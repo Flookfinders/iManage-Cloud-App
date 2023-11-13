@@ -1,0 +1,2949 @@
+/* #region header */
+/**************************************************************************************************
+//
+//  Description: Edit template dialog
+//
+//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//
+//--------------------------------------------------------------------------------------------------
+//
+//  Modification History:
+//
+//  Version Date     Modifier            Issue# Description
+//#region Version 1.0.0.0 changes
+//    001            Sean Flook                 Initial Revision.
+//    002   31.03.23 Sean Flook         WI40652 For template and wizard do not include Historic or Rejected logical status.
+//    003   06.04.23 Sean Flook         WI40675 Correctly call FilteredBLPUState.
+//    004   27.06.23 Sean Flook         WI40738 Renamed title when editing a title.
+//    005   23.08.23 Sean Flook       IMANN-159 Corrected field names.
+//    006   22.09.23 Sean Flook                 Changes required to handle Scottish classifications.
+//    007   06.10.23 Sean Flook                 Added some error trapping and use colour variables.
+//    008   03.11.23 Sean Flook                 Added hyphen to one-way.
+//#endregion Version 1.0.0.0 changes
+//
+//--------------------------------------------------------------------------------------------------
+/* #endregion header */
+
+import React, { useContext, useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import LookupContext from "../context/lookupContext";
+import SettingsContext from "../context/settingsContext";
+
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Typography,
+  Stack,
+  Button,
+  Grid,
+  FormControlLabel,
+  Box,
+  Checkbox,
+} from "@mui/material";
+import ADSSelectControl from "../components/ADSSelectControl";
+import ADSNumberControl from "../components/ADSNumberControl";
+import ADSTextControl from "../components/ADSTextControl";
+import ADSSwitchControl from "../components/ADSSwitchControl";
+import ADSProwAccessControl from "../components/ADSProwAccessControl";
+import ADSDateControl from "../components/ADSDateControl";
+
+import { GetLookupLabel } from "../utils/HelperUtils";
+import {
+  FilteredBLPULogicalStatus,
+  FilteredRepresentativePointCode,
+  FilteredBLPUState,
+  FilteredLPILogicalStatus,
+  FilteredBLPUProvenance,
+} from "../utils/PropertyUtils";
+import {
+  FilteredStreetType,
+  FilteredRoadStatusCode,
+  FilteredSwaOrgRef,
+  FilteredReinstatementType,
+  FilteredSpecialDesignationCode,
+} from "../utils/StreetUtils";
+
+import BLPUClassification from "../data/BLPUClassification";
+import OSGClassification from "../data/OSGClassification";
+import OfficialAddress from "../data/OfficialAddress";
+import PostallyAddressable from "../data/PostallyAddressable";
+import StreetState from "../data/StreetState";
+import StreetClassification from "../data/StreetClassification";
+import StreetSurface from "../data/StreetSurface";
+import ESUDirectionCode from "../data/ESUDirectionCode";
+import ESUState from "../data/ESUState";
+import ESUClassification from "../data/ESUClassification";
+import OneWayExemptionType from "../data/OneWayExemptionType";
+import OneWayExemptionPeriodicity from "../data/OneWayExemptionPeriodicity";
+import HighwayDedicationCode from "../data/HighwayDedicationCode";
+import InterestType from "../data/InterestType";
+import ConstructionType from "../data/ConstructionType";
+import AggregateAbrasionValue from "../data/AggregateAbrasionValue";
+import PolishedStoneValue from "../data/PolishedStoneValue";
+import SpecialDesignationPeriodicity from "./../data/SpecialDesignationPeriodicity";
+import HWWDesignationCode from "./../data/HWWDesignationCode";
+import PRoWDedicationCode from "../data/PRoWDedicationCode";
+import PRoWStatusCode from "../data/PRoWStatusCode";
+
+import CloseIcon from "@mui/icons-material/Close";
+import DoneIcon from "@mui/icons-material/Done";
+import DirectionsBikeIcon from "@mui/icons-material/DirectionsBike";
+import {
+  PRoWIcon,
+  QuietRouteIcon,
+  ObstructionIcon,
+  PlanningOrderIcon,
+  VehiclesProhibitedIcon,
+} from "../utils/ADSIcons";
+
+import { adsBlueA, adsMidGreyA, adsDarkPink, adsDarkGreen } from "../utils/ADSColours";
+import { blueButtonStyle, whiteButtonStyle, FormRowStyle } from "../utils/ADSStyles";
+import { useTheme } from "@mui/styles";
+
+EditTemplateDialog.propTypes = {
+  variant: PropTypes.oneOf([
+    "title",
+    "description",
+    "blpu",
+    "lpi",
+    "other",
+    "street",
+    "esu",
+    "owe",
+    "hd",
+    "maintenanceResponsibility",
+    "reinstatementCategory",
+    "osSpecialDesignation",
+    "interest",
+    "construction",
+    "specialDesignation",
+    "hww",
+    "prow",
+    "blpuWizard",
+    "lpiWizard",
+    "otherWizard",
+  ]),
+  isOpen: PropTypes.bool.isRequired,
+  data: PropTypes.object,
+  onDone: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
+};
+
+function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
+  const theme = useTheme();
+
+  const lookupContext = useContext(LookupContext);
+  const settingsContext = useContext(SettingsContext);
+
+  const [showDialog, setShowDialog] = useState(false);
+  const [templateType, setTemplateType] = useState("unknown");
+
+  const [title, setTitle] = useState(null);
+  const [description, setDescription] = useState(null);
+  const [blpuStatus, setBlpuStatus] = useState(null);
+  const [blpuRpc, setBlpuRpc] = useState(null);
+  const [blpuState, setBlpuState] = useState(null);
+  const [blpuStateDate, setBlpuStateDate] = useState(null);
+  const [blpuClassification, setBlpuClassification] = useState(null);
+  const [blpuStartDate, setBlpuStartDate] = useState(null);
+  const [lpiStatus, setLpiStatus] = useState(null);
+  const [lpiPostTown, setLpiPostTown] = useState(null);
+  const [lpiLevel, setLpiLevel] = useState(null);
+  const [lpiOfficialAddress, setLpiOfficialAddress] = useState(null);
+  const [lpiPostalAddress, setLpiPostalAddress] = useState(null);
+  const [lpiStartDate, setLpiStartDate] = useState(null);
+  const [otherCrossRefSource, setOtherCrossRefSource] = useState(null);
+  const [otherProvenance, setOtherProvenance] = useState(null);
+  const [otherProvenanceStartDate, setOtherProvenanceStartDate] = useState(null);
+  const [otherNote, setOtherNote] = useState(null);
+  const [streetType, setStreetType] = useState(null);
+  const [streetState, setStreetState] = useState(null);
+  const [streetLocality, setStreetLocality] = useState(null);
+  const [streetTown, setStreetTown] = useState(null);
+  const [streetIsland, setStreetIsland] = useState(null);
+  const [streetAdminArea, setStreetAdminArea] = useState(null);
+  const [streetClassification, setStreetClassification] = useState(null);
+  const [streetSurface, setStreetSurface] = useState(null);
+  const [esuDirection, setEsuDirection] = useState(null);
+  const [esuState, setEsuState] = useState(null);
+  const [esuClassification, setEsuClassification] = useState(null);
+  const [oweType, setOweType] = useState(null);
+  const [owePeriodicityCode, setOwePeriodicityCode] = useState(null);
+  const [hdCode, setHdCode] = useState(false);
+  const [hdPRoW, setHdPRoW] = useState(false);
+  const [hdNCR, setHdNCR] = useState(false);
+  const [hdQuietRoute, setHdQuietRoute] = useState(false);
+  const [hdObstruction, setHdObstruction] = useState(false);
+  const [hdPlanningOrder, setHdPlanningOrder] = useState(false);
+  const [hdVehiclesProhibited, setHdVehiclesProhibited] = useState(false);
+  const [maintenanceResponsibilityStreetStatus, setMaintenanceResponsibilityStreetStatus] = useState(null);
+  const [maintenanceResponsibilityCustodian, setMaintenanceResponsibilityCustodian] = useState(null);
+  const [maintenanceResponsibilityAuthority, setMaintenanceResponsibilityAuthority] = useState(null);
+  const [reinstatementCategoryReinstatementCategory, setReinstatementCategoryReinstatementCategory] = useState(null);
+  const [reinstatementCategoryCustodian, setReinstatementCategoryCustodian] = useState(null);
+  const [reinstatementCategoryAuthority, setReinstatementCategoryAuthority] = useState(null);
+  const [osSpecialDesignationSpecialDesignation, setOsSpecialDesignationSpecialDesignation] = useState(null);
+  const [osSpecialDesignationCustodian, setOsSpecialDesignationCustodian] = useState(null);
+  const [osSpecialDesignationAuthority, setOsSpecialDesignationAuthority] = useState(null);
+  const [interestStreetStatus, setInterestStreetStatus] = useState(null);
+  const [interestOrganisation, setInterestOrganisation] = useState(null);
+  const [interestType, setInterestType] = useState(null);
+  const [interestDistrict, setInterestDistrict] = useState(null);
+  const [interestMaintainingOrganisation, setInterestMaintainingOrganisation] = useState(null);
+  const [constructionType, setConstructionType] = useState(null);
+  const [constructionReinstatementType, setConstructionReinstatementType] = useState(null);
+  const [constructionAggregateAbrasionValue, setConstructionAggregateAbrasionValue] = useState(null);
+  const [constructionPolishedStoneValue, setConstructionPolishedStoneValue] = useState(null);
+  const [constructionOrganisation, setConstructionOrganisation] = useState(null);
+  const [constructionDistrict, setConstructionDistrict] = useState(null);
+  const [specialDesigType, setSpecialDesigType] = useState(null);
+  const [specialDesigOrganisation, setSpecialDesigOrganisation] = useState(null);
+  const [specialDesigDistrict, setSpecialDesigDistrict] = useState(null);
+  const [specialDesigPeriodicity, setSpecialDesigPeriodicity] = useState(null);
+  const [hwwDesignation, setHwwDesignation] = useState(null);
+  const [hwwOrganisation, setHwwOrganisation] = useState(null);
+  const [hwwDistrict, setHwwDistrict] = useState(null);
+  const [prowDedication, setProwDedication] = useState(null);
+  const [prowStatus, setProwStatus] = useState(null);
+  const [prowPedestrianAccess, setProwPedestrianAccess] = useState(false);
+  const [prowEquestrianAccess, setProwEquestrianAccess] = useState(false);
+  const [prowNonMotorisedVehicleAccess, setProwNonMotorisedVehicleAccess] = useState(false);
+  const [prowBicycleAccess, setProwBicycleAccess] = useState(false);
+  const [prowMotorisedVehicleAccess, setProwMotorisedVehicleAccess] = useState(false);
+  const [prowPromotedRoute, setProwPromotedRoute] = useState(false);
+  const [prowAccessibleRoute, setProwAccessibleRoute] = useState(false);
+  const [prowOrganisation, setProwOrganisation] = useState(null);
+  const [prowDistrict, setProwDistrict] = useState(null);
+
+  const [prowHover, setProwHover] = useState(false);
+  const [ncrHover, setNcrHover] = useState(false);
+  const [quietRouteHover, setQuietRouteHover] = useState(false);
+  const [obstructionHover, setObstructionHover] = useState(false);
+  const [planningOrderHover, setPlanningOrderHover] = useState(false);
+  const [vehiclesProhibitedHover, setVehiclesProhibitedHover] = useState(false);
+
+  const [errors, setErrors] = useState(null);
+  const [blpuStatusError, setBlpuStatusError] = useState(null);
+  const [blpuRpcError, setBlpuRpcError] = useState(null);
+  const [blpuStateError, setBlpuStateError] = useState(null);
+  const [blpuStateDateError, setBlpuStateDateError] = useState(null);
+  const [blpuClassificationError, setBlpuClassificationError] = useState(null);
+  const [blpuStartDateError, setBlpuStartDateError] = useState(null);
+  const [lpiStatusError, setLpiStatusError] = useState(null);
+  const [lpiLevelError, setLpiLevelError] = useState(null);
+  const [lpiOfficialAddressError, setLpiOfficialAddressError] = useState(null);
+  const [lpiPostalAddressError, setLpiPostalAddressError] = useState(null);
+  const [lpiStartDateError, setLpiStartDateError] = useState(null);
+  const [otherProvenanceError, setOtherProvenanceError] = useState(null);
+  const [otherProvenanceStartDateError, setOtherProvenanceStartDateError] = useState(null);
+  const [otherNoteError, setOtherNoteError] = useState(null);
+
+  /**
+   * Event to handle the closing of the dialog.
+   *
+   * @param {object} event The event object.
+   * @param {string} reason The reason why the dialog is closing.
+   */
+  const handleDialogClose = (event, reason) => {
+    event.stopPropagation();
+    if (reason === "escapeKeyDown") handleCancelClick();
+  };
+
+  /**
+   * Method to get the data that has been updated.
+   *
+   * @returns {object} The updated data.
+   */
+  const getUpdatedData = () => {
+    switch (variant) {
+      case "title":
+        return { templateName: title };
+
+      case "description":
+        return { templateDescription: description };
+
+      case "blpu":
+        return { blpuLogicalStatus: blpuStatus, rpc: blpuRpc, state: blpuState, classification: blpuClassification };
+
+      case "lpi":
+        return {
+          lpiLogicalStatus: lpiStatus,
+          postTownRef: lpiPostTown,
+          level: lpiLevel,
+          officialAddressMaker: lpiOfficialAddress,
+          postallyAddressable: lpiPostalAddress,
+        };
+
+      case "other":
+        return { source: otherCrossRefSource, provCode: otherProvenance, note: otherNote };
+
+      case "street":
+        return {
+          streetRefType: streetType,
+          state: streetState,
+          localityRef: streetLocality,
+          townRef: streetTown,
+          islandRef: streetIsland,
+          adminAreaRef: streetAdminArea,
+          classification: streetClassification,
+          surface: streetSurface,
+        };
+
+      case "esu":
+        return { esuDirection: esuDirection, esuState: esuState, esuClassification: esuClassification };
+
+      case "owe":
+        return { oweType: oweType, owePeriodicityCode: owePeriodicityCode };
+
+      case "hd":
+        return {
+          hdCode: hdCode,
+          hdPRoW: hdPRoW,
+          hdNCR: hdNCR,
+          hdQuietRoute: hdQuietRoute,
+          hdObstruction: hdObstruction,
+          hdPlanningOrder: hdPlanningOrder,
+          hdVehiclesProhibited: hdVehiclesProhibited,
+        };
+
+      case "maintenanceResponsibility":
+        return {
+          maintenanceResponsibilityStreetStatus: maintenanceResponsibilityStreetStatus,
+          maintenanceResponsibilityCustodian: maintenanceResponsibilityCustodian,
+          maintenanceResponsibilityAuthority: maintenanceResponsibilityAuthority,
+        };
+
+      case "reinstatementCategory":
+        return {
+          reinstatementCategoryReinstatementCategory: reinstatementCategoryReinstatementCategory,
+          reinstatementCategoryCustodian: reinstatementCategoryCustodian,
+          reinstatementCategoryAuthority: reinstatementCategoryAuthority,
+        };
+
+      case "osSpecialDesignation":
+        return {
+          osSpecialDesignationSpecialDesignation: osSpecialDesignationSpecialDesignation,
+          osSpecialDesignationCustodian: osSpecialDesignationCustodian,
+          osSpecialDesignationAuthority: osSpecialDesignationAuthority,
+        };
+
+      case "interest":
+        return {
+          interestStreetStatus: interestStreetStatus,
+          interestOrganisation: interestOrganisation,
+          interestType: interestType,
+          interestDistrict: interestDistrict,
+          maintainingOrganisation: interestMaintainingOrganisation,
+        };
+
+      case "construction":
+        return {
+          constructionType: constructionType,
+          reinstatementType: constructionReinstatementType,
+          aggregateAbrasionValue: constructionAggregateAbrasionValue,
+          polishedStoneValue: constructionPolishedStoneValue,
+          constructionOrganisation: constructionOrganisation,
+          constructionDistrict: constructionDistrict,
+        };
+
+      case "specialDesignation":
+        return {
+          specialDesigType: specialDesigType,
+          specialDesigOrganisation: specialDesigOrganisation,
+          specialDesigDistrict: specialDesigDistrict,
+          specialDesigPeriodicity: specialDesigPeriodicity,
+        };
+
+      case "hww":
+        return {
+          hwwDesignation: hwwDesignation,
+          hwwOrganisation: hwwOrganisation,
+          hwwDistrict: hwwDistrict,
+        };
+
+      case "prow":
+        return {
+          prowDedication: prowDedication,
+          prowStatus: prowStatus,
+          pedestrianAccess: prowPedestrianAccess,
+          equestrianAccess: prowEquestrianAccess,
+          nonMotorisedVehicleAccess: prowNonMotorisedVehicleAccess,
+          bicycleAccess: prowBicycleAccess,
+          motorisedVehicleAccess: prowMotorisedVehicleAccess,
+          promotedRoute: prowPromotedRoute,
+          accessibleRoute: prowAccessibleRoute,
+          prowOrganisation: prowOrganisation,
+          prowDistrict: prowDistrict,
+        };
+
+      case "blpuWizard":
+        return {
+          blpuLogicalStatus: blpuStatus,
+          rpc: blpuRpc,
+          state: blpuState,
+          stateDate: blpuStateDate,
+          classification: blpuClassification,
+          startDate: blpuStartDate,
+          errors: errors,
+        };
+
+      case "lpiWizard":
+        return {
+          lpiLogicalStatus: lpiStatus,
+          level: lpiLevel,
+          officialAddressMaker: lpiOfficialAddress,
+          postallyAddressable: lpiPostalAddress,
+          startDate: lpiStartDate,
+          errors: errors,
+        };
+
+      case "otherWizard":
+        return { provCode: otherProvenance, provStartDate: otherProvenanceStartDate, note: otherNote, errors: errors };
+
+      default:
+        return null;
+    }
+  };
+
+  /**
+   * Event to handle when the done button is clicked.
+   */
+  const handleDoneClick = () => {
+    if (onDone) onDone(getUpdatedData());
+  };
+
+  /**
+   * Event to handle when the cancel button is clicked.
+   */
+  const handleCancelClick = () => {
+    if (onClose) onClose();
+    else setShowDialog(false);
+  };
+
+  /**
+   * Method to update the errors.
+   *
+   * @param {string} updatedField The name of the field that was updated.
+   */
+  const updateErrors = (updatedField) => {
+    if (errors) setErrors(errors.filter((x) => x.field.toLowerCase() !== updatedField.toLowerCase()));
+  };
+
+  /**
+   * Event to handle when the title is changed.
+   *
+   * @param {string} newValue The new title.
+   */
+  const handleTitleChangeEvent = (newValue) => {
+    setTitle(newValue);
+  };
+
+  /**
+   * Event to handle when the description is changed.
+   *
+   * @param {string} newValue The new description.
+   */
+  const handleDescriptionChangeEvent = (newValue) => {
+    setDescription(newValue);
+  };
+
+  /**
+   * Event to handle when the BLPU logical status is changed.
+   *
+   * @param {number} newValue The new BLPU logical status.
+   */
+  const handleBlpuStatusChangeEvent = (newValue) => {
+    setBlpuStatus(newValue);
+    if (variant === "blpuWizard") {
+      updateErrors("blpuStatus");
+      setBlpuStatusError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the BLPU RPC is changed.
+   *
+   * @param {number} newValue The new BLPU RPC.
+   */
+  const handleBlpuRpcChangeEvent = (newValue) => {
+    setBlpuRpc(newValue);
+    if (variant === "blpuWizard") {
+      updateErrors("rpc");
+      setBlpuRpcError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the BLPU state is changed.
+   *
+   * @param {number} newValue The new BLPU state.
+   */
+  const handleBlpuStateChangeEvent = (newValue) => {
+    setBlpuState(newValue);
+    if (variant === "blpuWizard") {
+      if (newValue && !blpuStateDate) setBlpuStateDate(new Date());
+      updateErrors("state");
+      setBlpuStateError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the BLPU state date is changed.
+   *
+   * @param {Date} newValue The new BLPU state date.
+   */
+  const handleBlpuStateDateChangeEvent = (newValue) => {
+    setBlpuStateDate(newValue);
+    if (variant === "blpuWizard") {
+      updateErrors("stateDate");
+      setBlpuStateDateError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the BLPU classification is changed (GeoPlace only).
+   *
+   * @param {string} newValue The new BLPU classification.
+   */
+  const handleBlpuClassificationChangeEvent = (newValue) => {
+    setBlpuClassification(newValue);
+    if (variant === "blpuWizard") {
+      updateErrors("classification");
+      setBlpuClassificationError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the BLPU start date is changed.
+   *
+   * @param {Date} newValue The new BLPU start date.
+   */
+  const handleBlpuStartDateChangeEvent = (newValue) => {
+    setBlpuStartDate(newValue);
+    if (variant === "blpuWizard") {
+      updateErrors("blpuStartDate");
+      setBlpuStartDateError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the LPI logical status is changed.
+   *
+   * @param {number} newValue The new LPI logical status.
+   */
+  const handleLpiStatusChangeEvent = (newValue) => {
+    setLpiStatus(newValue);
+    if (variant === "lpiWizard") {
+      updateErrors("lpiStatus");
+      setLpiStatusError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the post town is changed.
+   *
+   * @param {number} newValue The new post town.
+   */
+  const handleLpiPostTownChangeEvent = (newValue) => {
+    setLpiPostTown(newValue);
+  };
+
+  /**
+   * Event to handle when the LPI level is changed.
+   *
+   * @param {number|string} newValue The new LPI level.
+   */
+  const handleLpiLevelChangeEvent = (newValue) => {
+    setLpiLevel(newValue);
+    if (variant === "lpiWizard") {
+      updateErrors("level");
+      setLpiLevelError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the official address is changed.
+   *
+   * @param {string} newValue The new official address.
+   */
+  const handleLpiOfficialAddressChangeEvent = (newValue) => {
+    setLpiOfficialAddress(newValue);
+    if (variant === "lpiWizard") {
+      updateErrors("officialAddress");
+      setLpiOfficialAddressError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the postally addressable is changed.
+   *
+   * @param {string} newValue The new postally addressable.
+   */
+  const handleLpiPostalAddressChangeEvent = (newValue) => {
+    setLpiPostalAddress(newValue);
+    if (variant === "lpiWizard") {
+      updateErrors("postalAddress");
+      setLpiPostalAddressError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the LPU start date is changed.
+   *
+   * @param {Date} newValue The new LPI start date.
+   */
+  const handleLpiStartDateChangeEvent = (newValue) => {
+    setLpiStartDate(newValue);
+    if (variant === "lpiWizard") {
+      updateErrors("lpiStartDate");
+      setLpiStartDateError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the cross reference source is changed.
+   *
+   * @param {number} newValue The new cross reference source.
+   */
+  const handleOtherCrossRefSourceChangeEvent = (newValue) => {
+    setOtherCrossRefSource(newValue);
+  };
+
+  /**
+   * Event to handle when the provenance is changed.
+   *
+   * @param {string} newValue The new provenance.
+   */
+  const handleOtherProvenanceChangeEvent = (newValue) => {
+    setOtherProvenance(newValue);
+    if (variant === "otherWizard") {
+      if (newValue && !otherProvenanceStartDate) setOtherProvenanceStartDate(new Date());
+      updateErrors("provenance");
+      setOtherProvenanceError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the provenance start date is changed.
+   *
+   * @param {Date} newValue The new provenance start date.
+   */
+  const handleOtherProvenanceStartDateChangeEvent = (newValue) => {
+    setOtherProvenanceStartDate(newValue);
+    if (variant === "otherWizard") {
+      updateErrors("provenanceStartDate");
+      setOtherProvenanceStartDateError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the note is changed.
+   *
+   * @param {string} newValue The new note.
+   */
+  const handleOtherNoteChangeEvent = (newValue) => {
+    setOtherNote(newValue);
+    if (variant === "otherWizard") {
+      updateErrors("note");
+      setOtherNoteError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the street type is changed.
+   *
+   * @param {number} newValue The new street type.
+   */
+  const handleStreetTypeChangeEvent = (newValue) => {
+    setStreetType(newValue);
+  };
+
+  /**
+   * Event to handle when the state is changed.
+   *
+   * @param {number} newValue The new state.
+   */
+  const handleStateChangeEvent = (newValue) => {
+    setStreetState(newValue);
+  };
+
+  /**
+   * Event to handle when the locality is changed.
+   *
+   * @param {number} newValue The new locality.
+   */
+  const handleLocalityChangeEvent = (newValue) => {
+    setStreetLocality(newValue);
+  };
+
+  /**
+   * Event to handle when the town is changed.
+   *
+   * @param {number} newValue The new town.
+   */
+  const handleTownChangeEvent = (newValue) => {
+    setStreetTown(newValue);
+  };
+
+  /**
+   * Event to handle when the island is changed.
+   *
+   * @param {number} newValue The new island.
+   */
+  const handleIslandChangeEvent = (newValue) => {
+    setStreetIsland(newValue);
+  };
+
+  /**
+   * Event to handle when the administrative area is changed.
+   *
+   * @param {number} newValue The new administrative area.
+   */
+  const handleAdministrativeAreaChangeEvent = (newValue) => {
+    setStreetAdminArea(newValue);
+  };
+
+  /**
+   * Event to handle when the street classification is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new street classification.
+   */
+  const handleClassificationChangeEvent = (newValue) => {
+    setStreetClassification(newValue);
+  };
+
+  /**
+   * Event to handle when the surface is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new surface.
+   */
+  const handleSurfaceChangeEvent = (newValue) => {
+    setStreetSurface(newValue);
+  };
+
+  /**
+   * Event to handle when the direction is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new direction.
+   */
+  const handleDirectionChangeEvent = (newValue) => {
+    setEsuDirection(newValue);
+  };
+
+  /**
+   * Event to handle when the ESU state is changed (OneScotland only).
+   *
+   * @param {number} newValue The new ESU state.
+   */
+  const handleEsuStateChangeEvent = (newValue) => {
+    setEsuState(newValue);
+  };
+
+  /**
+   * Event to handle when the ESU classification is changed (OneScotland only).
+   *
+   * @param {number} newValue The new ESU classification.
+   */
+  const handleEsuClassificationChangeEvent = (newValue) => {
+    setEsuClassification(newValue);
+  };
+
+  /**
+   * Event to handle when the one-way exemption type is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new one-way exemption type.
+   */
+  const handleOneWayExemptionTypeChangeEvent = (newValue) => {
+    setOweType(newValue);
+  };
+
+  /**
+   * Event to handle when the one-way exemption periodicity is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new one-way exemption periodicity.
+   */
+  const handlePeriodicityChangeEvent = (newValue) => {
+    setOwePeriodicityCode(newValue);
+  };
+
+  /**
+   * Event to handle when the highway dedication code is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new highway dedication code.
+   */
+  const handleHighwayDedicationCodeChangeEvent = (newValue) => {
+    setHdCode(newValue);
+  };
+
+  /**
+   * Event to handle when the public rights of way is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new public rights of way.
+   */
+  const handleProwChangeEvent = (newValue) => {
+    setHdPRoW(newValue);
+  };
+
+  /**
+   * Event to handle when the NCR is changed (GeoPlace only).
+   *
+   * @param {boolean} newValue The new NCR.
+   */
+  const handleNcrChangeEvent = (newValue) => {
+    setHdNCR(newValue);
+  };
+
+  /**
+   * Event to handle when the quiet route is changed (GeoPlace only).
+   *
+   * @param {boolean} newValue The new quiet route.
+   */
+  const handleQuietRouteChangeEvent = (newValue) => {
+    setHdQuietRoute(newValue);
+  };
+
+  /**
+   * Event to handle when the obstruction is changed (GeoPlace only).
+   *
+   * @param {boolean} newValue The new obstruction.
+   */
+  const handleObstructionChangeEvent = (newValue) => {
+    setHdObstruction(newValue);
+  };
+
+  /**
+   * Event to handle when the planning order is changed (GeoPlace only).
+   *
+   * @param {boolean} newValue The new planning order.
+   */
+  const handlePlanningOrderChangeEvent = (newValue) => {
+    setHdPlanningOrder(newValue);
+  };
+
+  /**
+   * Event to handle when the vehicles prohibited is changed (GeoPlace only).
+   *
+   * @param {boolean} newValue The new vehicles prohibited.
+   */
+  const handleVehiclesProhibitedChangeEvent = (newValue) => {
+    setHdVehiclesProhibited(newValue);
+  };
+
+  /**
+   * Event to handle when the maintenance responsibility street status is changed (OneScotland only).
+   *
+   * @param {number} newValue The new maintenance responsibility street status.
+   */
+  const handleMaintenanceResponsibilityStreetStatusChangeEvent = (newValue) => {
+    setMaintenanceResponsibilityStreetStatus(newValue);
+  };
+
+  /**
+   * Event to handle when the maintenance responsibility custodian is changed (OneScotland only).
+   *
+   * @param {number} newValue The new maintenance responsibility custodian.
+   */
+  const handleMaintenanceResponsibilityCustodianChangeEvent = (newValue) => {
+    setMaintenanceResponsibilityCustodian(newValue);
+  };
+
+  /**
+   * Event to handle when the maintenance responsibility authority is changed (OneScotland only).
+   *
+   * @param {number} newValue The new maintenance responsibility authority.
+   */
+  const handleMaintenanceResponsibilityAuthorityChangeEvent = (newValue) => {
+    setMaintenanceResponsibilityAuthority(newValue);
+  };
+
+  /**
+   * Event to handle when the reinstatement category is changed (OneScotland only).
+   *
+   * @param {number} newValue The new reinstatement category.
+   */
+  const handleReinstatementCategoryReinstatementCategoryChangeEvent = (newValue) => {
+    setReinstatementCategoryReinstatementCategory(newValue);
+  };
+
+  /**
+   * Event to handle when the reinstatement category custodian is changed (OneScotland only).
+   *
+   * @param {number} newValue The new reinstatement category custodian.
+   */
+  const handleReinstatementCategoryCustodianChangeEvent = (newValue) => {
+    setReinstatementCategoryCustodian(newValue);
+  };
+
+  /**
+   * Event to handle when the reinstatement category authority is changed (OneScotland only).
+   *
+   * @param {number} newValue The new reinstatement category authority.
+   */
+  const handleReinstatementCategoryAuthorityChangeEvent = (newValue) => {
+    setReinstatementCategoryAuthority(newValue);
+  };
+
+  /**
+   * Event to handle when the special designation is changed (OneScotland only).
+   *
+   * @param {number} newValue The new special designation.
+   */
+  const handleOsSpecialDesignationSpecialDesignationChangeEvent = (newValue) => {
+    setOsSpecialDesignationSpecialDesignation(newValue);
+  };
+
+  /**
+   * Event to handle when the special designation custodian is changed (OneScotland only).
+   *
+   * @param {number} newValue The new special designation custodian.
+   */
+  const handleOsSpecialDesignationCustodianChangeEvent = (newValue) => {
+    setOsSpecialDesignationCustodian(newValue);
+  };
+
+  /**
+   * Event to handle when the special designation authority is changed (OneScotland only).
+   *
+   * @param {number} newValue The new special designation authority.
+   */
+  const handleOsSpecialDesignationAuthorityChangeEvent = (newValue) => {
+    setOsSpecialDesignationAuthority(newValue);
+  };
+
+  /**
+   * Event to handle when the interest street status is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new interest street status.
+   */
+  const handleInterestStreetStatusChangeEvent = (newValue) => {
+    setInterestStreetStatus(newValue);
+  };
+
+  /**
+   * Event to handle when the interest organisation is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new interest organisation.
+   */
+  const handleInterestOrganisationChangeEvent = (newValue) => {
+    setInterestOrganisation(newValue);
+  };
+
+  /**
+   * Event to handle when the interest type is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new interest type.
+   */
+  const handleInterestTypeChangeEvent = (newValue) => {
+    setInterestType(newValue);
+  };
+
+  /**
+   * Event to handle when the interest district is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new interest district.
+   */
+  const handleInterestDistrictChangeEvent = (newValue) => {
+    setInterestDistrict(newValue);
+  };
+
+  /**
+   * Event to handle when the interest maintaining organisation is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new interest maintaining organisation.
+   */
+  const handleInterestMaintainingOrganisationChangeEvent = (newValue) => {
+    setInterestMaintainingOrganisation(newValue);
+  };
+
+  /**
+   * Event to handle when the construction type is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new construction type.
+   */
+  const handleConstructionTypeChangeEvent = (newValue) => {
+    setConstructionType(newValue);
+  };
+
+  /**
+   * Event to handle when the reinstatement type is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new reinstatement type.
+   */
+  const handleReinstatementTypeChangeEvent = (newValue) => {
+    setConstructionReinstatementType(newValue);
+  };
+
+  /**
+   * Event to handle when the aggregate abrasion value is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new aggregate abrasion value.
+   */
+  const handleAggregateAbrasionValueChangeEvent = (newValue) => {
+    setConstructionAggregateAbrasionValue(newValue);
+  };
+
+  /**
+   * Event to handle when the polished stone value is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new polished stone value.
+   */
+  const handlePolishedStoneValueChangeEvent = (newValue) => {
+    setConstructionPolishedStoneValue(newValue);
+  };
+
+  /**
+   * Event to handle when the construction organisation is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new construction organisation.
+   */
+  const handleConstructionOrganisationChangeEvent = (newValue) => {
+    setConstructionOrganisation(newValue);
+  };
+
+  /**
+   * Event to handle when the construction district is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new construction district.
+   */
+  const handleConstructionDistrictChangeEvent = (newValue) => {
+    setConstructionDistrict(newValue);
+  };
+
+  /**
+   * Event to handle when the special designation type is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new special designation type.
+   */
+  const handleDesignationTypeChangeEvent = (newValue) => {
+    setSpecialDesigType(newValue);
+  };
+
+  /**
+   * Event to handle when the special designation organisation is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new special designation organisation.
+   */
+  const handleSpecialDesigOrganisationChangeEvent = (newValue) => {
+    setSpecialDesigOrganisation(newValue);
+  };
+
+  /**
+   * Event to handle when the special designation district is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new special designation district.
+   */
+  const handleSpecialDesigDistrictChangeEvent = (newValue) => {
+    setSpecialDesigDistrict(newValue);
+  };
+
+  /**
+   * Event to handle when the special designation periodicity is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new special designation periodicity.
+   */
+  const handleSpecialDesigPeriodicityChangeEvent = (newValue) => {
+    setSpecialDesigPeriodicity(newValue);
+  };
+
+  /**
+   * Event to handle when the height, width & weight designation code is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new height, width & weight designation code.
+   */
+  const handleHwwDesignationCodeChangeEvent = (newValue) => {
+    setHwwDesignation(newValue);
+  };
+
+  /**
+   * Event to handle when the height, width & weight organisation is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new height, width & weight organisation.
+   */
+  const handleHwwOrganisationChangeEvent = (newValue) => {
+    setHwwOrganisation(newValue);
+  };
+
+  /**
+   * Event to handle when the height, width & weight district is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new height, width & weight district.
+   */
+  const handleHwwDistrictChangeEvent = (newValue) => {
+    setHwwDistrict(newValue);
+  };
+
+  /**
+   * Event to handle when the public rights of way dedication is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new public rights of way dedication.
+   */
+  const handleProwDedicationChangeEvent = (newValue) => {
+    setProwDedication(newValue);
+  };
+
+  /**
+   * Event to handle when the public rights of way status is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new public rights of way status.
+   */
+  const handleProwStatusChangeEvent = (newValue) => {
+    setProwStatus(newValue);
+  };
+
+  /**
+   * Event to handle when the pedestrian access is changed (GeoPlace only).
+   *
+   * @param {boolean} newValue The new pedestrian access.
+   */
+  const handlePedestrianAccessChangeEvent = (newValue) => {
+    setProwPedestrianAccess(newValue);
+  };
+
+  /**
+   * Event to handle when the equestrian access is changed (GeoPlace only).
+   *
+   * @param {boolean} newValue The new equestrian access.
+   */
+  const handleEquestrianAccessChangeEvent = (newValue) => {
+    setProwEquestrianAccess(newValue);
+  };
+
+  /**
+   * Event to handle when the non-motorised access is changed (GeoPlace only).
+   *
+   * @param {boolean} newValue The new non-motorised access.
+   */
+  const handleNonMotorisedAccessChangeEvent = (newValue) => {
+    setProwNonMotorisedVehicleAccess(newValue);
+  };
+
+  /**
+   * Event to handle when the cycle access is changed (GeoPlace only).
+   *
+   * @param {boolean} newValue The new cycle access.
+   */
+  const handleCycleAccessChangeEvent = (newValue) => {
+    setProwBicycleAccess(newValue);
+  };
+
+  /**
+   * Event to handle when the motorised access is changed (GeoPlace only).
+   *
+   * @param {boolean} newValue The new motorised access.
+   */
+  const handleMotorisedAccessChangeEvent = (newValue) => {
+    setProwMotorisedVehicleAccess(newValue);
+  };
+
+  /**
+   * Event to handle when the promoted route is changed (GeoPlace only).
+   *
+   * @param {boolean} newValue The new promoted route.
+   */
+  const handlePromotedRouteChangeEvent = (newValue) => {
+    setProwPromotedRoute(newValue);
+  };
+
+  /**
+   * Event to handle when the accessible route is changed (GeoPlace only).
+   *
+   * @param {boolean} newValue The new accessible route.
+   */
+  const handleAccessibleRouteChangeEvent = (newValue) => {
+    setProwAccessibleRoute(newValue);
+  };
+
+  /**
+   * Event to handle when the public rights of way organisation is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new public rights of way organisation.
+   */
+  const handleProwOrganisationChangeEvent = (newValue) => {
+    setProwOrganisation(newValue);
+  };
+
+  /**
+   * Event to handle when the public rights of way district is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new public rights of way district.
+   */
+  const handleProwDistrictChangeEvent = (newValue) => {
+    setProwDistrict(newValue);
+  };
+
+  /**
+   * Event to handle when the mouse enters the public rights of way (GeoPlace only)
+   */
+  const handleProwMouseEnter = () => {
+    setProwHover(true);
+  };
+
+  /**
+   * Event to handle when the mouse leaves the public rights of way (GeoPlace only)
+   */
+  const handleProwMouseLeave = () => {
+    setProwHover(false);
+  };
+
+  /**
+   * Event to handle when the mouse enters the national cycle route (GeoPlace only)
+   */
+  const handleNcrMouseEnter = () => {
+    setNcrHover(true);
+  };
+
+  /**
+   * Event to handle when the mouse leaves the national cycle route (GeoPlace only)
+   */
+  const handleNcrMouseLeave = () => {
+    setNcrHover(false);
+  };
+
+  /**
+   * Event to handle when the mouse enters the quite route (GeoPlace only)
+   */
+  const handleQuietRouteMouseEnter = () => {
+    setQuietRouteHover(true);
+  };
+
+  /**
+   * Event to handle when the mouse leaves the quite route (GeoPlace only)
+   */
+  const handleQuietRouteMouseLeave = () => {
+    setQuietRouteHover(false);
+  };
+
+  /**
+   * Event to handle when the mouse enters the obstruction (GeoPlace only)
+   */
+  const handleObstructionMouseEnter = () => {
+    setObstructionHover(true);
+  };
+
+  /**
+   * Event to handle when the mouse leaves the obstruction (GeoPlace only)
+   */
+  const handleObstructionMouseLeave = () => {
+    setObstructionHover(false);
+  };
+
+  /**
+   * Event to handle when the mouse enters the planning order (GeoPlace only)
+   */
+  const handlePlanningOrderMouseEnter = () => {
+    setPlanningOrderHover(true);
+  };
+
+  /**
+   * Event to handle when the mouse leaves the planning order (GeoPlace only)
+   */
+  const handlePlanningOrderMouseLeave = () => {
+    setPlanningOrderHover(false);
+  };
+
+  /**
+   * Event to handle when the mouse enters the vehicles prohibited (GeoPlace only)
+   */
+  const handleVehiclesProhibitedMouseEnter = () => {
+    setVehiclesProhibitedHover(true);
+  };
+
+  /**
+   * Event to handle when the mouse leaves the vehicles prohibited (GeoPlace only)
+   */
+  const handleVehiclesProhibitedMouseLeave = () => {
+    setVehiclesProhibitedHover(false);
+  };
+
+  /**
+   * Method to get the dialog title depending on which variant of dialog is to be displayed.
+   *
+   * @returns {string} The dialog title
+   */
+  const getDialogTitle = () => {
+    switch (variant) {
+      case "title":
+        return "Edit title";
+
+      case "description":
+        return "Edit description";
+
+      case "blpuWizard":
+      case "lpiWizard":
+      case "otherWizard":
+        return `Edit ${templateType} details`;
+
+      default:
+        return `Edit ${templateType} settings`;
+    }
+  };
+
+  /**
+   * Method to get the content of the dialog depending on which variant of dialog is to be displayed.
+   *
+   * @returns {JSX.Element} The content of the dialog.
+   */
+  const getDialogContent = () => {
+    if (!variant) return null;
+
+    switch (variant) {
+      case "title":
+        return (
+          <ADSTextControl
+            label="Name"
+            isEditable
+            displayCharactersLeft
+            value={title}
+            id="template_title"
+            maxLength={75}
+            onChange={handleTitleChangeEvent}
+          />
+        );
+
+      case "description":
+        return (
+          <ADSTextControl
+            label="Description"
+            isEditable
+            value={description}
+            id="template_description"
+            maxLength={200}
+            minLines={2}
+            maxLines={10}
+            onChange={handleDescriptionChangeEvent}
+          />
+        );
+
+      case "blpu":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Logical status"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredBLPULogicalStatus(settingsContext.isScottish, true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              value={blpuStatus}
+              onChange={handleBlpuStatusChangeEvent}
+              helperText="Logical Status of the BLPU."
+            />
+            <ADSSelectControl
+              label="RPC"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredRepresentativePointCode(settingsContext.isScottish, true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              value={blpuRpc}
+              onChange={handleBlpuRpcChangeEvent}
+              helperText="Representative Point Code."
+            />
+            {!settingsContext.isScottish && (
+              <ADSSelectControl
+                label="State"
+                isEditable
+                useRounded
+                doNotSetTitleCase
+                lookupData={FilteredBLPUState(settingsContext.isScottish, blpuStatus ? blpuStatus : null)}
+                lookupId="id"
+                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                lookupColour="colour"
+                value={blpuState}
+                onChange={handleBlpuStateChangeEvent}
+                helperText="A code identifying the current state of a BLPU."
+              />
+            )}
+            {!settingsContext.isScottish && (
+              <ADSSelectControl
+                label="Classification"
+                isEditable
+                isClassification
+                includeHiddenCode
+                useRounded
+                doNotSetTitleCase
+                lookupData={settingsContext.isScottish ? OSGClassification : BLPUClassification}
+                lookupId="id"
+                lookupLabel="display"
+                lookupColour="colour"
+                value={blpuClassification}
+                onChange={handleBlpuClassificationChangeEvent}
+                helperText="Classification code for the BLPU."
+              />
+            )}
+          </Stack>
+        );
+
+      case "lpi":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Logical status"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredLPILogicalStatus(settingsContext.isScottish, null, true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              value={lpiStatus}
+              onChange={handleLpiStatusChangeEvent}
+              helperText="Logical status of this Record."
+            />
+            <ADSSelectControl
+              label="Post town"
+              isEditable
+              useRounded
+              lookupData={lookupContext.currentLookups.postTowns
+                .filter((x) => x.language === "ENG" && !x.historic)
+                .sort(function (a, b) {
+                  return a.postTown.localeCompare(b.postTown, undefined, {
+                    numeric: true,
+                    sensitivity: "base",
+                  });
+                })}
+              lookupId="postTownRef"
+              lookupLabel="postTown"
+              value={lpiPostTown}
+              onChange={handleLpiPostTownChangeEvent}
+              helperText="Allocated by the Royal Mail to assist in delivery of mail."
+            />
+            {settingsContext.isScottish ? (
+              <ADSNumberControl
+                label="Level"
+                isEditable
+                value={lpiLevel}
+                helperText="Memorandum of the vertical position of the BLPU."
+                onChange={handleLpiLevelChangeEvent}
+              />
+            ) : (
+              <ADSTextControl
+                label="Level"
+                isEditable
+                value={lpiLevel}
+                id="lpi_level_settings_template"
+                maxLength={30}
+                helperText="Memorandum of the vertical position of the BLPU."
+                onChange={handleLpiLevelChangeEvent}
+              />
+            )}
+            {!settingsContext.isScottish && (
+              <ADSSelectControl
+                label="Official address"
+                isEditable
+                useRounded
+                doNotSetTitleCase
+                lookupData={OfficialAddress}
+                lookupId="id"
+                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                value={lpiOfficialAddress}
+                onChange={handleLpiOfficialAddressChangeEvent}
+                helperText="Status of address."
+              />
+            )}
+            {!settingsContext.isScottish && (
+              <ADSSelectControl
+                label="Postal address"
+                isEditable
+                useRounded
+                doNotSetTitleCase
+                lookupData={PostallyAddressable}
+                lookupId="id"
+                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                value={lpiPostalAddress}
+                onChange={handleLpiPostalAddressChangeEvent}
+                helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
+              />
+            )}
+          </Stack>
+        );
+
+      case "other":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Cross ref source"
+              isEditable
+              useRounded
+              isCrossRef
+              lookupData={lookupContext.currentLookups.appCrossRefs.filter((x) => x.enabled)}
+              lookupId="pkId"
+              lookupLabel="xrefDescription"
+              lookupColour={adsDarkPink}
+              lookupIcon="avatar_icon"
+              value={otherCrossRefSource}
+              onChange={handleOtherCrossRefSourceChangeEvent}
+              helperText="External data-set identity."
+            />
+            <ADSSelectControl
+              label="Provenance"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredBLPUProvenance(settingsContext.isScottish)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              lookupIcon="avatar_icon"
+              value={otherProvenance}
+              onChange={handleOtherProvenanceChangeEvent}
+              helperText="Identifies the BLPU Provenance Extent derivation."
+            />
+            <ADSTextControl
+              label="Note"
+              isEditable
+              value={otherNote}
+              id={"ads-text-textfield-note"}
+              maxLength={4000}
+              minLines={2}
+              maxLines={10}
+              onChange={handleOtherNoteChangeEvent}
+            />
+          </Stack>
+        );
+
+      case "street":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Type"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredStreetType(settingsContext.isScottish)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              value={streetType}
+              onChange={handleStreetTypeChangeEvent}
+              helperText="This is the type of the street."
+            />
+            {!settingsContext.isScottish && (
+              <ADSSelectControl
+                label="State"
+                isEditable
+                doNotSetTitleCase
+                useRounded
+                lookupData={StreetState}
+                lookupId="id"
+                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                lookupColour="colour"
+                value={streetState}
+                helperText="This is the current state of the street."
+                onChange={handleStateChangeEvent}
+              />
+            )}
+            <ADSSelectControl
+              label="Locality"
+              isEditable
+              useRounded
+              lookupData={lookupContext.currentLookups.localities
+                .filter((x) => x.language === "ENG" && !x.historic)
+                .sort(function (a, b) {
+                  return a.locality.localeCompare(b.locality, undefined, {
+                    numeric: true,
+                    sensitivity: "base",
+                  });
+                })}
+              lookupId="localityRef"
+              lookupLabel="locality"
+              value={streetLocality}
+              onChange={handleLocalityChangeEvent}
+              helperText="Locality name."
+            />
+            <ADSSelectControl
+              label="Town"
+              isEditable
+              useRounded
+              lookupData={lookupContext.currentLookups.towns
+                .filter((x) => x.language === "ENG" && !x.historic)
+                .sort(function (a, b) {
+                  return a.town.localeCompare(b.town, undefined, {
+                    numeric: true,
+                    sensitivity: "base",
+                  });
+                })}
+              lookupId="townRef"
+              lookupLabel="town"
+              value={streetTown}
+              onChange={handleTownChangeEvent}
+              helperText="Town name."
+            />
+            {settingsContext.isScottish && (
+              <ADSSelectControl
+                label="Island"
+                isEditable
+                useRounded
+                lookupData={lookupContext.currentLookups.islands
+                  .filter((x) => x.language === "ENG" && !x.historic)
+                  .sort(function (a, b) {
+                    return a.island.localeCompare(b.island, undefined, {
+                      numeric: true,
+                      sensitivity: "base",
+                    });
+                  })}
+                lookupId="islandRef"
+                lookupLabel="island"
+                value={streetIsland}
+                onChange={handleIslandChangeEvent}
+                helperText="Island name."
+              />
+            )}
+            <ADSSelectControl
+              label="Admin area"
+              isEditable
+              useRounded
+              lookupData={lookupContext.currentLookups.adminAuthorities
+                .filter((x) => x.language === "ENG" && !x.historic)
+                .sort(function (a, b) {
+                  return a.administrativeArea.localeCompare(b.administrativeArea, undefined, {
+                    numeric: true,
+                    sensitivity: "base",
+                  });
+                })}
+              lookupId="administrativeAreaRef"
+              lookupLabel="administrativeArea"
+              value={streetAdminArea}
+              onChange={handleAdministrativeAreaChangeEvent}
+              helperText="Administrative area name."
+            />
+            {!settingsContext.isScottish && (
+              <ADSSelectControl
+                label="Classification"
+                isEditable
+                doNotSetTitleCase
+                useRounded
+                lookupData={StreetClassification}
+                lookupId="id"
+                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                lookupColour="colour"
+                value={streetClassification}
+                helperText="This is the current classification of the street."
+                onChange={handleClassificationChangeEvent}
+              />
+            )}
+            {!settingsContext.isScottish && (
+              <ADSSelectControl
+                label="Surface"
+                isEditable
+                doNotSetTitleCase
+                useRounded
+                lookupData={StreetSurface}
+                lookupId="id"
+                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                lookupColour="colour"
+                value={streetSurface}
+                helperText="This is the type of surface used for the majority of the street."
+                onChange={handleSurfaceChangeEvent}
+              />
+            )}
+          </Stack>
+        );
+
+      case "esu":
+        return (
+          <Stack direction="column">
+            {!settingsContext.isScottish && (
+              <ADSSelectControl
+                label="Direction"
+                isEditable
+                useRounded
+                doNotSetTitleCase
+                lookupData={ESUDirectionCode}
+                lookupId="id"
+                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                lookupColour="colour"
+                lookupIcon="avatar_icon"
+                value={esuDirection}
+                onChange={handleDirectionChangeEvent}
+                helperText="Indicates whether traffic flow is restricted in a particular direction."
+              />
+            )}
+            {settingsContext.isScottish && (
+              <ADSSelectControl
+                label="State"
+                isEditable
+                useRounded
+                doNotSetTitleCase
+                lookupData={ESUState}
+                lookupId="id"
+                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                lookupColour="colour"
+                lookupIcon="avatar_icon"
+                value={esuState}
+                onChange={handleEsuStateChangeEvent}
+                helperText="The current state of the ESU."
+              />
+            )}
+            {settingsContext.isScottish && (
+              <ADSSelectControl
+                label="Classification"
+                isEditable
+                useRounded
+                doNotSetTitleCase
+                lookupData={ESUClassification}
+                lookupId="id"
+                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                lookupColour="colour"
+                lookupIcon="avatar_icon"
+                value={esuClassification}
+                onChange={handleEsuClassificationChangeEvent}
+                helperText="The classification of the ESU."
+              />
+            )}
+          </Stack>
+        );
+
+      case "owe":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Type"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={OneWayExemptionType}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              lookupIcon="avatar_icon"
+              value={oweType}
+              onChange={handleOneWayExemptionTypeChangeEvent}
+              helperText="Type of traffic which is exempt from one-way restrictions."
+            />
+            <ADSSelectControl
+              label="Periodicity"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={OneWayExemptionPeriodicity}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              lookupIcon="avatar_icon"
+              value={owePeriodicityCode}
+              onChange={handlePeriodicityChangeEvent}
+              helperText="Code to identify the periodicity of the restriction."
+            />
+          </Stack>
+        );
+
+      case "hd":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Type"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={HighwayDedicationCode}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              lookupIcon="avatar_icon"
+              value={hdCode}
+              onChange={handleHighwayDedicationCodeChangeEvent}
+              helperText="The type of Highway Dedication that applies to this section of the Street."
+            />
+            <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
+              <Grid item xs={3}>
+                <Typography variant="body2" align="left" id="indicator-label" color="textPrimary">
+                  Indicator
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Grid container direction="column" justifyContent="flex-start" alignItems="flex-start">
+                  <Grid item>
+                    <FormControlLabel
+                      control={
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <Checkbox checked={hdPRoW} onChange={handleProwChangeEvent} />
+                          <PRoWIcon sx={getIndicatorStyle(hdPRoW, prowHover)} />
+                        </Box>
+                      }
+                      label="PRoW"
+                      onMouseEnter={handleProwMouseEnter}
+                      onMouseLeave={handleProwMouseLeave}
+                      sx={getIndicatorStyle(hdPRoW, prowHover)}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <FormControlLabel
+                      control={
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <Checkbox checked={hdNCR} onChange={handleNcrChangeEvent} />
+                          <DirectionsBikeIcon sx={getIndicatorStyle(hdNCR, ncrHover)} />
+                        </Box>
+                      }
+                      label="NCR"
+                      onMouseEnter={handleNcrMouseEnter}
+                      onMouseLeave={handleNcrMouseLeave}
+                      sx={getIndicatorStyle(hdNCR, ncrHover)}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <FormControlLabel
+                      control={
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <Checkbox checked={hdQuietRoute} onChange={handleQuietRouteChangeEvent} />
+                          <QuietRouteIcon sx={getIndicatorStyle(hdQuietRoute, quietRouteHover)} />
+                        </Box>
+                      }
+                      label="Quiet route"
+                      onMouseEnter={handleQuietRouteMouseEnter}
+                      onMouseLeave={handleQuietRouteMouseLeave}
+                      sx={getIndicatorStyle(hdQuietRoute, quietRouteHover)}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <FormControlLabel
+                      control={
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <Checkbox checked={hdObstruction} onChange={handleObstructionChangeEvent} />
+                          <ObstructionIcon sx={getIndicatorStyle(hdObstruction, obstructionHover)} />
+                        </Box>
+                      }
+                      label="Obstruction"
+                      onMouseEnter={handleObstructionMouseEnter}
+                      onMouseLeave={handleObstructionMouseLeave}
+                      sx={getIndicatorStyle(hdObstruction, obstructionHover)}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <FormControlLabel
+                      control={
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <Checkbox checked={hdPlanningOrder} onChange={handlePlanningOrderChangeEvent} />
+                          <PlanningOrderIcon sx={getIndicatorStyle(hdPlanningOrder, planningOrderHover)} />
+                        </Box>
+                      }
+                      label="Planning order"
+                      onMouseEnter={handlePlanningOrderMouseEnter}
+                      onMouseLeave={handlePlanningOrderMouseLeave}
+                      sx={getIndicatorStyle(hdPlanningOrder, planningOrderHover)}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <FormControlLabel
+                      control={
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <Checkbox checked={hdVehiclesProhibited} onChange={handleVehiclesProhibitedChangeEvent} />
+                          <VehiclesProhibitedIcon
+                            sx={getIndicatorStyle(hdVehiclesProhibited, vehiclesProhibitedHover)}
+                          />
+                        </Box>
+                      }
+                      label="Vehicles prohibited"
+                      onMouseEnter={handleVehiclesProhibitedMouseEnter}
+                      onMouseLeave={handleVehiclesProhibitedMouseLeave}
+                      sx={getIndicatorStyle(hdVehiclesProhibited, vehiclesProhibitedHover)}
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Stack>
+        );
+
+      case "maintenanceResponsibility":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Street status"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredRoadStatusCode(true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(true)}
+              lookupColour="colour"
+              value={maintenanceResponsibilityStreetStatus}
+              onChange={handleMaintenanceResponsibilityStreetStatusChangeEvent}
+              helperText="Street status of the Street."
+            />
+            <ADSSelectControl
+              label="Custodian"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredSwaOrgRef(true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(true)}
+              lookupColour="colour"
+              value={maintenanceResponsibilityCustodian}
+              onChange={handleMaintenanceResponsibilityCustodianChangeEvent}
+              helperText="The organisation providing the data."
+            />
+            <ADSSelectControl
+              label="Authority"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredSwaOrgRef(true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(true)}
+              lookupColour="colour"
+              value={maintenanceResponsibilityAuthority}
+              onChange={handleMaintenanceResponsibilityAuthorityChangeEvent}
+              helperText="The organisation maintaining the street."
+            />
+          </Stack>
+        );
+
+      case "reinstatementCategory":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Category"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredReinstatementType(true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(true)}
+              lookupColour="colour"
+              value={reinstatementCategoryReinstatementCategory}
+              onChange={handleReinstatementCategoryReinstatementCategoryChangeEvent}
+              helperText="The reinstatement category of the street, footpath etc."
+            />
+            <ADSSelectControl
+              label="Custodian"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredSwaOrgRef(true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(true)}
+              lookupColour="colour"
+              value={reinstatementCategoryCustodian}
+              onChange={handleReinstatementCategoryCustodianChangeEvent}
+              helperText="The organisation providing the data."
+            />
+            <ADSSelectControl
+              label="Authority"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredSwaOrgRef(true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(true)}
+              lookupColour="colour"
+              value={reinstatementCategoryAuthority}
+              onChange={handleReinstatementCategoryAuthorityChangeEvent}
+              helperText="The organisation specifying the reinstatement of the street."
+            />
+          </Stack>
+        );
+
+      case "osSpecialDesignation":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Type"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredSpecialDesignationCode(true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(true)}
+              lookupColour="colour"
+              value={osSpecialDesignationSpecialDesignation}
+              onChange={handleOsSpecialDesignationSpecialDesignationChangeEvent}
+              helperText="The type of special designation applying to the street."
+            />
+            <ADSSelectControl
+              label="Custodian"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredSwaOrgRef(true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(true)}
+              lookupColour="colour"
+              value={osSpecialDesignationCustodian}
+              onChange={handleOsSpecialDesignationCustodianChangeEvent}
+              helperText="The organisation providing the data."
+            />
+            <ADSSelectControl
+              label="Authority"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredSwaOrgRef(true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(true)}
+              lookupColour="colour"
+              value={osSpecialDesignationAuthority}
+              onChange={handleOsSpecialDesignationAuthorityChangeEvent}
+              helperText="The authority responsible for the special designation."
+            />
+          </Stack>
+        );
+
+      case "interest":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Street status"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredRoadStatusCode(false)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              lookupColour="colour"
+              value={interestStreetStatus}
+              onChange={handleInterestStreetStatusChangeEvent}
+              helperText="Street status as defined within the Street Maintenance Responsibility table."
+            />
+            <ADSSelectControl
+              label="Interested organisation"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredSwaOrgRef(false)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              lookupColour="colour"
+              value={interestOrganisation}
+              onChange={handleInterestOrganisationChangeEvent}
+              helperText="Code to identify the authority which has an interest in the Street."
+            />
+            <ADSSelectControl
+              label="Interest type"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={InterestType}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              lookupColour="colour"
+              value={interestType}
+              onChange={handleInterestTypeChangeEvent}
+              helperText="Code to identify the nature of the interest that the organisation has in the Street. Defined within the SWA Data Capture Codes."
+            />
+            <ADSSelectControl
+              label="District"
+              isEditable
+              useRounded
+              includeHistoric
+              lookupData={lookupContext.currentLookups.operationalDistricts.sort(function (a, b) {
+                return a.districtName.localeCompare(b.districtName, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+              })}
+              lookupId="districtId"
+              lookupLabel="districtName"
+              value={interestDistrict}
+              onChange={handleInterestDistrictChangeEvent}
+              helperText="Code to identify the Operational District within the authority."
+            />
+            <ADSSelectControl
+              label="Maintaining organisation"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredSwaOrgRef(false)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              lookupColour="colour"
+              value={interestMaintainingOrganisation}
+              onChange={handleInterestMaintainingOrganisationChangeEvent}
+              helperText="Code to identify the Street Authority that is legally responsible for maintaining the street where this is not the Local Highway Authority. For example, TfL, Highways England and Welsh Government."
+            />
+          </Stack>
+        );
+
+      case "construction":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Construction type"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={ConstructionType}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              lookupColour="colour"
+              value={constructionType}
+              onChange={handleConstructionTypeChangeEvent}
+              helperText="The type of Construction that the Record applies to."
+            />
+            <ADSSelectControl
+              label="Reinstatement type"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredReinstatementType(false)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              lookupColour="colour"
+              value={constructionReinstatementType}
+              onChange={handleReinstatementTypeChangeEvent}
+              helperText="Reinstatement as defined in the SROH codes of practice."
+            />
+            <ADSSelectControl
+              label="Aggregate abrasion value"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={
+                constructionReinstatementType &&
+                AggregateAbrasionValue.filter((x) => x.reinstatementCode === constructionReinstatementType)
+              }
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              value={constructionAggregateAbrasionValue}
+              onChange={handleAggregateAbrasionValueChangeEvent}
+              helperText="Value as defined in the SROH codes of practice."
+            />
+            <ADSSelectControl
+              label="Polished stone value"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={
+                constructionReinstatementType &&
+                PolishedStoneValue.filter((x) => x.reinstatementCode === constructionReinstatementType)
+              }
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              value={constructionPolishedStoneValue}
+              onChange={handlePolishedStoneValueChangeEvent}
+              helperText="Value as defined in the SROH codes of practice."
+            />
+            <ADSSelectControl
+              label="Organisation"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredSwaOrgRef(false)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              lookupColour="colour"
+              value={constructionOrganisation}
+              onChange={handleConstructionOrganisationChangeEvent}
+              helperText="Code to identify the Highway Authority which must be consulted about the Construction."
+            />
+            <ADSSelectControl
+              label="District"
+              isEditable
+              useRounded
+              includeHistoric
+              lookupData={lookupContext.currentLookups.operationalDistricts.sort(function (a, b) {
+                return a.districtName.localeCompare(b.districtName, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+              })}
+              lookupId="districtId"
+              lookupLabel="districtName"
+              value={constructionDistrict}
+              onChange={handleConstructionDistrictChangeEvent}
+              helperText="Code to identify the Operational District of the Highway Authority which must be consulted about the Construction."
+            />
+          </Stack>
+        );
+
+      case "specialDesignation":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Type"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredSpecialDesignationCode(false)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              lookupColour="colour"
+              value={specialDesigType}
+              onChange={handleDesignationTypeChangeEvent}
+              helperText="Code to identify the type of Special Designation that the Record applies to (for example, Traffic Sensitive Street)."
+            />
+            <ADSSelectControl
+              label="Organisation"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredSwaOrgRef(false)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              lookupColour="colour"
+              value={specialDesigOrganisation}
+              onChange={handleSpecialDesigOrganisationChangeEvent}
+              helperText="Code to identify the Street Authority which must be consulted about the Special Designation."
+            />
+            <ADSSelectControl
+              label="District"
+              isEditable
+              useRounded
+              includeHistoric
+              lookupData={lookupContext.currentLookups.operationalDistricts.sort(function (a, b) {
+                return a.districtName.localeCompare(b.districtName, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+              })}
+              lookupId="districtId"
+              lookupLabel="districtName"
+              value={specialDesigDistrict}
+              onChange={handleSpecialDesigDistrictChangeEvent}
+              helperText="Code to identify the Operational District for the Street Authority which must be consulted about the Special Designation."
+            />
+            <ADSSelectControl
+              label="Periodicity"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={SpecialDesignationPeriodicity}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              lookupColour="colour"
+              value={specialDesigPeriodicity}
+              onChange={handleSpecialDesigPeriodicityChangeEvent}
+              helperText="Code to identify the periodicity of the restriction."
+            />
+          </Stack>
+        );
+
+      case "hww":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Designation"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={HWWDesignationCode}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              lookupColour="colour"
+              value={hwwDesignation}
+              onChange={handleHwwDesignationCodeChangeEvent}
+              helperText="The type of restriction that the Record applies to."
+            />
+            <ADSSelectControl
+              label="Organisation"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredSwaOrgRef(false)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              lookupColour="colour"
+              value={hwwOrganisation}
+              onChange={handleHwwOrganisationChangeEvent}
+              helperText="Code to identify the Street Authority which must be consulted about the HWW Restriction."
+            />
+            <ADSSelectControl
+              label="District"
+              isEditable
+              useRounded
+              includeHistoric
+              lookupData={lookupContext.currentLookups.operationalDistricts.sort(function (a, b) {
+                return a.districtName.localeCompare(b.districtName, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+              })}
+              lookupId="districtId"
+              lookupLabel="districtName"
+              value={hwwDistrict}
+              onChange={handleHwwDistrictChangeEvent}
+              helperText="Code to identify the Operational District for the Street Authority which must be consulted about the HWW Restriction."
+            />
+          </Stack>
+        );
+
+      case "prow":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Dedication"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={PRoWDedicationCode}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              lookupColour={adsDarkGreen}
+              value={prowDedication}
+              onChange={handleProwDedicationChangeEvent}
+              helperText="PRoW Dedication."
+            />
+            <ADSSelectControl
+              label="Status"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={PRoWStatusCode}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              lookupColour={adsDarkGreen}
+              value={prowStatus}
+              onChange={handleProwStatusChangeEvent}
+              helperText="The status of the PRoW."
+            />
+            <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
+              <Grid item xs={3}>
+                <Typography variant="body2" align="left" id="access-label" color="textPrimary">
+                  Access
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Grid container direction="column" justifyContent="flex-start" alignItems="flex-start">
+                  <Grid item>
+                    <ADSProwAccessControl
+                      variant="Pedestrian"
+                      value={prowPedestrianAccess}
+                      isEditable
+                      onChange={handlePedestrianAccessChangeEvent}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <ADSProwAccessControl
+                      variant="Equestrian"
+                      value={prowEquestrianAccess}
+                      isEditable
+                      onChange={handleEquestrianAccessChangeEvent}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <ADSProwAccessControl
+                      variant="NonMotorised"
+                      value={prowNonMotorisedVehicleAccess}
+                      isEditable
+                      onChange={handleNonMotorisedAccessChangeEvent}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <ADSProwAccessControl
+                      variant="Bicycle"
+                      value={prowBicycleAccess}
+                      isEditable
+                      onChange={handleCycleAccessChangeEvent}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <ADSProwAccessControl
+                      variant="Motorised"
+                      value={prowMotorisedVehicleAccess}
+                      isEditable
+                      onChange={handleMotorisedAccessChangeEvent}
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+            <ADSSwitchControl
+              label="Promoted route"
+              isEditable
+              checked={prowPromotedRoute}
+              trueLabel="Yes"
+              falseLabel="No"
+              helperText="Route defined by the Surveying Authority as a recommended/promoted route."
+              onChange={handlePromotedRouteChangeEvent}
+            />
+            <ADSSwitchControl
+              label="Accessible route"
+              isEditable
+              checked={prowAccessibleRoute}
+              trueLabel="Yes"
+              falseLabel="No"
+              helperText="Route defined by the Surveying Authority as an accessible route for elderly and disabled."
+              onChange={handleAccessibleRouteChangeEvent}
+            />
+            <ADSSelectControl
+              label="Organisation"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredSwaOrgRef(false)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(false)}
+              lookupColour="colour"
+              value={prowOrganisation}
+              onChange={handleProwOrganisationChangeEvent}
+              helperText="The Surveying Authority which must be consulted about the PRoW."
+            />
+            <ADSSelectControl
+              label="District"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={lookupContext.currentLookups.operationalDistricts.sort(function (a, b) {
+                return a.districtName.localeCompare(b.districtName, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+              })}
+              lookupId="districtId"
+              lookupLabel="districtName"
+              lookupColour="colour"
+              value={prowDistrict}
+              onChange={handleProwDistrictChangeEvent}
+              helperText="The Operational District for the Surveying Authority which must be consulted about the PRoW."
+            />
+          </Stack>
+        );
+
+      case "blpuWizard":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Logical status"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredBLPULogicalStatus(settingsContext.isScottish, true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              value={blpuStatus}
+              errorText={blpuStatusError}
+              onChange={handleBlpuStatusChangeEvent}
+              helperText="Logical Status of the BLPU."
+            />
+            <ADSSelectControl
+              label="RPC"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredRepresentativePointCode(settingsContext.isScottish, true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              value={blpuRpc}
+              errorText={blpuRpcError}
+              onChange={handleBlpuRpcChangeEvent}
+              helperText="Representative Point Code."
+            />
+            {!settingsContext.isScottish && (
+              <ADSSelectControl
+                label="State"
+                isEditable
+                useRounded
+                doNotSetTitleCase
+                lookupData={FilteredBLPUState(settingsContext.isScottish, blpuStatus ? blpuStatus : null)}
+                lookupId="id"
+                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                lookupColour="colour"
+                value={blpuState}
+                errorText={blpuStateError}
+                onChange={handleBlpuStateChangeEvent}
+                helperText="A code identifying the current state of a BLPU."
+              />
+            )}
+            {!settingsContext.isScottish && (
+              <ADSDateControl
+                label="State date"
+                isEditable
+                value={blpuStateDate}
+                errorText={blpuStateDateError}
+                onChange={handleBlpuStateDateChangeEvent}
+                helperText="Date at which the BLPU achieved its current state in the real-world."
+              />
+            )}
+            {!settingsContext.isScottish && (
+              <ADSSelectControl
+                label="Classification"
+                isEditable
+                includeHiddenCode
+                useRounded
+                doNotSetTitleCase
+                lookupData={settingsContext.isScottish ? OSGClassification : BLPUClassification}
+                lookupId="id"
+                lookupLabel="display"
+                lookupColour="colour"
+                value={blpuClassification}
+                errorText={blpuClassificationError}
+                onChange={handleBlpuClassificationChangeEvent}
+                helperText="Classification code for the BLPU."
+              />
+            )}
+            <ADSDateControl
+              label="Start date"
+              isEditable
+              value={blpuStartDate}
+              helperText="Date on which this BLPU was defined."
+              errorText={blpuStartDateError}
+              onChange={handleBlpuStartDateChangeEvent}
+            />
+          </Stack>
+        );
+
+      case "lpiWizard":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Logical status"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredLPILogicalStatus(settingsContext.isScottish, null, true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              value={lpiStatus}
+              errorText={lpiStatusError}
+              onChange={handleLpiStatusChangeEvent}
+              helperText="Logical status of this Record."
+            />
+            {settingsContext.isScottish ? (
+              <ADSNumberControl
+                label="Level"
+                isEditable
+                value={lpiLevel}
+                errorText={lpiLevelError}
+                helperText="Memorandum of the vertical position of the BLPU."
+                onChange={handleLpiLevelChangeEvent}
+              />
+            ) : (
+              <ADSTextControl
+                label="Level"
+                isEditable
+                value={lpiLevel}
+                errorText={lpiLevelError}
+                id="lpi_level_settings_template"
+                maxLength={30}
+                helperText="Memorandum of the vertical position of the BLPU."
+                onChange={handleLpiLevelChangeEvent}
+              />
+            )}
+            {!settingsContext.isScottish && (
+              <ADSSelectControl
+                label="Official address"
+                isEditable
+                useRounded
+                doNotSetTitleCase
+                lookupData={OfficialAddress}
+                lookupId="id"
+                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                value={lpiOfficialAddress}
+                errorText={lpiOfficialAddressError}
+                onChange={handleLpiOfficialAddressChangeEvent}
+                helperText="Status of address."
+              />
+            )}
+            {!settingsContext.isScottish && (
+              <ADSSelectControl
+                label="Postal address"
+                isEditable
+                useRounded
+                doNotSetTitleCase
+                lookupData={PostallyAddressable}
+                lookupId="id"
+                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                value={lpiPostalAddress}
+                errorText={lpiPostalAddressError}
+                onChange={handleLpiPostalAddressChangeEvent}
+                helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
+              />
+            )}
+            <ADSDateControl
+              label="Start date"
+              isEditable
+              value={lpiStartDate}
+              helperText="Date this Record was created."
+              errorText={lpiStartDateError}
+              onChange={handleLpiStartDateChangeEvent}
+            />
+          </Stack>
+        );
+
+      case "otherWizard":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Provenance"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredBLPUProvenance(settingsContext.isScottish)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              lookupIcon="avatar_icon"
+              value={otherProvenance}
+              errorText={otherProvenanceError}
+              onChange={handleOtherProvenanceChangeEvent}
+              helperText="Identifies the BLPU Provenance Extent derivation."
+            />
+            <ADSDateControl
+              label="Start date"
+              isEditable
+              value={otherProvenanceStartDate}
+              helperText="Date this Record was created."
+              errorText={otherProvenanceStartDateError}
+              onChange={handleOtherProvenanceStartDateChangeEvent}
+            />
+            <ADSTextControl
+              label="Note"
+              isEditable
+              value={otherNote}
+              errorText={otherNoteError}
+              id={"ads-text-textfield-note"}
+              maxLength={4000}
+              minLines={2}
+              maxLines={10}
+              onChange={handleOtherNoteChangeEvent}
+            />
+          </Stack>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  /**
+   * Method to get the styling to be used for the indicator.
+   *
+   * @param {boolean} isChecked True if the item is checked; otherwise false.
+   * @param {boolean} isHover True if the mouse is hovering over the item; otherwise false.
+   * @returns {object} The styling to be used for the indicator.
+   */
+  function getIndicatorStyle(isChecked, isHover) {
+    if (isChecked || isHover)
+      return {
+        marginRight: theme.spacing(1),
+        color: adsBlueA,
+      };
+    else
+      return {
+        marginRight: theme.spacing(1),
+        color: adsMidGreyA,
+        "&:hover": {
+          color: adsBlueA,
+        },
+      };
+  }
+
+  useEffect(() => {
+    if (data) {
+      switch (variant) {
+        case "title":
+          setTemplateType("Title");
+          setTitle(data.title);
+          break;
+
+        case "description":
+          setTemplateType("Description");
+          setDescription(data.description);
+          break;
+
+        case "blpu":
+          setTemplateType("BLPU");
+          setBlpuStatus(data.blpuLogicalStatus);
+          setBlpuRpc(data.rpc);
+          setBlpuState(data.state);
+          setBlpuClassification(data.classification);
+          break;
+
+        case "lpi":
+          setTemplateType("LPI");
+          setLpiStatus(data.lpiLogicalStatus);
+          setLpiPostTown(data.postTownRef);
+          setLpiLevel(data.level);
+          setLpiOfficialAddress(data.officialAddressMaker);
+          setLpiPostalAddress(data.postallyAddressable);
+          break;
+
+        case "other":
+          setTemplateType("Other");
+          setOtherCrossRefSource(data.source);
+          setOtherProvenance(data.provCode);
+          setOtherNote(data.note);
+          break;
+
+        case "street":
+          setTemplateType("Street");
+          setStreetType(data.streetRefType);
+          setStreetState(data.state);
+          setStreetLocality(data.localityRef);
+          setStreetTown(data.townRef);
+          setStreetIsland(data.islandRef);
+          setStreetAdminArea(data.adminAreaRef);
+          setStreetClassification(data.classification);
+          setStreetSurface(data.surface);
+          break;
+
+        case "esu":
+          setTemplateType("ESU");
+          setEsuDirection(data.esuDirection);
+          setEsuState(data.esuState);
+          setEsuClassification(data.esuClassification);
+          break;
+
+        case "owe":
+          setTemplateType("One-way exemption");
+          setOweType(data.oweType);
+          setOwePeriodicityCode(data.owePeriodicityCode);
+          break;
+
+        case "hd":
+          setTemplateType("Highway dedication");
+          setHdCode(data.hdCode);
+          setHdPRoW(data.hdPRoW ? data.hdPRoW : false);
+          setHdNCR(data.hdNCR ? data.hdNCR : false);
+          setHdQuietRoute(data.hdQuietRoute ? data.hdQuietRoute : false);
+          setHdObstruction(data.hdObstruction ? data.hdObstruction : false);
+          setHdPlanningOrder(data.hdPlanningOrder ? data.hdPlanningOrder : false);
+          setHdVehiclesProhibited(data.hdVehiclesProhibited ? data.hdVehiclesProhibited : false);
+          break;
+
+        case "maintenanceResponsibility":
+          setTemplateType("Maintenance responsibility");
+          setMaintenanceResponsibilityStreetStatus(data.maintenanceResponsibilityStreetStatus);
+          setMaintenanceResponsibilityCustodian(
+            data.maintenanceResponsibilityCustodian
+              ? data.maintenanceResponsibilityCustodian
+              : settingsContext.authorityCode
+          );
+          setMaintenanceResponsibilityAuthority(
+            data.maintenanceResponsibilityAuthority
+              ? data.maintenanceResponsibilityAuthority
+              : settingsContext.authorityCode
+          );
+          break;
+
+        case "reinstatementCategory":
+          setTemplateType("Reinstatement category");
+          setReinstatementCategoryReinstatementCategory(data.reinstatementCategoryReinstatementCategory);
+          setReinstatementCategoryCustodian(
+            data.reinstatementCategoryCustodian ? data.reinstatementCategoryCustodian : settingsContext.authorityCode
+          );
+          setReinstatementCategoryAuthority(
+            data.reinstatementCategoryAuthority ? data.reinstatementCategoryAuthority : settingsContext.authorityCode
+          );
+          break;
+
+        case "osSpecialDesignation":
+          setTemplateType("Special designation");
+          setOsSpecialDesignationSpecialDesignation(data.osSpecialDesignationSpecialDesignation);
+          setOsSpecialDesignationCustodian(
+            data.osSpecialDesignationCustodian ? data.osSpecialDesignationCustodian : settingsContext.authorityCode
+          );
+          setOsSpecialDesignationAuthority(
+            data.osSpecialDesignationAuthority ? data.osSpecialDesignationAuthority : settingsContext.authorityCode
+          );
+          break;
+
+        case "interest":
+          setTemplateType("Interested organisation");
+          setInterestStreetStatus(data.interestStreetStatus);
+          setInterestOrganisation(
+            data.interestOrganisation ? data.interestOrganisation : settingsContext.authorityCode
+          );
+          setInterestType(data.interestType);
+          setInterestDistrict(data.interestDistrict);
+          setInterestMaintainingOrganisation(
+            data.maintainingOrganisation ? data.maintainingOrganisation : settingsContext.authorityCode
+          );
+          break;
+
+        case "construction":
+          setTemplateType("Construction");
+          setConstructionType(data.constructionType);
+          setConstructionReinstatementType(data.reinstatementType);
+          setConstructionAggregateAbrasionValue(data.aggregateAbrasionValue);
+          setConstructionPolishedStoneValue(data.polishedStoneValue);
+          setConstructionOrganisation(
+            data.constructionOrganisation ? data.constructionOrganisation : settingsContext.authorityCode
+          );
+          setConstructionDistrict(data.constructionDistrict);
+          break;
+
+        case "specialDesignation":
+          setTemplateType("Special designation");
+          setSpecialDesigType(data.specialDesigType);
+          setSpecialDesigOrganisation(
+            data.specialDesigOrganisation ? data.specialDesigOrganisation : settingsContext.authorityCode
+          );
+          setSpecialDesigDistrict(data.specialDesigDistrict);
+          setSpecialDesigPeriodicity(data.specialDesigPeriodicity);
+          break;
+
+        case "hww":
+          setTemplateType("Height, width & weight restriction");
+          setHwwDesignation(data.hwwDesignation);
+          setHwwOrganisation(data.hwwOrganisation ? data.hwwOrganisation : settingsContext.authorityCode);
+          setHwwDistrict(data.hwwDistrict);
+          break;
+
+        case "prow":
+          setTemplateType("Public right of way");
+          setProwDedication(data.prowDedication);
+          setProwStatus(data.prowStatus);
+          setProwPedestrianAccess(data.pedestrianAccess ? data.pedestrianAccess : false);
+          setProwEquestrianAccess(data.equestrianAccess ? data.equestrianAccess : false);
+          setProwNonMotorisedVehicleAccess(data.nonMotorisedVehicleAccess ? data.nonMotorisedVehicleAccess : false);
+          setProwBicycleAccess(data.bicycleAccess ? data.bicycleAccess : false);
+          setProwMotorisedVehicleAccess(data.motorisedVehicleAccess ? data.motorisedVehicleAccess : false);
+          setProwPromotedRoute(data.promotedRoute ? data.promotedRoute : false);
+          setProwAccessibleRoute(data.accessibleRoute ? data.accessibleRoute : false);
+          setProwOrganisation(data.prowOrganisation ? data.prowOrganisation : settingsContext.authorityCode);
+          setProwDistrict(data.prowDistrict);
+          break;
+
+        case "blpuWizard":
+          setTemplateType("BLPU");
+          setBlpuStatus(data.blpuLogicalStatus);
+          setBlpuRpc(data.rpc);
+          setBlpuState(data.state);
+          setBlpuStateDate(data.stateDate);
+          setBlpuClassification(data.classification);
+          setBlpuStartDate(data.startDate);
+          break;
+
+        case "lpiWizard":
+          setTemplateType("LPI");
+          setLpiStatus(data.lpiLogicalStatus);
+          setLpiLevel(data.level);
+          setLpiOfficialAddress(data.officialAddressMaker);
+          setLpiPostalAddress(data.postallyAddressable);
+          setLpiStartDate(data.startDate);
+          break;
+
+        case "otherWizard":
+          setTemplateType("Other");
+          setOtherProvenance(data.provCode);
+          setOtherProvenanceStartDate(data.provStartDate);
+          setOtherNote(data.note);
+          break;
+
+        default:
+          setTemplateType("Unknown");
+          break;
+      }
+
+      if (["blpuWizard", "lpiWizard", "otherWizard"].includes(variant) && data.errors && data.errors.length > 0) {
+        setErrors(data.errors);
+        setBlpuStatusError(null);
+        setBlpuRpcError(null);
+        setBlpuStateError(null);
+        setBlpuStateDateError(null);
+        setBlpuClassificationError(null);
+        setBlpuStartDateError(null);
+        setLpiStatusError(null);
+        setLpiLevelError(null);
+        setLpiOfficialAddressError(null);
+        setLpiPostalAddressError(null);
+        setLpiStartDateError(null);
+        setOtherProvenanceError(null);
+        setOtherProvenanceStartDateError(null);
+        setOtherNoteError(null);
+
+        for (const error of data.errors) {
+          switch (error.field.toLowerCase()) {
+            case "blpustatus":
+              setBlpuStatusError(error.errors);
+              break;
+
+            case "rpc":
+              setBlpuRpcError(error.errors);
+              break;
+
+            case "state":
+              setBlpuStateError(error.errors);
+              break;
+
+            case "statedate":
+              setBlpuStateDateError(error.errors);
+              break;
+
+            case "classification":
+              setBlpuClassificationError(error.errors);
+              break;
+
+            case "blpucstartdate":
+              setBlpuStartDateError(error.errors);
+              break;
+
+            case "lpistatus":
+              setLpiStatusError(error.errors);
+              break;
+
+            case "level":
+              setLpiLevelError(error.errors);
+              break;
+
+            case "officialaddress":
+              setLpiOfficialAddressError(error.errors);
+              break;
+
+            case "postaladdress":
+              setLpiPostalAddressError(error.errors);
+              break;
+
+            case "lpistartdate":
+              setLpiStartDateError(error.errors);
+              break;
+
+            case "provenance":
+              setOtherProvenanceError(error.errors);
+              break;
+
+            case "provenancestartdate":
+              setOtherProvenanceStartDateError(error.errors);
+              break;
+
+            case "note":
+              setOtherNoteError(error.errors);
+              break;
+
+            default:
+              break;
+          }
+        }
+      } else setErrors(null);
+    }
+
+    setShowDialog(isOpen);
+  }, [variant, data, isOpen, settingsContext.authorityCode]);
+
+  return (
+    <Dialog
+      open={showDialog}
+      aria-labelledby="edit-template-dialog"
+      fullWidth
+      maxWidth="sm"
+      onClose={handleDialogClose}
+    >
+      <DialogTitle
+        id="edit-template-dialog"
+        sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
+      >
+        <Typography variant="h6">{getDialogTitle()}</Typography>
+        <IconButton
+          aria-label="close"
+          onClick={handleCancelClick}
+          sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent sx={{ marginTop: theme.spacing(2) }}>{getDialogContent()}</DialogContent>
+      <DialogActions sx={{ justifyContent: "flex-start", mb: theme.spacing(1), ml: theme.spacing(3) }}>
+        <Button onClick={handleDoneClick} autoFocus variant="contained" sx={blueButtonStyle} startIcon={<DoneIcon />}>
+          Done
+        </Button>
+        <Button onClick={handleCancelClick} variant="contained" sx={whiteButtonStyle} startIcon={<CloseIcon />}>
+          Cancel
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
+export default EditTemplateDialog;

@@ -1,0 +1,4647 @@
+//#region header */
+/**************************************************************************************************
+//
+//  Description: Property Data Form
+//
+//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//
+//--------------------------------------------------------------------------------------------------
+//
+//  Modification History:
+//
+//  Version Date     Modifier            Issue# Description
+//#region Version 1.0.0.0 changes
+//    001   20.07.21 Sean Flook         WI39??? Initial Revision.
+//    002   16.03.23 Sean Flook         WI40581 When deleting a cross ref ensure the form is closed.
+//    003   22.03.23 Sean Flook         WI40596 Pass the BLPU logical status to the data tabs.
+//    004   31.03.23 Sean Flook         WI40656 Ensure Site Survey is updated when changed.
+//    005   06.04.23 Sean Flook         WI40656 Included missing Site Survey.
+//    006   06.04.23 Sean Flook         WI40671 Allow newly created notes to be edited.
+//    007   06.04.23 Sean Flook         WI40610 Include parentUprn in handleBLPUDataChanged.
+//    008   26.04.23 Sean Flook         WI40700 Do not set end date when deleting.
+//    009   27.06.23 Sean Flook         WI40746 Remove new LPI if canceled.
+//    010   27.06.23 Sean Flook         WI40234 Allow for the update of the local custodian code.
+//    011   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
+//    012   28.06.23 Sean Flook         WI40730 Get the temporary address before using it.
+//    013   29.06.23 Sean Flook         WI40731 Clear provenanceChanged after clicking OK button.
+//    014   20.07.23 Sean Flook                 Added code to handle when a user adds a new associated record and then clicks on the Cancel button.
+//    015   20.09.23 Sean Flook                 Changes required to handle the OneScotland specific record types.
+//    016   22.09.23 Sean Flook                 Various small bug fixes.
+//    017   06.10.23 Sean Flook                 Various changes to ensure this works for GeoPlace and OneScotland and use colour variables.
+//    018   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate and set end date for associated records when updating the logical status to historic or rejected.
+//#endregion Version 1.0.0.0 changes
+//
+//--------------------------------------------------------------------------------------------------
+//#endregion header */
+
+/* #region imports */
+
+import React, { useContext, useState, useRef, useEffect } from "react";
+import { useHistory } from "react-router";
+import PropTypes from "prop-types";
+import SandboxContext from "../context/sandboxContext";
+import UserContext from "./../context/userContext";
+import PropertyContext from "../context/propertyContext";
+import StreetContext from "../context/streetContext";
+import MapContext from "../context/mapContext";
+import SearchContext from "../context/searchContext";
+import LookupContext from "./../context/lookupContext";
+import SettingsContext from "../context/settingsContext";
+import {
+  FormatDateTime,
+  GetUserAvatar,
+  GetCurrentDate,
+  GetChangedAssociatedRecords,
+  GetWktCoordinates,
+  PolygonsEqual,
+  ResetContexts,
+} from "../utils/HelperUtils";
+import {
+  GetNewPropertyData,
+  GetCurrentPropertyData,
+  SavePropertyAndUpdate,
+  GetTempAddress,
+  getBilingualSource,
+} from "../utils/PropertyUtils";
+import ObjectComparison, { PropertyComparison } from "./../utils/ObjectComparison";
+import { useEditConfirmation } from "../pages/EditConfirmationPage";
+import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
+import { AppBar, Tabs, Tab, Avatar, Typography, Box, Snackbar, Alert, Toolbar, Button, Stack } from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
+import HistoryIcon from "@mui/icons-material/History";
+import ErrorIcon from "@mui/icons-material/Error";
+import PropertyDetailsTab from "../tabs/PropertyDetailsTab";
+import PropertyLPITab from "../tabs/PropertyLPITab";
+import PropertyClassificationListTab from "../tabs/PropertyClassificationListTab";
+import PropertyClassificationTab from "../tabs/PropertyClassificationTab";
+import PropertyOrganisationListTab from "../tabs/PropertyOrganisationListTab";
+import PropertyOrganisationTab from "../tabs/PropertyOrganisationTab";
+import SuccessorListTab from "../tabs/SuccessorListTab";
+import SuccessorTab from "../tabs/SuccessorTab";
+import PropertyBLPUProvenanceListTab from "../tabs/PropertyBLPUProvenanceListTab";
+import PropertyBLPUProvenanceTab from "../tabs/PropertyBLPUProvenanceTab";
+import PropertyCrossRefListTab from "../tabs/PropertyCrossRefListTab";
+import PropertyCrossRefTab from "../tabs/PropertyCrossRefTab";
+import RelatedTab from "../tabs/RelatedTab";
+import NotesListTab from "../tabs/NotesListTab";
+import NotesDataTab from "../tabs/NotesDataTab";
+import EntityHistoryTab from "../tabs/EntityHistoryTab";
+import { GazetteerRoute } from "../PageRouting";
+import { adsBlueA, adsMidGreyA, adsWhite, adsLightGreyB } from "../utils/ADSColours";
+import {
+  GetTabIconStyle,
+  GetAlertStyle,
+  GetAlertIcon,
+  GetAlertSeverity,
+  errorIconStyle,
+  tabStyle,
+  tabLabelStyle,
+  getSaveButtonStyle,
+  getSaveIcon,
+} from "../utils/ADSStyles";
+import { useTheme } from "@mui/styles";
+
+/* #endregion imports */
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`property-tabpanel-${index}`}
+      aria-labelledby={`property-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `property-tab-${index}`,
+    "aria-controls": `property-tabpanel-${index}`,
+  };
+}
+
+function PropertyDataForm({ data, loading }) {
+  const theme = useTheme();
+
+  const sandboxContext = useContext(SandboxContext);
+  const userContext = useContext(UserContext);
+  const propertyContext = useContext(PropertyContext);
+  const streetContext = useContext(StreetContext);
+  const mapContext = useContext(MapContext);
+  const searchContext = useContext(SearchContext);
+  const lookupContext = useContext(LookupContext);
+  const settingsContext = useContext(SettingsContext);
+
+  const history = useHistory();
+
+  const [propertyData, setPropertyData] = useState(null);
+  const propertyUprn = useRef(null);
+  const [value, setValue] = useState(0);
+  const [copyOpen, setCopyOpen] = useState(false);
+  const [saveOpen, setSaveOpen] = useState(false);
+  const [lpiFormData, setLpiFormData] = useState(null);
+  const [classificationFormData, setClassificationFormData] = useState(null);
+  const [organisationFormData, setOrganisationFormData] = useState(null);
+  const [successorFormData, setSuccessorFormData] = useState(null);
+  const [provenanceFormData, setProvenanceFormData] = useState(null);
+  const [crossRefFormData, setCrossRefFormData] = useState(null);
+  const [notesFormData, setNotesFormData] = useState(null);
+  const copyDataType = useRef(null);
+  const saveResult = useRef(null);
+  const failedValidation = useRef(null);
+  const associatedRecords = useRef([]);
+  const provenanceChanged = useRef(false);
+
+  const [blpuErrors, setBlpuErrors] = useState([]);
+  const [lpiErrors, setLpiErrors] = useState([]);
+  const [classificationErrors, setClassificationErrors] = useState([]);
+  const [organisationErrors, setOrganisationErrors] = useState([]);
+  const [successorErrors, setSuccessorErrors] = useState([]);
+  const [provenanceErrors, setProvenanceErrors] = useState([]);
+  const [crossRefErrors, setCrossRefErrors] = useState([]);
+  const [noteErrors, setNoteErrors] = useState([]);
+
+  const [saveDisabled, setSaveDisabled] = useState(true);
+
+  const confirmDialog = useEditConfirmation(false);
+  const saveConfirmDialog = useSaveConfirmation(false);
+
+  const [blpuFocusedField, setBlpuFocusedField] = useState(null);
+  const [lpiFocusedField, setLpiFocusedField] = useState(null);
+  const [classificationFocusedField, setClassificationFocusedField] = useState(null);
+  const [organisationFocusedField, setOrganisationFocusedField] = useState(null);
+  const [successorFocusedField, setSuccessorFocusedField] = useState(null);
+  const [provenanceFocusedField, setProvenanceFocusedField] = useState(null);
+  const [crossRefFocusedField, setCrossRefFocusedField] = useState(null);
+  const [noteFocusedField, setNoteFocusedField] = useState(null);
+
+  /**
+   * Sets the associated property data for the current property.
+   *
+   * @param {object|null} lpiData The LPI data for the property.
+   * @param {object|null} provenanceData The provenance data for the property.
+   * @param {object|null} crossRefData The cross reference data for the property.
+   * @param {object|null} classificationData The classification data for the property (OneScotland only).
+   * @param {object|null} organisationData The organisation data for the property (OneScotland only).
+   * @param {object|null} successorData The successor data for the property (OneScotland only).
+   * @param {object|null} noteData The note data for the property.
+   */
+  const setAssociatedPropertyData = (
+    lpiData,
+    provenanceData,
+    crossRefData,
+    classificationData,
+    organisationData,
+    successorData,
+    noteData
+  ) => {
+    const newPropertyData = GetNewPropertyData(
+      settingsContext.isScottish,
+      sandboxContext.currentSandbox.currentProperty
+        ? sandboxContext.currentSandbox.currentProperty
+        : sandboxContext.currentSandbox.sourceProperty,
+      lpiData,
+      provenanceData,
+      crossRefData,
+      classificationData,
+      organisationData,
+      successorData,
+      noteData
+    );
+    updatePropertyData(newPropertyData);
+  };
+
+  /**
+   * Sets the associated property data for the current property and then clears the data from the sandbox.
+   *
+   * @param {array|null} lpiData The LPI data for the property.
+   * @param {array|null} provenanceData The provenance data for the property.
+   * @param {array|null} crossRefData The cross reference data for the property.
+   * @param {array|null} classificationData The classification data for the property (OneScotland only).
+   * @param {array|null} organisationData The organisation data for the property (OneScotland only).
+   * @param {array|null} successorData The successor data for the property (OneScotland only).
+   * @param {array|null} noteData The note data for the property.
+   * @param {string} clearType The type of data that we are clearing from the sandbox.
+   */
+  const setAssociatedPropertyDataAndClear = (
+    lpiData,
+    provenanceData,
+    crossRefData,
+    classificationData,
+    organisationData,
+    successorData,
+    noteData,
+    clearType
+  ) => {
+    const newPropertyData = GetNewPropertyData(
+      settingsContext.isScottish,
+      sandboxContext.currentSandbox.currentProperty
+        ? sandboxContext.currentSandbox.currentProperty
+        : sandboxContext.currentSandbox.sourceProperty,
+      lpiData,
+      provenanceData,
+      crossRefData,
+      classificationData,
+      organisationData,
+      successorData,
+      noteData
+    );
+    updatePropertyDataAndClear(newPropertyData, clearType);
+  };
+
+  /**
+   * Method to set the availability of the save button.
+   *
+   * @param {boolean} disabled If true then the button is disabled; otherwise it is enabled.
+   */
+  const updateSaveButton = (disabled) => {
+    setSaveDisabled(disabled);
+    propertyContext.onPropertyModified(!disabled);
+    if (!disabled) mapContext.onSetCoordinate(null);
+  };
+
+  /**
+   * Method to update the property data with the latest data.
+   *
+   * @param {object} newPropertyData The updated property object.
+   */
+  const updatePropertyData = (newPropertyData) => {
+    setPropertyData(newPropertyData);
+    sandboxContext.onSandboxChange("currentProperty", newPropertyData);
+    updateSaveButton(false);
+  };
+
+  /**
+   * Method to update the property data with the latest data and then clear it from the sandbox.
+   *
+   * @param {object} newPropertyData The updated property object.
+   * @param {string} clearType The name of the data type to be cleared.
+   */
+  const updatePropertyDataAndClear = (newPropertyData, clearType) => {
+    setPropertyData(newPropertyData);
+    sandboxContext.onUpdateAndClear("currentProperty", newPropertyData, clearType);
+    updateSaveButton(false);
+  };
+
+  /**
+   * Event to handle when a user changes tabs on the form
+   *
+   * @param {object} event This is not used.
+   * @param {number} newValue The index of the tab the user wants to switch to.
+   */
+  const handleTabChange = (event, newValue) => {
+    switch (value) {
+      case 0: // Details
+        if (lpiFormData) {
+          setLpiFormData({
+            pkId: lpiFormData.pkId,
+            lpiData: sandboxContext.currentSandbox.currentPropertyRecords.lpi
+              ? sandboxContext.currentSandbox.currentPropertyRecords.lpi
+              : lpiFormData.lpiData,
+            blpuLogicalStatus: propertyData.logicalStatus,
+            organisation: propertyData.organisation,
+            index: lpiFormData.index,
+            totalRecords: lpiFormData.totalRecords,
+          });
+        }
+        break;
+
+      case 1: // Classifications / Provenances
+        if (settingsContext.isScottish) {
+          if (classificationFormData) {
+            setClassificationFormData({
+              id: classificationFormData.id,
+              classificationData: sandboxContext.currentSandbox.currentPropertyRecords.classification
+                ? {
+                    id: sandboxContext.currentSandbox.currentPropertyRecords.classification.pkId,
+                    changeType: sandboxContext.currentSandbox.currentPropertyRecords.classification.changeType,
+                    uprn: sandboxContext.currentSandbox.currentPropertyRecords.classification.uprn,
+                    classKey: sandboxContext.currentSandbox.currentPropertyRecords.classification.classKey,
+                    classScheme: sandboxContext.currentSandbox.currentPropertyRecords.classification.classScheme,
+                    blpuClass: sandboxContext.currentSandbox.currentPropertyRecords.classification.blpuClass,
+                    startDate: sandboxContext.currentSandbox.currentPropertyRecords.classification.startDate,
+                    endDate: sandboxContext.currentSandbox.currentPropertyRecords.classification.endDate,
+                    entryDate: sandboxContext.currentSandbox.currentPropertyRecords.classification.entryDate,
+                    lastUpdateDate: sandboxContext.currentSandbox.currentPropertyRecords.classification.lastUpdateDate,
+                    neverExport: sandboxContext.currentSandbox.currentPropertyRecords.classification.neverExport,
+                  }
+                : classificationFormData.classificationData,
+              index: classificationFormData.index,
+              totalRecords: classificationFormData.totalRecords,
+            });
+          }
+        } else {
+          if (provenanceFormData) {
+            setProvenanceFormData({
+              id: provenanceFormData.id,
+              provenanceData: sandboxContext.currentSandbox.currentPropertyRecords.provenance
+                ? {
+                    id: sandboxContext.currentSandbox.currentPropertyRecords.provenance.pkId,
+                    changeType: sandboxContext.currentSandbox.currentPropertyRecords.provenance.changeType,
+                    uprn: sandboxContext.currentSandbox.currentPropertyRecords.provenance.uprn,
+                    provenanceKey: sandboxContext.currentSandbox.currentPropertyRecords.provenance.provenanceKey,
+                    provenanceCode: sandboxContext.currentSandbox.currentPropertyRecords.provenance.provenanceCode,
+                    annotation: sandboxContext.currentSandbox.currentPropertyRecords.provenance.annotation,
+                    startDate: sandboxContext.currentSandbox.currentPropertyRecords.provenance.startDate,
+                    endDate: sandboxContext.currentSandbox.currentPropertyRecords.provenance.endDate,
+                    entryDate: sandboxContext.currentSandbox.currentPropertyRecords.provenance.entryDate,
+                    lastUpdateDate: sandboxContext.currentSandbox.currentPropertyRecords.provenance.lastUpdateDate,
+                    wktGeometry: sandboxContext.currentSandbox.currentPropertyRecords.provenance.wktGeometry,
+                  }
+                : provenanceFormData.provenanceData,
+              blpuLogicalStatus: propertyData.logicalStatus,
+              index: provenanceFormData.index,
+              totalRecords: provenanceFormData.totalRecords,
+            });
+          }
+        }
+        break;
+
+      case 2: // Organisations / Cross Refs
+        if (settingsContext.isScottish) {
+          if (organisationFormData) {
+            setOrganisationFormData({
+              id: organisationFormData.id,
+              organisationData: sandboxContext.currentSandbox.currentPropertyRecords.organisation
+                ? {
+                    id: sandboxContext.currentSandbox.currentPropertyRecords.organisation.pkId,
+                    changeType: sandboxContext.currentSandbox.currentPropertyRecords.organisation.changeType,
+                    uprn: sandboxContext.currentSandbox.currentPropertyRecords.organisation.uprn,
+                    orgKey: sandboxContext.currentSandbox.currentPropertyRecords.organisation.orgKey,
+                    organisation: sandboxContext.currentSandbox.currentPropertyRecords.organisation.organisation,
+                    legalName: sandboxContext.currentSandbox.currentPropertyRecords.organisation.legalName,
+                    startDate: sandboxContext.currentSandbox.currentPropertyRecords.organisation.startDate,
+                    endDate: sandboxContext.currentSandbox.currentPropertyRecords.organisation.endDate,
+                    entryDate: sandboxContext.currentSandbox.currentPropertyRecords.organisation.entryDate,
+                    lastUpdateDate: sandboxContext.currentSandbox.currentPropertyRecords.organisation.lastUpdateDate,
+                    neverExport: sandboxContext.currentSandbox.currentPropertyRecords.organisation.neverExport,
+                  }
+                : organisationFormData.organisationData,
+              index: organisationFormData.index,
+              totalRecords: organisationFormData.totalRecords,
+            });
+          }
+        } else {
+          if (crossRefFormData) {
+            setCrossRefFormData({
+              id: crossRefFormData.id,
+              xrefData: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef
+                ? {
+                    id: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.pkId,
+                    uprn: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.uprn,
+                    changeType: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.changeType,
+                    xrefKey: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.xrefKey,
+                    source: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.source,
+                    sourceId: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.sourceId,
+                    crossReference: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.crossReference,
+                    startDate: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.startDate,
+                    endDate: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.endDate,
+                    lastUpdateDate: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.lastUpdateDate,
+                    neverExport: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.neverExport,
+                  }
+                : crossRefFormData.xrefData,
+              blpuLogicalStatus: propertyData.logicalStatus,
+              index: crossRefFormData.index,
+              totalRecords: crossRefFormData.totalRecords,
+            });
+          }
+        }
+        break;
+
+      case 3: // Successors / Notes
+        if (settingsContext.isScottish) {
+          if (successorFormData) {
+            setSuccessorFormData({
+              id: successorFormData.id,
+              successorData: sandboxContext.currentSandbox.currentPropertyRecords.successor
+                ? {
+                    id: sandboxContext.currentSandbox.currentPropertyRecords.successor.pkId,
+                    changeType: sandboxContext.currentSandbox.currentPropertyRecords.successor.changeType,
+                    uprn: sandboxContext.currentSandbox.currentPropertyRecords.successor.uprn,
+                    succKey: sandboxContext.currentSandbox.currentPropertyRecords.successor.succKey,
+                    successor: sandboxContext.currentSandbox.currentPropertyRecords.successor.successor,
+                    successorType: sandboxContext.currentSandbox.currentPropertyRecords.successor.successorType,
+                    predecessor: sandboxContext.currentSandbox.currentPropertyRecords.successor.predecessor,
+                    startDate: sandboxContext.currentSandbox.currentPropertyRecords.successor.startDate,
+                    endDate: sandboxContext.currentSandbox.currentPropertyRecords.successor.endDate,
+                    entryDate: sandboxContext.currentSandbox.currentPropertyRecords.successor.entryDate,
+                    lastUpdateDate: sandboxContext.currentSandbox.currentPropertyRecords.successor.lastUpdateDate,
+                    neverExport: sandboxContext.currentSandbox.currentPropertyRecords.successor.neverExport,
+                  }
+                : successorFormData.successorData,
+              index: successorFormData.index,
+              totalRecords: successorFormData.totalRecords,
+            });
+          }
+        } else {
+          if (notesFormData) {
+            setNotesFormData({
+              pkId: notesFormData.pkId,
+              noteData: sandboxContext.currentSandbox.currentPropertyRecords.note
+                ? sandboxContext.currentSandbox.currentPropertyRecords.note
+                : notesFormData.noteData,
+              index: notesFormData.index,
+              totalRecords: notesFormData.totalRecords,
+              variant: "property",
+            });
+          }
+        }
+        break;
+
+      case 4: // BLPU Provenances
+        if (settingsContext.isScottish && provenanceFormData) {
+          setProvenanceFormData({
+            id: provenanceFormData.id,
+            provenanceData: sandboxContext.currentSandbox.currentPropertyRecords.provenance
+              ? {
+                  id: sandboxContext.currentSandbox.currentPropertyRecords.provenance.pkId,
+                  changeType: sandboxContext.currentSandbox.currentPropertyRecords.provenance.changeType,
+                  uprn: sandboxContext.currentSandbox.currentPropertyRecords.provenance.uprn,
+                  provenanceKey: sandboxContext.currentSandbox.currentPropertyRecords.provenance.provenanceKey,
+                  provenanceCode: sandboxContext.currentSandbox.currentPropertyRecords.provenance.provenanceCode,
+                  annotation: sandboxContext.currentSandbox.currentPropertyRecords.provenance.annotation,
+                  startDate: sandboxContext.currentSandbox.currentPropertyRecords.provenance.startDate,
+                  endDate: sandboxContext.currentSandbox.currentPropertyRecords.provenance.endDate,
+                  entryDate: sandboxContext.currentSandbox.currentPropertyRecords.provenance.entryDate,
+                  lastUpdateDate: sandboxContext.currentSandbox.currentPropertyRecords.provenance.lastUpdateDate,
+                  wktGeometry: sandboxContext.currentSandbox.currentPropertyRecords.provenance.wktGeometry,
+                }
+              : provenanceFormData.provenanceData,
+            blpuLogicalStatus: propertyData.logicalStatus,
+            index: provenanceFormData.index,
+            totalRecords: provenanceFormData.totalRecords,
+          });
+        }
+        break;
+
+      case 5: // Cross Refs
+        if (settingsContext.isScottish && crossRefFormData) {
+          setCrossRefFormData({
+            id: crossRefFormData.id,
+            xrefData: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef
+              ? {
+                  id: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.pkId,
+                  uprn: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.uprn,
+                  changeType: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.changeType,
+                  xrefKey: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.xrefKey,
+                  source: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.source,
+                  sourceId: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.sourceId,
+                  crossReference: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.crossReference,
+                  startDate: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.startDate,
+                  endDate: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.endDate,
+                  lastUpdateDate: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.lastUpdateDate,
+                  neverExport: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.neverExport,
+                }
+              : crossRefFormData.xrefData,
+            blpuLogicalStatus: propertyData.logicalStatus,
+            index: crossRefFormData.index,
+            totalRecords: crossRefFormData.totalRecords,
+          });
+        }
+        break;
+
+      case 6: // Notes
+        if (settingsContext.isScottish && notesFormData) {
+          setNotesFormData({
+            pkId: notesFormData.pkId,
+            noteData: sandboxContext.currentSandbox.currentPropertyRecords.note
+              ? sandboxContext.currentSandbox.currentPropertyRecords.note
+              : notesFormData.noteData,
+            index: notesFormData.index,
+            totalRecords: notesFormData.totalRecords,
+            variant: "property",
+          });
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    const propertyChanged =
+      propertyContext.currentProperty.newProperty ||
+      sandboxContext.currentSandbox.currentPropertyRecords.lpi ||
+      sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef ||
+      sandboxContext.currentSandbox.currentPropertyRecords.provenance ||
+      sandboxContext.currentSandbox.currentPropertyRecords.note ||
+      (sandboxContext.currentSandbox.currentProperty &&
+        !PropertyComparison(
+          sandboxContext.currentSandbox.sourceProperty,
+          sandboxContext.currentSandbox.currentProperty
+        ));
+
+    if (!propertyChanged || propertyContext.validateData()) {
+      failedValidation.current = false;
+      setValue(newValue);
+      mapContext.onEditMapObject(null, null);
+
+      switch (newValue) {
+        case 0:
+          if (lpiFormData) propertyContext.onRecordChange(24, lpiFormData.index);
+          else {
+            propertyContext.onRecordChange(21, null);
+            mapContext.onEditMapObject(21, propertyData && propertyData.uprn);
+          }
+          break;
+
+        case 1:
+          if (settingsContext.isScottish) {
+            if (classificationFormData) propertyContext.onRecordChange(32, classificationFormData.index);
+          } else {
+            if (provenanceFormData) {
+              propertyContext.onRecordChange(22, provenanceFormData.index);
+              mapContext.onEditMapObject(22, provenanceFormData.provenanceData.pkId);
+            }
+          }
+          break;
+
+        case 2:
+          if (settingsContext.isScottish) {
+            if (organisationFormData) propertyContext.onRecordChange(31, organisationFormData.index);
+          } else {
+            if (crossRefFormData) propertyContext.onRecordChange(23, crossRefFormData.index);
+          }
+          break;
+
+        case 3:
+          if (settingsContext.isScottish) {
+            if (successorFormData) propertyContext.onRecordChange(30, successorFormData.index);
+          } else {
+            if (notesFormData) propertyContext.onRecordChange(23, notesFormData.index);
+          }
+          break;
+
+        case 4:
+          if (settingsContext.isScottish && provenanceFormData) {
+            propertyContext.onRecordChange(22, provenanceFormData.index);
+            mapContext.onEditMapObject(22, provenanceFormData.provenanceData.pkId);
+          }
+          break;
+
+        case 5:
+          if (settingsContext.isScottish && crossRefFormData)
+            propertyContext.onRecordChange(23, crossRefFormData.index);
+          break;
+
+        case 6:
+          if (settingsContext.isScottish && notesFormData) propertyContext.onRecordChange(23, notesFormData.index);
+          break;
+
+        default:
+          break;
+      }
+    } else if (propertyChanged) {
+      failedValidation.current = true;
+      saveResult.current = false;
+      setSaveOpen(true);
+    }
+  };
+
+  /**
+   * Event to handle when a LPI record is selected from the property details tab.
+   *
+   * @param {number} pkId The primary key for the selected record. If -1 the data is cleared. 0 indicates a new LPI is required. Any number > 0 is existing data.
+   * @param {object|null} lpiData The LPI data for the selected record
+   * @param {number|null} dataIdx The index of the record within the array of LPI records.
+   * @param {number|null} dataLength The total number of records in the array of LPI records.
+   */
+  const handleLPISelected = (pkId, lpiData, dataIdx, dataLength) => {
+    mapContext.onEditMapObject(null, null);
+
+    if (pkId === -1) {
+      setLpiFormData(null);
+      propertyContext.onRecordChange(21, null);
+      mapContext.onEditMapObject(21, propertyData && propertyData.uprn);
+    } else if (pkId === 0) {
+      const newIdx =
+        propertyData && propertyData.lpis ? propertyData.lpis.filter((x) => x.changeType !== "D").length : 0;
+      const currentUser = userContext.currentUser
+        ? `${userContext.currentUser.firstName} ${userContext.currentUser.lastName}`
+        : null;
+      const currentDate = GetCurrentDate(false);
+      const currentStreet = propertyData.lpis[0].usrn;
+      const minPkIdLpi =
+        propertyData.lpis && propertyData.lpis.length > 0
+          ? propertyData.lpis.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
+          : null;
+      const maxDualLanguageLink =
+        propertyData.lpis && propertyData.lpis.length > 0
+          ? propertyData.lpis.reduce((prev, curr) =>
+              (prev.dualLanguageLink ? prev.dualLanguageLink : 0) > (curr.dualLanguageLink ? curr.dualLanguageLink : 0)
+                ? prev
+                : curr
+            )
+          : 0;
+      const newPkId = !minPkIdLpi || !minPkIdLpi.pkId || minPkIdLpi.pkId > -10 ? -10 : minPkIdLpi.pkId - 1;
+
+      const newEngRec = {
+        level: null,
+        postalAddress: null,
+        custodianOne: 0,
+        custodianTwo: 0,
+        canKey: null,
+        pkId: newPkId,
+        changeType: "I",
+        uprn: propertyData && propertyData.uprn,
+        lpiKey: null,
+        language: "ENG",
+        logicalStatus: 6,
+        startDate: currentDate,
+        endDate: null,
+        entryDate: currentDate,
+        lastUpdateDate: currentDate,
+        saoStartNumber: 0,
+        saoStartSuffix: null,
+        saoEndNumber: 0,
+        saoEndSuffix: null,
+        saoText: null,
+        paoStartNumber: 0,
+        paoStartSuffix: null,
+        paoEndNumber: 0,
+        paoEndSuffix: null,
+        paoText: null,
+        usrn: currentStreet,
+        postcodeRef: 0,
+        postTownRef: 0,
+        officialFlag: null,
+        neverExport: false,
+        address: null,
+        postTown: null,
+        postcode: null,
+        lastUpdated: currentDate,
+        lastUser: currentUser,
+        dualLanguageLink: settingsContext.isWelsh
+          ? maxDualLanguageLink
+            ? maxDualLanguageLink.dualLanguageLink + 1
+            : 0
+          : 0,
+      };
+
+      let newLPIs = propertyData.lpis ? propertyData.lpis : [];
+
+      if (settingsContext.isWelsh) {
+        const newCymRec = {
+          level: null,
+          postalAddress: null,
+          custodianOne: 0,
+          custodianTwo: 0,
+          canKey: null,
+          pkId: newPkId - 1,
+          changeType: "I",
+          uprn: propertyData && propertyData.uprn,
+          lpiKey: null,
+          language: "CYM",
+          logicalStatus: 6,
+          startDate: currentDate,
+          endDate: null,
+          entryDate: currentDate,
+          lastUpdateDate: currentDate,
+          saoStartNumber: 0,
+          saoStartSuffix: null,
+          saoEndNumber: 0,
+          saoEndSuffix: null,
+          saoText: null,
+          paoStartNumber: 0,
+          paoStartSuffix: null,
+          paoEndNumber: 0,
+          paoEndSuffix: null,
+          paoText: null,
+          usrn: currentStreet,
+          postcodeRef: 0,
+          postTownRef: 0,
+          officialFlag: null,
+          neverExport: false,
+          address: null,
+          postTown: null,
+          postcode: null,
+          lastUpdated: currentDate,
+          lastUser: currentUser,
+          dualLanguageLink: maxDualLanguageLink ? maxDualLanguageLink.dualLanguageLink + 1 : 0,
+        };
+
+        newLPIs.push(newEngRec, newCymRec);
+      } else newLPIs.push(newEngRec);
+
+      setAssociatedPropertyData(
+        newLPIs,
+        propertyData.blpuProvenances,
+        propertyData.blpuAppCrossRefs,
+        propertyData.classifications,
+        propertyData.organisations,
+        propertyData.successors,
+        propertyData.blpuNotes
+      );
+
+      setLpiFormData({
+        pkId: newPkId,
+        lpiData: newEngRec,
+        blpuLogicalStatus: propertyData.logicalStatus,
+        organisation: propertyData.organisation,
+        index: newIdx,
+        totalRecords: propertyData.lpis
+          ? propertyData.lpis.filter((x) => x.changeType !== "D").length
+          : settingsContext.isWelsh
+          ? 2
+          : 1,
+      });
+
+      sandboxContext.onSandboxChange("lpi", newEngRec);
+      propertyContext.onRecordChange(24, newIdx, true);
+    } else {
+      const propertyChanged =
+        propertyContext.currentProperty.newProperty ||
+        (sandboxContext.currentSandbox.currentProperty &&
+          !PropertyComparison(
+            sandboxContext.currentSandbox.sourceProperty,
+            sandboxContext.currentSandbox.currentProperty
+          ));
+
+      if (!propertyChanged || propertyContext.validateData()) {
+        failedValidation.current = false;
+        setLpiFormData({
+          pkId: pkId,
+          lpiData: lpiData,
+          blpuLogicalStatus: propertyData.logicalStatus,
+          organisation: propertyData.organisation,
+          index: dataIdx,
+          totalRecords: dataLength,
+        });
+
+        propertyContext.onRecordChange(24, dataIdx);
+      } else if (propertyChanged) {
+        failedValidation.current = true;
+        saveResult.current = false;
+        setSaveOpen(true);
+      }
+    }
+  };
+
+  /**
+   * Event to handle when a classification record is selected from the list of classification records.
+   *
+   * @param {number} pkId The primary key for the selected record. If -1 the data is cleared. 0 indicates a new classification is required. Any number > 0 is existing data.
+   * @param {object|null} classificationData The classification data for the selected record
+   * @param {number|null} dataIdx The index of the record within the array of classification records.
+   * @param {number|null} dataLength The total number of records in the array of classification records.
+   */
+  const handleClassificationSelected = (pkId, classificationData, dataIdx, dataLength) => {
+    if (pkId === -1) {
+      setClassificationFormData(null);
+      propertyContext.onRecordChange(21, null);
+      mapContext.onEditMapObject(null, null);
+    } else if (pkId === 0) {
+      const newIdx =
+        propertyData && propertyData.classifications
+          ? propertyData.classifications.filter((x) => x.changeType !== "D").length
+          : 0;
+      const currentDate = GetCurrentDate(false);
+      const minPkIdClassification =
+        propertyData.classifications && propertyData.classifications.length > 0
+          ? propertyData.classifications.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
+          : null;
+      const newPkId =
+        !minPkIdClassification || !minPkIdClassification.pkId || minPkIdClassification.pkId > -10
+          ? -10
+          : minPkIdClassification.pkId - 1;
+      const newRec = {
+        pkId: newPkId,
+        changeType: "I",
+        uprn: propertyData && propertyData.uprn,
+        classKey: null,
+        classScheme: "Scottish Gazetteer Conventions v4.5",
+        blpuClass: null,
+        startDate: currentDate,
+        endDate: null,
+        entryDate: currentDate,
+        lastUpdateDate: currentDate,
+      };
+
+      const newClassifications = propertyData.classifications ? propertyData.classifications : [];
+      newClassifications.push(newRec);
+
+      setAssociatedPropertyData(
+        propertyData.lpis,
+        propertyData.blpuProvenances,
+        propertyData.blpuAppCrossRefs,
+        newClassifications,
+        propertyData.organisations,
+        propertyData.successors,
+        propertyData.blpuNotes
+      );
+
+      setClassificationFormData({
+        id: newPkId,
+        classificationData: {
+          id: newRec.pkId,
+          changeType: newRec.changeType,
+          uprn: newRec.uprn,
+          classKey: newRec.classKey,
+          classScheme: newRec.classScheme,
+          blpuClass: newRec.blpuClass,
+          startDate: newRec.startDate,
+          endDate: newRec.endDate,
+          entryDate: newRec.entryDate,
+          lastUpdateDate: newRec.lastUpdateDate,
+        },
+        index: newIdx,
+        totalRecords: propertyData.classifications
+          ? propertyData.classifications.filter((x) => x.changeType !== "D").length
+          : 1,
+      });
+
+      sandboxContext.onSandboxChange("classification", newRec);
+      propertyContext.onRecordChange(32, newIdx, true);
+      mapContext.onEditMapObject(32, newRec.pkId);
+    } else {
+      setClassificationFormData({
+        id: pkId,
+        classificationData: classificationData,
+        index: dataIdx,
+        totalRecords: dataLength,
+      });
+
+      propertyContext.onRecordChange(32, dataIdx);
+      mapContext.onEditMapObject(32, pkId);
+    }
+  };
+
+  /**
+   * Event to handle when a organisation record is selected from the list of organisation records.
+   *
+   * @param {number} pkId The primary key for the selected record. If -1 the data is cleared. 0 indicates a new organisation is required. Any number > 0 is existing data.
+   * @param {object|null} organisationData The organisation data for the selected record
+   * @param {number|null} dataIdx The index of the record within the array of organisation records.
+   * @param {number|null} dataLength The total number of records in the array of organisation records.
+   */
+  const handleOrganisationSelected = (pkId, organisationData, dataIdx, dataLength) => {
+    if (pkId === -1) {
+      setOrganisationFormData(null);
+      propertyContext.onRecordChange(21, null);
+      mapContext.onEditMapObject(null, null);
+    } else if (pkId === 0) {
+      const newIdx =
+        propertyData && propertyData.organisations
+          ? propertyData.organisations.filter((x) => x.changeType !== "D").length
+          : 0;
+      const currentDate = GetCurrentDate(false);
+      const minPkIdOrganisation =
+        propertyData.organisations && propertyData.organisations.length > 0
+          ? propertyData.organisations.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
+          : null;
+      const newPkId =
+        !minPkIdOrganisation || !minPkIdOrganisation.pkId || minPkIdOrganisation.pkId > -10
+          ? -10
+          : minPkIdOrganisation.pkId - 1;
+      const newRec = {
+        pkId: newPkId,
+        changeType: "I",
+        uprn: propertyData && propertyData.uprn,
+        orgKey: null,
+        organisation: null,
+        legalName: null,
+        startDate: currentDate,
+        endDate: null,
+        entryDate: currentDate,
+        lastUpdateDate: currentDate,
+      };
+
+      const newOrganisations = propertyData.organisations ? propertyData.organisations : [];
+      newOrganisations.push(newRec);
+
+      setAssociatedPropertyData(
+        propertyData.lpis,
+        propertyData.blpuProvenances,
+        propertyData.blpuAppCrossRefs,
+        propertyData.classifications,
+        newOrganisations,
+        propertyData.successors,
+        propertyData.blpuNotes
+      );
+
+      setOrganisationFormData({
+        id: newPkId,
+        organisationData: {
+          id: newRec.pkId,
+          changeType: newRec.changeType,
+          uprn: newRec.uprn,
+          orgKey: newRec.orgKey,
+          organisation: newRec.organisation,
+          legalName: newRec.legalName,
+          startDate: newRec.startDate,
+          endDate: newRec.endDate,
+          entryDate: newRec.entryDate,
+          lastUpdateDate: newRec.lastUpdateDate,
+        },
+        index: newIdx,
+        totalRecords: propertyData.organisations
+          ? propertyData.organisations.filter((x) => x.changeType !== "D").length
+          : 1,
+      });
+
+      sandboxContext.onSandboxChange("organisation", newRec);
+      propertyContext.onRecordChange(31, newIdx, true);
+      mapContext.onEditMapObject(31, newRec.pkId);
+    } else {
+      setOrganisationFormData({
+        id: pkId,
+        organisationData: organisationData,
+        index: dataIdx,
+        totalRecords: dataLength,
+      });
+
+      propertyContext.onRecordChange(31, dataIdx);
+      mapContext.onEditMapObject(31, pkId);
+    }
+  };
+
+  /**
+   * Event to handle when a successor record is selected from the list of successor records.
+   *
+   * @param {number} pkId The primary key for the selected record. If -1 the data is cleared. 0 indicates a new successor is required. Any number > 0 is existing data.
+   * @param {object|null} successorData The successor data for the selected record
+   * @param {number|null} dataIdx The index of the record within the array of successor records.
+   * @param {number|null} dataLength The total number of records in the array of successor records.
+   */
+  const handleSuccessorSelected = (pkId, successorData, dataIdx, dataLength) => {
+    if (pkId === -1) {
+      setSuccessorFormData(null);
+      propertyContext.onRecordChange(21, null);
+      mapContext.onEditMapObject(null, null);
+    } else if (pkId === 0) {
+      const newIdx =
+        propertyData && propertyData.successors
+          ? propertyData.successors.filter((x) => x.changeType !== "D").length
+          : 0;
+      const currentDate = GetCurrentDate(false);
+      const minPkIdSuccessor =
+        propertyData.successors && propertyData.successors.length > 0
+          ? propertyData.successors.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
+          : null;
+      const newPkId =
+        !minPkIdSuccessor || !minPkIdSuccessor.pkId || minPkIdSuccessor.pkId > -10 ? -10 : minPkIdSuccessor.pkId - 1;
+      const newRec = {
+        pkId: newPkId,
+        changeType: "I",
+        succKey: null,
+        successor: propertyData && propertyData.uprn,
+        successorType: 1,
+        predecessor: null,
+        startDate: currentDate,
+        endDate: null,
+        entryDate: currentDate,
+        lastUpdateDate: currentDate,
+      };
+
+      const newSuccessors = propertyData.successors ? propertyData.successors : [];
+      newSuccessors.push(newRec);
+
+      setAssociatedPropertyData(
+        propertyData.lpis,
+        propertyData.blpuProvenances,
+        propertyData.blpuAppCrossRefs,
+        propertyData.classifications,
+        propertyData.organisations,
+        newSuccessors,
+        propertyData.blpuNotes
+      );
+
+      setSuccessorFormData({
+        id: newPkId,
+        successorData: {
+          id: newRec.pkId,
+          changeType: newRec.changeType,
+          succKey: newRec.succKey,
+          successor: newRec.successor,
+          successorType: newRec.successorType,
+          predecessor: newRec.predecessor,
+          startDate: newRec.startDate,
+          endDate: newRec.endDate,
+          entryDate: newRec.entryDate,
+          lastUpdateDate: newRec.lastUpdateDate,
+        },
+        index: newIdx,
+        totalRecords: propertyData.successors ? propertyData.successors.filter((x) => x.changeType !== "D").length : 1,
+      });
+
+      sandboxContext.onSandboxChange("successor", newRec);
+      propertyContext.onRecordChange(30, newIdx, true);
+      mapContext.onEditMapObject(30, newRec.pkId);
+    } else {
+      setSuccessorFormData({
+        id: pkId,
+        successorData: successorData,
+        index: dataIdx,
+        totalRecords: dataLength,
+      });
+
+      propertyContext.onRecordChange(30, dataIdx);
+      mapContext.onEditMapObject(30, pkId);
+    }
+  };
+
+  /**
+   * Event to handle when a provenance record is selected from the list of provenance records.
+   *
+   * @param {number} pkId The primary key for the selected record. If -1 the data is cleared. 0 indicates a new provenance is required. Any number > 0 is existing data.
+   * @param {object|null} provenanceData The provenance data for the selected record
+   * @param {number|null} dataIdx The index of the record within the array of provenance records.
+   * @param {number|null} dataLength The total number of records in the array of provenance records.
+   */
+  const handleProvenanceSelected = (pkId, provenanceData, dataIdx, dataLength) => {
+    if (pkId === -1) {
+      setProvenanceFormData(null);
+      propertyContext.onRecordChange(21, null);
+      mapContext.onEditMapObject(null, null);
+    } else if (pkId === 0) {
+      const newIdx =
+        propertyData && propertyData.blpuProvenances
+          ? propertyData.blpuProvenances.filter((x) => x.changeType !== "D").length
+          : 0;
+      const currentDate = GetCurrentDate(false);
+      const minPkIdProvenance =
+        propertyData.blpuProvenances && propertyData.blpuProvenances.length > 0
+          ? propertyData.blpuProvenances.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
+          : null;
+      const newPkId =
+        !minPkIdProvenance || !minPkIdProvenance.pkId || minPkIdProvenance.pkId > -10
+          ? -10
+          : minPkIdProvenance.pkId - 1;
+      const newRec = {
+        pkId: newPkId,
+        changeType: "I",
+        uprn: propertyData && propertyData.uprn,
+        provenanceKey: null,
+        provenanceCode: null,
+        annotation: null,
+        startDate: currentDate,
+        endDate: null,
+        entryDate: currentDate,
+        lastUpdateDate: currentDate,
+        wktGeometry: "",
+      };
+
+      const newProvenances = propertyData.blpuProvenances ? propertyData.blpuProvenances : [];
+      newProvenances.push(newRec);
+
+      setAssociatedPropertyData(
+        propertyData.lpis,
+        newProvenances,
+        propertyData.blpuAppCrossRefs,
+        propertyData.classifications,
+        propertyData.organisations,
+        propertyData.successors,
+        propertyData.blpuNotes
+      );
+
+      setProvenanceFormData({
+        id: newPkId,
+        provenanceData: {
+          id: newRec.pkId,
+          changeType: newRec.changeType,
+          uprn: newRec.uprn,
+          provenanceKey: newRec.provenanceKey,
+          provenanceCode: newRec.provenanceCode,
+          annotation: newRec.annotation,
+          startDate: newRec.startDate,
+          endDate: newRec.endDate,
+          entryDate: newRec.entryDate,
+          lastUpdateDate: newRec.lastUpdateDate,
+          wktGeometry: newRec.wktGeometry,
+        },
+        blpuLogicalStatus: propertyData.logicalStatus,
+        index: newIdx,
+        totalRecords: propertyData.blpuProvenances
+          ? propertyData.blpuProvenances.filter((x) => x.changeType !== "D").length
+          : 1,
+      });
+
+      sandboxContext.onSandboxChange("provenance", newRec);
+      propertyContext.onRecordChange(22, newIdx, true);
+      mapContext.onEditMapObject(22, newRec.pkId);
+    } else {
+      setProvenanceFormData({
+        id: pkId,
+        provenanceData: provenanceData,
+        blpuLogicalStatus: propertyData.logicalStatus,
+        index: dataIdx,
+        totalRecords: dataLength,
+      });
+
+      propertyContext.onRecordChange(22, dataIdx);
+      mapContext.onEditMapObject(22, pkId);
+    }
+  };
+
+  /**
+   * Event to handle when a cross reference record is selected from the list of cross references records.
+   *
+   * @param {number} pkId The primary key for the selected record. If -1 the data is cleared. 0 indicates a new cross reference is required. Any number > 0 is existing data.
+   * @param {object|null} xrefData The cross reference data for the selected record
+   * @param {number|null} dataIdx The index of the record within the array of cross reference records.
+   * @param {number|null} dataLength The total number of records in the array of cross reference records.
+   */
+  const handleCrossRefSelected = (pkId, xrefData, dataIdx, dataLength) => {
+    mapContext.onEditMapObject(null, null);
+
+    if (pkId === -1) {
+      setCrossRefFormData(null);
+      propertyContext.onRecordChange(21, null);
+    } else if (pkId === 0) {
+      const newIdx =
+        propertyData && propertyData.blpuAppCrossRefs
+          ? propertyData.blpuAppCrossRefs.filter((x) => x.changeType !== "D").length
+          : 0;
+      const currentDate = GetCurrentDate(false);
+      const minPkIdXRef =
+        propertyData.blpuAppCrossRefs && propertyData.blpuAppCrossRefs.length > 0
+          ? propertyData.blpuAppCrossRefs.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
+          : null;
+      const newPkId = !minPkIdXRef || !minPkIdXRef.pkId || minPkIdXRef.pkId > -10 ? -10 : minPkIdXRef.pkId - 1;
+      const newRec = {
+        pkId: newPkId,
+        uprn: propertyData && propertyData.uprn,
+        changeType: "I",
+        xrefKey: null,
+        source: null,
+        sourceId: null,
+        crossReference: null,
+        startDate: currentDate,
+        endDate: null,
+        entryDate: currentDate,
+        lastUpdateDate: null,
+        neverExport: false,
+      };
+
+      const newCrossRefs = propertyData.blpuAppCrossRefs ? propertyData.blpuAppCrossRefs : [];
+      newCrossRefs.push(newRec);
+
+      setAssociatedPropertyData(
+        propertyData.lpis,
+        propertyData.blpuProvenances,
+        newCrossRefs,
+        propertyData.classifications,
+        propertyData.organisations,
+        propertyData.successors,
+        propertyData.blpuNotes
+      );
+
+      setCrossRefFormData({
+        id: newPkId,
+        xrefData: {
+          id: newPkId,
+          uprn: newRec.uprn,
+          changeType: newRec.changeType,
+          xrefKey: newRec.xrefKey,
+          source: newRec.source,
+          sourceId: newRec.sourceId,
+          crossReference: newRec.crossReference,
+          startDate: newRec.startDate,
+          endDate: newRec.endDate,
+          lastUpdateDate: newRec.lastUpdateDate,
+          neverExport: newRec.neverExport,
+        },
+        blpuLogicalStatus: propertyData.logicalStatus,
+        index: newIdx,
+        totalRecords: propertyData.blpuAppCrossRefs
+          ? propertyData.blpuAppCrossRefs.filter((x) => x.changeType !== "D").length
+          : 1,
+      });
+
+      sandboxContext.onSandboxChange("appCrossRef", newRec);
+      propertyContext.onRecordChange(23, newIdx, true);
+    } else {
+      setCrossRefFormData({
+        id: pkId,
+        xrefData: xrefData,
+        blpuLogicalStatus: propertyData.logicalStatus,
+        index: dataIdx,
+        totalRecords: dataLength,
+      });
+
+      propertyContext.onRecordChange(23, dataIdx);
+    }
+  };
+
+  /**
+   * Event to handle when a note record is selected from the list of note records.
+   *
+   * @param {number} pkId The primary key for the note record. If -1 the data is cleared. 0 indicates a new note is required. Any number > 0 is existing data.
+   * @param {object|null} noteData The note data for the selected record
+   * @param {number|null} dataIdx The index of the record within the array of note records.
+   */
+  const handleNoteSelected = (pkId, noteData, dataIdx) => {
+    mapContext.onEditMapObject(null, null);
+
+    if (pkId === -1) {
+      setNotesFormData(null);
+      propertyContext.onRecordChange(21, null);
+    } else if (pkId === 0) {
+      const newIdx =
+        propertyData && propertyData.blpuNotes ? propertyData.blpuNotes.filter((x) => x.changeType !== "D").length : 0;
+
+      const currentDate = GetCurrentDate(false);
+      const minPkIdNote =
+        propertyData.blpuNotes && propertyData.blpuNotes.length > 0
+          ? propertyData.blpuNotes.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
+          : null;
+      const newPkId = !minPkIdNote || !minPkIdNote.pkId || minPkIdNote.pkId > -10 ? -10 : minPkIdNote.pkId - 1;
+      const maxSeqNo =
+        propertyData.blpuNotes && propertyData.blpuNotes.length > 0
+          ? propertyData.blpuNotes.reduce((prev, curr) => (prev.seqNo > curr.seqNo ? prev : curr))
+          : null;
+      const newSeqNo = maxSeqNo && maxSeqNo.seqNo ? maxSeqNo.seqNo + 1 : 1;
+
+      const newRec = {
+        createdDate: currentDate,
+        lastUpdatedDate: currentDate,
+        pkId: newPkId,
+        seqNo: newSeqNo,
+        uprn: propertyData && propertyData.uprn,
+        note: null,
+        changeType: "I",
+        lastUser: userContext.currentUser
+          ? `${userContext.currentUser.firstName} ${userContext.currentUser.lastName}`
+          : null,
+      };
+
+      const newNotes = propertyData.blpuNotes ? propertyData.blpuNotes : [];
+      newNotes.push(newRec);
+
+      setAssociatedPropertyData(
+        propertyData.lpis,
+        propertyData.blpuProvenances,
+        propertyData.blpuAppCrossRefs,
+        propertyData.classifications,
+        propertyData.organisations,
+        propertyData.successors,
+        newNotes
+      );
+
+      setNotesFormData({
+        pkId: newPkId,
+        noteData: newRec,
+        index: newIdx,
+        totalRecords: propertyData.blpuNotes ? propertyData.blpuNotes.filter((x) => x.changeType !== "D").length : 1,
+        variant: "property",
+      });
+
+      sandboxContext.onSandboxChange("propertyNote", newRec);
+      propertyContext.onRecordChange(72, newIdx, true);
+    } else {
+      setNotesFormData({
+        pkId: pkId,
+        noteData: noteData,
+        index: dataIdx,
+        totalRecords: data.blpuNotes.filter((x) => x.changeType !== "D").length,
+        variant: "property",
+      });
+
+      propertyContext.onRecordChange(72, dataIdx);
+    }
+  };
+
+  /**
+   * Event to handle the deleting of a LPI
+   *
+   * @param {number} pkId The id of the LPI that the user wants to delete.
+   */
+  const handleDeleteLPI = (pkId) => {
+    function GetDeletedLpi(deleteLpi) {
+      return {
+        level: deleteLpi.level,
+        postalAddress: deleteLpi.postalAddress,
+        custodianOne: deleteLpi.custodianOne,
+        custodianTwo: deleteLpi.custodianTwo,
+        canKey: deleteLpi.canKey,
+        pkId: deleteLpi.pkId,
+        changeType: "D",
+        uprn: deleteLpi.uprn,
+        lpiKey: deleteLpi.lpiKey,
+        language: deleteLpi.language,
+        logicalStatus: deleteLpi.logicalStatus,
+        startDate: deleteLpi.startDate,
+        endDate: deleteLpi.endDate,
+        entryDate: deleteLpi.entryDate,
+        lastUpdateDate: deleteLpi.lastUpdateDate,
+        saoStartNumber: deleteLpi.saoStartNumber,
+        saoStartSuffix: deleteLpi.saoStartSuffix,
+        saoEndNumber: deleteLpi.saoEndNumber,
+        saoEndSuffix: deleteLpi.saoEndSuffix,
+        saoText: deleteLpi.saoText,
+        paoStartNumber: deleteLpi.paoStartNumber,
+        paoStartSuffix: deleteLpi.paoStartSuffix,
+        paoEndNumber: deleteLpi.paoEndNumber,
+        paoEndSuffix: deleteLpi.paoEndSuffix,
+        paoText: deleteLpi.paoText,
+        usrn: deleteLpi.usrn,
+        postcodeRef: deleteLpi.postcodeRef,
+        postTownRef: deleteLpi.postTownRef,
+        officialFlag: deleteLpi.officialFlag,
+        neverExport: deleteLpi.neverExport,
+        address: deleteLpi.address,
+        postTown: deleteLpi.postTown,
+        postcode: deleteLpi.postcode,
+        lastUpdated: deleteLpi.lastUpdated,
+        lastUser: deleteLpi.lastUser,
+        dualLanguageLink: deleteLpi.dualLanguageLink,
+      };
+    }
+
+    if (pkId && pkId > 0) {
+      if (settingsContext.isWelsh) {
+        const lpi1 = propertyData.lpis.find((x) => x.pkId === pkId);
+
+        if (lpi1) {
+          const bilingualId = getBilingualSource(lookupContext);
+          const linkXRef = propertyData.blpuAppCrossRefs.find(
+            (x) => x.sourceId === bilingualId && x.crossReference.includes(lpi1.lpiKey)
+          );
+
+          if (linkXRef) {
+            const lpi2 = propertyData.lpis.find((x) => x.lpiKey === linkXRef.crossReference.replace(lpi1.lpiKey, ""));
+
+            if (lpi2) {
+              const deletedLpi1 = GetDeletedLpi(lpi1);
+              const deletedLpi2 = GetDeletedLpi(lpi2);
+              const deletedXref = {
+                changeType: "D",
+                uprn: linkXRef.uprn,
+                startDate: linkXRef.startDate,
+                endDate: linkXRef.endDate,
+                crossReference: linkXRef.crossReference,
+                sourceId: linkXRef.sourceId,
+                source: linkXRef.source,
+                neverExport: linkXRef.neverExport,
+                pkId: linkXRef.pkId,
+                xrefKey: linkXRef.xrefKey,
+                lastUpdateDate: linkXRef.lastUpdateDate,
+                entryDate: linkXRef.entryDate,
+              };
+
+              const newLpis = propertyData.lpis.map(
+                (x) =>
+                  [deletedLpi1].find((rec) => rec.pkId === x.pkId) ||
+                  [deletedLpi2].find((rec) => rec.pkId === x.pkId) ||
+                  x
+              );
+              const newCrossRefs = propertyData.blpuAppCrossRefs.map(
+                (x) => [deletedXref].find((rec) => rec.xrefKey === x.xrefKey) || x
+              );
+
+              setAssociatedPropertyData(
+                newLpis,
+                propertyData.blpuProvenances,
+                newCrossRefs,
+                propertyData.classifications,
+                propertyData.organisations,
+                propertyData.successors,
+                propertyData.blpuNotes
+              );
+            }
+          }
+        }
+      } else {
+        const deleteLpi = propertyData.lpis.find((x) => x.pkId === pkId);
+
+        if (deleteLpi) {
+          const deletedLpi = GetDeletedLpi(deleteLpi);
+
+          const newLpis = propertyData.lpis.map((x) => [deletedLpi].find((rec) => rec.pkId === x.pkId) || x);
+
+          setAssociatedPropertyData(
+            newLpis,
+            propertyData.blpuProvenances,
+            propertyData.blpuAppCrossRefs,
+            propertyData.classifications,
+            propertyData.organisations,
+            propertyData.successors,
+            propertyData.blpuNotes
+          );
+        }
+      }
+    } else if (pkId && pkId < 0) {
+      // If the LPI has just been added and not saved we can just remove the record/s
+      if (settingsContext.isWelsh) {
+        const deleteLpi = propertyData.lpis.find((x) => x.pkId === pkId);
+
+        if (deleteLpi) {
+          const newLpis = propertyData.lpis.filter((x) => x.dualLanguageLink !== deleteLpi.dualLanguageLink);
+
+          setAssociatedPropertyData(
+            newLpis,
+            propertyData.blpuProvenances,
+            propertyData.blpuAppCrossRefs,
+            propertyData.classifications,
+            propertyData.organisations,
+            propertyData.successors,
+            propertyData.blpuNotes
+          );
+        }
+      } else {
+        const newLpis = propertyData.lpis.filter((x) => x.pkId !== pkId);
+        setAssociatedPropertyData(
+          newLpis,
+          propertyData.blpuProvenances,
+          propertyData.blpuAppCrossRefs,
+          propertyData.classifications,
+          propertyData.organisations,
+          propertyData.successors,
+          propertyData.blpuNotes
+        );
+      }
+    }
+  };
+
+  /**
+   * Event to handle the deleting of a classification.
+   *
+   * @param {number} pkId The id of the classification the user wants to delete.
+   */
+  const handleDeleteClassification = (pkId) => {
+    if (pkId && pkId > 0) {
+      const deleteClassification = propertyData.classifications.find((x) => x.pkId === pkId);
+
+      if (deleteClassification) {
+        const deletedClassification = {
+          entryDate: deleteClassification.entryDate,
+          pkId: deleteClassification.pkId,
+          classKey: deleteClassification.classKey,
+          uprn: deleteClassification.uprn,
+          changeType: "D",
+          classScheme: deleteClassification.classScheme,
+          blpuClass: deleteClassification.blpuClass,
+          startDate: deleteClassification.startDate,
+          endDate: deleteClassification.endDate,
+        };
+
+        const newClassifications = propertyData.classifications.map(
+          (x) => [deletedClassification].find((rec) => rec.pkId === x.pkId) || x
+        );
+
+        setAssociatedPropertyData(
+          propertyData.lpis,
+          propertyData.blpuProvenances,
+          propertyData.blpuAppCrossRefs,
+          newClassifications,
+          propertyData.organisations,
+          propertyData.successors,
+          propertyData.blpuNotes
+        );
+      }
+    } else if (pkId && pkId < 0) {
+      const newClassifications = propertyData.classifications.filter((x) => x.pkId !== pkId);
+      setAssociatedPropertyData(
+        propertyData.lpis,
+        propertyData.blpuProvenances,
+        propertyData.blpuAppCrossRefs,
+        newClassifications,
+        propertyData.organisations,
+        propertyData.successors,
+        propertyData.blpuNotes
+      );
+    }
+  };
+
+  /**
+   * Event to handle the deleting of multiple classifications.
+   *
+   * @param {Array} classificationIds The list of classification ids that the user wants to delete.
+   */
+  const handleMultiDeleteClassification = (classificationIds) => {
+    if (classificationIds && classificationIds.length > 0) {
+      const deleteClassifications = propertyData.classifications
+        .filter((x) => classificationIds.includes(x.pkId))
+        .map((classification) => {
+          classification.changeType = "D";
+          return classification;
+        });
+
+      if (deleteClassifications && deleteClassifications.length > 0) {
+        const classificationDeleted = propertyData.classifications.map(
+          (x) => deleteClassifications.filter((x) => x.pkId > 0).find((rec) => rec.pkId === x.pkId) || x
+        );
+
+        setAssociatedPropertyData(
+          propertyData.lpis,
+          propertyData.blpuProvenances,
+          propertyData.blpuAppCrossRefs,
+          classificationDeleted,
+          propertyData.organisations,
+          propertyData.successors,
+          propertyData.blpuNotes
+        );
+      }
+    }
+  };
+
+  /**
+   * Event to handle the deleting of a organisation.
+   *
+   * @param {number} pkId The id of the organisation the user wants to delete.
+   */
+  const handleDeleteOrganisation = (pkId) => {
+    if (pkId && pkId > 0) {
+      const deleteOrganisation = propertyData.organisations.find((x) => x.pkId === pkId);
+
+      if (deleteOrganisation) {
+        const deletedOrganisation = {
+          entryDate: deleteOrganisation.entryDate,
+          pkId: deleteOrganisation.pkId,
+          orgKey: deleteOrganisation.orgKey,
+          uprn: deleteOrganisation.uprn,
+          changeType: "D",
+          organisation: deleteOrganisation.organisation,
+          legalName: deleteOrganisation.legalName,
+          startDate: deleteOrganisation.startDate,
+          endDate: deleteOrganisation.endDate,
+        };
+
+        const newOrganisations = propertyData.organisations.map(
+          (x) => [deletedOrganisation].find((rec) => rec.pkId === x.pkId) || x
+        );
+
+        setAssociatedPropertyData(
+          propertyData.lpis,
+          propertyData.blpuProvenances,
+          propertyData.blpuAppCrossRefs,
+          propertyData.classifications,
+          newOrganisations,
+          propertyData.successors,
+          propertyData.blpuNotes
+        );
+      }
+    } else if (pkId && pkId < 0) {
+      const newOrganisations = propertyData.organisations.filter((x) => x.pkId !== pkId);
+      setAssociatedPropertyData(
+        propertyData.lpis,
+        propertyData.blpuProvenances,
+        propertyData.blpuAppCrossRefs,
+        propertyData.classifications,
+        newOrganisations,
+        propertyData.successors,
+        propertyData.blpuNotes
+      );
+    }
+  };
+
+  /**
+   * Event to handle the deleting of multiple organisations.
+   *
+   * @param {Array} organisationIds The list of organisation ids that the user wants to delete.
+   */
+  const handleMultiDeleteOrganisation = (organisationIds) => {
+    if (organisationIds && organisationIds.length > 0) {
+      const deleteOrganisations = propertyData.organisations
+        .filter((x) => organisationIds.includes(x.pkId))
+        .map((organisation) => {
+          organisation.changeType = "D";
+          return organisation;
+        });
+
+      if (deleteOrganisations && deleteOrganisations.length > 0) {
+        const organisationDeleted = propertyData.organisations.map(
+          (x) => deleteOrganisations.filter((x) => x.pkId > 0).find((rec) => rec.pkId === x.pkId) || x
+        );
+
+        setAssociatedPropertyData(
+          propertyData.lpis,
+          propertyData.blpuProvenances,
+          propertyData.blpuAppCrossRefs,
+          propertyData.classifications,
+          organisationDeleted,
+          propertyData.successors,
+          propertyData.blpuNotes
+        );
+      }
+    }
+  };
+
+  /**
+   * Event to handle the deleting of a successor.
+   *
+   * @param {number} pkId The id of the successor the user wants to delete.
+   */
+  const handleDeleteSuccessor = (pkId) => {
+    if (pkId && pkId > 0) {
+      const deleteSuccessor = propertyData.successors.find((x) => x.pkId === pkId);
+
+      if (deleteSuccessor) {
+        const deletedSuccessor = {
+          entryDate: deleteSuccessor.entryDate,
+          pkId: deleteSuccessor.pkId,
+          succKey: deleteSuccessor.succKey,
+          changeType: "D",
+          predecessor: deleteSuccessor.predecessor,
+          successorType: deleteSuccessor.successorType,
+          successor: deleteSuccessor.successor,
+          startDate: deleteSuccessor.startDate,
+          endDate: deleteSuccessor.endDate,
+        };
+
+        const newSuccessors = propertyData.successors.map(
+          (x) => [deletedSuccessor].find((rec) => rec.pkId === x.pkId) || x
+        );
+
+        setAssociatedPropertyData(
+          propertyData.lpis,
+          propertyData.blpuProvenances,
+          propertyData.blpuAppCrossRefs,
+          propertyData.classifications,
+          propertyData.organisations,
+          newSuccessors,
+          propertyData.blpuNotes
+        );
+      }
+    } else if (pkId && pkId < 0) {
+      const newSuccessors = propertyData.successors.filter((x) => x.pkId !== pkId);
+      setAssociatedPropertyData(
+        propertyData.lpis,
+        propertyData.blpuProvenances,
+        propertyData.blpuAppCrossRefs,
+        propertyData.classifications,
+        propertyData.organisations,
+        newSuccessors,
+        propertyData.blpuNotes
+      );
+    }
+  };
+
+  /**
+   * Event to handle the deleting of multiple successors.
+   *
+   * @param {Array} successorIds The list of successor ids that the user wants to delete.
+   */
+  const handleMultiDeleteSuccessor = (successorIds) => {
+    if (successorIds && successorIds.length > 0) {
+      const deleteSuccessors = propertyData.successors
+        .filter((x) => successorIds.includes(x.pkId))
+        .map((successor) => {
+          successor.changeType = "D";
+          return successor;
+        });
+
+      if (deleteSuccessors && deleteSuccessors.length > 0) {
+        const successorDeleted = propertyData.successors.map(
+          (x) => deleteSuccessors.filter((x) => x.pkId > 0).find((rec) => rec.pkId === x.pkId) || x
+        );
+
+        setAssociatedPropertyData(
+          propertyData.lpis,
+          propertyData.blpuProvenances,
+          propertyData.blpuAppCrossRefs,
+          propertyData.classifications,
+          propertyData.organisations,
+          successorDeleted,
+          propertyData.blpuNotes
+        );
+      }
+    }
+  };
+
+  /**
+   * Event to handle the deleting of a provenance.
+   *
+   * @param {number} pkId The id of the provenance the user wants to delete.
+   */
+  const handleDeleteProvenance = (pkId) => {
+    if (pkId && pkId > 0) {
+      const deleteProvenance = propertyData.blpuProvenances.find((x) => x.pkId === pkId);
+
+      if (deleteProvenance) {
+        const deletedProvenance = {
+          entryDate: deleteProvenance.entryDate,
+          pkId: deleteProvenance.pkId,
+          provenanceKey: deleteProvenance.provenanceKey,
+          uprn: deleteProvenance.uprn,
+          changeType: "D",
+          provenanceCode: deleteProvenance.provenanceCode,
+          annotation: deleteProvenance.annotation,
+          startDate: deleteProvenance.startDate,
+          endDate: deleteProvenance.endDate,
+          wktGeometry: deleteProvenance.wktGeometry,
+        };
+
+        const newProvenances = propertyData.blpuProvenances.map(
+          (x) => [deletedProvenance].find((rec) => rec.pkId === x.pkId) || x
+        );
+
+        setAssociatedPropertyData(
+          propertyData.lpis,
+          newProvenances,
+          propertyData.blpuAppCrossRefs,
+          propertyData.classifications,
+          propertyData.organisations,
+          propertyData.successors,
+          propertyData.blpuNotes
+        );
+      }
+    } else if (pkId && pkId < 0) {
+      const newProvenances = propertyData.blpuProvenances.filter((x) => x.pkId !== pkId);
+      setAssociatedPropertyData(
+        propertyData.lpis,
+        newProvenances,
+        propertyData.blpuAppCrossRefs,
+        propertyData.classifications,
+        propertyData.organisations,
+        propertyData.successors,
+        propertyData.blpuNotes
+      );
+    }
+  };
+
+  /**
+   * Event to handle the deleting of multiple provenances.
+   *
+   * @param {Array} provenanceIds The list of provenance ids that the user wants to delete.
+   */
+  const handleMultiDeleteProvenance = (provenanceIds) => {
+    if (provenanceIds && provenanceIds.length > 0) {
+      const deleteProvenances = propertyData.blpuProvenances
+        .filter((x) => provenanceIds.includes(x.pkId))
+        .map((provenance) => {
+          provenance.changeType = "D";
+          return provenance;
+        });
+
+      if (deleteProvenances && deleteProvenances.length > 0) {
+        const provenanceDeleted = propertyData.blpuProvenances.map(
+          (x) => deleteProvenances.filter((x) => x.pkId > 0).find((rec) => rec.pkId === x.pkId) || x
+        );
+
+        setAssociatedPropertyData(
+          propertyData.lpis,
+          provenanceDeleted,
+          propertyData.blpuAppCrossRefs,
+          propertyData.classifications,
+          propertyData.organisations,
+          propertyData.successors,
+          propertyData.blpuNotes
+        );
+      }
+    }
+  };
+
+  /**
+   * Event to handle the deleting of a cross reference.
+   *
+   * @param {number} pkId The id of the cross reference record the user wants to delete.
+   */
+  const handleDeleteCrossRef = (pkId) => {
+    if (pkId && pkId > 0) {
+      const deleteCrossRef = propertyData.blpuAppCrossRefs.find((x) => x.pkId === pkId);
+
+      if (deleteCrossRef) {
+        const deletedCrossRef = {
+          changeType: "D",
+          uprn: deleteCrossRef.uprn,
+          startDate: deleteCrossRef.startDate,
+          endDate: deleteCrossRef.endDate,
+          crossReference: deleteCrossRef.crossReference,
+          sourceId: deleteCrossRef.sourceId,
+          source: deleteCrossRef.source,
+          neverExport: deleteCrossRef.neverExport,
+          pkId: deleteCrossRef.pkId,
+          xrefKey: deleteCrossRef.xrefKey,
+          lastUpdateDate: deleteCrossRef.lastUpdateDate,
+          entryDate: deleteCrossRef.entryDate,
+        };
+
+        const newCrossRefs = propertyData.blpuAppCrossRefs.map(
+          (x) => [deletedCrossRef].find((rec) => rec.pkId === x.pkId) || x
+        );
+
+        if (deleteCrossRef.sourceId === getBilingualSource(lookupContext)) {
+          const deleteLinkedLpis = propertyData.lpis
+            .filter((x) => deleteCrossRef.crossReference.includes(x.lpiKey))
+            .map((lpi) => {
+              lpi.changeType = "D";
+              return lpi;
+            });
+          const linkedLpisDeleted = propertyData.lpis.map(
+            (x) => deleteLinkedLpis.find((rec) => rec.pkId === x.pkId) || x
+          );
+          setAssociatedPropertyData(
+            linkedLpisDeleted,
+            propertyData.blpuProvenances,
+            newCrossRefs,
+            propertyData.classifications,
+            propertyData.organisations,
+            propertyData.successors,
+            propertyData.blpuNotes
+          );
+        } else
+          setAssociatedPropertyData(
+            propertyData.lpis,
+            propertyData.blpuProvenances,
+            newCrossRefs,
+            propertyData.classifications,
+            propertyData.organisations,
+            propertyData.successors,
+            propertyData.blpuNotes
+          );
+        handleCrossRefSelected(-1, null, null, null);
+      }
+    } else if (pkId && pkId < 0) {
+      const newCrossRefs = propertyData.blpuAppCrossRefs.filter((x) => x.pkId !== pkId);
+      setAssociatedPropertyData(
+        propertyData.lpis,
+        propertyData.blpuProvenances,
+        newCrossRefs,
+        propertyData.classifications,
+        propertyData.organisations,
+        propertyData.successors,
+        propertyData.blpuNotes
+      );
+      handleCrossRefSelected(-1, null, null, null);
+    }
+  };
+
+  /**
+   * Event to handle deleting of multiple cross references.
+   *
+   * @param {Array} crossRefIds The list of cross reference ids that the user wants to delete.
+   */
+  const handleMultiDeleteCrossRef = (crossRefIds) => {
+    if (crossRefIds && crossRefIds.length > 0) {
+      const deleteCrossRefs = propertyData.blpuAppCrossRefs
+        .filter((x) => crossRefIds.includes(x.pkId))
+        .map((crossRef) => {
+          crossRef.changeType = "D";
+          return crossRef;
+        });
+
+      if (deleteCrossRefs && deleteCrossRefs.length > 0) {
+        const crossRefDeleted = propertyData.blpuAppCrossRefs.map(
+          (x) => deleteCrossRefs.filter((x) => x.pkId > 0).find((rec) => rec.pkId === x.pkId) || x
+        );
+
+        const bilingualId = getBilingualSource(lookupContext);
+        const deleteLinkedLpiCrossRefs = deleteCrossRefs
+          .filter((x) => x.sourceId === bilingualId)
+          .map((x) => x.crossReference);
+
+        let lpisToDelete = [];
+
+        for (const linkedXref of deleteLinkedLpiCrossRefs) {
+          lpisToDelete.push(linkedXref.substring(0, 14));
+          lpisToDelete.push(linkedXref.substring(14));
+        }
+
+        if (lpisToDelete && lpisToDelete.length > 0) {
+          const deleteLinkedLpis = propertyData.lpis
+            .filter((x) => lpisToDelete.includes(x.lpiKey))
+            .map((rec) => {
+              rec.changeType = "D";
+              return rec;
+            });
+
+          const linkedLpisDeleted = propertyData.lpis.map(
+            (x) => deleteLinkedLpis.find((rec) => rec.pkId === x.pkId) || x
+          );
+
+          setAssociatedPropertyData(
+            linkedLpisDeleted,
+            propertyData.blpuProvenances,
+            crossRefDeleted,
+            propertyData.classifications,
+            propertyData.organisations,
+            propertyData.successors,
+            propertyData.blpuNotes
+          );
+        } else
+          setAssociatedPropertyData(
+            propertyData.lpis,
+            propertyData.blpuProvenances,
+            crossRefDeleted,
+            propertyData.classifications,
+            propertyData.organisations,
+            propertyData.successors,
+            propertyData.blpuNotes
+          );
+      }
+    }
+  };
+
+  /**
+   * Event to handle the deleting of a note.
+   *
+   * @param {number} pkId The id of the note that the user wants to delete.
+   */
+  const handleDeleteNote = (pkId) => {
+    if (pkId && pkId > 0) {
+      const deleteNote = propertyData.blpuNotes.find((x) => x.pkId === pkId);
+
+      if (deleteNote) {
+        const deletedNote = {
+          createdDate: deleteNote.createdDate,
+          lastUpdateDate: deleteNote.lastUpdateDate,
+          pkId: deleteNote.pkId,
+          seqNo: deleteNote.seqNo,
+          uprn: deleteNote.uprn,
+          note: deleteNote.note,
+          changeType: "D",
+          lastUser: deleteNote.lastUser,
+        };
+
+        const newNotes = propertyData.blpuNotes.map((x) => [deletedNote].find((rec) => rec.pkId === x.pkId) || x);
+
+        setAssociatedPropertyData(
+          propertyData.lpis,
+          propertyData.blpuProvenances,
+          propertyData.blpuAppCrossRefs,
+          propertyData.classifications,
+          propertyData.organisations,
+          propertyData.successors,
+          newNotes
+        );
+      }
+    } else if (pkId && pkId < 0) {
+      const newNotes = propertyData.blpuNotes.filter((x) => x.pkId !== pkId);
+      setAssociatedPropertyData(
+        propertyData.lpis,
+        propertyData.blpuProvenances,
+        propertyData.blpuAppCrossRefs,
+        propertyData.classifications,
+        propertyData.organisations,
+        propertyData.successors,
+        newNotes
+      );
+    }
+  };
+
+  /**
+   * Event to handle adding a new property.
+   *
+   * @param {number} usrn The USRN of the street the property is being added to.
+   * @param {number} easting The easting to be used for the new property.
+   * @param {number} northing The northing to be used for the new property.
+   * @param {object} parent The details of the parent property if creating a child property.
+   */
+  const handlePropertyAdd = (usrn, easting, northing, parent) => {
+    const propertyChanged =
+      propertyContext.currentProperty.newProperty ||
+      sandboxContext.currentSandbox.currentPropertyRecords.lpi ||
+      sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef ||
+      sandboxContext.currentSandbox.currentPropertyRecords.provenance ||
+      sandboxContext.currentSandbox.currentPropertyRecords.note ||
+      (sandboxContext.currentSandbox.currentProperty &&
+        !PropertyComparison(
+          sandboxContext.currentSandbox.sourceProperty,
+          sandboxContext.currentSandbox.currentProperty
+        ));
+
+    if (propertyChanged) {
+      saveConfirmDialog(true)
+        .then((result) => {
+          if (result === "save") {
+            if (propertyContext.validateData()) {
+              failedValidation.current = false;
+              handleSaveClicked();
+            } else {
+              failedValidation.current = true;
+              saveResult.current = false;
+              setSaveOpen(true);
+            }
+          }
+          ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+          handleAddProperty(usrn, easting, northing, parent);
+        })
+        .catch(() => {});
+    } else {
+      ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+      handleAddProperty(usrn, easting, northing, parent);
+    }
+  };
+
+  /**
+   * Event to handle adding a new property.
+   *
+   * @param {number} usrn The USRN of the street the property is being added to.
+   * @param {number} easting The easting to be used for the new property.
+   * @param {number} northing The northing to be used for the new property.
+   * @param {object} parent The details of the parent property if creating a child property.
+   */
+  const handleAddProperty = (usrn, easting, northing, parent) => {
+    streetContext.onStreetChange(0, "", false);
+
+    propertyContext.onPropertyChange(0, usrn, null, null, null, easting, northing, true, parent);
+
+    const currentSearchProperties = [
+      {
+        uprn: 0,
+        address: null,
+        postcode: null,
+        easting: easting,
+        northing: northing,
+        logicalStatus: 6,
+        classificationCode: "U",
+      },
+    ];
+
+    mapContext.onSearchDataChange([], currentSearchProperties, null, "0");
+    mapContext.onEditMapObject(21, 0);
+  };
+
+  /**
+   * Event to handle adding a new LPI to the existing property.
+   */
+  const handleAddLPI = () => {
+    handleLPISelected(0, null, null, null);
+  };
+
+  /**
+   * Event to add a child to the existing property.
+   */
+  const handleChildAdd = () => {
+    const engLpiData = propertyData.lpis
+      .filter((x) => x.language === "ENG")
+      .sort((a, b) => a.logicalStatus - b.logicalStatus);
+    const cymLpiData = propertyData.lpis
+      .filter((x) => x.language === "CYM")
+      .sort((a, b) => a.logicalStatus - b.logicalStatus);
+    const gaeLpiData = propertyData.lpis
+      .filter((x) => x.language === "GAE")
+      .sort((a, b) => a.logicalStatus - b.logicalStatus);
+
+    const parent =
+      cymLpiData && cymLpiData.length > 0 && engLpiData && engLpiData.length > 0
+        ? {
+            uprn: propertyData.uprn,
+            rpc: propertyData.rpc,
+            eng: {
+              paoStartNumber: engLpiData[0].paoStartNumber,
+              paoStartSuffix: engLpiData[0].paoStartSuffix,
+              paoEndNumber: engLpiData[0].paoEndNumber,
+              paoEndSuffix: engLpiData[0].paoEndSuffix,
+              paoText: engLpiData[0].paoText,
+              address: engLpiData[0].address,
+              postTownRef: engLpiData[0].postTownRef,
+              postcodeRef: engLpiData[0].postcodeRef,
+              postTown: engLpiData[0].postTown,
+              postcode: engLpiData[0].postcode,
+            },
+            cym: {
+              paoStartNumber: cymLpiData[0].paoStartNumber,
+              paoStartSuffix: cymLpiData[0].paoStartSuffix,
+              paoEndNumber: cymLpiData[0].paoEndNumber,
+              paoEndSuffix: cymLpiData[0].paoEndSuffix,
+              paoText: cymLpiData[0].paoText,
+              address: cymLpiData[0].address,
+              postTownRef: cymLpiData[0].postTownRef,
+              postcodeRef: cymLpiData[0].postcodeRef,
+              postTown: cymLpiData[0].postTown,
+              postcode: cymLpiData[0].postcode,
+            },
+          }
+        : gaeLpiData && gaeLpiData.length > 0 && engLpiData && engLpiData.length > 0
+        ? {
+            uprn: propertyData.uprn,
+            rpc: propertyData.rpc,
+            eng: {
+              paoStartNumber: engLpiData[0].paoStartNumber,
+              paoStartSuffix: engLpiData[0].paoStartSuffix,
+              paoEndNumber: engLpiData[0].paoEndNumber,
+              paoEndSuffix: engLpiData[0].paoEndSuffix,
+              paoText: engLpiData[0].paoText,
+              address: engLpiData[0].address,
+              postTownRef: engLpiData[0].postTownRef,
+              postcodeRef: engLpiData[0].postcodeRef,
+              postTown: engLpiData[0].postTown,
+              postcode: engLpiData[0].postcode,
+            },
+            gae: {
+              paoStartNumber: gaeLpiData[0].paoStartNumber,
+              paoStartSuffix: gaeLpiData[0].paoStartSuffix,
+              paoEndNumber: gaeLpiData[0].paoEndNumber,
+              paoEndSuffix: gaeLpiData[0].paoEndSuffix,
+              paoText: gaeLpiData[0].paoText,
+              address: gaeLpiData[0].address,
+              postTownRef: gaeLpiData[0].postTownRef,
+              postcodeRef: gaeLpiData[0].postcodeRef,
+              postTown: gaeLpiData[0].postTown,
+              postcode: gaeLpiData[0].postcode,
+            },
+          }
+        : engLpiData && engLpiData.length > 0
+        ? {
+            uprn: propertyData.uprn,
+            rpc: propertyData.rpc,
+            eng: {
+              paoStartNumber: engLpiData[0].paoStartNumber,
+              paoStartSuffix: engLpiData[0].paoStartSuffix,
+              paoEndNumber: engLpiData[0].paoEndNumber,
+              paoEndSuffix: engLpiData[0].paoEndSuffix,
+              paoText: engLpiData[0].paoText,
+              address: engLpiData[0].address,
+              postTownRef: engLpiData[0].postTownRef,
+              postcodeRef: engLpiData[0].postcodeRef,
+              postTown: engLpiData[0].postTown,
+              postcode: engLpiData[0].postcode,
+            },
+          }
+        : null;
+
+    handlePropertyAdd(
+      propertyContext.currentProperty.usrn,
+      propertyContext.currentProperty.easting,
+      propertyContext.currentProperty.northing,
+      parent
+    );
+  };
+
+  /**
+   * Event to notify the user when some data has been copied to the clipboard.
+   *
+   * @param {boolean} open Flag to determine if the alert is displayed.
+   * @param {string} dataType The type of data that has just been copied.
+   */
+  const handleCopyOpen = (open, dataType) => {
+    copyDataType.current = dataType;
+    setCopyOpen(open);
+  };
+
+  /**
+   * Event to handle the closing of the copy alert.
+   *
+   * @param {object} event This is not used.
+   * @param {string} reason The reason why the alert is being closed.
+   * @returns
+   */
+  const handleCopyClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setCopyOpen(false);
+  };
+
+  /**
+   * Event to handle the closing of the save alert.
+   *
+   * @param {object} event This is not used.
+   * @param {string} reason The reason why the alert is being closed.
+   * @returns
+   */
+  const handleSaveClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSaveOpen(false);
+  };
+
+  /**
+   * Event to handle when the user clicks on the save button.
+   */
+  const handleSaveClicked = () => {
+    associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext, provenanceChanged.current);
+
+    const currentProperty = sandboxContext.currentSandbox.currentProperty
+      ? sandboxContext.currentSandbox.currentProperty
+      : sandboxContext.currentSandbox.sourceProperty;
+
+    if (associatedRecords.current.length > 0) {
+      saveConfirmDialog(associatedRecords.current)
+        .then((result) => {
+          if (result === "save") {
+            if (propertyContext.validateData()) {
+              failedValidation.current = false;
+              const currentPropertyData = GetCurrentPropertyData(
+                propertyData,
+                sandboxContext,
+                lookupContext,
+                settingsContext.isWelsh,
+                settingsContext.isScottish
+              );
+              HandlePropertySave(currentPropertyData);
+            } else {
+              failedValidation.current = true;
+              saveResult.current = false;
+              setSaveOpen(true);
+            }
+          } else if (result === "discard") {
+            updateSaveButton(true);
+            saveResult.current = true;
+            ResetContexts("property", true, mapContext, streetContext, propertyContext, sandboxContext);
+            if (propertyContext.currentProperty.newProperty) {
+              propertyContext.resetProperty();
+              mapContext.onSearchDataChange([], [], null, null);
+              mapContext.onEditMapObject(null, null);
+
+              history.push(GazetteerRoute);
+            }
+          }
+        })
+        .catch(() => {});
+    } else HandlePropertySave(currentProperty);
+
+    provenanceChanged.current = false;
+  };
+
+  /**
+   * Method used to save changes to the property.
+   *
+   * @param {object} currentProperty The data for the current property.
+   */
+  function HandlePropertySave(currentProperty) {
+    SavePropertyAndUpdate(
+      currentProperty,
+      propertyContext.currentProperty.newProperty,
+      propertyContext,
+      userContext.currentUser.token,
+      lookupContext,
+      searchContext,
+      mapContext,
+      sandboxContext,
+      settingsContext.isScottish,
+      settingsContext.isWelsh
+    ).then((result) => {
+      if (result) {
+        setPropertyData(result);
+
+        updateSaveButton(true);
+        saveResult.current = true;
+        setSaveOpen(true);
+      } else {
+        saveResult.current = false;
+        setSaveOpen(true);
+      }
+    });
+  }
+
+  /**
+   * Event to handle when the BLPU data is changed.
+   *
+   * @param {object} srcData The BLPU data that has been changed.
+   */
+  const handleBLPUDataChanged = (srcData) => {
+    const newPropertyData = !settingsContext.isScottish
+      ? {
+          blpuClass: srcData.blpuClass,
+          localCustodianCode: srcData.localCustodianCode,
+          organisation: srcData.organisation,
+          wardCode: srcData.wardCode,
+          parishCode: srcData.parishCode,
+          custodianOne: propertyData.custodianOne,
+          custodianTwo: propertyData.custodianTwo,
+          canKey: propertyData.canKey,
+          pkId: propertyData.pkId,
+          changeType: propertyData.uprn === 0 ? "I" : "U",
+          parentUprn: propertyData.parentUprn,
+          uprn: propertyData.uprn,
+          logicalStatus: srcData.logicalStatus,
+          blpuState: srcData.blpuState,
+          blpuStateDate: srcData.blpuStateDate,
+          xcoordinate: srcData.xcoordinate,
+          ycoordinate: srcData.ycoordinate,
+          rpc: srcData.rpc,
+          startDate: srcData.startDate,
+          endDate: srcData.endDate,
+          lastUpdateDate: propertyData.lastUpdateDate,
+          entryDate: propertyData.entryDate,
+          neverExport: srcData.neverExport,
+          siteSurvey: srcData.siteSurvey,
+          propertyLastUpdated: propertyData.propertyLastUpdated,
+          propertyLastUser: propertyData.propertyLastUser,
+          relatedPropertyCount: propertyData.relatedPropertyCount,
+          relatedStreetCount: propertyData.relatedStreetCount,
+          latitude: propertyData.latitude,
+          longitude: propertyData.longitude,
+          lastUpdated: propertyData.lastUpdated,
+          insertedTimestamp: propertyData.insertedTimestamp,
+          insertedUser: propertyData.insertedUser,
+          lastUser: propertyData.lastUser,
+          blpuAppCrossRefs: propertyData.blpuAppCrossRefs,
+          blpuProvenances: propertyData.blpuProvenances,
+          blpuNotes: propertyData.blpuNotes,
+          lpis: propertyData.lpis,
+        }
+      : {
+          localCustodianCode: srcData.localCustodianCode,
+          pkId: propertyData.pkId,
+          changeType: propertyData.uprn === 0 ? "I" : "U",
+          parentUprn: propertyData.parentUprn,
+          uprn: propertyData.uprn,
+          logicalStatus: srcData.logicalStatus,
+          blpuState: srcData.blpuState,
+          blpuStateDate: srcData.blpuStateDate,
+          xcoordinate: srcData.xcoordinate,
+          ycoordinate: srcData.ycoordinate,
+          rpc: srcData.rpc,
+          startDate: srcData.startDate,
+          endDate: srcData.endDate,
+          lastUpdateDate: propertyData.lastUpdateDate,
+          entryDate: propertyData.entryDate,
+          neverExport: srcData.neverExport,
+          siteSurvey: srcData.siteSurvey,
+          propertyLastUpdated: propertyData.propertyLastUpdated,
+          propertyLastUser: propertyData.propertyLastUser,
+          relatedPropertyCount: propertyData.relatedPropertyCount,
+          relatedStreetCount: propertyData.relatedStreetCount,
+          latitude: propertyData.latitude,
+          longitude: propertyData.longitude,
+          lastUpdated: propertyData.lastUpdated,
+          insertedTimestamp: propertyData.insertedTimestamp,
+          insertedUser: propertyData.insertedUser,
+          lastUser: propertyData.lastUser,
+          blpuAppCrossRefs: propertyData.blpuAppCrossRefs,
+          blpuProvenances: propertyData.blpuProvenances,
+          classifications: propertyData.classifications,
+          organisations: propertyData.organisations,
+          successors: propertyData.successors,
+          blpuNotes: propertyData.blpuNotes,
+          lpis: propertyData.lpis,
+        };
+
+    updatePropertyData(newPropertyData);
+  };
+
+  /**
+   * Method to handle when the organisation is changed.
+   *
+   * @param {string} oldValue The previous organisation.
+   * @param {string} newValue The new organisation.
+   * @param {object} srcData The BLPU data.
+   * @returns
+   */
+  const handleOrganisationChanged = (oldValue, newValue, srcData) => {
+    if (oldValue === newValue) return;
+
+    const newLpis = [];
+
+    propertyData.lpis.forEach((lpi) => {
+      const baseAddress =
+        lpi.address && lpi.address.length > 0 && lpi.address.indexOf(`${oldValue}, `) !== -1
+          ? lpi.address.replace(`${oldValue}, `, "")
+          : lpi.address;
+
+      newLpis.push({
+        ...lpi,
+        address:
+          baseAddress && baseAddress.length > 0 && newValue && newValue.length > 0
+            ? `${newValue}, ${baseAddress}`
+            : baseAddress,
+      });
+    });
+
+    const newPropertyData = !settingsContext.isScottish
+      ? {
+          blpuClass: srcData.blpuClass,
+          localCustodianCode: srcData.localCustodianCode,
+          organisation: srcData.organisation,
+          wardCode: srcData.wardCode,
+          parishCode: srcData.parishCode,
+          custodianOne: propertyData.custodianOne,
+          custodianTwo: propertyData.custodianTwo,
+          canKey: propertyData.canKey,
+          pkId: propertyData.pkId,
+          changeType: propertyData.uprn === 0 ? "I" : "U",
+          uprn: propertyData.uprn,
+          logicalStatus: srcData.logicalStatus,
+          blpuState: srcData.blpuState,
+          blpuStateDate: srcData.blpuStateDate,
+          xcoordinate: srcData.xcoordinate,
+          ycoordinate: srcData.ycoordinate,
+          rpc: srcData.rpc,
+          startDate: srcData.startDate,
+          endDate: srcData.endDate,
+          lastUpdateDate: propertyData.lastUpdateDate,
+          entryDate: propertyData.entryDate,
+          neverExport: srcData.neverExport,
+          siteSurvey: srcData.siteSurvey,
+          propertyLastUpdated: propertyData.propertyLastUpdated,
+          propertyLastUser: propertyData.propertyLastUser,
+          relatedPropertyCount: propertyData.relatedPropertyCount,
+          relatedStreetCount: propertyData.relatedStreetCount,
+          latitude: propertyData.latitude,
+          longitude: propertyData.longitude,
+          lastUpdated: propertyData.lastUpdated,
+          insertedTimestamp: propertyData.insertedTimestamp,
+          insertedUser: propertyData.insertedUser,
+          lastUser: propertyData.lastUser,
+          blpuAppCrossRefs: propertyData.blpuAppCrossRefs,
+          blpuProvenances: propertyData.blpuProvenances,
+          blpuNotes: propertyData.blpuNotes,
+          lpis: newLpis,
+        }
+      : {
+          localCustodianCode: srcData.localCustodianCode,
+          pkId: propertyData.pkId,
+          changeType: propertyData.uprn === 0 ? "I" : "U",
+          uprn: propertyData.uprn,
+          logicalStatus: srcData.logicalStatus,
+          blpuState: srcData.blpuState,
+          blpuStateDate: srcData.blpuStateDate,
+          xcoordinate: srcData.xcoordinate,
+          ycoordinate: srcData.ycoordinate,
+          rpc: srcData.rpc,
+          startDate: srcData.startDate,
+          endDate: srcData.endDate,
+          lastUpdateDate: propertyData.lastUpdateDate,
+          entryDate: propertyData.entryDate,
+          neverExport: srcData.neverExport,
+          propertyLastUpdated: propertyData.propertyLastUpdated,
+          propertyLastUser: propertyData.propertyLastUser,
+          relatedPropertyCount: propertyData.relatedPropertyCount,
+          relatedStreetCount: propertyData.relatedStreetCount,
+          latitude: propertyData.latitude,
+          longitude: propertyData.longitude,
+          lastUpdated: propertyData.lastUpdated,
+          insertedTimestamp: propertyData.insertedTimestamp,
+          insertedUser: propertyData.insertedUser,
+          lastUser: propertyData.lastUser,
+          blpuAppCrossRefs: propertyData.blpuAppCrossRefs,
+          blpuProvenances: propertyData.blpuProvenances,
+          classifications: propertyData.classifications,
+          organisations: propertyData.organisations,
+          successors: propertyData.successors,
+          blpuNotes: propertyData.blpuNotes,
+          lpis: newLpis,
+        };
+
+    updatePropertyData(newPropertyData);
+  };
+
+  /**
+   * Method to set the Save button when associated records data changes.
+   */
+  const handleAssociatedRecordDataChanged = () => {
+    updateSaveButton(false);
+  };
+
+  /**
+   * Event to handle when the provenance data changes.
+   */
+  const handleProvenanceDataChanged = () => {
+    updateSaveButton(false);
+    provenanceChanged.current = true;
+  };
+
+  /**
+   * Event to handle when a user clicks on the home button from the LPI tab.
+   *
+   * @param {string} action The action to take.
+   * @param {object} srcData The original state of the data
+   * @param {object} currentData The current state of the data.
+   * @returns {boolean}
+   */
+  const handleLPIHomeClick = (action, srcData, currentData) => {
+    const discardChanges = (checkData) => {
+      if (checkData && checkData.pkId < 0) {
+        // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
+        let restoredLpis = propertyData.lpis.filter((x) => x.pkId !== checkData.pkId);
+
+        if (checkData.dualLanguageLink > 0)
+          restoredLpis = restoredLpis.filter((x) => x.dualLanguageLink !== checkData.dualLanguageLink);
+
+        if (restoredLpis)
+          setAssociatedPropertyData(
+            restoredLpis,
+            propertyData.blpuProvenances,
+            propertyData.blpuAppCrossRefs,
+            propertyData.classifications,
+            propertyData.organisations,
+            propertyData.successors,
+            propertyData.blpuNotes
+          );
+      }
+      failedValidation.current = true;
+      sandboxContext.onSandboxChange("lpi", null);
+      handleLPISelected(-1, null, null, null);
+    };
+
+    failedValidation.current = false;
+
+    switch (action) {
+      case "check":
+        const dataHasChanged =
+          currentData.pkId < 0 ||
+          !ObjectComparison(srcData, currentData, [
+            "custodianOne",
+            "custodianTwo",
+            "canKey",
+            "changeType",
+            "dualLanguageLink",
+            "lastUpdateDate",
+            "address",
+            "postTown",
+            "postcode",
+            "lastUpdated",
+            "lastUser",
+          ]);
+
+        if (dataHasChanged) {
+          confirmDialog(true)
+            .then((result) => {
+              if (result === "save") {
+                if (propertyContext.validateData()) {
+                  failedValidation.current = false;
+                  updateLPIData(currentData);
+                  updateSaveButton(false);
+                  handleLPISelected(-1, null, null, null);
+                } else {
+                  failedValidation.current = true;
+                  saveResult.current = false;
+                  setSaveOpen(true);
+                }
+              } else {
+                discardChanges(currentData);
+              }
+            })
+            .catch(() => {});
+        } else {
+          sandboxContext.onSandboxChange("lpi", null);
+          handleLPISelected(-1, null, null, null);
+        }
+        break;
+
+      case "save":
+        if (propertyContext.validateData()) {
+          failedValidation.current = false;
+          updateLPIData(currentData);
+          updateSaveButton(false);
+          handleLPISelected(-1, null, null, null);
+        } else {
+          failedValidation.current = true;
+          saveResult.current = false;
+          setSaveOpen(true);
+        }
+        break;
+
+      default:
+        discardChanges(srcData ? srcData : currentData ? currentData : null);
+        break;
+    }
+
+    return failedValidation.current;
+  };
+
+  /**
+   * Event to handle when a user clicks on the home button from the classification tab.
+   *
+   * @param {string} action The action to take.
+   * @param {object} srcData The original state of the data
+   * @param {object} currentData The current state of the data.
+   * @returns {boolean}
+   */
+  const handleClassificationHomeClick = (action, srcData, currentData) => {
+    const discardChanges = (checkPkID) => {
+      if (checkPkID < 0) {
+        // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
+        const restoredClassifications = propertyData.classifications.filter((x) => x.pkId !== checkPkID);
+
+        if (restoredClassifications)
+          setAssociatedPropertyData(
+            propertyData.lpis,
+            propertyData.blpuProvenances,
+            propertyData.blpuAppCrossRefs,
+            restoredClassifications,
+            propertyData.organisations,
+            propertyData.successors,
+            propertyData.blpuNotes
+          );
+      }
+
+      sandboxContext.onSandboxChange("classification", null);
+      handleClassificationSelected(-1, null, null, null);
+    };
+
+    failedValidation.current = false;
+
+    switch (action) {
+      case "check":
+        const dataHasChanged =
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, ["changeType", "entryDate", "id", "pkId"]);
+
+        if (dataHasChanged) {
+          confirmDialog(true)
+            .then((result) => {
+              if (result === "save") {
+                if (propertyContext.validateData()) {
+                  failedValidation.current = false;
+                  updateClassificationData(currentData);
+                  updateSaveButton(false);
+                  handleClassificationSelected(-1, null, null, null);
+                } else {
+                  failedValidation.current = true;
+                  saveResult.current = false;
+                  setSaveOpen(true);
+                }
+              } else {
+                discardChanges(currentData ? currentData.pkId : 0);
+              }
+            })
+            .catch(() => {});
+        } else {
+          sandboxContext.onSandboxChange("classification", null);
+          handleClassificationSelected(-1, null, null, null);
+        }
+        break;
+
+      case "save":
+        if (propertyContext.validateData()) {
+          failedValidation.current = false;
+          updateClassificationData(currentData);
+          updateSaveButton(false);
+          handleClassificationSelected(-1, null, null, null);
+        } else {
+          failedValidation.current = true;
+          saveResult.current = false;
+          setSaveOpen(true);
+        }
+        break;
+
+      default:
+        discardChanges(srcData ? srcData.id : currentData ? currentData.pkId : 0);
+        break;
+    }
+
+    return failedValidation.current;
+  };
+
+  /**
+   * Event to handle when a user clicks on the home button from the organisation tab.
+   *
+   * @param {string} action The action to take.
+   * @param {object} srcData The original state of the data
+   * @param {object} currentData The current state of the data.
+   * @returns {boolean}
+   */
+  const handleOrganisationHomeClick = (action, srcData, currentData) => {
+    const discardChanges = (checkPkID) => {
+      if (checkPkID < 0) {
+        // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
+        const restoredOrganisations = propertyData.organisations.filter((x) => x.pkId !== checkPkID);
+
+        if (restoredOrganisations)
+          setAssociatedPropertyData(
+            propertyData.lpis,
+            propertyData.blpuProvenances,
+            propertyData.blpuAppCrossRefs,
+            propertyData.classifications,
+            restoredOrganisations,
+            propertyData.successors,
+            propertyData.blpuNotes
+          );
+      }
+
+      sandboxContext.onSandboxChange("organisation", null);
+      handleOrganisationSelected(-1, null, null, null);
+    };
+
+    failedValidation.current = false;
+
+    switch (action) {
+      case "check":
+        const dataHasChanged =
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, ["changeType", "entryDate", "id", "pkId"]);
+
+        if (dataHasChanged) {
+          confirmDialog(true)
+            .then((result) => {
+              if (result === "save") {
+                if (propertyContext.validateData()) {
+                  failedValidation.current = false;
+                  updateOrganisationData(currentData);
+                  updateSaveButton(false);
+                  handleOrganisationSelected(-1, null, null, null);
+                } else {
+                  failedValidation.current = true;
+                  saveResult.current = false;
+                  setSaveOpen(true);
+                }
+              } else {
+                discardChanges(currentData ? currentData.pkId : 0);
+              }
+            })
+            .catch(() => {});
+        } else {
+          sandboxContext.onSandboxChange("organisation", null);
+          handleOrganisationSelected(-1, null, null, null);
+        }
+        break;
+
+      case "save":
+        if (propertyContext.validateData()) {
+          failedValidation.current = false;
+          updateOrganisationData(currentData);
+          updateSaveButton(false);
+          handleOrganisationSelected(-1, null, null, null);
+        } else {
+          failedValidation.current = true;
+          saveResult.current = false;
+          setSaveOpen(true);
+        }
+        break;
+
+      default:
+        discardChanges(srcData ? srcData.id : currentData ? currentData.pkId : 0);
+        break;
+    }
+
+    return failedValidation.current;
+  };
+
+  /**
+   * Event to handle when a user clicks on the home button from the successor tab.
+   *
+   * @param {string} action The action to take.
+   * @param {object} srcData The original state of the data
+   * @param {object} currentData The current state of the data.
+   * @returns {boolean}
+   */
+  const handleSuccessorHomeClick = (action, srcData, currentData) => {
+    const discardChanges = (checkPkID) => {
+      if (checkPkID < 0) {
+        // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
+        const restoredSuccessors = propertyData.successors.filter((x) => x.pkId !== checkPkID);
+
+        if (restoredSuccessors)
+          setAssociatedPropertyData(
+            propertyData.lpis,
+            propertyData.blpuProvenances,
+            propertyData.blpuAppCrossRefs,
+            propertyData.classifications,
+            propertyData.organisations,
+            restoredSuccessors,
+            propertyData.blpuNotes
+          );
+      }
+
+      sandboxContext.onSandboxChange("successor", null);
+      handleSuccessorSelected(-1, null, null, null);
+    };
+
+    failedValidation.current = false;
+
+    switch (action) {
+      case "check":
+        const dataHasChanged =
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, ["changeType", "entryDate", "id", "pkId"]);
+
+        if (dataHasChanged) {
+          confirmDialog(true)
+            .then((result) => {
+              if (result === "save") {
+                if (propertyContext.validateData()) {
+                  failedValidation.current = false;
+                  updateSuccessorData(currentData);
+                  updateSaveButton(false);
+                  handleSuccessorSelected(-1, null, null, null);
+                } else {
+                  failedValidation.current = true;
+                  saveResult.current = false;
+                  setSaveOpen(true);
+                }
+              } else {
+                discardChanges(currentData ? currentData.pkId : 0);
+              }
+            })
+            .catch(() => {});
+        } else {
+          sandboxContext.onSandboxChange("successor", null);
+          handleSuccessorSelected(-1, null, null, null);
+        }
+        break;
+
+      case "save":
+        if (propertyContext.validateData()) {
+          failedValidation.current = false;
+          updateSuccessorData(currentData);
+          updateSaveButton(false);
+          handleSuccessorSelected(-1, null, null, null);
+        } else {
+          failedValidation.current = true;
+          saveResult.current = false;
+          setSaveOpen(true);
+        }
+        break;
+
+      default:
+        discardChanges(srcData ? srcData.id : currentData ? currentData.pkId : 0);
+        break;
+    }
+
+    return failedValidation.current;
+  };
+
+  /**
+   * Event to handle when a user clicks on the home button from the provenance tab.
+   *
+   * @param {string} action The action to take.
+   * @param {object} srcData The original state of the data
+   * @param {object} currentData The current state of the data.
+   * @returns {boolean}
+   */
+  const handleProvenanceHomeClick = (action, srcData, currentData) => {
+    const discardChanges = (checkPkID) => {
+      if (checkPkID < 0) {
+        // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
+        const restoredProvenances = propertyData.blpuProvenances.filter((x) => x.pkId !== checkPkID);
+
+        if (restoredProvenances)
+          setAssociatedPropertyData(
+            propertyData.lpis,
+            restoredProvenances,
+            propertyData.blpuAppCrossRefs,
+            propertyData.classifications,
+            propertyData.organisations,
+            propertyData.successors,
+            propertyData.blpuNotes
+          );
+      }
+
+      sandboxContext.onSandboxChange("provenance", null);
+      handleProvenanceSelected(-1, null, null, null);
+    };
+
+    failedValidation.current = false;
+
+    switch (action) {
+      case "check":
+        const dataHasChanged =
+          currentData.id < 0 || !ObjectComparison(srcData, currentData, ["changeType", "entryDate", "id", "pkId"]);
+
+        if (dataHasChanged) {
+          confirmDialog(true)
+            .then((result) => {
+              if (result === "save") {
+                if (propertyContext.validateData()) {
+                  failedValidation.current = false;
+                  updateProvenanceData(currentData);
+                  updateSaveButton(false);
+                  handleProvenanceSelected(-1, null, null, null);
+                } else {
+                  failedValidation.current = true;
+                  saveResult.current = false;
+                  setSaveOpen(true);
+                }
+              } else {
+                discardChanges(currentData ? currentData.pkId : 0);
+              }
+            })
+            .catch(() => {});
+        } else {
+          sandboxContext.onSandboxChange("provenance", null);
+          handleProvenanceSelected(-1, null, null, null);
+        }
+        break;
+
+      case "save":
+        if (propertyContext.validateData()) {
+          failedValidation.current = false;
+          updateProvenanceData(currentData);
+          provenanceChanged.current = false;
+          updateSaveButton(false);
+          handleProvenanceSelected(-1, null, null, null);
+        } else {
+          failedValidation.current = true;
+          saveResult.current = false;
+          setSaveOpen(true);
+        }
+        break;
+
+      default:
+        discardChanges(srcData ? srcData.id : currentData ? currentData.pkId : 0);
+        break;
+    }
+
+    return failedValidation.current;
+  };
+
+  /**
+   * Event to handle when a user clicks on the home button from the cross reference tab.
+   *
+   * @param {string} action The action to take.
+   * @param {object} srcData The original state of the data
+   * @param {object} currentData The current state of the data.
+   * @returns {boolean}
+   */
+  const handleCrossRefHomeClick = (action, srcData, currentData) => {
+    const discardChanges = (checkPkId) => {
+      if (checkPkId < 0) {
+        // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
+        const restoredAppCrossRefs = propertyData.blpuAppCrossRefs.filter((x) => x.pkId !== checkPkId);
+
+        if (restoredAppCrossRefs)
+          setAssociatedPropertyData(
+            propertyData.lpis,
+            propertyData.blpuProvenances,
+            restoredAppCrossRefs,
+            propertyData.classifications,
+            propertyData.organisations,
+            propertyData.successors,
+            propertyData.blpuNotes
+          );
+      }
+
+      sandboxContext.onSandboxChange("appCrossRef", null);
+      handleCrossRefSelected(-1, null, null, null);
+    };
+
+    failedValidation.current = false;
+
+    switch (action) {
+      case "check":
+        const dataHasChanged =
+          currentData.id < 0 || !ObjectComparison(srcData, currentData, ["changeType", "entryDate", "id", "pkId"]);
+
+        if (dataHasChanged) {
+          confirmDialog(true)
+            .then((result) => {
+              if (result === "save") {
+                if (propertyContext.validateData()) {
+                  failedValidation.current = false;
+                  updateCrossRefData(currentData);
+                  updateSaveButton(false);
+                  handleCrossRefSelected(-1, null, null, null);
+                } else {
+                  failedValidation.current = true;
+                  saveResult.current = false;
+                  setSaveOpen(true);
+                }
+              } else {
+                discardChanges(currentData ? currentData.pkId : 0);
+              }
+            })
+            .catch(() => {});
+        } else {
+          sandboxContext.onSandboxChange("appCrossRef", null);
+          handleCrossRefSelected(-1, null, null, null);
+        }
+        break;
+
+      case "save":
+        if (propertyContext.validateData()) {
+          failedValidation.current = false;
+          updateCrossRefData(currentData);
+          updateSaveButton(false);
+          handleCrossRefSelected(-1, null, null, null);
+        } else {
+          failedValidation.current = true;
+          saveResult.current = false;
+          setSaveOpen(true);
+        }
+        break;
+
+      default:
+        discardChanges(srcData ? srcData.id : currentData ? currentData.pkId : 0);
+        break;
+    }
+
+    return failedValidation.current;
+  };
+
+  /**
+   * Event to handle when a user clicks on the home button from the note tab.
+   *
+   * @param {string} action The action to take.
+   * @param {object} srcData The original state of the data
+   * @param {object} currentData The current state of the data.
+   * @returns {boolean}
+   */
+  const handleNoteHomeClick = (action, srcData, currentData) => {
+    const discardChanges = (checkData) => {
+      if (checkData && checkData.pkId < 0) {
+        // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
+        const restoredNotes = propertyData.blpuNotes.filter((x) => x.pkId !== checkData.pkId);
+
+        if (restoredNotes)
+          setAssociatedPropertyData(
+            propertyData.lpis,
+            propertyData.blpuProvenances,
+            propertyData.blpuAppCrossRefs,
+            propertyData.classifications,
+            propertyData.organisations,
+            propertyData.successors,
+            restoredNotes
+          );
+      }
+
+      sandboxContext.onSandboxChange("propertyNote", null);
+      handleNoteSelected(-1, null, null, null);
+    };
+
+    failedValidation.current = false;
+
+    switch (action) {
+      case "check":
+        const dataHasChanged =
+          currentData.pkId < 0 ||
+          !ObjectComparison(srcData, currentData, ["changeType", "createdDate", "lastUpdatedDate", "lastUser"]);
+
+        if (dataHasChanged) {
+          confirmDialog(true)
+            .then((result) => {
+              if (result === "save") {
+                if (propertyContext.validateData()) {
+                  failedValidation.current = false;
+                  updateNoteData(currentData);
+                  updateSaveButton(false);
+                  handleNoteSelected(-1, null, null, null);
+                } else {
+                  failedValidation.current = true;
+                  saveResult.current = false;
+                  setSaveOpen(true);
+                }
+              } else {
+                discardChanges(currentData);
+              }
+            })
+            .catch(() => {});
+        } else {
+          sandboxContext.onSandboxChange("propertyNote", null);
+          handleNoteSelected(-1, null, null, null);
+        }
+        break;
+
+      case "save":
+        if (propertyContext.validateData()) {
+          failedValidation.current = false;
+          updateNoteData(currentData);
+          updateSaveButton(false);
+          handleNoteSelected(-1, null, null, null);
+        } else {
+          failedValidation.current = true;
+          saveResult.current = false;
+          setSaveOpen(true);
+        }
+        break;
+
+      default:
+        discardChanges(srcData ? srcData : currentData ? currentData : null);
+        break;
+    }
+
+    return failedValidation.current;
+  };
+
+  /**
+   * Event to update the LPI record with new data.
+   *
+   * @param {object|null} newData The data to be used to update the LPI record with.
+   * @returns
+   */
+  async function updateLPIData(newData) {
+    if (!newData) return;
+
+    let newLpis = null;
+
+    const newAddress = await GetTempAddress(
+      newData,
+      propertyData.organisation,
+      lookupContext,
+      userContext.currentUser.token
+    );
+
+    const updatedData = {
+      level: newData.level,
+      postalAddress: newData.postalAddress,
+      custodianOne: newData.custodianOne,
+      custodianTwo: newData.custodianTwo,
+      canKey: newData.canKey,
+      pkId: newData.pkId,
+      changeType: newData.changeType,
+      uprn: newData.uprn,
+      lpiKey: newData.lpiKey,
+      language: newData.language,
+      logicalStatus: newData.logicalStatus,
+      startDate: newData.startDate,
+      endDate: newData.endDate,
+      entryDate: newData.entryDate,
+      lastUpdateDate: newData.lastUpdateDate,
+      saoStartNumber: newData.saoStartNumber,
+      saoStartSuffix: newData.saoStartSuffix,
+      saoEndNumber: newData.saoEndNumber,
+      saoEndSuffix: newData.saoEndSuffix,
+      saoText: newData.saoText,
+      paoStartNumber: newData.paoStartNumber,
+      paoStartSuffix: newData.paoStartSuffix,
+      paoEndNumber: newData.paoEndNumber,
+      paoEndSuffix: newData.paoEndSuffix,
+      paoText: newData.paoText,
+      usrn: newData.usrn,
+      postcodeRef: newData.postcodeRef,
+      postTownRef: newData.postTownRef,
+      officialFlag: newData.officialFlag,
+      neverExport: newData.neverExport,
+      address: newAddress,
+      postTown: newData.postTown,
+      postcode: newData.postcode,
+      lastUpdated: newData.lastUpdated,
+      lastUser: newData.lastUser,
+      dualLanguageLink: newData.dualLanguageLink,
+    };
+
+    if (settingsContext.isWelsh) {
+      const secondLanguage = updatedData.language === "ENG" ? "CYM" : "ENG";
+
+      let secondLpi = null;
+      if (updatedData.dualLanguageLink === 0) {
+        const bilingualId = getBilingualSource(lookupContext);
+        const linkXRef = propertyData.blpuAppCrossRefs.find(
+          (x) => x.sourceId === bilingualId && x.crossReference.includes(updatedData.lpiKey)
+        );
+        secondLpi = propertyData.lpis.find((x) => x.lpiKey === linkXRef.crossReference.replace(updatedData.lpiKey, ""));
+      } else {
+        secondLpi = propertyData.lpis.find(
+          (x) => x.dualLanguageLink === updatedData.dualLanguageLink && x.language === secondLanguage
+        );
+      }
+      const secondPostTown = lookupContext.currentLookups.postTowns.find(
+        (x) => x.linkedRef === updatedData.postTownRef && x.language === secondLpi.language
+      );
+      const newSecondLpi = {
+        level: updatedData.level,
+        postalAddress: updatedData.postalAddress,
+        custodianOne: secondLpi.custodianOne,
+        custodianTwo: secondLpi.custodianTwo,
+        canKey: secondLpi.canKey,
+        pkId: secondLpi.pkId,
+        changeType: secondLpi.changeType,
+        uprn: secondLpi.uprn,
+        lpiKey: secondLpi.lpiKey,
+        language: secondLpi.language,
+        logicalStatus: updatedData.logicalStatus,
+        startDate: updatedData.startDate,
+        endDate: updatedData.endDate,
+        entryDate: secondLpi.entryDate,
+        lastUpdateDate: secondLpi.lastUpdateDate,
+        saoStartNumber: secondLpi && secondLpi.saoStartNumber ? secondLpi.saoStartNumber : updatedData.saoStartNumber,
+        saoStartSuffix: secondLpi && secondLpi.saoStartSuffix ? secondLpi.saoStartSuffix : updatedData.saoStartSuffix,
+        saoEndNumber: secondLpi && secondLpi.saoEndNumber ? secondLpi.saoEndNumber : updatedData.saoEndNumber,
+        saoEndSuffix: secondLpi && secondLpi.saoEndSuffix ? secondLpi.saoEndSuffix : updatedData.saoEndSuffix,
+        saoText: secondLpi && secondLpi.saoText ? secondLpi.saoText : updatedData.saoText,
+        paoStartNumber: secondLpi && secondLpi.paoStartNumber ? secondLpi.paoStartNumber : updatedData.paoStartNumber,
+        paoStartSuffix: secondLpi && secondLpi.paoStartSuffix ? secondLpi.paoStartSuffix : updatedData.paoStartSuffix,
+        paoEndNumber: secondLpi && secondLpi.paoEndNumber ? secondLpi.paoEndNumber : updatedData.paoEndNumber,
+        paoEndSuffix: secondLpi && secondLpi.paoEndSuffix ? secondLpi.paoEndSuffix : updatedData.paoEndSuffix,
+        paoText: secondLpi && secondLpi.paoText ? secondLpi.paoText : updatedData.paoText,
+        usrn: updatedData.usrn,
+        postcodeRef: updatedData.postcodeRef,
+        postTownRef: secondPostTown ? secondPostTown.postTownRef : null,
+        officialFlag: updatedData.officialFlag,
+        neverExport: updatedData.neverExport,
+        address: secondLpi.address,
+        postTown: secondPostTown ? secondPostTown.postTown : null,
+        postcode: updatedData.postcode,
+        lastUpdated: secondLpi.lastUpdated,
+        lastUser: secondLpi.lastUser,
+        dualLanguageLink: secondLpi.dualLanguageLink,
+      };
+
+      const newSecondAddress = await GetTempAddress(
+        newSecondLpi,
+        propertyData.organisation,
+        lookupContext,
+        userContext.currentUser.token
+      );
+
+      const updatedSecondLpi = {
+        level: newSecondLpi.level,
+        postalAddress: newSecondLpi.postalAddress,
+        custodianOne: newSecondLpi.custodianOne,
+        custodianTwo: newSecondLpi.custodianTwo,
+        canKey: newSecondLpi.canKey,
+        pkId: newSecondLpi.pkId,
+        changeType: newSecondLpi.changeType,
+        uprn: newSecondLpi.uprn,
+        lpiKey: newSecondLpi.lpiKey,
+        language: newSecondLpi.language,
+        logicalStatus: newSecondLpi.logicalStatus,
+        startDate: newSecondLpi.startDate,
+        endDate: newSecondLpi.endDate,
+        entryDate: newSecondLpi.entryDate,
+        lastUpdateDate: newSecondLpi.lastUpdateDate,
+        saoStartNumber: newSecondLpi.saoStartNumber,
+        saoStartSuffix: newSecondLpi.saoStartSuffix,
+        saoEndNumber: newSecondLpi.saoEndNumber,
+        saoEndSuffix: newSecondLpi.saoEndSuffix,
+        saoText: newSecondLpi.saoText,
+        paoStartNumber: newSecondLpi.paoStartNumber,
+        paoStartSuffix: newSecondLpi.paoStartSuffix,
+        paoEndNumber: newSecondLpi.paoEndNumber,
+        paoEndSuffix: newSecondLpi.paoEndSuffix,
+        paoText: newSecondLpi.paoText,
+        usrn: newSecondLpi.usrn,
+        postcodeRef: newSecondLpi.postcodeRef,
+        postTownRef: newSecondLpi.postTownRef,
+        officialFlag: newSecondLpi.officialFlag,
+        neverExport: newSecondLpi.neverExport,
+        address: newSecondAddress,
+        postTown: newSecondLpi.postTown,
+        postcode: newSecondLpi.postcode,
+        lastUpdated: newSecondLpi.lastUpdated,
+        lastUser: newSecondLpi.lastUser,
+        dualLanguageLink: newSecondLpi.dualLanguageLink,
+      };
+
+      newLpis = propertyData.lpis.map(
+        (x) =>
+          [updatedData].find((lpi) => lpi.pkId === x.pkId) || [updatedSecondLpi].find((lpi) => lpi.pkId === x.pkId) || x
+      );
+    } else {
+      newLpis = propertyData.lpis.map((x) => [updatedData].find((lpi) => lpi.pkId === x.pkId) || x);
+    }
+
+    if (newLpis && newLpis.length > 0) {
+      setAssociatedPropertyDataAndClear(
+        newLpis,
+        propertyData.blpuProvenances,
+        propertyData.blpuAppCrossRefs,
+        propertyData.classifications,
+        propertyData.organisations,
+        propertyData.successors,
+        propertyData.blpuNotes,
+        "lpi"
+      );
+    }
+  }
+
+  /**
+   * Event to update the classification record with new data.
+   *
+   * @param {object|null} newData The data to be used to update the classification record with.
+   * @returns
+   */
+  const updateClassificationData = (newData) => {
+    if (!newData) return;
+
+    const newClassifications = propertyData.classifications.map(
+      (x) => [newData].find((classification) => classification.pkId === x.pkId) || x
+    );
+
+    setAssociatedPropertyDataAndClear(
+      propertyData.lpis,
+      propertyData.blpuProvenances,
+      propertyData.blpuAppCrossRefs,
+      newClassifications,
+      propertyData.organisations,
+      propertyData.successors,
+      propertyData.blpuNotes,
+      "classification"
+    );
+  };
+
+  /**
+   * Event to update the organisation record with new data.
+   *
+   * @param {object|null} newData The data to be used to update the organisation record with.
+   * @returns
+   */
+  const updateOrganisationData = (newData) => {
+    if (!newData) return;
+
+    const newOrganisations = propertyData.organisations.map(
+      (x) => [newData].find((organisation) => organisation.pkId === x.pkId) || x
+    );
+
+    setAssociatedPropertyDataAndClear(
+      propertyData.lpis,
+      propertyData.blpuProvenances,
+      propertyData.blpuAppCrossRefs,
+      propertyData.classifications,
+      newOrganisations,
+      propertyData.successors,
+      propertyData.blpuNotes,
+      "organisation"
+    );
+  };
+
+  /**
+   * Event to update the successor record with new data.
+   *
+   * @param {object|null} newData The data to be used to update the successor record with.
+   * @returns
+   */
+  const updateSuccessorData = (newData) => {
+    if (!newData) return;
+
+    const newSuccessors = propertyData.successors.map(
+      (x) => [newData].find((successor) => successor.pkId === x.pkId) || x
+    );
+
+    setAssociatedPropertyDataAndClear(
+      propertyData.lpis,
+      propertyData.blpuProvenances,
+      propertyData.blpuAppCrossRefs,
+      propertyData.classifications,
+      propertyData.organisations,
+      newSuccessors,
+      propertyData.blpuNotes,
+      "successor"
+    );
+  };
+
+  /**
+   * Event to update the provenance record with new data.
+   *
+   * @param {object|null} newData The data to be used to update the provenance record with.
+   * @returns
+   */
+  const updateProvenanceData = (newData) => {
+    if (!newData) return;
+
+    const newProvenances = propertyData.blpuProvenances.map(
+      (x) => [newData].find((provenance) => provenance.pkId === x.pkId) || x
+    );
+
+    setAssociatedPropertyDataAndClear(
+      propertyData.lpis,
+      newProvenances,
+      propertyData.blpuAppCrossRefs,
+      propertyData.classifications,
+      propertyData.organisations,
+      propertyData.successors,
+      propertyData.blpuNotes,
+      "provenance"
+    );
+  };
+
+  /**
+   * Event to update the cross reference record with new data.
+   *
+   * @param {object|null} newData The data to be used to update the cross reference record with.
+   * @returns
+   */
+  const updateCrossRefData = (newData) => {
+    if (!newData) return;
+
+    const newCrossRefs = propertyData.blpuAppCrossRefs.map((x) => [newData].find((xRef) => xRef.pkId === x.pkId) || x);
+
+    setAssociatedPropertyDataAndClear(
+      propertyData.lpis,
+      propertyData.blpuProvenances,
+      newCrossRefs,
+      propertyData.classifications,
+      propertyData.organisations,
+      propertyData.successors,
+      propertyData.blpuNotes,
+      "appCrossRef"
+    );
+  };
+
+  /**
+   * Event to update the note record with new data.
+   *
+   * @param {object|null} newData The data to be used to update the note record with.
+   * @returns
+   */
+  const updateNoteData = (newData) => {
+    const newNotes = propertyData.blpuNotes.map((x) => [newData].find((xRef) => xRef.pkId === x.pkId) || x);
+
+    setAssociatedPropertyDataAndClear(
+      propertyData.lpis,
+      propertyData.blpuProvenances,
+      propertyData.blpuAppCrossRefs,
+      propertyData.classifications,
+      propertyData.organisations,
+      propertyData.successors,
+      newNotes,
+      "propertyNote"
+    );
+  };
+
+  // Update BLPU coordinates
+  useEffect(() => {
+    const contextProperty =
+      sandboxContext.currentSandbox.currentProperty || sandboxContext.currentSandbox.sourceProperty;
+    if (mapContext.currentPropertyPin) {
+      const newX = Number.parseFloat(mapContext.currentPropertyPin.x);
+      const newY = Number.parseFloat(mapContext.currentPropertyPin.y);
+      if (newX !== contextProperty.xcoordinate || newY !== contextProperty.ycoordinate) {
+        const newPropertyData = !settingsContext.isScottish
+          ? {
+              blpuClass: contextProperty.blpuClass,
+              localCustodianCode: contextProperty.localCustodianCode,
+              organisation: contextProperty.organisation,
+              wardCode: contextProperty.wardCode,
+              parishCode: contextProperty.parishCode,
+              custodianOne: contextProperty.custodianOne,
+              custodianTwo: contextProperty.custodianTwo,
+              canKey: contextProperty.canKey,
+              pkId: contextProperty.pkId,
+              changeType: contextProperty.uprn === 0 ? "I" : "U",
+              uprn: contextProperty.uprn,
+              logicalStatus: contextProperty.logicalStatus,
+              blpuState: contextProperty.blpuState,
+              blpuStateDate: contextProperty.blpuStateDate,
+              xcoordinate: newX,
+              ycoordinate: newY,
+              rpc: contextProperty.rpc,
+              startDate: contextProperty.startDate,
+              endDate: contextProperty.endDate,
+              lastUpdateDate: contextProperty.lastUpdateDate,
+              entryDate: contextProperty.entryDate,
+              neverExport: contextProperty.neverExport,
+              siteSurvey: contextProperty.siteSurvey,
+              propertyLastUpdated: contextProperty.propertyLastUpdated,
+              propertyLastUser: contextProperty.propertyLastUser,
+              relatedPropertyCount: contextProperty.relatedPropertyCount,
+              relatedStreetCount: contextProperty.relatedStreetCount,
+              latitude: contextProperty.latitude,
+              longitude: contextProperty.longitude,
+              lastUpdated: contextProperty.lastUpdated,
+              insertedTimestamp: contextProperty.insertedTimestamp,
+              insertedUser: contextProperty.insertedUser,
+              lastUser: contextProperty.lastUser,
+              blpuAppCrossRefs: contextProperty.blpuAppCrossRefs,
+              blpuProvenances: contextProperty.blpuProvenances,
+              blpuNotes: contextProperty.blpuNotes,
+              lpis: contextProperty.lpis,
+            }
+          : {
+              localCustodianCode: contextProperty.localCustodianCode,
+              pkId: contextProperty.pkId,
+              changeType: contextProperty.uprn === 0 ? "I" : "U",
+              uprn: contextProperty.uprn,
+              logicalStatus: contextProperty.logicalStatus,
+              blpuState: contextProperty.blpuState,
+              blpuStateDate: contextProperty.blpuStateDate,
+              xcoordinate: newX,
+              ycoordinate: newY,
+              rpc: contextProperty.rpc,
+              startDate: contextProperty.startDate,
+              endDate: contextProperty.endDate,
+              lastUpdateDate: contextProperty.lastUpdateDate,
+              entryDate: contextProperty.entryDate,
+              neverExport: contextProperty.neverExport,
+              propertyLastUpdated: contextProperty.propertyLastUpdated,
+              propertyLastUser: contextProperty.propertyLastUser,
+              relatedPropertyCount: contextProperty.relatedPropertyCount,
+              relatedStreetCount: contextProperty.relatedStreetCount,
+              latitude: contextProperty.latitude,
+              longitude: contextProperty.longitude,
+              lastUpdated: contextProperty.lastUpdated,
+              insertedTimestamp: contextProperty.insertedTimestamp,
+              insertedUser: contextProperty.insertedUser,
+              lastUser: contextProperty.lastUser,
+              blpuAppCrossRefs: contextProperty.blpuAppCrossRefs,
+              blpuProvenances: contextProperty.blpuProvenances,
+              classifications: contextProperty.classifications,
+              organisations: contextProperty.organisations,
+              successors: contextProperty.successors,
+              blpuNotes: contextProperty.blpuNotes,
+              lpis: contextProperty.lpis,
+            };
+
+        if (newPropertyData) {
+          mapContext.onSetCoordinate(null);
+
+          const engLpi = newPropertyData.lpis
+            .filter((x) => x.language === "ENG")
+            .sort(function (a, b) {
+              return a.logicalStatus - b.logicalStatus;
+            });
+
+          propertyContext.onPropertyChange(
+            newPropertyData.uprn,
+            newPropertyData.usrn,
+            engLpi[0].address,
+            engLpi[0].address,
+            engLpi[0].postcode,
+            newX,
+            newY,
+            propertyContext.currentProperty.newProperty,
+            null
+          );
+
+          const currentSearchProperties = [
+            {
+              uprn: newPropertyData.uprn,
+              address: engLpi[0].address,
+              postcode: engLpi[0].postcode,
+              easting: newX,
+              northing: newY,
+              logicalStatus: newPropertyData.logicalStatus,
+              classificationCode: newPropertyData.blpuClass,
+            },
+          ];
+
+          mapContext.onSearchDataChange([], currentSearchProperties, null, newPropertyData.uprn);
+        }
+        setPropertyData(newPropertyData);
+        sandboxContext.onSandboxChange("currentProperty", newPropertyData);
+        setSaveDisabled(false);
+        propertyContext.onPropertyModified(true);
+      }
+    }
+  }, [mapContext.currentPropertyPin, mapContext, sandboxContext, propertyContext, settingsContext]);
+
+  // Update extent geometry
+  useEffect(() => {
+    const contextProperty =
+      sandboxContext.currentSandbox.currentProperty || sandboxContext.currentSandbox.sourceProperty;
+    let newPropertyData = null;
+    const currentDate = GetCurrentDate(false);
+
+    if (mapContext.currentPolygonGeometry && mapContext.currentPolygonGeometry.objectType === 22) {
+      const currentProvenance = sandboxContext.currentSandbox.currentPropertyRecords.provenance
+        ? sandboxContext.currentSandbox.currentPropertyRecords.provenance
+        : propertyData.blpuProvenances.find((x) => x.pkId === mapContext.currentPolygonGeometry.objectId);
+
+      if (
+        currentProvenance &&
+        !PolygonsEqual(currentProvenance.wktGeometry, mapContext.currentPolygonGeometry.wktGeometry)
+      ) {
+        const updatedProvenance = {
+          uprn: currentProvenance.uprn,
+          changeType: contextProperty.uprn === 0 || currentProvenance.pkId < 0 ? "I" : "U",
+          provenanceCode: currentProvenance.provenanceCode,
+          annotation: currentProvenance.annotation,
+          startDate: currentProvenance.startDate ? currentProvenance.startDate : currentDate,
+          endDate: currentProvenance.endDate,
+          wktGeometry: mapContext.currentPolygonGeometry.wktGeometry,
+          pkId: currentProvenance.pkId,
+          provenanceKey: currentProvenance.provenanceKey,
+          entryDate: currentProvenance.entryDate ? currentProvenance.entryDate : currentDate,
+          lastUpdateDate: currentDate,
+        };
+
+        const newProvenances = propertyData.blpuProvenances.map(
+          (x) => [updatedProvenance].find((rec) => rec.pkId === x.pkId) || x
+        );
+
+        const mapExtents = newProvenances.map((rec) => ({
+          uprn: rec.uprn,
+          code: rec.provenanceCode,
+          geometry: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
+        }));
+
+        mapContext.onMapChange(mapExtents, null, null);
+
+        newPropertyData = !settingsContext.isScottish
+          ? {
+              blpuClass: contextProperty.blpuClass,
+              localCustodianCode: contextProperty.localCustodianCode,
+              organisation: contextProperty.organisation,
+              wardCode: contextProperty.wardCode,
+              parishCode: contextProperty.parishCode,
+              custodianOne: contextProperty.custodianOne,
+              custodianTwo: contextProperty.custodianTwo,
+              canKey: contextProperty.canKey,
+              pkId: contextProperty.pkId,
+              changeType: contextProperty.changeType,
+              uprn: contextProperty.uprn,
+              logicalStatus: contextProperty.logicalStatus,
+              blpuState: contextProperty.blpuState,
+              blpuStateDate: contextProperty.blpuStateDate,
+              xcoordinate: contextProperty.xcoordinate,
+              ycoordinate: contextProperty.ycoordinate,
+              rpc: contextProperty.rpc,
+              startDate: contextProperty.startDate,
+              endDate: contextProperty.endDate,
+              lastUpdateDate: contextProperty.lastUpdateDate,
+              entryDate: contextProperty.entryDate,
+              neverExport: contextProperty.neverExport,
+              siteSurvey: contextProperty.siteSurvey,
+              propertyLastUpdated: contextProperty.propertyLastUpdated,
+              propertyLastUser: contextProperty.propertyLastUser,
+              relatedPropertyCount: contextProperty.relatedPropertyCount,
+              relatedStreetCount: contextProperty.relatedStreetCount,
+              latitude: contextProperty.latitude,
+              longitude: contextProperty.longitude,
+              lastUpdated: contextProperty.lastUpdated,
+              insertedTimestamp: contextProperty.insertedTimestamp,
+              insertedUser: contextProperty.insertedUser,
+              lastUser: contextProperty.lastUser,
+              blpuAppCrossRefs: contextProperty.blpuAppCrossRefs,
+              blpuProvenances: newProvenances,
+              blpuNotes: contextProperty.blpuNotes,
+              lpis: contextProperty.lpis,
+            }
+          : {
+              localCustodianCode: contextProperty.localCustodianCode,
+              pkId: contextProperty.pkId,
+              changeType: contextProperty.changeType,
+              uprn: contextProperty.uprn,
+              logicalStatus: contextProperty.logicalStatus,
+              blpuState: contextProperty.blpuState,
+              blpuStateDate: contextProperty.blpuStateDate,
+              xcoordinate: contextProperty.xcoordinate,
+              ycoordinate: contextProperty.ycoordinate,
+              rpc: contextProperty.rpc,
+              startDate: contextProperty.startDate,
+              endDate: contextProperty.endDate,
+              lastUpdateDate: contextProperty.lastUpdateDate,
+              entryDate: contextProperty.entryDate,
+              neverExport: contextProperty.neverExport,
+              propertyLastUpdated: contextProperty.propertyLastUpdated,
+              propertyLastUser: contextProperty.propertyLastUser,
+              relatedPropertyCount: contextProperty.relatedPropertyCount,
+              relatedStreetCount: contextProperty.relatedStreetCount,
+              latitude: contextProperty.latitude,
+              longitude: contextProperty.longitude,
+              lastUpdated: contextProperty.lastUpdated,
+              insertedTimestamp: contextProperty.insertedTimestamp,
+              insertedUser: contextProperty.insertedUser,
+              lastUser: contextProperty.lastUser,
+              blpuAppCrossRefs: contextProperty.blpuAppCrossRefs,
+              blpuProvenances: newProvenances,
+              classifications: contextProperty.classifications,
+              organisations: contextProperty.organisations,
+              successors: contextProperty.successors,
+              blpuNotes: contextProperty.blpuNotes,
+              lpis: contextProperty.lpis,
+            };
+
+        if (newPropertyData) {
+          mapContext.onSetPolygonGeometry(null);
+
+          setPropertyData(newPropertyData);
+          sandboxContext.onUpdateAndClear("currentProperty", newPropertyData, "provenance");
+          setSaveDisabled(false);
+          provenanceChanged.current = true;
+          propertyContext.onPropertyModified(true);
+          propertyContext.onProvenanceDataChange(true);
+        }
+      }
+    }
+  }, [mapContext.currentPolygonGeometry, propertyData, sandboxContext, mapContext, propertyContext, settingsContext]);
+
+  useEffect(() => {
+    if (
+      data &&
+      (propertyUprn.current === null ||
+        propertyUprn.current === undefined ||
+        propertyUprn.current === "" ||
+        propertyUprn.current === false ||
+        data.uprn.toString() !== propertyUprn.current.toString())
+    ) {
+      propertyUprn.current = data.uprn;
+      setPropertyData(data);
+      if (data && data.uprn.toString() === "0" && saveDisabled) {
+        setSaveDisabled(false);
+        propertyContext.onPropertyModified(true);
+      }
+    }
+  }, [data, saveDisabled, propertyContext]);
+
+  useEffect(() => {
+    if (propertyContext.currentProperty.openRelated) {
+      failedValidation.current = false;
+      setValue(3);
+      mapContext.onEditMapObject(null, null);
+      // propertyContext.onRelatedOpened();
+    }
+  }, [propertyContext, mapContext]);
+
+  useEffect(() => {
+    if (
+      propertyContext.newLogicalStatus &&
+      propertyData &&
+      propertyData.logicalStatus &&
+      propertyContext.newLogicalStatus !== propertyData.logicalStatus
+    ) {
+      const today = GetCurrentDate(false);
+      const newLpis = propertyData.lpis.map((x) => {
+        return { ...x, logicalStatus: propertyContext.newLogicalStatus, changeType: "U", endDate: today };
+      });
+      const newCrossRefs = propertyData.blpuAppCrossRefs.map((x) => {
+        return { ...x, changeType: "U", endDate: today };
+      });
+      const newProvenances = propertyData.blpuProvenances.map((x) => {
+        return { ...x, changeType: "U", endDate: today };
+      });
+
+      const newPropertyData = !settingsContext.isScottish
+        ? {
+            blpuClass: propertyData.blpuClass,
+            localCustodianCode: propertyData.localCustodianCode,
+            organisation: propertyData.organisation,
+            wardCode: propertyData.wardCode,
+            parishCode: propertyData.parishCode,
+            custodianOne: propertyData.custodianOne,
+            custodianTwo: propertyData.custodianTwo,
+            canKey: propertyData.canKey,
+            pkId: propertyData.pkId,
+            changeType: "U",
+            uprn: propertyData.uprn,
+            logicalStatus: propertyContext.newLogicalStatus,
+            blpuState: propertyData.blpuState,
+            blpuStateDate: propertyData.blpuStateDate,
+            xcoordinate: propertyData.xcoordinate,
+            ycoordinate: propertyData.ycoordinate,
+            rpc: propertyData.rpc,
+            startDate: propertyData.startDate,
+            endDate: today,
+            lastUpdateDate: propertyData.lastUpdateDate,
+            entryDate: propertyData.entryDate,
+            neverExport: propertyData.neverExport,
+            siteSurvey: propertyData.siteSurvey,
+            propertyLastUpdated: propertyData.propertyLastUpdated,
+            propertyLastUser: propertyData.propertyLastUser,
+            relatedPropertyCount: propertyData.relatedPropertyCount,
+            relatedStreetCount: propertyData.relatedStreetCount,
+            latitude: propertyData.latitude,
+            longitude: propertyData.longitude,
+            lastUpdated: propertyData.lastUpdated,
+            insertedTimestamp: propertyData.insertedTimestamp,
+            insertedUser: propertyData.insertedUser,
+            lastUser: propertyData.lastUser,
+            blpuAppCrossRefs: newCrossRefs,
+            blpuProvenances: newProvenances,
+            blpuNotes: propertyData.blpuNotes,
+            lpis: newLpis,
+          }
+        : {
+            localCustodianCode: propertyData.localCustodianCode,
+            pkId: propertyData.pkId,
+            changeType: "U",
+            uprn: propertyData.uprn,
+            logicalStatus: propertyContext.newLogicalStatus,
+            blpuState: propertyData.blpuState,
+            blpuStateDate: propertyData.blpuStateDate,
+            xcoordinate: propertyData.xcoordinate,
+            ycoordinate: propertyData.ycoordinate,
+            rpc: propertyData.rpc,
+            startDate: propertyData.startDate,
+            endDate: today,
+            lastUpdateDate: propertyData.lastUpdateDate,
+            entryDate: propertyData.entryDate,
+            neverExport: propertyData.neverExport,
+            propertyLastUpdated: propertyData.propertyLastUpdated,
+            propertyLastUser: propertyData.propertyLastUser,
+            relatedPropertyCount: propertyData.relatedPropertyCount,
+            relatedStreetCount: propertyData.relatedStreetCount,
+            latitude: propertyData.latitude,
+            longitude: propertyData.longitude,
+            lastUpdated: propertyData.lastUpdated,
+            insertedTimestamp: propertyData.insertedTimestamp,
+            insertedUser: propertyData.insertedUser,
+            lastUser: propertyData.lastUser,
+            blpuAppCrossRefs: newCrossRefs,
+            blpuProvenances: newProvenances,
+            classifications: propertyData.classifications.map((x) => {
+              return { ...x, changeType: "U", endDate: today };
+            }),
+            organisations: propertyData.organisations.map((x) => {
+              return { ...x, changeType: "U", endDate: today };
+            }),
+            successors: propertyData.successors.map((x) => {
+              return { ...x, changeType: "U", endDate: today };
+            }),
+            blpuNotes: propertyData.blpuNotes,
+            lpis: newLpis,
+          };
+
+      setPropertyData(newPropertyData);
+      sandboxContext.onSandboxChange("currentProperty", newPropertyData);
+      setSaveDisabled(false);
+      propertyContext.onPropertyModified(true);
+    }
+  }, [propertyData, propertyContext.newLogicalStatus, sandboxContext, propertyContext, settingsContext]);
+
+  useEffect(() => {
+    if (propertyContext.currentErrors) {
+      if (propertyContext.currentErrors.blpu && propertyContext.currentErrors.blpu.length > 0)
+        setBlpuErrors(propertyContext.currentErrors.blpu);
+      else setBlpuErrors([]);
+
+      if (propertyContext.currentErrors.lpi && propertyContext.currentErrors.lpi.length > 0)
+        setLpiErrors(propertyContext.currentErrors.lpi);
+      else setLpiErrors([]);
+
+      if (propertyContext.currentErrors.classification && propertyContext.currentErrors.classification.length > 0)
+        setClassificationErrors(propertyContext.currentErrors.classification);
+      else setClassificationErrors([]);
+
+      if (propertyContext.currentErrors.organisation && propertyContext.currentErrors.organisation.length > 0)
+        setOrganisationErrors(propertyContext.currentErrors.organisation);
+      else setOrganisationErrors([]);
+
+      if (propertyContext.currentErrors.successor && propertyContext.currentErrors.successor.length > 0)
+        setSuccessorErrors(propertyContext.currentErrors.successor);
+      else setSuccessorErrors([]);
+
+      if (propertyContext.currentErrors.provenance && propertyContext.currentErrors.provenance.length > 0)
+        setProvenanceErrors(propertyContext.currentErrors.provenance);
+      else setProvenanceErrors([]);
+
+      if (propertyContext.currentErrors.crossRef && propertyContext.currentErrors.crossRef.length > 0)
+        setCrossRefErrors(propertyContext.currentErrors.crossRef);
+      else setCrossRefErrors(null);
+
+      if (propertyContext.currentErrors.note && propertyContext.currentErrors.note.length > 0)
+        setNoteErrors(propertyContext.currentErrors.note);
+      else setNoteErrors(null);
+    }
+  }, [propertyContext.currentErrors]);
+
+  useEffect(() => {
+    if (propertyContext.goToField) {
+      setBlpuFocusedField(null);
+      setLpiFocusedField(null);
+      setProvenanceFocusedField(null);
+      setCrossRefFocusedField(null);
+      setNoteFocusedField(null);
+
+      switch (propertyContext.goToField.type) {
+        case 21:
+          setBlpuFocusedField(propertyContext.goToField.fieldName);
+          if (value !== 0) setValue(0);
+          propertyContext.onRecordChange(21, null);
+          setLpiFormData(null);
+          break;
+
+        case 22:
+          setProvenanceFocusedField(propertyContext.goToField.fieldName);
+          if (value !== 1) setValue(1);
+          const provenanceData =
+            propertyData && propertyData.blpuProvenances.length > propertyContext.goToField.index
+              ? propertyData.blpuProvenances[propertyContext.goToField.index]
+              : null;
+          if (provenanceData) {
+            propertyContext.onRecordChange(22, propertyContext.goToField.index);
+            setProvenanceFormData({
+              id: provenanceData.pkId,
+              provenanceData: provenanceData,
+              blpuLogicalStatus: propertyData.logicalStatus,
+              index: propertyContext.goToField.index,
+              totalRecords: propertyData.blpuProvenances.length,
+            });
+          }
+          break;
+
+        case 23:
+          setCrossRefFocusedField(propertyContext.goToField.fieldName);
+          if (value !== 2) setValue(2);
+          const crossRefData =
+            propertyData && propertyData.blpuAppCrossRefs.length > propertyContext.goToField.index
+              ? propertyData.blpuAppCrossRefs[propertyContext.goToField.index]
+              : null;
+          if (crossRefData) {
+            propertyContext.onRecordChange(23, propertyContext.goToField.index);
+            setCrossRefFormData({
+              id: crossRefData.id,
+              xrefData: crossRefData,
+              blpuLogicalStatus: propertyData.logicalStatus,
+              index: propertyContext.goToField.index,
+              totalRecords: propertyData.blpuAppCrossRefs.length,
+            });
+          }
+          break;
+
+        case 24:
+          setLpiFocusedField(propertyContext.goToField.fieldName);
+          if (value !== 0) setValue(0);
+          const lpiData =
+            propertyData && propertyData.lpis.length > propertyContext.goToField.index
+              ? propertyData.lpis[propertyContext.goToField.index]
+              : null;
+
+          if (lpiData) {
+            propertyContext.onRecordChange(24, propertyContext.goToField.index);
+            setLpiFormData({
+              pkId: lpiData.pkId,
+              lpiData: lpiData,
+              blpuLogicalStatus: propertyData.logicalStatus,
+              organisation: propertyData.organisation,
+              index: propertyContext.goToField.index,
+              totalRecords: propertyData.lpis.length,
+            });
+          }
+          break;
+
+        case 30:
+          setSuccessorFocusedField(propertyContext.goToField.fieldName);
+          if (value !== 1) setValue(1);
+          const successorData =
+            propertyData && propertyData.successors.length > propertyContext.goToField.index
+              ? propertyData.successors[propertyContext.goToField.index]
+              : null;
+          if (successorData) {
+            propertyContext.onRecordChange(30, propertyContext.goToField.index);
+            setSuccessorFormData({
+              id: successorData.pkId,
+              successorData: successorData,
+              blpuLogicalStatus: propertyData.logicalStatus,
+              index: propertyContext.goToField.index,
+              totalRecords: propertyData.successors.length,
+            });
+          }
+          break;
+
+        case 31:
+          setOrganisationFocusedField(propertyContext.goToField.fieldName);
+          if (value !== 1) setValue(1);
+          const organisationData =
+            propertyData && propertyData.organisations.length > propertyContext.goToField.index
+              ? propertyData.organisations[propertyContext.goToField.index]
+              : null;
+          if (organisationData) {
+            propertyContext.onRecordChange(31, propertyContext.goToField.index);
+            setOrganisationFormData({
+              id: organisationData.pkId,
+              organisationData: organisationData,
+              blpuLogicalStatus: propertyData.logicalStatus,
+              index: propertyContext.goToField.index,
+              totalRecords: propertyData.organisations.length,
+            });
+          }
+          break;
+
+        case 32:
+          setClassificationFocusedField(propertyContext.goToField.fieldName);
+          if (value !== 1) setValue(1);
+          const classificationData =
+            propertyData && propertyData.classifications.length > propertyContext.goToField.index
+              ? propertyData.classifications[propertyContext.goToField.index]
+              : null;
+          if (classificationData) {
+            propertyContext.onRecordChange(32, propertyContext.goToField.index);
+            setClassificationFormData({
+              id: classificationData.pkId,
+              classificationData: classificationData,
+              blpuLogicalStatus: propertyData.logicalStatus,
+              index: propertyContext.goToField.index,
+              totalRecords: propertyData.classifications.length,
+            });
+          }
+          break;
+
+        case 72:
+          setNoteFocusedField(propertyContext.goToField.fieldName);
+          if (value !== 4) setValue(4);
+          const noteData =
+            propertyData && propertyData.blpuNotes.length > propertyContext.goToField.index
+              ? propertyData.blpuNotes[propertyContext.goToField.index]
+              : null;
+          if (noteData) {
+            propertyContext.onRecordChange(72, propertyContext.goToField.index);
+            setNotesFormData({
+              pkId: noteData.pkId,
+              noteData: noteData,
+              index: propertyContext.goToField.index,
+              totalRecords: propertyData.blpuNotes.length,
+              variant: "property",
+            });
+          }
+          break;
+
+        default:
+          break;
+      }
+
+      propertyContext.onGoToField(null, null, null);
+    }
+  }, [propertyContext, propertyContext.goToField, value, propertyData]);
+
+  return (
+    <div id="property-data-form">
+      <AppBar position="static" color="default">
+        <Tabs
+          value={value}
+          onChange={handleTabChange}
+          TabIndicatorProps={{ style: { background: adsBlueA, height: "2px" } }}
+          textColor={adsMidGreyA}
+          variant="scrollable"
+          scrollButtons="auto"
+          selectionFollowsFocus
+          aria-label="property-tabs"
+          sx={{ backgroundColor: adsWhite }}
+        >
+          <Tab
+            sx={tabStyle}
+            label={
+              <Stack direction="row" spacing={0.5} alignItems="center">
+                <Typography variant="subtitle2" sx={tabLabelStyle(value === 0)}>
+                  Details
+                </Typography>
+                {((blpuErrors && blpuErrors.length > 0) || (lpiErrors && lpiErrors.length > 0)) && (
+                  <ErrorIcon sx={errorIconStyle} />
+                )}
+              </Stack>
+            }
+            {...a11yProps(0)}
+          />
+          {settingsContext.isScottish && (
+            <Tab
+              sx={tabStyle}
+              label={
+                <Stack direction="row" spacing={0.5} alignItems="center">
+                  <Typography variant="subtitle2" sx={tabLabelStyle(value === 1)}>
+                    Classifications
+                  </Typography>
+                  {classificationErrors && classificationErrors.length > 0 ? (
+                    <ErrorIcon sx={errorIconStyle} />
+                  ) : (
+                    <Avatar
+                      variant="rounded"
+                      sx={GetTabIconStyle(
+                        propertyData && propertyData.classifications
+                          ? propertyData.classifications.filter((x) => x.changeType !== "D").length
+                          : 0
+                      )}
+                    >
+                      <Typography variant="caption">
+                        <strong>
+                          {propertyData && propertyData.classifications
+                            ? propertyData.classifications.filter((x) => x.changeType !== "D").length
+                            : 0}
+                        </strong>
+                      </Typography>
+                    </Avatar>
+                  )}
+                </Stack>
+              }
+              {...a11yProps(1)}
+            />
+          )}
+          {settingsContext.isScottish && (
+            <Tab
+              sx={tabStyle}
+              label={
+                <Stack direction="row" spacing={0.5} alignItems="center">
+                  <Typography variant="subtitle2" sx={tabLabelStyle(value === 2)}>
+                    Organisations
+                  </Typography>
+                  {organisationErrors && organisationErrors.length > 0 ? (
+                    <ErrorIcon sx={errorIconStyle} />
+                  ) : (
+                    <Avatar
+                      variant="rounded"
+                      sx={GetTabIconStyle(
+                        propertyData && propertyData.organisations
+                          ? propertyData.organisations.filter((x) => x.changeType !== "D").length
+                          : 0
+                      )}
+                    >
+                      <Typography variant="caption">
+                        <strong>
+                          {propertyData && propertyData.organisations
+                            ? propertyData.organisations.filter((x) => x.changeType !== "D").length
+                            : 0}
+                        </strong>
+                      </Typography>
+                    </Avatar>
+                  )}
+                </Stack>
+              }
+              {...a11yProps(2)}
+            />
+          )}
+          {settingsContext.isScottish && (
+            <Tab
+              sx={tabStyle}
+              label={
+                <Stack direction="row" spacing={0.5} alignItems="center">
+                  <Typography variant="subtitle2" sx={tabLabelStyle(value === 3)}>
+                    Successors
+                  </Typography>
+                  {successorErrors && successorErrors.length > 0 ? (
+                    <ErrorIcon sx={errorIconStyle} />
+                  ) : (
+                    <Avatar
+                      variant="rounded"
+                      sx={GetTabIconStyle(
+                        propertyData && propertyData.successors
+                          ? propertyData.successors.filter((x) => x.changeType !== "D").length
+                          : 0
+                      )}
+                    >
+                      <Typography variant="caption">
+                        <strong>
+                          {propertyData && propertyData.successors
+                            ? propertyData.successors.filter((x) => x.changeType !== "D").length
+                            : 0}
+                        </strong>
+                      </Typography>
+                    </Avatar>
+                  )}
+                </Stack>
+              }
+              {...a11yProps(3)}
+            />
+          )}
+          <Tab
+            sx={tabStyle}
+            label={
+              <Stack direction="row" spacing={0.5} alignItems="center">
+                <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 4 : 1))}>
+                  Provenances
+                </Typography>
+                {provenanceErrors && provenanceErrors.length > 0 ? (
+                  <ErrorIcon sx={errorIconStyle} />
+                ) : (
+                  <Avatar
+                    variant="rounded"
+                    sx={GetTabIconStyle(
+                      propertyData && propertyData.blpuProvenances
+                        ? propertyData.blpuProvenances.filter((x) => x.changeType !== "D").length
+                        : 0
+                    )}
+                  >
+                    <Typography variant="caption">
+                      <strong>
+                        {propertyData && propertyData.blpuProvenances
+                          ? propertyData.blpuProvenances.filter((x) => x.changeType !== "D").length
+                          : 0}
+                      </strong>
+                    </Typography>
+                  </Avatar>
+                )}
+              </Stack>
+            }
+            {...a11yProps(settingsContext.isScottish ? 4 : 1)}
+          />
+          <Tab
+            sx={tabStyle}
+            label={
+              <Stack direction="row" spacing={0.5} alignItems="center">
+                <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 5 : 2))}>
+                  Cross refs
+                </Typography>
+                {crossRefErrors && crossRefErrors.length > 0 ? (
+                  <ErrorIcon sx={errorIconStyle} />
+                ) : (
+                  <Avatar
+                    variant="rounded"
+                    sx={GetTabIconStyle(
+                      propertyData && propertyData.blpuAppCrossRefs
+                        ? propertyData.blpuAppCrossRefs.filter((x) => x.changeType !== "D").length
+                        : 0
+                    )}
+                  >
+                    <Typography variant="caption">
+                      <strong>
+                        {propertyData && propertyData.blpuAppCrossRefs
+                          ? propertyData.blpuAppCrossRefs.filter((x) => x.changeType !== "D").length
+                          : 0}
+                      </strong>
+                    </Typography>
+                  </Avatar>
+                )}
+              </Stack>
+            }
+            {...a11yProps(settingsContext.isScottish ? 5 : 2)}
+          />
+          <Tab
+            sx={tabStyle}
+            label={
+              <Stack direction="row" spacing={0.5} alignItems="center">
+                <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 6 : 3))}>
+                  Related
+                </Typography>
+                <Avatar
+                  variant="rounded"
+                  sx={GetTabIconStyle(
+                    propertyData ? propertyData.relatedPropertyCount + propertyData.relatedStreetCount : 0
+                  )}
+                >
+                  <Typography variant="caption">
+                    <strong>
+                      {propertyData ? propertyData.relatedPropertyCount + propertyData.relatedStreetCount : 0}
+                    </strong>
+                  </Typography>
+                </Avatar>
+              </Stack>
+            }
+            {...a11yProps(settingsContext.isScottish ? 6 : 3)}
+          />
+          <Tab
+            sx={tabStyle}
+            label={
+              <Stack direction="row" spacing={0.5} alignItems="center">
+                <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 7 : 4))}>
+                  Notes
+                </Typography>
+                {noteErrors && noteErrors.length > 0 ? (
+                  <ErrorIcon sx={errorIconStyle} />
+                ) : (
+                  <Avatar
+                    variant="rounded"
+                    sx={GetTabIconStyle(
+                      propertyData && propertyData.blpuNotes
+                        ? propertyData.blpuNotes.filter((x) => x.changeType !== "D").length
+                        : 0
+                    )}
+                  >
+                    <Typography variant="caption">
+                      <strong>
+                        {propertyData && propertyData.blpuNotes
+                          ? propertyData.blpuNotes.filter((x) => x.changeType !== "D").length
+                          : 0}
+                      </strong>
+                    </Typography>
+                  </Avatar>
+                )}
+              </Stack>
+            }
+            {...a11yProps(settingsContext.isScottish ? 7 : 4)}
+          />
+          <Tab
+            sx={tabStyle}
+            label={
+              <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 8 : 5))}>
+                History
+              </Typography>
+            }
+            {...a11yProps(settingsContext.isScottish ? 8 : 5)}
+          />
+        </Tabs>
+      </AppBar>
+      <TabPanel value={value} index={0}>
+        {lpiFormData ? (
+          <PropertyLPITab
+            data={lpiFormData}
+            errors={lpiErrors && lpiErrors.filter((x) => x.index === lpiFormData.index)}
+            loading={loading}
+            focusedField={lpiFocusedField}
+            onDataChanged={handleAssociatedRecordDataChanged}
+            onSetCopyOpen={(open, dataType) => handleCopyOpen(open, dataType)}
+            onHomeClick={(action, srcData, currentData) => handleLPIHomeClick(action, srcData, currentData)}
+            onAddLpi={handleAddLPI}
+            onDelete={(pkId) => handleDeleteLPI(pkId)}
+          />
+        ) : (
+          <PropertyDetailsTab
+            data={propertyData}
+            errors={blpuErrors}
+            lpiErrors={lpiErrors}
+            loading={loading}
+            focusedField={blpuFocusedField}
+            onSetCopyOpen={(open, dataType) => handleCopyOpen(open, dataType)}
+            onLpiSelected={(pkId, lpiData, dataIdx, dataLength) =>
+              handleLPISelected(pkId, lpiData, dataIdx, dataLength)
+            }
+            onLpiDeleted={(pkId) => handleDeleteLPI(pkId)}
+            onDataChanged={(srcData) => handleBLPUDataChanged(srcData)}
+            onOrganisationChanged={(oldValue, newValue, srcData) =>
+              handleOrganisationChanged(oldValue, newValue, srcData)
+            }
+            onChildAdd={handleChildAdd}
+          />
+        )}
+      </TabPanel>
+      {settingsContext.isScottish && (
+        <TabPanel value={value} index={1}>
+          {classificationFormData ? (
+            <PropertyClassificationTab
+              data={classificationFormData}
+              errors={
+                classificationErrors && classificationErrors.filter((x) => x.index === classificationFormData.index)
+              }
+              loading={loading}
+              focusedField={classificationFocusedField}
+              onDataChanged={handleAssociatedRecordDataChanged}
+              onHomeClick={(action, srcData, currentData) =>
+                handleClassificationHomeClick(action, srcData, currentData)
+              }
+              onDelete={(pkId) => handleDeleteClassification(pkId)}
+            />
+          ) : (
+            <PropertyClassificationListTab
+              data={
+                propertyData &&
+                propertyData.classifications &&
+                propertyData.classifications
+                  .filter((x) => x.changeType !== "D")
+                  .map(function (x) {
+                    return {
+                      id: x.pkId,
+                      uprn: x.uprn,
+                      changeType: x.changeType,
+                      classKey: x.classKey,
+                      blpuClass: x.blpuClass,
+                      classScheme: x.classScheme,
+                      entryDate: x.entryDate,
+                      lastUpdateDate: x.lastUpdateDate,
+                      startDate: x.startDate,
+                      endDate: x.endDate,
+                    };
+                  })
+              }
+              errors={classificationErrors}
+              loading={loading}
+              onClassificationSelected={(pkId, classificationData, dataIdx, dataLength) =>
+                handleClassificationSelected(pkId, classificationData, dataIdx, dataLength)
+              }
+              onClassificationDelete={(pkId) => handleDeleteClassification(pkId)}
+              onMultiClassificationDelete={(classificationIds) => handleMultiDeleteClassification(classificationIds)}
+            />
+          )}
+        </TabPanel>
+      )}
+      {settingsContext.isScottish && (
+        <TabPanel value={value} index={2}>
+          {organisationFormData ? (
+            <PropertyOrganisationTab
+              data={organisationFormData}
+              errors={organisationErrors && organisationErrors.filter((x) => x.index === organisationFormData.index)}
+              loading={loading}
+              focusedField={organisationFocusedField}
+              onDataChanged={handleAssociatedRecordDataChanged}
+              onHomeClick={(action, srcData, currentData) => handleOrganisationHomeClick(action, srcData, currentData)}
+              onDelete={(pkId) => handleDeleteOrganisation(pkId)}
+            />
+          ) : (
+            <PropertyOrganisationListTab
+              data={
+                propertyData &&
+                propertyData.organisations &&
+                propertyData.organisations
+                  .filter((x) => x.changeType !== "D")
+                  .map(function (x) {
+                    return {
+                      id: x.pkId,
+                      uprn: x.uprn,
+                      changeType: x.changeType,
+                      orgKey: x.orgKey,
+                      organisation: x.organisation,
+                      legalName: x.legalName,
+                      entryDate: x.entryDate,
+                      lastUpdateDate: x.lastUpdateDate,
+                      startDate: x.startDate,
+                      endDate: x.endDate,
+                    };
+                  })
+              }
+              errors={organisationErrors}
+              loading={loading}
+              onOrganisationSelected={(pkId, organisationData, dataIdx, dataLength) =>
+                handleOrganisationSelected(pkId, organisationData, dataIdx, dataLength)
+              }
+              onOrganisationDelete={(pkId) => handleDeleteOrganisation(pkId)}
+              onMultiOrganisationDelete={(organisationIds) => handleMultiDeleteOrganisation(organisationIds)}
+            />
+          )}
+        </TabPanel>
+      )}
+      {settingsContext.isScottish && (
+        <TabPanel value={value} index={3}>
+          {successorFormData ? (
+            <SuccessorTab
+              data={successorFormData}
+              variant="property"
+              errors={successorErrors && successorErrors.filter((x) => x.index === successorFormData.index)}
+              loading={loading}
+              focusedField={successorFocusedField}
+              onDataChanged={handleAssociatedRecordDataChanged}
+              onHomeClick={(action, srcData, currentData) => handleSuccessorHomeClick(action, srcData, currentData)}
+              onDelete={(pkId) => handleDeleteSuccessor(pkId)}
+            />
+          ) : (
+            <SuccessorListTab
+              data={
+                propertyData &&
+                propertyData.successors &&
+                propertyData.successors
+                  .filter((x) => x.changeType !== "D")
+                  .map(function (x) {
+                    return {
+                      id: x.pkId,
+                      uprn: x.uprn,
+                      changeType: x.changeType,
+                      succKey: x.succKey,
+                      predecessor: x.predecessor,
+                      successorType: x.successorType,
+                      successor: x.successor,
+                      entryDate: x.entryDate,
+                      lastUpdateDate: x.lastUpdateDate,
+                      startDate: x.startDate,
+                      endDate: x.endDate,
+                    };
+                  })
+              }
+              variant="property"
+              errors={successorErrors}
+              loading={loading}
+              onSuccessorSelected={(pkId, successorData, dataIdx, dataLength) =>
+                handleSuccessorSelected(pkId, successorData, dataIdx, dataLength)
+              }
+              onSuccessorDelete={(pkId) => handleDeleteSuccessor(pkId)}
+              onMultiSuccessorDelete={(successorIds) => handleMultiDeleteSuccessor(successorIds)}
+            />
+          )}
+        </TabPanel>
+      )}
+      <TabPanel value={value} index={settingsContext.isScottish ? 4 : 1}>
+        {provenanceFormData ? (
+          <PropertyBLPUProvenanceTab
+            data={provenanceFormData}
+            errors={provenanceErrors && provenanceErrors.filter((x) => x.index === provenanceFormData.index)}
+            loading={loading}
+            focusedField={provenanceFocusedField}
+            onDataChanged={handleProvenanceDataChanged}
+            onHomeClick={(action, srcData, currentData) => handleProvenanceHomeClick(action, srcData, currentData)}
+            onDelete={(pkId) => handleDeleteProvenance(pkId)}
+          />
+        ) : (
+          <PropertyBLPUProvenanceListTab
+            data={
+              propertyData &&
+              propertyData.blpuProvenances &&
+              propertyData.blpuProvenances
+                .filter((x) => x.changeType !== "D")
+                .map(function (x) {
+                  return {
+                    id: x.pkId,
+                    uprn: x.uprn,
+                    changeType: x.changeType,
+                    provenanceKey: x.provenanceKey,
+                    provenanceCode: x.provenanceCode,
+                    annotation: x.annotation,
+                    entryDate: x.entryDate,
+                    lastUpdateDate: x.lastUpdateDate,
+                    startDate: x.startDate,
+                    endDate: x.endDate,
+                    wktGeometry: x.wktGeometry,
+                  };
+                })
+            }
+            errors={provenanceErrors}
+            loading={loading}
+            onProvenanceSelected={(pkId, provenanceData, dataIdx, dataLength) =>
+              handleProvenanceSelected(pkId, provenanceData, dataIdx, dataLength)
+            }
+            onProvenanceDelete={(pkId) => handleDeleteProvenance(pkId)}
+            onMultiProvenanceDelete={(provenanceIds) => handleMultiDeleteProvenance(provenanceIds)}
+          />
+        )}
+      </TabPanel>
+      <TabPanel value={value} index={settingsContext.isScottish ? 5 : 2}>
+        {crossRefFormData ? (
+          <PropertyCrossRefTab
+            data={crossRefFormData}
+            errors={crossRefErrors && crossRefErrors.filter((x) => x.index === crossRefFormData.index)}
+            loading={loading}
+            focusedField={crossRefFocusedField}
+            onDataChanged={handleAssociatedRecordDataChanged}
+            onHomeClick={(action, srcData, currentData) => handleCrossRefHomeClick(action, srcData, currentData)}
+            onDelete={(pkId) => handleDeleteCrossRef(pkId)}
+          />
+        ) : (
+          <PropertyCrossRefListTab
+            data={
+              propertyData &&
+              propertyData.blpuAppCrossRefs &&
+              propertyData.blpuAppCrossRefs
+                .filter((x) => x.changeType !== "D")
+                .map(function (x) {
+                  return {
+                    id: x.pkId,
+                    uprn: x.uprn,
+                    changeType: x.changeType,
+                    xrefKey: x.xrefKey,
+                    source: x.source,
+                    sourceId: x.sourceId,
+                    crossReference: x.crossReference,
+                    startDate: x.startDate,
+                    endDate: x.endDate,
+                    entryDate: x.entryDate,
+                    lastUpdateDate: x.lastUpdateDate,
+                    neverExport: x.neverExport,
+                  };
+                })
+            }
+            errors={crossRefErrors}
+            loading={loading}
+            onSetCopyOpen={(open, dataType) => handleCopyOpen(open, dataType)}
+            onCrossRefSelected={(pkId, xrefData, dataIdx, dataLength) =>
+              handleCrossRefSelected(pkId, xrefData, dataIdx, dataLength)
+            }
+            onCrossRefDelete={(pkId) => handleDeleteCrossRef(pkId)}
+            onMultiCrossRefDelete={(crossRefIds) => handleMultiDeleteCrossRef(crossRefIds)}
+          />
+        )}
+      </TabPanel>
+      <TabPanel value={value} index={settingsContext.isScottish ? 6 : 3}>
+        <RelatedTab
+          variant="property"
+          propertyCount={propertyData ? propertyData.relatedPropertyCount : 0}
+          streetCount={propertyData ? propertyData.relatedStreetCount : 0}
+          onSetCopyOpen={(open, dataType) => handleCopyOpen(open, dataType)}
+          onPropertyAdd={(usrn, easting, northing, parent) => handlePropertyAdd(usrn, easting, northing, parent)}
+        />
+      </TabPanel>
+      <TabPanel value={value} index={settingsContext.isScottish ? 7 : 4}>
+        {notesFormData ? (
+          <NotesDataTab
+            data={notesFormData}
+            errors={noteErrors && noteErrors.filter((x) => x.index === notesFormData.index)}
+            loading={loading}
+            focusedField={noteFocusedField}
+            onDataChanged={handleAssociatedRecordDataChanged}
+            onDelete={(pkId) => handleDeleteNote(pkId)}
+            onHomeClick={(action, srcData, currentData) => handleNoteHomeClick(action, srcData, currentData)}
+          />
+        ) : (
+          <NotesListTab
+            data={
+              propertyData && propertyData.blpuNotes ? propertyData.blpuNotes.filter((x) => x.changeType !== "D") : null
+            }
+            errors={noteErrors}
+            loading={loading}
+            variant="property"
+            onNoteSelected={(pkId, noteData, dataIdx) => handleNoteSelected(pkId, noteData, dataIdx)}
+            onNoteDelete={(pkId) => handleDeleteNote(pkId)}
+          />
+        )}
+      </TabPanel>
+      <TabPanel value={value} index={settingsContext.isScottish ? 8 : 5}>
+        <EntityHistoryTab variant="property" />
+      </TabPanel>
+      <div>
+        <Snackbar
+          open={copyOpen}
+          autoHideDuration={6000}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          onClose={handleCopyClose}
+        >
+          <Alert
+            sx={{
+              backgroundColor: adsBlueA,
+            }}
+            icon={<CheckIcon fontSize="inherit" />}
+            onClose={handleCopyClose}
+            severity="success"
+            elevation={6}
+            variant="filled"
+          >{`${copyDataType.current} copied to clipboard`}</Alert>
+        </Snackbar>
+      </div>
+      <div>
+        <Snackbar
+          open={saveOpen}
+          autoHideDuration={6000}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          onClose={handleSaveClose}
+        >
+          <Alert
+            sx={GetAlertStyle(saveResult.current)}
+            icon={GetAlertIcon(saveResult.current)}
+            onClose={handleSaveClose}
+            severity={GetAlertSeverity(saveResult.current)}
+            elevation={6}
+            variant="filled"
+          >{`${
+            saveResult.current
+              ? "The property has been successfully saved."
+              : failedValidation.current
+              ? "Failed to validate the record."
+              : "Failed to save the property."
+          }`}</Alert>
+        </Snackbar>
+      </div>
+      <AppBar
+        position="static"
+        color="default"
+        sx={{
+          top: "auto",
+          bottom: 0,
+          height: "56px",
+          backgroundColor: adsWhite,
+          borderTop: `1px solid ${adsLightGreyB}`,
+        }}
+      >
+        <Toolbar
+          variant="dense"
+          disableGutters
+          sx={{
+            pl: theme.spacing(1),
+            pr: theme.spacing(2),
+            pt: theme.spacing(1),
+          }}
+        >
+          <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
+            <HistoryIcon sx={{ color: adsMidGreyA }} />
+            <Typography variant="body2" sx={{ color: adsMidGreyA }}>{`Last updated ${
+              propertyData && propertyData.propertyLastUpdated ? FormatDateTime(propertyData.propertyLastUpdated) : ""
+            }`}</Typography>
+            {propertyData && propertyData.propertyLastUser && GetUserAvatar(propertyData.propertyLastUser)}
+          </Stack>
+          <Box sx={{ flexGrow: 1 }} />
+          <Button
+            id="property-save-button"
+            sx={getSaveButtonStyle(propertyContext.currentPropertyHasErrors)}
+            variant="text"
+            startIcon={getSaveIcon(propertyContext.currentPropertyHasErrors)}
+            disabled={saveDisabled}
+            onClick={handleSaveClicked}
+          >
+            Save
+          </Button>
+        </Toolbar>
+      </AppBar>
+    </div>
+  );
+}
+
+export default PropertyDataForm;

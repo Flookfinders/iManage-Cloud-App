@@ -28,6 +28,90 @@
   color: #61dafb;
 }
 
+.MuiBox-root {
+  padding: 0px;
+}
+
+.MuiToolbar-gutters {
+  padding-left: 4px;
+}
+
+.MuiTypography-root {
+  font-family: "Nunito Sans";
+}
+
+.MuiTextField-root {
+  font-family: "Nunito Sans";
+}
+
+.MuiButton-contained {
+  font-family: "Nunito Sans";
+  font-size: 15px;
+  height: 28px;
+  box-shadow: none;
+}
+
+.MuiListItemIcon-root {
+  min-width: 30px;
+  padding-bottom: 0px;
+}
+
+.MuiAutocomplete-popper {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.MuiAutocomplete-root {
+  font-family: "Nunito Sans";
+}
+
+.MuiAutocomplete-listbox {
+  padding-left: 0px;
+  margin-left: 0px;
+  overflow-x: hidden;
+}
+
+.MuiAutocomplete-option {
+  padding-left: 0px;
+  margin-left: 0px;
+}
+
+.MuiAutocomplete-inputRoot {
+  padding-left: 0px;
+}
+
+.dashboardIcon {
+  color: #8f949c;
+  width: 28px;
+  height: 28px;
+}
+
+.nestedMenuItem {
+  padding-left: 8px;
+}
+
+.nestedMenuItem:hover {
+  padding-left: 8px;
+  background-color: #e6f3f9;
+  color: #2a6ebb;
+}
+
+.nestedMenuItemDivider {
+  padding-left: 8px;
+  padding-bottom: 8px;
+}
+
+.nestedMenuItemDivider:hover {
+  padding-left: 8px;
+  padding-bottom: 8px;
+  background-color: #e6f3f9;
+  color: #2a6ebb;
+}
+
+.esri-view .esri-view-surface:focus::after {
+  outline-color: #2a6ebb;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

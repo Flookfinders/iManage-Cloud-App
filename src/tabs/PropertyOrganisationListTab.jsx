@@ -1,0 +1,423 @@
+/* #region header */
+/**************************************************************************************************
+//
+//  Description: Display the list of classifications for the property.
+//
+//  Copyright:    © 2023 Idox Software Limited.
+//
+//--------------------------------------------------------------------------------------------------
+//
+//  Modification History:
+//
+//  Version Date     Modifier            Issue# Description
+//#region Version 1.0.0.0 changes
+//    001   18.09.23 Sean Flook                 Initial Revision.
+//    002   06.10.23 Sean Flook                 Use colour variables.
+//    003   27.10.23 Sean Flook                 Use new dataFormStyle.
+//#endregion Version 1.0.0.0 changes
+//
+//--------------------------------------------------------------------------------------------------
+/* #endregion header */
+
+import React, { useState, useRef, useContext, useEffect, Fragment } from "react";
+import PropTypes from "prop-types";
+import UserContext from "../context/userContext";
+import dateFormat from "dateformat";
+import {
+  Box,
+  Grid,
+  Tooltip,
+  IconButton,
+  Typography,
+  List,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
+  Skeleton,
+  Popper,
+  Stack,
+} from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import ADSActionButton from "../components/ADSActionButton";
+import ADSSelectionControl from "../components/ADSSelectionControl";
+import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+import { AddCircleOutlineOutlined as AddCircleIcon } from "@mui/icons-material";
+import { adsBlueA, adsLightBlue10 } from "../utils/ADSColours";
+import { propertyToolbarStyle, ActionIconStyle, dataFormStyle, tooltipStyle, gridRowStyle } from "../utils/ADSStyles";
+import { createTheme } from "@mui/material/styles";
+import { useTheme, makeStyles } from "@mui/styles";
+
+PropertyOrganisationListTab.propTypes = {
+  data: PropTypes.array,
+  errors: PropTypes.array,
+  loading: PropTypes.bool.isRequired,
+  onOrganisationSelected: PropTypes.func.isRequired,
+  onOrganisationDelete: PropTypes.func.isRequired,
+  onMultiOrganisationDelete: PropTypes.func.isRequired,
+};
+
+const defaultTheme = createTheme();
+const useStyles = makeStyles(
+  (theme) => {
+    return gridRowStyle;
+  },
+  { defaultTheme }
+);
+
+function PropertyOrganisationListTab({
+  data,
+  errors,
+  loading,
+  onOrganisationSelected,
+  onOrganisationDelete,
+  onMultiOrganisationDelete,
+}) {
+  const theme = useTheme();
+  const classes = useStyles();
+
+  const userContext = useContext(UserContext);
+
+  const [sortModel, setSortModel] = useState([{ field: "organisation", sort: "asc" }]);
+  const [selectionModel, setSelectionModel] = useState([]);
+  const [selectedRow, setSelectedRow] = useState(null);
+
+  const [selectionAnchorEl, setSelectionAnchorEl] = useState(null);
+  const selectionOpen = Boolean(selectionAnchorEl);
+  const selectionId = selectionOpen ? "organisation-selection-popper" : undefined;
+
+  const [userCanEdit, setUserCanEdit] = useState(false);
+
+  const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
+
+  const deleteOrganisationId = useRef(null);
+
+  /**
+   * Method to format the start date.
+   *
+   * @param {object} params The parameters including the row data.
+   * @returns {string} The formatted date.
+   */
+  const formatTableStartDate = (params) => {
+    if (params && params.row.startDate) {
+      return dateFormat(params.row.startDate, "d mmm yyyy");
+    } else return null;
+  };
+
+  /**
+   * Method to format the end date.
+   *
+   * @param {object} params The parameters including the row data.
+   * @returns {string} The formatted date.
+   */
+  const formatTableEndDate = (params) => {
+    if (params && params.row.endDate) {
+      return dateFormat(params.row.endDate, "d mmm yyyy");
+    } else return null;
+  };
+
+  /**
+   * Event to handle the deletion of a organisation record.
+   */
+  const handleDeleteOrganisation = () => {
+    if (selectionModel && selectionModel.length > 0) setOpenDeleteConfirmation(true);
+  };
+
+  /**
+   * Method to display the action buttons for the given row.
+   *
+   * @param {object} params The grid row parameters.
+   * @returns {JSX.Element} The action buttons for the row
+   */
+  const displayActionButtons = (params) => {
+    const onDeleteClick = (event) => {
+      event.stopPropagation();
+      deleteOrganisationId.current = params.id;
+      setOpenDeleteConfirmation(true);
+    };
+
+    return (
+      selectedRow &&
+      params.id === selectedRow && (
+        <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
+          <ADSActionButton
+            id={`delete-organisation-${params.id}`}
+            variant="delete"
+            inheritBackground
+            disabled={!userCanEdit}
+            tooltipTitle="Delete organisation"
+            tooltipPlacement="bottom"
+            onClick={onDeleteClick}
+          />
+        </Stack>
+      )
+    );
+  };
+
+  /**
+   * Array of fields (columns) to be displayed in the data grid.
+   */
+  const organisationColumns = [
+    { field: "id", hide: true },
+    { field: "uprn", hide: true },
+    { field: "changeType", hide: true },
+    { field: "orgKey", hide: true },
+    {
+      field: "organisation",
+      headerName: "Organisation",
+      flex: 30,
+    },
+    { field: "legalName", hide: true },
+    { field: "entryDate", hide: true },
+    {
+      field: "startDate",
+      headerName: "Start",
+      flex: 10,
+      type: "date",
+      align: "right",
+      headerAlign: "right",
+      renderCell: formatTableStartDate,
+    },
+    {
+      field: "endDate",
+      headerName: "End",
+      flex: 10,
+      type: "date",
+      align: "right",
+      headerAlign: "right",
+      renderCell: formatTableEndDate,
+    },
+    { field: "lastUpdateDate", hide: true },
+    { field: "", flex: 2, sortable: false, renderCell: displayActionButtons },
+  ];
+
+  /**
+   * Event to handle when the mouse enters a row in the data grid.
+   *
+   * @param {object} event The event object.
+   */
+  const handleRowMouseEnter = (event) => {
+    event.preventDefault();
+
+    setSelectedRow(Number(event.currentTarget.getAttribute("data-id")));
+  };
+
+  /**
+   * Event to handle when the mouse leaves a row in the data grid.
+   */
+  const handleRowMouseLeave = () => {
+    setSelectedRow(null);
+  };
+
+  /**
+   * Event to handle when a organisation record is clicked.
+   *
+   * @param {object} param The grid row parameters.
+   * @param {object} event The event object.
+   */
+  const handleOrganisationClicked = (param, event) => {
+    event.stopPropagation();
+
+    if (param && param.field !== "__check__" && param.field !== "") {
+      let record = -1;
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].id === param.id) {
+          record = i;
+          break;
+        }
+      }
+      if (onOrganisationSelected) onOrganisationSelected(param.id, param.row, record, data.length);
+    }
+  };
+
+  /**
+   * Event to handle when the add organisation button is clicked.
+   *
+   * @param {object} event The event object.
+   */
+  const handleAddOrganisationClick = (event) => {
+    event.stopPropagation();
+    if (onOrganisationSelected) onOrganisationSelected(0, null, null, null);
+  };
+
+  /**
+   * Event to handle when the selection model for the data grid changes.
+   *
+   * @param {object} selectionModel The current selection model for the data grid.
+   */
+  const handleSelectionModelChange = (selectionModel) => {
+    if (selectionModel.length > 0) {
+      setSelectionAnchorEl(document.getElementById("ads-organisation-data-grid"));
+    } else {
+      setSelectionAnchorEl(null);
+    }
+  };
+
+  /**
+   * Event to handle when the selection dialog is closed.
+   */
+  const handleCloseSelection = () => {
+    setSelectionAnchorEl(null);
+    setSelectionModel([]);
+  };
+
+  /**
+   * Event to handle when the delete confirmation dialog is closed.
+   *
+   * @param {boolean} deleteConfirmed True if the user has confirmed the delete; otherwise false.
+   */
+  const handleCloseDeleteConfirmation = (deleteConfirmed) => {
+    setOpenDeleteConfirmation(false);
+    if (deleteConfirmed) {
+      if (selectionModel && selectionModel.length > 0 && onMultiOrganisationDelete) {
+        onMultiOrganisationDelete(selectionModel);
+        setSelectionAnchorEl(null);
+        setSelectionModel([]);
+      } else if (deleteOrganisationId.current && onOrganisationDelete) {
+        onOrganisationDelete(deleteOrganisationId.current);
+        deleteOrganisationId.current = null;
+      }
+    }
+  };
+
+  /**
+   * Method to determine if the row is valid or not.
+   *
+   * @param {number} id The id of the row.
+   * @returns {boolean} True if the row is valid; otherwise false.
+   */
+  const isRowInvalid = (id) => {
+    if (errors && errors.length > 0) {
+      const rowErrors = errors.filter((x) => x.id === id);
+      return rowErrors && rowErrors.length > 0;
+    } else return false;
+  };
+
+  useEffect(() => {
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+  }, [userContext]);
+
+  return (
+    <Fragment>
+      <Box sx={propertyToolbarStyle} id="ads-organisation-data-grid">
+        <Grid container justifyContent="space-between" alignItems="center">
+          <Grid item>
+            <Typography variant="subtitle2" sx={{ paddingLeft: theme.spacing(2) }}>
+              Organisations
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Grid container justifyContent="flex-end" spacing={1}>
+              <Grid item>
+                <Tooltip title="Add new organisation record" arrow placement="right" sx={tooltipStyle}>
+                  <IconButton
+                    sx={ActionIconStyle()}
+                    disabled={!userCanEdit}
+                    onClick={handleAddOrganisationClick}
+                    size="small"
+                  >
+                    <AddCircleIcon />
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        paddingLeft: theme.spacing(1),
+                        paddingRight: theme.spacing(1),
+                      }}
+                    >
+                      Organisation
+                    </Typography>
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Box>
+      <Box sx={dataFormStyle("77.7vh")} className={classes.root}>
+        {loading ? (
+          <Skeleton variant="rectangular" height="60px" width="100%" />
+        ) : data && data.filter((x) => x.changeType !== "D").length > 0 ? (
+          <DataGrid
+            rows={data.filter((x) => x.changeType !== "D")}
+            columns={organisationColumns}
+            autoPageSize
+            checkboxSelection
+            disableColumnMenu
+            pagination
+            sortModel={sortModel}
+            selectionModel={selectionModel}
+            componentsProps={{
+              row: {
+                onMouseEnter: handleRowMouseEnter,
+                onMouseLeave: handleRowMouseLeave,
+              },
+            }}
+            getRowClassName={(params) => `${isRowInvalid(params.id) ? "invalid-row" : "valid-row"}`}
+            onCellClick={handleOrganisationClicked}
+            onSelectionModelChange={(newSelectionModel) => {
+              setSelectionModel(newSelectionModel);
+              handleSelectionModelChange(newSelectionModel);
+            }}
+            onSortModelChange={(model) => setSortModel(model)}
+          />
+        ) : (
+          <List
+            sx={{
+              width: "100%",
+              backgroundColor: theme.palette.background.paper,
+              paddingTop: theme.spacing(0),
+            }}
+            component="nav"
+            key="key_no_records"
+          >
+            <ListItemButton
+              button
+              dense
+              disabled={!userCanEdit}
+              disableGutters
+              onClick={handleAddOrganisationClick}
+              sx={{
+                height: "30px",
+                "&:hover": {
+                  backgroundColor: adsLightBlue10,
+                  color: adsBlueA,
+                },
+              }}
+            >
+              <ListItemText primary={<Typography variant="subtitle1">No organisation records present</Typography>} />
+              <ListItemAvatar
+                sx={{
+                  minWidth: 32,
+                }}
+              >
+                <Tooltip title="Add organisation record" arrow placement="bottom" sx={tooltipStyle}>
+                  <IconButton disabled={!userCanEdit} onClick={handleAddOrganisationClick} size="small">
+                    <AddCircleIcon sx={ActionIconStyle()} />
+                  </IconButton>
+                </Tooltip>
+              </ListItemAvatar>
+            </ListItemButton>
+          </List>
+        )}
+      </Box>
+      <Popper id={selectionId} open={selectionOpen} anchorEl={selectionAnchorEl} placement="top-start">
+        <ADSSelectionControl
+          selectionCount={selectionModel && selectionModel.length > 0 ? selectionModel.length : 0}
+          haveOrganisation={selectionModel && selectionModel.length > 0}
+          currentOrganisation={selectionModel}
+          onDeleteOrganisation={handleDeleteOrganisation}
+          onClose={handleCloseSelection}
+        />
+      </Popper>
+      <div>
+        <ConfirmDeleteDialog
+          variant="organisation"
+          recordCount={selectionModel && selectionModel.length > 0 ? selectionModel.length : 0}
+          open={openDeleteConfirmation}
+          onClose={handleCloseDeleteConfirmation}
+        />
+      </div>
+    </Fragment>
+  );
+}
+
+export default PropertyOrganisationListTab;

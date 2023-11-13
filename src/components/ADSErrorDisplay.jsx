@@ -1,0 +1,69 @@
+/* #region header */
+/**************************************************************************************************
+//
+//  Description: Error Display component
+//
+//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//
+//--------------------------------------------------------------------------------------------------
+//
+//  Modification History:
+//
+//  Version Date     Modifier            Issue# Description
+//#region Version 1.0.0.0 changes
+//    001   13.04.21 Sean Flook         WI39345 Initial Revision.
+//    002   22.04.21 Sean Flook         WI39345 Removed extra label as not required any more.
+//    003   18.06.21 Sean Flook         WI39345 Corrected spelling.
+//    004   05.04.23 Sean Flook         WI40669 Replace holding character ¬ with a comma.
+//    005   06.04.23 Sean Flook         WI40677 Allow errorText to be a string or an array of strings.
+//    006   06.10.23 Sean Flook                 Use colour variables.
+//#endregion Version 1.0.0.0 changes
+//
+//--------------------------------------------------------------------------------------------------
+/* #endregion header */
+
+/* #region imports */
+
+import React, { useState, useEffect } from "react";
+import { Typography, Grid, Stack } from "@mui/material";
+import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
+import { adsRed } from "../utils/ADSColours";
+
+/* #endregion imports */
+
+const ADSErrorDisplay = ({ errorText, id }) => {
+  const [errorString, setErrorString] = useState(null);
+
+  useEffect(() => {
+    setErrorString(Array.isArray(errorText) ? errorText.join(", ") : errorText);
+  }, [errorText]);
+
+  return errorString && errorString.length > 0 ? (
+    <React.Fragment>
+      <Grid item xs={3} />
+      <Grid item xs={9}>
+        <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={0.25} sx={{ pl: "4px" }}>
+          <PriorityHighIcon sx={{ color: adsRed, height: "16px", width: "16px" }} />
+          <Stack direction="column">
+            {errorString.split(", ").map((rec, idx) => (
+              <Typography
+                id={`${id}-${idx}`}
+                variant="caption"
+                color={adsRed}
+                align="left"
+                key={`error-${id}-${idx}`}
+                sx={{ fontWeight: 600, fontSize: "14px" }}
+              >
+                {`${rec.replace("¬", ",")}`}
+              </Typography>
+            ))}
+          </Stack>
+        </Stack>
+      </Grid>
+    </React.Fragment>
+  ) : (
+    ""
+  );
+};
+
+export default ADSErrorDisplay;

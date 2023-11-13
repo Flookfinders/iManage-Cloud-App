@@ -1,0 +1,1266 @@
+//#region header */
+/**************************************************************************************************
+//
+//  Description: Property Details Tab
+//
+//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//
+//--------------------------------------------------------------------------------------------------
+//
+//  Modification History:
+//
+//  Version Date     Modifier            Issue# Description
+//#region Version 1.0.0.0 changes
+//    001   20.07.21 Sean Flook         WI39??? Initial Revision.
+//    002   22.03.23 Sean Flook         WI40596 Only allow editing if BLPU logical status is not historic or rejected.
+//    003   28.03.23 Sean Flook         WI40596 Removed above change.
+//    004   26.04.23 Sean Flook         WI40700 Do not set end date when deleting.
+//    005   07.09.23 Sean Flook                 Removed unnecessary awaits.
+//    006   06.10.23 Sean Flook                 Use colour variables.
+//    007   27.10.23 Sean Flook                 Use new dataFormStyle.
+//    008   03.11.23 Sean Flook                 Added debug code.
+//#endregion Version 1.0.0.0 changes
+//
+//--------------------------------------------------------------------------------------------------
+//#endregion header */
+
+import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
+import PropTypes from "prop-types";
+import LookupContext from "../context/lookupContext";
+import SandboxContext from "../context/sandboxContext";
+import UserContext from "../context/userContext";
+import SettingsContext from "../context/settingsContext";
+import { GetTempAddressUrl } from "../configuration/ADSConfig";
+import { copyTextToClipboard, GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
+import { addressToTitleCase, FilteredLPILogicalStatus } from "../utils/PropertyUtils";
+import ObjectComparison from "./../utils/ObjectComparison";
+import { Box, Typography, Tooltip, IconButton, Menu, MenuItem, Fade, Stack, Divider } from "@mui/material";
+import ADSActionButton from "../components/ADSActionButton";
+import ADSLanguageControl from "../components/ADSLanguageControl";
+import ADSSelectControl from "../components/ADSSelectControl";
+import ADSAddressableObjectControl from "../components/ADSAddressableObjectControl";
+import ADSNumberControl from "../components/ADSNumberControl";
+import ADSTextControl from "../components/ADSTextControl";
+import ADSDateControl from "../components/ADSDateControl";
+import ADSReadOnlyControl from "../components/ADSReadOnlyControl";
+import ADSOkCancelControl from "../components/ADSOkCancelControl";
+import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+import { MoreVert as ActionsIcon } from "@mui/icons-material";
+import OfficialAddress from "./../data/OfficialAddress";
+import PostallyAddressable from "./../data/PostallyAddressable";
+import { adsMidGreyA, adsDarkGrey, adsLightGreyB } from "../utils/ADSColours";
+import {
+  propertyToolbarStyle,
+  dataFormStyle,
+  ActionIconStyle,
+  menuStyle,
+  menuItemStyle,
+  tooltipStyle,
+} from "../utils/ADSStyles";
+import { useTheme } from "@mui/styles";
+
+PropertyLPITab.propTypes = {
+  data: PropTypes.object,
+  errors: PropTypes.array,
+  loading: PropTypes.bool.isRequired,
+  focusedField: PropTypes.string,
+  onDataChanged: PropTypes.func.isRequired,
+  onSetCopyOpen: PropTypes.func.isRequired,
+  onHomeClick: PropTypes.func.isRequired,
+  onAddLpi: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+};
+
+function PropertyLPITab({
+  data,
+  errors,
+  loading,
+  focusedField,
+  onDataChanged,
+  onSetCopyOpen,
+  onHomeClick,
+  onAddLpi,
+  onDelete,
+}) {
+  const theme = useTheme();
+
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const lookupContext = useContext(LookupContext);
+  const sandboxContext = useContext(SandboxContext);
+  const userContext = useContext(UserContext);
+  const settingsContext = useContext(SettingsContext);
+
+  const [dataChanged, setDataChanged] = useState(false);
+  const [associatedRecords, setAssociatedRecords] = useState(null);
+  const currentId = useRef(0);
+
+  const [logicalStatusLookup, setLogicalStatusLookup] = useState(
+    FilteredLPILogicalStatus(settingsContext.isScottish, data.blpuLogicalStatus)
+  );
+
+  const [language, setLanguage] = useState(data && data.lpiData ? data.lpiData.language : null);
+  const [logicalStatus, setLogicalStatus] = useState(data && data.lpiData ? data.lpiData.logicalStatus : null);
+  const [saoStartNumber, setSaoStartNumber] = useState(data && data.lpiData ? data.lpiData.saoStartNumber : null);
+  const [saoStartSuffix, setSaoStartSuffix] = useState(data && data.lpiData ? data.lpiData.saoStartSuffix : null);
+  const [saoEndNumber, setSaoEndNumber] = useState(data && data.lpiData ? data.lpiData.saoEndNumber : null);
+  const [saoEndSuffix, setSaoEndSuffix] = useState(data && data.lpiData ? data.lpiData.saoEndSuffix : null);
+  const [saoText, setSaoText] = useState(data && data.lpiData ? data.lpiData.saoText : null);
+  const [paoStartNumber, setPaoStartNumber] = useState(data && data.lpiData ? data.lpiData.paoStartNumber : null);
+  const [paoStartSuffix, setPaoStartSuffix] = useState(data && data.lpiData ? data.lpiData.paoStartSuffix : null);
+  const [paoEndNumber, setPaoEndNumber] = useState(data && data.lpiData ? data.lpiData.paoEndNumber : null);
+  const [paoEndSuffix, setPaoEndSuffix] = useState(data && data.lpiData ? data.lpiData.paoEndSuffix : null);
+  const [paoText, setPaoText] = useState(data && data.lpiData ? data.lpiData.paoText : null);
+  const [usrn, setUsrn] = useState(data && data.lpiData ? data.lpiData.usrn : null);
+  const [postTownRef, setPostTownRef] = useState(data && data.lpiData ? data.lpiData.postTownRef : null);
+  const [postcodeRef, setPostcodeRef] = useState(data && data.lpiData ? data.lpiData.postcodeRef : null);
+  const [level, setLevel] = useState(data && data.lpiData ? data.lpiData.level : null);
+  const [officialFlag, setOfficialFlag] = useState(data && data.lpiData ? data.lpiData.officialFlag : null);
+  const [postalAddress, setPostalAddress] = useState(data && data.lpiData ? data.lpiData.postalAddress : null);
+  const [startDate, setStartDate] = useState(data && data.lpiData ? data.lpiData.startDate : null);
+  const [endDate, setEndDate] = useState(data && data.lpiData ? data.lpiData.endDate : null);
+
+  const [lpiAddress, setLpiAddress] = useState("");
+
+  const [userCanEdit, setUserCanEdit] = useState(false);
+
+  const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
+
+  const [languageError, setLanguageError] = useState(null);
+  const [logicalStatusError, setLogicalStatusError] = useState(null);
+  const [saoStartNumError, setSaoStartNumError] = useState(null);
+  const [saoStartSuffixError, setSaoStartSuffixError] = useState(null);
+  const [saoEndNumError, setSaoEndNumError] = useState(null);
+  const [saoEndSuffixError, setSaoEndSuffixError] = useState(null);
+  const [saoTextError, setSaoTextError] = useState(null);
+  const [paoStartNumError, setPaoStartNumError] = useState(null);
+  const [paoStartSuffixError, setPaoStartSuffixError] = useState(null);
+  const [paoEndNumError, setPaoEndNumError] = useState(null);
+  const [paoEndSuffixError, setPaoEndSuffixError] = useState(null);
+  const [paoTextError, setPaoTextError] = useState(null);
+  const [usrnError, setUsrnError] = useState(null);
+  const [postTownRefError, setPostTownRefError] = useState(null);
+  const [postcodeRefError, setPostcodeRefError] = useState(null);
+  const [levelError, setLevelError] = useState(null);
+  const [officialFlagError, setOfficialFlagError] = useState(null);
+  const [postalAddressError, setPostalAddressError] = useState(null);
+  const [startDateError, setStartDateError] = useState(null);
+  const [endDateError, setEndDateError] = useState(null);
+
+  /**
+   * Method used to update the current sandbox record.
+   *
+   * @param {string} field The name of the field that is being updated.
+   * @param {string|boolean|Date|number|null} newValue The value used to update the given field.
+   */
+  const UpdateSandbox = (field, newValue) => {
+    const newLpiData = GetCurrentData(field, newValue);
+    sandboxContext.onSandboxChange("lpi", newLpiData);
+  };
+
+  /**
+   * Event to handle when the language is changed.
+   *
+   * @param {string|null} newValue The new language.
+   */
+  const handleLanguageChangeEvent = (newValue) => {
+    setLanguage(newValue);
+    if (!dataChanged) {
+      setDataChanged(language !== newValue);
+      if (onDataChanged && language !== newValue) onDataChanged();
+    }
+    UpdateSandbox("language", newValue);
+  };
+
+  /**
+   * Event to handle when the logical status is changed.
+   *
+   * @param {number|null} newValue The new logical status.
+   */
+  const handleLogicalStatusChangeEvent = (newValue) => {
+    setLogicalStatus(newValue);
+    if (!dataChanged) {
+      setDataChanged(logicalStatus !== newValue);
+      if (onDataChanged && logicalStatus !== newValue) onDataChanged();
+    }
+    UpdateSandbox("logicalStatus", newValue);
+  };
+
+  /**
+   * Event to handle when the SAO start number is changed.
+   *
+   * @param {number|null} newValue The new SAO start number.
+   */
+  const handleSaoStartNumberChangeEvent = (newValue) => {
+    setSaoStartNumber(newValue);
+    if (!dataChanged) {
+      setDataChanged(saoStartNumber !== newValue);
+      if (onDataChanged && saoStartNumber !== newValue) onDataChanged();
+    }
+    UpdateSandbox("saoStartNumber", newValue);
+  };
+
+  /**
+   * Event to handle when the SAO start suffix is changed.
+   *
+   * @param {string|null} newValue The new SAO start suffix.
+   */
+  const handleSaoStartSuffixChangeEvent = (newValue) => {
+    setSaoStartSuffix(newValue);
+    if (!dataChanged) {
+      setDataChanged(saoStartSuffix !== newValue);
+    }
+    UpdateSandbox("saoStartSuffix", newValue);
+  };
+
+  /**
+   * Event to handle when the SAO end number is changed.
+   *
+   * @param {number|null} newValue The new SAO end number.
+   */
+  const handleSaoEndNumberChangeEvent = (newValue) => {
+    setSaoEndNumber(newValue);
+    if (!dataChanged) {
+      setDataChanged(saoEndNumber !== newValue);
+    }
+    UpdateSandbox("saoEndNumber", newValue);
+  };
+
+  /**
+   * Event to handle when the SAO end suffix is changed.
+   *
+   * @param {string|null} newValue The new SAO end suffix.
+   */
+  const handleSaoEndSuffixChangeEvent = (newValue) => {
+    setSaoEndSuffix(newValue);
+    if (!dataChanged) {
+      setDataChanged(saoEndSuffix !== newValue);
+      if (onDataChanged && saoEndSuffix !== newValue) onDataChanged();
+    }
+    UpdateSandbox("saoEndSuffix", newValue);
+  };
+
+  /**
+   * Event to handle when the SAO text is changed.
+   *
+   * @param {string|null} newValue The new SAO text.
+   */
+  const handleSaoTextChangeEvent = (newValue) => {
+    setSaoText(newValue);
+    if (!dataChanged) {
+      setDataChanged(saoText !== newValue);
+      if (onDataChanged && saoText !== newValue) onDataChanged();
+    }
+    UpdateSandbox("saoText", newValue);
+  };
+
+  /**
+   * Event to handle when the PAO start number is changed.
+   *
+   * @param {number|null} newValue The new PAO start number.
+   */
+  const handlePaoStartNumberChangeEvent = (newValue) => {
+    setPaoStartNumber(newValue);
+    if (!dataChanged) {
+      setDataChanged(paoStartNumber !== newValue);
+      if (onDataChanged && paoStartNumber !== newValue) onDataChanged();
+    }
+    UpdateSandbox("paoStartNumber", newValue);
+  };
+
+  /**
+   * Event to handle when the PAO start suffix is changed.
+   *
+   * @param {string|null} newValue The new PAO start number.
+   */
+  const handlePaoStartSuffixChangeEvent = (newValue) => {
+    setPaoStartSuffix(newValue);
+    if (!dataChanged) {
+      setDataChanged(paoStartSuffix !== newValue);
+      if (onDataChanged && paoStartSuffix !== newValue) onDataChanged();
+    }
+    UpdateSandbox("paoStartSuffix", newValue);
+  };
+
+  /**
+   * Event to handle when the PAO end number is changed.
+   *
+   * @param {number|null} newValue The new PAO end number.
+   */
+  const handlePaoEndNumberChangeEvent = (newValue) => {
+    setPaoEndNumber(newValue);
+    if (!dataChanged) {
+      setDataChanged(paoEndNumber !== newValue);
+      if (onDataChanged && paoEndNumber !== newValue) onDataChanged();
+    }
+    UpdateSandbox("paoEndNumber", newValue);
+  };
+
+  /**
+   * Event to handle when the PAO end suffix is changed.
+   *
+   * @param {string|null} newValue The new PAO end suffix.
+   */
+  const handlePaoEndSuffixChangeEvent = (newValue) => {
+    setPaoEndSuffix(newValue);
+    if (!dataChanged) {
+      setDataChanged(paoEndSuffix !== newValue);
+      if (onDataChanged && paoEndSuffix !== newValue) onDataChanged();
+    }
+    UpdateSandbox("paoEndSuffix", newValue);
+  };
+
+  /**
+   * Event to handle when the PAO text is changed.
+   *
+   * @param {string|null} newValue The new PAO text.
+   */
+  const handlePaoTextChangeEvent = (newValue) => {
+    setPaoText(newValue);
+    if (!dataChanged) {
+      setDataChanged(paoText !== newValue);
+      if (onDataChanged && paoText !== newValue) onDataChanged();
+    }
+    UpdateSandbox("paoText", newValue);
+  };
+
+  /**
+   * Event to handle when the USRN is changed.
+   *
+   * @param {number|null} newValue The new USRN.
+   */
+  const handleUsrnChangeEvent = (newValue) => {
+    setUsrn(newValue);
+    if (!dataChanged) {
+      setDataChanged(usrn !== newValue);
+      if (onDataChanged && usrn !== newValue) onDataChanged();
+    }
+    UpdateSandbox("usrn", newValue);
+  };
+
+  /**
+   * Event to handle when the post town is changed.
+   *
+   * @param {number|null} newValue The new post town.
+   */
+  const handlePostTownRefChangeEvent = (newValue) => {
+    setPostTownRef(newValue);
+    if (!dataChanged) {
+      setDataChanged(postTownRef !== newValue);
+      if (onDataChanged && postTownRef !== newValue) onDataChanged();
+    }
+    UpdateSandbox("postTownRef", newValue);
+  };
+
+  /**
+   * Event to handle when the postcode is changed.
+   *
+   * @param {number|null} newValue The new postcode.
+   */
+  const handlePostcodeRefChangeEvent = (newValue) => {
+    setPostcodeRef(newValue);
+    if (!dataChanged) {
+      setDataChanged(postcodeRef !== newValue);
+      if (onDataChanged && postcodeRef !== newValue) onDataChanged();
+    }
+    UpdateSandbox("postcodeRef", newValue);
+  };
+
+  /**
+   * Event to handle when the level is changed.
+   *
+   * @param {number|string|null} newValue The new level.
+   */
+  const handleLevelChangeEvent = (newValue) => {
+    setLevel(newValue);
+    if (!dataChanged) {
+      setDataChanged(level !== newValue);
+      if (onDataChanged && level !== newValue) onDataChanged();
+    }
+    UpdateSandbox("level", newValue);
+  };
+
+  /**
+   * Event to handle when the official flag is changed.
+   *
+   * @param {string|null} newValue The new official flag.
+   */
+  const handleOfficialFlagChangeEvent = (newValue) => {
+    setOfficialFlag(newValue);
+    if (!dataChanged) {
+      setDataChanged(officialFlag !== newValue);
+      if (onDataChanged && officialFlag !== newValue) onDataChanged();
+    }
+    UpdateSandbox("officialFlag", newValue);
+  };
+
+  /**
+   * Event to handle when the postally addressable is changed.
+   *
+   * @param {string|null} newValue The new postally addressable.
+   */
+  const handlePostalAddressChangeEvent = (newValue) => {
+    setPostalAddress(newValue);
+    if (!dataChanged) {
+      setDataChanged(postalAddress !== newValue);
+      if (onDataChanged && postalAddress !== newValue) onDataChanged();
+    }
+    UpdateSandbox("postalAddress", newValue);
+  };
+
+  /**
+   * Event to handle when the start date is changed.
+   *
+   * @param {Date|null} newValue The new start date.
+   */
+  const handleStartDateChangeEvent = (newValue) => {
+    setStartDate(newValue);
+    if (!dataChanged) {
+      setDataChanged(startDate !== newValue);
+      if (onDataChanged && startDate !== newValue) onDataChanged();
+    }
+    UpdateSandbox("startDate", newValue);
+  };
+
+  /**
+   * Event to handle when the end date is changed.
+   *
+   * @param {Date|null} newValue The new end date.
+   */
+  const handleEndDateChangeEvent = (newValue) => {
+    setEndDate(newValue);
+    if (!dataChanged) {
+      setDataChanged(endDate !== newValue);
+      if (onDataChanged && endDate !== newValue) onDataChanged();
+    }
+    UpdateSandbox("endDate", newValue);
+  };
+
+  /**
+   * Method to return the current LPI record.
+   *
+   * @param {string} field The name of the field that is being updated.
+   * @param {string|boolean|Date|number|null} newValue The value used to update the given field.
+   * @returns {object} The current LPI record.
+   */
+  function GetCurrentData(field, newValue) {
+    return {
+      level: field && field === "level" ? newValue : level,
+      postalAddress: field && field === "postalAddress" ? newValue : postalAddress,
+      custodianOne: data.lpiData.custodianOne,
+      custodianTwo: data.lpiData.custodianTwo,
+      canKey: data.lpiData.canKey,
+      pkId: data.lpiData.pkId,
+      changeType: field && field === "changeType" ? newValue : !data.lpiData.lpiKey ? "I" : "U",
+      uprn: data.lpiData.uprn,
+      lpiKey: data.lpiData.lpiKey,
+      language: field && field === "language" ? newValue : language,
+      logicalStatus: field && field === "logicalStatus" ? newValue : logicalStatus,
+      startDate:
+        field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
+      endDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
+      entryDate: data.lpiData.entryDate,
+      lastUpdateDate: data.lpiData.lastUpdateDate,
+      saoStartNumber:
+        field && field === "saoStartNumber" ? newValue && Number(newValue) : saoStartNumber && Number(saoStartNumber),
+      saoStartSuffix: field === "saoStartSuffix" ? newValue : saoStartSuffix,
+      saoEndNumber:
+        field && field === "saoEndNumber" ? newValue && Number(newValue) : saoEndNumber && Number(saoEndNumber),
+      saoEndSuffix: field && field === "saoEndSuffix" ? newValue : saoEndSuffix,
+      saoText: field && field === "saoText" ? newValue : saoText,
+      paoStartNumber:
+        field && field === "paoStartNumber" ? newValue && Number(newValue) : paoStartNumber && Number(paoStartNumber),
+      paoStartSuffix: field && field === "paoStartSuffix" ? newValue : paoStartSuffix,
+      paoEndNumber:
+        field && field === "paoEndNumber" ? newValue && Number(newValue) : paoEndNumber && Number(paoEndNumber),
+      paoEndSuffix: field && field === "paoEndSuffix" ? newValue : paoEndSuffix,
+      paoText: field && field === "paoText" ? newValue : paoText,
+      usrn: field && field === "usrn" ? newValue : usrn,
+      postcodeRef: field && field === "postcodeRef" ? newValue : postcodeRef,
+      postTownRef: field && field === "postTownRef" ? newValue : postTownRef,
+      officialFlag: field && field === "officialFlag" ? newValue : officialFlag,
+      neverExport: data.lpiData.neverExport,
+      address: data.lpiData.address,
+      postTown: data.lpiData.postTown,
+      postcode: data.lpiData.postcode,
+      lastUpdated: data.lpiData.lastUpdated,
+      lastUser: data.lpiData.lastUser,
+      dualLanguageLink: data.lpiData.dualLanguageLink ? data.lpiData.dualLanguageLink : 0,
+    };
+  }
+
+  /**
+   * Event to handle when the home button is clicked.
+   */
+  const handleHomeClick = () => {
+    const sourceLpi =
+      data.pkId > 0 && sandboxContext.currentSandbox.sourceProperty
+        ? sandboxContext.currentSandbox.sourceProperty.lpis.find((x) => x.pkId === data.pkId)
+        : null;
+
+    if (onHomeClick)
+      setDataChanged(
+        onHomeClick(
+          dataChanged ? (sandboxContext.currentSandbox.currentPropertyRecords.lpi ? "check" : "discard") : "discard",
+          sourceLpi,
+          sandboxContext.currentSandbox.currentPropertyRecords.lpi
+        )
+      );
+  };
+
+  /**
+   * Event to display the actions context menu.
+   *
+   * @param {object} event The event object.
+   */
+  const handleActionsClick = (event) => {
+    setAnchorEl(event.nativeEvent.target);
+  };
+
+  /**
+   * Event to handle closing the actions context menu.
+   */
+  const handleActionsMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  /**
+   * Event to handle adding a new LPI.
+   */
+  const handleAddNewLpi = () => {
+    setAnchorEl(null);
+    if (onAddLpi) onAddLpi();
+    if (!dataChanged) setDataChanged(true);
+  };
+
+  /**
+   * Event to handle copying the address to the clipboard.
+   */
+  const handleCopyAddress = () => {
+    if (data.lpiData.address) itemCopy(data.lpiData.address, "Address");
+    setAnchorEl(null);
+  };
+
+  /**
+   * Event to handle when the user selects to search for properties and streets near by.
+   */
+  const handleSearchNearby = () => {
+    setAnchorEl(null);
+  };
+
+  /**
+   * Event to handle when the user selects to export the LPI.
+   */
+  const handleExportTo = () => {
+    setAnchorEl(null);
+  };
+
+  /**
+   * Event to handle when the user selects to make the LPI rejected.
+   */
+  const handleRejectLpi = () => {
+    if (logicalStatus !== 9) {
+      setLogicalStatus(9);
+      setLogicalStatusLookup(FilteredLPILogicalStatus(settingsContext.isScottish, 9));
+      if (!dataChanged) setDataChanged(true);
+      UpdateSandbox("logicalStatus", 9);
+    }
+    setAnchorEl(null);
+  };
+
+  /**
+   * Event to handle when the user selects to make the LPI historic.
+   */
+  const handleHistoriciseLpi = () => {
+    if (logicalStatus !== 8) {
+      setLogicalStatus(8);
+      setLogicalStatusLookup(FilteredLPILogicalStatus(settingsContext.isScottish, 8));
+      if (!dataChanged) setDataChanged(true);
+      UpdateSandbox("logicalStatus", 8);
+    }
+    setAnchorEl(null);
+  };
+
+  /**
+   * Event to handle when the user selects to delete the LPI.
+   */
+  const handleDeleteLpi = () => {
+    setAnchorEl(null);
+    if (settingsContext.isWelsh) {
+      setAssociatedRecords([
+        {
+          type: "linked lpi",
+          count: 1,
+        },
+        {
+          type: "cross reference",
+          count: 1,
+        },
+      ]);
+    }
+    setOpenDeleteConfirmation(true);
+  };
+
+  /**
+   * Event to handle when the delete confirmation dialog is closed.
+   *
+   * @param {boolean} deleteConfirmed True if the user has confirmed the delete; otherwise false.
+   */
+  const handleCloseDeleteConfirmation = (deleteConfirmed) => {
+    setOpenDeleteConfirmation(false);
+    const pkId = data && data.pkId ? data.pkId : -1;
+
+    if (deleteConfirmed && pkId && pkId > 0) {
+      const currentData = GetCurrentData("changeType", "D");
+      if (onHomeClick) onHomeClick("save", null, currentData);
+      if (onDelete) onDelete(pkId);
+    }
+  };
+
+  /**
+   * Method used to copy the text to the clipboard.
+   *
+   * @param {string|null} text The text that needs to be copied to the clipboard.
+   * @param {string} dataType The type of data that is being copied to the clipboard.
+   */
+  const itemCopy = (text, dataType) => {
+    if (text) {
+      copyTextToClipboard(text);
+      if (onSetCopyOpen) onSetCopyOpen(true, dataType);
+    }
+  };
+
+  /**
+   * Event to handle when the OK button is clicked.
+   */
+  const handleOkClicked = () => {
+    if (onHomeClick)
+      setDataChanged(onHomeClick("save", null, sandboxContext.currentSandbox.currentPropertyRecords.lpi));
+  };
+
+  /**
+   * Event to handle when the Cancel button is clicked.
+   */
+  const handleCancelClicked = () => {
+    if (dataChanged) {
+      if (data && data.lpiData) {
+        setLanguage(data.lpiData.language);
+        setLogicalStatus(data.lpiData.logicalStatus);
+        setSaoStartNumber(data.lpiData.saoStartNumber);
+        setSaoStartSuffix(data.lpiData.saoStartSuffix);
+        setSaoEndNumber(data.lpiData.saoEndNumber);
+        setSaoEndSuffix(data.lpiData.saoEndSuffix);
+        setSaoText(data.lpiData.saoText);
+        setPaoStartNumber(data.lpiData.paoStartNumber);
+        setPaoStartSuffix(data.lpiData.paoStartSuffix);
+        setPaoEndNumber(data.lpiData.paoEndNumber);
+        setPaoEndSuffix(data.lpiData.paoEndSuffix);
+        setPaoText(data.lpiData.paoText);
+        setUsrn(data.lpiData.usrn);
+        setPostTownRef(data.lpiData.postTownRef);
+        setPostcodeRef(data.lpiData.postcodeRef);
+        setLevel(data.lpiData.level);
+        setOfficialFlag(data.lpiData.officialFlag);
+        setPostalAddress(data.lpiData.postallyAddressable);
+        setStartDate(data.lpiData.startDate);
+        setEndDate(data.lpiData.endDate);
+      }
+    }
+    setDataChanged(false);
+    if (onHomeClick) onHomeClick("discard", data.lpiData, null);
+  };
+
+  useEffect(() => {
+    if (!loading && data && data.lpiData) {
+      setLanguage(data.lpiData.language);
+      setLogicalStatus(data.lpiData.logicalStatus);
+      setSaoStartNumber(data.lpiData.saoStartNumber);
+      setSaoStartSuffix(data.lpiData.saoStartSuffix);
+      setSaoEndNumber(data.lpiData.saoEndNumber);
+      setSaoEndSuffix(data.lpiData.saoEndSuffix);
+      setSaoText(data.lpiData.saoText);
+      setPaoStartNumber(data.lpiData.paoStartNumber);
+      setPaoStartSuffix(data.lpiData.paoStartSuffix);
+      setPaoEndNumber(data.lpiData.paoEndNumber);
+      setPaoEndSuffix(data.lpiData.paoEndSuffix);
+      setPaoText(data.lpiData.paoText);
+      setUsrn(data.lpiData.usrn);
+      setPostTownRef(data.lpiData.postTownRef);
+      setPostcodeRef(data.lpiData.postcodeRef);
+      setLevel(data.lpiData.level);
+      setOfficialFlag(data.lpiData.officialFlag);
+      setPostalAddress(data.lpiData.postalAddress);
+      setStartDate(data.lpiData.startDate);
+      setEndDate(data.lpiData.endDate);
+
+      setLogicalStatusLookup(FilteredLPILogicalStatus(settingsContext.isScottish, data.blpuLogicalStatus));
+    }
+  }, [loading, data, settingsContext.isScottish]);
+
+  useEffect(() => {
+    async function GetTempAddress() {
+      const tempAddressUrl = GetTempAddressUrl(userContext.currentUser.token);
+
+      if (tempAddressUrl) {
+        const postTown = postTownRef
+          ? lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === postTownRef).postTown
+          : "";
+        const postcode = postcodeRef
+          ? lookupContext.currentLookups.postcodes.find((x) => x.postcodeRef === postcodeRef).postcode
+          : "";
+
+        const saveData = {
+          usrn: usrn,
+          language: language,
+          organisation: data.lpiData.organisation,
+          saonStartNum: saoStartNumber,
+          saonStartSuffix: saoStartSuffix,
+          saonEndNum: saoEndNumber,
+          saonEndSuffix: saoEndSuffix,
+          saonText: saoText,
+          paonStartNum: paoStartNumber,
+          paonStartSuffix: paoStartSuffix,
+          paonEndNum: paoEndNumber,
+          paonEndSuffix: paoEndSuffix,
+          paonText: paoText,
+          postTown: postTown,
+          postcode: postcode,
+          postallyAddressable: postalAddress,
+        };
+
+        console.log("[DEBUG] GetTempAddress", tempAddressUrl, JSON.stringify(saveData));
+
+        return await fetch(`${tempAddressUrl.url}?AddressSeparator=%2C%20`, {
+          headers: tempAddressUrl.headers,
+          crossDomain: true,
+          method: tempAddressUrl.type,
+          body: JSON.stringify(saveData),
+        })
+          .then((res) => (res.ok ? res : Promise.reject(res)))
+          .then((res) => res.text())
+          .then(
+            (tempAddress) => {
+              return addressToTitleCase(tempAddress, postcode);
+            },
+            (error) => {
+              console.log("ERROR Get temp address data", error);
+            }
+          );
+      } else return "";
+    }
+
+    if (!loading && usrn && (saoStartNumber || saoText || paoStartNumber || paoText)) {
+      GetTempAddress().then((address) => {
+        setLpiAddress(address);
+      });
+    } else setLpiAddress("");
+  }, [
+    loading,
+    data,
+    language,
+    saoStartNumber,
+    saoStartSuffix,
+    saoEndNumber,
+    saoEndSuffix,
+    saoText,
+    paoStartNumber,
+    paoStartSuffix,
+    paoEndNumber,
+    paoEndSuffix,
+    paoText,
+    usrn,
+    postTownRef,
+    postcodeRef,
+    postalAddress,
+    lookupContext,
+    userContext,
+    settingsContext,
+  ]);
+
+  useEffect(() => {
+    if (sandboxContext.currentSandbox.sourceProperty && data && data.lpiData) {
+      const sourceLpi = sandboxContext.currentSandbox.sourceProperty.lpis.find((x) => x.pkId === data.pkId);
+
+      if (sourceLpi) {
+        setDataChanged(
+          !ObjectComparison(sourceLpi, data.lpiData, [
+            "custodianOne",
+            "custodianTwo",
+            "canKey",
+            "changeType",
+            "dualLanguageLink",
+            "lastUpdateDate",
+            "address",
+            "postTown",
+            "postcode",
+            "lastUpdated",
+            "lastUser",
+          ])
+        );
+      } else if (data.pkId < 0) setDataChanged(true);
+    }
+  }, [data, sandboxContext.currentSandbox.sourceProperty]);
+
+  useEffect(() => {
+    if (
+      data &&
+      data.pkId < 0 &&
+      !sandboxContext.currentSandbox.currentPropertyRecords.lpi &&
+      currentId.current !== data.pkId
+    ) {
+      sandboxContext.onSandboxChange("lpi", data.lpiData);
+      currentId.current = data.pkId;
+    }
+  }, [data, sandboxContext, sandboxContext.currentSandbox.currentPropertyRecords.lpi]);
+
+  useEffect(() => {
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+  }, [userContext]);
+
+  useEffect(() => {
+    setLanguageError(null);
+    setLogicalStatusError(null);
+    setSaoStartNumError(null);
+    setSaoStartSuffixError(null);
+    setSaoEndNumError(null);
+    setSaoEndSuffixError(null);
+    setSaoTextError(null);
+    setPaoStartNumError(null);
+    setPaoStartSuffixError(null);
+    setPaoEndNumError(null);
+    setPaoEndSuffixError(null);
+    setPaoTextError(null);
+    setUsrnError(null);
+    setPostTownRefError(null);
+    setPostcodeRefError(null);
+    setLevelError(null);
+    setOfficialFlagError(null);
+    setPostalAddressError(null);
+    setStartDateError(null);
+    setEndDateError(null);
+
+    if (errors && errors.length > 0) {
+      for (const error of errors) {
+        switch (error.field.toLowerCase()) {
+          case "language":
+            setLanguageError(error.errors);
+            break;
+
+          case "logicalstatus":
+            setLogicalStatusError(error.errors);
+            break;
+
+          case "saostartnumber":
+            setSaoStartNumError(error.errors);
+            break;
+
+          case "saostartsuffix":
+            setSaoStartSuffixError(error.errors);
+            break;
+
+          case "saoendnumber":
+            setSaoEndNumError(error.errors);
+            break;
+
+          case "saoendsuffix":
+            setSaoEndSuffixError(error.errors);
+            break;
+
+          case "saotext":
+            setSaoTextError(error.errors);
+            break;
+
+          case "paostartnumber":
+            setPaoStartNumError(error.errors);
+            break;
+
+          case "paostartsuffix":
+            setPaoStartSuffixError(error.errors);
+            break;
+
+          case "paoendnumber":
+            setPaoEndNumError(error.errors);
+            break;
+
+          case "paoendsuffix":
+            setPaoEndSuffixError(error.errors);
+            break;
+
+          case "paotext":
+            setPaoTextError(error.errors);
+            break;
+
+          case "usrn":
+            setUsrnError(error.errors);
+            break;
+
+          case "posttown":
+          case "posttownref":
+            setPostTownRefError(error.errors);
+            break;
+
+          case "postcode":
+          case "postcoderef":
+            setPostcodeRefError(error.errors);
+            break;
+
+          case "level":
+            setLevelError(error.errors);
+            break;
+
+          case "officialflag":
+            setOfficialFlagError(error.errors);
+            break;
+
+          case "postaladdress":
+            setPostalAddressError(error.errors);
+            break;
+
+          case "startdate":
+            setStartDateError(error.errors);
+            break;
+
+          case "enddate":
+            setEndDateError(error.errors);
+            break;
+
+          default:
+            break;
+        }
+      }
+    }
+  }, [errors]);
+
+  return (
+    <Fragment>
+      <Box sx={propertyToolbarStyle}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Stack direction="row" spacing={0} justifyContent="flex-start" alignItems="center">
+            <Box sx={{ width: "12px" }} />
+            <ADSActionButton
+              variant="home"
+              tooltipTitle="Back to property details"
+              tooltipPlacement="bottom"
+              onClick={handleHomeClick}
+            />
+            <Divider orientation="vertical" variant="middle" flexItem sx={{ color: adsLightGreyB }} />
+            <Typography
+              sx={{
+                flexGrow: 1,
+                fontSize: "15px",
+                pl: "8px",
+                color: adsDarkGrey,
+                display: "none",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >
+              {`LPI ${data.index + 1} of ${data.totalRecords}: `}
+            </Typography>
+            <Typography
+              sx={{
+                flexGrow: 1,
+                fontSize: "14px",
+                color: adsMidGreyA,
+                display: "none",
+                pl: "8px",
+                pt: "2px",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >{`${lpiAddress ? lpiAddress : ""}`}</Typography>
+          </Stack>
+          <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
+            <IconButton
+              onClick={handleActionsClick}
+              sx={ActionIconStyle()}
+              aria_controls={`actions-menu-${data.lpiData.lpiKey}`}
+              size="small"
+            >
+              <ActionsIcon />
+            </IconButton>
+          </Tooltip>
+          <Menu
+            id={`actions-menu-${data.lpiData.lpiKey}`}
+            elevation={2}
+            anchorEl={anchorEl}
+            getContentAnchorEl={null}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleActionsMenuClose}
+            TransitionComponent={Fade}
+            sx={menuStyle}
+          >
+            <MenuItem dense disabled={!userCanEdit} onClick={handleAddNewLpi} sx={menuItemStyle(false)}>
+              <Typography variant="inherit">Add new LPI</Typography>
+            </MenuItem>
+            <MenuItem dense onClick={handleCopyAddress} divider sx={menuItemStyle(true)}>
+              <Typography variant="inherit">Copy address</Typography>
+            </MenuItem>
+            <MenuItem dense disabled onClick={handleSearchNearby} sx={menuItemStyle(false)}>
+              <Typography variant="inherit">Search nearby</Typography>
+            </MenuItem>
+            <MenuItem dense disabled onClick={handleExportTo} divider sx={menuItemStyle(true)}>
+              <Typography variant="inherit">Export to...</Typography>
+            </MenuItem>
+            <MenuItem dense disabled={!userCanEdit} onClick={handleRejectLpi} sx={menuItemStyle(false)}>
+              <Typography variant="inherit">Reject LPI</Typography>
+            </MenuItem>
+            <MenuItem dense disabled={!userCanEdit} onClick={handleHistoriciseLpi} sx={menuItemStyle(false)}>
+              <Typography variant="inherit">Historicise LPI</Typography>
+            </MenuItem>
+            <MenuItem dense disabled={!userCanEdit} onClick={handleDeleteLpi} sx={menuItemStyle(false)}>
+              <Typography variant="inherit" color="error">
+                Delete LPI
+              </Typography>
+            </MenuItem>
+          </Menu>
+        </Stack>
+      </Box>
+      <Box sx={dataFormStyle("77.7vh")}>
+        <ADSLanguageControl
+          label="Language"
+          isEditable={userCanEdit}
+          isRequired
+          isFocused={focusedField ? focusedField === "Language" : false}
+          loading={loading}
+          value={language}
+          helperText="The language in use for the descriptive identifier."
+          errorText={languageError}
+          onChange={handleLanguageChangeEvent}
+        />
+        <ADSSelectControl
+          label="LPI logical status"
+          isEditable={userCanEdit}
+          isRequired
+          isFocused={focusedField ? focusedField === "LogicalStatus" : false}
+          loading={loading}
+          useRounded
+          doNotSetTitleCase
+          lookupData={logicalStatusLookup}
+          lookupId="id"
+          lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+          lookupColour="colour"
+          value={logicalStatus}
+          errorText={logicalStatusError}
+          onChange={handleLogicalStatusChangeEvent}
+          helperText="Logical status of this Record."
+        />
+        <ADSAddressableObjectControl
+          variant="SAO"
+          isEditable={userCanEdit}
+          isStartNumberFocused={focusedField ? focusedField === "SaoStartNumber" : false}
+          isStartSuffixFocused={focusedField ? focusedField === "SaoStartSuffix" : false}
+          isEndNumberFocused={focusedField ? focusedField === "SaoEndNumber" : false}
+          isEndSuffixFocused={focusedField ? focusedField === "SaoEndSuffix" : false}
+          isTextFocused={focusedField ? focusedField === "SaoText" : false}
+          loading={loading}
+          helperText="The secondary addressable object."
+          startNumberValue={saoStartNumber}
+          startSuffixValue={saoStartSuffix}
+          endNumberValue={saoEndNumber}
+          endSuffixValue={saoEndSuffix}
+          textValue={saoText}
+          startNumberErrorText={saoStartNumError}
+          startSuffixErrorText={saoStartSuffixError}
+          endNumberErrorText={saoEndNumError}
+          endSuffixErrorText={saoEndSuffixError}
+          textErrorText={saoTextError}
+          onStartNumberChange={handleSaoStartNumberChangeEvent}
+          onStartSuffixChange={handleSaoStartSuffixChangeEvent}
+          onEndNumberChange={handleSaoEndNumberChangeEvent}
+          onEndSuffixChange={handleSaoEndSuffixChangeEvent}
+          onTextChange={handleSaoTextChangeEvent}
+        />
+        <ADSAddressableObjectControl
+          variant="PAO"
+          isEditable={userCanEdit}
+          isRequired
+          isStartNumberFocused={focusedField ? focusedField === "PaoStartNumber" : false}
+          isStartSuffixFocused={focusedField ? focusedField === "PaoStartSuffix" : false}
+          isEndNumberFocused={focusedField ? focusedField === "PaoEndNumber" : false}
+          isEndSuffixFocused={focusedField ? focusedField === "PaoEndSuffix" : false}
+          isTextFocused={focusedField ? focusedField === "PaoText" : false}
+          loading={loading}
+          helperText="The primary addressable object."
+          startNumberValue={paoStartNumber}
+          startSuffixValue={paoStartSuffix}
+          endNumberValue={paoEndNumber}
+          endSuffixValue={paoEndSuffix}
+          textValue={paoText}
+          startNumberErrorText={paoStartNumError}
+          startSuffixErrorText={paoStartSuffixError}
+          endNumberErrorText={paoEndNumError}
+          endSuffixErrorText={paoEndSuffixError}
+          textErrorText={paoTextError}
+          onStartNumberChange={handlePaoStartNumberChangeEvent}
+          onStartSuffixChange={handlePaoStartSuffixChangeEvent}
+          onEndNumberChange={handlePaoEndNumberChangeEvent}
+          onEndSuffixChange={handlePaoEndSuffixChangeEvent}
+          onTextChange={handlePaoTextChangeEvent}
+        />
+        <ADSSelectControl
+          label="Street"
+          isEditable={userCanEdit}
+          isRequired
+          isFocused={focusedField ? focusedField === "Usrn" : false}
+          loading={loading}
+          useRounded
+          // doNotSetTitleCase
+          lookupData={lookupContext.currentLookups.streetDescriptors.filter((x) => x.language === language)}
+          lookupId="usrn"
+          lookupLabel="address"
+          value={usrn}
+          errorText={usrnError}
+          onChange={handleUsrnChangeEvent}
+          helperText="Unique Street reference number."
+        />
+        <ADSSelectControl
+          label="Post town"
+          isEditable={userCanEdit}
+          isFocused={focusedField ? focusedField === "PostTown" || focusedField === "PostTownRef" : false}
+          loading={loading}
+          useRounded
+          lookupData={lookupContext.currentLookups.postTowns.filter((x) => x.language === language && !x.historic)}
+          lookupId="postTownRef"
+          lookupLabel="postTown"
+          value={postTownRef}
+          errorText={postTownRefError}
+          onChange={handlePostTownRefChangeEvent}
+          helperText="Allocated by the Royal Mail to assist in delivery of mail."
+        />
+        <ADSSelectControl
+          label="Postcode"
+          isEditable={userCanEdit}
+          isFocused={focusedField ? focusedField === "Postcode" || focusedField === "PostcodeRef" : false}
+          loading={loading}
+          useRounded
+          doNotSetTitleCase
+          lookupData={lookupContext.currentLookups.postcodes.filter((x) => !x.historic)}
+          lookupId="postcodeRef"
+          lookupLabel="postcode"
+          value={postcodeRef}
+          errorText={postcodeRefError}
+          onChange={handlePostcodeRefChangeEvent}
+          helperText="Allocated by the Royal Mail to assist in delivery of mail."
+        />
+        {settingsContext.isScottish ? (
+          <ADSNumberControl
+            label="Level"
+            isEditable={userCanEdit}
+            isFocused={focusedField ? focusedField === "Level" : false}
+            loading={loading}
+            value={level}
+            errorText={levelError}
+            helperText="Memorandum of the vertical position of the BLPU."
+            onChange={handleLevelChangeEvent}
+          />
+        ) : (
+          <ADSTextControl
+            label="Level"
+            isEditable={userCanEdit}
+            isFocused={focusedField ? focusedField === "Level" : false}
+            loading={loading}
+            value={level}
+            id={`lpi_level_${data.lpiData.pkId}`}
+            maxLength={30}
+            errorText={levelError}
+            helperText="Memorandum of the vertical position of the BLPU."
+            onChange={handleLevelChangeEvent}
+          />
+        )}
+        {!settingsContext.isScottish && (
+          <ADSSelectControl
+            label="Official address"
+            isEditable={userCanEdit}
+            isFocused={focusedField ? focusedField === "OfficialFlag" : false}
+            loading={loading}
+            useRounded
+            doNotSetTitleCase
+            lookupData={OfficialAddress}
+            lookupId="id"
+            lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+            value={officialFlag}
+            errorText={officialFlagError}
+            onChange={handleOfficialFlagChangeEvent}
+            helperText="Status of address."
+          />
+        )}
+        {!settingsContext.isScottish && (
+          <ADSSelectControl
+            label="Postal address"
+            isEditable={userCanEdit}
+            isRequired
+            isFocused={focusedField ? focusedField === "PostalAddress" : false}
+            loading={loading}
+            useRounded
+            doNotSetTitleCase
+            lookupData={PostallyAddressable}
+            lookupId="id"
+            lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+            value={postalAddress}
+            errorText={postalAddressError}
+            onChange={handlePostalAddressChangeEvent}
+            helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
+          />
+        )}
+        <ADSDateControl
+          label="Start date"
+          isEditable={userCanEdit}
+          isRequired
+          isFocused={focusedField ? focusedField === "StartDate" : false}
+          loading={loading}
+          value={startDate}
+          helperText="Date this Record was created."
+          errorText={startDateError}
+          onChange={handleStartDateChangeEvent}
+        />
+        {logicalStatus && [7, 8, 9].includes(logicalStatus) && (
+          <ADSDateControl
+            label="End date"
+            isEditable={userCanEdit}
+            isRequired
+            isFocused={focusedField ? focusedField === "EndDate" : false}
+            loading={loading}
+            value={endDate}
+            helperText="Date this Record was closed."
+            errorText={endDateError}
+            onChange={handleEndDateChangeEvent}
+          />
+        )}
+        <ADSReadOnlyControl label="LPI key" loading={loading} value={data.lpiData.lpiKey} />
+        <ADSOkCancelControl
+          okDisabled={!dataChanged}
+          onOkClicked={handleOkClicked}
+          onCancelClicked={handleCancelClicked}
+        />
+        <Box sx={{ height: "24px" }} />
+      </Box>
+      <div>
+        <ConfirmDeleteDialog
+          open={openDeleteConfirmation}
+          associatedRecords={associatedRecords}
+          onClose={handleCloseDeleteConfirmation}
+        />
+      </div>
+    </Fragment>
+  );
+}
+
+export default PropertyLPITab;
