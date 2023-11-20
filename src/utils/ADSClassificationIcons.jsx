@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   23.07.21 Sean Flook                 Initial Revision.
 //    002   20.11.23 Sean Flook                 Added icon for street BLPUs.
+//    003   20.11.23 Sean Flook                 Modified GetClassificationIcon to change the classification for street BLPUs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -42,7 +43,9 @@ export default function GetClassificationIcon(classification, nameClass, props) 
 
   if (classification.includes(",")) return null;
 
-  switch (classification.substring(0, 1)) {
+  const primaryClassification = classification === "PS" ? "B" : classification.substring(0, 1);
+
+  switch (primaryClassification) {
     case "B":
       if (nameClass) {
         return (

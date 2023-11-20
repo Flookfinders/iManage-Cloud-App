@@ -30,6 +30,7 @@
 //    016   30.11.23 Sean Flook       IMANN-175 Added closing street, reset property selection flag when opening a record.
 //    017   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    018   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs, and improve some functions.
+//    019   20.11.23 Sean Flook                 Undone above change.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1317,11 +1318,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                         {rec.type === 15
                           ? GetStreetIcon(rec.logical_status, GetAvatarColour(rec.status ? rec.status : 12))
                           : GetClassificationIcon(
-                              rec.classification_code === "PS"
-                                ? "B"
-                                : rec.classification_code
-                                ? rec.classification_code
-                                : "U",
+                              rec.classification_code ? rec.classification_code : "U",
                               GetAvatarColour(rec.logical_status)
                             )}
                       </Tooltip>
@@ -1669,11 +1666,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                         {rec.type === 15
                           ? GetStreetIcon(rec.logical_status, GetAvatarColour(rec.status ? rec.status : 12))
                           : GetClassificationIcon(
-                              rec.classification_code === "PS"
-                                ? "B"
-                                : rec.classification_code
-                                ? rec.classification_code
-                                : "U",
+                              rec.classification_code ? rec.classification_code : "U",
                               GetAvatarColour(rec.logical_status)
                             )}
                       </Tooltip>
