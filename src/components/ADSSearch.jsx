@@ -22,6 +22,7 @@
 //    009   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate.
 //    010   03.11.23 Sean Flook                 Hide the filter and sort buttons for now.
 //    011   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
+//    012   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1187,7 +1188,11 @@ function ADSSearch({ placeholder, onSearchClick }) {
               }}
             >
               <Grid item>
-                {option.type === 15 ? <StreetIcon /> : GetClassificationIcon(option.classification_code)}
+                {option.type === 15 ? (
+                  <StreetIcon />
+                ) : (
+                  GetClassificationIcon(option.classification_code === "PS" ? "B" : option.classification_code)
+                )}
               </Grid>
               <Grid item xs>
                 <Typography sx={{ fontSize: "15px" }}>{addressToTitleCase(option.address, option.postcode)}</Typography>

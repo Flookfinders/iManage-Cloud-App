@@ -29,6 +29,7 @@
 //    015   27.10.23 Sean Flook       IMANN-175 Added getUprnsFromLpiKeys.
 //    016   30.11.23 Sean Flook       IMANN-175 Added closing street, reset property selection flag when opening a record.
 //    017   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
+//    018   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs, and improve some functions.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -929,9 +930,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
    * @returns {object|null} The property record.
    */
   const getPropertyFromLPIKey = (lpiKey) => {
-    const property = data.filter((x) => x.id === lpiKey);
-    if (property && property.length === 1) return { id: property[0].uprn, logical_status: property[0].logical_status };
-    else return null;
+    const property = data.find((x) => x.id === lpiKey);
+    return property ? { id: property.uprn, logical_status: property.logical_status } : null;
   };
 
   /**
@@ -941,18 +941,18 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
    * @returns {string|null} The property address.
    */
   const getAddressFromLPIKey = (lpiKey) => {
-    const property = data.filter((x) => x.id === lpiKey);
-    if (property && property.length === 1) return property[0].formattedaddress;
-    else return null;
+    const property = data.find((x) => x.id === lpiKey);
+    return property ? property.formattedaddress : null;
   };
 
+  /**
+   * Method to get the unique selected UPRNs from the LPI keys.
+   *
+   * @param {array} lpiKeys The array of LPI keys for the selected addresses
+   * @returns {array} An array of the unique selected UPRNs.
+   */
   const getUprnsFromLpiKeys = (lpiKeys) => {
-    const uprns = [];
-    for (const lpiKey of lpiKeys) {
-      const property = data.find((x) => x.id === lpiKey);
-      if (property) uprns.push(property.uprn);
-    }
-    return uprns;
+    return [...new Set(data.filter((x) => lpiKeys.includes(x.id)).map((x) => x.uprn))];
   };
 
   /**
@@ -1317,7 +1317,11 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                         {rec.type === 15
                           ? GetStreetIcon(rec.logical_status, GetAvatarColour(rec.status ? rec.status : 12))
                           : GetClassificationIcon(
-                              rec.classification_code ? rec.classification_code : "U",
+                              rec.classification_code === "PS"
+                                ? "B"
+                                : rec.classification_code
+                                ? rec.classification_code
+                                : "U",
                               GetAvatarColour(rec.logical_status)
                             )}
                       </Tooltip>
@@ -1665,7 +1669,11 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                         {rec.type === 15
                           ? GetStreetIcon(rec.logical_status, GetAvatarColour(rec.status ? rec.status : 12))
                           : GetClassificationIcon(
-                              rec.classification_code ? rec.classification_code : "U",
+                              rec.classification_code === "PS"
+                                ? "B"
+                                : rec.classification_code
+                                ? rec.classification_code
+                                : "U",
                               GetAvatarColour(rec.logical_status)
                             )}
                       </Tooltip>

@@ -27,6 +27,7 @@
 //    014   12.10.23 Sean Flook                 Reset the ESU and ASD list when resetting the street.
 //    015   03.11.23 Sean Flook       IMANN-175 Changes required to select properties from the map.
 //    016   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
+//    017   20.11.23 Sean Flook                 Removed unwanted code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2499,7 +2500,6 @@ function App() {
   return (
     <StylesProvider injectFirst>
       <Router history={history}>
-        {/* <HistoryRouter history={history}> */}
         <userContext.Provider
           value={{ currentUser: currentUser, onUserChange: HandleUserChange, onDisplayLogin: HandleDisplayLogin }}
         >
@@ -2697,7 +2697,6 @@ function App() {
           </LookupContext.Provider>
         </userContext.Provider>
       </Router>
-      {/* </HistoryRouter> */}
     </StylesProvider>
   );
 }

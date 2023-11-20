@@ -21,6 +21,7 @@
 //    007   10.10.23 Sean Flook       IMANN-163 Changes required for opening the tab after the property wizard.
 //    008   27.10.23 Sean Flook       IMANN-175 Changes required for multi-edit of properties.
 //    009   03.11.23 Sean Flook                 Updated TreeView and TreeItem.
+//    010   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -951,7 +952,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                             )}
                             <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="flex-start">
                               {GetClassificationIcon(
-                                rec.blpuClass ? rec.blpuClass : "R",
+                                rec.blpuClass === "PS" ? "B" : rec.blpuClass ? rec.blpuClass : "R",
                                 GetAvatarColour(rec.primary.logicalStatus)
                               )}
                               <Stack direction="column">
@@ -1091,7 +1092,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                         alignItems="flex-start"
                                       >
                                         {GetClassificationIcon(
-                                          child1.blpuClass ? child1.blpuClass : "R",
+                                          child1.blpuClass === "PS" ? "B" : child1.blpuClass ? child1.blpuClass : "R",
                                           GetAvatarColour(child1.primary.logicalStatus)
                                         )}
                                         <Stack direction="column">
@@ -1258,7 +1259,11 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                   alignItems="flex-start"
                                                 >
                                                   {GetClassificationIcon(
-                                                    child2.blpuClass ? child2.blpuClass : "R",
+                                                    child2.blpuClass === "PS"
+                                                      ? "B"
+                                                      : child2.blpuClass
+                                                      ? child2.blpuClass
+                                                      : "R",
                                                     GetAvatarColour(child2.primary.logicalStatus)
                                                   )}
                                                   <Stack direction="column">
@@ -1450,7 +1455,11 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                             alignItems="flex-start"
                                                           >
                                                             {GetClassificationIcon(
-                                                              child3.blpuClass ? child3.blpuClass : "R",
+                                                              child3.blpuClass === "PS"
+                                                                ? "B"
+                                                                : child3.blpuClass
+                                                                ? child3.blpuClass
+                                                                : "R",
                                                               GetAvatarColour(child3.primary.logicalStatus)
                                                             )}
                                                             <Stack direction="column">

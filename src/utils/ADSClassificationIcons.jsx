@@ -11,7 +11,8 @@
 //
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   23.07.21 Sean Flook         WI39??? Initial Revision.
+//    001   23.07.21 Sean Flook                 Initial Revision.
+//    002   20.11.23 Sean Flook                 Added icon for street BLPUs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -42,6 +43,25 @@ export default function GetClassificationIcon(classification, nameClass, props) 
   if (classification.includes(",")) return null;
 
   switch (classification.substring(0, 1)) {
+    case "B":
+      if (nameClass) {
+        return (
+          <SvgIcon sx={nameClass} {...props}>
+            <g>
+              <path d="M21,21L3,21L7.5,3L16.5,3L21,21ZM13,14L11,14L11,18L13,18L13,14ZM13,9L11,9L11,12L13,12L13,9ZM13,5L11,5L11,7L13,7L13,5Z" />
+            </g>
+          </SvgIcon>
+        );
+      } else {
+        return (
+          <SvgIcon {...props}>
+            <g>
+              <path d="M21,21L3,21L7.5,3L16.5,3L21,21ZM13,14L11,14L11,18L13,18L13,14ZM13,9L11,9L11,12L13,12L13,9ZM13,5L11,5L11,7L13,7L13,5Z" />
+            </g>
+          </SvgIcon>
+        );
+      }
+
     case "C":
       if (nameClass) {
         return <BusinessCenterIcon sx={nameClass} {...props} />;

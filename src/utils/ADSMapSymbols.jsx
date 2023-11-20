@@ -15,6 +15,7 @@
 //    002   07.09.23 Sean Flook                 Added GetESUMapSymbol.
 //    003   20.09.23 Sean Flook                 Tweaks to GetESUMapSymbol.
 //    004   03.11.23 Sean Flook       IMANN-175 Modified GetBackgroundPropertyMapSymbol for selecting properties.
+//    005   20.11.23 Sean Flook                 Added icon for street BLPUs and display the nodes on a street.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -208,6 +209,33 @@ const propertyShellIcon = (logicalStatus) => {
 };
 
 /**
+ * Method to get the street BLPU icon.
+ *
+ * @param {number} logicalStatus The logical status.
+ * @returns {object} The street BLPU icon.
+ */
+const streetBlpuIcon = (logicalStatus) => {
+  return {
+    type: "CIMPictureMarker",
+    enable: true,
+    anchorPoint: {
+      x: 0,
+      y: 0,
+    },
+    anchorPointUnits: "Relative",
+    dominantSizeAxis3D: "Y",
+    size: 9,
+    billboardMode3D: "FaceNearPlane",
+    invertBackfaceTexture: true,
+    scaleX: 1,
+    textureFilter: "Picture",
+    tintColor: getPinColour(logicalStatus),
+    url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAJlJREFUOI2lk8ERgCAMBINjIViJdGpp2En8gB6RJCj7lbvhdpBIwMwH+xwy94KZ80BR9kqiTMA3ScTsIrqSe2XlrCzaO7dsbmadxdCIH9tTz4/jqPGE05rNg9wZLNI367wzH/30PWl+Bok4LZFCKBjzEhb98VN5spYfOGN6CmWj+hPWWVjaYVvJeT9OQSUtNOensoeyMU4WnRefVpyPbel/dQAAAABJRU5ErkJggg==",
+    offsetY: 13,
+  };
+};
+
+/**
  * Method to get the residential icon.
  *
  * @param {number} logicalStatus The logical status.
@@ -358,6 +386,9 @@ const objectOfInterestIcon = (logicalStatus) => {
  */
 const getIcon = (classification, logicalStatus) => {
   switch (classification) {
+    case "B":
+      return streetBlpuIcon(logicalStatus);
+
     case "C":
       return commercialIcon(logicalStatus);
 
@@ -803,12 +834,103 @@ export function GetStreetMapSymbol() {
     };
   }
 
+  function getNodeSymbolLayer() {
+    return {
+      type: "CIMVectorMarker",
+      enable: true,
+      colorLocked: true,
+      anchorPoint: {
+        x: 0,
+        y: 0,
+      },
+      anchorPointUnits: "Relative",
+      dominantSizeAxis3D: "Y",
+      size: 6,
+      billboardMode3D: "FaceNearPlane",
+      markerPlacement: {
+        type: "CIMMarkerPlacementOnVertices",
+        angleToLine: true,
+        offset: 0,
+        placeOnEndPoints: true,
+        placeOnRegularVertices: true,
+      },
+      frame: {
+        xmin: -5,
+        ymin: -5,
+        xmax: 5,
+        ymax: 5,
+      },
+      markerGraphics: [
+        {
+          type: "CIMMarkerGraphic",
+          geometry: {
+            rings: [
+              [
+                [0, 5],
+                [0.87, 4.92],
+                [1.71, 4.7],
+                [2.5, 4.33],
+                [3.21, 3.83],
+                [3.83, 3.21],
+                [4.33, 2.5],
+                [4.7, 1.71],
+                [4.92, 0.87],
+                [5, 0],
+                [4.92, -0.87],
+                [4.7, -1.71],
+                [4.33, -2.5],
+                [3.83, -3.21],
+                [3.21, -3.83],
+                [2.5, -4.33],
+                [1.71, -4.7],
+                [0.87, -4.92],
+                [0, -5],
+                [-0.87, -4.92],
+                [-1.71, -4.7],
+                [-2.5, -4.33],
+                [-3.21, -3.83],
+                [-3.83, -3.21],
+                [-4.33, -2.5],
+                [-4.7, -1.71],
+                [-4.92, -0.87],
+                [-5, 0],
+                [-4.92, 0.87],
+                [-4.7, 1.71],
+                [-4.33, 2.5],
+                [-3.83, 3.21],
+                [-3.21, 3.83],
+                [-2.5, 4.33],
+                [-1.71, 4.7],
+                [-0.87, 4.92],
+                [0, 5],
+                [0, 5],
+              ],
+            ],
+          },
+          symbol: {
+            type: "CIMPolygonSymbol",
+            symbolLayers: [
+              {
+                type: "CIMSolidFill",
+                enable: true,
+                color: [153, 52, 164, 255], // #9934A4FF
+                // color: [0, 0, 0, 255],
+              },
+            ],
+          },
+        },
+      ],
+      scaleSymbolsProportionally: true,
+      respectFrame: true,
+    };
+  }
+
   return new CIMSymbol({
     data: {
       type: "CIMSymbolReference",
       symbol: {
         type: "CIMLineSymbol",
-        symbolLayers: [getBorderSymbolLayer(4), getStreetSymbolLayer(), getBorderSymbolLayer(-4)],
+        symbolLayers: [getNodeSymbolLayer(), getBorderSymbolLayer(4), getStreetSymbolLayer(), getBorderSymbolLayer(-4)],
       },
     },
   });

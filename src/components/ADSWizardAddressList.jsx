@@ -16,6 +16,7 @@
 //    003   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
 //    004   06.10.23 Sean Flook                 Use colour variables.
 //    005   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
+//    006   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -993,7 +994,11 @@ function ADSWizardAddressList({
                         sx={tooltipStyle}
                       >
                         {GetClassificationIcon(
-                          rec.blpu.classification ? rec.blpu.classification : "U",
+                          rec.blpu.classification === "PS"
+                            ? "B"
+                            : rec.blpu.classification
+                            ? rec.blpu.classification
+                            : "U",
                           GetAvatarColour(rec.blpu.logicalStatus)
                         )}
                       </Tooltip>

@@ -32,6 +32,7 @@
 //    018   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate.
 //    019   03.11.23 Sean Flook       IMANN-175 Added code to allow properties to be selected.
 //    020   10.11.23 Sean Flook       IMANN-175 Added code try and correctly highlight properties after doing a move BLPU.
+//    021   20.11.23 Sean Flook                 Added street BLPU to the list of classifications that display an icon.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -493,6 +494,11 @@ const propertyRenderer = {
   field: "SymbolCode",
   uniqueValueInfos: [
     {
+      value: "1, B",
+      symbol: GetPropertyMapSymbol(1, "B"),
+      label: "Approved Preferred, Street BLPU",
+    },
+    {
       value: "1, C",
       symbol: GetPropertyMapSymbol(1, "C"),
       label: "Approved Preferred, Commercial",
@@ -531,6 +537,11 @@ const propertyRenderer = {
       value: "1, Z",
       symbol: GetPropertyMapSymbol(1, "Z"),
       label: "Approved Preferred, Object of Interest",
+    },
+    {
+      value: "3, B",
+      symbol: GetPropertyMapSymbol(3, "B"),
+      label: "Alternative, Street BLPU",
     },
     {
       value: "3, C",
@@ -573,6 +584,11 @@ const propertyRenderer = {
       label: "Alternative, Object of Interest",
     },
     {
+      value: "5, B",
+      symbol: GetPropertyMapSymbol(5, "B"),
+      label: "Candidate, Street BLPU",
+    },
+    {
       value: "5, C",
       symbol: GetPropertyMapSymbol(5, "C"),
       label: "Candidate, Commercial",
@@ -611,6 +627,11 @@ const propertyRenderer = {
       value: "5, Z",
       symbol: GetPropertyMapSymbol(5, "Z"),
       label: "Candidate, Object of Interest",
+    },
+    {
+      value: "6, B",
+      symbol: GetPropertyMapSymbol(6, "B"),
+      label: "Provisional, Street BLPU",
     },
     {
       value: "6, C",
@@ -653,6 +674,11 @@ const propertyRenderer = {
       label: "Provisional, Object of Interest",
     },
     {
+      value: "7, B",
+      symbol: GetPropertyMapSymbol(7, "B"),
+      label: "Rejected (External), Street BLPU",
+    },
+    {
       value: "7, C",
       symbol: GetPropertyMapSymbol(7, "C"),
       label: "Rejected (External), Commercial",
@@ -693,6 +719,11 @@ const propertyRenderer = {
       label: "Rejected (External), Object of Interest",
     },
     {
+      value: "8, B",
+      symbol: GetPropertyMapSymbol(8, "B"),
+      label: "Historical, Street BLPU",
+    },
+    {
       value: "8, C",
       symbol: GetPropertyMapSymbol(8, "C"),
       label: "Historical, Commercial",
@@ -731,6 +762,11 @@ const propertyRenderer = {
       value: "8, Z",
       symbol: GetPropertyMapSymbol(8, "Z"),
       label: "Historical, Object of Interest",
+    },
+    {
+      value: "9, B",
+      symbol: GetPropertyMapSymbol(9, "B"),
+      label: "Rejected (Internal), Street BLPU",
     },
     {
       value: "9, C",
@@ -874,7 +910,6 @@ function ADSEsriMap(startExtent) {
   const [measurementActiveTool, setMeasurementActiveTool] = useState(null);
 
   const baseMappingLayerIds = useRef([]);
-  // const baseMapLayers = useRef(null);
   const baseLayersSnapEsu = useRef([]);
   const baseLayersSnapBlpu = useRef([]);
   const baseLayersSnapExtent = useRef([]);
@@ -889,7 +924,6 @@ function ADSEsriMap(startExtent) {
   const coordinateConversionRef = useRef(null);
   const currentPointCaptureModeRef = useRef(null);
   const selectingProperties = useRef(false);
-  // const handlingEventAction = useRef(false);
 
   const mapContext = useContext(MapContext);
   const sandboxContext = useContext(SandboxContext);
@@ -1652,7 +1686,6 @@ function ADSEsriMap(startExtent) {
             case 1: // WFS
               switch (baseLayer.serviceProvider) {
                 case "thinkWare":
-                  // alert("Code to handle thinkWare WFS layers has not been written yet.");
                   // Create an empty GraphicsLayer as a placeholder for when the user actually gets the features
                   newBaseLayer = new GraphicsLayer({
                     id: baseLayer.layerId,
@@ -1862,7 +1895,6 @@ function ADSEsriMap(startExtent) {
     });
 
     baseView.ui.remove("zoom"); // Remove default zoom widget first
-    // baseView.ui.add(zoom, "bottom-left");
 
     baseView.ui.add("ads-buttons", "bottom-left");
 
@@ -3053,7 +3085,11 @@ function ADSEsriMap(startExtent) {
             mapContext.currentProperty &&
             mapContext.currentProperty.uprn &&
             mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
-              ? mapContext.currentProperty.blpuClass.substring(0, 1)
+              ? mapContext.currentProperty.blpuClass === "PS"
+                ? "B"
+                : mapContext.currentProperty.blpuClass.substring(0, 1)
+              : rec.classificationCode === "PS"
+              ? "B"
               : rec.classificationCode.substring(0, 1)
           }`,
         },
@@ -4145,7 +4181,6 @@ function ADSEsriMap(startExtent) {
     }
 
     view.on("layerview-create", function (event) {
-      // if (loading && event.layer.id !== baseMappingLayerName) setLoading(false);
       if (loading && baseMappingLayerIds.current.includes(event.layer.id)) setLoading(false);
     });
 
@@ -4846,9 +4881,6 @@ function ADSEsriMap(startExtent) {
       };
 
       const options = {
-        // query: {
-        //   f: "json",
-        // },
         responseType: "json",
       };
 
@@ -4884,8 +4916,6 @@ function ADSEsriMap(startExtent) {
         } ${
           backgroundExtent.current ? backgroundExtent.current.ymax : 1300000.0
         }</upperCorner></Envelope></BBOX></Filter>`,
-        // count: count,
-        // startIndex: startIndex,
       };
 
       const options = {
