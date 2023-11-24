@@ -21,6 +21,7 @@
 //    008   08.06.21 Sean Flook         WI39345 Changed read-only version to a label and altered colour of outline.
 //    009   15.06.21 Sean Flook         WI39345 Display the toolbar as temporary fix, until v5 components are fully released.
 //    010   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
+//    011   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,7 +31,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Grid, TextField, Typography, Tooltip, Skeleton, Box } from "@mui/material";
+import { Grid, TextField, Typography, Tooltip, Skeleton } from "@mui/material";
+import { Box } from "@mui/system";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dateFormat from "dateformat";
 import ADSErrorDisplay from "./ADSErrorDisplay";

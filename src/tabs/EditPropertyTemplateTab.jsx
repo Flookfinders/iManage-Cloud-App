@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   22.09.23 Sean Flook                 Changes required to handle Scottish classifications.
 //    003   06.10.23 Sean Flook                 Use colour variables.
+//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -25,9 +26,7 @@ import LookupContext from "../context/lookupContext";
 import SettingsContext from "../context/settingsContext";
 
 import {
-  Box,
   Typography,
-  Stack,
   Button,
   Divider,
   Tooltip,
@@ -37,6 +36,7 @@ import {
   CardContent,
   IconButton,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 
 import EditTemplateDialog from "../dialogs/EditTemplateDialog";

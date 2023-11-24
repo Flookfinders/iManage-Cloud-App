@@ -23,6 +23,7 @@
 //    009   03.11.23 Sean Flook                 Updated TreeView and TreeItem.
 //    010   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs.
 //    011   20.11.23 Sean Flook                 Undone above change.
+//    012   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -37,9 +38,7 @@ import UserContext from "../context/userContext";
 import StreetContext from "../context/streetContext";
 
 import {
-  Box,
   Typography,
-  Stack,
   Skeleton,
   Menu,
   MenuItem,
@@ -50,6 +49,7 @@ import {
   Popper,
   Avatar,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { TreeView, TreeItem } from "@mui/x-tree-view";
 import ADSSelectionControl from "../components/ADSSelectionControl";
 
@@ -613,7 +613,6 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
         id={id}
         elevation={2}
         anchorEl={anchorEl}
-        getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right",
@@ -842,7 +841,6 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
             id="related-property-select-menu"
             elevation={2}
             anchorEl={anchorSelectEl}
-            getContentAnchorEl={null}
             anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
             transformOrigin={{ vertical: "top", horizontal: "center" }}
             keepMounted

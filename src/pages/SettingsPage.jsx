@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   03.11.23 Sean Flook                 Updated TreeView and TreeItem.
+//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -23,7 +24,8 @@ import React, { useEffect, useState, useContext } from "react";
 import SettingsContext from "../context/settingsContext";
 import { HasASD, HasProperties } from "../configuration/ADSConfig";
 
-import { Grid, Box, Typography, Stack } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { TreeView, TreeItem } from "@mui/x-tree-view";
 import SettingsDataForm from "../forms/SettingsDataForm";
 

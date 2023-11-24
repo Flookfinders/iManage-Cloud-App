@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record and use colour variables.
 //    003   16.10.23 Sean Flook                 Hide the button for the coordinates.
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle and removed start and end coordinates as no longer required.
+//    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -29,7 +30,8 @@ import UserContext from "./../context/userContext";
 import MapContext from "./../context/mapContext";
 
 import { ConvertDate } from "../utils/HelperUtils";
-import { Avatar, Box, Grid, Stack, Typography } from "@mui/material";
+import { Avatar, Grid, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { GetLookupLabel } from "../utils/HelperUtils";
 import { FilteredSwaOrgRef, FilteredReinstatementType } from "../utils/StreetUtils";
 import ObjectComparison from "../utils/ObjectComparison";

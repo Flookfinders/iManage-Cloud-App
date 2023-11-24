@@ -3,7 +3,7 @@
 //
 //  Description: Lookup tables tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    ï¿½ 2021 - 2023 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001            Sean Flook                 Initial Revision.
 //    002   03.11.23 Sean Flook                 Make labels the same within application.
+//    003   24.11.23 Sean Flook                 Moved Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -21,7 +22,8 @@
 import React, { useContext, useState, useEffect } from "react";
 import SettingsContext from "../context/settingsContext";
 
-import { Grid, Typography, Stack } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
+import { Stack } from "@mui/system";
 import { TreeView, TreeItem } from "@mui/x-tree-view";
 import LookupTablesDataForm from "../forms/LookupTablesDataForm";
 

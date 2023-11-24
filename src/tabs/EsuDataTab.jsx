@@ -17,6 +17,7 @@
 //    004   06.10.23 Sean Flook                 Use colour variables.
 //    005   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    006   03.11.23 Sean Flook                 Added hyphen to one-way.
+//    007   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,7 +31,6 @@ import StreetContext from "../context/streetContext";
 import SettingsContext from "../context/settingsContext";
 import MapContext from "../context/mapContext";
 import {
-  Box,
   Grid,
   Typography,
   Tooltip,
@@ -45,8 +45,8 @@ import {
   ListItemAvatar,
   Avatar,
   ListItemIcon,
-  Stack,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import {
   ExpandMore,
@@ -899,7 +899,6 @@ function EsuDataTab({
                   id={`actions-menu-${data.esuData.esuId}`}
                   elevation={2}
                   anchorEl={anchorEl}
-                  getContentAnchorEl={null}
                   anchorOrigin={{
                     vertical: "bottom",
                     horizontal: "right",

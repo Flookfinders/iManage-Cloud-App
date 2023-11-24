@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   05.04.23 Sean Flook         WI40669 Fixed warning and reduced code.
 //    003   06.10.23 Sean Flook                 Use colour variables.
+//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -25,7 +26,8 @@ import PropTypes from "prop-types";
 import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
 
-import { Box, Stack, Typography, AppBar, Tabs, Tab } from "@mui/material";
+import { Typography, AppBar, Tabs, Tab } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import WizardAddressDetails1Tab from "../tabs/WizardAddressDetails1Tab";
 import WizardAddressDetails2Tab from "../tabs/WizardAddressDetails2Tab";
 

@@ -16,6 +16,7 @@
 //    003   07.09.23 Sean Flook                 Removed unnecessary wait.
 //    004   06.10.23 Sean Flook                 Use colour variables.
 //    005   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
+//    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -44,7 +45,8 @@ import Point from "@arcgis/core/geometry/Point";
 import Graphic from "@arcgis/core/Graphic";
 import * as reactiveUtils from "@arcgis/core/core/reactiveUtils";
 
-import { Box, CircularProgress, Stack, IconButton, Divider } from "@mui/material";
+import { CircularProgress, IconButton, Divider } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSPlaceOnMapControl from "./ADSPlaceOnMapControl";
 
 import { GetMapLayersUrl } from "../configuration/ADSConfig";

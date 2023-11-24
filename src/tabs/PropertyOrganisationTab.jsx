@@ -14,6 +14,7 @@
 //    001   19.09.23 Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record.
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
+//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -23,7 +24,8 @@ import React, { useContext, useState, useRef, useEffect, Fragment } from "react"
 import PropTypes from "prop-types";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
-import { Box, Grid, Typography, Stack } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { ConvertDate } from "../utils/HelperUtils";
 import ObjectComparison from "./../utils/ObjectComparison";
 import ADSActionButton from "../components/ADSActionButton";

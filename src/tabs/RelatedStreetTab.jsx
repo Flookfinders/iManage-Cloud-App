@@ -20,6 +20,7 @@
 //    007   06.10.23 Sean Flook                 Use colour variables.
 //    008   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    009   03.11.23 Sean Flook                 Updated TreeView and TreeItem.
+//    010   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -42,9 +43,7 @@ import {
 } from "../utils/HelperUtils";
 import { streetToTitleCase, GetStreetMapData } from "./../utils/StreetUtils";
 import {
-  Box,
   Typography,
-  Stack,
   Avatar,
   Skeleton,
   Menu,
@@ -57,6 +56,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { TreeView, TreeItem } from "@mui/x-tree-view";
 import ADSSelectionControl from "../components/ADSSelectionControl";
 import {
@@ -784,7 +784,6 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                                 id="street-actions-menu"
                                 elevation={2}
                                 anchorEl={anchorStreetActionsEl}
-                                getContentAnchorEl={null}
                                 anchorOrigin={{
                                   vertical: "bottom",
                                   horizontal: "right",

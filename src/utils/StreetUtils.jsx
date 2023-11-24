@@ -19,6 +19,7 @@
 //    006   06.10.23 Sean Flook                 Added DisplayStreetInStreetView, updateMapStreetData, GetWholeRoadGeometry & GetProwStatusLabel as well as various bug fixes.
 //    007   03.11.23 Sean Flook                 Added hyphen to one-way.
 //    008   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
+//    009   24.11.23 Sean Flook                 Moved Stack to @mui/system and renamed successor to successorCrossRef.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -26,7 +27,8 @@
 
 import React from "react";
 import dateFormat from "dateformat";
-import { Typography, Stack } from "@mui/material";
+import { Typography } from "@mui/material";
+import { Stack } from "@mui/system";
 import { GetLookupLabel, GetCurrentDate, GetWktCoordinates, openInStreetView } from "./HelperUtils";
 import {
   GetStreetByUSRNUrl,
@@ -346,7 +348,7 @@ export function GetNewStreet(
   const currentDate = GetCurrentDate();
 
   const esuData = [];
-  const successorData = [];
+  const successorCrossRefData = [];
   const noteData = [];
   const maintenanceResponsibilityData = [];
   const reinstatementCategoryData = [];
@@ -491,7 +493,7 @@ export function GetNewStreet(
   return GetNewStreetData(
     currentStreet,
     esuData,
-    successorData,
+    successorCrossRefData,
     descriptorData,
     noteData,
     maintenanceResponsibilityData,
@@ -541,7 +543,7 @@ export async function StreetDelete(usrn, deleteEsus, userToken, isScottish) {
  *
  * @param {object} currentStreet The current street data.
  * @param {array|null} esuData The ESU data for the street.
- * @param {array|null} successorData The successor data for the street.
+ * @param {array|null} successorCrossRefData The successor cross reference data for the street.
  * @param {array|null} descriptorData The descriptor data for the street.
  * @param {array|null} noteData The note data for the street.
  * @param {array|null} maintenanceResponsibilityData The maintenance responsibility data for the street (OneScotland only).
@@ -558,7 +560,7 @@ export async function StreetDelete(usrn, deleteEsus, userToken, isScottish) {
 export function GetNewStreetData(
   currentStreet,
   esuData,
-  successorData,
+  successorCrossRefData,
   descriptorData,
   noteData,
   maintenanceResponsibilityData,
@@ -659,7 +661,7 @@ export function GetNewStreetData(
           lastUpdated: currentStreet.lastUpdated,
           lastUser: currentStreet.lastUser,
           esus: esuData,
-          successors: successorData,
+          successorCrossRefs: successorCrossRefData,
           streetDescriptors: descriptorData,
           streetNotes: noteData,
           maintenanceResponsibilities: maintenanceResponsibilityData,
@@ -957,7 +959,7 @@ export function GetNewEsuStreetData(currentSandbox, newEsus, streetData, isScott
   const newStreetData = GetNewStreetData(
     currentSandbox.currentStreet ? currentSandbox.currentStreet : currentSandbox.sourceStreet,
     newEsus,
-    streetData.successors,
+    streetData.successorCrossRefs,
     streetData.streetDescriptors,
     streetData.streetNotes,
     updatedMaintenanceResponsibilities,
@@ -1052,12 +1054,15 @@ export function GetCurrentStreetData(streetData, sandboxContext, lookupContext, 
         (x) => [sandboxContext.currentSandbox.currentStreetRecords.esu].find((esu) => esu.pkId === x.pkId) || x
       )
     : streetData.esus;
-  const successorData = isScottish
-    ? sandboxContext.currentSandbox.currentStreetRecords.successor
-      ? streetData.successors.map(
-          (x) => [sandboxContext.currentStreetRecords.successors].find((successor) => successor.pkId === x.pkId) || x
+  const successorCrossRefData = isScottish
+    ? sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef
+      ? streetData.successorCrossRefs.map(
+          (x) =>
+            [sandboxContext.currentStreetRecords.successorCrossRefs].find(
+              (successorCrossRef) => successorCrossRef.pkId === x.pkId
+            ) || x
         )
-      : streetData.successors
+      : streetData.successorCrossRefs
     : null;
   const noteData = sandboxContext.currentSandbox.currentStreetRecords.note
     ? streetData.streetNotes.map(
@@ -1142,7 +1147,7 @@ export function GetCurrentStreetData(streetData, sandboxContext, lookupContext, 
   const currentStreetData = GetNewStreetData(
     streetData,
     esuData,
-    successorData,
+    successorCrossRefData,
     descriptorData,
     noteData,
     maintenanceResponsibilityData,
@@ -1203,6 +1208,17 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
       streetEndDate: streetData.streetEndDate,
       neverExport: streetData.neverExport,
       recordType: streetData.recordType,
+      successorCrossRefs: streetData.successorCrossRefs.map((x) => {
+        return {
+          changeType: "I",
+          predecessor: x.predecessor,
+          successorType: x.successorType,
+          successor: x.successor,
+          startDate: x.startDate,
+          endDate: x.endDate,
+          neverExport: x.neverExport,
+        };
+      }),
       maintenanceResponsibilities: streetData.maintenanceResponsibilities
         ? streetData.maintenanceResponsibilities.map((mr) => {
             return {
@@ -1746,6 +1762,19 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
       neverExport: streetData.neverExport,
       pkId: streetData.pkId,
       recordType: streetData.recordType,
+      successorCrossRefs: streetData.successorCrossRefs.map((s) => {
+        return {
+          pkId: s.pkId > 0 ? s.pkId : 0,
+          succKey: s.succKey,
+          changeType: s.changeType,
+          predecessor: s.predecessor,
+          successorType: s.successorType,
+          successor: s.successor,
+          startDate: s.startDate,
+          endDate: s.endDate,
+          neverExport: s.neverExport,
+        };
+      }),
       maintenanceResponsibilities: streetData.maintenanceResponsibilities.map((mr) => {
         return {
           usrn: mr.usrn,

@@ -17,6 +17,7 @@
 //    004   05.04.23 Sean Flook         WI40669 Replace holding character ¬ with a comma.
 //    005   06.04.23 Sean Flook         WI40677 Allow errorText to be a string or an array of strings.
 //    006   06.10.23 Sean Flook                 Use colour variables.
+//    007   24.11.23 Sean Flook                 Moved Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -25,7 +26,8 @@
 /* #region imports */
 
 import React, { useState, useEffect } from "react";
-import { Typography, Grid, Stack } from "@mui/material";
+import { Typography, Grid } from "@mui/material";
+import { Stack } from "@mui/system";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import { adsRed } from "../utils/ADSColours";
 

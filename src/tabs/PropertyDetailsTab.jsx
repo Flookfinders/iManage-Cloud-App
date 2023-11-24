@@ -25,6 +25,7 @@
 //    012   06.10.23 Sean Flook                 Use colour variables.
 //    013   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    014   03.11.23 Sean Flook                 Added tooltip to the actions button.
+//    015   24.11.23 Sean Flook                 Moved Box to @mui/system and changes required for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -51,7 +52,6 @@ import OSGClassification from "../data/OSGClassification";
 import LPILogicalStatus from "./../data/LPILogicalStatus";
 import DETRCodes from "../data/DETRCodes";
 import {
-  Box,
   Grid,
   Menu,
   MenuItem,
@@ -66,9 +66,11 @@ import {
   ListItemAvatar,
   Tooltip,
 } from "@mui/material";
+import { Box } from "@mui/system";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSDateControl from "../components/ADSDateControl";
 import ADSTextControl from "../components/ADSTextControl";
+import ADSNumberControl from "../components/ADSNumberControl";
 import ADSSwitchControl from "../components/ADSSwitchControl";
 import ADSCoordinateControl from "../components/ADSCoordinateControl";
 import ADSActionButton from "../components/ADSActionButton";
@@ -154,9 +156,12 @@ function PropertyDetailsTab({
   const [stateDate, setStateDate] = useState(data ? data.blpuStateDate : null);
   const [classification, setClassification] = useState(data ? data.blpuClass : null);
   const [organisation, setOrganisation] = useState(data ? data.organisation : null);
+  const [level, setLevel] = useState(data ? data.level : null);
   const [ward, setWard] = useState(data ? data.wardCode : null);
   const [parish, setParish] = useState(data ? data.parishCode : null);
-  const [localCustodian, setLocalCustodian] = useState(data ? data.localCustodianCode : null);
+  const [localCustodian, setLocalCustodian] = useState(
+    data ? (settingsContext.isScottish ? data.custodianCode : data.localCustodianCode) : null
+  );
   const [easting, setEasting] = useState(data ? data.xcoordinate : null);
   const [northing, setNorthing] = useState(data ? data.ycoordinate : null);
   const [excludeFromExport, setExcludeFromExport] = useState(data ? data.neverExport : false);
@@ -178,6 +183,7 @@ function PropertyDetailsTab({
   const [stateDateError, setStateDateError] = useState(null);
   const [classificationError, setClassificationError] = useState(null);
   const [organisationError, setOrganisationError] = useState(null);
+  const [levelError, setLevelError] = useState(null);
   const [wardError, setWardError] = useState(null);
   const [parishError, setParishError] = useState(null);
   const [localCustodianError, setLocalCustodianError] = useState(null);
@@ -214,30 +220,52 @@ function PropertyDetailsTab({
    * @param {string|boolean|Date|number|null} newValue The value used to update the given field.
    */
   const updateCurrentData = (fieldName, newValue) => {
-    const currentData = {
-      blpuClass: fieldName && fieldName === "classification" ? newValue : classification,
-      organisation: fieldName && fieldName === "organisation" ? newValue : organisation,
-      wardCode: fieldName && fieldName === "ward" ? newValue : ward,
-      parishCode: fieldName && fieldName === "parish" ? newValue : parish,
-      localCustodianCode: fieldName && fieldName === "localCustodian" ? newValue : localCustodian,
-      logicalStatus: fieldName && fieldName === "logicalStatus" ? newValue : blpuLogicalStatus,
-      blpuState: fieldName && fieldName === "state" ? newValue : state,
-      blpuStateDate:
-        fieldName && fieldName === "stateDate"
-          ? newValue && ConvertDate(newValue)
-          : stateDate && ConvertDate(stateDate),
-      xcoordinate: fieldName && fieldName === "easting" ? newValue : easting,
-      ycoordinate: fieldName && fieldName === "northing" ? newValue : northing,
-      rpc: fieldName && fieldName === "rpc" ? newValue : rpc,
-      startDate:
-        fieldName && fieldName === "startDate"
-          ? newValue && ConvertDate(newValue)
-          : startDate && ConvertDate(startDate),
-      endDate:
-        fieldName && fieldName === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
-      neverExport: fieldName && fieldName === "neverExport" ? newValue : excludeFromExport,
-      siteSurvey: fieldName && fieldName === "siteSurvey" ? newValue : siteSurvey,
-    };
+    const currentData = !settingsContext.isScottish
+      ? {
+          blpuClass: fieldName && fieldName === "classification" ? newValue : classification,
+          organisation: fieldName && fieldName === "organisation" ? newValue : organisation,
+          wardCode: fieldName && fieldName === "ward" ? newValue : ward,
+          parishCode: fieldName && fieldName === "parish" ? newValue : parish,
+          localCustodianCode: fieldName && fieldName === "localCustodian" ? newValue : localCustodian,
+          logicalStatus: fieldName && fieldName === "logicalStatus" ? newValue : blpuLogicalStatus,
+          blpuState: fieldName && fieldName === "state" ? newValue : state,
+          blpuStateDate:
+            fieldName && fieldName === "stateDate"
+              ? newValue && ConvertDate(newValue)
+              : stateDate && ConvertDate(stateDate),
+          xcoordinate: fieldName && fieldName === "easting" ? newValue : easting,
+          ycoordinate: fieldName && fieldName === "northing" ? newValue : northing,
+          rpc: fieldName && fieldName === "rpc" ? newValue : rpc,
+          startDate:
+            fieldName && fieldName === "startDate"
+              ? newValue && ConvertDate(newValue)
+              : startDate && ConvertDate(startDate),
+          endDate:
+            fieldName && fieldName === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
+          neverExport: fieldName && fieldName === "neverExport" ? newValue : excludeFromExport,
+          siteSurvey: fieldName && fieldName === "siteSurvey" ? newValue : siteSurvey,
+        }
+      : {
+          level: fieldName && fieldName === "level" ? newValue : level,
+          custodianCode: fieldName && fieldName === "localCustodian" ? newValue : localCustodian,
+          logicalStatus: fieldName && fieldName === "logicalStatus" ? newValue : blpuLogicalStatus,
+          blpuState: fieldName && fieldName === "state" ? newValue : state,
+          blpuStateDate:
+            fieldName && fieldName === "stateDate"
+              ? newValue && ConvertDate(newValue)
+              : stateDate && ConvertDate(stateDate),
+          xcoordinate: fieldName && fieldName === "easting" ? newValue : easting,
+          ycoordinate: fieldName && fieldName === "northing" ? newValue : northing,
+          rpc: fieldName && fieldName === "rpc" ? newValue : rpc,
+          startDate:
+            fieldName && fieldName === "startDate"
+              ? newValue && ConvertDate(newValue)
+              : startDate && ConvertDate(startDate),
+          endDate:
+            fieldName && fieldName === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
+          neverExport: fieldName && fieldName === "neverExport" ? newValue : excludeFromExport,
+          siteSurvey: fieldName && fieldName === "siteSurvey" ? newValue : siteSurvey,
+        };
 
     if (fieldName === "organisation") {
       if (onOrganisationChanged) onOrganisationChanged(organisation, newValue, currentData);
@@ -308,6 +336,16 @@ function PropertyDetailsTab({
   const handleOrganisationChangeEvent = (newValue) => {
     updateCurrentData("organisation", newValue);
     setOrganisation(newValue);
+  };
+
+  /**
+   * Event to handle when the level is changed.
+   *
+   * @param {number|string|null} newValue The new level.
+   */
+  const handleLevelChangeEvent = (newValue) => {
+    setLevel(newValue);
+    updateCurrentData("level", newValue);
   };
 
   /**
@@ -749,11 +787,16 @@ function PropertyDetailsTab({
       setRpc(data.rpc);
       setState(data.blpuState);
       setStateDate(data.blpuStateDate);
-      setClassification(data.blpuClass);
-      setOrganisation(data.organisation);
-      setWard(data.wardCode);
-      setParish(data.parishCode);
-      setLocalCustodian(data.localCustodianCode);
+      if (!settingsContext.isScottish) {
+        setClassification(data.blpuClass);
+        setOrganisation(data.organisation);
+        setWard(data.wardCode);
+        setParish(data.parishCode);
+        setLocalCustodian(data.localCustodianCode);
+      } else {
+        setLocalCustodian(data.custodianCode);
+        setLevel(data.level);
+      }
       setEasting(data.xcoordinate);
       setNorthing(data.ycoordinate);
       setExcludeFromExport(data.neverExport);
@@ -777,6 +820,14 @@ function PropertyDetailsTab({
           type: "BLPU provenance",
           count: data.blpuProvenances.length,
         });
+      if (settingsContext.isScottish) {
+        if (data.organisations && data.organisations.length > 0)
+          associatedRecords.push({ type: "Organisation", count: data.organisations.length });
+        if (data.classifications && data.classifications.length > 0)
+          associatedRecords.push({ type: "Classification", count: data.classifications.length });
+        if (data.successorCrossRefs && data.successorCrossRefs.length > 0)
+          associatedRecords.push({ type: "Successor cross reference", count: data.successorCrossRefs.length });
+      }
       if (data.blpuNotes && data.blpuNotes.length > 0)
         associatedRecords.push({ type: "note", count: data.blpuNotes.length });
 
@@ -796,6 +847,7 @@ function PropertyDetailsTab({
     setStateDateError(null);
     setClassificationError(null);
     setOrganisationError(null);
+    setLevelError(null);
     setWardError(null);
     setParishError(null);
     setLocalCustodianError(null);
@@ -833,6 +885,10 @@ function PropertyDetailsTab({
             setOrganisationError(error.errors);
             break;
 
+          case "level":
+            setLevelError(error.errors);
+            break;
+
           case "wardcode":
             setWardError(error.errors);
             break;
@@ -842,6 +898,7 @@ function PropertyDetailsTab({
             break;
 
           case "localCustodian":
+          case "custodianCode":
             setLocalCustodianError(error.errors);
             break;
 
@@ -919,7 +976,6 @@ function PropertyDetailsTab({
               id="blpu-menu"
               elevation={2}
               anchorEl={anchorEl}
-              getContentAnchorEl={null}
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               transformOrigin={{ vertical: "top", horizontal: "right" }}
               keepMounted
@@ -1042,7 +1098,6 @@ function PropertyDetailsTab({
                       key={`key_${index}`}
                     >
                       <ListItemButton
-                        button
                         dense
                         disableGutters
                         sx={getLpiStyle(index)}
@@ -1107,7 +1162,6 @@ function PropertyDetailsTab({
                   key="key_no_records"
                 >
                   <ListItemButton
-                    button
                     dense
                     disableGutters
                     disabled={!userCanEdit}
@@ -1239,6 +1293,18 @@ function PropertyDetailsTab({
               onChange={handleOrganisationChangeEvent}
             />
           )}
+          {settingsContext.isScottish && (
+            <ADSNumberControl
+              label="Level"
+              isEditable={userCanEdit}
+              isFocused={focusedField ? focusedField === "Level" : false}
+              loading={loading}
+              value={level}
+              errorText={levelError}
+              helperText="Code describing vertical position of BLPU."
+              onChange={handleLevelChangeEvent}
+            />
+          )}
           {!settingsContext.isScottish && (
             <ADSSelectControl
               label="Ward"
@@ -1293,7 +1359,6 @@ function PropertyDetailsTab({
             isRequired
             isEastFocused={focusedField ? focusedField === "XCoordinate" || focusedField === "Easting" : false}
             isNorthFocused={focusedField ? focusedField === "YCoordinate" || focusedField === "Northing" : false}
-            // displayButton
             loading={loading}
             eastErrorText={eastingError}
             northErrorText={northingError}
@@ -1302,8 +1367,6 @@ function PropertyDetailsTab({
             northValue={northing}
             eastLabel="Easting:"
             northLabel="Northing:"
-            // buttonLabel="Move"
-            // buttonIcon="move"
             onEastChange={handleEastingChangeEvent}
             onNorthChange={handleNorthingChangeEvent}
             onButtonClick={handleMoveClickEvent}

@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   03.11.23 Sean Flook                 Updated propTypes.
 //    005   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
+//    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,7 +31,8 @@ import LookupContext from "../context/lookupContext";
 import { GetLookupLabel } from "../utils/HelperUtils";
 import { FilteredRepresentativePointCode } from "../utils/PropertyUtils";
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button, Box, Stack } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSNumberControl from "../components/ADSNumberControl";

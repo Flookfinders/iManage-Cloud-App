@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001            Sean Flook                 Initial Revision.
 //    002   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
+//    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -20,7 +21,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Typography, Grid, Tooltip, Slider, TextField, Skeleton, Box, Stack } from "@mui/material";
+import { Typography, Grid, Tooltip, Slider, TextField, Skeleton } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { FormBoxRowStyle, FormRowStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
 

@@ -21,6 +21,7 @@
 //    008   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate.
 //    009   03.11.23 Sean Flook       IMANN-175 Added button to select properties from the map.
 //    010   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
+//    011   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and added getClassificationCode.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -47,23 +48,16 @@ import {
   mapSelectSearchString,
 } from "../utils/HelperUtils";
 import { streetToTitleCase, GetStreetMapData, GetCurrentStreetData, SaveStreet } from "../utils/StreetUtils";
-import { addressToTitleCase, GetCurrentPropertyData, SavePropertyAndUpdate } from "../utils/PropertyUtils";
+import {
+  addressToTitleCase,
+  GetCurrentPropertyData,
+  SavePropertyAndUpdate,
+  getClassificationCode,
+} from "../utils/PropertyUtils";
 import { HasASD } from "../configuration/ADSConfig";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
-import {
-  AppBar,
-  IconButton,
-  Typography,
-  Tooltip,
-  Snackbar,
-  Alert,
-  Stack,
-  Divider,
-  Link,
-  Popper,
-  Avatar,
-} from "@mui/material";
-import { Box } from "@mui/system";
+import { AppBar, IconButton, Typography, Tooltip, Snackbar, Alert, Divider, Link, Popper, Avatar } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { EditConfirmationServiceProvider } from "../pages/EditConfirmationPage";
 import ADSErrorList from "./ADSErrorList";
 import ADSActionButton from "./ADSActionButton";
@@ -666,7 +660,7 @@ function ADSAppBar(props) {
         easting: foundProperty.easting,
         northing: foundProperty.northing,
         logicalStatus: foundProperty.logicalStatus,
-        classificationCode: foundProperty.blpuClass,
+        classificationCode: getClassificationCode(foundProperty),
       };
 
     const currentSearchProperties =

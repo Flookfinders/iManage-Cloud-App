@@ -19,6 +19,7 @@
 //    006   06.10.23 Sean Flook                 Use colour variables.
 //    007   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    008   03.11.23 Sean Flook                 Added debug code.
+//    009   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and changes required for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -26,28 +27,33 @@
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
+
 import LookupContext from "../context/lookupContext";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
+
 import { GetTempAddressUrl } from "../configuration/ADSConfig";
 import { copyTextToClipboard, GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
 import { addressToTitleCase, FilteredLPILogicalStatus } from "../utils/PropertyUtils";
 import ObjectComparison from "./../utils/ObjectComparison";
-import { Box, Typography, Tooltip, IconButton, Menu, MenuItem, Fade, Stack, Divider } from "@mui/material";
+
+import { Typography, Tooltip, IconButton, Menu, MenuItem, Fade, Divider } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSLanguageControl from "../components/ADSLanguageControl";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSAddressableObjectControl from "../components/ADSAddressableObjectControl";
-import ADSNumberControl from "../components/ADSNumberControl";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSDateControl from "../components/ADSDateControl";
 import ADSReadOnlyControl from "../components/ADSReadOnlyControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
-import { MoreVert as ActionsIcon } from "@mui/icons-material";
+
 import OfficialAddress from "./../data/OfficialAddress";
 import PostallyAddressable from "./../data/PostallyAddressable";
+
+import { MoreVert as ActionsIcon } from "@mui/icons-material";
 import { adsMidGreyA, adsDarkGrey, adsLightGreyB } from "../utils/ADSColours";
 import {
   propertyToolbarStyle,
@@ -113,10 +119,19 @@ function PropertyLPITab({
   const [paoText, setPaoText] = useState(data && data.lpiData ? data.lpiData.paoText : null);
   const [usrn, setUsrn] = useState(data && data.lpiData ? data.lpiData.usrn : null);
   const [postTownRef, setPostTownRef] = useState(data && data.lpiData ? data.lpiData.postTownRef : null);
+  const [subLocalityRef, setSubLocalityRef] = useState(
+    settingsContext.isScottish && data && data.lpiData ? data.lpiData.subLocalityRef : null
+  );
   const [postcodeRef, setPostcodeRef] = useState(data && data.lpiData ? data.lpiData.postcodeRef : null);
   const [level, setLevel] = useState(data && data.lpiData ? data.lpiData.level : null);
   const [officialFlag, setOfficialFlag] = useState(data && data.lpiData ? data.lpiData.officialFlag : null);
-  const [postalAddress, setPostalAddress] = useState(data && data.lpiData ? data.lpiData.postalAddress : null);
+  const [postalAddress, setPostalAddress] = useState(
+    data && data.lpiData
+      ? settingsContext.isScottish
+        ? data.lpiData.postallyAddressable
+        : data.lpiData.postalAddress
+      : null
+  );
   const [startDate, setStartDate] = useState(data && data.lpiData ? data.lpiData.startDate : null);
   const [endDate, setEndDate] = useState(data && data.lpiData ? data.lpiData.endDate : null);
 
@@ -140,6 +155,7 @@ function PropertyLPITab({
   const [paoTextError, setPaoTextError] = useState(null);
   const [usrnError, setUsrnError] = useState(null);
   const [postTownRefError, setPostTownRefError] = useState(null);
+  const [subLocalityRefError, setSubLocalityRefError] = useState(null);
   const [postcodeRefError, setPostcodeRefError] = useState(null);
   const [levelError, setLevelError] = useState(null);
   const [officialFlagError, setOfficialFlagError] = useState(null);
@@ -353,6 +369,20 @@ function PropertyLPITab({
   };
 
   /**
+   * Event to handle when the sub-locality is changed.
+   *
+   * @param {number|null} newValue The new sub-locality.
+   */
+  const handleSubLocalityRefChangeEvent = (newValue) => {
+    setSubLocalityRef(newValue);
+    if (!dataChanged) {
+      setDataChanged(subLocalityRef !== newValue);
+      if (onDataChanged && subLocalityRef !== newValue) onDataChanged();
+    }
+    UpdateSandbox("subLocalityRef", newValue);
+  };
+
+  /**
    * Event to handle when the postcode is changed.
    *
    * @param {number|null} newValue The new postcode.
@@ -444,49 +474,92 @@ function PropertyLPITab({
    * @returns {object} The current LPI record.
    */
   function GetCurrentData(field, newValue) {
-    return {
-      level: field && field === "level" ? newValue : level,
-      postalAddress: field && field === "postalAddress" ? newValue : postalAddress,
-      custodianOne: data.lpiData.custodianOne,
-      custodianTwo: data.lpiData.custodianTwo,
-      canKey: data.lpiData.canKey,
-      pkId: data.lpiData.pkId,
-      changeType: field && field === "changeType" ? newValue : !data.lpiData.lpiKey ? "I" : "U",
-      uprn: data.lpiData.uprn,
-      lpiKey: data.lpiData.lpiKey,
-      language: field && field === "language" ? newValue : language,
-      logicalStatus: field && field === "logicalStatus" ? newValue : logicalStatus,
-      startDate:
-        field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
-      endDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
-      entryDate: data.lpiData.entryDate,
-      lastUpdateDate: data.lpiData.lastUpdateDate,
-      saoStartNumber:
-        field && field === "saoStartNumber" ? newValue && Number(newValue) : saoStartNumber && Number(saoStartNumber),
-      saoStartSuffix: field === "saoStartSuffix" ? newValue : saoStartSuffix,
-      saoEndNumber:
-        field && field === "saoEndNumber" ? newValue && Number(newValue) : saoEndNumber && Number(saoEndNumber),
-      saoEndSuffix: field && field === "saoEndSuffix" ? newValue : saoEndSuffix,
-      saoText: field && field === "saoText" ? newValue : saoText,
-      paoStartNumber:
-        field && field === "paoStartNumber" ? newValue && Number(newValue) : paoStartNumber && Number(paoStartNumber),
-      paoStartSuffix: field && field === "paoStartSuffix" ? newValue : paoStartSuffix,
-      paoEndNumber:
-        field && field === "paoEndNumber" ? newValue && Number(newValue) : paoEndNumber && Number(paoEndNumber),
-      paoEndSuffix: field && field === "paoEndSuffix" ? newValue : paoEndSuffix,
-      paoText: field && field === "paoText" ? newValue : paoText,
-      usrn: field && field === "usrn" ? newValue : usrn,
-      postcodeRef: field && field === "postcodeRef" ? newValue : postcodeRef,
-      postTownRef: field && field === "postTownRef" ? newValue : postTownRef,
-      officialFlag: field && field === "officialFlag" ? newValue : officialFlag,
-      neverExport: data.lpiData.neverExport,
-      address: data.lpiData.address,
-      postTown: data.lpiData.postTown,
-      postcode: data.lpiData.postcode,
-      lastUpdated: data.lpiData.lastUpdated,
-      lastUser: data.lpiData.lastUser,
-      dualLanguageLink: data.lpiData.dualLanguageLink ? data.lpiData.dualLanguageLink : 0,
-    };
+    return !settingsContext.isScottish
+      ? {
+          language: field && field === "language" ? newValue : language,
+          startDate:
+            field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
+          endDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
+          saoStartNumber:
+            field && field === "saoStartNumber"
+              ? newValue && Number(newValue)
+              : saoStartNumber && Number(saoStartNumber),
+          saoEndNumber:
+            field && field === "saoEndNumber" ? newValue && Number(newValue) : saoEndNumber && Number(saoEndNumber),
+          saoText: field && field === "saoText" ? newValue : saoText,
+          paoStartNumber:
+            field && field === "paoStartNumber"
+              ? newValue && Number(newValue)
+              : paoStartNumber && Number(paoStartNumber),
+          paoEndNumber:
+            field && field === "paoEndNumber" ? newValue && Number(newValue) : paoEndNumber && Number(paoEndNumber),
+          paoText: field && field === "paoText" ? newValue : paoText,
+          usrn: field && field === "usrn" ? newValue : usrn,
+          postcodeRef: field && field === "postcodeRef" ? newValue : postcodeRef,
+          postTownRef: field && field === "postTownRef" ? newValue : postTownRef,
+          neverExport: data.lpiData.neverExport,
+          postTown: data.lpiData.postTown,
+          postcode: data.lpiData.postcode,
+          dualLanguageLink: data.lpiData.dualLanguageLink ? data.lpiData.dualLanguageLink : 0,
+          uprn: data.lpiData.uprn,
+          logicalStatus: field && field === "logicalStatus" ? newValue : logicalStatus,
+          paoStartSuffix: field && field === "paoStartSuffix" ? newValue : paoStartSuffix,
+          paoEndSuffix: field && field === "paoEndSuffix" ? newValue : paoEndSuffix,
+          saoStartSuffix: field === "saoStartSuffix" ? newValue : saoStartSuffix,
+          saoEndSuffix: field && field === "saoEndSuffix" ? newValue : saoEndSuffix,
+          level: field && field === "level" ? newValue : level,
+          postalAddress: field && field === "postalAddress" ? newValue : postalAddress,
+          officialFlag: field && field === "officialFlag" ? newValue : officialFlag,
+          pkId: data.lpiData.pkId,
+          changeType: field && field === "changeType" ? newValue : !data.lpiData.lpiKey ? "I" : "U",
+          lpiKey: data.lpiData.lpiKey,
+          address: data.lpiData.address,
+          entryDate: data.lpiData.entryDate,
+          lastUpdateDate: data.lpiData.lastUpdateDate,
+        }
+      : {
+          language: field && field === "language" ? newValue : language,
+          startDate:
+            field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
+          endDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
+          saoStartNumber:
+            field && field === "saoStartNumber"
+              ? newValue && Number(newValue)
+              : saoStartNumber && Number(saoStartNumber),
+          saoEndNumber:
+            field && field === "saoEndNumber" ? newValue && Number(newValue) : saoEndNumber && Number(saoEndNumber),
+          saoText: field && field === "saoText" ? newValue : saoText,
+          paoStartNumber:
+            field && field === "paoStartNumber"
+              ? newValue && Number(newValue)
+              : paoStartNumber && Number(paoStartNumber),
+          paoEndNumber:
+            field && field === "paoEndNumber" ? newValue && Number(newValue) : paoEndNumber && Number(paoEndNumber),
+          paoText: field && field === "paoText" ? newValue : paoText,
+          usrn: field && field === "usrn" ? newValue : usrn,
+          postcodeRef: field && field === "postcodeRef" ? newValue : postcodeRef,
+          postTownRef: field && field === "postTownRef" ? newValue : postTownRef,
+          neverExport: data.lpiData.neverExport,
+          postTown: data.lpiData.postTown,
+          postcode: data.lpiData.postcode,
+          dualLanguageLink: data.lpiData.dualLanguageLink ? data.lpiData.dualLanguageLink : 0,
+          uprn: data.lpiData.uprn,
+          logicalStatus: field && field === "logicalStatus" ? newValue : logicalStatus,
+          paoStartSuffix: field && field === "paoStartSuffix" ? newValue : paoStartSuffix,
+          paoEndSuffix: field && field === "paoEndSuffix" ? newValue : paoEndSuffix,
+          saoStartSuffix: field === "saoStartSuffix" ? newValue : saoStartSuffix,
+          saoEndSuffix: field && field === "saoEndSuffix" ? newValue : saoEndSuffix,
+          subLocalityRef: field && field === "subLocalityRef" ? newValue : subLocalityRef,
+          subLocality: data.lpiData.subLocality,
+          postallyAddressable: field && field === "postalAddress" ? newValue : postalAddress,
+          officialFlag: field && field === "officialFlag" ? newValue : officialFlag,
+          pkId: data.lpiData.pkId,
+          changeType: field && field === "changeType" ? newValue : !data.lpiData.lpiKey ? "I" : "U",
+          lpiKey: data.lpiData.lpiKey,
+          address: data.lpiData.address,
+          entryDate: data.lpiData.entryDate,
+          lastUpdateDate: data.lpiData.lastUpdateDate,
+        };
   }
 
   /**
@@ -658,10 +731,11 @@ function PropertyLPITab({
         setPaoText(data.lpiData.paoText);
         setUsrn(data.lpiData.usrn);
         setPostTownRef(data.lpiData.postTownRef);
+        if (settingsContext.isScottish) setSubLocalityRef(data.lpiData.subLocalityRef);
         setPostcodeRef(data.lpiData.postcodeRef);
         setLevel(data.lpiData.level);
         setOfficialFlag(data.lpiData.officialFlag);
-        setPostalAddress(data.lpiData.postallyAddressable);
+        setPostalAddress(settingsContext.isScottish ? data.lpiData.postallyAddressable : data.lpiData.postalAddress);
         setStartDate(data.lpiData.startDate);
         setEndDate(data.lpiData.endDate);
       }
@@ -686,10 +760,11 @@ function PropertyLPITab({
       setPaoText(data.lpiData.paoText);
       setUsrn(data.lpiData.usrn);
       setPostTownRef(data.lpiData.postTownRef);
+      if (settingsContext.isScottish) setSubLocalityRef(data.lpiData.subLocalityRef);
       setPostcodeRef(data.lpiData.postcodeRef);
       setLevel(data.lpiData.level);
       setOfficialFlag(data.lpiData.officialFlag);
-      setPostalAddress(data.lpiData.postalAddress);
+      setPostalAddress(settingsContext.isScottish ? data.lpiData.postallyAddressable : data.lpiData.postalAddress);
       setStartDate(data.lpiData.startDate);
       setEndDate(data.lpiData.endDate);
 
@@ -705,28 +780,51 @@ function PropertyLPITab({
         const postTown = postTownRef
           ? lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === postTownRef).postTown
           : "";
+        const subLocality = subLocalityRef
+          ? lookupContext.currentLookups.subLocalities.find((x) => x.subLocalityRef === subLocalityRef).postTown
+          : "";
         const postcode = postcodeRef
           ? lookupContext.currentLookups.postcodes.find((x) => x.postcodeRef === postcodeRef).postcode
           : "";
 
-        const saveData = {
-          usrn: usrn,
-          language: language,
-          organisation: data.lpiData.organisation,
-          saonStartNum: saoStartNumber,
-          saonStartSuffix: saoStartSuffix,
-          saonEndNum: saoEndNumber,
-          saonEndSuffix: saoEndSuffix,
-          saonText: saoText,
-          paonStartNum: paoStartNumber,
-          paonStartSuffix: paoStartSuffix,
-          paonEndNum: paoEndNumber,
-          paonEndSuffix: paoEndSuffix,
-          paonText: paoText,
-          postTown: postTown,
-          postcode: postcode,
-          postallyAddressable: postalAddress,
-        };
+        const saveData = settingsContext.isScottish
+          ? {
+              usrn: usrn,
+              language: language,
+              organisation: data.lpiData.organisation,
+              saonStartNum: saoStartNumber,
+              saonStartSuffix: saoStartSuffix,
+              saonEndNum: saoEndNumber,
+              saonEndSuffix: saoEndSuffix,
+              saonText: saoText,
+              paonStartNum: paoStartNumber,
+              paonStartSuffix: paoStartSuffix,
+              paonEndNum: paoEndNumber,
+              paonEndSuffix: paoEndSuffix,
+              paonText: paoText,
+              postTown: postTown,
+              subLocality: subLocality,
+              postcode: postcode,
+              postallyAddressable: postalAddress,
+            }
+          : {
+              usrn: usrn,
+              language: language,
+              organisation: data.lpiData.organisation,
+              saonStartNum: saoStartNumber,
+              saonStartSuffix: saoStartSuffix,
+              saonEndNum: saoEndNumber,
+              saonEndSuffix: saoEndSuffix,
+              saonText: saoText,
+              paonStartNum: paoStartNumber,
+              paonStartSuffix: paoStartSuffix,
+              paonEndNum: paoEndNumber,
+              paonEndSuffix: paoEndSuffix,
+              paonText: paoText,
+              postTown: postTown,
+              postcode: postcode,
+              postallyAddressable: postalAddress,
+            };
 
         console.log("[DEBUG] GetTempAddress", tempAddressUrl, JSON.stringify(saveData));
 
@@ -770,6 +868,7 @@ function PropertyLPITab({
     paoText,
     usrn,
     postTownRef,
+    subLocalityRef,
     postcodeRef,
     postalAddress,
     lookupContext,
@@ -832,6 +931,7 @@ function PropertyLPITab({
     setPaoTextError(null);
     setUsrnError(null);
     setPostTownRefError(null);
+    setSubLocalityRefError(null);
     setPostcodeRefError(null);
     setLevelError(null);
     setOfficialFlagError(null);
@@ -897,6 +997,11 @@ function PropertyLPITab({
           case "posttown":
           case "posttownref":
             setPostTownRefError(error.errors);
+            break;
+
+          case "sublocality":
+          case "sublocalityref":
+            setSubLocalityRefError(error.errors);
             break;
 
           case "postcode":
@@ -992,7 +1097,6 @@ function PropertyLPITab({
             id={`actions-menu-${data.lpiData.lpiKey}`}
             elevation={2}
             anchorEl={anchorEl}
-            getContentAnchorEl={null}
             anchorOrigin={{
               vertical: "bottom",
               horizontal: "right",
@@ -1145,6 +1249,24 @@ function PropertyLPITab({
           onChange={handlePostTownRefChangeEvent}
           helperText="Allocated by the Royal Mail to assist in delivery of mail."
         />
+        {settingsContext.isScottish && (
+          <ADSSelectControl
+            label="Sub-locality"
+            isEditable={userCanEdit}
+            isFocused={focusedField ? focusedField === "SubLocality" || focusedField === "SubLocalityRef" : false}
+            loading={loading}
+            useRounded
+            lookupData={lookupContext.currentLookups.subLocalities.filter(
+              (x) => x.language === language && !x.historic
+            )}
+            lookupId="subLocalityRef"
+            lookupLabel="subLocality"
+            value={subLocalityRef}
+            errorText={subLocalityRefError}
+            onChange={handleSubLocalityRefChangeEvent}
+            helperText="Third level of geographic area name. e.g. to record an island name or property group."
+          />
+        )}
         <ADSSelectControl
           label="Postcode"
           isEditable={userCanEdit}
@@ -1160,18 +1282,7 @@ function PropertyLPITab({
           onChange={handlePostcodeRefChangeEvent}
           helperText="Allocated by the Royal Mail to assist in delivery of mail."
         />
-        {settingsContext.isScottish ? (
-          <ADSNumberControl
-            label="Level"
-            isEditable={userCanEdit}
-            isFocused={focusedField ? focusedField === "Level" : false}
-            loading={loading}
-            value={level}
-            errorText={levelError}
-            helperText="Memorandum of the vertical position of the BLPU."
-            onChange={handleLevelChangeEvent}
-          />
-        ) : (
+        {!settingsContext.isScottish && (
           <ADSTextControl
             label="Level"
             isEditable={userCanEdit}
@@ -1185,41 +1296,37 @@ function PropertyLPITab({
             onChange={handleLevelChangeEvent}
           />
         )}
-        {!settingsContext.isScottish && (
-          <ADSSelectControl
-            label="Official address"
-            isEditable={userCanEdit}
-            isFocused={focusedField ? focusedField === "OfficialFlag" : false}
-            loading={loading}
-            useRounded
-            doNotSetTitleCase
-            lookupData={OfficialAddress}
-            lookupId="id"
-            lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-            value={officialFlag}
-            errorText={officialFlagError}
-            onChange={handleOfficialFlagChangeEvent}
-            helperText="Status of address."
-          />
-        )}
-        {!settingsContext.isScottish && (
-          <ADSSelectControl
-            label="Postal address"
-            isEditable={userCanEdit}
-            isRequired
-            isFocused={focusedField ? focusedField === "PostalAddress" : false}
-            loading={loading}
-            useRounded
-            doNotSetTitleCase
-            lookupData={PostallyAddressable}
-            lookupId="id"
-            lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-            value={postalAddress}
-            errorText={postalAddressError}
-            onChange={handlePostalAddressChangeEvent}
-            helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
-          />
-        )}
+        <ADSSelectControl
+          label="Official address"
+          isEditable={userCanEdit}
+          isFocused={focusedField ? focusedField === "OfficialFlag" : false}
+          loading={loading}
+          useRounded
+          doNotSetTitleCase
+          lookupData={OfficialAddress}
+          lookupId="id"
+          lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+          value={officialFlag}
+          errorText={officialFlagError}
+          onChange={handleOfficialFlagChangeEvent}
+          helperText="Status of address."
+        />
+        <ADSSelectControl
+          label={`${settingsContext.isScottish ? "Postally addressable" : "Postal address"}`}
+          isEditable={userCanEdit}
+          isRequired
+          isFocused={focusedField ? focusedField === "PostalAddress" : false}
+          loading={loading}
+          useRounded
+          doNotSetTitleCase
+          lookupData={PostallyAddressable}
+          lookupId="id"
+          lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+          value={postalAddress}
+          errorText={postalAddressError}
+          onChange={handlePostalAddressChangeEvent}
+          helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
+        />
         <ADSDateControl
           label="Start date"
           isEditable={userCanEdit}

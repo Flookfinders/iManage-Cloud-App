@@ -31,6 +31,7 @@
 //    017   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    018   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs, and improve some functions.
 //    019   20.11.23 Sean Flook                 Undone above change.
+//    020   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -50,10 +51,8 @@ import LookupContext from "../context/lookupContext";
 import SandboxContext from "../context/sandboxContext";
 
 import {
-  Box,
   Checkbox,
   Grid,
-  Stack,
   IconButton,
   List,
   ListItemButton,
@@ -69,6 +68,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSSelectionControl from "../components/ADSSelectionControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import AddPropertyWizardDialog from "../dialogs/AddPropertyWizardDialog";
@@ -1280,7 +1280,6 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                 )
                 .map((rec) => (
                   <ListItemButton
-                    button
                     divider
                     dense
                     disableGutters
@@ -1359,7 +1358,6 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                               id="street-actions-menu"
                               elevation={2}
                               anchorEl={anchorStreetActionsEl}
-                              getContentAnchorEl={null}
                               anchorOrigin={{
                                 vertical: "bottom",
                                 horizontal: "right",
@@ -1471,7 +1469,6 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                               id="property-actions-menu"
                               elevation={2}
                               anchorEl={anchorPropertyActionsEl}
-                              getContentAnchorEl={null}
                               anchorOrigin={{
                                 vertical: "bottom",
                                 horizontal: "right",
@@ -1628,7 +1625,6 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                 .map((rec) => (
                   <ListItemButton
                     alignItems="flex-start"
-                    button
                     divider
                     dense
                     disableGutters
@@ -1883,7 +1879,6 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                       id="street-actions-menu"
                                       elevation={2}
                                       anchorEl={anchorStreetActionsEl}
-                                      getContentAnchorEl={null}
                                       anchorOrigin={{
                                         vertical: "bottom",
                                         horizontal: "right",
@@ -2002,7 +1997,6 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                       id="property-actions-menu"
                                       elevation={2}
                                       anchorEl={anchorPropertyActionsEl}
-                                      getContentAnchorEl={null}
                                       anchorOrigin={{
                                         vertical: "bottom",
                                         horizontal: "right",

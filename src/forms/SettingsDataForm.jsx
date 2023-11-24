@@ -1,6 +1,27 @@
+/* #region header */
+/**************************************************************************************************
+//
+//  Description: Settings data form
+//
+//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//
+//--------------------------------------------------------------------------------------------------
+//
+//  Modification History:
+//
+//  Version Date     Modifier            Issue# Description
+//#region Version 1.0.0.0 changes
+//    001            Sean Flook                 Initial Revision.
+//    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//#endregion Version 1.0.0.0 changes
+//
+//--------------------------------------------------------------------------------------------------
+/* #endregion header */
+
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Typography, Box } from "@mui/material";
+import { Typography } from "@mui/material";
+import { Box } from "@mui/system";
 import AuthorityDetailsSettingsTab from "../tabs/AuthorityDetailsSettingsTab";
 import MetadataSettingsTab from "../tabs/MetadataSettingsTab";
 import PropertyTemplatesTab from "../tabs/PropertyTemplatesTab";

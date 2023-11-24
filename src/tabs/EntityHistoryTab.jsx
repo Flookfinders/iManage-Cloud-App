@@ -15,6 +15,7 @@
 //    002   07.09.23 Sean Flook                 Cleaned the code.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle.
+//    005   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -29,7 +30,8 @@ import SettingsContext from "../context/settingsContext";
 
 import { GetPropertyHistoryByUPRNUrl, GetStreetHistoryByUSRNUrl } from "../configuration/ADSConfig";
 
-import { Box, Chip, Skeleton } from "@mui/material";
+import { Chip, Skeleton } from "@mui/material";
+import { Box } from "@mui/system";
 import ADSEntityHistoryList from "../components/ADSEntityHistoryList";
 
 import UpdateIcon from "@mui/icons-material/Update";

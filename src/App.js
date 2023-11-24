@@ -28,6 +28,7 @@
 //    015   03.11.23 Sean Flook       IMANN-175 Changes required to select properties from the map.
 //    016   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
 //    017   20.11.23 Sean Flook                 Removed unwanted code.
+//    018   24.11.23 Sean Flook                 Renamed successor to successorCrossRef.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -62,7 +63,7 @@ import {
   ValidateEsuData,
   ValidateOneWayExemptionData,
   ValidateHighwayDedicationData,
-  ValidateStreetSuccessorData,
+  ValidateStreetSuccessorCrossRefData,
   ValidateMaintenanceResponsibilityData,
   ValidateReinstatementCategoryData,
   ValidateOSSpecialDesignationData,
@@ -80,7 +81,7 @@ import {
   ValidateCrossRefData,
   ValidateClassificationData,
   ValidateOrganisationData,
-  ValidateSuccessorData,
+  ValidateSuccessorCrossRefData,
   ValidatePropertyNoteData,
 } from "./utils/PropertyValidation";
 import LoginDialog from "./dialogs/LoginDialog";
@@ -130,7 +131,7 @@ function App() {
       esu: null,
       highwayDedication: null,
       oneWayExemption: null,
-      successor: null,
+      successorCrossRef: null,
       maintenanceResponsibility: null,
       reinstatementCategory: null,
       osSpecialDesignation: null,
@@ -147,7 +148,7 @@ function App() {
       provenance: null,
       classification: null,
       organisation: null,
-      successor: null,
+      successorCrossRef: null,
       note: null,
     },
   });
@@ -228,7 +229,7 @@ function App() {
     esu: [],
     highwayDedication: [],
     oneWayExemption: [],
-    successor: [],
+    successorCrossRef: [],
     interest: [],
     maintenanceResponsibility: [],
     reinstatementCategory: [],
@@ -280,7 +281,7 @@ function App() {
     crossRef: [],
     classification: [],
     organisation: [],
-    successor: [],
+    successorCrossRef: [],
     note: [],
   });
 
@@ -398,12 +399,12 @@ function App() {
    * @param {array} adminAuthorities The list of administrative authorities
    * @param {array} operationalDistricts The list of operational districts (GeoPlace only)
    * @param {array} appCrossRefs  The list of application cross references
-   * @param {array} subLocalities The list of sub-localities (OneScotland)
+   * @param {array} subLocalities The list of sub-localities (OneScotland only)
    * @param {array} streetDescriptors The list of street descriptors
    * @param {array} postTowns The list of post towns.
    * @param {array} postcodes The list of postcodes.
-   * @param {array} wards The list of wards.
-   * @param {array} parishes The list of parishes.
+   * @param {array} wards The list of wards (GeoPlace only).
+   * @param {array} parishes The list of parishes (GeoPlace only).
    */
   function HandleLookupChange(
     validationMessages,
@@ -501,8 +502,10 @@ function App() {
           type === "oneWayExemption"
             ? JSON.parse(JSON.stringify(updatedData))
             : sandbox.currentStreetRecords.oneWayExemption,
-        successor:
-          type === "successor" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentStreetRecords.successor,
+        successorCrossRef:
+          type === "successorCrossRef"
+            ? JSON.parse(JSON.stringify(updatedData))
+            : sandbox.currentStreetRecords.successorCrossRef,
         maintenanceResponsibility:
           type === "maintenanceResponsibility"
             ? JSON.parse(JSON.stringify(updatedData))
@@ -540,8 +543,10 @@ function App() {
           type === "organisation"
             ? JSON.parse(JSON.stringify(updatedData))
             : sandbox.currentPropertyRecords.organisation,
-        successor:
-          type === "successor" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentPropertyRecords.successor,
+        successorCrossRef:
+          type === "successorCrossRef"
+            ? JSON.parse(JSON.stringify(updatedData))
+            : sandbox.currentPropertyRecords.successorCrossRef,
         note: type === "propertyNote" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentPropertyRecords.note,
       },
     };
@@ -606,12 +611,12 @@ function App() {
             : ["oneWayExemption", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
             ? null
             : sandbox.currentStreetRecords.oneWayExemption,
-        successor:
-          updateType === "successor"
+        successorCrossRef:
+          updateType === "successorCrossRef"
             ? JSON.parse(JSON.stringify(updatedData))
-            : ["successor", "allAssociatedProperty", "allProperty", "allStreet"].includes(clearType)
+            : ["successorCrossRef", "allAssociatedProperty", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentStreetRecords.successor,
+            : sandbox.currentStreetRecords.successorCrossRef,
         maintenanceResponsibility:
           updateType === "maintenanceResponsibility"
             ? JSON.parse(JSON.stringify(updatedData))
@@ -698,12 +703,12 @@ function App() {
             : ["organisation", "allAssociatedProperty", "allProperty", "allStreet"].includes(clearType)
             ? null
             : sandbox.currentPropertyRecords.organisation,
-        successor:
-          updateType === "successor"
+        successorCrossRef:
+          updateType === "successorCrossRef"
             ? JSON.parse(JSON.stringify(updatedData))
-            : ["successor", "allAssociatedProperty", "allProperty", "allStreet"].includes(clearType)
+            : ["successorCrossRef", "allAssociatedProperty", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentPropertyRecords.successor,
+            : sandbox.currentPropertyRecords.successorCrossRef,
         note:
           updateType === "propertyNote"
             ? JSON.parse(JSON.stringify(updatedData))
@@ -731,7 +736,7 @@ function App() {
         esu: null,
         highwayDedication: null,
         oneWayExemption: null,
-        successor: null,
+        successorCrossRef: null,
         maintenanceResponsibility: null,
         reinstatementCategory: null,
         osSpecialDesignation: null,
@@ -748,7 +753,7 @@ function App() {
         provenance: null,
         classification: null,
         organisation: null,
-        successor: null,
+        successorCrossRef: null,
         note: null,
       },
     };
@@ -939,7 +944,7 @@ function App() {
    * @param {array|null} streetErrors The list of street errors.
    * @param {array|null} descriptorErrors The list of descriptor errors.
    * @param {array|null} esuErrors The list of ESU errors.
-   * @param {array|null} successorErrors The list of successor errors.
+   * @param {array|null} successorCrossRefErrors The list of successor cross reference errors (OneScotland only).
    * @param {array|null} highwayDedicationErrors The list of highway dedication errors (GeoPlace only).
    * @param {array|null} oneWayExemptionErrors The list of one-way exemption errors (GeoPlace only).
    * @param {array|null} maintenanceResponsibilityErrors The list of maintenance responsibility errors (OneScotland only).
@@ -956,7 +961,7 @@ function App() {
     streetErrors,
     descriptorErrors,
     esuErrors,
-    successorErrors,
+    successorCrossRefErrors,
     highwayDedicationErrors,
     oneWayExemptionErrors,
     maintenanceResponsibilityErrors,
@@ -975,7 +980,7 @@ function App() {
       esu: esuErrors && esuErrors.length > 0 ? esuErrors : [],
       highwayDedication: highwayDedicationErrors && highwayDedicationErrors.length > 0 ? highwayDedicationErrors : [],
       oneWayExemption: oneWayExemptionErrors && oneWayExemptionErrors.length > 0 ? oneWayExemptionErrors : [],
-      successor: successorErrors && successorErrors.length > 0 ? successorErrors : [],
+      successorCrossRef: successorCrossRefErrors && successorCrossRefErrors.length > 0 ? successorCrossRefErrors : [],
       maintenanceResponsibility:
         maintenanceResponsibilityErrors && maintenanceResponsibilityErrors.length > 0
           ? maintenanceResponsibilityErrors
@@ -998,7 +1003,7 @@ function App() {
         (esuErrors && esuErrors.length > 0) ||
         (highwayDedicationErrors && highwayDedicationErrors.length > 0) ||
         (oneWayExemptionErrors && oneWayExemptionErrors.length > 0) ||
-        (successorErrors && successorErrors.length > 0) ||
+        (successorCrossRefErrors && successorCrossRefErrors.length > 0) ||
         (maintenanceResponsibilityErrors && maintenanceResponsibilityErrors.length > 0) ||
         (reinstatementCategoryErrors && reinstatementCategoryErrors.length > 0) ||
         (osSpecialDesignationErrors && osSpecialDesignationErrors.length > 0) ||
@@ -1185,7 +1190,7 @@ function App() {
               streetClassification: sandbox.currentStreet.streetClassification,
               streetTolerance: sandbox.currentStreet.streetTolerance,
               esus: sandbox.currentStreet.esus,
-              successors: sandbox.currentStreet.successors,
+              successorCrossRefs: sandbox.currentStreet.successorCrossRefs,
             };
             const errorStreet = ValidateStreetData(streetData, lookups, isScottish);
             isValid = errorStreet.length === 0;
@@ -1195,7 +1200,7 @@ function App() {
               streetErrors.esu,
               streetErrors.highwayDedication,
               streetErrors.oneWayExemption,
-              streetErrors.successor,
+              streetErrors.successorCrossRef,
               streetErrors.maintenanceResponsibility,
               streetErrors.reinstatementCategory,
               streetErrors.osSpecialDesignation,
@@ -1224,7 +1229,7 @@ function App() {
               esuErrors,
               streetErrors.highwayDedication,
               streetErrors.oneWayExemption,
-              streetErrors.successor,
+              streetErrors.successorCrossRef,
               streetErrors.maintenanceResponsibility,
               streetErrors.reinstatementCategory,
               streetErrors.osSpecialDesignation,
@@ -1254,7 +1259,7 @@ function App() {
               streetErrors.esu,
               streetErrors.highwayDedication,
               streetErrors.oneWayExemption,
-              streetErrors.successor,
+              streetErrors.successorCrossRef,
               streetErrors.maintenanceResponsibility,
               streetErrors.reinstatementCategory,
               streetErrors.osSpecialDesignation,
@@ -1284,7 +1289,7 @@ function App() {
               streetErrors.esu,
               streetErrors.highwayDedication,
               oneWayExemptionErrors,
-              streetErrors.successor,
+              streetErrors.successorCrossRef,
               streetErrors.maintenanceResponsibility,
               streetErrors.reinstatementCategory,
               streetErrors.osSpecialDesignation,
@@ -1314,7 +1319,7 @@ function App() {
               streetErrors.esu,
               highwayDedicationErrors,
               streetErrors.oneWayExemption,
-              streetErrors.successor,
+              streetErrors.successorCrossRef,
               streetErrors.maintenanceResponsibility,
               streetErrors.reinstatementCategory,
               streetErrors.osSpecialDesignation,
@@ -1329,22 +1334,22 @@ function App() {
           break;
 
         case 30:
-          if (sandbox.currentStreetRecords.successor) {
-            const successorErrors = ValidateStreetSuccessorData(
-              sandbox.currentStreetRecords.successor,
+          if (sandbox.currentStreetRecords.successorCrossRef) {
+            const successorCrossRefErrors = ValidateStreetSuccessorCrossRefData(
+              sandbox.currentStreetRecords.successorCrossRef,
               streetRecord.index,
               streetRecord.parentIndex,
               lookups,
               true
             );
-            isValid = successorErrors.length === 0;
+            isValid = successorCrossRefErrors.length === 0;
             HandleStreetErrors(
               streetErrors.street,
               streetErrors.descriptor,
               streetErrors.esu,
               streetErrors.highwayDedication,
               streetErrors.oneWayExemption,
-              successorErrors,
+              successorCrossRefErrors,
               streetErrors.maintenanceResponsibility,
               streetErrors.reinstatementCategory,
               streetErrors.osSpecialDesignation,
@@ -1372,7 +1377,7 @@ function App() {
               streetErrors.esu,
               streetErrors.highwayDedication,
               streetErrors.oneWayExemption,
-              streetErrors.successor,
+              streetErrors.successorCrossRef,
               maintenanceResponsibilityErrors,
               streetErrors.reinstatementCategory,
               streetErrors.osSpecialDesignation,
@@ -1400,7 +1405,7 @@ function App() {
               streetErrors.esu,
               streetErrors.highwayDedication,
               streetErrors.oneWayExemption,
-              streetErrors.successor,
+              streetErrors.successorCrossRef,
               streetErrors.maintenanceResponsibility,
               reinstatementCategoryErrors,
               streetErrors.osSpecialDesignation,
@@ -1428,7 +1433,7 @@ function App() {
               streetErrors.esu,
               streetErrors.highwayDedication,
               streetErrors.oneWayExemption,
-              streetErrors.successor,
+              streetErrors.successorCrossRef,
               streetErrors.maintenanceResponsibility,
               streetErrors.reinstatementCategory,
               osSpecialDesignationErrors,
@@ -1456,7 +1461,7 @@ function App() {
               streetErrors.esu,
               streetErrors.highwayDedication,
               streetErrors.oneWayExemption,
-              streetErrors.successor,
+              streetErrors.successorCrossRef,
               streetErrors.maintenanceResponsibility,
               streetErrors.reinstatementCategory,
               streetErrors.osSpecialDesignation,
@@ -1484,7 +1489,7 @@ function App() {
               streetErrors.esu,
               streetErrors.highwayDedication,
               streetErrors.oneWayExemption,
-              streetErrors.successor,
+              streetErrors.successorCrossRef,
               streetErrors.maintenanceResponsibility,
               streetErrors.reinstatementCategory,
               streetErrors.osSpecialDesignation,
@@ -1512,7 +1517,7 @@ function App() {
               streetErrors.esu,
               streetErrors.highwayDedication,
               streetErrors.oneWayExemption,
-              streetErrors.successor,
+              streetErrors.successorCrossRef,
               streetErrors.maintenanceResponsibility,
               streetErrors.reinstatementCategory,
               streetErrors.osSpecialDesignation,
@@ -1540,7 +1545,7 @@ function App() {
               streetErrors.esu,
               streetErrors.highwayDedication,
               streetErrors.oneWayExemption,
-              streetErrors.successor,
+              streetErrors.successorCrossRef,
               streetErrors.maintenanceResponsibility,
               streetErrors.reinstatementCategory,
               streetErrors.osSpecialDesignation,
@@ -1569,7 +1574,7 @@ function App() {
               streetErrors.esu,
               streetErrors.highwayDedication,
               streetErrors.oneWayExemption,
-              streetErrors.successor,
+              streetErrors.successorCrossRef,
               streetErrors.maintenanceResponsibility,
               streetErrors.reinstatementCategory,
               streetErrors.osSpecialDesignation,
@@ -1598,7 +1603,7 @@ function App() {
               streetErrors.esu,
               streetErrors.highwayDedication,
               streetErrors.oneWayExemption,
-              streetErrors.successor,
+              streetErrors.successorCrossRef,
               streetErrors.maintenanceResponsibility,
               streetErrors.reinstatementCategory,
               streetErrors.osSpecialDesignation,
@@ -1745,7 +1750,7 @@ function App() {
    * @param {array|null} crossRefErrors The list of cross reference errors.
    * @param {array|null} classificationErrors The list of classification errors (OneScotland only).
    * @param {array|null} organisationErrors The list of organisation errors (OneScotland only).
-   * @param {array|null} successorErrors The list of successor errors (OneScotland only).
+   * @param {array|null} successorCrossRefErrors The list of successor cross reference errors (OneScotland only).
    * @param {array|null} noteErrors The list of note errors.
    * @param {number} pkId The id of the current property.
    */
@@ -1756,7 +1761,7 @@ function App() {
     crossRefErrors,
     classificationErrors,
     organisationErrors,
-    successorErrors,
+    successorCrossRefErrors,
     noteErrors,
     pkId
   ) {
@@ -1768,7 +1773,7 @@ function App() {
       crossRef: crossRefErrors && crossRefErrors.length > 0 ? crossRefErrors : [],
       classification: classificationErrors && classificationErrors.length > 0 ? classificationErrors : [],
       organisation: organisationErrors && organisationErrors.length > 0 ? organisationErrors : [],
-      successor: successorErrors && successorErrors.length > 0 ? successorErrors : [],
+      successorCrossRef: successorCrossRefErrors && successorCrossRefErrors.length > 0 ? successorCrossRefErrors : [],
       note: noteErrors && noteErrors.length > 0 ? noteErrors : [],
     });
     setPropertyHasErrors(
@@ -1778,7 +1783,7 @@ function App() {
         (crossRefErrors && crossRefErrors.length > 0) ||
         (classificationErrors && classificationErrors.length > 0) ||
         (organisationErrors && organisationErrors.length > 0) ||
-        (successorErrors && successorErrors.length > 0) ||
+        (successorCrossRefErrors && successorCrossRefErrors.length > 0) ||
         (noteErrors && noteErrors.length > 0)
     );
   }
@@ -1864,7 +1869,7 @@ function App() {
       crossRef: [],
       classification: [],
       organisation: [],
-      successor: [],
+      successorCrossRef: [],
       note: [],
     });
     setPropertyHasErrors(false);
@@ -1909,7 +1914,7 @@ function App() {
               propertyErrors.crossRef,
               propertyErrors.classification,
               propertyErrors.organisation,
-              propertyErrors.successor,
+              propertyErrors.successorCrossRef,
               propertyErrors.note
             );
           }
@@ -1931,7 +1936,7 @@ function App() {
               propertyErrors.crossRef,
               propertyErrors.classification,
               propertyErrors.organisation,
-              propertyErrors.successor,
+              propertyErrors.successorCrossRef,
               propertyErrors.note
             );
           }
@@ -1953,7 +1958,7 @@ function App() {
               crossRefErrors,
               propertyErrors.classification,
               propertyErrors.organisation,
-              propertyErrors.successor,
+              propertyErrors.successorCrossRef,
               propertyErrors.note
             );
           }
@@ -1976,20 +1981,20 @@ function App() {
               propertyErrors.crossRef,
               propertyErrors.classification,
               propertyErrors.organisation,
-              propertyErrors.successor,
+              propertyErrors.successorCrossRef,
               propertyErrors.note
             );
           }
           break;
 
         case 30:
-          if (sandbox.currentPropertyRecords.successor) {
-            const successorErrors = ValidateSuccessorData(
-              sandbox.currentPropertyRecords.successor,
+          if (sandbox.currentPropertyRecords.successorCrossRef) {
+            const successorCrossRefErrors = ValidateSuccessorCrossRefData(
+              sandbox.currentPropertyRecords.successorCrossRef,
               propertyRecord.index,
               lookups
             );
-            isValid = successorErrors.length === 0;
+            isValid = successorCrossRefErrors.length === 0;
             HandlePropertyErrors(
               propertyErrors.blpu,
               propertyErrors.lpi,
@@ -1997,7 +2002,7 @@ function App() {
               propertyErrors.crossRef,
               propertyErrors.classification,
               propertyErrors.organisation,
-              successorErrors,
+              successorCrossRefErrors,
               propertyErrors.note
             );
           }
@@ -2018,7 +2023,7 @@ function App() {
               propertyErrors.crossRef,
               propertyErrors.classification,
               organisationErrors,
-              propertyErrors.successor,
+              propertyErrors.successorCrossRef,
               propertyErrors.note
             );
           }
@@ -2039,7 +2044,7 @@ function App() {
               propertyErrors.crossRef,
               classificationErrors,
               propertyErrors.organisation,
-              propertyErrors.successor,
+              propertyErrors.successorCrossRef,
               propertyErrors.note
             );
           }
@@ -2056,7 +2061,7 @@ function App() {
               propertyErrors.crossRef,
               propertyErrors.classification,
               propertyErrors.organisation,
-              propertyErrors.successor,
+              propertyErrors.successorCrossRef,
               noteErrors
             );
           }

@@ -17,6 +17,7 @@
 //    004   12.10.23 Sean Flook                 Correctly handle expand and collapse.
 //    005   12.10.23 Sean Flook                 Use the street context to handle storing the expanded state of the item.
 //    006   03.11.23 Sean Flook                 Added hyphen to one-way.
+//    007   24.11.23 Sean Flook                 Removed unwanted code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -669,7 +670,6 @@ function ADSEsuDataListItem({
                 id={`actions-menu-${data.esu.esuId}`}
                 elevation={2}
                 anchorEl={anchorEl}
-                getContentAnchorEl={null}
                 anchorOrigin={{
                   vertical: "bottom",
                   horizontal: "right",

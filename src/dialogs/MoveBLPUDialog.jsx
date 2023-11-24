@@ -12,6 +12,7 @@
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   06/11/23 Sean Flook       IMANN-175 Initial Revision.
+//    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system, renamed successor to successorCrossRef and simplified handleFinaliseClose.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -27,7 +28,7 @@ import SettingsContext from "../context/settingsContext";
 import PropertyContext from "../context/propertyContext";
 
 import { ArraysEqual } from "../utils/HelperUtils";
-import { addressToTitleCase, GetPropertyMapData, SaveProperty } from "../utils/PropertyUtils";
+import { addressToTitleCase, GetPropertyMapData, SaveProperty, getClassificationCode } from "../utils/PropertyUtils";
 import { GetMultiEditSearchUrl } from "../configuration/ADSConfig";
 
 import {
@@ -38,14 +39,13 @@ import {
   DialogTitle,
   IconButton,
   Typography,
-  Stack,
   Button,
   Divider,
-  Box,
   Grid,
   Backdrop,
   CircularProgress,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 
 import ADSWizardMap from "../components/ADSWizardMap";
 import ADSWizardAddressList from "../components/ADSWizardAddressList";
@@ -131,28 +131,16 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
     setFinaliseOpen(false);
     if (type !== "error") {
       const savedMapProperties = savedProperty.current.map((x) => {
-        return settingsContext.isScottish
-          ? {
-              uprn: x.uprn.toString(),
-              address: x.lpis.filter((rec) => rec.language === "ENG")[0].address.replaceAll("\r\n", " "),
-              formattedAddress: x.lpis.filter((rec) => rec.language === "ENG")[0].address,
-              postcode: x.lpis.filter((rec) => rec.language === "ENG")[0].postcode,
-              easting: x.xcoordinate,
-              northing: x.ycoordinate,
-              logicalStatus: x.logicalStatus,
-              classificationCode:
-                x.classifications && x.classifications.length > 0 ? x.classifications[0].blpuClass : "U",
-            }
-          : {
-              uprn: x.uprn.toString(),
-              address: x.lpis.filter((rec) => rec.language === "ENG")[0].address.replaceAll("\r\n", " "),
-              formattedAddress: x.lpis.filter((rec) => rec.language === "ENG")[0].address,
-              postcode: x.lpis.filter((rec) => rec.language === "ENG")[0].postcode,
-              easting: x.xcoordinate,
-              northing: x.ycoordinate,
-              logicalStatus: x.logicalStatus,
-              classificationCode: x.blpuClass,
-            };
+        return {
+          uprn: x.uprn.toString(),
+          address: x.lpis.filter((rec) => rec.language === "ENG")[0].address.replaceAll("\r\n", " "),
+          formattedAddress: x.lpis.filter((rec) => rec.language === "ENG")[0].address,
+          postcode: x.lpis.filter((rec) => rec.language === "ENG")[0].postcode,
+          easting: x.xcoordinate,
+          northing: x.ycoordinate,
+          logicalStatus: x.logicalStatus,
+          classificationCode: getClassificationCode(x),
+        };
       });
       const updatedSearchProperties = mapContext.currentSearchData.properties.map(
         (x) => savedMapProperties.find((rec) => rec.uprn === x.uprn) || x
@@ -295,7 +283,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
                 blpuProvenances: currentProperty.blpuProvenances,
                 classifications: currentProperty.classifications,
                 organisations: currentProperty.organisations,
-                successors: currentProperty.successors,
+                successorCrossRefs: currentProperty.successorCrossRefs,
                 blpuNotes: updatedNotes,
                 lpis: currentProperty.lpis,
               }
@@ -547,9 +535,9 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
         }
       }
 
-      if (currentErrors.successor && currentErrors.successor.length > 0) {
-        for (const error of currentErrors.successor) {
-          const errorStr = `Successor [${error.field}]: ${[...new Set(error.errors)].join(", ")}`;
+      if (currentErrors.successorCrossRef && currentErrors.successorCrossRef.length > 0) {
+        for (const error of currentErrors.successorCrossRef) {
+          const errorStr = `Successor cross reference [${error.field}]: ${[...new Set(error.errors)].join(", ")}`;
           if (!errorList.includes(errorStr)) errorList.push(errorStr);
         }
       }

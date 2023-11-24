@@ -3,7 +3,7 @@
 //
 //  Description: Street descriptor tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    ï¿½ 2021 - 2023 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001            Sean Flook                 Initial version.
 //    002   27.10.23 Sean Flook                 Use new dataFormStyle.
+//    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -26,7 +27,8 @@ import UserContext from "./../context/userContext";
 import SettingsContext from "../context/settingsContext";
 import { streetToTitleCase } from "../utils/StreetUtils";
 import ObjectComparison from "./../utils/ObjectComparison";
-import { Box, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
+import { Box } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSLanguageControl from "../components/ADSLanguageControl";
 import ADSTextControl from "../components/ADSTextControl";

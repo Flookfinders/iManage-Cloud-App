@@ -15,6 +15,7 @@
 //    002   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle.
+//    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -29,20 +30,19 @@ import SettingsContext from "../context/settingsContext";
 import dateFormat from "dateformat";
 import { GetLookupLabel } from "../utils/HelperUtils";
 import {
-  Box,
   Grid,
   Tooltip,
   IconButton,
   Typography,
   List,
   ListItemAvatar,
-  ListItem,
+  ListItemButton,
   ListItemText,
   Skeleton,
   Popper,
-  Stack,
   Avatar,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import BLPUProvenance from "../data/BLPUProvenance";
 import ADSActionButton from "../components/ADSActionButton";
@@ -416,8 +416,7 @@ function PropertyBLPUProvenanceListTab({
             component="nav"
             key="key_no_records"
           >
-            <ListItem
-              button
+            <ListItemButton
               dense
               disabled={!userCanEdit}
               disableGutters
@@ -442,7 +441,7 @@ function PropertyBLPUProvenanceListTab({
                   </IconButton>
                 </Tooltip>
               </ListItemAvatar>
-            </ListItem>
+            </ListItemButton>
           </List>
         )}
       </Box>

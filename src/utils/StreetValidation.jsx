@@ -34,6 +34,7 @@
 //    002   19.04.23 Sean Flook         WI40653 use includeCheck to determine if a check should be run.
 //    003   10.08.23 Sean Flook                 Corrected object name.
 //    004   20.09.23 Sean Flook                 Added holder for ValidateStreetSuccessorData.
+//    005   24.11.23 Sean Flook                 Renamed successor to successorCrossRef.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -815,15 +816,15 @@ export function ValidateHighwayDedicationData(data, index, esuIndex, currentLook
 }
 
 /**
- * Validates a successor record
+ * Validates a successor cross reference record
  *
- * @param {object} data - The successor record data that needs to be validated
- * @param {number} index - The index for the successor record.
+ * @param {object} data - The successor cross reference record data that needs to be validated
+ * @param {number} index - The index for the successor cross reference record.
  * @param {object} currentLookups - The lookup context object.
  * @return {array}
  */
-export function ValidateStreetSuccessorData(data, index, currentLookups) {
-  // const methodName = "ValidateStreetSuccessorData";
+export function ValidateStreetSuccessorCrossRefData(data, index, currentLookups) {
+  // const methodName = "ValidateStreetSuccessorCrossRefData";
   let validationErrors = [];
   return validationErrors;
 }

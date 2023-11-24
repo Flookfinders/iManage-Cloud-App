@@ -15,6 +15,7 @@
 //    002   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
+//    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -23,7 +24,8 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button, Box, Stack } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 
 import FmdBadIcon from "@mui/icons-material/FmdBad";

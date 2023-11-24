@@ -1,7 +1,28 @@
+/* #region header */
+/**************************************************************************************************
+//
+//  Description: Wizard finalise page
+//
+//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//
+//--------------------------------------------------------------------------------------------------
+//
+//  Modification History:
+//
+//  Version Date     Modifier            Issue# Description
+//#region Version 1.0.0.0 changes
+//    001            Sean Flook                 Initial Revision.
+//    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//#endregion Version 1.0.0.0 changes
+//
+//--------------------------------------------------------------------------------------------------
+/* #endregion header */
+
 import React from "react";
 import PropTypes from "prop-types";
 
-import { Box, Backdrop, CircularProgress } from "@mui/material";
+import { Backdrop, CircularProgress } from "@mui/material";
+import { Box } from "@mui/system";
 import ADSWizardMap from "../components/ADSWizardMap";
 
 WizardMapPlacementPage.propTypes = {

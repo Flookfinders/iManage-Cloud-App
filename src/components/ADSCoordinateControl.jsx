@@ -11,7 +11,8 @@
 //
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   07.07.21 Sean Flook         WI39??? Initial Revision.
+//    001   07.07.21 Sean Flook                 Initial Revision.
+//    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -21,7 +22,8 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Grid, TextField, Typography, Tooltip, Button, Skeleton, Box } from "@mui/material";
+import { Grid, TextField, Typography, Tooltip, Button, Skeleton } from "@mui/material";
+import { Box } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { PinDrop } from "@mui/icons-material";
 import { MoveBLPUIcon } from "../utils/ADSIcons";

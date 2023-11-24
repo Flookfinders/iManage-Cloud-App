@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   15.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
+//    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -21,7 +22,8 @@
 /* #region imports */
 
 import React from "react";
-import { SvgIcon, Box } from "@mui/material";
+import { SvgIcon } from "@mui/material";
+import { Box } from "@mui/system";
 import LinearScaleIcon from "@mui/icons-material/LinearScale";
 import { adsWhite, adsLightGreyD } from "./ADSColours";
 

@@ -29,6 +29,7 @@
 //    016   22.09.23 Sean Flook                 Various small bug fixes.
 //    017   06.10.23 Sean Flook                 Various changes to ensure this works for GeoPlace and OneScotland and use colour variables.
 //    018   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate and set end date for associated records when updating the logical status to historic or rejected.
+//    019   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system, renamed successor to successorCrossRef and changes to handle Scottish data structure.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -62,11 +63,13 @@ import {
   SavePropertyAndUpdate,
   GetTempAddress,
   getBilingualSource,
+  getClassificationCode,
 } from "../utils/PropertyUtils";
 import ObjectComparison, { PropertyComparison } from "./../utils/ObjectComparison";
 import { useEditConfirmation } from "../pages/EditConfirmationPage";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
-import { AppBar, Tabs, Tab, Avatar, Typography, Box, Snackbar, Alert, Toolbar, Button, Stack } from "@mui/material";
+import { AppBar, Tabs, Tab, Avatar, Typography, Snackbar, Alert, Toolbar, Button } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import CheckIcon from "@mui/icons-material/Check";
 import HistoryIcon from "@mui/icons-material/History";
 import ErrorIcon from "@mui/icons-material/Error";
@@ -158,7 +161,7 @@ function PropertyDataForm({ data, loading }) {
   const [lpiFormData, setLpiFormData] = useState(null);
   const [classificationFormData, setClassificationFormData] = useState(null);
   const [organisationFormData, setOrganisationFormData] = useState(null);
-  const [successorFormData, setSuccessorFormData] = useState(null);
+  const [successorCrossRefFormData, setSuccessorCrossRefFormData] = useState(null);
   const [provenanceFormData, setProvenanceFormData] = useState(null);
   const [crossRefFormData, setCrossRefFormData] = useState(null);
   const [notesFormData, setNotesFormData] = useState(null);
@@ -172,7 +175,7 @@ function PropertyDataForm({ data, loading }) {
   const [lpiErrors, setLpiErrors] = useState([]);
   const [classificationErrors, setClassificationErrors] = useState([]);
   const [organisationErrors, setOrganisationErrors] = useState([]);
-  const [successorErrors, setSuccessorErrors] = useState([]);
+  const [successorCrossRefErrors, setSuccessorCrossRefErrors] = useState([]);
   const [provenanceErrors, setProvenanceErrors] = useState([]);
   const [crossRefErrors, setCrossRefErrors] = useState([]);
   const [noteErrors, setNoteErrors] = useState([]);
@@ -186,7 +189,7 @@ function PropertyDataForm({ data, loading }) {
   const [lpiFocusedField, setLpiFocusedField] = useState(null);
   const [classificationFocusedField, setClassificationFocusedField] = useState(null);
   const [organisationFocusedField, setOrganisationFocusedField] = useState(null);
-  const [successorFocusedField, setSuccessorFocusedField] = useState(null);
+  const [successorCrossRefFocusedField, setSuccessorCrossRefFocusedField] = useState(null);
   const [provenanceFocusedField, setProvenanceFocusedField] = useState(null);
   const [crossRefFocusedField, setCrossRefFocusedField] = useState(null);
   const [noteFocusedField, setNoteFocusedField] = useState(null);
@@ -199,7 +202,7 @@ function PropertyDataForm({ data, loading }) {
    * @param {object|null} crossRefData The cross reference data for the property.
    * @param {object|null} classificationData The classification data for the property (OneScotland only).
    * @param {object|null} organisationData The organisation data for the property (OneScotland only).
-   * @param {object|null} successorData The successor data for the property (OneScotland only).
+   * @param {object|null} successorCrossRefData The successor cross reference data for the property (OneScotland only).
    * @param {object|null} noteData The note data for the property.
    */
   const setAssociatedPropertyData = (
@@ -208,7 +211,7 @@ function PropertyDataForm({ data, loading }) {
     crossRefData,
     classificationData,
     organisationData,
-    successorData,
+    successorCrossRefData,
     noteData
   ) => {
     const newPropertyData = GetNewPropertyData(
@@ -221,7 +224,7 @@ function PropertyDataForm({ data, loading }) {
       crossRefData,
       classificationData,
       organisationData,
-      successorData,
+      successorCrossRefData,
       noteData
     );
     updatePropertyData(newPropertyData);
@@ -235,7 +238,7 @@ function PropertyDataForm({ data, loading }) {
    * @param {array|null} crossRefData The cross reference data for the property.
    * @param {array|null} classificationData The classification data for the property (OneScotland only).
    * @param {array|null} organisationData The organisation data for the property (OneScotland only).
-   * @param {array|null} successorData The successor data for the property (OneScotland only).
+   * @param {array|null} successorCrossRefData The successor cross reference data for the property (OneScotland only).
    * @param {array|null} noteData The note data for the property.
    * @param {string} clearType The type of data that we are clearing from the sandbox.
    */
@@ -245,7 +248,7 @@ function PropertyDataForm({ data, loading }) {
     crossRefData,
     classificationData,
     organisationData,
-    successorData,
+    successorCrossRefData,
     noteData,
     clearType
   ) => {
@@ -259,7 +262,7 @@ function PropertyDataForm({ data, loading }) {
       crossRefData,
       classificationData,
       organisationData,
-      successorData,
+      successorCrossRefData,
       noteData
     );
     updatePropertyDataAndClear(newPropertyData, clearType);
@@ -426,27 +429,27 @@ function PropertyDataForm({ data, loading }) {
 
       case 3: // Successors / Notes
         if (settingsContext.isScottish) {
-          if (successorFormData) {
-            setSuccessorFormData({
-              id: successorFormData.id,
-              successorData: sandboxContext.currentSandbox.currentPropertyRecords.successor
+          if (successorCrossRefFormData) {
+            setSuccessorCrossRefFormData({
+              id: successorCrossRefFormData.id,
+              successorCrossRefData: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef
                 ? {
-                    id: sandboxContext.currentSandbox.currentPropertyRecords.successor.pkId,
-                    changeType: sandboxContext.currentSandbox.currentPropertyRecords.successor.changeType,
-                    uprn: sandboxContext.currentSandbox.currentPropertyRecords.successor.uprn,
-                    succKey: sandboxContext.currentSandbox.currentPropertyRecords.successor.succKey,
-                    successor: sandboxContext.currentSandbox.currentPropertyRecords.successor.successor,
-                    successorType: sandboxContext.currentSandbox.currentPropertyRecords.successor.successorType,
-                    predecessor: sandboxContext.currentSandbox.currentPropertyRecords.successor.predecessor,
-                    startDate: sandboxContext.currentSandbox.currentPropertyRecords.successor.startDate,
-                    endDate: sandboxContext.currentSandbox.currentPropertyRecords.successor.endDate,
-                    entryDate: sandboxContext.currentSandbox.currentPropertyRecords.successor.entryDate,
-                    lastUpdateDate: sandboxContext.currentSandbox.currentPropertyRecords.successor.lastUpdateDate,
-                    neverExport: sandboxContext.currentSandbox.currentPropertyRecords.successor.neverExport,
+                    id: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.pkId,
+                    changeType: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.changeType,
+                    succKey: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.succKey,
+                    successor: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.successor,
+                    successorType: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.successorType,
+                    predecessor: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.predecessor,
+                    startDate: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.startDate,
+                    endDate: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.endDate,
+                    entryDate: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.entryDate,
+                    lastUpdateDate:
+                      sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.lastUpdateDate,
+                    neverExport: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.neverExport,
                   }
-                : successorFormData.successorData,
-              index: successorFormData.index,
-              totalRecords: successorFormData.totalRecords,
+                : successorCrossRefFormData.successorCrossRefData,
+              index: successorCrossRefFormData.index,
+              totalRecords: successorCrossRefFormData.totalRecords,
             });
           }
         } else {
@@ -581,7 +584,7 @@ function PropertyDataForm({ data, loading }) {
 
         case 3:
           if (settingsContext.isScottish) {
-            if (successorFormData) propertyContext.onRecordChange(30, successorFormData.index);
+            if (successorCrossRefFormData) propertyContext.onRecordChange(30, successorCrossRefFormData.index);
           } else {
             if (notesFormData) propertyContext.onRecordChange(23, notesFormData.index);
           }
@@ -650,48 +653,78 @@ function PropertyDataForm({ data, loading }) {
           : 0;
       const newPkId = !minPkIdLpi || !minPkIdLpi.pkId || minPkIdLpi.pkId > -10 ? -10 : minPkIdLpi.pkId - 1;
 
-      const newEngRec = {
-        level: null,
-        postalAddress: null,
-        custodianOne: 0,
-        custodianTwo: 0,
-        canKey: null,
-        pkId: newPkId,
-        changeType: "I",
-        uprn: propertyData && propertyData.uprn,
-        lpiKey: null,
-        language: "ENG",
-        logicalStatus: 6,
-        startDate: currentDate,
-        endDate: null,
-        entryDate: currentDate,
-        lastUpdateDate: currentDate,
-        saoStartNumber: 0,
-        saoStartSuffix: null,
-        saoEndNumber: 0,
-        saoEndSuffix: null,
-        saoText: null,
-        paoStartNumber: 0,
-        paoStartSuffix: null,
-        paoEndNumber: 0,
-        paoEndSuffix: null,
-        paoText: null,
-        usrn: currentStreet,
-        postcodeRef: 0,
-        postTownRef: 0,
-        officialFlag: null,
-        neverExport: false,
-        address: null,
-        postTown: null,
-        postcode: null,
-        lastUpdated: currentDate,
-        lastUser: currentUser,
-        dualLanguageLink: settingsContext.isWelsh
-          ? maxDualLanguageLink
-            ? maxDualLanguageLink.dualLanguageLink + 1
-            : 0
-          : 0,
-      };
+      const newEngRec = settingsContext.isScottish
+        ? {
+            language: "ENG",
+            startDate: currentDate,
+            endDate: null,
+            saoStartNumber: 0,
+            saoEndNumber: 0,
+            saoText: null,
+            paoStartNumber: 0,
+            paoEndNumber: 0,
+            paoText: null,
+            usrn: currentStreet,
+            postcodeRef: 0,
+            postTownRef: 0,
+            neverExport: false,
+            postTown: null,
+            postcode: null,
+            dualLanguageLink: maxDualLanguageLink ? maxDualLanguageLink.dualLanguageLink + 1 : 0,
+            uprn: propertyData && propertyData.uprn,
+            logicalStatus: 6,
+            paoStartSuffix: null,
+            paoEndSuffix: null,
+            saoStartSuffix: null,
+            saoEndSuffix: null,
+            subLocalityRef: 0,
+            subLocality: null,
+            postallyAddressable: null,
+            officialFlag: null,
+            pkId: newPkId,
+            changeType: "I",
+            lpiKey: null,
+            address: null,
+            entryDate: currentDate,
+            lastUpdateDate: currentDate,
+          }
+        : {
+            language: "ENG",
+            startDate: currentDate,
+            endDate: null,
+            saoStartNumber: 0,
+            saoEndNumber: 0,
+            saoText: null,
+            paoStartNumber: 0,
+            paoEndNumber: 0,
+            paoText: null,
+            usrn: currentStreet,
+            postcodeRef: 0,
+            postTownRef: 0,
+            neverExport: false,
+            postTown: null,
+            postcode: null,
+            dualLanguageLink: settingsContext.isWelsh
+              ? maxDualLanguageLink
+                ? maxDualLanguageLink.dualLanguageLink + 1
+                : 0
+              : 0,
+            uprn: propertyData && propertyData.uprn,
+            logicalStatus: 6,
+            paoStartSuffix: null,
+            paoEndSuffix: null,
+            saoStartSuffix: null,
+            saoEndSuffix: null,
+            level: null,
+            postalAddress: null,
+            officialFlag: null,
+            pkId: newPkId,
+            changeType: "I",
+            lpiKey: null,
+            address: null,
+            entryDate: currentDate,
+            lastUpdateDate: currentDate,
+          };
 
       let newLPIs = propertyData.lpis ? propertyData.lpis : [];
 
@@ -699,9 +732,6 @@ function PropertyDataForm({ data, loading }) {
         const newCymRec = {
           level: null,
           postalAddress: null,
-          custodianOne: 0,
-          custodianTwo: 0,
-          canKey: null,
           pkId: newPkId - 1,
           changeType: "I",
           uprn: propertyData && propertyData.uprn,
@@ -744,7 +774,7 @@ function PropertyDataForm({ data, loading }) {
         propertyData.blpuAppCrossRefs,
         propertyData.classifications,
         propertyData.organisations,
-        propertyData.successors,
+        propertyData.successorCrossRefs,
         propertyData.blpuNotes
       );
 
@@ -841,7 +871,7 @@ function PropertyDataForm({ data, loading }) {
         propertyData.blpuAppCrossRefs,
         newClassifications,
         propertyData.organisations,
-        propertyData.successors,
+        propertyData.successorCrossRefs,
         propertyData.blpuNotes
       );
 
@@ -930,7 +960,7 @@ function PropertyDataForm({ data, loading }) {
         propertyData.blpuAppCrossRefs,
         propertyData.classifications,
         newOrganisations,
-        propertyData.successors,
+        propertyData.successorCrossRefs,
         propertyData.blpuNotes
       );
 
@@ -971,30 +1001,32 @@ function PropertyDataForm({ data, loading }) {
   };
 
   /**
-   * Event to handle when a successor record is selected from the list of successor records.
+   * Event to handle when a successor cross reference record is selected from the list of successor cross reference records.
    *
-   * @param {number} pkId The primary key for the selected record. If -1 the data is cleared. 0 indicates a new successor is required. Any number > 0 is existing data.
-   * @param {object|null} successorData The successor data for the selected record
-   * @param {number|null} dataIdx The index of the record within the array of successor records.
-   * @param {number|null} dataLength The total number of records in the array of successor records.
+   * @param {number} pkId The primary key for the selected record. If -1 the data is cleared. 0 indicates a new successor cross reference is required. Any number > 0 is existing data.
+   * @param {object|null} successorCrossRefData The successor cross reference data for the selected record
+   * @param {number|null} dataIdx The index of the record within the array of successor cross reference records.
+   * @param {number|null} dataLength The total number of records in the array of successor cross reference records.
    */
-  const handleSuccessorSelected = (pkId, successorData, dataIdx, dataLength) => {
+  const handleSuccessorCrossRefSelected = (pkId, successorCrossRefData, dataIdx, dataLength) => {
     if (pkId === -1) {
-      setSuccessorFormData(null);
+      setSuccessorCrossRefFormData(null);
       propertyContext.onRecordChange(21, null);
       mapContext.onEditMapObject(null, null);
     } else if (pkId === 0) {
       const newIdx =
-        propertyData && propertyData.successors
-          ? propertyData.successors.filter((x) => x.changeType !== "D").length
+        propertyData && propertyData.successorCrossRefs
+          ? propertyData.successorCrossRefs.filter((x) => x.changeType !== "D").length
           : 0;
       const currentDate = GetCurrentDate(false);
-      const minPkIdSuccessor =
-        propertyData.successors && propertyData.successors.length > 0
-          ? propertyData.successors.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
+      const minPkIdSuccessorCrossRef =
+        propertyData.successorCrossRefs && propertyData.successorCrossRefs.length > 0
+          ? propertyData.successorCrossRefs.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
           : null;
       const newPkId =
-        !minPkIdSuccessor || !minPkIdSuccessor.pkId || minPkIdSuccessor.pkId > -10 ? -10 : minPkIdSuccessor.pkId - 1;
+        !minPkIdSuccessorCrossRef || !minPkIdSuccessorCrossRef.pkId || minPkIdSuccessorCrossRef.pkId > -10
+          ? -10
+          : minPkIdSuccessorCrossRef.pkId - 1;
       const newRec = {
         pkId: newPkId,
         changeType: "I",
@@ -1008,8 +1040,8 @@ function PropertyDataForm({ data, loading }) {
         lastUpdateDate: currentDate,
       };
 
-      const newSuccessors = propertyData.successors ? propertyData.successors : [];
-      newSuccessors.push(newRec);
+      const newSuccessorCrossRefs = propertyData.successorCrossRefs ? propertyData.successorCrossRefs : [];
+      newSuccessorCrossRefs.push(newRec);
 
       setAssociatedPropertyData(
         propertyData.lpis,
@@ -1017,13 +1049,13 @@ function PropertyDataForm({ data, loading }) {
         propertyData.blpuAppCrossRefs,
         propertyData.classifications,
         propertyData.organisations,
-        newSuccessors,
+        newSuccessorCrossRefs,
         propertyData.blpuNotes
       );
 
-      setSuccessorFormData({
+      setSuccessorCrossRefFormData({
         id: newPkId,
-        successorData: {
+        successorCrossRefData: {
           id: newRec.pkId,
           changeType: newRec.changeType,
           succKey: newRec.succKey,
@@ -1036,16 +1068,18 @@ function PropertyDataForm({ data, loading }) {
           lastUpdateDate: newRec.lastUpdateDate,
         },
         index: newIdx,
-        totalRecords: propertyData.successors ? propertyData.successors.filter((x) => x.changeType !== "D").length : 1,
+        totalRecords: propertyData.successorCrossRefs
+          ? propertyData.successorCrossRefs.filter((x) => x.changeType !== "D").length
+          : 1,
       });
 
-      sandboxContext.onSandboxChange("successor", newRec);
+      sandboxContext.onSandboxChange("successorCrossRef", newRec);
       propertyContext.onRecordChange(30, newIdx, true);
       mapContext.onEditMapObject(30, newRec.pkId);
     } else {
-      setSuccessorFormData({
+      setSuccessorCrossRefFormData({
         id: pkId,
-        successorData: successorData,
+        successorCrossRefData: successorCrossRefData,
         index: dataIdx,
         totalRecords: dataLength,
       });
@@ -1105,7 +1139,7 @@ function PropertyDataForm({ data, loading }) {
         propertyData.blpuAppCrossRefs,
         propertyData.classifications,
         propertyData.organisations,
-        propertyData.successors,
+        propertyData.successorCrossRefs,
         propertyData.blpuNotes
       );
 
@@ -1197,7 +1231,7 @@ function PropertyDataForm({ data, loading }) {
         newCrossRefs,
         propertyData.classifications,
         propertyData.organisations,
-        propertyData.successors,
+        propertyData.successorCrossRefs,
         propertyData.blpuNotes
       );
 
@@ -1289,7 +1323,7 @@ function PropertyDataForm({ data, loading }) {
         propertyData.blpuAppCrossRefs,
         propertyData.classifications,
         propertyData.organisations,
-        propertyData.successors,
+        propertyData.successorCrossRefs,
         newNotes
       );
 
@@ -1323,44 +1357,74 @@ function PropertyDataForm({ data, loading }) {
    */
   const handleDeleteLPI = (pkId) => {
     function GetDeletedLpi(deleteLpi) {
-      return {
-        level: deleteLpi.level,
-        postalAddress: deleteLpi.postalAddress,
-        custodianOne: deleteLpi.custodianOne,
-        custodianTwo: deleteLpi.custodianTwo,
-        canKey: deleteLpi.canKey,
-        pkId: deleteLpi.pkId,
-        changeType: "D",
-        uprn: deleteLpi.uprn,
-        lpiKey: deleteLpi.lpiKey,
-        language: deleteLpi.language,
-        logicalStatus: deleteLpi.logicalStatus,
-        startDate: deleteLpi.startDate,
-        endDate: deleteLpi.endDate,
-        entryDate: deleteLpi.entryDate,
-        lastUpdateDate: deleteLpi.lastUpdateDate,
-        saoStartNumber: deleteLpi.saoStartNumber,
-        saoStartSuffix: deleteLpi.saoStartSuffix,
-        saoEndNumber: deleteLpi.saoEndNumber,
-        saoEndSuffix: deleteLpi.saoEndSuffix,
-        saoText: deleteLpi.saoText,
-        paoStartNumber: deleteLpi.paoStartNumber,
-        paoStartSuffix: deleteLpi.paoStartSuffix,
-        paoEndNumber: deleteLpi.paoEndNumber,
-        paoEndSuffix: deleteLpi.paoEndSuffix,
-        paoText: deleteLpi.paoText,
-        usrn: deleteLpi.usrn,
-        postcodeRef: deleteLpi.postcodeRef,
-        postTownRef: deleteLpi.postTownRef,
-        officialFlag: deleteLpi.officialFlag,
-        neverExport: deleteLpi.neverExport,
-        address: deleteLpi.address,
-        postTown: deleteLpi.postTown,
-        postcode: deleteLpi.postcode,
-        lastUpdated: deleteLpi.lastUpdated,
-        lastUser: deleteLpi.lastUser,
-        dualLanguageLink: deleteLpi.dualLanguageLink,
-      };
+      return !settingsContext.isScottish
+        ? {
+            language: deleteLpi.language,
+            startDate: deleteLpi.startDate,
+            endDate: deleteLpi.endDate,
+            saoStartNumber: deleteLpi.saoStartNumber,
+            saoEndNumber: deleteLpi.saoEndNumber,
+            saoText: deleteLpi.saoText,
+            paoStartNumber: deleteLpi.paoStartNumber,
+            paoEndNumber: deleteLpi.paoEndNumber,
+            paoText: deleteLpi.paoText,
+            usrn: deleteLpi.usrn,
+            postcodeRef: deleteLpi.postcodeRef,
+            postTownRef: deleteLpi.postTownRef,
+            neverExport: deleteLpi.neverExport,
+            postTown: deleteLpi.postTown,
+            postcode: deleteLpi.postcode,
+            dualLanguageLink: deleteLpi.dualLanguageLink,
+            uprn: deleteLpi.uprn,
+            logicalStatus: deleteLpi.logicalStatus,
+            paoStartSuffix: deleteLpi.paoStartSuffix,
+            paoEndSuffix: deleteLpi.paoEndSuffix,
+            saoStartSuffix: deleteLpi.saoStartSuffix,
+            saoEndSuffix: deleteLpi.saoEndSuffix,
+            level: deleteLpi.level,
+            postalAddress: deleteLpi.postalAddress,
+            officialFlag: deleteLpi.officialFlag,
+            pkId: deleteLpi.pkId,
+            changeType: "D",
+            lpiKey: deleteLpi.lpiKey,
+            address: deleteLpi.address,
+            entryDate: deleteLpi.entryDate,
+            lastUpdateDate: deleteLpi.lastUpdateDate,
+          }
+        : {
+            language: deleteLpi.language,
+            startDate: deleteLpi.startDate,
+            endDate: deleteLpi.endDate,
+            saoStartNumber: deleteLpi.saoStartNumber,
+            saoEndNumber: deleteLpi.saoEndNumber,
+            saoText: deleteLpi.saoText,
+            paoStartNumber: deleteLpi.paoStartNumber,
+            paoEndNumber: deleteLpi.paoEndNumber,
+            paoText: deleteLpi.paoText,
+            usrn: deleteLpi.usrn,
+            postcodeRef: deleteLpi.postcodeRef,
+            postTownRef: deleteLpi.postTownRef,
+            neverExport: deleteLpi.neverExport,
+            postTown: deleteLpi.postTown,
+            postcode: deleteLpi.postcode,
+            dualLanguageLink: deleteLpi.dualLanguageLink,
+            uprn: deleteLpi.uprn,
+            logicalStatus: deleteLpi.logicalStatus,
+            paoStartSuffix: deleteLpi.paoStartSuffix,
+            paoEndSuffix: deleteLpi.paoEndSuffix,
+            saoStartSuffix: deleteLpi.saoStartSuffix,
+            saoEndSuffix: deleteLpi.saoEndSuffix,
+            subLocalityRef: deleteLpi.subLocalityRef,
+            subLocality: deleteLpi.subLocality,
+            postallyAddressable: deleteLpi.postallyAddressable,
+            officialFlag: deleteLpi.officialFlag,
+            pkId: deleteLpi.pkId,
+            changeType: "D",
+            lpiKey: deleteLpi.lpiKey,
+            address: deleteLpi.address,
+            entryDate: deleteLpi.entryDate,
+            lastUpdateDate: deleteLpi.lastUpdateDate,
+          };
     }
 
     if (pkId && pkId > 0) {
@@ -1410,7 +1474,7 @@ function PropertyDataForm({ data, loading }) {
                 newCrossRefs,
                 propertyData.classifications,
                 propertyData.organisations,
-                propertyData.successors,
+                propertyData.successorCrossRefs,
                 propertyData.blpuNotes
               );
             }
@@ -1430,7 +1494,7 @@ function PropertyDataForm({ data, loading }) {
             propertyData.blpuAppCrossRefs,
             propertyData.classifications,
             propertyData.organisations,
-            propertyData.successors,
+            propertyData.successorCrossRefs,
             propertyData.blpuNotes
           );
         }
@@ -1449,7 +1513,7 @@ function PropertyDataForm({ data, loading }) {
             propertyData.blpuAppCrossRefs,
             propertyData.classifications,
             propertyData.organisations,
-            propertyData.successors,
+            propertyData.successorCrossRefs,
             propertyData.blpuNotes
           );
         }
@@ -1461,7 +1525,7 @@ function PropertyDataForm({ data, loading }) {
           propertyData.blpuAppCrossRefs,
           propertyData.classifications,
           propertyData.organisations,
-          propertyData.successors,
+          propertyData.successorCrossRefs,
           propertyData.blpuNotes
         );
       }
@@ -1500,7 +1564,7 @@ function PropertyDataForm({ data, loading }) {
           propertyData.blpuAppCrossRefs,
           newClassifications,
           propertyData.organisations,
-          propertyData.successors,
+          propertyData.successorCrossRefs,
           propertyData.blpuNotes
         );
       }
@@ -1512,7 +1576,7 @@ function PropertyDataForm({ data, loading }) {
         propertyData.blpuAppCrossRefs,
         newClassifications,
         propertyData.organisations,
-        propertyData.successors,
+        propertyData.successorCrossRefs,
         propertyData.blpuNotes
       );
     }
@@ -1543,7 +1607,7 @@ function PropertyDataForm({ data, loading }) {
           propertyData.blpuAppCrossRefs,
           classificationDeleted,
           propertyData.organisations,
-          propertyData.successors,
+          propertyData.successorCrossRefs,
           propertyData.blpuNotes
         );
       }
@@ -1582,7 +1646,7 @@ function PropertyDataForm({ data, loading }) {
           propertyData.blpuAppCrossRefs,
           propertyData.classifications,
           newOrganisations,
-          propertyData.successors,
+          propertyData.successorCrossRefs,
           propertyData.blpuNotes
         );
       }
@@ -1594,7 +1658,7 @@ function PropertyDataForm({ data, loading }) {
         propertyData.blpuAppCrossRefs,
         propertyData.classifications,
         newOrganisations,
-        propertyData.successors,
+        propertyData.successorCrossRefs,
         propertyData.blpuNotes
       );
     }
@@ -1625,7 +1689,7 @@ function PropertyDataForm({ data, loading }) {
           propertyData.blpuAppCrossRefs,
           propertyData.classifications,
           organisationDeleted,
-          propertyData.successors,
+          propertyData.successorCrossRefs,
           propertyData.blpuNotes
         );
       }
@@ -1633,29 +1697,29 @@ function PropertyDataForm({ data, loading }) {
   };
 
   /**
-   * Event to handle the deleting of a successor.
+   * Event to handle the deleting of a successor cross reference.
    *
-   * @param {number} pkId The id of the successor the user wants to delete.
+   * @param {number} pkId The id of the successor cross reference the user wants to delete.
    */
-  const handleDeleteSuccessor = (pkId) => {
+  const handleDeleteSuccessorCrossRef = (pkId) => {
     if (pkId && pkId > 0) {
-      const deleteSuccessor = propertyData.successors.find((x) => x.pkId === pkId);
+      const deleteSuccessorCrossRef = propertyData.successorCrossRefs.find((x) => x.pkId === pkId);
 
-      if (deleteSuccessor) {
-        const deletedSuccessor = {
-          entryDate: deleteSuccessor.entryDate,
-          pkId: deleteSuccessor.pkId,
-          succKey: deleteSuccessor.succKey,
+      if (deleteSuccessorCrossRef) {
+        const deletedSuccessorCrossRef = {
+          entryDate: deleteSuccessorCrossRef.entryDate,
+          pkId: deleteSuccessorCrossRef.pkId,
+          succKey: deleteSuccessorCrossRef.succKey,
           changeType: "D",
-          predecessor: deleteSuccessor.predecessor,
-          successorType: deleteSuccessor.successorType,
-          successor: deleteSuccessor.successor,
-          startDate: deleteSuccessor.startDate,
-          endDate: deleteSuccessor.endDate,
+          predecessor: deleteSuccessorCrossRef.predecessor,
+          successorType: deleteSuccessorCrossRef.successorType,
+          successor: deleteSuccessorCrossRef.successor,
+          startDate: deleteSuccessorCrossRef.startDate,
+          endDate: deleteSuccessorCrossRef.endDate,
         };
 
-        const newSuccessors = propertyData.successors.map(
-          (x) => [deletedSuccessor].find((rec) => rec.pkId === x.pkId) || x
+        const newSuccessorCrossRefs = propertyData.successorCrossRefs.map(
+          (x) => [deletedSuccessorCrossRef].find((rec) => rec.pkId === x.pkId) || x
         );
 
         setAssociatedPropertyData(
@@ -1664,41 +1728,41 @@ function PropertyDataForm({ data, loading }) {
           propertyData.blpuAppCrossRefs,
           propertyData.classifications,
           propertyData.organisations,
-          newSuccessors,
+          newSuccessorCrossRefs,
           propertyData.blpuNotes
         );
       }
     } else if (pkId && pkId < 0) {
-      const newSuccessors = propertyData.successors.filter((x) => x.pkId !== pkId);
+      const newSuccessorCrossRefs = propertyData.successorCrossRefs.filter((x) => x.pkId !== pkId);
       setAssociatedPropertyData(
         propertyData.lpis,
         propertyData.blpuProvenances,
         propertyData.blpuAppCrossRefs,
         propertyData.classifications,
         propertyData.organisations,
-        newSuccessors,
+        newSuccessorCrossRefs,
         propertyData.blpuNotes
       );
     }
   };
 
   /**
-   * Event to handle the deleting of multiple successors.
+   * Event to handle the deleting of multiple successor cross references.
    *
-   * @param {Array} successorIds The list of successor ids that the user wants to delete.
+   * @param {Array} successorCrossRefIds The list of successor cross reference ids that the user wants to delete.
    */
-  const handleMultiDeleteSuccessor = (successorIds) => {
-    if (successorIds && successorIds.length > 0) {
-      const deleteSuccessors = propertyData.successors
-        .filter((x) => successorIds.includes(x.pkId))
-        .map((successor) => {
-          successor.changeType = "D";
-          return successor;
+  const handleMultiDeleteSuccessorCrossRef = (successorCrossRefIds) => {
+    if (successorCrossRefIds && successorCrossRefIds.length > 0) {
+      const deleteSuccessorCrossRefs = propertyData.successorCrossRefs
+        .filter((x) => successorCrossRefIds.includes(x.pkId))
+        .map((successorCrossRef) => {
+          successorCrossRef.changeType = "D";
+          return successorCrossRef;
         });
 
-      if (deleteSuccessors && deleteSuccessors.length > 0) {
-        const successorDeleted = propertyData.successors.map(
-          (x) => deleteSuccessors.filter((x) => x.pkId > 0).find((rec) => rec.pkId === x.pkId) || x
+      if (deleteSuccessorCrossRefs && deleteSuccessorCrossRefs.length > 0) {
+        const successorCrossRefDeleted = propertyData.successorCrossRefs.map(
+          (x) => deleteSuccessorCrossRefs.filter((x) => x.pkId > 0).find((rec) => rec.pkId === x.pkId) || x
         );
 
         setAssociatedPropertyData(
@@ -1707,7 +1771,7 @@ function PropertyDataForm({ data, loading }) {
           propertyData.blpuAppCrossRefs,
           propertyData.classifications,
           propertyData.organisations,
-          successorDeleted,
+          successorCrossRefDeleted,
           propertyData.blpuNotes
         );
       }
@@ -1747,7 +1811,7 @@ function PropertyDataForm({ data, loading }) {
           propertyData.blpuAppCrossRefs,
           propertyData.classifications,
           propertyData.organisations,
-          propertyData.successors,
+          propertyData.successorCrossRefs,
           propertyData.blpuNotes
         );
       }
@@ -1759,7 +1823,7 @@ function PropertyDataForm({ data, loading }) {
         propertyData.blpuAppCrossRefs,
         propertyData.classifications,
         propertyData.organisations,
-        propertyData.successors,
+        propertyData.successorCrossRefs,
         propertyData.blpuNotes
       );
     }
@@ -1790,7 +1854,7 @@ function PropertyDataForm({ data, loading }) {
           propertyData.blpuAppCrossRefs,
           propertyData.classifications,
           propertyData.organisations,
-          propertyData.successors,
+          propertyData.successorCrossRefs,
           propertyData.blpuNotes
         );
       }
@@ -1842,7 +1906,7 @@ function PropertyDataForm({ data, loading }) {
             newCrossRefs,
             propertyData.classifications,
             propertyData.organisations,
-            propertyData.successors,
+            propertyData.successorCrossRefs,
             propertyData.blpuNotes
           );
         } else
@@ -1852,7 +1916,7 @@ function PropertyDataForm({ data, loading }) {
             newCrossRefs,
             propertyData.classifications,
             propertyData.organisations,
-            propertyData.successors,
+            propertyData.successorCrossRefs,
             propertyData.blpuNotes
           );
         handleCrossRefSelected(-1, null, null, null);
@@ -1865,7 +1929,7 @@ function PropertyDataForm({ data, loading }) {
         newCrossRefs,
         propertyData.classifications,
         propertyData.organisations,
-        propertyData.successors,
+        propertyData.successorCrossRefs,
         propertyData.blpuNotes
       );
       handleCrossRefSelected(-1, null, null, null);
@@ -1921,7 +1985,7 @@ function PropertyDataForm({ data, loading }) {
             crossRefDeleted,
             propertyData.classifications,
             propertyData.organisations,
-            propertyData.successors,
+            propertyData.successorCrossRefs,
             propertyData.blpuNotes
           );
         } else
@@ -1931,7 +1995,7 @@ function PropertyDataForm({ data, loading }) {
             crossRefDeleted,
             propertyData.classifications,
             propertyData.organisations,
-            propertyData.successors,
+            propertyData.successorCrossRefs,
             propertyData.blpuNotes
           );
       }
@@ -1967,7 +2031,7 @@ function PropertyDataForm({ data, loading }) {
           propertyData.blpuAppCrossRefs,
           propertyData.classifications,
           propertyData.organisations,
-          propertyData.successors,
+          propertyData.successorCrossRefs,
           newNotes
         );
       }
@@ -1979,7 +2043,7 @@ function PropertyDataForm({ data, loading }) {
         propertyData.blpuAppCrossRefs,
         propertyData.classifications,
         propertyData.organisations,
-        propertyData.successors,
+        propertyData.successorCrossRefs,
         newNotes
       );
     }
@@ -2293,78 +2357,64 @@ function PropertyDataForm({ data, loading }) {
   const handleBLPUDataChanged = (srcData) => {
     const newPropertyData = !settingsContext.isScottish
       ? {
+          blpuStateDate: srcData.blpuStateDate,
+          parentUprn: propertyData.parentUprn,
+          neverExport: srcData.neverExport,
+          siteSurvey: srcData.siteSurvey,
+          uprn: propertyData.uprn,
+          logicalStatus: srcData.logicalStatus,
+          endDate: srcData.endDate,
+          blpuState: srcData.blpuState,
+          startDate: srcData.startDate,
           blpuClass: srcData.blpuClass,
           localCustodianCode: srcData.localCustodianCode,
           organisation: srcData.organisation,
-          wardCode: srcData.wardCode,
-          parishCode: srcData.parishCode,
-          custodianOne: propertyData.custodianOne,
-          custodianTwo: propertyData.custodianTwo,
-          canKey: propertyData.canKey,
-          pkId: propertyData.pkId,
-          changeType: propertyData.uprn === 0 ? "I" : "U",
-          parentUprn: propertyData.parentUprn,
-          uprn: propertyData.uprn,
-          logicalStatus: srcData.logicalStatus,
-          blpuState: srcData.blpuState,
-          blpuStateDate: srcData.blpuStateDate,
           xcoordinate: srcData.xcoordinate,
           ycoordinate: srcData.ycoordinate,
+          wardCode: srcData.wardCode,
+          parishCode: srcData.parishCode,
+          pkId: propertyData.pkId,
+          changeType: propertyData.uprn === 0 ? "I" : "U",
           rpc: srcData.rpc,
-          startDate: srcData.startDate,
-          endDate: srcData.endDate,
-          lastUpdateDate: propertyData.lastUpdateDate,
           entryDate: propertyData.entryDate,
-          neverExport: srcData.neverExport,
-          siteSurvey: srcData.siteSurvey,
-          propertyLastUpdated: propertyData.propertyLastUpdated,
-          propertyLastUser: propertyData.propertyLastUser,
+          lastUpdateDate: propertyData.lastUpdateDate,
           relatedPropertyCount: propertyData.relatedPropertyCount,
           relatedStreetCount: propertyData.relatedStreetCount,
-          latitude: propertyData.latitude,
-          longitude: propertyData.longitude,
-          lastUpdated: propertyData.lastUpdated,
-          insertedTimestamp: propertyData.insertedTimestamp,
-          insertedUser: propertyData.insertedUser,
-          lastUser: propertyData.lastUser,
+          propertyLastUpdated: propertyData.propertyLastUpdated,
+          propertyLastUser: propertyData.propertyLastUser,
           blpuAppCrossRefs: propertyData.blpuAppCrossRefs,
           blpuProvenances: propertyData.blpuProvenances,
           blpuNotes: propertyData.blpuNotes,
           lpis: propertyData.lpis,
         }
       : {
-          localCustodianCode: srcData.localCustodianCode,
-          pkId: propertyData.pkId,
-          changeType: propertyData.uprn === 0 ? "I" : "U",
-          parentUprn: propertyData.parentUprn,
-          uprn: propertyData.uprn,
-          logicalStatus: srcData.logicalStatus,
-          blpuState: srcData.blpuState,
           blpuStateDate: srcData.blpuStateDate,
-          xcoordinate: srcData.xcoordinate,
-          ycoordinate: srcData.ycoordinate,
-          rpc: srcData.rpc,
-          startDate: srcData.startDate,
-          endDate: srcData.endDate,
-          lastUpdateDate: propertyData.lastUpdateDate,
-          entryDate: propertyData.entryDate,
+          parentUprn: propertyData.parentUprn,
           neverExport: srcData.neverExport,
           siteSurvey: srcData.siteSurvey,
-          propertyLastUpdated: propertyData.propertyLastUpdated,
-          propertyLastUser: propertyData.propertyLastUser,
+          uprn: propertyData.uprn,
+          logicalStatus: srcData.logicalStatus,
+          endDate: srcData.endDate,
+          startDate: srcData.startDate,
+          blpuState: srcData.blpuState,
+          custodianCode: srcData.custodianCode,
+          level: srcData.level,
+          xcoordinate: srcData.xcoordinate,
+          ycoordinate: srcData.ycoordinate,
+          pkId: propertyData.pkId,
+          changeType: propertyData.uprn === 0 ? "I" : "U",
+          rpc: srcData.rpc,
+          entryDate: propertyData.entryDate,
+          lastUpdateDate: propertyData.lastUpdateDate,
           relatedPropertyCount: propertyData.relatedPropertyCount,
           relatedStreetCount: propertyData.relatedStreetCount,
-          latitude: propertyData.latitude,
-          longitude: propertyData.longitude,
-          lastUpdated: propertyData.lastUpdated,
-          insertedTimestamp: propertyData.insertedTimestamp,
-          insertedUser: propertyData.insertedUser,
-          lastUser: propertyData.lastUser,
+          propertyLastUpdated: propertyData.propertyLastUpdated,
+          propertyLastUser: propertyData.propertyLastUser,
           blpuAppCrossRefs: propertyData.blpuAppCrossRefs,
           blpuProvenances: propertyData.blpuProvenances,
           classifications: propertyData.classifications,
           organisations: propertyData.organisations,
-          successors: propertyData.successors,
+          successorCrossRefs: propertyData.successorCrossRefs,
           blpuNotes: propertyData.blpuNotes,
           lpis: propertyData.lpis,
         };
@@ -2402,75 +2452,64 @@ function PropertyDataForm({ data, loading }) {
 
     const newPropertyData = !settingsContext.isScottish
       ? {
+          blpuStateDate: srcData.blpuStateDate,
+          parentUprn: srcData.parentUprn,
+          neverExport: srcData.neverExport,
+          siteSurvey: srcData.siteSurvey,
+          uprn: propertyData.uprn,
+          logicalStatus: srcData.logicalStatus,
+          endDate: srcData.endDate,
+          blpuState: srcData.blpuState,
+          startDate: srcData.startDate,
           blpuClass: srcData.blpuClass,
           localCustodianCode: srcData.localCustodianCode,
           organisation: srcData.organisation,
-          wardCode: srcData.wardCode,
-          parishCode: srcData.parishCode,
-          custodianOne: propertyData.custodianOne,
-          custodianTwo: propertyData.custodianTwo,
-          canKey: propertyData.canKey,
-          pkId: propertyData.pkId,
-          changeType: propertyData.uprn === 0 ? "I" : "U",
-          uprn: propertyData.uprn,
-          logicalStatus: srcData.logicalStatus,
-          blpuState: srcData.blpuState,
-          blpuStateDate: srcData.blpuStateDate,
           xcoordinate: srcData.xcoordinate,
           ycoordinate: srcData.ycoordinate,
+          wardCode: srcData.wardCode,
+          parishCode: srcData.parishCode,
+          pkId: propertyData.pkId,
+          changeType: propertyData.uprn === 0 ? "I" : "U",
           rpc: srcData.rpc,
-          startDate: srcData.startDate,
-          endDate: srcData.endDate,
-          lastUpdateDate: propertyData.lastUpdateDate,
           entryDate: propertyData.entryDate,
-          neverExport: srcData.neverExport,
-          siteSurvey: srcData.siteSurvey,
-          propertyLastUpdated: propertyData.propertyLastUpdated,
-          propertyLastUser: propertyData.propertyLastUser,
+          lastUpdateDate: propertyData.lastUpdateDate,
           relatedPropertyCount: propertyData.relatedPropertyCount,
           relatedStreetCount: propertyData.relatedStreetCount,
-          latitude: propertyData.latitude,
-          longitude: propertyData.longitude,
-          lastUpdated: propertyData.lastUpdated,
-          insertedTimestamp: propertyData.insertedTimestamp,
-          insertedUser: propertyData.insertedUser,
-          lastUser: propertyData.lastUser,
+          propertyLastUpdated: propertyData.propertyLastUpdated,
+          propertyLastUser: propertyData.propertyLastUser,
           blpuAppCrossRefs: propertyData.blpuAppCrossRefs,
           blpuProvenances: propertyData.blpuProvenances,
           blpuNotes: propertyData.blpuNotes,
           lpis: newLpis,
         }
       : {
-          localCustodianCode: srcData.localCustodianCode,
-          pkId: propertyData.pkId,
-          changeType: propertyData.uprn === 0 ? "I" : "U",
+          blpuStateDate: srcData.blpuStateDate,
+          parentUprn: srcData.parentUprn,
+          neverExport: srcData.neverExport,
+          siteSurvey: srcData.siteSurvey,
           uprn: propertyData.uprn,
           logicalStatus: srcData.logicalStatus,
+          endDate: srcData.endDate,
+          startDate: srcData.startDate,
           blpuState: srcData.blpuState,
-          blpuStateDate: srcData.blpuStateDate,
+          custodianCode: srcData.custodianCode,
+          level: srcData.level,
           xcoordinate: srcData.xcoordinate,
           ycoordinate: srcData.ycoordinate,
+          pkId: propertyData.pkId,
+          changeType: propertyData.uprn === 0 ? "I" : "U",
           rpc: srcData.rpc,
-          startDate: srcData.startDate,
-          endDate: srcData.endDate,
-          lastUpdateDate: propertyData.lastUpdateDate,
           entryDate: propertyData.entryDate,
-          neverExport: srcData.neverExport,
-          propertyLastUpdated: propertyData.propertyLastUpdated,
-          propertyLastUser: propertyData.propertyLastUser,
+          lastUpdateDate: propertyData.lastUpdateDate,
           relatedPropertyCount: propertyData.relatedPropertyCount,
           relatedStreetCount: propertyData.relatedStreetCount,
-          latitude: propertyData.latitude,
-          longitude: propertyData.longitude,
-          lastUpdated: propertyData.lastUpdated,
-          insertedTimestamp: propertyData.insertedTimestamp,
-          insertedUser: propertyData.insertedUser,
-          lastUser: propertyData.lastUser,
+          propertyLastUpdated: propertyData.propertyLastUpdated,
+          propertyLastUser: propertyData.propertyLastUser,
           blpuAppCrossRefs: propertyData.blpuAppCrossRefs,
           blpuProvenances: propertyData.blpuProvenances,
           classifications: propertyData.classifications,
           organisations: propertyData.organisations,
-          successors: propertyData.successors,
+          successorCrossRefs: propertyData.successorCrossRefs,
           blpuNotes: propertyData.blpuNotes,
           lpis: newLpis,
         };
@@ -2517,7 +2556,7 @@ function PropertyDataForm({ data, loading }) {
             propertyData.blpuAppCrossRefs,
             propertyData.classifications,
             propertyData.organisations,
-            propertyData.successors,
+            propertyData.successorCrossRefs,
             propertyData.blpuNotes
           );
       }
@@ -2533,14 +2572,12 @@ function PropertyDataForm({ data, loading }) {
         const dataHasChanged =
           currentData.pkId < 0 ||
           !ObjectComparison(srcData, currentData, [
-            "custodianOne",
-            "custodianTwo",
-            "canKey",
             "changeType",
             "dualLanguageLink",
             "lastUpdateDate",
             "address",
             "postTown",
+            "subLocality",
             "postcode",
             "lastUpdated",
             "lastUser",
@@ -2613,7 +2650,7 @@ function PropertyDataForm({ data, loading }) {
             propertyData.blpuAppCrossRefs,
             restoredClassifications,
             propertyData.organisations,
-            propertyData.successors,
+            propertyData.successorCrossRefs,
             propertyData.blpuNotes
           );
       }
@@ -2696,7 +2733,7 @@ function PropertyDataForm({ data, loading }) {
             propertyData.blpuAppCrossRefs,
             propertyData.classifications,
             restoredOrganisations,
-            propertyData.successors,
+            propertyData.successorCrossRefs,
             propertyData.blpuNotes
           );
       }
@@ -2759,33 +2796,33 @@ function PropertyDataForm({ data, loading }) {
   };
 
   /**
-   * Event to handle when a user clicks on the home button from the successor tab.
+   * Event to handle when a user clicks on the home button from the successor cross reference tab.
    *
    * @param {string} action The action to take.
    * @param {object} srcData The original state of the data
    * @param {object} currentData The current state of the data.
    * @returns {boolean}
    */
-  const handleSuccessorHomeClick = (action, srcData, currentData) => {
+  const handleSuccessorCrossRefHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkPkID) => {
       if (checkPkID < 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
-        const restoredSuccessors = propertyData.successors.filter((x) => x.pkId !== checkPkID);
+        const restoredSuccessorCrossRefs = propertyData.successorCrossRefs.filter((x) => x.pkId !== checkPkID);
 
-        if (restoredSuccessors)
+        if (restoredSuccessorCrossRefs)
           setAssociatedPropertyData(
             propertyData.lpis,
             propertyData.blpuProvenances,
             propertyData.blpuAppCrossRefs,
             propertyData.classifications,
             propertyData.organisations,
-            restoredSuccessors,
+            restoredSuccessorCrossRefs,
             propertyData.blpuNotes
           );
       }
 
-      sandboxContext.onSandboxChange("successor", null);
-      handleSuccessorSelected(-1, null, null, null);
+      sandboxContext.onSandboxChange("successorCrossRef", null);
+      handleSuccessorCrossRefSelected(-1, null, null, null);
     };
 
     failedValidation.current = false;
@@ -2801,9 +2838,9 @@ function PropertyDataForm({ data, loading }) {
               if (result === "save") {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
-                  updateSuccessorData(currentData);
+                  updateSuccessorCrossRefData(currentData);
                   updateSaveButton(false);
-                  handleSuccessorSelected(-1, null, null, null);
+                  handleSuccessorCrossRefSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
                   saveResult.current = false;
@@ -2815,17 +2852,17 @@ function PropertyDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
-          sandboxContext.onSandboxChange("successor", null);
-          handleSuccessorSelected(-1, null, null, null);
+          sandboxContext.onSandboxChange("successorCrossRef", null);
+          handleSuccessorCrossRefSelected(-1, null, null, null);
         }
         break;
 
       case "save":
         if (propertyContext.validateData()) {
           failedValidation.current = false;
-          updateSuccessorData(currentData);
+          updateSuccessorCrossRefData(currentData);
           updateSaveButton(false);
-          handleSuccessorSelected(-1, null, null, null);
+          handleSuccessorCrossRefSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
           saveResult.current = false;
@@ -2862,7 +2899,7 @@ function PropertyDataForm({ data, loading }) {
             propertyData.blpuAppCrossRefs,
             propertyData.classifications,
             propertyData.organisations,
-            propertyData.successors,
+            propertyData.successorCrossRefs,
             propertyData.blpuNotes
           );
       }
@@ -2946,7 +2983,7 @@ function PropertyDataForm({ data, loading }) {
             restoredAppCrossRefs,
             propertyData.classifications,
             propertyData.organisations,
-            propertyData.successors,
+            propertyData.successorCrossRefs,
             propertyData.blpuNotes
           );
       }
@@ -3029,7 +3066,7 @@ function PropertyDataForm({ data, loading }) {
             propertyData.blpuAppCrossRefs,
             propertyData.classifications,
             propertyData.organisations,
-            propertyData.successors,
+            propertyData.successorCrossRefs,
             restoredNotes
           );
       }
@@ -3107,47 +3144,78 @@ function PropertyDataForm({ data, loading }) {
       newData,
       propertyData.organisation,
       lookupContext,
-      userContext.currentUser.token
+      userContext.currentUser.token,
+      settingsContext.isScottish
     );
 
-    const updatedData = {
-      level: newData.level,
-      postalAddress: newData.postalAddress,
-      custodianOne: newData.custodianOne,
-      custodianTwo: newData.custodianTwo,
-      canKey: newData.canKey,
-      pkId: newData.pkId,
-      changeType: newData.changeType,
-      uprn: newData.uprn,
-      lpiKey: newData.lpiKey,
-      language: newData.language,
-      logicalStatus: newData.logicalStatus,
-      startDate: newData.startDate,
-      endDate: newData.endDate,
-      entryDate: newData.entryDate,
-      lastUpdateDate: newData.lastUpdateDate,
-      saoStartNumber: newData.saoStartNumber,
-      saoStartSuffix: newData.saoStartSuffix,
-      saoEndNumber: newData.saoEndNumber,
-      saoEndSuffix: newData.saoEndSuffix,
-      saoText: newData.saoText,
-      paoStartNumber: newData.paoStartNumber,
-      paoStartSuffix: newData.paoStartSuffix,
-      paoEndNumber: newData.paoEndNumber,
-      paoEndSuffix: newData.paoEndSuffix,
-      paoText: newData.paoText,
-      usrn: newData.usrn,
-      postcodeRef: newData.postcodeRef,
-      postTownRef: newData.postTownRef,
-      officialFlag: newData.officialFlag,
-      neverExport: newData.neverExport,
-      address: newAddress,
-      postTown: newData.postTown,
-      postcode: newData.postcode,
-      lastUpdated: newData.lastUpdated,
-      lastUser: newData.lastUser,
-      dualLanguageLink: newData.dualLanguageLink,
-    };
+    const updatedData = settingsContext.isScottish
+      ? {
+          language: newData.language,
+          startDate: newData.startDate,
+          endDate: newData.endDate,
+          saoStartNumber: newData.saoStartNumber,
+          saoEndNumber: newData.saoEndNumber,
+          saoText: newData.saoText,
+          paoStartNumber: newData.paoStartNumber,
+          paoEndNumber: newData.paoEndNumber,
+          paoText: newData.paoText,
+          usrn: newData.usrn,
+          postcodeRef: newData.postcodeRef,
+          postTownRef: newData.postTownRef,
+          neverExport: newData.neverExport,
+          postTown: newData.postTown,
+          postcode: newData.postcode,
+          dualLanguageLink: newData.dualLanguageLink,
+          uprn: newData.uprn,
+          logicalStatus: newData.logicalStatus,
+          paoStartSuffix: newData.paoStartSuffix,
+          paoEndSuffix: newData.paoEndSuffix,
+          saoStartSuffix: newData.saoStartSuffix,
+          saoEndSuffix: newData.saoEndSuffix,
+          subLocalityRef: newData.subLocalityRef,
+          subLocality: newData.subLocality,
+          postallyAddressable: newData.postallyAddressable,
+          officialFlag: newData.officialFlag,
+          pkId: newData.pkId,
+          changeType: newData.changeType,
+          lpiKey: newData.lpiKey,
+          address: newAddress,
+          entryDate: newData.entryDate,
+          lastUpdateDate: newData.lastUpdateDate,
+        }
+      : {
+          language: newData.language,
+          startDate: newData.startDate,
+          endDate: newData.endDate,
+          saoStartNumber: newData.saoStartNumber,
+          saoEndNumber: newData.saoEndNumber,
+          saoText: newData.saoText,
+          paoStartNumber: newData.paoStartNumber,
+          paoEndNumber: newData.paoEndNumber,
+          paoText: newData.paoText,
+          usrn: newData.usrn,
+          postcodeRef: newData.postcodeRef,
+          postTownRef: newData.postTownRef,
+          neverExport: newData.neverExport,
+          postTown: newData.postTown,
+          postcode: newData.postcode,
+          dualLanguageLink: newData.dualLanguageLink,
+          uprn: newData.uprn,
+          logicalStatus: newData.logicalStatus,
+          paoStartSuffix: newData.paoStartSuffix,
+          paoEndSuffix: newData.paoEndSuffix,
+          saoStartSuffix: newData.saoStartSuffix,
+          saoEndSuffix: newData.saoEndSuffix,
+          level: newData.level,
+          postalAddress: newData.postalAddress,
+          officialFlag: newData.officialFlag,
+          pkId: newData.pkId,
+          changeType: newData.changeType,
+          lpiKey: newData.lpiKey,
+          address: newAddress,
+          entryDate: newData.entryDate,
+          lastUpdateDate: newData.lastUpdateDate,
+        };
 
     if (settingsContext.isWelsh) {
       const secondLanguage = updatedData.language === "ENG" ? "CYM" : "ENG";
@@ -3168,42 +3236,37 @@ function PropertyDataForm({ data, loading }) {
         (x) => x.linkedRef === updatedData.postTownRef && x.language === secondLpi.language
       );
       const newSecondLpi = {
-        level: updatedData.level,
-        postalAddress: updatedData.postalAddress,
-        custodianOne: secondLpi.custodianOne,
-        custodianTwo: secondLpi.custodianTwo,
-        canKey: secondLpi.canKey,
-        pkId: secondLpi.pkId,
-        changeType: secondLpi.changeType,
-        uprn: secondLpi.uprn,
-        lpiKey: secondLpi.lpiKey,
         language: secondLpi.language,
-        logicalStatus: updatedData.logicalStatus,
         startDate: updatedData.startDate,
         endDate: updatedData.endDate,
-        entryDate: secondLpi.entryDate,
-        lastUpdateDate: secondLpi.lastUpdateDate,
         saoStartNumber: secondLpi && secondLpi.saoStartNumber ? secondLpi.saoStartNumber : updatedData.saoStartNumber,
-        saoStartSuffix: secondLpi && secondLpi.saoStartSuffix ? secondLpi.saoStartSuffix : updatedData.saoStartSuffix,
         saoEndNumber: secondLpi && secondLpi.saoEndNumber ? secondLpi.saoEndNumber : updatedData.saoEndNumber,
-        saoEndSuffix: secondLpi && secondLpi.saoEndSuffix ? secondLpi.saoEndSuffix : updatedData.saoEndSuffix,
         saoText: secondLpi && secondLpi.saoText ? secondLpi.saoText : updatedData.saoText,
         paoStartNumber: secondLpi && secondLpi.paoStartNumber ? secondLpi.paoStartNumber : updatedData.paoStartNumber,
-        paoStartSuffix: secondLpi && secondLpi.paoStartSuffix ? secondLpi.paoStartSuffix : updatedData.paoStartSuffix,
         paoEndNumber: secondLpi && secondLpi.paoEndNumber ? secondLpi.paoEndNumber : updatedData.paoEndNumber,
-        paoEndSuffix: secondLpi && secondLpi.paoEndSuffix ? secondLpi.paoEndSuffix : updatedData.paoEndSuffix,
         paoText: secondLpi && secondLpi.paoText ? secondLpi.paoText : updatedData.paoText,
         usrn: updatedData.usrn,
         postcodeRef: updatedData.postcodeRef,
         postTownRef: secondPostTown ? secondPostTown.postTownRef : null,
-        officialFlag: updatedData.officialFlag,
         neverExport: updatedData.neverExport,
-        address: secondLpi.address,
         postTown: secondPostTown ? secondPostTown.postTown : null,
         postcode: updatedData.postcode,
-        lastUpdated: secondLpi.lastUpdated,
-        lastUser: secondLpi.lastUser,
         dualLanguageLink: secondLpi.dualLanguageLink,
+        uprn: secondLpi.uprn,
+        logicalStatus: updatedData.logicalStatus,
+        paoStartSuffix: secondLpi && secondLpi.paoStartSuffix ? secondLpi.paoStartSuffix : updatedData.paoStartSuffix,
+        paoEndSuffix: secondLpi && secondLpi.paoEndSuffix ? secondLpi.paoEndSuffix : updatedData.paoEndSuffix,
+        saoStartSuffix: secondLpi && secondLpi.saoStartSuffix ? secondLpi.saoStartSuffix : updatedData.saoStartSuffix,
+        saoEndSuffix: secondLpi && secondLpi.saoEndSuffix ? secondLpi.saoEndSuffix : updatedData.saoEndSuffix,
+        level: updatedData.level,
+        postalAddress: updatedData.postalAddress,
+        officialFlag: updatedData.officialFlag,
+        pkId: secondLpi.pkId,
+        changeType: secondLpi.changeType,
+        lpiKey: secondLpi.lpiKey,
+        address: secondLpi.address,
+        entryDate: secondLpi.entryDate,
+        lastUpdateDate: secondLpi.lastUpdateDate,
       };
 
       const newSecondAddress = await GetTempAddress(
@@ -3214,42 +3277,37 @@ function PropertyDataForm({ data, loading }) {
       );
 
       const updatedSecondLpi = {
-        level: newSecondLpi.level,
-        postalAddress: newSecondLpi.postalAddress,
-        custodianOne: newSecondLpi.custodianOne,
-        custodianTwo: newSecondLpi.custodianTwo,
-        canKey: newSecondLpi.canKey,
-        pkId: newSecondLpi.pkId,
-        changeType: newSecondLpi.changeType,
-        uprn: newSecondLpi.uprn,
-        lpiKey: newSecondLpi.lpiKey,
         language: newSecondLpi.language,
-        logicalStatus: newSecondLpi.logicalStatus,
         startDate: newSecondLpi.startDate,
         endDate: newSecondLpi.endDate,
-        entryDate: newSecondLpi.entryDate,
-        lastUpdateDate: newSecondLpi.lastUpdateDate,
         saoStartNumber: newSecondLpi.saoStartNumber,
-        saoStartSuffix: newSecondLpi.saoStartSuffix,
         saoEndNumber: newSecondLpi.saoEndNumber,
-        saoEndSuffix: newSecondLpi.saoEndSuffix,
         saoText: newSecondLpi.saoText,
         paoStartNumber: newSecondLpi.paoStartNumber,
-        paoStartSuffix: newSecondLpi.paoStartSuffix,
         paoEndNumber: newSecondLpi.paoEndNumber,
-        paoEndSuffix: newSecondLpi.paoEndSuffix,
         paoText: newSecondLpi.paoText,
         usrn: newSecondLpi.usrn,
         postcodeRef: newSecondLpi.postcodeRef,
         postTownRef: newSecondLpi.postTownRef,
-        officialFlag: newSecondLpi.officialFlag,
         neverExport: newSecondLpi.neverExport,
-        address: newSecondAddress,
         postTown: newSecondLpi.postTown,
         postcode: newSecondLpi.postcode,
-        lastUpdated: newSecondLpi.lastUpdated,
-        lastUser: newSecondLpi.lastUser,
         dualLanguageLink: newSecondLpi.dualLanguageLink,
+        uprn: newSecondLpi.uprn,
+        logicalStatus: newSecondLpi.logicalStatus,
+        paoStartSuffix: newSecondLpi.paoStartSuffix,
+        paoEndSuffix: newSecondLpi.paoEndSuffix,
+        saoStartSuffix: newSecondLpi.saoStartSuffix,
+        saoEndSuffix: newSecondLpi.saoEndSuffix,
+        level: newSecondLpi.level,
+        postalAddress: newSecondLpi.postalAddress,
+        officialFlag: newSecondLpi.officialFlag,
+        pkId: newSecondLpi.pkId,
+        changeType: newSecondLpi.changeType,
+        lpiKey: newSecondLpi.lpiKey,
+        address: newSecondAddress,
+        entryDate: newSecondLpi.entryDate,
+        lastUpdateDate: newSecondLpi.lastUpdateDate,
       };
 
       newLpis = propertyData.lpis.map(
@@ -3267,7 +3325,7 @@ function PropertyDataForm({ data, loading }) {
         propertyData.blpuAppCrossRefs,
         propertyData.classifications,
         propertyData.organisations,
-        propertyData.successors,
+        propertyData.successorCrossRefs,
         propertyData.blpuNotes,
         "lpi"
       );
@@ -3293,7 +3351,7 @@ function PropertyDataForm({ data, loading }) {
       propertyData.blpuAppCrossRefs,
       newClassifications,
       propertyData.organisations,
-      propertyData.successors,
+      propertyData.successorCrossRefs,
       propertyData.blpuNotes,
       "classification"
     );
@@ -3318,23 +3376,23 @@ function PropertyDataForm({ data, loading }) {
       propertyData.blpuAppCrossRefs,
       propertyData.classifications,
       newOrganisations,
-      propertyData.successors,
+      propertyData.successorCrossRefs,
       propertyData.blpuNotes,
       "organisation"
     );
   };
 
   /**
-   * Event to update the successor record with new data.
+   * Event to update the successor cross reference record with new data.
    *
-   * @param {object|null} newData The data to be used to update the successor record with.
+   * @param {object|null} newData The data to be used to update the successor cross reference record with.
    * @returns
    */
-  const updateSuccessorData = (newData) => {
+  const updateSuccessorCrossRefData = (newData) => {
     if (!newData) return;
 
-    const newSuccessors = propertyData.successors.map(
-      (x) => [newData].find((successor) => successor.pkId === x.pkId) || x
+    const newSuccessorCrossRefs = propertyData.successorCrossRefs.map(
+      (x) => [newData].find((successorCrossRef) => successorCrossRef.pkId === x.pkId) || x
     );
 
     setAssociatedPropertyDataAndClear(
@@ -3343,9 +3401,9 @@ function PropertyDataForm({ data, loading }) {
       propertyData.blpuAppCrossRefs,
       propertyData.classifications,
       propertyData.organisations,
-      newSuccessors,
+      newSuccessorCrossRefs,
       propertyData.blpuNotes,
-      "successor"
+      "successorCrossRef"
     );
   };
 
@@ -3368,7 +3426,7 @@ function PropertyDataForm({ data, loading }) {
       propertyData.blpuAppCrossRefs,
       propertyData.classifications,
       propertyData.organisations,
-      propertyData.successors,
+      propertyData.successorCrossRefs,
       propertyData.blpuNotes,
       "provenance"
     );
@@ -3391,7 +3449,7 @@ function PropertyDataForm({ data, loading }) {
       newCrossRefs,
       propertyData.classifications,
       propertyData.organisations,
-      propertyData.successors,
+      propertyData.successorCrossRefs,
       propertyData.blpuNotes,
       "appCrossRef"
     );
@@ -3412,7 +3470,7 @@ function PropertyDataForm({ data, loading }) {
       propertyData.blpuAppCrossRefs,
       propertyData.classifications,
       propertyData.organisations,
-      propertyData.successors,
+      propertyData.successorCrossRefs,
       newNotes,
       "propertyNote"
     );
@@ -3428,75 +3486,64 @@ function PropertyDataForm({ data, loading }) {
       if (newX !== contextProperty.xcoordinate || newY !== contextProperty.ycoordinate) {
         const newPropertyData = !settingsContext.isScottish
           ? {
+              blpuStateDate: contextProperty.blpuStateDate,
+              parentUprn: contextProperty.parentUprn,
+              neverExport: contextProperty.neverExport,
+              siteSurvey: contextProperty.siteSurvey,
+              uprn: contextProperty.uprn,
+              logicalStatus: contextProperty.logicalStatus,
+              endDate: contextProperty.endDate,
+              blpuState: contextProperty.blpuState,
+              startDate: contextProperty.startDate,
               blpuClass: contextProperty.blpuClass,
               localCustodianCode: contextProperty.localCustodianCode,
               organisation: contextProperty.organisation,
-              wardCode: contextProperty.wardCode,
-              parishCode: contextProperty.parishCode,
-              custodianOne: contextProperty.custodianOne,
-              custodianTwo: contextProperty.custodianTwo,
-              canKey: contextProperty.canKey,
-              pkId: contextProperty.pkId,
-              changeType: contextProperty.uprn === 0 ? "I" : "U",
-              uprn: contextProperty.uprn,
-              logicalStatus: contextProperty.logicalStatus,
-              blpuState: contextProperty.blpuState,
-              blpuStateDate: contextProperty.blpuStateDate,
               xcoordinate: newX,
               ycoordinate: newY,
+              wardCode: contextProperty.wardCode,
+              parishCode: contextProperty.parishCode,
+              pkId: contextProperty.pkId,
+              changeType: contextProperty.uprn === 0 ? "I" : "U",
               rpc: contextProperty.rpc,
-              startDate: contextProperty.startDate,
-              endDate: contextProperty.endDate,
-              lastUpdateDate: contextProperty.lastUpdateDate,
               entryDate: contextProperty.entryDate,
-              neverExport: contextProperty.neverExport,
-              siteSurvey: contextProperty.siteSurvey,
-              propertyLastUpdated: contextProperty.propertyLastUpdated,
-              propertyLastUser: contextProperty.propertyLastUser,
+              lastUpdateDate: contextProperty.lastUpdateDate,
               relatedPropertyCount: contextProperty.relatedPropertyCount,
               relatedStreetCount: contextProperty.relatedStreetCount,
-              latitude: contextProperty.latitude,
-              longitude: contextProperty.longitude,
-              lastUpdated: contextProperty.lastUpdated,
-              insertedTimestamp: contextProperty.insertedTimestamp,
-              insertedUser: contextProperty.insertedUser,
-              lastUser: contextProperty.lastUser,
+              propertyLastUpdated: contextProperty.propertyLastUpdated,
+              propertyLastUser: contextProperty.propertyLastUser,
               blpuAppCrossRefs: contextProperty.blpuAppCrossRefs,
               blpuProvenances: contextProperty.blpuProvenances,
               blpuNotes: contextProperty.blpuNotes,
               lpis: contextProperty.lpis,
             }
           : {
-              localCustodianCode: contextProperty.localCustodianCode,
-              pkId: contextProperty.pkId,
-              changeType: contextProperty.uprn === 0 ? "I" : "U",
+              blpuStateDate: contextProperty.blpuStateDate,
+              parentUprn: contextProperty.parentUprn,
+              neverExport: contextProperty.neverExport,
+              siteSurvey: contextProperty.siteSurvey,
               uprn: contextProperty.uprn,
               logicalStatus: contextProperty.logicalStatus,
+              endDate: contextProperty.endDate,
+              startDate: contextProperty.startDate,
               blpuState: contextProperty.blpuState,
-              blpuStateDate: contextProperty.blpuStateDate,
+              custodianCode: contextProperty.custodianCode,
+              level: contextProperty.level,
               xcoordinate: newX,
               ycoordinate: newY,
+              pkId: contextProperty.pkId,
+              changeType: contextProperty.uprn === 0 ? "I" : "U",
               rpc: contextProperty.rpc,
-              startDate: contextProperty.startDate,
-              endDate: contextProperty.endDate,
-              lastUpdateDate: contextProperty.lastUpdateDate,
               entryDate: contextProperty.entryDate,
-              neverExport: contextProperty.neverExport,
-              propertyLastUpdated: contextProperty.propertyLastUpdated,
-              propertyLastUser: contextProperty.propertyLastUser,
+              lastUpdateDate: contextProperty.lastUpdateDate,
               relatedPropertyCount: contextProperty.relatedPropertyCount,
               relatedStreetCount: contextProperty.relatedStreetCount,
-              latitude: contextProperty.latitude,
-              longitude: contextProperty.longitude,
-              lastUpdated: contextProperty.lastUpdated,
-              insertedTimestamp: contextProperty.insertedTimestamp,
-              insertedUser: contextProperty.insertedUser,
-              lastUser: contextProperty.lastUser,
+              propertyLastUpdated: contextProperty.propertyLastUpdated,
+              propertyLastUser: contextProperty.propertyLastUser,
               blpuAppCrossRefs: contextProperty.blpuAppCrossRefs,
               blpuProvenances: contextProperty.blpuProvenances,
               classifications: contextProperty.classifications,
               organisations: contextProperty.organisations,
-              successors: contextProperty.successors,
+              successorCrossRefs: contextProperty.successorCrossRefs,
               blpuNotes: contextProperty.blpuNotes,
               lpis: contextProperty.lpis,
             };
@@ -3530,7 +3577,7 @@ function PropertyDataForm({ data, loading }) {
               easting: newX,
               northing: newY,
               logicalStatus: newPropertyData.logicalStatus,
-              classificationCode: newPropertyData.blpuClass,
+              classificationCode: getClassificationCode(newPropertyData),
             },
           ];
 
@@ -3561,17 +3608,18 @@ function PropertyDataForm({ data, loading }) {
         !PolygonsEqual(currentProvenance.wktGeometry, mapContext.currentPolygonGeometry.wktGeometry)
       ) {
         const updatedProvenance = {
+          entryDate: currentProvenance.entryDate ? currentProvenance.entryDate : currentDate,
+          lastUpdateDate: currentDate,
+          pkId: currentProvenance.pkId,
+          provenanceKey: currentProvenance.provenanceKey,
           uprn: currentProvenance.uprn,
           changeType: contextProperty.uprn === 0 || currentProvenance.pkId < 0 ? "I" : "U",
           provenanceCode: currentProvenance.provenanceCode,
           annotation: currentProvenance.annotation,
           startDate: currentProvenance.startDate ? currentProvenance.startDate : currentDate,
           endDate: currentProvenance.endDate,
+          neverExport: currentProvenance.neverExport,
           wktGeometry: mapContext.currentPolygonGeometry.wktGeometry,
-          pkId: currentProvenance.pkId,
-          provenanceKey: currentProvenance.provenanceKey,
-          entryDate: currentProvenance.entryDate ? currentProvenance.entryDate : currentDate,
-          lastUpdateDate: currentDate,
         };
 
         const newProvenances = propertyData.blpuProvenances.map(
@@ -3588,75 +3636,64 @@ function PropertyDataForm({ data, loading }) {
 
         newPropertyData = !settingsContext.isScottish
           ? {
+              blpuStateDate: contextProperty.blpuStateDate,
+              parentUprn: contextProperty.parentUprn,
+              neverExport: contextProperty.neverExport,
+              siteSurvey: contextProperty.siteSurvey,
+              uprn: contextProperty.uprn,
+              logicalStatus: contextProperty.logicalStatus,
+              endDate: contextProperty.endDate,
+              blpuState: contextProperty.blpuState,
+              startDate: contextProperty.startDate,
               blpuClass: contextProperty.blpuClass,
               localCustodianCode: contextProperty.localCustodianCode,
               organisation: contextProperty.organisation,
-              wardCode: contextProperty.wardCode,
-              parishCode: contextProperty.parishCode,
-              custodianOne: contextProperty.custodianOne,
-              custodianTwo: contextProperty.custodianTwo,
-              canKey: contextProperty.canKey,
-              pkId: contextProperty.pkId,
-              changeType: contextProperty.changeType,
-              uprn: contextProperty.uprn,
-              logicalStatus: contextProperty.logicalStatus,
-              blpuState: contextProperty.blpuState,
-              blpuStateDate: contextProperty.blpuStateDate,
               xcoordinate: contextProperty.xcoordinate,
               ycoordinate: contextProperty.ycoordinate,
+              wardCode: contextProperty.wardCode,
+              parishCode: contextProperty.parishCode,
+              pkId: contextProperty.pkId,
+              changeType: contextProperty.changeType,
               rpc: contextProperty.rpc,
-              startDate: contextProperty.startDate,
-              endDate: contextProperty.endDate,
-              lastUpdateDate: contextProperty.lastUpdateDate,
               entryDate: contextProperty.entryDate,
-              neverExport: contextProperty.neverExport,
-              siteSurvey: contextProperty.siteSurvey,
-              propertyLastUpdated: contextProperty.propertyLastUpdated,
-              propertyLastUser: contextProperty.propertyLastUser,
+              lastUpdateDate: contextProperty.lastUpdateDate,
               relatedPropertyCount: contextProperty.relatedPropertyCount,
               relatedStreetCount: contextProperty.relatedStreetCount,
-              latitude: contextProperty.latitude,
-              longitude: contextProperty.longitude,
-              lastUpdated: contextProperty.lastUpdated,
-              insertedTimestamp: contextProperty.insertedTimestamp,
-              insertedUser: contextProperty.insertedUser,
-              lastUser: contextProperty.lastUser,
+              propertyLastUpdated: contextProperty.propertyLastUpdated,
+              propertyLastUser: contextProperty.propertyLastUser,
               blpuAppCrossRefs: contextProperty.blpuAppCrossRefs,
               blpuProvenances: newProvenances,
               blpuNotes: contextProperty.blpuNotes,
               lpis: contextProperty.lpis,
             }
           : {
-              localCustodianCode: contextProperty.localCustodianCode,
-              pkId: contextProperty.pkId,
-              changeType: contextProperty.changeType,
+              blpuStateDate: contextProperty.blpuStateDate,
+              parentUprn: contextProperty.parentUprn,
+              neverExport: contextProperty.neverExport,
+              siteSurvey: contextProperty.siteSurvey,
               uprn: contextProperty.uprn,
               logicalStatus: contextProperty.logicalStatus,
+              endDate: contextProperty.endDate,
+              startDate: contextProperty.startDate,
               blpuState: contextProperty.blpuState,
-              blpuStateDate: contextProperty.blpuStateDate,
+              custodianCode: contextProperty.custodianCode,
+              level: contextProperty.level,
               xcoordinate: contextProperty.xcoordinate,
               ycoordinate: contextProperty.ycoordinate,
+              pkId: contextProperty.pkId,
+              changeType: contextProperty.changeType,
               rpc: contextProperty.rpc,
-              startDate: contextProperty.startDate,
-              endDate: contextProperty.endDate,
-              lastUpdateDate: contextProperty.lastUpdateDate,
               entryDate: contextProperty.entryDate,
-              neverExport: contextProperty.neverExport,
-              propertyLastUpdated: contextProperty.propertyLastUpdated,
-              propertyLastUser: contextProperty.propertyLastUser,
+              lastUpdateDate: contextProperty.lastUpdateDate,
               relatedPropertyCount: contextProperty.relatedPropertyCount,
               relatedStreetCount: contextProperty.relatedStreetCount,
-              latitude: contextProperty.latitude,
-              longitude: contextProperty.longitude,
-              lastUpdated: contextProperty.lastUpdated,
-              insertedTimestamp: contextProperty.insertedTimestamp,
-              insertedUser: contextProperty.insertedUser,
-              lastUser: contextProperty.lastUser,
+              propertyLastUpdated: contextProperty.propertyLastUpdated,
+              propertyLastUser: contextProperty.propertyLastUser,
               blpuAppCrossRefs: contextProperty.blpuAppCrossRefs,
               blpuProvenances: newProvenances,
               classifications: contextProperty.classifications,
               organisations: contextProperty.organisations,
-              successors: contextProperty.successors,
+              successorCrossRefs: contextProperty.successorCrossRefs,
               blpuNotes: contextProperty.blpuNotes,
               lpis: contextProperty.lpis,
             };
@@ -3722,70 +3759,59 @@ function PropertyDataForm({ data, loading }) {
 
       const newPropertyData = !settingsContext.isScottish
         ? {
+            blpuStateDate: propertyData.blpuStateDate,
+            parentUprn: propertyData.parentUprn,
+            neverExport: propertyData.neverExport,
+            siteSurvey: propertyData.siteSurvey,
+            uprn: propertyData.uprn,
+            logicalStatus: propertyContext.newLogicalStatus,
+            endDate: today,
+            blpuState: propertyData.blpuState,
+            startDate: propertyData.startDate,
             blpuClass: propertyData.blpuClass,
             localCustodianCode: propertyData.localCustodianCode,
             organisation: propertyData.organisation,
-            wardCode: propertyData.wardCode,
-            parishCode: propertyData.parishCode,
-            custodianOne: propertyData.custodianOne,
-            custodianTwo: propertyData.custodianTwo,
-            canKey: propertyData.canKey,
-            pkId: propertyData.pkId,
-            changeType: "U",
-            uprn: propertyData.uprn,
-            logicalStatus: propertyContext.newLogicalStatus,
-            blpuState: propertyData.blpuState,
-            blpuStateDate: propertyData.blpuStateDate,
             xcoordinate: propertyData.xcoordinate,
             ycoordinate: propertyData.ycoordinate,
+            wardCode: propertyData.wardCode,
+            parishCode: propertyData.parishCode,
+            pkId: propertyData.pkId,
+            changeType: "U",
             rpc: propertyData.rpc,
-            startDate: propertyData.startDate,
-            endDate: today,
-            lastUpdateDate: propertyData.lastUpdateDate,
             entryDate: propertyData.entryDate,
-            neverExport: propertyData.neverExport,
-            siteSurvey: propertyData.siteSurvey,
-            propertyLastUpdated: propertyData.propertyLastUpdated,
-            propertyLastUser: propertyData.propertyLastUser,
+            lastUpdateDate: propertyData.lastUpdateDate,
             relatedPropertyCount: propertyData.relatedPropertyCount,
             relatedStreetCount: propertyData.relatedStreetCount,
-            latitude: propertyData.latitude,
-            longitude: propertyData.longitude,
-            lastUpdated: propertyData.lastUpdated,
-            insertedTimestamp: propertyData.insertedTimestamp,
-            insertedUser: propertyData.insertedUser,
-            lastUser: propertyData.lastUser,
+            propertyLastUpdated: propertyData.propertyLastUpdated,
+            propertyLastUser: propertyData.propertyLastUser,
             blpuAppCrossRefs: newCrossRefs,
             blpuProvenances: newProvenances,
             blpuNotes: propertyData.blpuNotes,
             lpis: newLpis,
           }
         : {
-            localCustodianCode: propertyData.localCustodianCode,
-            pkId: propertyData.pkId,
-            changeType: "U",
+            blpuStateDate: propertyData.blpuStateDate,
+            parentUprn: propertyData.parentUprn,
+            neverExport: propertyData.neverExport,
+            siteSurvey: propertyData.siteSurvey,
             uprn: propertyData.uprn,
             logicalStatus: propertyContext.newLogicalStatus,
+            endDate: today,
+            startDate: propertyData.startDate,
             blpuState: propertyData.blpuState,
-            blpuStateDate: propertyData.blpuStateDate,
+            custodianCode: propertyData.custodianCode,
+            level: propertyData.level,
             xcoordinate: propertyData.xcoordinate,
             ycoordinate: propertyData.ycoordinate,
+            pkId: propertyData.pkId,
+            changeType: "U",
             rpc: propertyData.rpc,
-            startDate: propertyData.startDate,
-            endDate: today,
-            lastUpdateDate: propertyData.lastUpdateDate,
             entryDate: propertyData.entryDate,
-            neverExport: propertyData.neverExport,
-            propertyLastUpdated: propertyData.propertyLastUpdated,
-            propertyLastUser: propertyData.propertyLastUser,
+            lastUpdateDate: propertyData.lastUpdateDate,
             relatedPropertyCount: propertyData.relatedPropertyCount,
             relatedStreetCount: propertyData.relatedStreetCount,
-            latitude: propertyData.latitude,
-            longitude: propertyData.longitude,
-            lastUpdated: propertyData.lastUpdated,
-            insertedTimestamp: propertyData.insertedTimestamp,
-            insertedUser: propertyData.insertedUser,
-            lastUser: propertyData.lastUser,
+            propertyLastUpdated: propertyData.propertyLastUpdated,
+            propertyLastUser: propertyData.propertyLastUser,
             blpuAppCrossRefs: newCrossRefs,
             blpuProvenances: newProvenances,
             classifications: propertyData.classifications.map((x) => {
@@ -3794,7 +3820,7 @@ function PropertyDataForm({ data, loading }) {
             organisations: propertyData.organisations.map((x) => {
               return { ...x, changeType: "U", endDate: today };
             }),
-            successors: propertyData.successors.map((x) => {
+            successorCrossRefs: propertyData.successorCrossRefs.map((x) => {
               return { ...x, changeType: "U", endDate: today };
             }),
             blpuNotes: propertyData.blpuNotes,
@@ -3826,9 +3852,9 @@ function PropertyDataForm({ data, loading }) {
         setOrganisationErrors(propertyContext.currentErrors.organisation);
       else setOrganisationErrors([]);
 
-      if (propertyContext.currentErrors.successor && propertyContext.currentErrors.successor.length > 0)
-        setSuccessorErrors(propertyContext.currentErrors.successor);
-      else setSuccessorErrors([]);
+      if (propertyContext.currentErrors.successorCrossRef && propertyContext.currentErrors.successorCrossRef.length > 0)
+        setSuccessorCrossRefErrors(propertyContext.currentErrors.successorCrossRef);
+      else setSuccessorCrossRefErrors([]);
 
       if (propertyContext.currentErrors.provenance && propertyContext.currentErrors.provenance.length > 0)
         setProvenanceErrors(propertyContext.currentErrors.provenance);
@@ -3920,20 +3946,20 @@ function PropertyDataForm({ data, loading }) {
           break;
 
         case 30:
-          setSuccessorFocusedField(propertyContext.goToField.fieldName);
+          setSuccessorCrossRefFocusedField(propertyContext.goToField.fieldName);
           if (value !== 1) setValue(1);
-          const successorData =
-            propertyData && propertyData.successors.length > propertyContext.goToField.index
-              ? propertyData.successors[propertyContext.goToField.index]
+          const successorCrossRefData =
+            propertyData && propertyData.successorCrossRefs.length > propertyContext.goToField.index
+              ? propertyData.successorCrossRefs[propertyContext.goToField.index]
               : null;
-          if (successorData) {
+          if (successorCrossRefData) {
             propertyContext.onRecordChange(30, propertyContext.goToField.index);
-            setSuccessorFormData({
-              id: successorData.pkId,
-              successorData: successorData,
+            setSuccessorCrossRefFormData({
+              id: successorCrossRefData.pkId,
+              successorCrossRefData: successorCrossRefData,
               blpuLogicalStatus: propertyData.logicalStatus,
               index: propertyContext.goToField.index,
-              totalRecords: propertyData.successors.length,
+              totalRecords: propertyData.successorCrossRefs.length,
             });
           }
           break;
@@ -4105,21 +4131,21 @@ function PropertyDataForm({ data, loading }) {
                   <Typography variant="subtitle2" sx={tabLabelStyle(value === 3)}>
                     Successors
                   </Typography>
-                  {successorErrors && successorErrors.length > 0 ? (
+                  {successorCrossRefErrors && successorCrossRefErrors.length > 0 ? (
                     <ErrorIcon sx={errorIconStyle} />
                   ) : (
                     <Avatar
                       variant="rounded"
                       sx={GetTabIconStyle(
-                        propertyData && propertyData.successors
-                          ? propertyData.successors.filter((x) => x.changeType !== "D").length
+                        propertyData && propertyData.successorCrossRefs
+                          ? propertyData.successorCrossRefs.filter((x) => x.changeType !== "D").length
                           : 0
                       )}
                     >
                       <Typography variant="caption">
                         <strong>
-                          {propertyData && propertyData.successors
-                            ? propertyData.successors.filter((x) => x.changeType !== "D").length
+                          {propertyData && propertyData.successorCrossRefs
+                            ? propertyData.successorCrossRefs.filter((x) => x.changeType !== "D").length
                             : 0}
                         </strong>
                       </Typography>
@@ -4386,23 +4412,28 @@ function PropertyDataForm({ data, loading }) {
       )}
       {settingsContext.isScottish && (
         <TabPanel value={value} index={3}>
-          {successorFormData ? (
+          {successorCrossRefFormData ? (
             <SuccessorTab
-              data={successorFormData}
+              data={successorCrossRefFormData}
               variant="property"
-              errors={successorErrors && successorErrors.filter((x) => x.index === successorFormData.index)}
+              errors={
+                successorCrossRefErrors &&
+                successorCrossRefErrors.filter((x) => x.index === successorCrossRefFormData.index)
+              }
               loading={loading}
-              focusedField={successorFocusedField}
+              focusedField={successorCrossRefFocusedField}
               onDataChanged={handleAssociatedRecordDataChanged}
-              onHomeClick={(action, srcData, currentData) => handleSuccessorHomeClick(action, srcData, currentData)}
-              onDelete={(pkId) => handleDeleteSuccessor(pkId)}
+              onHomeClick={(action, srcData, currentData) =>
+                handleSuccessorCrossRefHomeClick(action, srcData, currentData)
+              }
+              onDelete={(pkId) => handleDeleteSuccessorCrossRef(pkId)}
             />
           ) : (
             <SuccessorListTab
               data={
                 propertyData &&
-                propertyData.successors &&
-                propertyData.successors
+                propertyData.successorCrossRefs &&
+                propertyData.successorCrossRefs
                   .filter((x) => x.changeType !== "D")
                   .map(function (x) {
                     return {
@@ -4421,13 +4452,15 @@ function PropertyDataForm({ data, loading }) {
                   })
               }
               variant="property"
-              errors={successorErrors}
+              errors={successorCrossRefErrors}
               loading={loading}
-              onSuccessorSelected={(pkId, successorData, dataIdx, dataLength) =>
-                handleSuccessorSelected(pkId, successorData, dataIdx, dataLength)
+              onSuccessorSelected={(pkId, successorCrossRefData, dataIdx, dataLength) =>
+                handleSuccessorCrossRefSelected(pkId, successorCrossRefData, dataIdx, dataLength)
               }
-              onSuccessorDelete={(pkId) => handleDeleteSuccessor(pkId)}
-              onMultiSuccessorDelete={(successorIds) => handleMultiDeleteSuccessor(successorIds)}
+              onSuccessorDelete={(pkId) => handleDeleteSuccessorCrossRef(pkId)}
+              onMultiSuccessorDelete={(successorCrossRefIds) =>
+                handleMultiDeleteSuccessorCrossRef(successorCrossRefIds)
+              }
             />
           )}
         </TabPanel>

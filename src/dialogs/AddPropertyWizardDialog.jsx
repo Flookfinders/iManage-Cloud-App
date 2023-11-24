@@ -22,6 +22,7 @@
 //    009   27.10.23 Sean Flook                 Updated call to SaveProperty.
 //    010   03.11.23 Sean Flook                 Added Message dialog for confirmation of cancelling the wizard.
 //    011   10.11.23 Sean Flook                 Updated action string.
+//    012   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -50,11 +51,10 @@ import {
   DialogTitle,
   IconButton,
   Typography,
-  Stack,
   Button,
   Divider,
-  Box,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 
 import WizardSelectTemplatePage from "../pages/WizardSelectTemplatePage";
 import WizardAddressDetailsPage from "../pages/WizardAddressDetailsPage";

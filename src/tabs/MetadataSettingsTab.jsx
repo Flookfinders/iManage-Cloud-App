@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   07.09.23 Sean Flook                 Cleaned the code.
 //    003   06.10.23 Sean Flook                 Use colour variables.
+//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -26,8 +27,6 @@ import UserContext from "../context/userContext";
 import { GetLSGMetadataUrl, GetASDMetadataUrl, GetLLPGMetadataUrl } from "../configuration/ADSConfig";
 
 import {
-  Box,
-  Stack,
   Typography,
   Button,
   Grid,
@@ -38,6 +37,7 @@ import {
   Tooltip,
   Skeleton,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 
 import EditMetadataGazetteerDialog from "../dialogs/EditMetadataGazetteerDialog";
 import EditMetadataCustodianDialog from "../dialogs/EditMetadataCustodianDialog";

@@ -18,6 +18,7 @@
 //    005   06.10.23 Sean Flook                 Use colour variables.
 //    006   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate.
 //    007   10.11.23 Sean Flook                 Modified call to StringAvatar.
+//    008   24.11.23 Sean Flook                 Moved Stack to @mui/system and pass the correct parameter to StringAvatar.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -54,9 +55,9 @@ import {
   Card,
   CardActions,
   CardContent,
-  Stack,
   Avatar,
 } from "@mui/material";
+import { Stack } from "@mui/system";
 import ADSActionButton from "./ADSActionButton";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -144,7 +145,7 @@ const ADSNavContent = (props) => {
         <Card variant="outlined">
           <CardContent>
             <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
-              <Avatar {...StringAvatar(userContext.currentUser, false)} />
+              <Avatar {...StringAvatar(userContext.currentUser.auditName, false)} />
               {userContext.currentUser && (
                 <Typography sx={{ fontWeight: "bold" }}>{`${stringToSentenceCase(
                   userContext.currentUser.firstName
@@ -168,14 +169,7 @@ const ADSNavContent = (props) => {
           <Card variant="outlined">
             <CardContent>
               <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
-                <Avatar
-                  variant="rounded"
-                  {...StringAvatar({
-                    firstName: settingsContext ? settingsContext.authorityName : null,
-                    lastName: "",
-                    auditName: settingsContext ? settingsContext.authorityName : null,
-                  })}
-                />
+                <Avatar variant="rounded" {...StringAvatar(settingsContext ? settingsContext.authorityName : null)} />
                 <Typography sx={{ fontWeight: "bold" }}>
                   {settingsContext ? settingsContext.authorityName : null}
                 </Typography>

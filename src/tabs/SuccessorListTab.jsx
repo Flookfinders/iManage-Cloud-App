@@ -14,6 +14,7 @@
 //    001   18.09.23 Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
+//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,7 +25,6 @@ import PropTypes from "prop-types";
 import UserContext from "../context/userContext";
 import dateFormat from "dateformat";
 import {
-  Box,
   Grid,
   Tooltip,
   IconButton,
@@ -35,8 +35,8 @@ import {
   ListItemText,
   Skeleton,
   Popper,
-  Stack,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectionControl from "../components/ADSSelectionControl";
@@ -59,9 +59,9 @@ SuccessorListTab.propTypes = {
   variant: PropTypes.oneOf(["property", "street"]).isRequired,
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
-  onSuccessorSelected: PropTypes.func.isRequired,
-  onSuccessorDelete: PropTypes.func.isRequired,
-  onMultiSuccessorDelete: PropTypes.func.isRequired,
+  onSuccessorCrossRefSelected: PropTypes.func.isRequired,
+  onSuccessorCrossRefDelete: PropTypes.func.isRequired,
+  onMultiSuccessorCrossRefDelete: PropTypes.func.isRequired,
 };
 
 const defaultTheme = createTheme();
@@ -77,9 +77,9 @@ function SuccessorListTab({
   variant,
   errors,
   loading,
-  onSuccessorSelected,
-  onSuccessorDelete,
-  onMultiSuccessorDelete,
+  onSuccessorCrossRefSelected,
+  onSuccessorCrossRefDelete,
+  onMultiSuccessorCrossRefDelete,
 }) {
   const theme = useTheme();
   const classes = useStyles();
@@ -98,7 +98,7 @@ function SuccessorListTab({
 
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
 
-  const deleteSuccessorId = useRef(null);
+  const deleteSuccessorCrossRefId = useRef(null);
 
   /**
    * Method to format the start date.
@@ -125,9 +125,9 @@ function SuccessorListTab({
   };
 
   /**
-   * Event to handle the deletion of a successor record.
+   * Event to handle the deletion of a successor cross reference record.
    */
-  const handleDeleteSuccessor = () => {
+  const handleDeleteSuccessorCrossRef = () => {
     if (selectionModel && selectionModel.length > 0) setOpenDeleteConfirmation(true);
   };
 
@@ -140,7 +140,7 @@ function SuccessorListTab({
   const displayActionButtons = (params) => {
     const onDeleteClick = (event) => {
       event.stopPropagation();
-      deleteSuccessorId.current = params.id;
+      deleteSuccessorCrossRefId.current = params.id;
       setOpenDeleteConfirmation(true);
     };
 
@@ -153,7 +153,7 @@ function SuccessorListTab({
             variant="delete"
             inheritBackground
             disabled={!userCanEdit}
-            tooltipTitle="Delete successor"
+            tooltipTitle="Delete successor cross reference"
             tooltipPlacement="bottom"
             onClick={onDeleteClick}
           />
@@ -222,12 +222,12 @@ function SuccessorListTab({
   };
 
   /**
-   * Event to handle when a successor record is clicked.
+   * Event to handle when a successor cross reference record is clicked.
    *
    * @param {object} param The grid row parameters.
    * @param {object} event The event object.
    */
-  const handleSuccessorClicked = (param, event) => {
+  const handleSuccessorCrossRefClicked = (param, event) => {
     event.stopPropagation();
 
     if (param && param.field !== "__check__" && param.field !== "") {
@@ -238,18 +238,18 @@ function SuccessorListTab({
           break;
         }
       }
-      if (onSuccessorSelected) onSuccessorSelected(param.id, param.row, record, data.length);
+      if (onSuccessorCrossRefSelected) onSuccessorCrossRefSelected(param.id, param.row, record, data.length);
     }
   };
 
   /**
-   * Event to handle when the add successor button is clicked.
+   * Event to handle when the add successor cross reference button is clicked.
    *
    * @param {object} event The event object.
    */
-  const handleAddSuccessorClick = (event) => {
+  const handleAddSuccessorCrossRefClick = (event) => {
     event.stopPropagation();
-    if (onSuccessorSelected) onSuccessorSelected(0, null, null, null);
+    if (onSuccessorCrossRefSelected) onSuccessorCrossRefSelected(0, null, null, null);
   };
 
   /**
@@ -281,13 +281,13 @@ function SuccessorListTab({
   const handleCloseDeleteConfirmation = (deleteConfirmed) => {
     setOpenDeleteConfirmation(false);
     if (deleteConfirmed) {
-      if (selectionModel && selectionModel.length > 0 && onMultiSuccessorDelete) {
-        onMultiSuccessorDelete(selectionModel);
+      if (selectionModel && selectionModel.length > 0 && onMultiSuccessorCrossRefDelete) {
+        onMultiSuccessorCrossRefDelete(selectionModel);
         setSelectionAnchorEl(null);
         setSelectionModel([]);
-      } else if (deleteSuccessorId.current && onSuccessorDelete) {
-        onSuccessorDelete(deleteSuccessorId.current);
-        deleteSuccessorId.current = null;
+      } else if (deleteSuccessorCrossRefId.current && onSuccessorCrossRefDelete) {
+        onSuccessorCrossRefDelete(deleteSuccessorCrossRefId.current);
+        deleteSuccessorCrossRefId.current = null;
       }
     }
   };
@@ -315,17 +315,17 @@ function SuccessorListTab({
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
             <Typography variant="subtitle2" sx={{ paddingLeft: theme.spacing(2) }}>
-              Successors
+              Successor cross references
             </Typography>
           </Grid>
           <Grid item>
             <Grid container justifyContent="flex-end" spacing={1}>
               <Grid item>
-                <Tooltip title="Add new successor record" arrow placement="right" sx={tooltipStyle}>
+                <Tooltip title="Add new successor cross reference record" arrow placement="right" sx={tooltipStyle}>
                   <IconButton
                     sx={ActionIconStyle()}
                     disabled={!userCanEdit}
-                    onClick={handleAddSuccessorClick}
+                    onClick={handleAddSuccessorCrossRefClick}
                     size="small"
                   >
                     <AddCircleIcon />
@@ -336,7 +336,7 @@ function SuccessorListTab({
                         paddingRight: theme.spacing(1),
                       }}
                     >
-                      Successor
+                      Successor cross reference
                     </Typography>
                   </IconButton>
                 </Tooltip>
@@ -365,7 +365,7 @@ function SuccessorListTab({
               },
             }}
             getRowClassName={(params) => `${isRowInvalid(params.id) ? "invalid-row" : "valid-row"}`}
-            onCellClick={handleSuccessorClicked}
+            onCellClick={handleSuccessorCrossRefClicked}
             onSelectionModelChange={(newSelectionModel) => {
               setSelectionModel(newSelectionModel);
               handleSelectionModelChange(newSelectionModel);
@@ -383,11 +383,10 @@ function SuccessorListTab({
             key="key_no_records"
           >
             <ListItemButton
-              button
               dense
               disabled={!userCanEdit}
               disableGutters
-              onClick={handleAddSuccessorClick}
+              onClick={handleAddSuccessorCrossRefClick}
               sx={{
                 height: "30px",
                 "&:hover": {
@@ -396,14 +395,20 @@ function SuccessorListTab({
                 },
               }}
             >
-              <ListItemText primary={<Typography variant="subtitle1">No successor records present</Typography>} />
+              <ListItemText
+                primary={
+                  <Typography variant="subtitle1" sx={{ ml: "15px" }}>
+                    No successor cross reference records present
+                  </Typography>
+                }
+              />
               <ListItemAvatar
                 sx={{
                   minWidth: 32,
                 }}
               >
-                <Tooltip title="Add successor record" arrow placement="bottom" sx={tooltipStyle}>
-                  <IconButton disabled={!userCanEdit} onClick={handleAddSuccessorClick} size="small">
+                <Tooltip title="Add successor cross reference record" arrow placement="bottom" sx={tooltipStyle}>
+                  <IconButton disabled={!userCanEdit} onClick={handleAddSuccessorCrossRefClick} size="small">
                     <AddCircleIcon sx={ActionIconStyle()} />
                   </IconButton>
                 </Tooltip>
@@ -415,15 +420,15 @@ function SuccessorListTab({
       <Popper id={selectionId} open={selectionOpen} anchorEl={selectionAnchorEl} placement="top-start">
         <ADSSelectionControl
           selectionCount={selectionModel && selectionModel.length > 0 ? selectionModel.length : 0}
-          haveSuccessor={selectionModel && selectionModel.length > 0}
-          currentSuccessor={selectionModel}
-          onDeleteSuccessor={handleDeleteSuccessor}
+          haveSuccessorCrossRef={selectionModel && selectionModel.length > 0}
+          currentSuccessorCrossRef={selectionModel}
+          onDeleteSuccessorCrossRef={handleDeleteSuccessorCrossRef}
           onClose={handleCloseSelection}
         />
       </Popper>
       <div>
         <ConfirmDeleteDialog
-          variant="successor"
+          variant="successorCrossRef"
           recordCount={selectionModel && selectionModel.length > 0 ? selectionModel.length : 0}
           open={openDeleteConfirmation}
           onClose={handleCloseDeleteConfirmation}

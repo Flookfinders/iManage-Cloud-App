@@ -3,7 +3,7 @@
 //
 //  Description: Confirm edit loss dialog
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    ï¿½ 2021 - 2023 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
+//    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -22,6 +23,7 @@
 
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+
 import {
   Button,
   Typography,
@@ -29,12 +31,12 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Box,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
+import { Box } from "@mui/system";
 
 import CircleIcon from "@mui/icons-material/Circle";
 import SaveIcon from "@mui/icons-material/Save";

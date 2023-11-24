@@ -1,7 +1,7 @@
 //#region header */
 /**************************************************************************************************
 //
-//  Description: Successor Tab
+//  Description: Successor cross reference Tab
 //
 //  Copyright:    © 2023 Idox Software Limited.
 //
@@ -14,6 +14,7 @@
 //    001   19.09.23 Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record.
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
+//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -23,7 +24,8 @@ import React, { useContext, useState, useRef, useEffect, Fragment } from "react"
 import PropTypes from "prop-types";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
-import { Box, Grid, Typography, Stack } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { ConvertDate } from "../utils/HelperUtils";
 import ObjectComparison from "./../utils/ObjectComparison";
 import ADSActionButton from "../components/ADSActionButton";
@@ -56,10 +58,18 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
   const [dataChanged, setDataChanged] = useState(false);
   const currentId = useRef(0);
 
-  const [successor, setSuccessor] = useState(data && data.successorData ? data.successorData.successor : null);
-  const [predecessor, setPredecessor] = useState(data && data.successorData ? data.successorData.predecessor : null);
-  const [startDate, setStartDate] = useState(data && data.successorData ? data.successorData.startDate : null);
-  const [endDate, setEndDate] = useState(data && data.successorData ? data.successorData.endDate : null);
+  const [successor, setSuccessor] = useState(
+    data && data.successorCrossRefData ? data.successorCrossRefData.successor : null
+  );
+  const [predecessor, setPredecessor] = useState(
+    data && data.successorCrossRefData ? data.successorCrossRefData.predecessor : null
+  );
+  const [startDate, setStartDate] = useState(
+    data && data.successorCrossRefData ? data.successorCrossRefData.startDate : null
+  );
+  const [endDate, setEndDate] = useState(
+    data && data.successorCrossRefData ? data.successorCrossRefData.endDate : null
+  );
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -77,8 +87,8 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
    * @param {string|boolean|Date|number|null} newValue The value used to update the given field.
    */
   const UpdateSandbox = (field, newValue) => {
-    const newSuccessor = GetCurrentData(field, newValue);
-    sandboxContext.onSandboxChange("successor", newSuccessor);
+    const newSuccessorCrossRef = GetCurrentData(field, newValue);
+    sandboxContext.onSandboxChange("successorCrossRef", newSuccessorCrossRef);
   };
 
   /**
@@ -96,9 +106,9 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
   };
 
   /**
-   * Event to handle when the successor type is changed.
+   * Event to handle when the predecessor is changed.
    *
-   * @param {string|null} newValue The new successor type.
+   * @param {string|null} newValue The new predecessor.
    */
   const handlePredecessorChangeEvent = (newValue) => {
     setPredecessor(newValue);
@@ -141,29 +151,29 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
    * Event to handle when the home button is clicked.
    */
   const handleHomeClick = () => {
-    let sourceSuccessor = null;
-    let currentSuccessorRecords = null;
+    let sourceSuccessorCrossRef = null;
+    let currentSuccessorCrossRefRecords = null;
 
     if (variant === "property") {
-      sourceSuccessor =
+      sourceSuccessorCrossRef =
         data.id > 0 && sandboxContext.currentSandbox.sourceProperty
-          ? sandboxContext.currentSandbox.sourceProperty.successors.find((x) => x.pkId === data.id)
+          ? sandboxContext.currentSandbox.sourceProperty.successorCrossRefs.find((x) => x.pkId === data.id)
           : null;
-      currentSuccessorRecords = sandboxContext.currentSandbox.currentPropertyRecords.successor;
+      currentSuccessorCrossRefRecords = sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef;
     } else {
-      sourceSuccessor =
+      sourceSuccessorCrossRef =
         data.id > 0 && sandboxContext.currentSandbox.sourceStreet
-          ? sandboxContext.currentSandbox.sourceStreet.successors.find((x) => x.pkId === data.id)
+          ? sandboxContext.currentSandbox.sourceStreet.successorCrossRefs.find((x) => x.pkId === data.id)
           : null;
-      currentSuccessorRecords = sandboxContext.currentSandbox.currentStreetRecords.successor;
+      currentSuccessorCrossRefRecords = sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef;
     }
 
     if (onHomeClick)
       setDataChanged(
         onHomeClick(
-          dataChanged ? (currentSuccessorRecords ? "check" : "discard") : "discard",
-          sourceSuccessor,
-          currentSuccessorRecords
+          dataChanged ? (currentSuccessorCrossRefRecords ? "check" : "discard") : "discard",
+          sourceSuccessorCrossRef,
+          currentSuccessorCrossRefRecords
         )
       );
   };
@@ -185,8 +195,8 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
           "save",
           null,
           variant === "property"
-            ? sandboxContext.currentSandbox.currentPropertyRecords.successor
-            : sandboxContext.currentSandbox.currentStreetRecords.successor
+            ? sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef
+            : sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef
         )
       );
   };
@@ -196,15 +206,15 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
    */
   const handleCancelClicked = () => {
     if (dataChanged) {
-      if (data && data.successorData) {
-        setSuccessor(data.successorData.successor);
-        setPredecessor(data.successorData.predecessor);
-        setStartDate(data.successorData.startDate);
-        setEndDate(data.successorData.endDate);
+      if (data && data.successorCrossRefData) {
+        setSuccessor(data.successorCrossRefData.successor);
+        setPredecessor(data.successorCrossRefData.predecessor);
+        setStartDate(data.successorCrossRefData.startDate);
+        setEndDate(data.successorCrossRefData.endDate);
       }
     }
     setDataChanged(false);
-    if (onHomeClick) onHomeClick("discard", data.successorData, null);
+    if (onHomeClick) onHomeClick("discard", data.successorCrossRefData, null);
   };
 
   /**
@@ -224,35 +234,34 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
   };
 
   /**
-   * Method to return the current successor record.
+   * Method to return the current successor cross reference record.
    *
    * @param {string} field The name of the field that is being updated.
    * @param {string|Date|null} newValue The value used to update the given field.
-   * @returns {object} The current successor record.
+   * @returns {object} The current successor cross reference record.
    */
   function GetCurrentData(field, newValue) {
     return {
-      changeType: field && field === "changeType" ? newValue : !data.successorData.succKey ? "I" : "U",
+      changeType: field && field === "changeType" ? newValue : !data.successorCrossRefData.succKey ? "I" : "U",
       successor: field && field === "successor" ? newValue : successor,
-      successorType: data.successorData.successorType,
+      successorType: data.successorCrossRefData.successorType,
       endDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
-      entryDate: data.successorData.entryDate,
-      pkId: data.successorData.id,
-      lastUpdateDate: data.successorData.lastUpdateDate,
+      entryDate: data.successorCrossRefData.entryDate,
+      pkId: data.successorCrossRefData.id,
+      lastUpdateDate: data.successorCrossRefData.lastUpdateDate,
       predecessor: field && field === "predecessor" ? newValue : predecessor,
-      succKey: data.successorData.succKey,
+      succKey: data.successorCrossRefData.succKey,
       startDate:
         field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
-      uprn: data.successorData.uprn,
     };
   }
 
   useEffect(() => {
-    if (data && data.successorData) {
-      setSuccessor(data.successorData.successor);
-      setPredecessor(data.successorData.predecessor);
-      setStartDate(data.successorData.startDate);
-      setEndDate(data.successorData.endDate);
+    if (data && data.successorCrossRefData) {
+      setSuccessor(data.successorCrossRefData.successor);
+      setPredecessor(data.successorCrossRefData.predecessor);
+      setStartDate(data.successorCrossRefData.startDate);
+      setEndDate(data.successorCrossRefData.endDate);
     }
   }, [data]);
 
@@ -261,13 +270,12 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
       variant === "property"
         ? sandboxContext.currentSandbox.sourceProperty
         : sandboxContext.currentSandbox.sourceStreet;
-    // if (sourceObject && data && data.successorData) { TODO: Reinstate this line and remove line below once endpoints can handle successor records.
-    if (sourceObject && sourceObject.successors && data && data.successorData) {
-      const sourceSuccessor = sourceObject.successors.find((x) => x.pkId === data.id);
+    if (sourceObject && data && data.successorCrossRefData) {
+      const sourceSuccessorCrossRef = sourceObject.successorCrossRefs.find((x) => x.pkId === data.id);
 
-      if (sourceSuccessor) {
+      if (sourceSuccessorCrossRef) {
         setDataChanged(
-          !ObjectComparison(sourceSuccessor, data.successorData, [
+          !ObjectComparison(sourceSuccessorCrossRef, data.successorCrossRefData, [
             "changeType",
             "entryDate",
             "pkId",
@@ -277,8 +285,7 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
           ])
         );
       } else if (data.id < 0) setDataChanged(true);
-      // } TODO: Reinstate once endpoints can handle successor records.
-    } else if (data && data.id < 0) setDataChanged(true); // TODO: Remove once endpoints can handle successor records.
+    }
   }, [data, variant, sandboxContext.currentSandbox.sourceProperty, sandboxContext.currentSandbox.sourceStreet]);
 
   useEffect(() => {
@@ -286,26 +293,26 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
       variant === "property" &&
       data &&
       data.id < 0 &&
-      !sandboxContext.currentSandbox.currentPropertyRecords.successor &&
+      !sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef &&
       currentId.current !== data.id
     ) {
-      sandboxContext.onSandboxChange("successor", data.successorData);
+      sandboxContext.onSandboxChange("successorCrossRef", data.successorCrossRefData);
       currentId.current = data.id;
     }
-  }, [variant, data, sandboxContext, sandboxContext.currentSandbox.currentPropertyRecords.successor]);
+  }, [variant, data, sandboxContext, sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef]);
 
   useEffect(() => {
     if (
       variant === "street" &&
       data &&
       data.id < 0 &&
-      !sandboxContext.currentSandbox.currentStreetRecords.successor &&
+      !sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef &&
       currentId.current !== data.id
     ) {
-      sandboxContext.onSandboxChange("successor", data.successorData);
+      sandboxContext.onSandboxChange("successorCrossRef", data.successorCrossRefData);
       currentId.current = data.id;
     }
-  }, [variant, data, sandboxContext, sandboxContext.currentSandbox.currentStreetRecords.successor]);
+  }, [variant, data, sandboxContext, sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef]);
 
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
@@ -369,7 +376,7 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
                     noWrap
                     align="left"
                   >
-                    {`| Successor (${data.index + 1} of ${data.totalRecords}): ${successor}`}
+                    {`| Successor cross reference (${data.index + 1} of ${data.totalRecords}): ${successor}`}
                   </Typography>
                   {errors && errors.length > 0 && <ErrorIcon sx={errorIconStyle} />}
                 </Stack>
@@ -435,7 +442,7 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
           errorText={endDateError}
           onChange={handleEndDateChangeEvent}
         />
-        <ADSReadOnlyControl label="successor key" loading={loading} value={data.successorData.succKey} />
+        <ADSReadOnlyControl label="successor key" loading={loading} value={data.successorCrossRefData.succKey} />
         <ADSOkCancelControl
           okDisabled={!dataChanged}
           onOkClicked={handleOkClicked}

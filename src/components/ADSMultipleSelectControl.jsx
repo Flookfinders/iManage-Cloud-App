@@ -14,6 +14,7 @@
 //    001   12.07.21 Sean Flook                 Initial Revision.
 //    002   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
 //    003   06.10.23 Sean Flook                 Use colour variables.
+//    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,7 +25,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
-  Box,
   Grid,
   Select,
   Chip,
@@ -39,6 +39,7 @@ import {
   Checkbox,
   ListItemText,
 } from "@mui/material";
+import { Box } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import {
   SyncAlt as TwoWayIcon,

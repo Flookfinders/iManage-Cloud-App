@@ -15,6 +15,7 @@
 //    002   10.08.23 Sean Flook                 Do not display the deleted records.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle.
+//    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,7 +25,8 @@ import React, { useContext, useState, useRef, useEffect, Fragment } from "react"
 import PropTypes from "prop-types";
 import UserContext from "../context/userContext";
 import { FormatDate, FormatDateTime, GetUserAvatar, GetUserName } from "../utils/HelperUtils";
-import { Box, Typography, Stack, Grid, Skeleton, Tooltip, IconButton, List, ListItemButton } from "@mui/material";
+import { Typography, Grid, Skeleton, Tooltip, IconButton, List, ListItemButton } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import {
   AddCircleOutlineOutlined as AddCircleIcon,
@@ -228,7 +230,6 @@ function NotesListTab({ data, errors, loading, variant, onNoteSelected, onNoteDe
                 key={`key_${index}`}
               >
                 <ListItemButton
-                  button
                   divider
                   dense
                   disableGutters

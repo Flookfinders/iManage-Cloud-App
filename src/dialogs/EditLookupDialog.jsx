@@ -16,6 +16,7 @@
 //    003   29.06.23 Sean Flook                 Added enabled flag for cross reference records.
 //    004   06.10.23 Sean Flook                 Use colour variables.
 //    005   27.10.23 Sean Flook                 Added missing colour variable.
+//    006   24.11.23 Sean Flook                 Moved Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -34,13 +35,13 @@ import {
   DialogTitle,
   IconButton,
   Typography,
-  Stack,
   Grid,
   TextField,
   Button,
   FormControlLabel,
   Switch,
 } from "@mui/material";
+import { Stack } from "@mui/system";
 
 import { stringToSentenceCase, GeoPlaceCrossRefSources } from "../utils/HelperUtils";
 

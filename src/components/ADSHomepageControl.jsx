@@ -14,6 +14,7 @@
 //    001   02.06.23 Joel Benford       WI40689 Initial Revision.
 //    002   07.09.23 Sean Flook                 Modified function name.
 //    003   06.10.23 Sean Flook                 Use colour variables.
+//    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -23,10 +24,12 @@ import { React, useState, useEffect, useContext } from "react";
 
 import UserContext from "../context/userContext";
 
+import { GetHomepageUrl } from "../configuration/ADSConfig";
+
 import { getMonthString } from "../utils/HelperUtils";
 
-import { Grid, Box } from "@mui/material";
-import { GetHomepageUrl } from "../configuration/ADSConfig";
+import { Grid } from "@mui/material";
+import { Box } from "@mui/system";
 import ADSHomepagePieChartsControl from "./ADSHomepagePieChartsControl";
 import ADSHomepageLatestEditsControl from "./ADSHomepageLatestEditsControl";
 

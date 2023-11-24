@@ -21,6 +21,7 @@
 //    008   27.10.23 Sean Flook       IMANN-175 Changes required for multi-edit of properties.
 //    009   03.11.23 Sean Flook       IMANN-175 Use the same menu item for classification.
 //    010   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
+//    011   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system, use getClassificationCode method and renamed successor to successorCrossRef.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -38,7 +39,8 @@ import SandboxContext from "../context/sandboxContext";
 import LookupContext from "../context/lookupContext";
 import SearchContext from "../context/searchContext";
 
-import { Box, Stack, IconButton, Typography, Menu, MenuItem } from "@mui/material";
+import { IconButton, Typography, Menu, MenuItem } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { NestedMenuItem } from "mui-nested-menu";
 import AddPropertyWizardDialog from "../dialogs/AddPropertyWizardDialog";
 import MultiEditLogicalStatusDialog from "../dialogs/MultiEditLogicalStatusDialog";
@@ -51,7 +53,7 @@ import MoveBLPUDialog from "../dialogs/MoveBLPUDialog";
 
 import { copyTextToClipboard, GetWktCoordinates, openInStreetView } from "../utils/HelperUtils";
 import { GetStreetMapData } from "../utils/StreetUtils";
-import { GetPropertyMapData, UpdateRangeAfterSave } from "../utils/PropertyUtils";
+import { GetPropertyMapData, UpdateRangeAfterSave, getClassificationCode } from "../utils/PropertyUtils";
 
 import Polyline from "@arcgis/core/geometry/Polyline";
 import * as geometryEngine from "@arcgis/core/geometry/geometryEngine";
@@ -79,7 +81,7 @@ ADSSelectionControl.propTypes = {
   haveAsd: PropTypes.bool,
   haveClassification: PropTypes.bool,
   haveOrganisation: PropTypes.bool,
-  haveSuccessor: PropTypes.bool,
+  haveSuccessorCrossRef: PropTypes.bool,
   haveProvenance: PropTypes.bool,
   haveCrossReference: PropTypes.bool,
   haveWizard: PropTypes.bool,
@@ -90,7 +92,7 @@ ADSSelectionControl.propTypes = {
   currentAddress: PropTypes.string,
   currentClassification: PropTypes.array,
   currentOrganisation: PropTypes.array,
-  currentSuccessor: PropTypes.array,
+  currentSuccessorCrossRef: PropTypes.array,
   currentProvenance: PropTypes.array,
   currentCrossReference: PropTypes.array,
   propertyUprns: PropTypes.array,
@@ -100,7 +102,7 @@ ADSSelectionControl.propTypes = {
   onError: PropTypes.func,
   onDeleteClassification: PropTypes.func,
   onDeleteOrganisation: PropTypes.func,
-  onDeleteSuccessor: PropTypes.func,
+  onDeleteSuccessorCrossRef: PropTypes.func,
   onDeleteProvenance: PropTypes.func,
   onDeleteCrossReference: PropTypes.func,
   onDeleteWizard: PropTypes.func,
@@ -114,7 +116,7 @@ ADSSelectionControl.defaultProps = {
   haveAsd: false,
   haveClassification: false,
   haveOrganisation: false,
-  haveSuccessor: false,
+  haveSuccessorCrossRef: false,
   haveProvenance: false,
   haveCrossReference: false,
   haveWizard: false,
@@ -129,7 +131,7 @@ function ADSSelectionControl({
   haveAsd,
   haveClassification,
   haveOrganisation,
-  haveSuccessor,
+  haveSuccessorCrossRef,
   haveProvenance,
   haveCrossReference,
   haveWizard,
@@ -140,7 +142,7 @@ function ADSSelectionControl({
   currentAddress,
   currentClassification,
   currentOrganisation,
-  currentSuccessor,
+  currentSuccessorCrossRef,
   currentProvenance,
   currentCrossReference,
   propertyUprns,
@@ -150,7 +152,7 @@ function ADSSelectionControl({
   onError,
   onDeleteClassification,
   onDeleteOrganisation,
-  onDeleteSuccessor,
+  onDeleteSuccessorCrossRef,
   onDeleteProvenance,
   onDeleteCrossReference,
   onDeleteWizard,
@@ -595,7 +597,7 @@ function ADSSelectionControl({
           easting: propertyData.easting,
           northing: propertyData.northing,
           logicalStatus: propertyData.logicalStatus,
-          classificationCode: propertyData.blpuClass ? propertyData.blpuClass.substring(0, 1) : "U",
+          classificationCode: getClassificationCode(propertyData),
         });
       }
       const extents = propertyData
@@ -851,10 +853,11 @@ function ADSSelectionControl({
   };
 
   /**
-   * Event to handle deleting a successor
+   * Event to handle deleting a successor cross reference
    */
-  const handleDeleteSuccessor = () => {
-    if (currentSuccessor && currentSuccessor.length > 0 && onDeleteSuccessor) onDeleteSuccessor();
+  const handleDeleteSuccessorCrossRef = () => {
+    if (currentSuccessorCrossRef && currentSuccessorCrossRef.length > 0 && onDeleteSuccessorCrossRef)
+      onDeleteSuccessorCrossRef();
   };
 
   /**
@@ -1047,7 +1050,7 @@ function ADSSelectionControl({
     if (haveAsd) numTypes++;
     if (haveClassification) numTypes++;
     if (haveOrganisation) numTypes++;
-    if (haveSuccessor) numTypes++;
+    if (haveSuccessorCrossRef) numTypes++;
     if (haveProvenance) numTypes++;
     if (haveCrossReference) numTypes++;
     if (haveWizard) numTypes++;
@@ -1061,7 +1064,7 @@ function ADSSelectionControl({
     haveAsd,
     haveClassification,
     haveOrganisation,
-    haveSuccessor,
+    haveSuccessorCrossRef,
     haveProvenance,
     haveCrossReference,
     haveWizard,
@@ -1135,7 +1138,6 @@ function ADSSelectionControl({
                   id="single-street-actions-menu"
                   elevation={2}
                   anchorEl={anchorStreetActionsEl}
-                  getContentAnchorEl={null}
                   anchorOrigin={{
                     vertical: "bottom",
                     horizontal: "right",
@@ -1217,7 +1219,6 @@ function ADSSelectionControl({
                   id="multiple-street-actions-menu"
                   elevation={2}
                   anchorEl={anchorStreetActionsEl}
-                  getContentAnchorEl={null}
                   anchorOrigin={{
                     vertical: "bottom",
                     horizontal: "right",
@@ -1340,7 +1341,6 @@ function ADSSelectionControl({
                   id="single-property-actions-menu"
                   elevation={2}
                   anchorEl={anchorPropertyActionsEl}
-                  getContentAnchorEl={null}
                   anchorOrigin={{
                     vertical: "bottom",
                     horizontal: "right",
@@ -1455,7 +1455,6 @@ function ADSSelectionControl({
                   id="multi-property-actions-menu"
                   elevation={2}
                   anchorEl={anchorPropertyActionsEl}
-                  getContentAnchorEl={null}
                   anchorOrigin={{
                     vertical: "bottom",
                     horizontal: "right",
@@ -1631,13 +1630,13 @@ function ADSSelectionControl({
               </IconButton>
             </Stack>
           )}
-          {numberOfTypes === 1 && haveSuccessor && (
+          {numberOfTypes === 1 && haveSuccessorCrossRef && (
             <Stack direction="row" justifyContent="flex-end" alignItems="center">
               <IconButton
                 size="small"
                 disabled={!userCanEdit}
-                onClick={handleDeleteSuccessor}
-                title={`Delete successor record${selectionCount === 1 ? "" : "s"}`}
+                onClick={handleDeleteSuccessorCrossRef}
+                title={`Delete successor cross reference record${selectionCount === 1 ? "" : "s"}`}
               >
                 <DeleteIcon sx={ActionIconStyle()} />
               </IconButton>
@@ -1696,7 +1695,6 @@ function ADSSelectionControl({
                 id="wizard-actions-menu"
                 elevation={2}
                 anchorEl={anchorWizardActionsEl}
-                getContentAnchorEl={null}
                 anchorOrigin={{
                   vertical: "bottom",
                   horizontal: "right",
@@ -1755,7 +1753,6 @@ function ADSSelectionControl({
                 id="move-blpu-actions-menu"
                 elevation={2}
                 anchorEl={anchorWizardActionsEl}
-                getContentAnchorEl={null}
                 anchorOrigin={{
                   vertical: "bottom",
                   horizontal: "right",

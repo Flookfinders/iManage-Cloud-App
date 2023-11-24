@@ -15,6 +15,7 @@
 //    002   27.06.23 Sean Flook         WI40757 Added in deletion confirmation dialog.
 //    003   07.09.23 Sean Flook                 Removed unnecessary awaits.
 //    004   06.10.23 Sean Flook                 Use colour variables.
+//    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,7 +25,8 @@ import React, { useContext, useState, useRef, useEffect } from "react";
 import SettingsContext from "../context/settingsContext";
 import UserContext from "../context/userContext";
 
-import { Box, Typography, Stack, Button, Tooltip, Avatar } from "@mui/material";
+import { Typography, Button, Tooltip, Avatar } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import ADSActionButton from "../components/ADSActionButton";
 

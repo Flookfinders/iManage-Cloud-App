@@ -18,6 +18,7 @@
 //    005   26.04.23 Sean Flook         WI40700 Do not set end date when deleting.
 //    006   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
 //    007   27.10.23 Sean Flook                 Use new dataFormStyle.
+//    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -29,7 +30,8 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
 import PropertyContext from "../context/propertyContext";
 import SettingsContext from "../context/settingsContext";
-import { Box, Grid, Typography, Stack } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
 import { FilteredBLPUProvenance } from "../utils/PropertyUtils";
 import BLPUProvenance from "../data/BLPUProvenance";

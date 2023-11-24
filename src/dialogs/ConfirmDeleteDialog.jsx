@@ -18,6 +18,7 @@
 //    005   20.09.23 Sean Flook                 Handle OneScotland specific records types.
 //    006   06.10.23 Sean Flook                 Use colour variables.
 //    007   03.11.23 Sean Flook                 Modified highway dedication and one-way exemption dialog titles.
+//    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -35,13 +36,12 @@ import {
   DialogActions,
   Typography,
   Button,
-  Box,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Stack,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 
 import CircleIcon from "@mui/icons-material/Circle";
@@ -58,7 +58,7 @@ ConfirmDeleteDialog.propTypes = {
   variant: PropTypes.oneOf([
     "street",
     "esu",
-    "streetSuccessor",
+    "streetSuccessorCrossRef",
     "hd",
     "owe",
     "interested organisation",
@@ -71,7 +71,7 @@ ConfirmDeleteDialog.propTypes = {
     "lpi",
     "classification",
     "organisation",
-    "propertySuccessor",
+    "propertySuccessorCrossRef",
     "app cross ref",
     "wizard app cross ref property",
     "wizard app cross ref range",
@@ -219,8 +219,12 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         );
         break;
 
-      case "streetSuccessor":
-        setTitle(`Delete ${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}successor ${recordText}`);
+      case "streetSuccessorCrossRef":
+        setTitle(
+          `Delete ${
+            recordCount && recordCount > 1 ? recordCount.toString() + " " : ""
+          }successor cross reference ${recordText}`
+        );
         setSubtitle(null);
         setContent(
           <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
@@ -680,8 +684,12 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         );
         break;
 
-      case "propertySuccessor":
-        setTitle(`Delete ${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}successor ${recordText}`);
+      case "propertySuccessorCrossRef":
+        setTitle(
+          `Delete ${
+            recordCount && recordCount > 1 ? recordCount.toString() + " " : ""
+          }successor cross reference ${recordText}`
+        );
         setSubtitle(null);
         setContent(
           <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>

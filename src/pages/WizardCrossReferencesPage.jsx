@@ -16,6 +16,7 @@
 //    003   13.04.23 Sean Flook         WI40681 Added validation of cross references.
 //    004   13.04.23 Sean Flook         WI40681 Handle when we do not have any existing errors.
 //    005   27.10.23 Sean Flook                 Use new dataFormStyle.
+//    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,7 +25,8 @@
 import React, { useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 
-import { Box, Stack, Typography, Button } from "@mui/material";
+import { Typography, Button } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import ADSActionButton from "../components/ADSActionButton";
 import EditCrossReferenceDialog from "../dialogs/EditCrossReferenceDialog";

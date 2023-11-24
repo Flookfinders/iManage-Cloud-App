@@ -24,6 +24,7 @@
 //    011   20.09.23 Sean Flook                 Added OneScotland specific record types.
 //    012   22.09.23 Sean Flook                 Changes required to handle Scottish classifications.
 //    013   27.10.23 Sean Flook                 Changes required to handle Scottish data.
+//    014   24.11.23 Sean Flook                 Further changes required for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -222,35 +223,62 @@ export function GetProvenanceLabel(provenanceCode, isScottish) {
  * @param {string} organisation The organisation, used for creating the return object.
  * @param {object} lookupContext The lookup context object
  * @param {string} userToken The token for the user who is calling the endpoint.
+ * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
  * @return {string} The temporary address from the supplied data.
  */
-export async function GetTempAddress(lpiRecord, organisation, lookupContext, userToken) {
+export async function GetTempAddress(lpiRecord, organisation, lookupContext, userToken, isScottish) {
   const postcode = lpiRecord.postcodeRef
     ? lookupContext.currentLookups.postcodes.find((x) => x.postcodeRef === lpiRecord.postcodeRef).postcode
     : "";
+
+  const subLocality =
+    isScottish && lpiRecord.subLocalityRef
+      ? lookupContext.currentLookups.subLocalities.find((x) => x.subLocalityRef === lpiRecord.subLocalityRef)
+          .subLocality
+      : "";
 
   const postTown = lpiRecord.postTownRef
     ? lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === lpiRecord.postTownRef).postTown
     : "";
 
-  const addressData = {
-    usrn: lpiRecord.usrn,
-    language: lpiRecord.language,
-    organisation: organisation,
-    saonStartNum: lpiRecord.saoStartNumber,
-    saonStartSuffix: lpiRecord.saoStartSuffix,
-    saonEndNum: lpiRecord.saoEndNumber,
-    saonEndSuffix: lpiRecord.saoEndSuffix,
-    saonText: lpiRecord.saoText,
-    paonStartNum: lpiRecord.paoStartNumber,
-    paonStartSuffix: lpiRecord.paoStartSuffix,
-    paonEndNum: lpiRecord.paoEndNumber,
-    paonEndSuffix: lpiRecord.paoEndSuffix,
-    paonText: lpiRecord.paoText,
-    postTown: postTown,
-    postcode: postcode,
-    postallyAddressable: lpiRecord.postalAddress,
-  };
+  const addressData = isScottish
+    ? {
+        usrn: lpiRecord.usrn,
+        language: lpiRecord.language,
+        organisation: organisation,
+        saonStartNum: lpiRecord.saoStartNumber,
+        saonStartSuffix: lpiRecord.saoStartSuffix,
+        saonEndNum: lpiRecord.saoEndNumber,
+        saonEndSuffix: lpiRecord.saoEndSuffix,
+        saonText: lpiRecord.saoText,
+        paonStartNum: lpiRecord.paoStartNumber,
+        paonStartSuffix: lpiRecord.paoStartSuffix,
+        paonEndNum: lpiRecord.paoEndNumber,
+        paonEndSuffix: lpiRecord.paoEndSuffix,
+        paonText: lpiRecord.paoText,
+        postTown: postTown,
+        subLocality: subLocality,
+        postcode: postcode,
+        postallyAddressable: lpiRecord.postalAddress,
+      }
+    : {
+        usrn: lpiRecord.usrn,
+        language: lpiRecord.language,
+        organisation: organisation,
+        saonStartNum: lpiRecord.saoStartNumber,
+        saonStartSuffix: lpiRecord.saoStartSuffix,
+        saonEndNum: lpiRecord.saoEndNumber,
+        saonEndSuffix: lpiRecord.saoEndSuffix,
+        saonText: lpiRecord.saoText,
+        paonStartNum: lpiRecord.paoStartNumber,
+        paonStartSuffix: lpiRecord.paoStartSuffix,
+        paonEndNum: lpiRecord.paoEndNumber,
+        paonEndSuffix: lpiRecord.paoEndSuffix,
+        paonText: lpiRecord.paoText,
+        postTown: postTown,
+        postcode: postcode,
+        postallyAddressable: lpiRecord.postalAddress,
+      };
 
   const tempAddressUrl = GetTempAddressUrl(userToken);
 
@@ -293,10 +321,15 @@ export function addressToTitleCase(address, postcode) {
     if (address === "No records found" || address === "Search failed...") return address;
     else
       return (
-        address.replace(postcode, "").replace(/\w\S*/g, function (txt) {
-          if (isNumeric(txt.charAt(0))) return txt.toUpperCase();
-          else return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
-        }) + (postcode && address.includes(postcode) ? postcode : "")
+        address
+          .replace(postcode, "")
+          .replace(/\w\S*/g, function (txt) {
+            if (isNumeric(txt.charAt(0))) return txt.toUpperCase();
+            else return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
+          })
+          .replaceAll(" And ", " and ")
+          .replaceAll(" The ", " the ")
+          .replaceAll(" To ", " to ") + (postcode && address.includes(postcode) ? postcode : "")
       );
   } else return null;
 }
@@ -441,16 +474,26 @@ export function GetNewProperty(isWelsh, isScottish, authorityCode, usrn, parent,
       siteSurvey: false,
       logicalStatus: 6,
       blpuState: null,
-      blpuClass: "U",
-      localCustodianCode: authorityCode,
-      organisation: null,
-      wardCode: null,
-      parishCode: null,
+      level: 0,
+      custodianCode: authorityCode,
       relatedPropertyCount: 0,
       relatedStreetCount: 0,
       blpuAppCrossRefs: [],
       blpuProvenances: [],
       blpuNotes: [],
+      organisations: [],
+      classifications: [
+        {
+          pkId: -10,
+          classKey: null,
+          changeType: "I",
+          uprn: 0,
+          classScheme: "Scottish Gazetteer Conventions",
+          blpuClass: "U",
+          startDate: currentDate,
+          endDate: null,
+        },
+      ],
       lpis: [
         {
           pkId: -10,
@@ -467,11 +510,13 @@ export function GetNewProperty(isWelsh, isScottish, authorityCode, usrn, parent,
           paoEndNumber: parent ? parent.eng.paoEndNumber : null,
           paoText: parent ? parent.eng.paoText : null,
           usrn: usrn,
-          postcodeRef: parent ? parent.cym.postcodeRef : null,
-          postTownRef: parent ? parent.cym.postTownRef : null,
+          postcodeRef: parent ? parent.eng.postcodeRef : null,
+          subLocalityRef: parent ? parent.eng.subLocalityRef : null,
+          postTownRef: parent ? parent.eng.postTownRef : null,
           neverExport: false,
           address: parent ? parent.eng.address : null,
           postTown: parent ? parent.eng.postTown : null,
+          subLocality: parent ? parent.eng.subLocality : null,
           postcode: parent ? parent.eng.postcode : null,
           logicalStatus: 6,
           paoStartSuffix: parent ? parent.eng.paoStartSuffix : null,
@@ -499,14 +544,90 @@ export function GetNewProperty(isWelsh, isScottish, authorityCode, usrn, parent,
           paoText: parent ? parent.gae.paoText : null,
           usrn: usrn,
           postcodeRef: parent ? parent.gae.postcodeRef : null,
+          subLocalityRef: parent ? parent.gae.subLocalityRef : null,
           postTownRef: parent ? parent.gae.postTownRef : null,
           neverExport: false,
           address: parent ? parent.gae.address : null,
           postTown: parent ? parent.gae.postTown : null,
+          subLocality: parent ? parent.gae.subLocality : null,
           postcode: parent ? parent.gae.postcode : null,
           logicalStatus: 6,
           paoStartSuffix: parent ? parent.gae.paoStartSuffix : null,
           paoEndSuffix: parent ? parent.gae.paoEndSuffix : null,
+          saoStartSuffix: null,
+          saoEndSuffix: null,
+          level: null,
+          postalAddress: null,
+          officialFlag: null,
+          dualLanguageLink: 1,
+        },
+      ],
+    };
+  } else if (isScottish) {
+    return {
+      pkId: -10,
+      changeType: "I",
+      uprn: 0,
+      blpuStateDate: null,
+      xcoordinate: easting,
+      ycoordinate: northing,
+      rpc: parent ? parent.rpc : 4,
+      startDate: currentDate,
+      endDate: null,
+      parentUprn: parent ? parent.uprn : null,
+      neverExport: false,
+      siteSurvey: false,
+      logicalStatus: 6,
+      blpuState: null,
+      level: 0,
+      custodianCode: authorityCode,
+      wardCode: null,
+      parishCode: null,
+      relatedPropertyCount: 0,
+      relatedStreetCount: 0,
+      blpuAppCrossRefs: [],
+      blpuProvenances: [],
+      blpuNotes: [],
+      organisations: [],
+      classifications: [
+        {
+          pkId: -10,
+          classKey: null,
+          changeType: "I",
+          uprn: 0,
+          classScheme: "Scottish Gazetteer Conventions",
+          blpuClass: "U",
+          startDate: currentDate,
+          endDate: null,
+        },
+      ],
+      lpis: [
+        {
+          pkId: -10,
+          changeType: "I",
+          uprn: 0,
+          lpiKey: null,
+          language: "ENG",
+          startDate: currentDate,
+          endDate: null,
+          saoStartNumber: null,
+          saoEndNumber: null,
+          saoText: null,
+          paoStartNumber: parent ? parent.eng.paoStartNumber : null,
+          paoEndNumber: parent ? parent.eng.paoEndNumber : null,
+          paoText: parent ? parent.eng.paoText : null,
+          usrn: usrn,
+          postcodeRef: parent ? parent.eng.postcodeRef : null,
+          subLocalityRef: parent ? parent.eng.subLocalityRef : null,
+          postTownRef: parent ? parent.eng.postTownRef : null,
+          neverExport: false,
+          address: parent ? parent.eng.address : null,
+          postTown: parent ? parent.eng.postTown : null,
+          subLocality: parent ? parent.eng.subLocality : null,
+          postcode: parent ? parent.eng.postcode : null,
+          logicalStatus: 6,
+          paoStartSuffix: parent ? parent.eng.paoStartSuffix : null,
+          paoEndSuffix: parent ? parent.eng.paoEndSuffix : null,
           saoStartSuffix: null,
           saoEndSuffix: null,
           level: null,
@@ -617,7 +738,7 @@ export async function PropertyDelete(uprn, userToken) {
  * @param {array|null} crossRefData The cross reference data for the property.
  * @param {array|null} classificationData The classification data for the property (OneScotland only).
  * @param {array|null} organisationData The organisation data for the property (OneScotland only).
- * @param {array|null} successorData The successor data for the property (OneScotland only).
+ * @param {array|null} successorCrossRefData The successor cross reference data for the property (OneScotland only).
  * @param {array|null} noteData The note data for the property.
  * @return {object} The new new property object.
  */
@@ -629,79 +750,67 @@ export function GetNewPropertyData(
   crossRefData,
   classificationData,
   organisationData,
-  successorData,
+  successorCrossRefData,
   noteData
 ) {
   const newPropertyData = !isScottish
     ? {
+        blpuStateDate: currentProperty.blpuStateDate,
+        parentUprn: currentProperty.parentUprn,
+        neverExport: currentProperty.neverExport,
+        siteSurvey: currentProperty.siteSurvey,
+        uprn: currentProperty.uprn,
+        logicalStatus: currentProperty.logicalStatus,
+        endDate: currentProperty.endDate,
+        blpuState: currentProperty.blpuState,
+        startDate: currentProperty.startDate,
         blpuClass: currentProperty.blpuClass,
         localCustodianCode: currentProperty.localCustodianCode,
         organisation: currentProperty.organisation,
-        wardCode: currentProperty.wardCode,
-        parishCode: currentProperty.parishCode,
-        custodianOne: currentProperty.custodianOne,
-        custodianTwo: currentProperty.custodianTwo,
-        canKey: currentProperty.canKey,
-        pkId: currentProperty.pkId,
-        changeType: currentProperty.changeType,
-        uprn: currentProperty.uprn,
-        parentUprn: currentProperty.parentUprn,
-        logicalStatus: currentProperty.logicalStatus,
-        blpuState: currentProperty.blpuState,
-        blpuStateDate: currentProperty.blpuStateDate,
         xcoordinate: currentProperty.xcoordinate,
         ycoordinate: currentProperty.ycoordinate,
+        wardCode: currentProperty.wardCode,
+        parishCode: currentProperty.parishCode,
+        pkId: currentProperty.pkId,
+        changeType: currentProperty.changeType,
         rpc: currentProperty.rpc,
-        startDate: currentProperty.startDate,
-        endDate: currentProperty.endDate,
-        lastUpdateDate: currentProperty.lastUpdateDate,
         entryDate: currentProperty.entryDate,
-        neverExport: currentProperty.neverExport,
-        propertyLastUpdated: currentProperty.propertyLastUpdated,
-        propertyLastUser: currentProperty.propertyLastUser,
+        lastUpdateDate: currentProperty.lastUpdateDate,
         relatedPropertyCount: currentProperty.relatedPropertyCount,
         relatedStreetCount: currentProperty.relatedStreetCount,
-        latitude: currentProperty.latitude,
-        longitude: currentProperty.longitude,
-        lastUpdated: currentProperty.lastUpdated,
-        insertedTimestamp: currentProperty.insertedTimestamp,
-        insertedUser: currentProperty.insertedUser,
-        lastUser: currentProperty.lastUser,
+        propertyLastUpdated: currentProperty.propertyLastUpdated,
+        propertyLastUser: currentProperty.propertyLastUser,
         blpuAppCrossRefs: crossRefData,
         blpuProvenances: provenanceData,
         blpuNotes: noteData,
         lpis: lpiData,
       }
     : {
-        localCustodianCode: currentProperty.localCustodianCode,
-        pkId: currentProperty.pkId,
-        changeType: currentProperty.changeType,
-        uprn: currentProperty.uprn,
-        parentUprn: currentProperty.parentUprn,
-        logicalStatus: currentProperty.logicalStatus,
-        blpuState: currentProperty.blpuState,
         blpuStateDate: currentProperty.blpuStateDate,
+        parentUprn: currentProperty.parentUprn,
+        neverExport: currentProperty.neverExport,
+        siteSurvey: currentProperty.siteSurvey,
+        uprn: currentProperty.uprn,
+        logicalStatus: currentProperty.logicalStatus,
+        endDate: currentProperty.endDate,
+        startDate: currentProperty.startDate,
+        blpuState: currentProperty.blpuState,
+        custodianCode: currentProperty.custodianCode,
+        level: currentProperty.level,
         xcoordinate: currentProperty.xcoordinate,
         ycoordinate: currentProperty.ycoordinate,
+        pkId: currentProperty.pkId,
+        changeType: currentProperty.changeType,
         rpc: currentProperty.rpc,
-        startDate: currentProperty.startDate,
-        endDate: currentProperty.endDate,
-        lastUpdateDate: currentProperty.lastUpdateDate,
         entryDate: currentProperty.entryDate,
-        neverExport: currentProperty.neverExport,
-        propertyLastUpdated: currentProperty.propertyLastUpdated,
-        propertyLastUser: currentProperty.propertyLastUser,
+        lastUpdateDate: currentProperty.lastUpdateDate,
         relatedPropertyCount: currentProperty.relatedPropertyCount,
         relatedStreetCount: currentProperty.relatedStreetCount,
-        latitude: currentProperty.latitude,
-        longitude: currentProperty.longitude,
-        lastUpdated: currentProperty.lastUpdated,
-        insertedTimestamp: currentProperty.insertedTimestamp,
-        insertedUser: currentProperty.insertedUser,
-        lastUser: currentProperty.lastUser,
+        propertyLastUpdated: currentProperty.propertyLastUpdated,
+        propertyLastUser: currentProperty.propertyLastUser,
         blpuAppCrossRefs: crossRefData,
         blpuProvenances: provenanceData,
-        successors: successorData,
+        successorCrossRefs: successorCrossRefData,
         organisations: organisationData,
         classifications: classificationData,
         blpuNotes: noteData,
@@ -764,37 +873,17 @@ export function GetCurrentPropertyData(propertyData, sandboxContext, lookupConte
     );
 
     const newSecondLpi = {
-      level: sandboxContext.currentSandbox.currentPropertyRecords.lpi.level,
-      postalAddress: sandboxContext.currentSandbox.currentPropertyRecords.lpi.postalAddress,
-      custodianOne: secondLpi.custodianOne,
-      custodianTwo: secondLpi.custodianTwo,
-      canKey: secondLpi.canKey,
-      pkId: secondLpi.pkId,
-      changeType: secondLpi.changeType,
-      uprn: secondLpi.uprn,
-      lpiKey: secondLpi.lpiKey,
       language: secondLpi.language,
-      logicalStatus: sandboxContext.currentSandbox.currentPropertyRecords.lpi.logicalStatus,
       startDate: sandboxContext.currentSandbox.currentPropertyRecords.lpi.startDate,
       endDate: sandboxContext.currentSandbox.currentPropertyRecords.lpi.endDate,
-      entryDate: secondLpi.entryDate,
-      lastUpdateDate: secondLpi.lastUpdateDate,
       saoStartNumber:
         secondLpi && secondLpi.saoStartNumber
           ? secondLpi.saoStartNumber
           : sandboxContext.currentSandbox.currentPropertyRecords.lpi.saoStartNumber,
-      saoStartSuffix:
-        secondLpi && secondLpi.saoStartSuffix
-          ? secondLpi.saoStartSuffix
-          : sandboxContext.currentSandbox.currentPropertyRecords.lpi.saoStartSuffix,
       saoEndNumber:
         secondLpi && secondLpi.saoEndNumber
           ? secondLpi.saoEndNumber
           : sandboxContext.currentSandbox.currentPropertyRecords.lpi.saoEndNumber,
-      saoEndSuffix:
-        secondLpi && secondLpi.saoEndSuffix
-          ? secondLpi.saoEndSuffix
-          : sandboxContext.currentSandbox.currentPropertyRecords.lpi.saoEndSuffix,
       saoText:
         secondLpi && secondLpi.saoText
           ? secondLpi.saoText
@@ -803,18 +892,10 @@ export function GetCurrentPropertyData(propertyData, sandboxContext, lookupConte
         secondLpi && secondLpi.paoStartNumber
           ? secondLpi.paoStartNumber
           : sandboxContext.currentSandbox.currentPropertyRecords.lpi.paoStartNumber,
-      paoStartSuffix:
-        secondLpi && secondLpi.paoStartSuffix
-          ? secondLpi.paoStartSuffix
-          : sandboxContext.currentSandbox.currentPropertyRecords.lpi.paoStartSuffix,
       paoEndNumber:
         secondLpi && secondLpi.paoEndNumber
           ? secondLpi.paoEndNumber
           : sandboxContext.currentSandbox.currentPropertyRecords.lpi.paoEndNumber,
-      paoEndSuffix:
-        secondLpi && secondLpi.paoEndSuffix
-          ? secondLpi.paoEndSuffix
-          : sandboxContext.currentSandbox.currentPropertyRecords.lpi.paoEndSuffix,
       paoText:
         secondLpi && secondLpi.paoText
           ? secondLpi.paoText
@@ -822,14 +903,37 @@ export function GetCurrentPropertyData(propertyData, sandboxContext, lookupConte
       usrn: sandboxContext.currentSandbox.currentPropertyRecords.lpi.usrn,
       postcodeRef: sandboxContext.currentSandbox.currentPropertyRecords.lpi.postcodeRef,
       postTownRef: secondPostTown ? secondPostTown.postTownRef : null,
-      officialFlag: sandboxContext.currentSandbox.currentPropertyRecords.lpi.officialFlag,
       neverExport: sandboxContext.currentSandbox.currentPropertyRecords.lpi.neverExport,
-      address: secondLpi.address,
       postTown: secondPostTown ? secondPostTown.postTown : null,
       postcode: sandboxContext.currentSandbox.currentPropertyRecords.lpi.postcode,
-      lastUpdated: secondLpi.lastUpdated,
-      lastUser: secondLpi.lastUser,
       dualLanguageLink: secondLpi.dualLanguageLink,
+      uprn: secondLpi.uprn,
+      logicalStatus: sandboxContext.currentSandbox.currentPropertyRecords.lpi.logicalStatus,
+      paoStartSuffix:
+        secondLpi && secondLpi.paoStartSuffix
+          ? secondLpi.paoStartSuffix
+          : sandboxContext.currentSandbox.currentPropertyRecords.lpi.paoStartSuffix,
+      paoEndSuffix:
+        secondLpi && secondLpi.paoEndSuffix
+          ? secondLpi.paoEndSuffix
+          : sandboxContext.currentSandbox.currentPropertyRecords.lpi.paoEndSuffix,
+      saoStartSuffix:
+        secondLpi && secondLpi.saoStartSuffix
+          ? secondLpi.saoStartSuffix
+          : sandboxContext.currentSandbox.currentPropertyRecords.lpi.saoStartSuffix,
+      saoEndSuffix:
+        secondLpi && secondLpi.saoEndSuffix
+          ? secondLpi.saoEndSuffix
+          : sandboxContext.currentSandbox.currentPropertyRecords.lpi.saoEndSuffix,
+      level: sandboxContext.currentSandbox.currentPropertyRecords.lpi.level,
+      postalAddress: sandboxContext.currentSandbox.currentPropertyRecords.lpi.postalAddress,
+      officialFlag: sandboxContext.currentSandbox.currentPropertyRecords.lpi.officialFlag,
+      pkId: secondLpi.pkId,
+      changeType: secondLpi.changeType,
+      lpiKey: secondLpi.lpiKey,
+      address: secondLpi.address,
+      entryDate: secondLpi.entryDate,
+      lastUpdateDate: secondLpi.lastUpdateDate,
     };
     lpiData = propertyData.lpis.map(
       (x) =>
@@ -877,14 +981,14 @@ export function GetCurrentPropertyData(propertyData, sandboxContext, lookupConte
           ) || x
       )
     : propertyData.organisations;
-  const successorData = sandboxContext.currentSandbox.currentPropertyRecords.successor
-    ? propertyData.successors.map(
+  const successorCrossRefData = sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef
+    ? propertyData.successorCrossRefs.map(
         (x) =>
-          [sandboxContext.currentSandbox.currentPropertyRecords.successor].find(
-            (successor) => successor.pkId === x.pkId
+          [sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef].find(
+            (successorCrossRef) => successorCrossRef.pkId === x.pkId
           ) || x
       )
-    : propertyData.successors;
+    : propertyData.successorCrossRefs;
   const noteData = sandboxContext.currentSandbox.currentPropertyRecords.note
     ? propertyData.blpuNotes.map(
         (x) => [sandboxContext.currentSandbox.currentPropertyRecords.note].find((note) => note.pkId === x.pkId) || x
@@ -898,7 +1002,7 @@ export function GetCurrentPropertyData(propertyData, sandboxContext, lookupConte
     crossRefData,
     classificationData,
     organisationData,
-    successorData,
+    successorCrossRefData,
     noteData
   );
 
@@ -915,120 +1019,131 @@ export function GetCurrentPropertyData(propertyData, sandboxContext, lookupConte
 export function GetPropertyCreateData(propertyData, isScottish) {
   if (isScottish)
     return {
-      changeType: "I",
       blpuStateDate: propertyData.blpuStateDate,
-      xcoordinate: propertyData.xcoordinate ? propertyData.xcoordinate : 0,
-      ycoordinate: propertyData.ycoordinate ? propertyData.ycoordinate : 0,
-      rpc: propertyData.rpc,
-      startDate: propertyData.startDate,
-      endDate: propertyData.endDate,
       parentUprn: propertyData.parentUprn,
       neverExport: propertyData.neverExport,
       siteSurvey: propertyData.siteSurvey,
       uprn: 0,
       logicalStatus: propertyData.logicalStatus,
+      endDate: propertyData.endDate,
+      startDate: propertyData.startDate,
       blpuState: propertyData.blpuState,
-      blpuClass: propertyData.blpuClass,
-      localCustodianCode: propertyData.localCustodianCode,
-      organisation: propertyData.organisation,
-      wardCode: propertyData.wardCode,
-      parishCode: propertyData.parishCode,
-      blpuAppCrossRefs: propertyData.blpuAppCrossRefs.map((x) => {
-        return {
-          changeType: "I",
-          uprn: 0,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          crossReference: x.crossReference,
-          sourceId: x.sourceId ? x.sourceId : 0,
-          source: x.source ? x.source : null,
-          neverExport: x.neverExport,
-        };
-      }),
-      blpuProvenances: propertyData.blpuProvenances.map((x) => {
-        return {
-          changeType: "I",
-          uprn: 0,
-          provenanceCode: x.provenanceCode,
-          annotation: x.annotation,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          wktGeometry: x.wktGeometry,
-        };
-      }),
-      classifications: propertyData.classifications.map((x) => {
-        return {
-          changeType: "I",
-          uprn: 0,
-          classScheme: x.classScheme,
-          blpuClass: x.blpuClass,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          neverExport: x.neverExport,
-        };
-      }),
-      organisations: propertyData.organisations.map((x) => {
-        return {
-          changeType: "I",
-          uprn: 0,
-          organisation: x.organisation,
-          legalName: x.legalName,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          entryDate: x.entryDate,
-          lastUpdateDate: x.lastUpdateDate,
-          neverExport: x.neverExport,
-        };
-      }),
-      successors: propertyData.successors.map((x) => {
-        return {
-          changeType: "I",
-          uprn: 0,
-          predecessor: x.predecessor,
-          successorType: x.successorType,
-          successor: x.successor,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          neverExport: x.neverExport,
-        };
-      }),
-      blpuNotes: propertyData.blpuNotes.map((x) => {
-        return {
-          uprn: 0,
-          note: x.note,
-          changeType: "I",
-        };
-      }),
-      lpis: propertyData.lpis.map((x) => {
-        return {
-          changeType: "I",
-          language: x.language,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          saoStartNumber: x.saoStartNumber ? x.saoStartNumber : 0,
-          saoEndNumber: x.saoEndNumber ? x.saoEndNumber : 0,
-          saoText: x.saoText,
-          paoStartNumber: x.paoStartNumber ? x.paoStartNumber : 0,
-          paoEndNumber: x.paoEndNumber ? x.paoEndNumber : 0,
-          paoText: x.paoText,
-          usrn: x.usrn,
-          postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
-          postTownRef: x.postTownRef ? x.postTownRef : -1,
-          neverExport: x.neverExport,
-          postTown: x.postTownRef ? x.postTown : "",
-          postcode: x.postcodeRef ? x.postcode : "",
-          dualLanguageLink: x.dualLanguageLink,
-          uprn: 0,
-          logicalStatus: x.logicalStatus,
-          paoStartSuffix: x.paoStartSuffix,
-          paoEndSuffix: x.paoEndSuffix,
-          saoStartSuffix: x.saoStartSuffix,
-          saoEndSuffix: x.saoEndSuffix,
-          level: x.level,
-          postalAddress: x.postalAddress,
-          officialFlag: x.officialFlag,
-        };
-      }),
+      custodianCode: propertyData.custodianCode,
+      level: propertyData.level,
+      xcoordinate: propertyData.xcoordinate ? propertyData.xcoordinate : 0,
+      ycoordinate: propertyData.ycoordinate ? propertyData.ycoordinate : 0,
+      changeType: "I",
+      rpc: propertyData.rpc,
+      blpuAppCrossRefs: propertyData.blpuAppCrossRefs
+        ? propertyData.blpuAppCrossRefs.map((x) => {
+            return {
+              changeType: "I",
+              uprn: 0,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              crossReference: x.crossReference,
+              sourceId: x.sourceId ? x.sourceId : 0,
+              source: x.source ? x.source : null,
+              neverExport: x.neverExport,
+            };
+          })
+        : [],
+      blpuProvenances: propertyData.blpuProvenances
+        ? propertyData.blpuProvenances.map((x) => {
+            return {
+              uprn: 0,
+              changeType: "I",
+              provenanceCode: x.provenanceCode,
+              annotation: x.annotation,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              wktGeometry: x.wktGeometry,
+            };
+          })
+        : [],
+      blpuNotes: propertyData.blpuNotes
+        ? propertyData.blpuNotes.map((x) => {
+            return {
+              uprn: 0,
+              note: x.note,
+              changeType: "I",
+            };
+          })
+        : [],
+      classifications: propertyData.classifications
+        ? propertyData.classifications.map((x) => {
+            return {
+              changeType: "I",
+              uprn: 0,
+              classScheme: x.classScheme,
+              blpuClass: x.blpuClass,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              neverExport: x.neverExport,
+            };
+          })
+        : [],
+      organisations: propertyData.organisations
+        ? propertyData.organisations.map((x) => {
+            return {
+              changeType: "I",
+              uprn: 0,
+              organisation: x.organisation,
+              legalName: x.legalName,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              entryDate: x.entryDate, // TODO: remove once it has been removed from the API
+              lastUpdateDate: x.lastUpdateDate, // TODO: remove once it has been removed from the API
+              neverExport: x.neverExport,
+            };
+          })
+        : [],
+      successorCrossRefs: propertyData.successorCrossRefs
+        ? propertyData.successorCrossRefs.map((x) => {
+            return {
+              changeType: "I",
+              predecessor: x.predecessor,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              successorType: x.successorType,
+              successor: x.successor,
+              neverExport: x.neverExport,
+            };
+          })
+        : [],
+      lpis: propertyData.lpis
+        ? propertyData.lpis.map((x) => {
+            return {
+              language: x.language,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              saoStartNumber: x.saoStartNumber ? x.saoStartNumber : 0,
+              saoEndNumber: x.saoEndNumber ? x.saoEndNumber : 0,
+              saoText: x.saoText,
+              paoStartNumber: x.paoStartNumber ? x.paoStartNumber : 0,
+              paoEndNumber: x.paoEndNumber ? x.paoEndNumber : 0,
+              paoText: x.paoText,
+              usrn: x.usrn,
+              postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
+              postTownRef: x.postTownRef ? x.postTownRef : -1,
+              neverExport: x.neverExport,
+              postTown: x.postTownRef ? x.postTown : "",
+              postcode: x.postcodeRef ? x.postcode : "",
+              dualLanguageLink: x.dualLanguageLink,
+              uprn: 0,
+              changeType: "I",
+              logicalStatus: x.logicalStatus,
+              paoStartSuffix: x.paoStartSuffix,
+              paoEndSuffix: x.paoEndSuffix,
+              saoStartSuffix: x.saoStartSuffix,
+              saoEndSuffix: x.saoEndSuffix,
+              subLocalityRef: x.subLocalityRef,
+              subLocality: x.subLocality,
+              postallyAddressable: x.postallyAddressable,
+              officialFlag: x.officialFlag,
+            };
+          })
+        : [],
     };
   else
     return {
@@ -1050,66 +1165,74 @@ export function GetPropertyCreateData(propertyData, isScottish) {
       organisation: propertyData.organisation,
       wardCode: propertyData.wardCode,
       parishCode: propertyData.parishCode,
-      blpuAppCrossRefs: propertyData.blpuAppCrossRefs.map((x) => {
-        return {
-          changeType: "I",
-          uprn: 0,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          crossReference: x.crossReference,
-          sourceId: x.sourceId ? x.sourceId : 0,
-          source: x.source ? x.source : null,
-          neverExport: x.neverExport,
-        };
-      }),
-      blpuProvenances: propertyData.blpuProvenances.map((x) => {
-        return {
-          changeType: "I",
-          uprn: 0,
-          provenanceCode: x.provenanceCode,
-          annotation: x.annotation,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          wktGeometry: x.wktGeometry,
-        };
-      }),
-      blpuNotes: propertyData.blpuNotes.map((x) => {
-        return {
-          uprn: 0,
-          note: x.note,
-          changeType: "I",
-        };
-      }),
-      lpis: propertyData.lpis.map((x) => {
-        return {
-          changeType: "I",
-          language: x.language,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          saoStartNumber: x.saoStartNumber ? x.saoStartNumber : 0,
-          saoEndNumber: x.saoEndNumber ? x.saoEndNumber : 0,
-          saoText: x.saoText,
-          paoStartNumber: x.paoStartNumber ? x.paoStartNumber : 0,
-          paoEndNumber: x.paoEndNumber ? x.paoEndNumber : 0,
-          paoText: x.paoText,
-          usrn: x.usrn,
-          postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
-          postTownRef: x.postTownRef ? x.postTownRef : -1,
-          neverExport: x.neverExport,
-          postTown: x.postTownRef ? x.postTown : "",
-          postcode: x.postcodeRef ? x.postcode : "",
-          dualLanguageLink: x.dualLanguageLink,
-          uprn: 0,
-          logicalStatus: x.logicalStatus,
-          paoStartSuffix: x.paoStartSuffix,
-          paoEndSuffix: x.paoEndSuffix,
-          saoStartSuffix: x.saoStartSuffix,
-          saoEndSuffix: x.saoEndSuffix,
-          level: x.level,
-          postalAddress: x.postalAddress,
-          officialFlag: x.officialFlag,
-        };
-      }),
+      blpuAppCrossRefs: propertyData.blpuAppCrossRefs
+        ? propertyData.blpuAppCrossRefs.map((x) => {
+            return {
+              changeType: "I",
+              uprn: 0,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              crossReference: x.crossReference,
+              sourceId: x.sourceId ? x.sourceId : 0,
+              source: x.source ? x.source : null,
+              neverExport: x.neverExport,
+            };
+          })
+        : [],
+      blpuProvenances: propertyData.blpuProvenances
+        ? propertyData.blpuProvenances.map((x) => {
+            return {
+              changeType: "I",
+              uprn: 0,
+              provenanceCode: x.provenanceCode,
+              annotation: x.annotation,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              wktGeometry: x.wktGeometry,
+            };
+          })
+        : [],
+      blpuNotes: propertyData.blpuNotes
+        ? propertyData.blpuNotes.map((x) => {
+            return {
+              uprn: 0,
+              note: x.note,
+              changeType: "I",
+            };
+          })
+        : [],
+      lpis: propertyData.lpis
+        ? propertyData.lpis.map((x) => {
+            return {
+              changeType: "I",
+              language: x.language,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              saoStartNumber: x.saoStartNumber ? x.saoStartNumber : 0,
+              saoEndNumber: x.saoEndNumber ? x.saoEndNumber : 0,
+              saoText: x.saoText,
+              paoStartNumber: x.paoStartNumber ? x.paoStartNumber : 0,
+              paoEndNumber: x.paoEndNumber ? x.paoEndNumber : 0,
+              paoText: x.paoText,
+              usrn: x.usrn,
+              postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
+              postTownRef: x.postTownRef ? x.postTownRef : -1,
+              neverExport: x.neverExport,
+              postTown: x.postTownRef ? x.postTown : "",
+              postcode: x.postcodeRef ? x.postcode : "",
+              dualLanguageLink: x.dualLanguageLink,
+              uprn: 0,
+              logicalStatus: x.logicalStatus,
+              paoStartSuffix: x.paoStartSuffix,
+              paoEndSuffix: x.paoEndSuffix,
+              saoStartSuffix: x.saoStartSuffix,
+              saoEndSuffix: x.saoEndSuffix,
+              level: x.level,
+              postalAddress: x.postalAddress,
+              officialFlag: x.officialFlag,
+            };
+          })
+        : [],
     };
 }
 
@@ -1123,135 +1246,150 @@ export function GetPropertyCreateData(propertyData, isScottish) {
 export function GetPropertyUpdateData(propertyData, isScottish) {
   if (isScottish)
     return {
-      changeType: propertyData.changeType,
       blpuStateDate: propertyData.blpuStateDate,
-      rpc: propertyData.rpc,
-      startDate: propertyData.startDate,
-      endDate: propertyData.endDate,
       parentUprn: propertyData.parentUprn,
       neverExport: propertyData.neverExport,
       siteSurvey: propertyData.siteSurvey,
       uprn: propertyData.uprn,
       logicalStatus: propertyData.logicalStatus,
+      endDate: propertyData.endDate,
+      startDate: propertyData.startDate,
       blpuState: propertyData.blpuState,
-      blpuClass: propertyData.blpuClass,
-      localCustodianCode: propertyData.localCustodianCode,
-      organisation: propertyData.organisation,
+      custodianCode: propertyData.custodianCode,
+      level: propertyData.level,
       xcoordinate: propertyData.xcoordinate ? propertyData.xcoordinate : 0,
       ycoordinate: propertyData.ycoordinate ? propertyData.ycoordinate : 0,
-      wardCode: propertyData.wardCode,
-      parishCode: propertyData.parishCode,
       pkId: propertyData.pkId,
-      blpuAppCrossRefs: propertyData.blpuAppCrossRefs.map((x) => {
-        return {
-          changeType: x.changeType,
-          uprn: propertyData.uprn,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          crossReference: x.crossReference,
-          sourceId: x.sourceId ? x.sourceId : 0,
-          source: x.source ? x.source : null,
-          neverExport: x.neverExport,
-          pkId: x.pkId > 0 ? x.pkId : 0,
-          xrefKey: x.xrefKey,
-        };
-      }),
-      blpuProvenances: propertyData.blpuProvenances.map((x) => {
-        return {
-          uprn: propertyData.uprn,
-          changeType: x.changeType,
-          provenanceCode: x.provenanceCode,
-          annotation: x.annotation,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          wktGeometry: x.wktGeometry,
-          pkId: x.pkId > 0 ? x.pkId : 0,
-          provenanceKey: x.provenanceKey,
-        };
-      }),
-      classifications: propertyData.classifications.map((x) => {
-        return {
-          pkId: x.pkId > 0 ? x.pkId : 0,
-          classKey: x.classKey,
-          changeType: x.changeType,
-          uprn: propertyData.uprn,
-          classScheme: x.classScheme,
-          blpuClass: x.blpuClass,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          neverExport: x.neverExport,
-        };
-      }),
-      organisations: propertyData.organisations.map((x) => {
-        return {
-          pkId: x.pkId > 0 ? x.pkId : 0,
-          orgKey: x.orgKey,
-          changeType: x.changeType,
-          uprn: propertyData.uprn,
-          organisation: x.organisation,
-          legalName: x.legalName,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          entryDate: x.entryDate,
-          lastUpdateDate: x.lastUpdateDate,
-          neverExport: x.neverExport,
-        };
-      }),
-      successors: propertyData.successors.map((x) => {
-        return {
-          pkId: x.pkId > 0 ? x.pkId : 0,
-          succKey: x.succKey,
-          changeType: x.changeType,
-          uprn: propertyData.uprn,
-          predecessor: x.predecessor,
-          successorType: x.successorType,
-          successor: x.successor,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          neverExport: x.neverExport,
-        };
-      }),
-      blpuNotes: propertyData.blpuNotes.map((x) => {
-        return {
-          uprn: propertyData.uprn,
-          note: x.note,
-          changeType: x.changeType,
-          pkId: x.pkId > 0 ? x.pkId : 0,
-          seqNo: x.seqNo,
-        };
-      }),
-      lpis: propertyData.lpis.map((x) => {
-        return {
-          changeType: x.changeType,
-          language: x.language,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          saoStartNumber: x.saoStartNumber ? x.saoStartNumber : 0,
-          saoEndNumber: x.saoEndNumber ? x.saoEndNumber : 0,
-          saoText: x.saoText,
-          paoStartNumber: x.paoStartNumber ? x.paoStartNumber : 0,
-          paoEndNumber: x.paoEndNumber ? x.paoEndNumber : 0,
-          paoText: x.paoText,
-          usrn: x.usrn,
-          postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
-          postTownRef: x.postTownRef ? x.postTownRef : -1,
-          neverExport: x.neverExport,
-          postTown: x.postTownRef ? x.postTown : "",
-          postcode: x.postcodeRef ? x.postcode : "",
-          dualLanguageLink: x.dualLanguageLink,
-          uprn: propertyData.uprn,
-          logicalStatus: x.logicalStatus,
-          paoStartSuffix: x.paoStartSuffix,
-          paoEndSuffix: x.paoEndSuffix,
-          saoStartSuffix: x.saoStartSuffix,
-          saoEndSuffix: x.saoEndSuffix,
-          level: x.level,
-          postalAddress: x.postalAddress,
-          officialFlag: x.officialFlag,
-          pkId: x.pkId > 0 ? x.pkId : 0,
-          lpiKey: x.lpiKey,
-        };
-      }),
+      changeType: propertyData.changeType,
+      rpc: propertyData.rpc,
+      blpuAppCrossRefs: propertyData.blpuAppCrossRefs
+        ? propertyData.blpuAppCrossRefs.map((x) => {
+            return {
+              pkId: x.pkId > 0 ? x.pkId : 0,
+              xrefKey: x.xrefKey,
+              changeType: x.changeType,
+              uprn: propertyData.uprn,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              crossReference: x.crossReference,
+              sourceId: x.sourceId ? x.sourceId : 0,
+              source: x.source ? x.source : null,
+              neverExport: x.neverExport,
+            };
+          })
+        : [],
+      blpuProvenances: propertyData.blpuProvenances
+        ? propertyData.blpuProvenances.map((x) => {
+            return {
+              pkId: x.pkId > 0 ? x.pkId : 0,
+              provenanceKey: x.provenanceKey,
+              uprn: propertyData.uprn,
+              changeType: x.changeType,
+              provenanceCode: x.provenanceCode,
+              annotation: x.annotation,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              neverExport: x.neverExport,
+              wktGeometry: x.wktGeometry,
+            };
+          })
+        : [],
+      blpuNotes: propertyData.blpuNotes
+        ? propertyData.blpuNotes.map((x) => {
+            return {
+              pkId: x.pkId > 0 ? x.pkId : 0,
+              seqNo: x.seqNo,
+              uprn: propertyData.uprn,
+              note: x.note,
+              changeType: x.changeType,
+            };
+          })
+        : [],
+      classifications: propertyData.classifications
+        ? propertyData.classifications.map((x) => {
+            return {
+              pkId: x.pkId > 0 ? x.pkId : 0,
+              classKey: x.classKey,
+              changeType: x.changeType,
+              uprn: propertyData.uprn,
+              classScheme: x.classScheme,
+              blpuClass: x.blpuClass,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              neverExport: x.neverExport,
+            };
+          })
+        : [],
+      organisations: propertyData.organisations
+        ? propertyData.organisations.map((x) => {
+            return {
+              pkId: x.pkId > 0 ? x.pkId : 0,
+              orgKey: x.orgKey,
+              changeType: x.changeType,
+              uprn: propertyData.uprn,
+              organisation: x.organisation,
+              legalName: x.legalName,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              entryDate: x.entryDate, // TODO: remove once it has been removed from the API
+              lastUpdateDate: x.lastUpdateDate, // TODO: remove once it has been removed from the API
+              neverExport: x.neverExport,
+            };
+          })
+        : [],
+      successorCrossRefs: propertyData.successorCrossRefs
+        ? propertyData.successorCrossRefs.map((x) => {
+            return {
+              pkId: x.pkId > 0 ? x.pkId : 0,
+              changeType: x.changeType,
+              predecessor: x.predecessor,
+              succKey: x.succKey,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              successorType: x.successorType,
+              successor: x.successor,
+              neverExport: x.neverExport,
+            };
+          })
+        : [],
+      lpis: propertyData.lpis
+        ? propertyData.lpis.map((x) => {
+            return {
+              language: x.language,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              saoStartNumber: x.saoStartNumber ? x.saoStartNumber : 0,
+              saoEndNumber: x.saoEndNumber ? x.saoEndNumber : 0,
+              saoText: x.saoText,
+              paoStartNumber: x.paoStartNumber ? x.paoStartNumber : 0,
+              paoEndNumber: x.paoEndNumber ? x.paoEndNumber : 0,
+              paoText: x.paoText,
+              usrn: x.usrn,
+              postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
+              postTownRef: x.postTownRef ? x.postTownRef : -1,
+              neverExport: x.neverExport,
+              postTown: x.postTownRef ? x.postTown : "",
+              postcode: x.postcodeRef ? x.postcode : "",
+              dualLanguageLink: x.dualLanguageLink,
+              uprn: propertyData.uprn,
+              logicalStatus: x.logicalStatus,
+              paoStartSuffix: x.paoStartSuffix,
+              paoEndSuffix: x.paoEndSuffix,
+              saoStartSuffix: x.saoStartSuffix,
+              saoEndSuffix: x.saoEndSuffix,
+              subLocalityRef: x.subLocalityRef,
+              subLocality: x.subLocality,
+              postallyAddressable: x.postallyAddressable,
+              officialFlag: x.officialFlag,
+              pkId: x.pkId > 0 ? x.pkId : 0,
+              changeType: x.changeType,
+              lpiKey: x.lpiKey,
+              address: x.address, // TODO: remove once it has been removed from the API
+              entryDate: x.entryDate, // TODO: remove once it has been removed from the API
+              lastUpdateDate: x.lastUpdateDate, // TODO: remove once it has been removed from the API
+            };
+          })
+        : [],
     };
   else
     return {
@@ -1274,74 +1412,82 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
       wardCode: propertyData.wardCode,
       parishCode: propertyData.parishCode,
       pkId: propertyData.pkId,
-      blpuAppCrossRefs: propertyData.blpuAppCrossRefs.map((x) => {
-        return {
-          changeType: x.changeType,
-          uprn: propertyData.uprn,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          crossReference: x.crossReference,
-          sourceId: x.sourceId ? x.sourceId : 0,
-          source: x.source ? x.source : null,
-          neverExport: x.neverExport,
-          pkId: x.pkId > 0 ? x.pkId : 0,
-          xrefKey: x.xrefKey,
-        };
-      }),
-      blpuProvenances: propertyData.blpuProvenances.map((x) => {
-        return {
-          uprn: propertyData.uprn,
-          changeType: x.changeType,
-          provenanceCode: x.provenanceCode,
-          annotation: x.annotation,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          wktGeometry: x.wktGeometry,
-          pkId: x.pkId > 0 ? x.pkId : 0,
-          provenanceKey: x.provenanceKey,
-        };
-      }),
-      blpuNotes: propertyData.blpuNotes.map((x) => {
-        return {
-          uprn: propertyData.uprn,
-          note: x.note,
-          changeType: x.changeType,
-          pkId: x.pkId > 0 ? x.pkId : 0,
-          seqNo: x.seqNo,
-        };
-      }),
-      lpis: propertyData.lpis.map((x) => {
-        return {
-          changeType: x.changeType,
-          language: x.language,
-          startDate: x.startDate,
-          endDate: x.endDate,
-          saoStartNumber: x.saoStartNumber ? x.saoStartNumber : 0,
-          saoEndNumber: x.saoEndNumber ? x.saoEndNumber : 0,
-          saoText: x.saoText,
-          paoStartNumber: x.paoStartNumber ? x.paoStartNumber : 0,
-          paoEndNumber: x.paoEndNumber ? x.paoEndNumber : 0,
-          paoText: x.paoText,
-          usrn: x.usrn,
-          postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
-          postTownRef: x.postTownRef ? x.postTownRef : -1,
-          neverExport: x.neverExport,
-          postTown: x.postTownRef ? x.postTown : "",
-          postcode: x.postcodeRef ? x.postcode : "",
-          dualLanguageLink: x.dualLanguageLink,
-          uprn: propertyData.uprn,
-          logicalStatus: x.logicalStatus,
-          paoStartSuffix: x.paoStartSuffix,
-          paoEndSuffix: x.paoEndSuffix,
-          saoStartSuffix: x.saoStartSuffix,
-          saoEndSuffix: x.saoEndSuffix,
-          level: x.level,
-          postalAddress: x.postalAddress,
-          officialFlag: x.officialFlag,
-          pkId: x.pkId > 0 ? x.pkId : 0,
-          lpiKey: x.lpiKey,
-        };
-      }),
+      blpuAppCrossRefs: propertyData.blpuAppCrossRefs
+        ? propertyData.blpuAppCrossRefs.map((x) => {
+            return {
+              changeType: x.changeType,
+              uprn: propertyData.uprn,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              crossReference: x.crossReference,
+              sourceId: x.sourceId ? x.sourceId : 0,
+              source: x.source ? x.source : null,
+              neverExport: x.neverExport,
+              pkId: x.pkId > 0 ? x.pkId : 0,
+              xrefKey: x.xrefKey,
+            };
+          })
+        : [],
+      blpuProvenances: propertyData.blpuProvenances
+        ? propertyData.blpuProvenances.map((x) => {
+            return {
+              uprn: propertyData.uprn,
+              changeType: x.changeType,
+              provenanceCode: x.provenanceCode,
+              annotation: x.annotation,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              wktGeometry: x.wktGeometry,
+              pkId: x.pkId > 0 ? x.pkId : 0,
+              provenanceKey: x.provenanceKey,
+            };
+          })
+        : [],
+      blpuNotes: propertyData.blpuNotes
+        ? propertyData.blpuNotes.map((x) => {
+            return {
+              uprn: propertyData.uprn,
+              note: x.note,
+              changeType: x.changeType,
+              pkId: x.pkId > 0 ? x.pkId : 0,
+              seqNo: x.seqNo,
+            };
+          })
+        : [],
+      lpis: propertyData.lpis
+        ? propertyData.lpis.map((x) => {
+            return {
+              changeType: x.changeType,
+              language: x.language,
+              startDate: x.startDate,
+              endDate: x.endDate,
+              saoStartNumber: x.saoStartNumber ? x.saoStartNumber : 0,
+              saoEndNumber: x.saoEndNumber ? x.saoEndNumber : 0,
+              saoText: x.saoText,
+              paoStartNumber: x.paoStartNumber ? x.paoStartNumber : 0,
+              paoEndNumber: x.paoEndNumber ? x.paoEndNumber : 0,
+              paoText: x.paoText,
+              usrn: x.usrn,
+              postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
+              postTownRef: x.postTownRef ? x.postTownRef : -1,
+              neverExport: x.neverExport,
+              postTown: x.postTownRef ? x.postTown : "",
+              postcode: x.postcodeRef ? x.postcode : "",
+              dualLanguageLink: x.dualLanguageLink,
+              uprn: propertyData.uprn,
+              logicalStatus: x.logicalStatus,
+              paoStartSuffix: x.paoStartSuffix,
+              paoEndSuffix: x.paoEndSuffix,
+              saoStartSuffix: x.saoStartSuffix,
+              saoEndSuffix: x.saoEndSuffix,
+              level: x.level,
+              postalAddress: x.postalAddress,
+              officialFlag: x.officialFlag,
+              pkId: x.pkId > 0 ? x.pkId : 0,
+              lpiKey: x.lpiKey,
+            };
+          })
+        : [],
     };
 }
 
@@ -1359,7 +1505,7 @@ export function GetPropertyValidationErrors(body, newProperty) {
   let errorCrossRef = [];
   let errorClassification = [];
   let errorOrganisation = [];
-  let errorSuccessor = [];
+  let errorSuccessorCrossRef = [];
   let errorNote = [];
 
   for (const [key, value] of Object.entries(body.errors)) {
@@ -1396,8 +1542,8 @@ export function GetPropertyValidationErrors(body, newProperty) {
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
         });
-      } else if (key.toLowerCase().includes("successors[")) {
-        errorSuccessor.push({
+      } else if (key.toLowerCase().includes("successorcrossreferences[")) {
+        errorSuccessorCrossRef.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
@@ -1436,9 +1582,12 @@ export function GetPropertyValidationErrors(body, newProperty) {
     // if (process.env.NODE_ENV === "development")
     console.log(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Organisation`, errorOrganisation);
   }
-  if (errorSuccessor.length > 0) {
+  if (errorSuccessorCrossRef.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Successor`, errorSuccessor);
+    console.log(
+      `[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Successor cross reference`,
+      errorSuccessorCrossRef
+    );
   }
   if (errorNote.length > 0) {
     // if (process.env.NODE_ENV === "development")
@@ -1452,7 +1601,7 @@ export function GetPropertyValidationErrors(body, newProperty) {
     crossRef: errorCrossRef,
     classification: errorClassification,
     organisation: errorOrganisation,
-    successor: errorSuccessor,
+    successorCrossRef: errorSuccessorCrossRef,
     note: errorNote,
   };
 }
@@ -1536,7 +1685,7 @@ export async function SaveProperty(currentProperty, newProperty, userToken, prop
                 propertyErrors.crossRef,
                 propertyErrors.classification,
                 propertyErrors.organisation,
-                propertyErrors.successor,
+                propertyErrors.successorCrossRef,
                 propertyErrors.note,
                 currentProperty.pkId
               );
@@ -1688,7 +1837,7 @@ export async function UpdateAfterSave(
           usrn: lpi.usrn,
           logical_status: lpi.logicalStatus,
           language: lpi.language,
-          classification_code: result.blpuClass,
+          classification_code: getClassificationCode(result),
           isParent: result.parentUprn ? true : false,
           parent_uprn: result.parentUprn,
           county: null,
@@ -1773,7 +1922,7 @@ export async function UpdateAfterSave(
       easting: result.xcoordinate,
       northing: result.ycoordinate,
       logicalStatus: result.logicalStatus,
-      classificationCode: result.blpuClass,
+      classificationCode: getClassificationCode(result),
     },
   ];
 
@@ -1829,7 +1978,7 @@ export async function UpdateRangeAfterSave(
             usrn: lpi.usrn,
             logical_status: lpi.logicalStatus,
             language: lpi.language,
-            classification_code: property.blpuClass,
+            classification_code: getClassificationCode(property),
             isParent: property.parentUprn ? true : false,
             parent_uprn: property.parentUprn,
             county: null,
@@ -1897,7 +2046,7 @@ export async function UpdateRangeAfterSave(
       easting: property.xcoordinate,
       northing: property.ycoordinate,
       logicalStatus: property.logicalStatus,
-      classificationCode: property.blpuClass,
+      classificationCode: getClassificationCode(property),
     };
 
     const i = newMapSearchProperties.findIndex((x) => x.uprn === property.uprn);
@@ -2099,4 +2248,18 @@ export const getOtherProvenance = (value, isScottish) => {
     if (isScottish) return rec.osText;
     else return rec.gpText;
   } else return null;
+};
+
+/**
+ * Method to get the classification code for the given property.
+ *
+ * @param {object} property The property object that we need the classification code for.
+ * @returns {string} The classification code to use for the property.
+ */
+export const getClassificationCode = (property) => {
+  const classificationCode = property.classifications
+    ? property.classifications.sort((a, b) => a.entryDate - b.entryDate)[0].blpuClass
+    : property.blpuClass;
+
+  return classificationCode ? classificationCode : "U";
 };

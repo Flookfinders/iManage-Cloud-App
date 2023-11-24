@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   29.06.23 Sean Flook                 Added ability to set enabled flag for cross reference records.
 //    003   07.09.23 Sean Flook                 Removed unnecessary awaits.
+//    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,7 +25,8 @@ import PropTypes from "prop-types";
 import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
-import { Typography, Box, Snackbar, Alert } from "@mui/material";
+import { Typography, Snackbar, Alert } from "@mui/material";
+import { Box } from "@mui/system";
 import {
   GetPostcodeUrl,
   GetPostTownUrl,

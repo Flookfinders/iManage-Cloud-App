@@ -23,6 +23,7 @@
 //    011   10.06.21 Sean Flook         WI39345 Only display characters left at the bottom when have a multiline component.
 //    012   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
 //    013   06.10.23 Sean Flook                 Use colour variables.
+//    014   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -87,7 +88,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Typography, Grid, Tooltip, TextField, Skeleton, Box, InputAdornment, IconButton } from "@mui/material";
+import { Typography, Grid, Tooltip, TextField, Skeleton, InputAdornment, IconButton } from "@mui/material";
+import { Box } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";

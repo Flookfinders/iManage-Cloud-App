@@ -17,6 +17,7 @@
 //    004   06.04.23 Sean Flook         WI40228 Prevent bilingual cross references from being edited.
 //    005   06.10.23 Sean Flook                 Use colour variables.
 //    006   27.10.23 Sean Flook                 Use new dataFormStyle.
+//    007   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,7 +31,8 @@ import UserContext from "./../context/userContext";
 import SettingsContext from "../context/settingsContext";
 import { ConvertDate } from "../utils/HelperUtils";
 import ObjectComparison from "./../utils/ObjectComparison";
-import { Box, Grid, Typography, Stack } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSTextControl from "../components/ADSTextControl";

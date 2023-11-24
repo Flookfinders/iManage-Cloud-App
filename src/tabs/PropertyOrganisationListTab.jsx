@@ -14,6 +14,7 @@
 //    001   18.09.23 Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
+//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,7 +25,6 @@ import PropTypes from "prop-types";
 import UserContext from "../context/userContext";
 import dateFormat from "dateformat";
 import {
-  Box,
   Grid,
   Tooltip,
   IconButton,
@@ -35,8 +35,8 @@ import {
   ListItemText,
   Skeleton,
   Popper,
-  Stack,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectionControl from "../components/ADSSelectionControl";
@@ -370,7 +370,6 @@ function PropertyOrganisationListTab({
             key="key_no_records"
           >
             <ListItemButton
-              button
               dense
               disabled={!userCanEdit}
               disableGutters

@@ -15,6 +15,7 @@
 //    002   16.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record and use colour variables.
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   03.11.23 Sean Flook                 Added hyphen to one-way.
+//    005   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -28,7 +29,8 @@ import { GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
 import OneWayExemptionType from "../data/OneWayExemptionType";
 import OneWayExemptionPeriodicity from "../data/OneWayExemptionPeriodicity";
-import { Box, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
+import { Box } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSDateTimeControl from "../components/ADSDateTimeControl";

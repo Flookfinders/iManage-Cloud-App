@@ -16,6 +16,7 @@
 //    003   23.08.23 Sean Flook       IMANN-159 Use the new street template structure.
 //    004   07.09.23 Sean Flook                 Removed unnecessary awaits.
 //    005   03.11.23 Sean Flook                 Added hyphen to one-way.
+//    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -26,7 +27,8 @@ import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 
-import { Box, Typography, Stack, Tooltip, Grid, Card, CardActionArea, CardContent, IconButton } from "@mui/material";
+import { Typography, Tooltip, Grid, Card, CardActionArea, CardContent, IconButton } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 
 import EditTemplateDialog from "../dialogs/EditTemplateDialog";
 

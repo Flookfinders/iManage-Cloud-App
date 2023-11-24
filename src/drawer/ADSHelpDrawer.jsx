@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   26.04.23 Sean Flook         WI40697 Updated contact information.
 //    003   06.10.23 Sean Flook                 Use colour variables.
+//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -25,7 +26,8 @@ import React, { useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import LookupContext from "../context/lookupContext";
 import { copyTextToClipboard } from "../utils/HelperUtils";
-import { Box, Drawer, Typography, Link, Grid, IconButton, Stack } from "@mui/material";
+import { Drawer, Typography, Link, Grid, IconButton } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ForumIcon from "@mui/icons-material/ForumOutlined";
 import EmailIcon from "@mui/icons-material/EmailOutlined";

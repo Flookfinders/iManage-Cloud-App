@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record and use colour variables.
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
+//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,7 +31,8 @@ import { GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
 import { FilteredRoadStatusCode, FilteredSwaOrgRef } from "../utils/StreetUtils";
 import ObjectComparison from "../utils/ObjectComparison";
 
-import { Avatar, Box, Grid, Stack, Typography } from "@mui/material";
+import { Avatar, Grid, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSDateControl from "../components/ADSDateControl";

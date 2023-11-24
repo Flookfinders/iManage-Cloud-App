@@ -37,6 +37,7 @@
 //    002   25.04.23 Sean Flook         WI40703 Do not allow text with invalid characters to be pasted in and displayed.
 //    003   30.06.23 Sean Flook         WI40770 Ensure the end suffix is uppercase.
 //    004   06.10.23 Sean Flook                 Use colour variables.
+//    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -45,7 +46,8 @@
 import React, { useContext, useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import SettingsContext from "../context/settingsContext";
-import { Typography, Grid, Tooltip, TextField, Skeleton, Box } from "@mui/material";
+import { Typography, Grid, Tooltip, TextField, Skeleton } from "@mui/material";
+import { Box } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { adsMidGreyA } from "../utils/ADSColours";
 import { FormBoxRowStyle, FormRowStyle, FormInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";

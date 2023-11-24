@@ -15,6 +15,7 @@
 //    002   07.09.23 Sean Flook                 Handle unassigned ESUs.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
+//    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and removed some warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -41,10 +42,9 @@ import {
   Alert,
   Tooltip,
   Typography,
-  Box,
   Popper,
-  Stack,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import GridOnIcon from "@mui/icons-material/GridOn";
@@ -819,7 +819,6 @@ function SearchDataForm() {
               id="select-menu"
               elevation={2}
               anchorEl={anchorSelectEl}
-              getContentAnchorEl={null}
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               transformOrigin={{ vertical: "top", horizontal: "right" }}
               keepMounted
@@ -928,7 +927,6 @@ function SearchDataForm() {
               id="actions-menu"
               elevation={2}
               anchorEl={anchorActionsEl}
-              getContentAnchorEl={null}
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               transformOrigin={{ vertical: "top", horizontal: "right" }}
               keepMounted

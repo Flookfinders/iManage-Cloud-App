@@ -12,6 +12,7 @@
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   17.10.23 Sean Flook       IMANN-175 Initial Revision.
+//    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -33,11 +34,10 @@ import {
   Typography,
   Button,
   Grid,
-  Stack,
-  Box,
   Backdrop,
   CircularProgress,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSTextControl from "../components/ADSTextControl";
@@ -592,7 +592,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   blpuProvenances: property.blpuProvenances,
                   classifications: property.classifications,
                   organisations: property.organisations,
-                  successors: property.successors,
+                  successorCrossRefs: property.successorCrossRefs,
                   blpuNotes: updatedNotes,
                   lpis: property.lpis,
                 };
@@ -650,7 +650,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   blpuProvenances: property.blpuProvenances,
                   classifications: property.classifications,
                   organisations: property.organisations,
-                  successors: property.successors,
+                  successorCrossRefs: property.successorCrossRefs,
                   blpuNotes: updatedNotes,
                   lpis: property.lpis.map((lpi) => {
                     return {
@@ -720,7 +720,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   blpuProvenances: property.blpuProvenances,
                   classifications: property.classifications,
                   organisations: property.organisations,
-                  successors: property.successors,
+                  successorCrossRefs: property.successorCrossRefs,
                   blpuNotes: updatedNotes,
                   lpis: property.lpis,
                 };
@@ -778,7 +778,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   blpuProvenances: property.blpuProvenances,
                   classifications: property.classifications,
                   organisations: property.organisations,
-                  successors: property.successors,
+                  successorCrossRefs: property.successorCrossRefs,
                   blpuNotes: updatedNotes,
                   lpis: property.lpis,
                 };
@@ -836,7 +836,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   blpuProvenances: property.blpuProvenances,
                   classifications: property.classifications,
                   organisations: property.organisations,
-                  successors: property.successors,
+                  successorCrossRefs: property.successorCrossRefs,
                   blpuNotes: updatedNotes,
                   lpis: property.lpis,
                 };
@@ -983,9 +983,9 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
         }
       }
 
-      if (currentErrors.successor && currentErrors.successor.length > 0) {
-        for (const error of currentErrors.successor) {
-          const errorStr = `Successor [${error.field}]: ${[...new Set(error.errors)].join(", ")}`;
+      if (currentErrors.successorCrossRef && currentErrors.successorCrossRef.length > 0) {
+        for (const error of currentErrors.successorCrossRef) {
+          const errorStr = `Successor cross reference [${error.field}]: ${[...new Set(error.errors)].join(", ")}`;
           if (!errorList.includes(errorStr)) errorList.push(errorStr);
         }
       }

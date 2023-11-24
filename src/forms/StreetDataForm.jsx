@@ -28,6 +28,7 @@
 //    014   16.10.23 Sean Flook                 Correctly set the required parent information when adding a property, if required.
 //    015   03.11.23 Sean Flook                 When creating a new ESU also create a new highway dedication record, also added hyphen to one-way.
 //    016   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
+//    017   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -76,7 +77,8 @@ import { HasASD } from "../configuration/ADSConfig";
 
 import { useEditConfirmation } from "../pages/EditConfirmationPage";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
-import { AppBar, Tabs, Tab, Typography, Box, Avatar, Button, Snackbar, Toolbar, Alert, Stack } from "@mui/material";
+import { AppBar, Tabs, Tab, Typography, Avatar, Button, Snackbar, Toolbar, Alert } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import CheckIcon from "@mui/icons-material/Check";
 import HistoryIcon from "@mui/icons-material/History";
 import ErrorIcon from "@mui/icons-material/Error";
@@ -178,7 +180,7 @@ function StreetDataForm({ data, loading }) {
   const currentEsuFormData = useRef(null);
   const [hdFormData, setHdFormData] = useState(null);
   const [oweFormData, setOweFormData] = useState(null);
-  const [successorFormData, setSuccessorFormData] = useState(null);
+  const [successorCrossRefFormData, setSuccessorCrossRefFormData] = useState(null);
   const [maintenanceResponsibilityFormData, setMaintenanceResponsibilityFormData] = useState(null);
   const [reinstatementCategoryFormData, setReinstatementCategoryFormData] = useState(null);
   const [osSpecialDesignationFormData, setOSSpecialDesignationFormData] = useState(null);
@@ -200,7 +202,7 @@ function StreetDataForm({ data, loading }) {
   const [esuErrors, setEsuErrors] = useState([]);
   const [oneWayExemptionErrors, setOneWayExemptionErrors] = useState([]);
   const [highwayDedicationErrors, setHighwayDedicationErrors] = useState([]);
-  const [successorErrors, setSuccessorErrors] = useState([]);
+  const [successorCrossRefErrors, setSuccessorCrossRefErrors] = useState([]);
   const [maintenanceResponsibilityErrors, setMaintenanceResponsibilityErrors] = useState([]);
   const [reinstatementCategoryErrors, setReinstatementCategoryErrors] = useState([]);
   const [osSpecialDesignationErrors, setOSSpecialDesignationErrors] = useState([]);
@@ -230,7 +232,7 @@ function StreetDataForm({ data, loading }) {
   const [esuFocusedField, setEsuFocusedField] = useState(null);
   const [oneWayExemptionFocusedField, setOneWayExemptionFocusedField] = useState(null);
   const [highwayDedicationFocusedField, setHighwayDedicationFocusedField] = useState(null);
-  const [successorFocusedField, setSuccessorFocusedField] = useState(null);
+  const [successorCrossRefFocusedField, setSuccessorCrossRefFocusedField] = useState(null);
   const [maintenanceResponsibilityFocusedField, setMaintenanceResponsibilityFocusedField] = useState(null);
   const [reinstatementCategoryFocusedField, setReinstatementCategoryFocusedField] = useState(null);
   const [osSpecialDesignationFocusedField, setOSSpecialDesignationFocusedField] = useState(null);
@@ -248,7 +250,7 @@ function StreetDataForm({ data, loading }) {
    * Sets the associated street data for the current street.
    *
    * @param {object|null} esuData The ESU data for the street.
-   * @param {object|null} successorData The successor data for the street.
+   * @param {object|null} successorCrossRefData The successor cross reference data for the street.
    * @param {object|null} descriptorData The descriptor data for the street.
    * @param {object|null} noteData The note data for the street.
    * @param {object|null} maintenanceResponsibilityData The maintenance responsibility data for the street (OneScotland only).
@@ -262,7 +264,7 @@ function StreetDataForm({ data, loading }) {
    */
   const setAssociatedStreetData = (
     esuData,
-    successorData,
+    successorCrossRefData,
     descriptorData,
     noteData,
     maintenanceResponsibilityData,
@@ -279,7 +281,7 @@ function StreetDataForm({ data, loading }) {
         ? sandboxContext.currentSandbox.currentStreet
         : sandboxContext.currentSandbox.sourceStreet,
       esuData,
-      successorData,
+      successorCrossRefData,
       descriptorData,
       noteData,
       maintenanceResponsibilityData,
@@ -299,7 +301,7 @@ function StreetDataForm({ data, loading }) {
    * Sets the associated street data for the current street and then clears the data from the sandbox.
    *
    * @param {array|null} esuData The ESU data for the street.
-   * @param {object|null} successorData The successor data for the street.
+   * @param {object|null} successorCrossRefData The successor cross reference data for the street.
    * @param {array|null} descriptorData The descriptor data for the street.
    * @param {array|null} noteData The note data for the street.
    * @param {array|null} maintenanceResponsibilityData The maintenance responsibility data for the street (OneScotland only).
@@ -314,7 +316,7 @@ function StreetDataForm({ data, loading }) {
    */
   const setAssociatedStreetDataAndClear = (
     esuData,
-    successorData,
+    successorCrossRefData,
     descriptorData,
     noteData,
     maintenanceResponsibilityData,
@@ -332,7 +334,7 @@ function StreetDataForm({ data, loading }) {
         ? sandboxContext.currentSandbox.currentStreet
         : sandboxContext.currentSandbox.sourceStreet,
       esuData,
-      successorData,
+      successorCrossRefData,
       descriptorData,
       noteData,
       maintenanceResponsibilityData,
@@ -529,27 +531,26 @@ function StreetDataForm({ data, loading }) {
 
       case 2: // Successors / ASD
         if (settingsContext.isScottish) {
-          if (successorFormData) {
-            setSuccessorFormData({
-              id: successorFormData.id,
-              successorData: sandboxContext.currentSandbox.currentStreetRecords.successor
+          if (successorCrossRefFormData) {
+            setSuccessorCrossRefFormData({
+              id: successorCrossRefFormData.id,
+              successorCrossRefData: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef
                 ? {
-                    id: sandboxContext.currentSandbox.currentStreetRecords.successor.pkId,
-                    changeType: sandboxContext.currentSandbox.currentStreetRecords.successor.changeType,
-                    uprn: sandboxContext.currentSandbox.currentStreetRecords.successor.uprn,
-                    succKey: sandboxContext.currentSandbox.currentStreetRecords.successor.succKey,
-                    successor: sandboxContext.currentSandbox.currentStreetRecords.successor.successor,
-                    successorType: sandboxContext.currentSandbox.currentStreetRecords.successor.successorType,
-                    predecessor: sandboxContext.currentSandbox.currentStreetRecords.successor.predecessor,
-                    startDate: sandboxContext.currentSandbox.currentStreetRecords.successor.startDate,
-                    endDate: sandboxContext.currentSandbox.currentStreetRecords.successor.endDate,
-                    entryDate: sandboxContext.currentSandbox.currentStreetRecords.successor.entryDate,
-                    lastUpdateDate: sandboxContext.currentSandbox.currentStreetRecords.successor.lastUpdateDate,
-                    neverExport: sandboxContext.currentSandbox.currentStreetRecords.successor.neverExport,
+                    id: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.pkId,
+                    changeType: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.changeType,
+                    succKey: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.succKey,
+                    successor: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.successor,
+                    successorType: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.successorType,
+                    predecessor: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.predecessor,
+                    startDate: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.startDate,
+                    endDate: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.endDate,
+                    entryDate: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.entryDate,
+                    lastUpdateDate: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.lastUpdateDate,
+                    neverExport: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.neverExport,
                   }
-                : successorFormData.successorData,
-              index: successorFormData.index,
-              totalRecords: successorFormData.totalRecords,
+                : successorCrossRefFormData.successorCrossRefData,
+              index: successorCrossRefFormData.index,
+              totalRecords: successorCrossRefFormData.totalRecords,
             });
           }
         } else setAsdFormData();
@@ -612,7 +613,7 @@ function StreetDataForm({ data, loading }) {
 
         case 2:
           if (settingsContext.isScottish) {
-            if (successorFormData) streetContext.onRecordChange(30, successorFormData.index, null);
+            if (successorCrossRefFormData) streetContext.onRecordChange(30, successorCrossRefFormData.index, null);
           } else {
             if (maintenanceResponsibilityFormData) {
               streetContext.onRecordChange(51, maintenanceResponsibilityFormData.index, null);
@@ -854,7 +855,7 @@ function StreetDataForm({ data, loading }) {
 
       setAssociatedStreetData(
         streetData.esus,
-        streetData.successors,
+        streetData.successorCrossRefs,
         newSDs,
         streetData.streetNotes,
         streetData.maintenanceResponsibilities,
@@ -930,7 +931,7 @@ function StreetDataForm({ data, loading }) {
 
     setAssociatedStreetData(
       currentStreetEsuData.current,
-      streetData.successors,
+      streetData.successorCrossRefs,
       streetData.streetDescriptors,
       streetData.streetNotes,
       streetData.maintenanceResponsibilities,
@@ -963,7 +964,7 @@ function StreetDataForm({ data, loading }) {
 
     setAssociatedStreetData(
       streetData.esus,
-      streetData.successors,
+      streetData.successorCrossRefs,
       streetData.streetDescriptors,
       streetData.streetNotes,
       currentStreetAsdData.current.maintenanceResponsibilities,
@@ -1113,7 +1114,7 @@ function StreetDataForm({ data, loading }) {
 
       setAssociatedStreetData(
         newEsus,
-        streetData.successors,
+        streetData.successorCrossRefs,
         streetData.streetDescriptors,
         streetData.streetNotes,
         streetData.maintenanceResponsibilities,
@@ -1444,28 +1445,32 @@ function StreetDataForm({ data, loading }) {
   };
 
   /**
-   * Event to handle when a successor record is selected from the list of successor records.
+   * Event to handle when a successor cross reference record is selected from the list of successor cross reference records.
    *
-   * @param {number} pkId The primary key for the selected record. If -1 the data is cleared. 0 indicates a new successor is required. Any number > 0 is existing data.
-   * @param {object|null} successorData The successor data for the selected record
-   * @param {number|null} dataIdx The index of the record within the array of successor records.
-   * @param {number|null} dataLength The total number of records in the array of successor records.
+   * @param {number} pkId The primary key for the selected record. If -1 the data is cleared. 0 indicates a new successor cross reference is required. Any number > 0 is existing data.
+   * @param {object|null} successorCrossRefData The  cross reference data for the selected record
+   * @param {number|null} dataIdx The index of the record within the array of successor cross reference records.
+   * @param {number|null} dataLength The total number of records in the array of successor cross reference records.
    */
-  const handleSuccessorSelected = (pkId, successorData, dataIdx, dataLength) => {
+  const handleSuccessorCrossRefSelected = (pkId, successorCrossRefData, dataIdx, dataLength) => {
     if (pkId === -1) {
-      setSuccessorFormData(null);
+      setSuccessorCrossRefFormData(null);
       streetContext.onRecordChange(11, null, null);
       mapContext.onEditMapObject(null, null);
     } else if (pkId === 0) {
       const newIdx =
-        streetData && streetData.successors ? streetData.successors.filter((x) => x.changeType !== "D").length : 0;
+        streetData && streetData.successorCrossRefs
+          ? streetData.successorCrossRefs.filter((x) => x.changeType !== "D").length
+          : 0;
       const currentDate = GetCurrentDate(false);
-      const minPkIdSuccessor =
-        streetData.successors && streetData.successors.length > 0
-          ? streetData.successors.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
+      const minPkIdSuccessorCrossRef =
+        streetData.successorCrossRefs && streetData.successorCrossRefs.length > 0
+          ? streetData.successorCrossRefs.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
           : null;
       const newPkId =
-        !minPkIdSuccessor || !minPkIdSuccessor.pkId || minPkIdSuccessor.pkId > -10 ? -10 : minPkIdSuccessor.pkId - 1;
+        !minPkIdSuccessorCrossRef || !minPkIdSuccessorCrossRef.pkId || minPkIdSuccessorCrossRef.pkId > -10
+          ? -10
+          : minPkIdSuccessorCrossRef.pkId - 1;
       const newRec = {
         pkId: newPkId,
         changeType: "I",
@@ -1479,12 +1484,12 @@ function StreetDataForm({ data, loading }) {
         lastUpdateDate: currentDate,
       };
 
-      const newSuccessors = streetData.successors ? streetData.successors : [];
-      newSuccessors.push(newRec);
+      const newSuccessorCrossRefs = streetData.successorCrossRefs ? streetData.successorCrossRefs : [];
+      newSuccessorCrossRefs.push(newRec);
 
       setAssociatedStreetData(
         streetData.esus,
-        newSuccessors,
+        newSuccessorCrossRefs,
         streetData.streetDescriptors,
         streetData.streetNotes,
         streetData.maintenanceResponsibilities,
@@ -1497,9 +1502,9 @@ function StreetDataForm({ data, loading }) {
         null
       );
 
-      setSuccessorFormData({
+      setSuccessorCrossRefFormData({
         id: newPkId,
-        successorData: {
+        successorCrossRefData: {
           id: newRec.pkId,
           changeType: newRec.changeType,
           succKey: newRec.succKey,
@@ -1512,15 +1517,17 @@ function StreetDataForm({ data, loading }) {
           lastUpdateDate: newRec.lastUpdateDate,
         },
         index: newIdx,
-        totalRecords: streetData.successors ? streetData.successors.filter((x) => x.changeType !== "D").length : 1,
+        totalRecords: streetData.successorCrossRefs
+          ? streetData.successorCrossRefs.filter((x) => x.changeType !== "D").length
+          : 1,
       });
 
-      sandboxContext.onSandboxChange("successor", newRec);
+      sandboxContext.onSandboxChange("successorCrossRef", newRec);
       streetContext.onRecordChange(30, newIdx, null);
     } else {
-      setSuccessorFormData({
+      setSuccessorCrossRefFormData({
         id: pkId,
-        successorData: successorData,
+        successorCrossRefData: successorCrossRefData,
         index: dataIdx,
         totalRecords: dataLength,
       });
@@ -1640,7 +1647,7 @@ function StreetDataForm({ data, loading }) {
 
       setAssociatedStreetData(
         streetData.esus,
-        streetData.successors,
+        streetData.successorCrossRefs,
         streetData.streetDescriptors,
         streetData.streetNotes,
         newMaintenanceResponsibilities,
@@ -1774,7 +1781,7 @@ function StreetDataForm({ data, loading }) {
 
       setAssociatedStreetData(
         streetData.esus,
-        streetData.successors,
+        streetData.successorCrossRefs,
         streetData.streetDescriptors,
         streetData.streetNotes,
         streetData.maintenanceResponsibilities,
@@ -1909,7 +1916,7 @@ function StreetDataForm({ data, loading }) {
 
       setAssociatedStreetData(
         streetData.esus,
-        streetData.successors,
+        streetData.successorCrossRefs,
         streetData.streetDescriptors,
         streetData.streetNotes,
         streetData.maintenanceResponsibilities,
@@ -2796,7 +2803,7 @@ function StreetDataForm({ data, loading }) {
 
       setAssociatedStreetData(
         streetData.esus,
-        streetData.successors,
+        streetData.successorCrossRefs,
         streetData.streetDescriptors,
         newNotes,
         streetData.maintenanceResponsibilities,
@@ -3082,7 +3089,7 @@ function StreetDataForm({ data, loading }) {
 
     setAssociatedStreetData(
       newEsus,
-      streetData.successors,
+      streetData.successorCrossRefs,
       streetData.streetDescriptors,
       streetData.streetNotes,
       streetData.maintenanceResponsibilities,
@@ -3142,7 +3149,7 @@ function StreetDataForm({ data, loading }) {
 
         setAssociatedStreetData(
           esuDeleted,
-          streetData.successors,
+          streetData.successorCrossRefs,
           streetData.streetDescriptors,
           streetData.streetNotes,
           streetData.maintenanceResponsibilities,
@@ -3314,34 +3321,34 @@ function StreetDataForm({ data, loading }) {
   };
 
   /**
-   * Event to handle the deleting of a successor.
+   * Event to handle the deleting of a successor cross reference.
    *
-   * @param {number} pkId The id of the successor the user wants to delete.
+   * @param {number} pkId The id of the successor cross reference the user wants to delete.
    */
-  const handleDeleteSuccessor = (pkId) => {
+  const handleDeleteSuccessorCrossRef = (pkId) => {
     if (pkId && pkId > 0) {
-      const deleteSuccessor = streetData.successors.find((x) => x.pkId === pkId);
+      const deleteSuccessorCrossRef = streetData.successorCrossRefs.find((x) => x.pkId === pkId);
 
-      if (deleteSuccessor) {
-        const deletedSuccessor = {
-          entryDate: deleteSuccessor.entryDate,
-          pkId: deleteSuccessor.pkId,
-          succKey: deleteSuccessor.succKey,
+      if (deleteSuccessorCrossRef) {
+        const deletedSuccessorCrossRef = {
+          entryDate: deleteSuccessorCrossRef.entryDate,
+          pkId: deleteSuccessorCrossRef.pkId,
+          succKey: deleteSuccessorCrossRef.succKey,
           changeType: "D",
-          predecessor: deleteSuccessor.predecessor,
-          successorType: deleteSuccessor.successorType,
-          successor: deleteSuccessor.successor,
-          startDate: deleteSuccessor.startDate,
-          endDate: deleteSuccessor.endDate,
+          predecessor: deleteSuccessorCrossRef.predecessor,
+          successorType: deleteSuccessorCrossRef.successorType,
+          successor: deleteSuccessorCrossRef.successor,
+          startDate: deleteSuccessorCrossRef.startDate,
+          endDate: deleteSuccessorCrossRef.endDate,
         };
 
-        const newSuccessors = streetData.successors.map(
-          (x) => [deletedSuccessor].find((rec) => rec.pkId === x.pkId) || x
+        const newSuccessorCrossRefs = streetData.successorCrossRefs.map(
+          (x) => [deletedSuccessorCrossRef].find((rec) => rec.pkId === x.pkId) || x
         );
 
         setAssociatedStreetData(
           streetData.esus,
-          newSuccessors,
+          newSuccessorCrossRefs,
           streetData.streetDescriptors,
           streetData.streetNotes,
           streetData.maintenanceResponsibilities,
@@ -3355,10 +3362,10 @@ function StreetDataForm({ data, loading }) {
         );
       }
     } else if (pkId && pkId < 0) {
-      const newSuccessors = streetData.successors.filter((x) => x.pkId !== pkId);
+      const newSuccessorCrossRefs = streetData.successorCrossRefs.filter((x) => x.pkId !== pkId);
       setAssociatedStreetData(
         streetData.esus,
-        newSuccessors,
+        newSuccessorCrossRefs,
         streetData.streetDescriptors,
         streetData.streetNotes,
         streetData.maintenanceResponsibilities,
@@ -3374,27 +3381,27 @@ function StreetDataForm({ data, loading }) {
   };
 
   /**
-   * Event to handle the deleting of multiple successors.
+   * Event to handle the deleting of multiple successor cross references.
    *
-   * @param {Array} successorIds The list of successor ids that the user wants to delete.
+   * @param {Array} successorCrossRefIds The list of successor cross reference ids that the user wants to delete.
    */
-  const handleMultiDeleteSuccessor = (successorIds) => {
-    if (successorIds && successorIds.length > 0) {
-      const deleteSuccessors = streetData.successors
-        .filter((x) => successorIds.includes(x.pkId))
-        .map((successor) => {
-          successor.changeType = "D";
-          return successor;
+  const handleMultiDeleteSuccessorCrossRef = (successorCrossRefIds) => {
+    if (successorCrossRefIds && successorCrossRefIds.length > 0) {
+      const deleteSuccessorCrossRefs = streetData.successorCrossRefs
+        .filter((x) => successorCrossRefIds.includes(x.pkId))
+        .map((successorCrossRef) => {
+          successorCrossRef.changeType = "D";
+          return successorCrossRef;
         });
 
-      if (deleteSuccessors && deleteSuccessors.length > 0) {
-        const successorDeleted = streetData.successors.map(
-          (x) => deleteSuccessors.filter((x) => x.pkId > 0).find((rec) => rec.pkId === x.pkId) || x
+      if (deleteSuccessorCrossRefs && deleteSuccessorCrossRefs.length > 0) {
+        const successorCrossRefDeleted = streetData.successorCrossRefs.map(
+          (x) => deleteSuccessorCrossRefs.filter((x) => x.pkId > 0).find((rec) => rec.pkId === x.pkId) || x
         );
 
         setAssociatedStreetData(
           streetData.esus,
-          successorDeleted,
+          successorCrossRefDeleted,
           streetData.streetDescriptors,
           streetData.streetNotes,
           streetData.maintenanceResponsibilities,
@@ -3449,7 +3456,7 @@ function StreetDataForm({ data, loading }) {
 
     setAssociatedStreetData(
       streetData.esus,
-      streetData.successors,
+      streetData.successorCrossRefs,
       streetData.streetDescriptors,
       streetData.streetNotes,
       newMaintenanceResponsibilities,
@@ -3502,7 +3509,7 @@ function StreetDataForm({ data, loading }) {
 
     setAssociatedStreetData(
       streetData.esus,
-      streetData.successors,
+      streetData.successorCrossRefs,
       streetData.streetDescriptors,
       streetData.streetNotes,
       streetData.maintenanceResponsibilities,
@@ -3556,7 +3563,7 @@ function StreetDataForm({ data, loading }) {
 
     setAssociatedStreetData(
       streetData.esus,
-      streetData.successors,
+      streetData.successorCrossRefs,
       streetData.streetDescriptors,
       streetData.streetNotes,
       streetData.maintenanceResponsibilities,
@@ -3929,7 +3936,7 @@ function StreetDataForm({ data, loading }) {
 
     setAssociatedStreetData(
       streetData.esus,
-      streetData.successors,
+      streetData.successorCrossRefs,
       streetData.streetDescriptors,
       newNotes,
       streetData.maintenanceResponsibilities,
@@ -4110,7 +4117,7 @@ function StreetDataForm({ data, loading }) {
         if (restoredDescriptors)
           setAssociatedStreetData(
             streetData.esus,
-            streetData.successors,
+            streetData.successorCrossRefs,
             restoredDescriptors,
             streetData.streetNotes,
             streetData.maintenanceResponsibilities,
@@ -4258,7 +4265,7 @@ function StreetDataForm({ data, loading }) {
         if (restoredEsus)
           setAssociatedStreetData(
             restoredEsus,
-            streetData.successors,
+            streetData.successorCrossRefs,
             streetData.streetDescriptors,
             streetData.streetNotes,
             streetData.maintenanceResponsibilities,
@@ -4510,23 +4517,23 @@ function StreetDataForm({ data, loading }) {
   };
 
   /**
-   * Event to handle when a user clicks on the home button from the successor tab.
+   * Event to handle when a user clicks on the home button from the successor cross reference tab.
    *
    * @param {string} action The action to take.
    * @param {object} srcData The original state of the data
    * @param {object} currentData The current state of the data.
    * @returns {boolean}
    */
-  const handleSuccessorHomeClick = (action, srcData, currentData) => {
+  const handleSuccessorCrossRefHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkPkID) => {
       if (checkPkID < 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
-        const restoredSuccessors = streetData.successors.filter((x) => x.pkId !== checkPkID);
+        const restoredSuccessorCrossRefs = streetData.successorCrossRefs.filter((x) => x.pkId !== checkPkID);
 
-        if (restoredSuccessors)
+        if (restoredSuccessorCrossRefs)
           setAssociatedStreetData(
             streetData.esus,
-            restoredSuccessors,
+            restoredSuccessorCrossRefs,
             streetData.streetDescriptors,
             streetData.streetNotes,
             streetData.maintenanceResponsibilities,
@@ -4540,8 +4547,8 @@ function StreetDataForm({ data, loading }) {
           );
       }
 
-      sandboxContext.onSandboxChange("successor", null);
-      handleSuccessorSelected(-1, null, null, null);
+      sandboxContext.onSandboxChange("successorCrossRef", null);
+      handleSuccessorCrossRefSelected(-1, null, null, null);
     };
 
     failedValidation.current = false;
@@ -4557,9 +4564,9 @@ function StreetDataForm({ data, loading }) {
               if (result === "save") {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
-                  updateSuccessorData(currentData);
+                  updateSuccessorCrossRefData(currentData);
                   updateSaveButton(false);
-                  handleSuccessorSelected(-1, null, null, null);
+                  handleSuccessorCrossRefSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
                   saveResult.current = false;
@@ -4571,17 +4578,17 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
-          sandboxContext.onSandboxChange("successor", null);
-          handleSuccessorSelected(-1, null, null, null);
+          sandboxContext.onSandboxChange("successorCrossRef", null);
+          handleSuccessorCrossRefSelected(-1, null, null, null);
         }
         break;
 
       case "save":
         if (propertyContext.validateData()) {
           failedValidation.current = false;
-          updateSuccessorData(currentData);
+          updateSuccessorCrossRefData(currentData);
           updateSaveButton(false);
-          handleSuccessorSelected(-1, null, null, null);
+          handleSuccessorCrossRefSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
           saveResult.current = false;
@@ -4616,7 +4623,7 @@ function StreetDataForm({ data, loading }) {
         if (restoredMaintenanceResponsibilities)
           setAssociatedStreetData(
             streetData.esus,
-            streetData.successors,
+            streetData.successorCrossRefs,
             streetData.streetDescriptors,
             streetData.streetNotes,
             restoredMaintenanceResponsibilities,
@@ -4717,7 +4724,7 @@ function StreetDataForm({ data, loading }) {
         if (restoredReinstatementCategories)
           setAssociatedStreetData(
             streetData.esus,
-            streetData.successors,
+            streetData.successorCrossRefs,
             streetData.streetDescriptors,
             streetData.streetNotes,
             streetData.maintenanceResponsibilities,
@@ -4818,7 +4825,7 @@ function StreetDataForm({ data, loading }) {
         if (restoredSpecialDesignations)
           setAssociatedStreetData(
             streetData.esus,
-            streetData.successors,
+            streetData.successorCrossRefs,
             streetData.streetDescriptors,
             streetData.streetNotes,
             streetData.maintenanceResponsibilities,
@@ -5420,7 +5427,7 @@ function StreetDataForm({ data, loading }) {
         if (restoredNotes)
           setAssociatedStreetData(
             streetData.esus,
-            streetData.successors,
+            streetData.successorCrossRefs,
             streetData.streetDescriptors,
             restoredNotes,
             streetData.maintenanceResponsibilities,
@@ -5567,7 +5574,7 @@ function StreetDataForm({ data, loading }) {
     if (newDescriptors && newDescriptors.length > 0) {
       setAssociatedStreetDataAndClear(
         streetData.esus,
-        streetData.successors,
+        streetData.successorCrossRefs,
         newDescriptors,
         streetData.streetNotes,
         streetData.maintenanceResponsibilities,
@@ -5596,7 +5603,7 @@ function StreetDataForm({ data, loading }) {
 
     setAssociatedStreetDataAndClear(
       newEsus,
-      streetData.successors,
+      streetData.successorCrossRefs,
       streetData.streetDescriptors,
       streetData.streetNotes,
       streetData.maintenanceResponsibilities,
@@ -5881,21 +5888,21 @@ function StreetDataForm({ data, loading }) {
   };
 
   /**
-   * Event to update the successor record with new data.
+   * Event to update the successor cross reference record with new data.
    *
-   * @param {object|null} newData The data to be used to update the successor record with.
+   * @param {object|null} newData The data to be used to update the successor cross reference record with.
    * @returns
    */
-  const updateSuccessorData = (newData) => {
+  const updateSuccessorCrossRefData = (newData) => {
     if (!newData) return;
 
-    const newSuccessors = streetData.successors.map(
-      (x) => [newData].find((successor) => successor.pkId === x.pkId) || x
+    const newSuccessorCrossRefs = streetData.successorCrossRefs.map(
+      (x) => [newData].find((successorCrossRef) => successorCrossRef.pkId === x.pkId) || x
     );
 
     setAssociatedStreetDataAndClear(
       streetData.esus,
-      newSuccessors,
+      newSuccessorCrossRefs,
       streetData.streetDescriptors,
       streetData.streetNotes,
       streetData.maintenanceResponsibilities,
@@ -5906,7 +5913,7 @@ function StreetDataForm({ data, loading }) {
       null,
       null,
       null,
-      "successor"
+      "successorCrossRef"
     );
   };
 
@@ -5925,7 +5932,7 @@ function StreetDataForm({ data, loading }) {
 
     setAssociatedStreetDataAndClear(
       streetData.esus,
-      streetData.successors,
+      streetData.successorCrossRefs,
       streetData.streetDescriptors,
       streetData.streetNotes,
       newMaintenanceResponsibilities,
@@ -5955,7 +5962,7 @@ function StreetDataForm({ data, loading }) {
 
     setAssociatedStreetDataAndClear(
       streetData.esus,
-      streetData.successors,
+      streetData.successorCrossRefs,
       streetData.streetDescriptors,
       streetData.streetNotes,
       streetData.maintenanceResponsibilities,
@@ -5985,7 +5992,7 @@ function StreetDataForm({ data, loading }) {
 
     setAssociatedStreetDataAndClear(
       streetData.esus,
-      streetData.successors,
+      streetData.successorCrossRefs,
       streetData.streetDescriptors,
       streetData.streetNotes,
       streetData.maintenanceResponsibilities,
@@ -6161,7 +6168,7 @@ function StreetDataForm({ data, loading }) {
 
     setAssociatedStreetDataAndClear(
       streetData.esus,
-      streetData.successors,
+      streetData.successorCrossRefs,
       streetData.streetDescriptors,
       newNotes,
       streetData.maintenanceResponsibilities,
@@ -6276,7 +6283,7 @@ function StreetDataForm({ data, loading }) {
             insertedUser: streetData.insertedUser,
             lastUser: streetData.lastUser,
             esus: streetData.esus,
-            successors: streetData.successors,
+            successorCrossRefs: streetData.successorCrossRefs,
             streetDescriptors: streetData.streetDescriptors,
             streetNotes: streetData.streetNotes,
           }
@@ -6307,7 +6314,7 @@ function StreetDataForm({ data, loading }) {
             insertedUser: streetData.insertedUser,
             lastUser: streetData.lastUser,
             esus: streetData.esus,
-            successors: streetData.successors,
+            successorCrossRefs: streetData.successorCrossRefs,
             streetDescriptors: streetData.streetDescriptors,
             streetNotes: streetData.streetNotes,
             maintenanceResponsibilities: streetData.maintenanceResponsibilities,
@@ -6517,7 +6524,7 @@ function StreetDataForm({ data, loading }) {
               insertedUser: streetData.insertedUser,
               lastUser: streetData.lastUser,
               esus: streetData.esus,
-              successors: streetData.successors,
+              successorCrossRefs: streetData.successorCrossRefs,
               streetDescriptors: streetData.streetDescriptors,
               streetNotes: streetData.streetNotes,
             }
@@ -6548,7 +6555,7 @@ function StreetDataForm({ data, loading }) {
               insertedUser: streetData.insertedUser,
               lastUser: streetData.lastUser,
               esus: streetData.esus,
-              successors: streetData.successors,
+              successorCrossRefs: streetData.successorCrossRefs,
               streetDescriptors: streetData.streetDescriptors,
               streetNotes: streetData.streetNotes,
               maintenanceResponsibilities: streetData.maintenanceResponsibilities,
@@ -6595,9 +6602,9 @@ function StreetDataForm({ data, loading }) {
         setHighwayDedicationErrors(streetContext.currentErrors.highwayDedication);
       else setHighwayDedicationErrors([]);
 
-      if (streetContext.currentErrors.successor && streetContext.currentErrors.successor.length > 0)
-        setSuccessorErrors(streetContext.currentErrors.successor);
-      else setSuccessorErrors([]);
+      if (streetContext.currentErrors.successorCrossRef && streetContext.currentErrors.successorCrossRef.length > 0)
+        setSuccessorCrossRefErrors(streetContext.currentErrors.successorCrossRef);
+      else setSuccessorCrossRefErrors([]);
 
       if (streetContext.currentErrors.construction && streetContext.currentErrors.construction.length > 0)
         setConstructionErrors(streetContext.currentErrors.construction);
@@ -6651,7 +6658,7 @@ function StreetDataForm({ data, loading }) {
       setStreetFocusedField(null);
       setDescriptorFocusedField(null);
       setEsuFocusedField(null);
-      setSuccessorFocusedField(null);
+      setSuccessorCrossRefFocusedField(null);
       setOneWayExemptionFocusedField(null);
       setHighwayDedicationFocusedField(null);
       setMaintenanceResponsibilityFocusedField(null);
@@ -6775,19 +6782,19 @@ function StreetDataForm({ data, loading }) {
           break;
 
         case 30:
-          setSuccessorFocusedField(streetContext.goToField.fieldName);
+          setSuccessorCrossRefFocusedField(streetContext.goToField.fieldName);
           if (value !== 0) setValue(0);
-          const successorData =
-            streetData && streetData.successors.length > streetContext.goToField.index
-              ? streetData.successors[streetContext.goToField.index]
+          const successorCrossRefData =
+            streetData && streetData.successorCrossRefs.length > streetContext.goToField.index
+              ? streetData.successorCrossRefs[streetContext.goToField.index]
               : null;
-          if (successorData) {
+          if (successorCrossRefData) {
             streetContext.onRecordChange(30, streetContext.goToField.index, null);
-            setSuccessorFormData({
-              pkId: successorData.pkId,
-              successorData: successorData,
+            setSuccessorCrossRefFormData({
+              pkId: successorCrossRefData.pkId,
+              successorCrossRefData: successorCrossRefData,
               index: streetContext.goToField.index,
-              totalRecords: streetData.successors.filter((x) => x.changeType !== "D").length,
+              totalRecords: streetData.successorCrossRefs.filter((x) => x.changeType !== "D").length,
             });
           }
           break;
@@ -7161,7 +7168,7 @@ function StreetDataForm({ data, loading }) {
                     insertedUser: contextStreet.insertedUser,
                     lastUser: contextStreet.lastUser,
                     esus: newEsus,
-                    successors: contextStreet.successors,
+                    successorCrossRefs: contextStreet.successorCrossRefs,
                     streetDescriptors: contextStreet.streetDescriptors,
                     streetNotes: contextStreet.streetNotes,
                     maintenanceResponsibilities: contextStreet.maintenanceResponsibilities,
@@ -7236,7 +7243,7 @@ function StreetDataForm({ data, loading }) {
               insertedUser: contextStreet.insertedUser,
               lastUser: contextStreet.lastUser,
               esus: contextStreet.esus,
-              successors: contextStreet.successors,
+              successorCrossRefs: contextStreet.successorCrossRefs,
               streetDescriptors: contextStreet.streetDescriptors,
               streetNotes: contextStreet.streetNotes,
               maintenanceResponsibilities: newAsd51,
@@ -7311,7 +7318,7 @@ function StreetDataForm({ data, loading }) {
               insertedUser: contextStreet.insertedUser,
               lastUser: contextStreet.lastUser,
               esus: contextStreet.esus,
-              successors: contextStreet.successors,
+              successorCrossRefs: contextStreet.successorCrossRefs,
               streetDescriptors: contextStreet.streetDescriptors,
               streetNotes: contextStreet.streetNotes,
               maintenanceResponsibilities: contextStreet.maintenanceResponsibilities,
@@ -7387,7 +7394,7 @@ function StreetDataForm({ data, loading }) {
               insertedUser: contextStreet.insertedUser,
               lastUser: contextStreet.lastUser,
               esus: contextStreet.esus,
-              successors: contextStreet.successors,
+              successorCrossRefs: contextStreet.successorCrossRefs,
               streetDescriptors: contextStreet.streetDescriptors,
               streetNotes: contextStreet.streetNotes,
               maintenanceResponsibilities: contextStreet.maintenanceResponsibilities,
@@ -8023,7 +8030,7 @@ function StreetDataForm({ data, loading }) {
                 insertedUser: contextStreet.insertedUser,
                 lastUser: contextStreet.lastUser,
                 esus: esuData,
-                successors: contextStreet.successors,
+                successorCrossRefs: contextStreet.successorCrossRefs,
                 streetDescriptors: contextStreet.streetDescriptors,
                 streetNotes: contextStreet.streetNotes,
                 interests: contextStreet.interests,
@@ -8154,7 +8161,7 @@ function StreetDataForm({ data, loading }) {
                 insertedUser: contextStreet.insertedUser,
                 lastUser: contextStreet.lastUser,
                 esus: esuData,
-                successors: contextStreet.successors,
+                successorCrossRefs: contextStreet.successorCrossRefs,
                 streetDescriptors: contextStreet.streetDescriptors,
                 streetNotes: contextStreet.streetNotes,
                 maintenanceResponsibility: contextStreet.maintenanceResponsibility,
@@ -9230,21 +9237,21 @@ function StreetDataForm({ data, loading }) {
                   <Typography variant="subtitle2" sx={tabLabelStyle(value === 2)}>
                     Successors
                   </Typography>
-                  {successorErrors && successorErrors.length > 0 ? (
+                  {successorCrossRefErrors && successorCrossRefErrors.length > 0 ? (
                     <ErrorIcon sx={errorIconStyle} />
                   ) : (
                     <Avatar
                       variant="rounded"
                       sx={GetTabIconStyle(
-                        streetData && streetData.successors
-                          ? streetData.successors.filter((x) => x.changeType !== "D").length
+                        streetData && streetData.successorCrossRefs
+                          ? streetData.successorCrossRefs.filter((x) => x.changeType !== "D").length
                           : 0
                       )}
                     >
                       <Typography variant="caption">
                         <strong>
-                          {streetData && streetData.successors
-                            ? streetData.successors.filter((x) => x.changeType !== "D").length
+                          {streetData && streetData.successorCrossRefs
+                            ? streetData.successorCrossRefs.filter((x) => x.changeType !== "D").length
                             : 0}
                         </strong>
                       </Typography>
@@ -9509,28 +9516,32 @@ function StreetDataForm({ data, loading }) {
       </TabPanel>
       {settingsContext.isScottish && (
         <TabPanel value={value} index={2}>
-          {successorFormData ? (
+          {successorCrossRefFormData ? (
             <SuccessorTab
-              data={successorFormData}
+              data={successorCrossRefFormData}
               variant="street"
-              errors={successorErrors && successorErrors.filter((x) => x.index === successorFormData.index)}
+              errors={
+                successorCrossRefErrors &&
+                successorCrossRefErrors.filter((x) => x.index === successorCrossRefFormData.index)
+              }
               loading={loading}
-              focusedField={successorFocusedField}
+              focusedField={successorCrossRefFocusedField}
               onDataChanged={handleAssociatedRecordDataChanged}
-              onHomeClick={(action, srcData, currentData) => handleSuccessorHomeClick(action, srcData, currentData)}
-              onDelete={(pkId) => handleDeleteSuccessor(pkId)}
+              onHomeClick={(action, srcData, currentData) =>
+                handleSuccessorCrossRefHomeClick(action, srcData, currentData)
+              }
+              onDelete={(pkId) => handleDeleteSuccessorCrossRef(pkId)}
             />
           ) : (
             <SuccessorListTab
               data={
                 streetData &&
-                streetData.successors &&
-                streetData.successors
+                streetData.successorCrossRefs &&
+                streetData.successorCrossRefs
                   .filter((x) => x.changeType !== "D")
                   .map(function (x) {
                     return {
                       id: x.pkId,
-                      uprn: x.uprn,
                       changeType: x.changeType,
                       succKey: x.succKey,
                       predecessor: x.predecessor,
@@ -9544,13 +9555,15 @@ function StreetDataForm({ data, loading }) {
                   })
               }
               variant="street"
-              errors={successorErrors}
+              errors={successorCrossRefErrors}
               loading={loading}
-              onSuccessorSelected={(pkId, successorData, dataIdx, dataLength) =>
-                handleSuccessorSelected(pkId, successorData, dataIdx, dataLength)
+              onSuccessorCrossRefSelected={(pkId, successorCrossRefData, dataIdx, dataLength) =>
+                handleSuccessorCrossRefSelected(pkId, successorCrossRefData, dataIdx, dataLength)
               }
-              onSuccessorDelete={(pkId) => handleDeleteSuccessor(pkId)}
-              onMultiSuccessorDelete={(successorIds) => handleMultiDeleteSuccessor(successorIds)}
+              onSuccessorCrossRefDelete={(pkId) => handleDeleteSuccessorCrossRef(pkId)}
+              onMultiSuccessorCrossRefDelete={(successorCrossRefIds) =>
+                handleMultiDeleteSuccessorCrossRef(successorCrossRefIds)
+              }
             />
           )}
         </TabPanel>

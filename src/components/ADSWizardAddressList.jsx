@@ -18,6 +18,7 @@
 //    005   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
 //    006   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs.
 //    007   20.11.23 Sean Flook                 Undone above change.
+//    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and sorted some warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,8 +32,6 @@ import MapContext from "../context/mapContext";
 import LookupContext from "../context/lookupContext";
 
 import {
-  Box,
-  Stack,
   Checkbox,
   IconButton,
   List,
@@ -46,6 +45,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSActionButton from "./ADSActionButton";
 import ADSSelectionControl from "./ADSSelectionControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
@@ -959,7 +959,6 @@ function ADSWizardAddressList({
               .map((rec, idx) => (
                 <Fragment>
                   <ListItemButton
-                    button
                     divider
                     dense
                     disableGutters
@@ -1031,7 +1030,6 @@ function ADSWizardAddressList({
                             id="wizard-addresses-actions-menu"
                             elevation={2}
                             anchorEl={anchorActionsEl}
-                            getContentAnchorEl={null}
                             anchorOrigin={{
                               vertical: "bottom",
                               horizontal: "right",

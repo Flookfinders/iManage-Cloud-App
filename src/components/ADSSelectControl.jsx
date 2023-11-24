@@ -25,6 +25,7 @@
 //    012   27.06.23 Sean Flook         WI40234 Handle the doNotSetTitleCase flag when control is read only.
 //    013   06.10.23 Sean Flook                 Use colour variables.
 //    014   27.10.23 Sean Flook      IMANN-175 Added a placeholder to display 'No change' if required.
+//    015   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -34,18 +35,8 @@
 
 import React, { useRef, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
-import {
-  Grid,
-  TextField,
-  Typography,
-  Tooltip,
-  Avatar,
-  InputAdornment,
-  Autocomplete,
-  Skeleton,
-  Box,
-  Stack,
-} from "@mui/material";
+import { Grid, TextField, Typography, Tooltip, Avatar, InputAdornment, Autocomplete, Skeleton } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { SyncAlt as TwoWayIcon } from "@mui/icons-material";
 import { StartToEndIcon, EndToStartIcon } from "../utils/ADSIcons";

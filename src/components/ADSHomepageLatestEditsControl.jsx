@@ -18,6 +18,7 @@
 //    005   07.09.23 Sean Flook                 Removed unnecessary code.
 //    006   06.10.23 Sean Flook                 Use colour variables and added some error trapping.
 //    007   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required and corrected display of user avatar.
+//    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and removed a couple of warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -38,10 +39,11 @@ import { GetWktCoordinates, FormatDate, StringAvatar } from "../utils/HelperUtil
 import { HasASD } from "../configuration/ADSConfig";
 
 import HistoricPropertyDialog from "../dialogs/HistoricPropertyDialog";
-import { AppBar, Tabs, Tab, Typography, Box, Stack, Avatar, Tooltip } from "@mui/material";
+import { AppBar, Tabs, Tab, Typography, Avatar, Tooltip } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 
-import { adsBlueA, adsMidGreyA, adsWhite } from "../utils/ADSColours";
+import { adsBlueA, adsWhite } from "../utils/ADSColours";
 import { gridRowStyle, tabStyle, tabLabelStyle, tooltipStyle } from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
@@ -464,7 +466,7 @@ function ADSHomepageLatestEditsControl({ data }) {
           TabIndicatorProps={{
             style: { background: adsBlueA, height: "2px" },
           }}
-          textColor={adsMidGreyA}
+          textColor="primary"
           variant="scrollable"
           scrollButtons="auto"
           selectionFollowsFocus
@@ -544,7 +546,7 @@ function ADSHomepageLatestEditsControl({ data }) {
             density="compact"
             editMode="row"
             autoPageSize
-            hideFooterSelectedRowCount="true"
+            hideFooterSelectedRowCount
             showColumnVerticalBorder={false}
             isRowSelectable={(params) => false}
             onRowClick={handleRowClick}

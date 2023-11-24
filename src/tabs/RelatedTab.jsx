@@ -20,6 +20,7 @@
 //    006   10.10.23 Sean Flook       IMANN-163 Changes required for opening tab after property wizard.
 //    006   27.10.23 Sean Flook                 Use new dataFormStyle and updated call to SavePropertyAndUpdate..
 //    007   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
+//    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -38,8 +39,6 @@ import SearchContext from "../context/searchContext";
 import SettingsContext from "../context/settingsContext";
 
 import {
-  Box,
-  Stack,
   Avatar,
   SvgIcon,
   Skeleton,
@@ -50,6 +49,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 
 import {
   GetRelatedPropertyByUSRNUrl,

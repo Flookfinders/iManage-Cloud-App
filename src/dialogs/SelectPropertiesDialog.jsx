@@ -12,6 +12,7 @@
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   01.11.23 Sean Flook       IMANN-175 Initial version.
+//    002   24.11.23 Sean Flook                 Moved Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -20,7 +21,8 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button, Stack } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button } from "@mui/material";
+import { Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 
 import NewListIcon from "@mui/icons-material/Reorder";

@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record and use colour variables.
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   03.11.23 Sean Flook                 If the type has not been selected default to Special designation.
+//    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -33,7 +34,8 @@ import ObjectComparison from "../utils/ObjectComparison";
 
 import SpecialDesignationCode from "./../data/SpecialDesignationCode";
 
-import { Avatar, Box, Grid, Stack, Typography } from "@mui/material";
+import { Avatar, Grid, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { SpecialDesignationIcon } from "../utils/ADSIcons";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";

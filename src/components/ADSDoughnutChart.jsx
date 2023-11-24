@@ -18,6 +18,7 @@
 //    005   25.05.21 Sean Flook         WI39345 Changes required to center the chart title.
 //    006   02.07.21 Sean Flook         WI39345 Set font for center text.
 //    007   26.05.23 Joel Benford       WI40689 Changes XDM -> iManage Cloud
+//    008   24.11.23 Sean Flook                 Moved Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -26,7 +27,8 @@
 /* #region imports */
 import React, { Component } from "react";
 import _ from "lodash";
-import { Grid, Typography, Stack } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
+import { Stack } from "@mui/system";
 import { Chart, ArcElement, DoughnutController, Legend, Tooltip } from "chart.js";
 import { toFont } from "chart.js/helpers";
 import { StreetIcon } from "../utils/ADSIcons";

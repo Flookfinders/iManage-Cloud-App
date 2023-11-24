@@ -24,6 +24,7 @@
 //    011   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    012   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs.
 //    013   20.11.23 Sean Flook                 Undone above change.
+//    014   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -44,7 +45,6 @@ import SettingsContext from "../context/settingsContext";
 
 import {
   Autocomplete,
-  Box,
   TextField,
   InputAdornment,
   IconButton,
@@ -54,6 +54,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import { Box } from "@mui/system";
 import ADSFilterControl from "./ADSFilterControl";
 
 import { autocompleteClasses } from "@mui/material/Autocomplete";

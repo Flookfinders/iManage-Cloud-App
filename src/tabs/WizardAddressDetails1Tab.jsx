@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001            Sean Flook                 Initial Revision.
 //    002   24.03.23 Sean Flook         WI40608 Changes required to correctly handle changes to PAO details for child properties.
+//    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -23,7 +24,7 @@ import PropTypes from "prop-types";
 
 import LookupContext from "../context/lookupContext";
 
-import { Box } from "@mui/material";
+import { Box } from "@mui/system";
 import ADSAddressableObjectControl from "../components/ADSAddressableObjectControl";
 import ADSPaoDetailsControl from "../components/ADSPaoDetailsControl";
 import ADSSelectControl from "../components/ADSSelectControl";

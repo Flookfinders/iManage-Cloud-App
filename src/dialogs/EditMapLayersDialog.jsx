@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
+//    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,18 +25,8 @@ import PropTypes from "prop-types";
 import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
 
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Grid,
-  Typography,
-  Stack,
-  Box,
-  Button,
-} from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Grid, Typography, Button } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSMinMaxControl from "../components/ADSMinMaxControl";

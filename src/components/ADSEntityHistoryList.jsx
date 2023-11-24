@@ -3,7 +3,7 @@
 //
 //  Description: Entity history list component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    ï¿½ 2021 - 2023 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,16 +13,18 @@
 //#region Version 1.0.0.0 changes
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
+//    003   24.11.23 Sean Flook                 Moved Stack to @mui/system and use StringAvatar to display the user initials.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import React, { /*useContext, useState, useEffect,*/ Fragment } from "react";
-import { StringToColour } from "../utils/HelperUtils";
-import { Typography, Stack, Chip } from "@mui/material";
+import React, { Fragment } from "react";
+import { StringAvatar } from "../utils/HelperUtils";
+import { Typography, Avatar } from "@mui/material";
+import { Stack } from "@mui/system";
 import { useTheme } from "@mui/styles";
-import { adsWhite, adsLightGreyA } from "../utils/ADSColours";
+import { adsLightGreyA } from "../utils/ADSColours";
 
 const ADSEntityHistoryList = ({ historySummaryData }) => {
   const theme = useTheme();
@@ -35,20 +37,9 @@ const ADSEntityHistoryList = ({ historySummaryData }) => {
    * @returns {JSX.Element} The history entry display.
    */
   const HistoryEntry = (historyEntry) => {
-    const userColour = StringToColour(historyEntry.auditUser);
-
     return (
       <Stack direction="row" spacing={1} key={keySeq++}>
-        <Chip
-          sx={{
-            ml: theme.spacing(5),
-            mr: theme.spacing(1),
-            mt: theme.spacing(0),
-            color: adsWhite,
-            background: userColour,
-          }}
-          label={historyEntry.auditUserInitials}
-        />
+        <Avatar {...StringAvatar(historyEntry.auditUser, false)} />
         <Stack spacing={0} key={keySeq++}>
           <Typography variant="subtitle2" sx={{ marginTop: theme.spacing(0.5) }}>
             {historyEntry.entryDescription}

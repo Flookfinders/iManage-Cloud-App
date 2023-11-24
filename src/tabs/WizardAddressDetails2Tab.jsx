@@ -18,6 +18,7 @@
 //    005   05.04.23 Sean Flook         WI40669 Fixed warnings.
 //    006   25.04.23 Sean Flook         WI40703 Do not allow text with invalid characters to be pasted in and displayed.
 //    007   06.10.23 Sean Flook                 Use colour variables.
+//    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -29,10 +30,8 @@ import PropTypes from "prop-types";
 import LookupContext from "../context/lookupContext";
 
 import {
-  Box,
   Grid,
   Typography,
-  Stack,
   Button,
   TextField,
   List,
@@ -41,6 +40,7 @@ import {
   ListItemAvatar,
   IconButton,
 } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSPaoDetailsControl from "../components/ADSPaoDetailsControl";
 import ADSErrorDisplay from "../components/ADSErrorDisplay";

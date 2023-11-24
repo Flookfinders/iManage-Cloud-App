@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   06.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
+//    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -22,7 +23,8 @@
 
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
-import { Box, Drawer, Grid, Typography, List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import { Drawer, Grid, Typography, List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import { Box } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import StarIcon from "@mui/icons-material/Star";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
@@ -341,7 +343,7 @@ function ADSBookmarkDrawer(props) {
                 {props.bookmarks &&
                   props.bookmarks.map((b, index) => (
                     <List disablePadding dense key={`key_${index}`}>
-                      <ListItemButton id={b.pkId} button dense onClick={() => handleBookmarkClick(b.pkId)}>
+                      <ListItemButton id={b.pkId} dense onClick={() => handleBookmarkClick(b.pkId)}>
                         <ListItemIcon>
                           <BookmarkIcon />
                         </ListItemIcon>

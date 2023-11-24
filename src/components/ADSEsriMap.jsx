@@ -33,6 +33,7 @@
 //    019   03.11.23 Sean Flook       IMANN-175 Added code to allow properties to be selected.
 //    020   10.11.23 Sean Flook       IMANN-175 Added code try and correctly highlight properties after doing a move BLPU.
 //    021   20.11.23 Sean Flook                 Added street BLPU to the list of classifications that display an icon.
+//    022   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and changed code to use map rather than foreach.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -118,7 +119,8 @@ import {
   GetESUMapSymbol,
   GetASDMapSymbol,
 } from "../utils/ADSMapSymbols";
-import { Box, CircularProgress, Stack, IconButton, Divider, Snackbar, Alert } from "@mui/material";
+import { CircularProgress, IconButton, Divider, Snackbar, Alert } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import AddPropertyWizardDialog from "../dialogs/AddPropertyWizardDialog";
 import HistoricPropertyDialog from "../dialogs/HistoricPropertyDialog";
 import SelectPropertiesDialog from "../dialogs/SelectPropertiesDialog";
@@ -2499,8 +2501,8 @@ function ADSEsriMap(startExtent) {
         let mapStreets = [];
 
         currentStreets.forEach((street) => {
-          street.esus.forEach((esu) => {
-            mapStreets.push({
+          mapStreets = street.esus.map((esu) => {
+            return {
               usrn: street.usrn,
               description: street.streetDescriptor,
               language: street.language,
@@ -2510,7 +2512,7 @@ function ADSEsriMap(startExtent) {
               state: street.state,
               esuId: esu.esuId,
               geometry: esu.geometry,
-            });
+            };
           });
         });
 
@@ -2560,8 +2562,8 @@ function ADSEsriMap(startExtent) {
         let mapAsd66 = [];
 
         currentStreets.forEach((street) => {
-          street.esus.forEach((esu) => {
-            mapStreets.push({
+          mapStreets = street.esus.map((esu) => {
+            return {
               usrn: street.usrn,
               description: street.description,
               language: street.language,
@@ -2571,12 +2573,12 @@ function ADSEsriMap(startExtent) {
               state: settingsContext.isScottish ? esu.state : street.state,
               esuId: esu.esuId,
               geometry: esu.geometry,
-            });
+            };
           });
 
           if (mapContext.currentSearchData.editStreet && street.asdType51) {
-            street.asdType51.forEach((asd) => {
-              mapAsd51.push({
+            mapAsd51 = street.asdType51.map((asd) => {
+              return {
                 pkId: asd.pkId,
                 usrn: asd.usrn,
                 streetStatus: asd.streetStatus,
@@ -2584,13 +2586,13 @@ function ADSEsriMap(startExtent) {
                 maintainingAuthorityCode: asd.maintainingAuthorityCode,
                 wholeRoad: asd.wholeRoad,
                 geometry: asd.geometry,
-              });
+              };
             });
           }
 
           if (mapContext.currentSearchData.editStreet && street.asdType52) {
-            street.asdType52.forEach((asd) => {
-              mapAsd52.push({
+            mapAsd52 = street.asdType52.map((asd) => {
+              return {
                 pkId: asd.pkId,
                 usrn: asd.usrn,
                 reinstatementCategoryCode: asd.reinstatementCategoryCode,
@@ -2598,13 +2600,13 @@ function ADSEsriMap(startExtent) {
                 reinstatementAuthorityCode: asd.reinstatementAuthorityCode,
                 wholeRoad: asd.wholeRoad,
                 geometry: asd.geometry,
-              });
+              };
             });
           }
 
           if (mapContext.currentSearchData.editStreet && street.asdType53) {
-            street.asdType53.forEach((asd) => {
-              mapAsd53.push({
+            mapAsd53 = street.asdType53.map((asd) => {
+              return {
                 pkId: asd.pkId,
                 usrn: asd.usrn,
                 specialDesig: asd.specialDesig,
@@ -2612,13 +2614,13 @@ function ADSEsriMap(startExtent) {
                 authorityCode: asd.authorityCode,
                 wholeRoad: asd.wholeRoad,
                 geometry: asd.geometry,
-              });
+              };
             });
           }
 
           if (mapContext.currentSearchData.editStreet && street.asdType61) {
-            street.asdType61.forEach((asd) => {
-              mapAsd61.push({
+            mapAsd61 = street.asdType61.map((asd) => {
+              return {
                 pkId: asd.pkId,
                 usrn: asd.usrn,
                 streetStatus: asd.streetStatus,
@@ -2627,13 +2629,13 @@ function ADSEsriMap(startExtent) {
                 districtRefAuthority: asd.districtRefAuthority,
                 wholeRoad: asd.wholeRoad,
                 geometry: asd.geometry,
-              });
+              };
             });
           }
 
           if (mapContext.currentSearchData.editStreet && street.asdType62) {
-            street.asdType62.forEach((asd) => {
-              mapAsd62.push({
+            mapAsd62 = street.asdType62.map((asd) => {
+              return {
                 pkId: asd.pkId,
                 usrn: asd.usrn,
                 constructionType: asd.constructionType,
@@ -2642,13 +2644,13 @@ function ADSEsriMap(startExtent) {
                 districtRefConsultant: asd.districtRefConsultant,
                 wholeRoad: asd.wholeRoad,
                 geometry: asd.geometry,
-              });
+              };
             });
           }
 
           if (mapContext.currentSearchData.editStreet && street.asdType63) {
-            street.asdType63.forEach((asd) => {
-              mapAsd63.push({
+            mapAsd63 = street.asdType63.map((asd) => {
+              return {
                 pkId: asd.pkId,
                 usrn: asd.usrn,
                 streetSpecialDesigCode: asd.streetSpecialDesigCode,
@@ -2656,13 +2658,13 @@ function ADSEsriMap(startExtent) {
                 districtRefConsultant: asd.districtRefConsultant,
                 wholeRoad: asd.wholeRoad,
                 geometry: asd.geometry,
-              });
+              };
             });
           }
 
           if (mapContext.currentSearchData.editStreet && street.asdType64) {
-            street.asdType64.forEach((asd) => {
-              mapAsd64.push({
+            mapAsd64 = street.asdType64.map((asd) => {
+              return {
                 pkId: asd.pkId,
                 usrn: asd.usrn,
                 hwwRestrictionCode: asd.hwwRestrictionCode,
@@ -2670,13 +2672,13 @@ function ADSEsriMap(startExtent) {
                 districtRefConsultant: asd.districtRefConsultant,
                 wholeRoad: asd.wholeRoad,
                 geometry: asd.geometry,
-              });
+              };
             });
           }
 
           if (mapContext.currentSearchData.editStreet && street.asdType66) {
-            street.asdType66.forEach((asd) => {
-              mapAsd66.push({
+            mapAsd66 = street.asdType66.map((asd) => {
+              return {
                 pkId: asd.pkId,
                 usrn: asd.usrn,
                 prowRights: asd.prowRights,
@@ -2684,7 +2686,7 @@ function ADSEsriMap(startExtent) {
                 prowDistrictRefConsultant: asd.prowDistrictRefConsultant,
                 defMapGeometryType: asd.defMapGeometryType,
                 geometry: asd.geometry,
-              });
+              };
             });
           }
         });
@@ -7391,7 +7393,7 @@ function ADSEsriMap(startExtent) {
         ref={mapRef}
         id="ads-map"
       >
-        <Box id="ads-buttons" class="esri-widget esri-interactive" sx={{ borderRadius: "6px" }}>
+        <Box id="ads-buttons" className="esri-widget esri-interactive" sx={{ borderRadius: "6px" }}>
           <Stack
             direction="row"
             sx={{ backgroundColor: adsWhite, height: "32px" }}

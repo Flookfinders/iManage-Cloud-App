@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   07.09.23 Sean Flook                 Removed unnecessary awaits.
 //    003   06.10.23 Sean Flook                 Use colour variables.
+//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -23,7 +24,8 @@ import React, { useContext, useState, useEffect } from "react";
 import SettingsContext from "../context/settingsContext";
 import UserContext from "../context/userContext";
 
-import { Box, Typography, Stack, Tooltip, Grid, Card, CardActionArea, CardContent, IconButton } from "@mui/material";
+import { Typography, Tooltip, Grid, Card, CardActionArea, CardContent, IconButton } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 
 import EditAuthorityDetailsDialog from "../dialogs/EditAuthorityDetailsDialog";
 

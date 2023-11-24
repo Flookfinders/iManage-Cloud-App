@@ -34,6 +34,7 @@
 //    009   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
 //    010   28.06.23 Sean Flook         WI40730 Corrected validation check for Welsh suffixes.
 //    011   27.10.23 Sean Flook       IMANN-175 Added ValidateMultiEditLogicalStatus.
+//    012   24.11.23 Sean Flook                 Renamed successor to successorCrossRef.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1184,15 +1185,15 @@ export function ValidateOrganisationData(data, index, currentLookups) {
 }
 
 /**
- * Validates a successor record
+ * Validates a successor cross reference record
  *
- * @param {object} data - The successor record data that needs to be validated
- * @param {number} index - The index for the successor record.
+ * @param {object} data - The successor cross reference record data that needs to be validated
+ * @param {number} index - The index for the successor cross reference record.
  * @param {object} currentLookups - The lookup context object.
  * @return {array}
  */
-export function ValidateSuccessorData(data, index, currentLookups) {
-  // const methodName = "ValidateSuccessorData";
+export function ValidateSuccessorCrossRefData(data, index, currentLookups) {
+  // const methodName = "ValidateSuccessorCrossRefData";
   let validationErrors = [];
   return validationErrors;
 }

@@ -17,6 +17,7 @@
 //    004   16.10.23 Sean Flook                 Hide the button for the coordinates.
 //    005   27.10.23 Sean Flook                 Use new dataFormStyle and removed start and end coordinates as no longer required.
 //    006   03.11.23 Sean Flook                 Make labels the same within application.
+//    007   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -36,7 +37,8 @@ import ObjectComparison from "../utils/ObjectComparison";
 
 import InterestType from "../data/InterestType";
 
-import { Avatar, Box, Grid, Stack, Typography } from "@mui/material";
+import { Avatar, Grid, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSDateControl from "../components/ADSDateControl";

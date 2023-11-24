@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   11.10.23 Sean Flook                 Correctly handle expand and collapse.
 //    004   12.10.23 Sean Flook                 Use the street context to handle storing the expanded state of the item.
+//    005   24.11.23 Sean Flook                 Moved Stack to @mui/system and fixed some warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -37,9 +38,9 @@ import {
   Collapse,
   Typography,
   ListItemIcon,
-  Stack,
   Checkbox,
 } from "@mui/material";
+import { Stack } from "@mui/system";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import {
   ExpandMore,
@@ -378,7 +379,6 @@ function AsdDataListItem({
   return (
     <Fragment>
       <ListItemButton
-        button
         divider
         dense
         disabled={!data || data.length === 0}
@@ -447,7 +447,6 @@ function AsdDataListItem({
                 <ListItemButton
                   id={d.pkId}
                   alignItems="flex-start"
-                  button
                   dense
                   disableGutters
                   autoFocus={selectedRecord && selectedRecord >= 0 && selectedRecord.toString() === d.pkId.toString()}

@@ -19,6 +19,7 @@
 //    006   08.06.21 Sean Flook         WI39345 Changed read-only version to a label and altered colour of outline.
 //    007   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
 //    008   10.08.23 Sean Flook                 Ensure we return a number from the control.
+//    009   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -27,7 +28,8 @@
 /* #region imports */
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Grid, TextField, Typography, Tooltip, Skeleton, Box } from "@mui/material";
+import { Grid, TextField, Typography, Tooltip, Skeleton } from "@mui/material";
+import { Box } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { FormBoxRowStyle, FormRowStyle, FormInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
 /* #endregion imports */

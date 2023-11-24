@@ -19,6 +19,7 @@
 //    006   27.06.23 Sean Flook         WI40757 Added in deletion confirmation dialog.
 //    007   07.09.23 Sean Flook                 Removed unnecessary awaits.
 //    008   03.11.23 Sean Flook                 Updated TreeView and TreeItem.
+//    009   24.11.23 Sean Flook                 Moved Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -28,7 +29,8 @@ import React, { useContext, useState, useRef, useEffect } from "react";
 import SettingsContext from "../context/settingsContext";
 import UserContext from "../context/userContext";
 
-import { Grid, Typography, Stack } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
+import { Stack } from "@mui/system";
 import { TreeView, TreeItem } from "@mui/x-tree-view";
 import PropertyTemplatesDataForm from "../forms/PropertyTemplatesDataForm";
 import EditPropertyTemplateTab from "./EditPropertyTemplateTab";

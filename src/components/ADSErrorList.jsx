@@ -15,6 +15,7 @@
 //    002   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
 //    003   06.10.23 Sean Flook                 Added OneScotland record types. Use colour variables.
 //    004   03.11.23 Sean Flook                 Added hyphen to one-way.
+//    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -32,7 +33,8 @@ import { HasASD } from "../configuration/ADSConfig";
 import { GetNewStreetData } from "../utils/StreetUtils";
 import { GetNewPropertyData, getBilingualSource } from "../utils/PropertyUtils";
 import { useEditConfirmation } from "../pages/EditConfirmationPage";
-import { Box, Grid, Typography, IconButton, Stack, Link, Divider, Snackbar, Alert } from "@mui/material";
+import { Grid, Typography, IconButton, Link, Divider, Snackbar, Alert } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import CloseIcon from "@mui/icons-material/Close";
 import { adsRed, adsDarkGrey, adsLightGreyB, adsOffWhite, adsLightGreyA50 } from "../utils/ADSColours";
 import { ActionIconStyle, GetAlertStyle, GetAlertIcon, GetAlertSeverity } from "../utils/ADSStyles";
@@ -117,7 +119,7 @@ function ADSErrorList({ onClose }) {
           break;
 
         case 30:
-          updateSuccessorData();
+          updateSuccessorCrossRefData();
           break;
 
         case 51:
@@ -197,7 +199,7 @@ function ADSErrorList({ onClose }) {
    * Sets the associated street data for the current street and then clears the data from the sandbox.
    *
    * @param {array|null} esuData The ESU data for the street.
-   * @param {array|null} successorData The successor data for the street (OneScotland only).
+   * @param {array|null} successorCrossRefData The successor cross reference data for the street (OneScotland only).
    * @param {array|null} descriptorData The descriptor data for the street.
    * @param {array|null} noteData The note data for the street.
    * @param {array|null} maintenanceResponsibilityData The maintenance responsibility data for the street (OneScotland only).
@@ -212,7 +214,7 @@ function ADSErrorList({ onClose }) {
    */
   const setAssociatedStreetDataAndClear = (
     esuData,
-    successorData,
+    successorCrossRefData,
     descriptorData,
     noteData,
     maintenanceResponsibilityData,
@@ -230,7 +232,7 @@ function ADSErrorList({ onClose }) {
         ? sandboxContext.currentSandbox.currentStreet
         : sandboxContext.currentSandbox.sourceStreet,
       esuData,
-      successorData,
+      successorCrossRefData,
       descriptorData,
       noteData,
       maintenanceResponsibilityData,
@@ -255,7 +257,7 @@ function ADSErrorList({ onClose }) {
    * @param {array|null} crossRefData The cross reference data for the property.
    * @param {array|null} classificationData The classification data for the property (OneScotland only).
    * @param {array|null} organisationData The organisation data for the property (OneScotland only).
-   * @param {array|null} successorData The successor data for the property (OneScotland only).
+   * @param {array|null} successorCrossRefData The successor cross reference data for the property (OneScotland only).
    * @param {array|null} noteData The note data for the property.
    * @param {string} clearType The type of data that we are clearing from the sandbox.
    */
@@ -265,7 +267,7 @@ function ADSErrorList({ onClose }) {
     crossRefData,
     classificationData,
     organisationData,
-    successorData,
+    successorCrossRefData,
     noteData,
     clearType
   ) => {
@@ -279,7 +281,7 @@ function ADSErrorList({ onClose }) {
       crossRefData,
       classificationData,
       organisationData,
-      successorData,
+      successorCrossRefData,
       noteData
     );
 
@@ -300,7 +302,7 @@ function ADSErrorList({ onClose }) {
 
     setAssociatedStreetDataAndClear(
       newEsus,
-      sandboxContext.currentSandbox.currentStreet.successors,
+      sandboxContext.currentSandbox.currentStreet.successorCrossRefs,
       sandboxContext.currentSandbox.currentStreet.streetDescriptors,
       sandboxContext.currentSandbox.currentStreet.streetNotes,
       sandboxContext.currentSandbox.currentStreet.maintenanceResponsibilities,
@@ -316,22 +318,23 @@ function ADSErrorList({ onClose }) {
   };
 
   /**
-   * Event to update the successor record with new data.
+   * Event to update the successor cross reference record with new data.
    *
    * @returns
    */
-  const updateSuccessorData = () => {
-    if (!sandboxContext.currentSandbox.currentStreetRecords.successor) return;
+  const updateSuccessorCrossRefData = () => {
+    if (!sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef) return;
 
-    const newSuccessors = sandboxContext.currentSandbox.currentStreet.successors.map(
+    const newSuccessorCrossRefs = sandboxContext.currentSandbox.currentStreet.successorCrossRefs.map(
       (x) =>
-        [sandboxContext.currentSandbox.currentStreetRecords.successor].find((successor) => successor.pkId === x.pkId) ||
-        x
+        [sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef].find(
+          (successorCrossRef) => successorCrossRef.pkId === x.pkId
+        ) || x
     );
 
     setAssociatedStreetDataAndClear(
       sandboxContext.currentSandbox.currentStreet.esus,
-      newSuccessors,
+      newSuccessorCrossRefs,
       sandboxContext.currentSandbox.currentStreet.streetDescriptors,
       sandboxContext.currentSandbox.currentStreet.streetNotes,
       sandboxContext.currentSandbox.currentStreet.maintenanceResponsibilities,
@@ -342,7 +345,7 @@ function ADSErrorList({ onClose }) {
       null,
       null,
       null,
-      "successor"
+      "successorCrossRef"
     );
   };
 
@@ -363,7 +366,7 @@ function ADSErrorList({ onClose }) {
 
     setAssociatedStreetDataAndClear(
       sandboxContext.currentSandbox.currentStreet.esus,
-      sandboxContext.currentSandbox.currentStreet.successors,
+      sandboxContext.currentSandbox.currentStreet.successorCrossRefs,
       newStreetDescriptors,
       sandboxContext.currentSandbox.currentStreet.streetNotes,
       sandboxContext.currentSandbox.currentStreet.maintenanceResponsibilities,
@@ -666,7 +669,7 @@ function ADSErrorList({ onClose }) {
 
     setAssociatedStreetDataAndClear(
       sandboxContext.currentSandbox.currentStreet.esus,
-      sandboxContext.currentSandbox.currentStreet.successors,
+      sandboxContext.currentSandbox.currentStreet.successorCrossRefs,
       sandboxContext.currentSandbox.currentStreet.streetDescriptors,
       sandboxContext.currentSandbox.currentStreet.streetNotes,
       newMaintenanceResponsibilities,
@@ -698,7 +701,7 @@ function ADSErrorList({ onClose }) {
 
     setAssociatedStreetDataAndClear(
       sandboxContext.currentSandbox.currentStreet.esus,
-      sandboxContext.currentSandbox.currentStreet.successors,
+      sandboxContext.currentSandbox.currentStreet.successorCrossRefs,
       sandboxContext.currentSandbox.currentStreet.streetDescriptors,
       sandboxContext.currentSandbox.currentStreet.streetNotes,
       sandboxContext.currentSandbox.currentStreet.maintenanceResponsibilities,
@@ -728,7 +731,7 @@ function ADSErrorList({ onClose }) {
 
     setAssociatedStreetDataAndClear(
       sandboxContext.currentSandbox.currentStreet.esus,
-      sandboxContext.currentSandbox.currentStreet.successors,
+      sandboxContext.currentSandbox.currentStreet.successorCrossRefs,
       sandboxContext.currentSandbox.currentStreet.streetDescriptors,
       sandboxContext.currentSandbox.currentStreet.streetNotes,
       sandboxContext.currentSandbox.currentStreet.maintenanceResponsibilities,
@@ -907,7 +910,7 @@ function ADSErrorList({ onClose }) {
 
     setAssociatedStreetDataAndClear(
       sandboxContext.currentSandbox.currentStreet.esus,
-      sandboxContext.currentSandbox.currentStreet.successors,
+      sandboxContext.currentSandbox.currentStreet.successorCrossRefs,
       sandboxContext.currentSandbox.currentStreet.streetDescriptors,
       newNotes,
       sandboxContext.currentSandbox.currentStreet.maintenanceResponsibilities,
@@ -943,7 +946,7 @@ function ADSErrorList({ onClose }) {
       sandboxContext.currentSandbox.currentProperty.blpuAppCrossRefs,
       sandboxContext.currentSandbox.currentProperty.classifications,
       sandboxContext.currentSandbox.currentProperty.organisations,
-      sandboxContext.currentSandbox.currentProperty.successors,
+      sandboxContext.currentSandbox.currentProperty.successorCrossRefs,
       sandboxContext.currentSandbox.currentProperty.blpuNotes,
       "provenance"
     );
@@ -967,7 +970,7 @@ function ADSErrorList({ onClose }) {
       newCrossRefs,
       sandboxContext.currentSandbox.currentProperty.classifications,
       sandboxContext.currentSandbox.currentProperty.organisations,
-      sandboxContext.currentSandbox.currentProperty.successors,
+      sandboxContext.currentSandbox.currentProperty.successorCrossRefs,
       sandboxContext.currentSandbox.currentProperty.blpuNotes,
       "appCrossRef"
     );
@@ -994,7 +997,7 @@ function ADSErrorList({ onClose }) {
       sandboxContext.currentSandbox.currentProperty.blpuAppCrossRefs,
       newClassifications,
       sandboxContext.currentSandbox.currentProperty.organisations,
-      sandboxContext.currentSandbox.currentProperty.successors,
+      sandboxContext.currentSandbox.currentProperty.successorCrossRefs,
       sandboxContext.currentSandbox.currentProperty.blpuNotes,
       "classification"
     );
@@ -1021,7 +1024,7 @@ function ADSErrorList({ onClose }) {
       sandboxContext.currentSandbox.currentProperty.blpuAppCrossRefs,
       sandboxContext.currentSandbox.currentProperty.classifications,
       newOrganisations,
-      sandboxContext.currentSandbox.currentProperty.successors,
+      sandboxContext.currentSandbox.currentProperty.successorCrossRefs,
       sandboxContext.currentSandbox.currentProperty.blpuNotes,
       "classification"
     );
@@ -1154,7 +1157,7 @@ function ADSErrorList({ onClose }) {
         sandboxContext.currentSandbox.currentProperty.blpuAppCrossRefs,
         sandboxContext.currentSandbox.currentProperty.classifications,
         sandboxContext.currentSandbox.currentProperty.organisations,
-        sandboxContext.currentSandbox.currentProperty.successors,
+        sandboxContext.currentSandbox.currentProperty.successorCrossRefs,
         sandboxContext.currentSandbox.currentProperty.blpuNotes,
         "lpi"
       );
@@ -1179,7 +1182,7 @@ function ADSErrorList({ onClose }) {
       sandboxContext.currentSandbox.currentProperty.blpuAppCrossRefs,
       sandboxContext.currentSandbox.currentProperty.classifications,
       sandboxContext.currentSandbox.currentProperty.organisations,
-      sandboxContext.currentSandbox.currentProperty.successors,
+      sandboxContext.currentSandbox.currentProperty.successorCrossRefs,
       newNotes,
       "propertyNote"
     );
