@@ -29,6 +29,7 @@
 //    015   03.11.23 Sean Flook                 When creating a new ESU also create a new highway dedication record, also added hyphen to one-way.
 //    016   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    017   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
+//    018   30.11.23 Sean Flook       IMANN-196 Corrected field name in updateDescriptorData.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -5548,7 +5549,7 @@ function StreetDataForm({ data, loading }) {
           secondDescriptor && secondDescriptor.streetDescriptor
             ? secondDescriptor.streetDescriptor
             : newData.streetDescriptor,
-        locRef: secondLocality ? secondLocality.locRef : null,
+        locRef: secondLocality ? secondLocality.localityRef : null,
         locality: secondLocality ? secondLocality.locality : null,
         townRef: secondTown ? secondTown.townRef : null,
         town: secondTown ? secondTown.town : null,
