@@ -34,6 +34,7 @@
 //    020   10.11.23 Sean Flook       IMANN-175 Added code try and correctly highlight properties after doing a move BLPU.
 //    021   20.11.23 Sean Flook                 Added street BLPU to the list of classifications that display an icon.
 //    022   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and changed code to use map rather than foreach.
+//    017   16.10.23 Sean Flook       IMANN-149 Uncomment the type 64 and 66 layers as the API has now been written.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -75,7 +76,7 @@ import {
   GetWholeRoadLabel,
   GetReinstatementLabel,
   GetInterestLabel,
-  // GetProwStatusLabel,
+  GetProwStatusLabel,
   GetDistrictLabel,
   DisplayStreetInStreetView,
 } from "../utils/StreetUtils";
@@ -207,19 +208,19 @@ const asd63OpenAction = {
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAcUlEQVR4Ae2VsQ3AIBDEPEE6dkrGy2xsAIOQhtoSOppIWPoObD0NHFZ5gA4MmYmcEZpfDANywChA3RYQec0DLi95wOXkAZfnAZc7HnD5joDLoydyeR64RL5tg9fleWBuYuQBfhNowAinZR+OTwduVjh8GbqRVAucOQEAAAAASUVORK5CYII=",
 };
 
-// const asd64OpenAction = {
-//   title: "Open ASD record",
-//   id: "open-asd-64-record",
-//   image:
-//     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAcUlEQVR4Ae2VsQ3AIBDEPEE6dkrGy2xsAIOQhtoSOppIWPoObD0NHFZ5gA4MmYmcEZpfDANywChA3RYQec0DLi95wOXkAZfnAZc7HnD5joDLoydyeR64RL5tg9fleWBuYuQBfhNowAinZR+OTwduVjh8GbqRVAucOQEAAAAASUVORK5CYII=",
-// };
+const asd64OpenAction = {
+  title: "Open ASD record",
+  id: "open-asd-64-record",
+  image:
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAcUlEQVR4Ae2VsQ3AIBDEPEE6dkrGy2xsAIOQhtoSOppIWPoObD0NHFZ5gA4MmYmcEZpfDANywChA3RYQec0DLi95wOXkAZfnAZc7HnD5joDLoydyeR64RL5tg9fleWBuYuQBfhNowAinZR+OTwduVjh8GbqRVAucOQEAAAAASUVORK5CYII=",
+};
 
-// const asd66OpenAction = {
-//   title: "Open ASD record",
-//   id: "open-asd-66-record",
-//   image:
-//     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAcUlEQVR4Ae2VsQ3AIBDEPEE6dkrGy2xsAIOQhtoSOppIWPoObD0NHFZ5gA4MmYmcEZpfDANywChA3RYQec0DLi95wOXkAZfnAZc7HnD5joDLoydyeR64RL5tg9fleWBuYuQBfhNowAinZR+OTwduVjh8GbqRVAucOQEAAAAASUVORK5CYII=",
-// };
+const asd66OpenAction = {
+  title: "Open ASD record",
+  id: "open-asd-66-record",
+  image:
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAcUlEQVR4Ae2VsQ3AIBDEPEE6dkrGy2xsAIOQhtoSOppIWPoObD0NHFZ5gA4MmYmcEZpfDANywChA3RYQec0DLi95wOXkAZfnAZc7HnD5joDLoydyeR64RL5tg9fleWBuYuQBfhNowAinZR+OTwduVjh8GbqRVAucOQEAAAAASUVORK5CYII=",
+};
 
 const streetAddProperty = {
   title: "Add property on street",
@@ -2961,52 +2962,52 @@ function ADSEsriMap(startExtent) {
         },
       }));
 
-    // const asd64Features =
-    //   asdType64DataRef &&
-    //   asdType64DataRef.map((rec, index) => ({
-    //     geometry: {
-    //       type: "polyline",
-    //       paths: rec.geometry,
-    //       spatialReference: { wkid: 27700 },
-    //     },
-    //     attributes: {
-    //       ObjectID: index,
-    //       PkId: rec.pkId.toString(),
-    //       USRN: rec.usrn.toString(),
-    //       Description: `Height, width and weight designation - ${GetAsdPrimaryCodeText(
-    //         "64",
-    //         rec.hwwRestrictionCode,
-    //         settingsContext.isScottish
-    //       )}`,
-    //       Organisation: GetAuthorityLabel(rec.swaOrgRefConsultant, settingsContext.isScottish),
-    //       District: GetDistrictLabel(rec.districtRefConsultant, lookupContext.current),
-    //       WholeRoad: GetWholeRoadLabel(rec.wholeRoad),
-    //     },
-    //   }));
+    const asd64Features =
+      asdType64DataRef &&
+      asdType64DataRef.map((rec, index) => ({
+        geometry: {
+          type: "polyline",
+          paths: rec.geometry,
+          spatialReference: { wkid: 27700 },
+        },
+        attributes: {
+          ObjectID: index,
+          PkId: rec.pkId.toString(),
+          USRN: rec.usrn.toString(),
+          Description: `Height, width and weight designation - ${GetAsdPrimaryCodeText(
+            "64",
+            rec.hwwRestrictionCode,
+            settingsContext.isScottish
+          )}`,
+          Organisation: GetAuthorityLabel(rec.swaOrgRefConsultant, settingsContext.isScottish),
+          District: GetDistrictLabel(rec.districtRefConsultant, lookupContext.current),
+          WholeRoad: GetWholeRoadLabel(rec.wholeRoad),
+        },
+      }));
 
-    // const asd66Features =
-    //   asdType66DataRef &&
-    //   asdType66DataRef.map((rec, index) => ({
-    //     geometry: {
-    //       type: "polyline",
-    //       paths: rec.geometry,
-    //       spatialReference: { wkid: 27700 },
-    //     },
-    //     attributes: {
-    //       ObjectID: index,
-    //       PkId: rec.pkId.toString(),
-    //       USRN: rec.usrn.toString(),
-    //       Description: `Public right of way - ${GetAsdPrimaryCodeText(
-    //         "66",
-    //         rec.prowRights,
-    //         settingsContext.isScottish
-    //       )}`,
-    //       ProwStatus: GetProwStatusLabel(rec.prowStatus),
-    //       Organisation: GetAuthorityLabel(rec.prowOrgRefConsultant, settingsContext.isScottish),
-    //       District: GetDistrictLabel(rec.prowDistrictRefConsultant, lookupContext.current),
-    //       DefMapGeometryType: GetWholeRoadLabel(rec.defMapGeometryType),
-    //     },
-    //   }));
+    const asd66Features =
+      asdType66DataRef &&
+      asdType66DataRef.map((rec, index) => ({
+        geometry: {
+          type: "polyline",
+          paths: rec.geometry,
+          spatialReference: { wkid: 27700 },
+        },
+        attributes: {
+          ObjectID: index,
+          PkId: rec.pkId.toString(),
+          USRN: rec.usrn.toString(),
+          Description: `Public right of way - ${GetAsdPrimaryCodeText(
+            "66",
+            rec.prowRights,
+            settingsContext.isScottish
+          )}`,
+          ProwStatus: GetProwStatusLabel(rec.prowStatus),
+          Organisation: GetAuthorityLabel(rec.prowOrgRefConsultant, settingsContext.isScottish),
+          District: GetDistrictLabel(rec.prowDistrictRefConsultant, lookupContext.current),
+          DefMapGeometryType: GetWholeRoadLabel(rec.defMapGeometryType),
+        },
+      }));
 
     const propertyFeatures =
       propertyDataRef &&
@@ -3696,170 +3697,170 @@ function ADSEsriMap(startExtent) {
       title: "Special designation layer",
     });
 
-    // const asd64Layer = new FeatureLayer({
-    //   id: asd64LayerName,
-    //   copyright: `© Copyright Idox Software Ltd. ${new Date().getFullYear()}`,
-    //   source: asd64Features,
-    //   fields: [
-    //     {
-    //       name: "ObjectID",
-    //       alias: "ObjectID",
-    //       type: "oid",
-    //     },
-    //     {
-    //       name: "USRN",
-    //       alias: "USRN",
-    //       type: "string",
-    //     },
-    //     {
-    //       name: "PkId",
-    //       alias: "PkId",
-    //       type: "string",
-    //     },
-    //     {
-    //       name: "Description",
-    //       alias: "Description",
-    //       type: "string",
-    //     },
-    //     {
-    //       name: "Organisation",
-    //       alias: "Organisation",
-    //       type: "string",
-    //     },
-    //     {
-    //       name: "District",
-    //       alias: "District",
-    //       type: "string",
-    //     },
-    //     {
-    //       name: "WholeRoad",
-    //       alias: "WholeRoad",
-    //       type: "string",
-    //     },
-    //     {
-    //       name: "Geometry",
-    //       alias: "Geometry",
-    //       type: "string",
-    //     },
-    //   ],
-    //   outFields: ["*"],
-    //   objectIdField: "ObjectID",
-    //   popupTemplate: {
-    //     title: "{Description}",
-    //     lastEditInfoEnabled: false,
-    //     content: [
-    //       {
-    //         type: "fields",
-    //         fieldInfos: [
-    //           {
-    //             fieldName: "USRN",
-    //           },
-    //           {
-    //             fieldName: "Organisation",
-    //           },
-    //           {
-    //             fieldName: "District",
-    //           },
-    //           {
-    //             fieldName: "WholeRoad",
-    //             label: "Whole road / Part of road",
-    //           },
-    //         ],
-    //       },
-    //     ],
-    //     actions: [asd64OpenAction],
-    //   },
-    //   renderer: asdRenderer,
-    //   spatialReference: { wkid: 27700 },
-    //   title: "Height, width & weight restriction layer",
-    // });
+    const asd64Layer = new FeatureLayer({
+      id: asd64LayerName,
+      copyright: `© Copyright Idox Software Ltd. ${new Date().getFullYear()}`,
+      source: asd64Features,
+      fields: [
+        {
+          name: "ObjectID",
+          alias: "ObjectID",
+          type: "oid",
+        },
+        {
+          name: "USRN",
+          alias: "USRN",
+          type: "string",
+        },
+        {
+          name: "PkId",
+          alias: "PkId",
+          type: "string",
+        },
+        {
+          name: "Description",
+          alias: "Description",
+          type: "string",
+        },
+        {
+          name: "Organisation",
+          alias: "Organisation",
+          type: "string",
+        },
+        {
+          name: "District",
+          alias: "District",
+          type: "string",
+        },
+        {
+          name: "WholeRoad",
+          alias: "WholeRoad",
+          type: "string",
+        },
+        {
+          name: "Geometry",
+          alias: "Geometry",
+          type: "string",
+        },
+      ],
+      outFields: ["*"],
+      objectIdField: "ObjectID",
+      popupTemplate: {
+        title: "{Description}",
+        lastEditInfoEnabled: false,
+        content: [
+          {
+            type: "fields",
+            fieldInfos: [
+              {
+                fieldName: "USRN",
+              },
+              {
+                fieldName: "Organisation",
+              },
+              {
+                fieldName: "District",
+              },
+              {
+                fieldName: "WholeRoad",
+                label: "Whole road / Part of road",
+              },
+            ],
+          },
+        ],
+        actions: [asd64OpenAction],
+      },
+      renderer: asdRenderer,
+      spatialReference: { wkid: 27700 },
+      title: "Height, width & weight restriction layer",
+    });
 
-    // const asd66Layer = new FeatureLayer({
-    //   id: asd66LayerName,
-    //   copyright: `© Copyright Idox Software Ltd. ${new Date().getFullYear()}`,
-    //   source: asd66Features,
-    //   fields: [
-    //     {
-    //       name: "ObjectID",
-    //       alias: "ObjectID",
-    //       type: "oid",
-    //     },
-    //     {
-    //       name: "USRN",
-    //       alias: "USRN",
-    //       type: "string",
-    //     },
-    //     {
-    //       name: "PkId",
-    //       alias: "PkId",
-    //       type: "string",
-    //     },
-    //     {
-    //       name: "Description",
-    //       alias: "Description",
-    //       type: "string",
-    //     },
-    //     {
-    //       name: "ProwStatus",
-    //       alias: "ProwStatus",
-    //       type: "string",
-    //     },
-    //     {
-    //       name: "Organisation",
-    //       alias: "Organisation",
-    //       type: "string",
-    //     },
-    //     {
-    //       name: "District",
-    //       alias: "District",
-    //       type: "string",
-    //     },
-    //     {
-    //       name: "DefMapGeometryType",
-    //       alias: "DefMapGeometryType",
-    //       type: "string",
-    //     },
-    //     {
-    //       name: "Geometry",
-    //       alias: "Geometry",
-    //       type: "string",
-    //     },
-    //   ],
-    //   outFields: ["*"],
-    //   objectIdField: "ObjectID",
-    //   popupTemplate: {
-    //     title: "{Description}",
-    //     lastEditInfoEnabled: false,
-    //     content: [
-    //       {
-    //         type: "fields",
-    //         fieldInfos: [
-    //           {
-    //             fieldName: "USRN",
-    //           },
-    //           {
-    //             fieldName: "ProwStatus",
-    //             label: "Status",
-    //           },
-    //           {
-    //             fieldName: "Organisation",
-    //           },
-    //           {
-    //             fieldName: "District",
-    //           },
-    //           {
-    //             fieldName: "DefMapGeometryType",
-    //             label: "Whole road / Part of road",
-    //           },
-    //         ],
-    //       },
-    //     ],
-    //     actions: [asd66OpenAction],
-    //   },
-    //   renderer: asdRenderer,
-    //   spatialReference: { wkid: 27700 },
-    //   title: "Public right of way layer",
-    // });
+    const asd66Layer = new FeatureLayer({
+      id: asd66LayerName,
+      copyright: `© Copyright Idox Software Ltd. ${new Date().getFullYear()}`,
+      source: asd66Features,
+      fields: [
+        {
+          name: "ObjectID",
+          alias: "ObjectID",
+          type: "oid",
+        },
+        {
+          name: "USRN",
+          alias: "USRN",
+          type: "string",
+        },
+        {
+          name: "PkId",
+          alias: "PkId",
+          type: "string",
+        },
+        {
+          name: "Description",
+          alias: "Description",
+          type: "string",
+        },
+        {
+          name: "ProwStatus",
+          alias: "ProwStatus",
+          type: "string",
+        },
+        {
+          name: "Organisation",
+          alias: "Organisation",
+          type: "string",
+        },
+        {
+          name: "District",
+          alias: "District",
+          type: "string",
+        },
+        {
+          name: "DefMapGeometryType",
+          alias: "DefMapGeometryType",
+          type: "string",
+        },
+        {
+          name: "Geometry",
+          alias: "Geometry",
+          type: "string",
+        },
+      ],
+      outFields: ["*"],
+      objectIdField: "ObjectID",
+      popupTemplate: {
+        title: "{Description}",
+        lastEditInfoEnabled: false,
+        content: [
+          {
+            type: "fields",
+            fieldInfos: [
+              {
+                fieldName: "USRN",
+              },
+              {
+                fieldName: "ProwStatus",
+                label: "Status",
+              },
+              {
+                fieldName: "Organisation",
+              },
+              {
+                fieldName: "District",
+              },
+              {
+                fieldName: "DefMapGeometryType",
+                label: "Whole road / Part of road",
+              },
+            ],
+          },
+        ],
+        actions: [asd66OpenAction],
+      },
+      renderer: asdRenderer,
+      spatialReference: { wkid: 27700 },
+      title: "Public right of way layer",
+    });
 
     const propertyLayer = new FeatureLayer({
       id: propertyLayerName,
@@ -4043,8 +4044,8 @@ function ADSEsriMap(startExtent) {
     if (asdType61DataRef && asdType61DataRef.length > 0) mapRef.current.add(asd61Layer);
     if (asdType62DataRef && asdType62DataRef.length > 0) mapRef.current.add(asd62Layer);
     if (asdType63DataRef && asdType63DataRef.length > 0) mapRef.current.add(asd63Layer);
-    // if (asdType64DataRef && asdType64DataRef.length > 0) mapRef.current.add(asd64Layer);
-    // if (asdType66DataRef && asdType66DataRef.length > 0) mapRef.current.add(asd66Layer);
+    if (asdType64DataRef && asdType64DataRef.length > 0) mapRef.current.add(asd64Layer);
+    if (asdType66DataRef && asdType66DataRef.length > 0) mapRef.current.add(asd66Layer);
     if (extentData.current && extentData.current.length > 0) mapRef.current.add(extentLayer);
     if (propertyDataRef && propertyDataRef.length > 0) mapRef.current.add(propertyLayer);
     mapRef.current.add(zoomGraphicsLayer.current);
