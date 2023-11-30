@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   24.03.23 Sean Flook         WI40608 Changes required to correctly handle changes to PAO details for child properties.
 //    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    004   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -23,6 +24,7 @@ import React, { useContext, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import LookupContext from "../context/lookupContext";
+import SettingsContext from "../context/settingsContext";
 
 import { Box } from "@mui/system";
 import ADSAddressableObjectControl from "../components/ADSAddressableObjectControl";
@@ -48,6 +50,7 @@ WizardAddressDetails1Tab.defaultProps = {
 
 function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChanged, onErrorChanged }) {
   const lookupContext = useContext(LookupContext);
+  const settingsContext = useContext(SettingsContext);
 
   const [saoStartNumber, setSaoStartNumber] = useState(null);
   const [saoStartSuffix, setSaoStartSuffix] = useState(null);
@@ -62,6 +65,7 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
   const [paoDetails, setPaoDetails] = useState(null);
   const [usrn, setUsrn] = useState(null);
   const [postTownRef, setPostTownRef] = useState(null);
+  const [subLocalityRef, setSubLocalityRef] = useState(null);
   const [postcodeRef, setPostcodeRef] = useState(null);
 
   const [addressPreview, setAddressPreview] = useState(null);
@@ -79,6 +83,7 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
   const [paoDetailsError, setPaoDetailsError] = useState(null);
   const [usrnError, setUsrnError] = useState(null);
   const [postTownRefError, setPostTownRefError] = useState(null);
+  const [subLocalityRefError, setSubLocalityRefError] = useState(null);
   const [postcodeRefError, setPostcodeRefError] = useState(null);
 
   const updatedDataRef = useRef(null);
@@ -158,6 +163,12 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
           : updatedDataRef.current
           ? updatedDataRef.current.postcodeRef
           : postcodeRef,
+      subLocalityRef:
+        updatedField === "subLocalityRef"
+          ? newValue
+          : updatedDataRef.current
+          ? updatedDataRef.current.subLocalityRef
+          : subLocalityRef,
       postTownRef:
         updatedField === "postTownRef"
           ? newValue
@@ -174,6 +185,11 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
     const postTownRecord = lookupContext.currentLookups.postTowns.find(
       (x) => x.postTownRef === updatedData.postTownRef && x.language === updatedData.language
     );
+    const subLocalityRecord = settingsContext.isScottish
+      ? lookupContext.currentLookups.subLocalities.find(
+          (x) => x.subLocalityRef === updatedData.subLocalityRef && x.language === updatedData.language
+        )
+      : null;
     const postcodeRecord = lookupContext.currentLookups.postcodes.find(
       (x) => x.postcodeRef === updatedData.postcodeRef
     );
@@ -200,8 +216,10 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
           `${saoDetails.trim()}${saoDetails ? ", " : ""}${paoDetails.trim()}${streetDescriptorRecord ? " " : ""}${
             streetDescriptorRecord ? streetDescriptorToTitleCase(streetDescriptorRecord.address) : ""
           }${postTownRecord ? ", " : ""}${postTownRecord ? stringToSentenceCase(postTownRecord.postTown) : ""}${
-            postcodeRecord ? " " : ""
-          }${postcodeRecord ? postcodeRecord.postcode : ""}`
+            subLocalityRecord ? ", " : ""
+          }${subLocalityRecord ? stringToSentenceCase(subLocalityRecord.subLocality) : ""}${postcodeRecord ? " " : ""}${
+            postcodeRecord ? postcodeRecord.postcode : ""
+          }`
         );
       }
     } else {
@@ -216,8 +234,10 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
           }${updatedData.paoEndSuffix ? updatedData.paoEndSuffix : ""}${streetDescriptorRecord ? " " : ""}${
             streetDescriptorRecord ? streetDescriptorToTitleCase(streetDescriptorRecord.address) : ""
           }${postTownRecord ? ", " : ""}${postTownRecord ? stringToSentenceCase(postTownRecord.postTown) : ""}${
-            postcodeRecord ? " " : ""
-          }${postcodeRecord ? postcodeRecord.postcode : ""}`
+            subLocalityRecord ? ", " : ""
+          }${subLocalityRecord ? stringToSentenceCase(subLocalityRecord.subLocality) : ""}${postcodeRecord ? " " : ""}${
+            postcodeRecord ? postcodeRecord.postcode : ""
+          }`
         );
       }
     }
@@ -389,6 +409,17 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
   };
 
   /**
+   * Event to handle when the sub-locality is changed.
+   *
+   * @param {number|null} newValue The new sub-locality.
+   */
+  const handleSubLocalityRefChangeEvent = (newValue) => {
+    setSubLocalityRef(newValue);
+    if (onDataChanged && subLocalityRef !== newValue) onDataChanged(getUpdatedData("subLocalityRef", newValue));
+    if (onErrorChanged) onErrorChanged(getUpdatedErrors("subLocalityRef"));
+  };
+
+  /**
    * Event to handle when the postcode reference is changed.
    *
    * @param {number|null} newValue The new postcode reference.
@@ -441,6 +472,7 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
       setPaoDetails(data.paoDetails);
       setUsrn(data.usrn);
       setPostTownRef(data.postTownRef);
+      setSubLocalityRef(settingsContext.isScottish ? data.subLocalityRef : null);
       setPostcodeRef(data.postcodeRef);
 
       const streetDescriptorRecord = lookupContext.currentLookups.streetDescriptors.find(
@@ -449,6 +481,11 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
       const postTownRecord = lookupContext.currentLookups.postTowns.find(
         (x) => x.postTownRef === data.postTownRef && x.language === data.language
       );
+      const subLocalityRecord = settingsContext.isScottish
+        ? lookupContext.currentLookups.subLocalities.find(
+            (x) => x.subLocalityRef === data.subLocalityRef && x.language === data.language
+          )
+        : null;
       const postcodeRecord = lookupContext.currentLookups.postcodes.find((x) => x.postcodeRef === data.postcodeRef);
 
       if (isChild && (data.saoStartNumber || data.saoText)) {
@@ -468,8 +505,10 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
           `${saoDetails.trim()}${saoDetails ? ", " : ""}${paoDetails.trim()}${streetDescriptorRecord ? " " : ""}${
             streetDescriptorRecord ? streetDescriptorToTitleCase(streetDescriptorRecord.address) : ""
           }${postTownRecord ? ", " : ""}${postTownRecord ? stringToSentenceCase(postTownRecord.postTown) : ""}${
-            postcodeRecord ? " " : ""
-          }${postcodeRecord ? postcodeRecord.postcode : ""}`
+            subLocalityRecord ? ", " : ""
+          }${subLocalityRecord ? stringToSentenceCase(subLocalityRecord.subLocality) : ""}${postcodeRecord ? " " : ""}${
+            postcodeRecord ? postcodeRecord.postcode : ""
+          }`
         );
       } else if (!isChild && (data.paoStartNumber || data.paoText)) {
         setAddressPreview(
@@ -482,12 +521,14 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
           }${streetDescriptorRecord ? streetDescriptorToTitleCase(streetDescriptorRecord.address) : ""}${
             postTownRecord ? ", " : ""
           }${postTownRecord ? stringToSentenceCase(postTownRecord.postTown) : ""}${postcodeRecord ? " " : ""}${
+            subLocalityRecord ? ", " : ""
+          }${subLocalityRecord ? stringToSentenceCase(subLocalityRecord.subLocality) : ""}${
             postcodeRecord ? postcodeRecord.postcode : ""
           }`
         );
       }
     }
-  }, [language, data, lookupContext, isChild]);
+  }, [language, data, lookupContext, isChild, settingsContext.isScottish]);
 
   useEffect(() => {
     setSaoStartNumError(null);
@@ -503,6 +544,7 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
     setPaoDetailsError(null);
     setUsrnError(null);
     setPostTownRefError(null);
+    setSubLocalityRefError(null);
     setPostcodeRefError(null);
 
     if (errors && errors.length > 0) {
@@ -559,6 +601,11 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
           case "posttown":
           case "posttownref":
             setPostTownRefError(error.errors);
+            break;
+
+          case "sublocality":
+          case "sublocalityref":
+            setSubLocalityRefError(error.errors);
             break;
 
           case "postcode":
@@ -662,6 +709,20 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
         onChange={handlePostTownRefChangeEvent}
         helperText="Allocated by the Royal Mail to assist in delivery of mail."
       />
+      {settingsContext.isScottish && (
+        <ADSSelectControl
+          label="Sub-locality"
+          isEditable
+          useRounded
+          lookupData={lookupContext.currentLookups.subLocalities.filter((x) => x.language === language && !x.historic)}
+          lookupId="subLocalityRef"
+          lookupLabel="subLocality"
+          value={subLocalityRef}
+          errorText={subLocalityRefError}
+          onChange={handleSubLocalityRefChangeEvent}
+          helperText="Third level of geographic area name. e.g. to record an island name or property group."
+        />
+      )}
       <ADSSelectControl
         label="Postcode"
         isEditable

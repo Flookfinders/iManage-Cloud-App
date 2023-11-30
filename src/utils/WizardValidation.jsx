@@ -25,6 +25,7 @@
 //    008   19.04.23 Sean Flook         WI40653 use includeCheck to determine if a check should be run.
 //    009   21.04.23 Sean Flook         WI40692 Corrected field name.
 //    010   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
+//    011   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -37,6 +38,7 @@ import BLPULogicalStatus from "../data/BLPULogicalStatus";
 import BLPUState from "../data/BLPUState";
 import RepresentativePointCode from "../data/RepresentativePointCode";
 import BLPUClassification from "../data/BLPUClassification";
+// import OSGClassification from "../data/OSGClassification";
 import BLPUProvenance from "../data/BLPUProvenance";
 import PostallyAddressable from "../data/PostallyAddressable";
 import OfficialAddress from "../data/OfficialAddress";
@@ -553,6 +555,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
 export function ValidatePropertyDetails(
   blpuData,
   lpiData,
+  classificationData,
   otherData,
   currentLookups,
   isScottish,
@@ -563,11 +566,12 @@ export function ValidatePropertyDetails(
   const methodName = "ValidatePropertyDetails";
   const blpuErrors = [];
   const lpiErrors = [];
+  const classificationErrors = [];
   const otherErrors = [];
   let currentCheck;
   const blpuStatusErrors = [];
   const rpcErrors = [];
-  const classificationErrors = [];
+  const blpuClassificationErrors = [];
   const stateErrors = [];
   const stateDateErrors = [];
   const blpuStartDateErrors = [];
@@ -575,6 +579,8 @@ export function ValidatePropertyDetails(
   const officialFlagErrors = [];
   const postalAddressErrors = [];
   const lpiStartDateErrors = [];
+  const classificationSchemeErrors = [];
+  const classificationStartDateErrors = [];
   const provenanceCodeErrors = [];
   const provStartDateErrors = [];
 
@@ -586,7 +592,8 @@ export function ValidatePropertyDetails(
     if (includeCheck(currentCheck, isScottish)) rpcErrors.push(GetErrorMessage(currentCheck, isScottish));
 
     currentCheck = GetCheck(2100016, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish)) classificationErrors.push(GetErrorMessage(currentCheck, isScottish));
+    if (!isScottish && includeCheck(currentCheck, isScottish))
+      blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
 
     currentCheck = GetCheck(2100027, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish)) blpuStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
@@ -633,13 +640,18 @@ export function ValidatePropertyDetails(
       rpcErrors.push(GetErrorMessage(currentCheck, isScottish));
 
     currentCheck = GetCheck(2100015, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && blpuData.classification && blpuData.classification.length > 4) {
-      classificationErrors.push(GetErrorMessage(currentCheck, isScottish));
+    if (
+      !isScottish &&
+      includeCheck(currentCheck, isScottish) &&
+      blpuData.classification &&
+      blpuData.classification.length > 4
+    ) {
+      blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     currentCheck = GetCheck(2100016, currentLookups, methodName, isScottish, showDebugMessages);
-    if (!haveMoveBlpu && includeCheck(currentCheck, isScottish) && !blpuData.classification)
-      classificationErrors.push(GetErrorMessage(currentCheck, isScottish));
+    if (!isScottish && !haveMoveBlpu && includeCheck(currentCheck, isScottish) && !blpuData.classification)
+      blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
 
     currentCheck = GetCheck(2100024, currentLookups, methodName, isScottish, showDebugMessages);
     if (
@@ -722,11 +734,12 @@ export function ValidatePropertyDetails(
 
     currentCheck = GetCheck(2100055, currentLookups, methodName, isScottish, showDebugMessages);
     if (
+      !isScottish &&
       includeCheck(currentCheck, isScottish) &&
       blpuData.classification &&
       !BLPUClassification.find((x) => x.id === blpuData.classification)
     ) {
-      classificationErrors.push(GetErrorMessage(currentCheck, isScottish));
+      blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     currentCheck = GetCheck(2100059, currentLookups, methodName, isScottish, showDebugMessages);
@@ -741,6 +754,7 @@ export function ValidatePropertyDetails(
 
     currentCheck = GetCheck(2100061, currentLookups, methodName, isScottish, showDebugMessages);
     if (
+      !isScottish &&
       !haveMoveBlpu &&
       includeCheck(currentCheck, isScottish) &&
       blpuData.logicalStatus &&
@@ -750,7 +764,7 @@ export function ValidatePropertyDetails(
       blpuData.startDate &&
       isOlderThanYear(blpuData.startDate)
     ) {
-      classificationErrors.push(GetErrorMessage(currentCheck, isScottish));
+      blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
   }
 
@@ -876,6 +890,19 @@ export function ValidatePropertyDetails(
     }
   }
 
+  if (isScottish && !haveMoveBlpu) {
+    // TODO: Need to add more validation checks once OneScotland classification record checks have been added.
+    if (!classificationData) {
+      currentCheck = GetCheck(3200008, currentLookups, methodName, isScottish, showDebugMessages);
+      if (includeCheck(currentCheck, isScottish))
+        blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
+    } else {
+      currentCheck = GetCheck(3200008, currentLookups, methodName, isScottish, showDebugMessages);
+      if (!haveMoveBlpu && includeCheck(currentCheck, isScottish) && !classificationData.classification)
+        blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+  }
+
   if (otherData && !haveMoveBlpu) {
     currentCheck = GetCheck(2200010, currentLookups, methodName, isScottish, showDebugMessages);
     if (
@@ -921,11 +948,18 @@ export function ValidatePropertyDetails(
       errors: stateDateErrors,
     });
 
-  if (classificationErrors.length > 0)
-    blpuErrors.push({
-      field: "Classification",
-      errors: classificationErrors,
-    });
+  if (blpuClassificationErrors.length > 0) {
+    if (isScottish)
+      classificationErrors.push({
+        field: "Classification",
+        errors: blpuClassificationErrors,
+      });
+    else
+      blpuErrors.push({
+        field: "Classification",
+        errors: blpuClassificationErrors,
+      });
+  }
 
   if (blpuStartDateErrors.length > 0)
     blpuErrors.push({
@@ -957,6 +991,18 @@ export function ValidatePropertyDetails(
       errors: lpiStartDateErrors,
     });
 
+  if (classificationSchemeErrors.length > 0)
+    classificationErrors.push({
+      field: "ClassificationScheme",
+      errors: classificationSchemeErrors,
+    });
+
+  if (classificationStartDateErrors.length > 0)
+    classificationErrors.push({
+      field: "ClassificationStartDate",
+      errors: classificationStartDateErrors,
+    });
+
   if (provenanceCodeErrors.length > 0)
     otherErrors.push({
       field: "Provenance",
@@ -969,7 +1015,7 @@ export function ValidatePropertyDetails(
       errors: provStartDateErrors,
     });
 
-  return { blpu: blpuErrors, lpi: lpiErrors, other: otherErrors };
+  return { blpu: blpuErrors, lpi: lpiErrors, classification: classificationErrors, other: otherErrors };
 }
 
 /**

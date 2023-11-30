@@ -1,5 +1,7 @@
 import { adsDarkBlue } from "../utils/ADSColours";
 
+export const OSGScheme = "Scottish Gazetteer Conventions v4.5";
+
 const OSGClassification = [
   {
     id: "C",

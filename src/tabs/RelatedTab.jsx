@@ -21,6 +21,7 @@
 //    006   27.10.23 Sean Flook                 Use new dataFormStyle and updated call to SavePropertyAndUpdate..
 //    007   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    009   30.11.23 Sean Flook                 Renamed variable to avoid confusion.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -596,7 +597,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
       if (propertyChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);
 
-        const propertyData = sandboxContext.currentSandbox.currentProperty
+        const contextPropertyData = sandboxContext.currentSandbox.currentProperty
           ? sandboxContext.currentSandbox.currentProperty
           : sandboxContext.currentSandbox.sourceProperty;
 
@@ -607,7 +608,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   const currentPropertyData = GetCurrentPropertyData(
-                    propertyData,
+                    contextPropertyData,
                     sandboxContext,
                     lookupContext,
                     settingsContext.isWelsh,

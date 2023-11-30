@@ -22,6 +22,7 @@
 //    009   03.11.23 Sean Flook       IMANN-175 Added button to select properties from the map.
 //    010   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    011   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and added getClassificationCode.
+//    012   30.11.23 Sean Flook       IMANN-175 Make the button visible to all.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -990,27 +991,23 @@ function ADSAppBar(props) {
             ) : (
               ""
             )}
-            {process.env.NODE_ENV === "development" &&
-              userCanEdit &&
-              haveMapProperties &&
-              !haveStreet &&
-              !haveProperty && (
-                <Tooltip
-                  title={selectingProperties ? "Stop selecting properties" : "Select properties"}
-                  arrow
-                  placement="bottom-end"
-                  sx={tooltipStyle}
+            {userCanEdit && haveMapProperties && !haveStreet && !haveProperty && (
+              <Tooltip
+                title={selectingProperties ? "Stop selecting properties" : "Select properties"}
+                arrow
+                placement="bottom-end"
+                sx={tooltipStyle}
+              >
+                <IconButton
+                  aria-label={selectingProperties ? "stop selecting properties" : "select properties"}
+                  onClick={() => HandleChangeCheck("properties")}
+                  size="large"
+                  sx={SelectPropertiesIconStyle(selectingProperties)}
                 >
-                  <IconButton
-                    aria-label={selectingProperties ? "stop selecting properties" : "select properties"}
-                    onClick={() => HandleChangeCheck("properties")}
-                    size="large"
-                    sx={SelectPropertiesIconStyle(selectingProperties)}
-                  >
-                    <SelectPropertiesIcon />
-                  </IconButton>
-                </Tooltip>
-              )}
+                  <SelectPropertiesIcon />
+                </IconButton>
+              </Tooltip>
+            )}
             {process.env.NODE_ENV === "development" && (
               <Tooltip title="Bookmarks and Views" arrow placement="bottom-end" sx={tooltipStyle}>
                 <IconButton aria-label="bookmarks and views" disabled onClick={handleBookmarkOpen} size="large">

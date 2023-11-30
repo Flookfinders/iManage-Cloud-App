@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   26.10.23 Sean Flook       IMANN-175 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
+//    003   30.11.23 Sean Flook                 Use a constant for the default classification scheme.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ import { GetCurrentDate } from "../utils/HelperUtils";
 import { GetPropertyMapData, SaveProperty, addressToTitleCase } from "../utils/PropertyUtils";
 import { ValidateClassificationData } from "../utils/PropertyValidation";
 
-import OSGClassification from "../data/OSGClassification";
+import OSGClassification, { OSGScheme } from "../data/OSGClassification";
 
 import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
@@ -272,7 +273,7 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
   const dataValid = () => {
     const validationData = {
       classification: classification,
-      classScheme: "Scottish Gazetteer Conventions v4.5",
+      classScheme: OSGScheme,
       startDate: startDate,
       endDate: endDate,
     };
@@ -354,7 +355,7 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
               classKey: null,
               changeType: "I",
               uprn: property && property.uprn,
-              classScheme: "Scottish Gazetteer Conventions v4.5",
+              classScheme: OSGScheme,
               blpuClass: classification,
               startDate: startDate,
               endDate: endDate,

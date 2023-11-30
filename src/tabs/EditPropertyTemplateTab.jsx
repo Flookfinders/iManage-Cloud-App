@@ -15,6 +15,7 @@
 //    002   22.09.23 Sean Flook                 Changes required to handle Scottish classifications.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    005   24.11.23 Joel Benford               Include Scottish text for LPI official/postal fields
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -166,7 +167,11 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
    */
   const doEditOther = () => {
     setEditVariant("other");
-    setEditData({ source: data.source, provCode: data.provCode, note: data.note });
+    setEditData({
+      source: data.source,
+      provCode: data.provCode,
+      note: data.note,
+    });
     setShowEditDialog(true);
   };
 
@@ -493,7 +498,13 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
   }, [data]);
 
   return (
-    <Box sx={{ marginLeft: theme.spacing(1), marginRight: theme.spacing(4.5), marginTop: theme.spacing(2) }}>
+    <Box
+      sx={{
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(4.5),
+        marginTop: theme.spacing(2),
+      }}
+    >
       <Stack direction="column" spacing={2}>
         <Stack direction="row" justifyContent="space-between">
           <Stack
@@ -565,7 +576,14 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
             </Tooltip>
           )}
         </Stack>
-        <Grid container sx={{ paddingLeft: theme.spacing(2.75), paddingRight: theme.spacing(3.5) }} spacing={3}>
+        <Grid
+          container
+          sx={{
+            paddingLeft: theme.spacing(2.75),
+            paddingRight: theme.spacing(3.5),
+          }}
+          spacing={3}
+        >
           <Grid item xs={6}>
             <Card
               variant="outlined"
@@ -681,7 +699,7 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
                       </Grid>
                       <Grid item xs={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getLpiOfficialAddress(lpiOfficialAddress)}
+                          {getLpiOfficialAddress(lpiOfficialAddress, settingsContext.isScottish)}
                         </Typography>
                       </Grid>
                       <Grid item xs={3}>
@@ -689,7 +707,7 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
                       </Grid>
                       <Grid item xs={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getLpiPostalAddress(lpiPostalAddress)}
+                          {getLpiPostalAddress(lpiPostalAddress, settingsContext.isScottish)}
                         </Typography>
                       </Grid>
                     </Grid>

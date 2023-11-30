@@ -20,6 +20,8 @@
 //    007   06.10.23 Sean Flook                 Added some error trapping and use colour variables.
 //    008   03.11.23 Sean Flook                 Added hyphen to one-way.
 //    009   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    010   24.11.23 Joel Benford               Show dropdowns for LPI official/postal in Scotland
+//    011   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -124,6 +126,7 @@ EditTemplateDialog.propTypes = {
     "prow",
     "blpuWizard",
     "lpiWizard",
+    "classificationWizard",
     "otherWizard",
   ]),
   isOpen: PropTypes.bool.isRequired,
@@ -151,10 +154,13 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [blpuStartDate, setBlpuStartDate] = useState(null);
   const [lpiStatus, setLpiStatus] = useState(null);
   const [lpiPostTown, setLpiPostTown] = useState(null);
+  const [lpiSubLocality, setLpiSubLocality] = useState(null);
   const [lpiLevel, setLpiLevel] = useState(null);
   const [lpiOfficialAddress, setLpiOfficialAddress] = useState(null);
   const [lpiPostalAddress, setLpiPostalAddress] = useState(null);
   const [lpiStartDate, setLpiStartDate] = useState(null);
+  const [classScheme, setClassScheme] = useState(null);
+  const [classificationStartDate, setClassificationStartDate] = useState(null);
   const [otherCrossRefSource, setOtherCrossRefSource] = useState(null);
   const [otherProvenance, setOtherProvenance] = useState(null);
   const [otherProvenanceStartDate, setOtherProvenanceStartDate] = useState(null);
@@ -237,6 +243,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [lpiOfficialAddressError, setLpiOfficialAddressError] = useState(null);
   const [lpiPostalAddressError, setLpiPostalAddressError] = useState(null);
   const [lpiStartDateError, setLpiStartDateError] = useState(null);
+  const [classSchemeError, setClassSchemeError] = useState(null);
+  const [classificationStartDateError, setClassificationStartDateError] = useState(null);
   const [otherProvenanceError, setOtherProvenanceError] = useState(null);
   const [otherProvenanceStartDateError, setOtherProvenanceStartDateError] = useState(null);
   const [otherNoteError, setOtherNoteError] = useState(null);
@@ -266,7 +274,12 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         return { templateDescription: description };
 
       case "blpu":
-        return { blpuLogicalStatus: blpuStatus, rpc: blpuRpc, state: blpuState, classification: blpuClassification };
+        return {
+          blpuLogicalStatus: blpuStatus,
+          rpc: blpuRpc,
+          state: blpuState,
+          classification: blpuClassification,
+        };
 
       case "lpi":
         return {
@@ -278,7 +291,11 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         };
 
       case "other":
-        return { source: otherCrossRefSource, provCode: otherProvenance, note: otherNote };
+        return {
+          source: otherCrossRefSource,
+          provCode: otherProvenance,
+          note: otherNote,
+        };
 
       case "street":
         return {
@@ -293,7 +310,11 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         };
 
       case "esu":
-        return { esuDirection: esuDirection, esuState: esuState, esuClassification: esuClassification };
+        return {
+          esuDirection: esuDirection,
+          esuState: esuState,
+          esuClassification: esuClassification,
+        };
 
       case "owe":
         return { oweType: oweType, owePeriodicityCode: owePeriodicityCode };
@@ -380,28 +401,61 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         };
 
       case "blpuWizard":
-        return {
-          blpuLogicalStatus: blpuStatus,
-          rpc: blpuRpc,
-          state: blpuState,
-          stateDate: blpuStateDate,
-          classification: blpuClassification,
-          startDate: blpuStartDate,
-          errors: errors,
-        };
+        if (settingsContext.isScottish)
+          return {
+            blpuLogicalStatus: blpuStatus,
+            rpc: blpuRpc,
+            state: blpuState,
+            stateDate: blpuStateDate,
+            level: lpiLevel,
+            startDate: blpuStartDate,
+            errors: errors,
+          };
+        else
+          return {
+            blpuLogicalStatus: blpuStatus,
+            rpc: blpuRpc,
+            state: blpuState,
+            stateDate: blpuStateDate,
+            classification: blpuClassification,
+            startDate: blpuStartDate,
+            errors: errors,
+          };
 
       case "lpiWizard":
+        if (settingsContext.isScottish)
+          return {
+            lpiLogicalStatus: lpiStatus,
+            officialAddressMaker: lpiOfficialAddress,
+            postallyAddressable: lpiPostalAddress,
+            startDate: lpiStartDate,
+            errors: errors,
+          };
+        else
+          return {
+            lpiLogicalStatus: lpiStatus,
+            level: lpiLevel,
+            officialAddressMaker: lpiOfficialAddress,
+            postallyAddressable: lpiPostalAddress,
+            startDate: lpiStartDate,
+            errors: errors,
+          };
+
+      case "classificationWizard":
         return {
-          lpiLogicalStatus: lpiStatus,
-          level: lpiLevel,
-          officialAddressMaker: lpiOfficialAddress,
-          postallyAddressable: lpiPostalAddress,
-          startDate: lpiStartDate,
+          classification: blpuClassification,
+          classScheme: classScheme,
+          startDate: classificationStartDate,
           errors: errors,
         };
 
       case "otherWizard":
-        return { provCode: otherProvenance, provStartDate: otherProvenanceStartDate, note: otherNote, errors: errors };
+        return {
+          provCode: otherProvenance,
+          provStartDate: otherProvenanceStartDate,
+          note: otherNote,
+          errors: errors,
+        };
 
       default:
         return null;
@@ -510,7 +564,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleBlpuClassificationChangeEvent = (newValue) => {
     setBlpuClassification(newValue);
-    if (variant === "blpuWizard") {
+    if (variant === "blpuWizard" || variant === "classificationWizard") {
       updateErrors("classification");
       setBlpuClassificationError(null);
     }
@@ -552,13 +606,22 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   };
 
   /**
+   * Event to handle when the sub-locality is changed.
+   *
+   * @param {number} newValue The new sub-locality.
+   */
+  const handleLpiSubLocalityChangeEvent = (newValue) => {
+    setLpiSubLocality(newValue);
+  };
+
+  /**
    * Event to handle when the LPI level is changed.
    *
    * @param {number|string} newValue The new LPI level.
    */
   const handleLpiLevelChangeEvent = (newValue) => {
     setLpiLevel(newValue);
-    if (variant === "lpiWizard") {
+    if (variant === "lpiWizard" || variant === "blpuWizard") {
       updateErrors("level");
       setLpiLevelError(null);
     }
@@ -591,7 +654,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   };
 
   /**
-   * Event to handle when the LPU start date is changed.
+   * Event to handle when the LPI start date is changed.
    *
    * @param {Date} newValue The new LPI start date.
    */
@@ -600,6 +663,32 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
     if (variant === "lpiWizard") {
       updateErrors("lpiStartDate");
       setLpiStartDateError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the classification scheme is changed.
+   *
+   * @param {string} newValue The new classification scheme.
+   */
+  const handleClassificationSchemeChangeEvent = (newValue) => {
+    setClassScheme(newValue);
+    if (variant === "classificationWizard") {
+      updateErrors("classScheme");
+      setClassSchemeError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the classification start date is changed.
+   *
+   * @param {Date} newValue The new LPI start date.
+   */
+  const handleClassificationStartDateChangeEvent = (newValue) => {
+    setClassificationStartDate(newValue);
+    if (variant === "classificationWizard") {
+      updateErrors("classificationStartDate");
+      setClassificationStartDateError(null);
     }
   };
 
@@ -1273,6 +1362,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
 
       case "blpuWizard":
       case "lpiWizard":
+      case "classificationWizard":
       case "otherWizard":
         return `Edit ${templateType} details`;
 
@@ -1346,21 +1436,28 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               onChange={handleBlpuRpcChangeEvent}
               helperText="Representative Point Code."
             />
-            {!settingsContext.isScottish && (
-              <ADSSelectControl
-                label="State"
+            {settingsContext.isScottish && (
+              <ADSNumberControl
+                label="Level"
                 isEditable
-                useRounded
-                doNotSetTitleCase
-                lookupData={FilteredBLPUState(settingsContext.isScottish, blpuStatus ? blpuStatus : null)}
-                lookupId="id"
-                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-                lookupColour="colour"
-                value={blpuState}
-                onChange={handleBlpuStateChangeEvent}
-                helperText="A code identifying the current state of a BLPU."
+                value={lpiLevel}
+                helperText="Memorandum of the vertical position of the BLPU."
+                onChange={handleLpiLevelChangeEvent}
               />
             )}
+            <ADSSelectControl
+              label="State"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredBLPUState(settingsContext.isScottish, blpuStatus ? blpuStatus : null)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              value={blpuState}
+              onChange={handleBlpuStateChangeEvent}
+              helperText="A code identifying the current state of a BLPU."
+            />
             {!settingsContext.isScottish && (
               <ADSSelectControl
                 label="Classification"
@@ -1415,15 +1512,22 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               onChange={handleLpiPostTownChangeEvent}
               helperText="Allocated by the Royal Mail to assist in delivery of mail."
             />
-            {settingsContext.isScottish ? (
-              <ADSNumberControl
-                label="Level"
+            {settingsContext.isScottish && (
+              <ADSSelectControl
+                label="Sub-locality"
                 isEditable
-                value={lpiLevel}
-                helperText="Memorandum of the vertical position of the BLPU."
-                onChange={handleLpiLevelChangeEvent}
+                useRounded
+                lookupData={lookupContext.currentLookups.subLocalities.filter(
+                  (x) => x.language === "ENG" && !x.historic
+                )}
+                lookupId="subLocalityRef"
+                lookupLabel="subLocality"
+                value={lpiSubLocality}
+                onChange={handleLpiSubLocalityChangeEvent}
+                helperText="Third level of geographic area name. e.g. to record an island name or property group."
               />
-            ) : (
+            )}
+            {!settingsContext.isScottish && (
               <ADSTextControl
                 label="Level"
                 isEditable
@@ -1434,34 +1538,30 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 onChange={handleLpiLevelChangeEvent}
               />
             )}
-            {!settingsContext.isScottish && (
-              <ADSSelectControl
-                label="Official address"
-                isEditable
-                useRounded
-                doNotSetTitleCase
-                lookupData={OfficialAddress}
-                lookupId="id"
-                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-                value={lpiOfficialAddress}
-                onChange={handleLpiOfficialAddressChangeEvent}
-                helperText="Status of address."
-              />
-            )}
-            {!settingsContext.isScottish && (
-              <ADSSelectControl
-                label="Postal address"
-                isEditable
-                useRounded
-                doNotSetTitleCase
-                lookupData={PostallyAddressable}
-                lookupId="id"
-                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-                value={lpiPostalAddress}
-                onChange={handleLpiPostalAddressChangeEvent}
-                helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
-              />
-            )}
+            <ADSSelectControl
+              label="Official address"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={OfficialAddress}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              value={lpiOfficialAddress}
+              onChange={handleLpiOfficialAddressChangeEvent}
+              helperText="Status of address."
+            />
+            <ADSSelectControl
+              label="Postal address"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={PostallyAddressable}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              value={lpiPostalAddress}
+              onChange={handleLpiPostalAddressChangeEvent}
+              helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
+            />
           </Stack>
         );
 
@@ -2428,32 +2528,37 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               onChange={handleBlpuRpcChangeEvent}
               helperText="Representative Point Code."
             />
-            {!settingsContext.isScottish && (
-              <ADSSelectControl
-                label="State"
+            {settingsContext.isScottish && (
+              <ADSNumberControl
+                label="Level"
                 isEditable
-                useRounded
-                doNotSetTitleCase
-                lookupData={FilteredBLPUState(settingsContext.isScottish, blpuStatus ? blpuStatus : null)}
-                lookupId="id"
-                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-                lookupColour="colour"
-                value={blpuState}
-                errorText={blpuStateError}
-                onChange={handleBlpuStateChangeEvent}
-                helperText="A code identifying the current state of a BLPU."
+                value={lpiLevel}
+                helperText="Memorandum of the vertical position of the BLPU."
+                onChange={handleLpiLevelChangeEvent}
               />
             )}
-            {!settingsContext.isScottish && (
-              <ADSDateControl
-                label="State date"
-                isEditable
-                value={blpuStateDate}
-                errorText={blpuStateDateError}
-                onChange={handleBlpuStateDateChangeEvent}
-                helperText="Date at which the BLPU achieved its current state in the real-world."
-              />
-            )}
+            <ADSSelectControl
+              label="State"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredBLPUState(settingsContext.isScottish, blpuStatus ? blpuStatus : null)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              value={blpuState}
+              errorText={blpuStateError}
+              onChange={handleBlpuStateChangeEvent}
+              helperText="A code identifying the current state of a BLPU."
+            />
+            <ADSDateControl
+              label="State date"
+              isEditable
+              value={blpuStateDate}
+              errorText={blpuStateDateError}
+              onChange={handleBlpuStateDateChangeEvent}
+              helperText="Date at which the BLPU achieved its current state in the real-world."
+            />
             {!settingsContext.isScottish && (
               <ADSSelectControl
                 label="Classification"
@@ -2461,7 +2566,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 includeHiddenCode
                 useRounded
                 doNotSetTitleCase
-                lookupData={settingsContext.isScottish ? OSGClassification : BLPUClassification}
+                lookupData={BLPUClassification}
                 lookupId="id"
                 lookupLabel="display"
                 lookupColour="colour"
@@ -2499,16 +2604,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               onChange={handleLpiStatusChangeEvent}
               helperText="Logical status of this Record."
             />
-            {settingsContext.isScottish ? (
-              <ADSNumberControl
-                label="Level"
-                isEditable
-                value={lpiLevel}
-                errorText={lpiLevelError}
-                helperText="Memorandum of the vertical position of the BLPU."
-                onChange={handleLpiLevelChangeEvent}
-              />
-            ) : (
+            {settingsContext.isScottish && (
               <ADSTextControl
                 label="Level"
                 isEditable
@@ -2520,36 +2616,32 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 onChange={handleLpiLevelChangeEvent}
               />
             )}
-            {!settingsContext.isScottish && (
-              <ADSSelectControl
-                label="Official address"
-                isEditable
-                useRounded
-                doNotSetTitleCase
-                lookupData={OfficialAddress}
-                lookupId="id"
-                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-                value={lpiOfficialAddress}
-                errorText={lpiOfficialAddressError}
-                onChange={handleLpiOfficialAddressChangeEvent}
-                helperText="Status of address."
-              />
-            )}
-            {!settingsContext.isScottish && (
-              <ADSSelectControl
-                label="Postal address"
-                isEditable
-                useRounded
-                doNotSetTitleCase
-                lookupData={PostallyAddressable}
-                lookupId="id"
-                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-                value={lpiPostalAddress}
-                errorText={lpiPostalAddressError}
-                onChange={handleLpiPostalAddressChangeEvent}
-                helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
-              />
-            )}
+            <ADSSelectControl
+              label="Official address"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={OfficialAddress}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              value={lpiOfficialAddress}
+              errorText={lpiOfficialAddressError}
+              onChange={handleLpiOfficialAddressChangeEvent}
+              helperText="Status of address."
+            />
+            <ADSSelectControl
+              label="Postal address"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              lookupData={PostallyAddressable}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              value={lpiPostalAddress}
+              errorText={lpiPostalAddressError}
+              onChange={handleLpiPostalAddressChangeEvent}
+              helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
+            />
             <ADSDateControl
               label="Start date"
               isEditable
@@ -2557,6 +2649,45 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               helperText="Date this Record was created."
               errorText={lpiStartDateError}
               onChange={handleLpiStartDateChangeEvent}
+            />
+          </Stack>
+        );
+
+      case "classificationWizard":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Classification"
+              isEditable
+              includeHiddenCode
+              useRounded
+              doNotSetTitleCase
+              lookupData={OSGClassification}
+              lookupId="id"
+              lookupLabel="display"
+              lookupColour="colour"
+              value={blpuClassification}
+              errorText={blpuClassificationError}
+              onChange={handleBlpuClassificationChangeEvent}
+              helperText="Classification for the BLPU."
+            />
+            <ADSTextControl
+              label="Scheme"
+              isEditable
+              value={classScheme}
+              id={0}
+              maxLength={40}
+              errorText={classSchemeError}
+              helperText="The classification scheme used for this record."
+              onChange={handleClassificationSchemeChangeEvent}
+            />
+            <ADSDateControl
+              label="Start date"
+              isEditable
+              value={classificationStartDate}
+              helperText="Date on which this classification was defined."
+              errorText={classificationStartDateError}
+              onChange={handleClassificationStartDateChangeEvent}
             />
           </Stack>
         );
@@ -2647,14 +2778,22 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           setBlpuStatus(data.blpuLogicalStatus);
           setBlpuRpc(data.rpc);
           setBlpuState(data.state);
-          setBlpuClassification(data.classification);
+          if (settingsContext.isScottish) {
+            setLpiLevel(data.level);
+          } else {
+            setBlpuClassification(data.classification);
+          }
           break;
 
         case "lpi":
           setTemplateType("LPI");
           setLpiStatus(data.lpiLogicalStatus);
           setLpiPostTown(data.postTownRef);
-          setLpiLevel(data.level);
+          if (settingsContext.isScottish) {
+            setLpiSubLocality(data.subLocality);
+          } else {
+            setLpiLevel(data.level);
+          }
           setLpiOfficialAddress(data.officialAddressMaker);
           setLpiPostalAddress(data.postallyAddressable);
           break;
@@ -2801,18 +2940,33 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           setBlpuStatus(data.blpuLogicalStatus);
           setBlpuRpc(data.rpc);
           setBlpuState(data.state);
-          setBlpuStateDate(data.stateDate);
-          setBlpuClassification(data.classification);
+          setBlpuStateDate(data.state);
+          if (settingsContext.isScottish) {
+            setLpiLevel(data.level);
+          } else {
+            setBlpuClassification(data.classification);
+          }
           setBlpuStartDate(data.startDate);
           break;
 
         case "lpiWizard":
           setTemplateType("LPI");
           setLpiStatus(data.lpiLogicalStatus);
-          setLpiLevel(data.level);
+          if (settingsContext.isScottish) {
+            setLpiSubLocality(data.subLocality);
+          } else {
+            setLpiLevel(data.level);
+          }
           setLpiOfficialAddress(data.officialAddressMaker);
           setLpiPostalAddress(data.postallyAddressable);
           setLpiStartDate(data.startDate);
+          break;
+
+        case "classificationWizard":
+          setTemplateType("Classification");
+          setBlpuClassification(data.classification);
+          setClassScheme(data.classScheme);
+          setClassificationStartDate(data.startDate);
           break;
 
         case "otherWizard":
@@ -2827,7 +2981,11 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           break;
       }
 
-      if (["blpuWizard", "lpiWizard", "otherWizard"].includes(variant) && data.errors && data.errors.length > 0) {
+      if (
+        ["blpuWizard", "lpiWizard", "classificationWizard", "otherWizard"].includes(variant) &&
+        data.errors &&
+        data.errors.length > 0
+      ) {
         setErrors(data.errors);
         setBlpuStatusError(null);
         setBlpuRpcError(null);
@@ -2840,6 +2998,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         setLpiOfficialAddressError(null);
         setLpiPostalAddressError(null);
         setLpiStartDateError(null);
+        setClassSchemeError(null);
         setOtherProvenanceError(null);
         setOtherProvenanceStartDateError(null);
         setOtherNoteError(null);
@@ -2890,6 +3049,14 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               setLpiStartDateError(error.errors);
               break;
 
+            case "classscheme":
+              setClassScheme(error.errors);
+              break;
+
+            case "classificationstartdate":
+              setClassificationStartDateError(error.errors);
+              break;
+
             case "provenance":
               setOtherProvenanceError(error.errors);
               break;
@@ -2910,7 +3077,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
     }
 
     setShowDialog(isOpen);
-  }, [variant, data, isOpen, settingsContext.authorityCode]);
+  }, [variant, data, isOpen, settingsContext.authorityCode, settingsContext.isScottish]);
 
   return (
     <Dialog
@@ -2922,19 +3089,34 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
     >
       <DialogTitle
         id="edit-template-dialog"
-        sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
+        sx={{
+          borderBottomWidth: "1px",
+          borderBottomStyle: "solid",
+          borderBottomColor: adsBlueA,
+        }}
       >
         <Typography variant="h6">{getDialogTitle()}</Typography>
         <IconButton
           aria-label="close"
           onClick={handleCancelClick}
-          sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
+          sx={{
+            position: "absolute",
+            right: 12,
+            top: 12,
+            color: (theme) => theme.palette.grey[500],
+          }}
         >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
       <DialogContent sx={{ marginTop: theme.spacing(2) }}>{getDialogContent()}</DialogContent>
-      <DialogActions sx={{ justifyContent: "flex-start", mb: theme.spacing(1), ml: theme.spacing(3) }}>
+      <DialogActions
+        sx={{
+          justifyContent: "flex-start",
+          mb: theme.spacing(1),
+          ml: theme.spacing(3),
+        }}
+      >
         <Button onClick={handleDoneClick} autoFocus variant="contained" sx={blueButtonStyle} startIcon={<DoneIcon />}>
           Done
         </Button>

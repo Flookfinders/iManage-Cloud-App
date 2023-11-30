@@ -25,6 +25,8 @@
 //    012   22.09.23 Sean Flook                 Changes required to handle Scottish classifications.
 //    013   27.10.23 Sean Flook                 Changes required to handle Scottish data.
 //    014   24.11.23 Sean Flook                 Further changes required for Scottish authorities.
+//    015   24.11.23 Joel Benford               Add Scottish option for getting official/postal text.
+//    016   30.11.23 Sean Flook                 Use constant for default classification scheme.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -39,7 +41,7 @@ import {
   GetTempAddressUrl,
 } from "../configuration/ADSConfig";
 import BLPUClassification from "../data/BLPUClassification";
-import OSGClassification from "../data/OSGClassification";
+import OSGClassification, { OSGScheme } from "../data/OSGClassification";
 import LPILogicalStatus from "../data/LPILogicalStatus";
 import BLPUProvenance from "./../data/BLPUProvenance";
 import BLPULogicalStatus from "../data/BLPULogicalStatus";
@@ -329,6 +331,7 @@ export function addressToTitleCase(address, postcode) {
           })
           .replaceAll(" And ", " and ")
           .replaceAll(" The ", " the ")
+          .replaceAll(" Of ", " of ")
           .replaceAll(" To ", " to ") + (postcode && address.includes(postcode) ? postcode : "")
       );
   } else return null;
@@ -488,7 +491,7 @@ export function GetNewProperty(isWelsh, isScottish, authorityCode, usrn, parent,
           classKey: null,
           changeType: "I",
           uprn: 0,
-          classScheme: "Scottish Gazetteer Conventions",
+          classScheme: OSGScheme,
           blpuClass: "U",
           startDate: currentDate,
           endDate: null,
@@ -595,7 +598,7 @@ export function GetNewProperty(isWelsh, isScottish, authorityCode, usrn, parent,
           classKey: null,
           changeType: "I",
           uprn: 0,
-          classScheme: "Scottish Gazetteer Conventions",
+          classScheme: OSGScheme,
           blpuClass: "U",
           startDate: currentDate,
           endDate: null,
@@ -1700,7 +1703,10 @@ export async function SaveProperty(currentProperty, newProperty, userToken, prop
 
           default:
             const contentType = res.headers.get("content-type");
-            console.log("[SF] SaveProperty - Failed", { res: res, contentType: contentType });
+            console.log("[SF] SaveProperty - Failed", {
+              res: res,
+              contentType: contentType,
+            });
             if (contentType && contentType.indexOf("application/json") !== -1) {
               res.json().then((body) => {
                 console.log(`[${res.status} ERROR] ${newProperty ? "Creating" : "Updating"} property.`, body);
@@ -2198,26 +2204,32 @@ export const getLpiPostTown = (value, postTowns) => {
  * Method to get the official address description.
  *
  * @param {string} value The official address.
+ * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
  * @returns {string|null} The description to display for the official address.
  */
-export const getLpiOfficialAddress = (value) => {
+export const getLpiOfficialAddress = (value, isScottish) => {
   const rec = OfficialAddress.find((x) => x.id === value);
 
-  if (rec) return rec.gpText;
-  else return null;
+  if (rec) {
+    if (isScottish) return rec.osText;
+    else return rec.gpText;
+  } else return null;
 };
 
 /**
  * Method to get the postally addressable description.
  *
  * @param {number} value The postally addressable.
+ * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
  * @returns {string|null} The description to display for the postally addressable.
  */
-export const getLpiPostalAddress = (value) => {
+export const getLpiPostalAddress = (value, isScottish) => {
   const rec = PostallyAddressable.find((x) => x.id === value);
 
-  if (rec) return rec.gpText;
-  else return null;
+  if (rec) {
+    if (isScottish) return rec.osText;
+    else return rec.gpText;
+  } else return null;
 };
 
 /**

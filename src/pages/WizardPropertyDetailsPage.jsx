@@ -15,12 +15,13 @@
 //    002   22.09.23 Sean Flook                 Changes required to handle Scottish classifications.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    005   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 
 import SettingsContext from "../context/settingsContext";
@@ -63,6 +64,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
 
   const [blpuData, setBlpuData] = useState(null);
   const [lpiData, setLpiData] = useState(null);
+  const [classificationData, setClassificationData] = useState(null);
   const [otherData, setOtherData] = useState(null);
 
   const [blpuStatus, setBlpuStatus] = useState(null);
@@ -76,20 +78,25 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
   const [lpiOfficialAddress, setLpiOfficialAddress] = useState(null);
   const [lpiPostalAddress, setLpiPostalAddress] = useState(null);
   const [lpiStartDate, setLpiStartDate] = useState(null);
+  const [classificationScheme, setClassificationScheme] = useState(null);
+  const [classificationStartDate, setClassificationStartDate] = useState(null);
   const [otherProvenance, setOtherProvenance] = useState(null);
   const [otherProvenanceStartDate, setOtherProvenanceStartDate] = useState(null);
   const [otherNote, setOtherNote] = useState(null);
 
   const [editBlpu, setEditBlpu] = useState(false);
   const [editLpi, setEditLpi] = useState(false);
+  const [editClassification, setEditClassification] = useState(false);
   const [editOther, setEditOther] = useState(false);
 
   const [haveBlpuErrors, setHaveBlpuErrors] = useState(false);
   const [haveLpiErrors, setHaveLpiErrors] = useState(false);
+  const [haveClassificationErrors, setHaveClassificationErrors] = useState(false);
   const [haveOtherErrors, setHaveOtherErrors] = useState(false);
 
   const [blpuErrors, setBlpuErrors] = useState(null);
   const [lpiErrors, setLpiErrors] = useState(null);
+  const [classificationErrors, setClassificationErrors] = useState(null);
   const [otherErrors, setOtherErrors] = useState(null);
 
   const [blpuStatusError, setBlpuStatusError] = useState(false);
@@ -103,6 +110,8 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
   const [lpiOfficialAddressError, setLpiOfficialAddressError] = useState(false);
   const [lpiPostalAddressError, setLpiPostalAddressError] = useState(false);
   const [lpiStartDateError, setLpiStartDateError] = useState(false);
+  const [classificationSchemeError, setClassificationSchemeError] = useState(false);
+  const [classificationStartDateError, setClassificationStartDateError] = useState(false);
   const [otherProvenanceError, setOtherProvenanceError] = useState(false);
   const [otherProvenanceStartDateError, setOtherProvenanceStartDateError] = useState(false);
   const [otherNoteError, setOtherNoteError] = useState(false);
@@ -116,15 +125,27 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
    */
   const doEditBlpu = () => {
     setEditVariant("blpuWizard");
-    setEditData({
-      blpuLogicalStatus: blpuStatus,
-      rpc: blpuRpc,
-      state: blpuState,
-      stateDate: blpuStateDate,
-      classification: blpuClassification,
-      startDate: blpuStartDate,
-      errors: blpuErrors,
-    });
+    setEditData(
+      settingsContext.isScottish
+        ? {
+            blpuLogicalStatus: blpuStatus,
+            rpc: blpuRpc,
+            state: blpuState,
+            stateDate: blpuStateDate,
+            level: lpiLevel,
+            startDate: blpuStartDate,
+            errors: blpuErrors,
+          }
+        : {
+            blpuLogicalStatus: blpuStatus,
+            rpc: blpuRpc,
+            state: blpuState,
+            stateDate: blpuStateDate,
+            classification: blpuClassification,
+            startDate: blpuStartDate,
+            errors: blpuErrors,
+          }
+    );
     setShowEditDialog(true);
   };
 
@@ -140,6 +161,20 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
       postallyAddressable: lpiPostalAddress,
       startDate: lpiStartDate,
       errors: lpiErrors,
+    });
+    setShowEditDialog(true);
+  };
+
+  /**
+   * Event to handle when the classification data is selected to be edited.
+   */
+  const doEditClassification = () => {
+    setEditVariant("classificationWizard");
+    setEditData({
+      classification: blpuClassification,
+      classScheme: classificationScheme,
+      startDate: classificationStartDate,
+      errors: classificationErrors,
     });
     setShowEditDialog(true);
   };
@@ -169,36 +204,78 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
         case "blpuWizard":
           if (onDataChanged)
             onDataChanged({
-              blpu: {
-                logicalStatus: updatedData.blpuLogicalStatus,
-                rpc: updatedData.rpc,
-                state: updatedData.state,
-                stateDate: updatedData.stateDate,
-                classification: updatedData.classification,
-                startDate: updatedData.startDate,
-              },
+              blpu: settingsContext.isScottish
+                ? {
+                    logicalStatus: updatedData.blpuLogicalStatus,
+                    rpc: updatedData.rpc,
+                    level: updatedData.level,
+                    startDate: updatedData.startDate,
+                  }
+                : {
+                    logicalStatus: updatedData.blpuLogicalStatus,
+                    rpc: updatedData.rpc,
+                    state: updatedData.state,
+                    stateDate: updatedData.stateDate,
+                    classification: updatedData.classification,
+                    startDate: updatedData.startDate,
+                  },
               lpi: lpiData,
+              classification: classificationData,
               other: otherData,
             });
 
-          if (onErrorChanged) onErrorChanged({ blpu: updatedData.errors, lpi: lpiErrors, other: otherErrors });
+          if (onErrorChanged)
+            onErrorChanged({
+              blpu: updatedData.errors,
+              lpi: lpiErrors,
+              classification: classificationErrors,
+              other: otherErrors,
+            });
           break;
 
         case "lpiWizard":
           if (onDataChanged)
             onDataChanged({
               blpu: blpuData,
-              lpi: {
-                logicalStatus: updatedData.lpiLogicalStatus,
-                level: updatedData.level,
-                officialAddress: updatedData.officialAddressMaker,
-                postallyAddressable: updatedData.postallyAddressable,
+              lpi: settingsContext.isScottish
+                ? {
+                    logicalStatus: updatedData.lpiLogicalStatus,
+                    officialAddress: updatedData.officialAddressMaker,
+                    postallyAddressable: updatedData.postallyAddressable,
+                    startDate: updatedData.startDate,
+                  }
+                : {
+                    logicalStatus: updatedData.lpiLogicalStatus,
+                    level: updatedData.level,
+                    officialAddress: updatedData.officialAddressMaker,
+                    postallyAddressable: updatedData.postallyAddressable,
+                    startDate: updatedData.startDate,
+                  },
+              classification: classificationData,
+              other: otherData,
+            });
+          break;
+
+        case "classificationWizard":
+          if (onDataChanged)
+            onDataChanged({
+              blpu: blpuData,
+              lpi: lpiData,
+              classification: {
+                classification: updatedData.classification,
+                classScheme: updatedData.classScheme,
                 startDate: updatedData.startDate,
               },
               other: otherData,
             });
 
-          if (onErrorChanged) onErrorChanged({ blpu: blpuErrors, lpi: updatedData.errors, other: otherErrors });
+          if (onErrorChanged)
+            onErrorChanged({
+              blpu: blpuErrors,
+              lpi: lpiErrors,
+              classification: updatedData.errors,
+              other: otherErrors,
+            });
           break;
 
         case "otherWizard":
@@ -206,6 +283,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
             onDataChanged({
               blpu: blpuData,
               lpi: lpiData,
+              classification: classificationData,
               other: {
                 provCode: updatedData.provCode,
                 provStartDate: updatedData.provStartDate,
@@ -213,7 +291,13 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
               },
             });
 
-          if (onErrorChanged) onErrorChanged({ blpu: blpuErrors, lpi: lpiErrors, other: updatedData.errors });
+          if (onErrorChanged)
+            onErrorChanged({
+              blpu: blpuErrors,
+              lpi: lpiErrors,
+              classification: classificationErrors,
+              other: updatedData.errors,
+            });
           break;
 
         default:
@@ -259,6 +343,20 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
   };
 
   /**
+   * Event to handle when the mouse enters the classification card.
+   */
+  const doMouseEnterClassification = () => {
+    setEditClassification(true);
+  };
+
+  /**
+   * Event to handle when the mouse leaves the classification card.
+   */
+  const doMouseLeaveClassification = () => {
+    setEditClassification(false);
+  };
+
+  /**
    * Event to handle when the mouse enters the other card.
    */
   const doMouseEnterOther = () => {
@@ -300,6 +398,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
     if (errors) {
       setBlpuErrors(errors.blpu);
       setLpiErrors(errors.lpi);
+      setClassificationErrors(errors.classification);
       setOtherErrors(errors.other);
     }
   }, [errors]);
@@ -312,6 +411,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
     setBlpuStateError(false);
     setBlpuStateDateError(false);
     setBlpuClassificationError(false);
+    setLpiLevelError(false);
     setBlpuStartDateError(false);
 
     if (blpuErrors && blpuErrors.length > 0) {
@@ -339,6 +439,11 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
 
           case "classification":
             setBlpuClassificationError(true);
+            setHaveBlpuErrors(true);
+            break;
+
+          case "level":
+            setLpiLevelError(true);
             setHaveBlpuErrors(true);
             break;
 
@@ -399,6 +504,38 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
   }, [lpiErrors]);
 
   useEffect(() => {
+    setHaveClassificationErrors(false);
+
+    setBlpuClassificationError(false);
+    setClassificationSchemeError(false);
+    setClassificationStartDateError(false);
+
+    if (classificationErrors && classificationErrors.length > 0) {
+      for (const error of classificationErrors) {
+        switch (error.field.toLowerCase()) {
+          case "classification":
+            setBlpuClassificationError(true);
+            setHaveClassificationErrors(true);
+            break;
+
+          case "classscheme":
+            setClassificationSchemeError(true);
+            setHaveClassificationErrors(true);
+            break;
+
+          case "classificationstartdate":
+            setClassificationStartDateError(true);
+            setHaveClassificationErrors(true);
+            break;
+
+          default:
+            break;
+        }
+      }
+    }
+  }, [classificationErrors]);
+
+  useEffect(() => {
     setHaveOtherErrors(false);
 
     setOtherProvenanceError(false);
@@ -434,6 +571,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
     if (data) {
       setBlpuData(data.blpu);
       setLpiData(data.lpi);
+      setClassificationData(data.classification);
       setOtherData(data.other);
     }
   }, [data]);
@@ -444,20 +582,29 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
       setBlpuRpc(blpuData.rpc);
       setBlpuState(blpuData.state);
       setBlpuStateDate(blpuData.stateDate);
-      setBlpuClassification(blpuData.classification);
+      setBlpuClassification(settingsContext.isScottish ? null : blpuData.classification);
+      setLpiLevel(settingsContext.isScottish ? blpuData.level : null);
       setBlpuStartDate(blpuData.startDate);
     }
-  }, [blpuData]);
+  }, [blpuData, settingsContext.isScottish]);
 
   useEffect(() => {
     if (lpiData) {
       setLpiStatus(lpiData.logicalStatus);
-      setLpiLevel(lpiData.level);
+      setLpiLevel(settingsContext.isScottish ? null : lpiData.level);
       setLpiOfficialAddress(lpiData.officialAddress);
       setLpiPostalAddress(lpiData.postallyAddressable);
       setLpiStartDate(lpiData.startDate);
     }
-  }, [lpiData]);
+  }, [lpiData, settingsContext.isScottish]);
+
+  useEffect(() => {
+    if (classificationData) {
+      setBlpuClassification(classificationData.classification);
+      setClassificationScheme(classificationData.classScheme);
+      setClassificationStartDate(classificationData.startDate);
+    }
+  }, [classificationData]);
 
   useEffect(() => {
     if (otherData) {
@@ -540,17 +687,36 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                           {DateString(blpuStateDate)}
                         </Typography>
                       </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Classification</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
-                        {blpuClassificationError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={8}>
-                        <Typography variant="body2" sx={getWizardValueStyle(blpuClassificationError)}>
-                          {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
-                        </Typography>
-                      </Grid>
+                      {settingsContext.isScottish && (
+                        <Fragment>
+                          <Grid item xs={3}>
+                            <Typography variant="body2">Level</Typography>
+                          </Grid>
+                          <Grid item xs={1}>
+                            {lpiLevelError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                          </Grid>
+                          <Grid item xs={8}>
+                            <Typography variant="body2" sx={getWizardValueStyle(lpiLevelError)}>
+                              {lpiLevel}
+                            </Typography>
+                          </Grid>
+                        </Fragment>
+                      )}
+                      {!settingsContext.isScottish && (
+                        <Fragment>
+                          <Grid item xs={3}>
+                            <Typography variant="body2">Classification</Typography>
+                          </Grid>
+                          <Grid item xs={1}>
+                            {blpuClassificationError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                          </Grid>
+                          <Grid item xs={8}>
+                            <Typography variant="body2" sx={getWizardValueStyle(blpuClassificationError)}>
+                              {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
+                            </Typography>
+                          </Grid>
+                        </Fragment>
+                      )}
                       <Grid item xs={3}>
                         <Typography variant="body2">Start date</Typography>
                       </Grid>
@@ -603,17 +769,21 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                           {getLpiStatus(lpiStatus, settingsContext.isScottish)}
                         </Typography>
                       </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Level</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
-                        {lpiLevelError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={8}>
-                        <Typography variant="body2" sx={getWizardValueStyle(lpiLevelError)}>
-                          {lpiLevel}
-                        </Typography>
-                      </Grid>
+                      {!settingsContext.isScottish && (
+                        <Fragment>
+                          <Grid item xs={3}>
+                            <Typography variant="body2">Level</Typography>
+                          </Grid>
+                          <Grid item xs={1}>
+                            {lpiLevelError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                          </Grid>
+                          <Grid item xs={8}>
+                            <Typography variant="body2" sx={getWizardValueStyle(lpiLevelError)}>
+                              {lpiLevel}
+                            </Typography>
+                          </Grid>
+                        </Fragment>
+                      )}
                       <Grid item xs={3}>
                         <Typography variant="body2">Official address</Typography>
                       </Grid>
@@ -653,6 +823,71 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
               </CardActionArea>
             </Card>
           </Grid>
+          {settingsContext.isScottish && (
+            <Grid item xs={6}>
+              <Card
+                variant="outlined"
+                onMouseEnter={doMouseEnterClassification}
+                onMouseLeave={doMouseLeaveClassification}
+                raised={editClassification}
+                sx={settingsCardStyle(editClassification, haveClassificationErrors)}
+              >
+                <CardActionArea onClick={doEditClassification}>
+                  <CardContent sx={settingsCardContentStyle("wizard")}>
+                    <Stack direction="column" spacing={1}>
+                      <Stack direction="row" justifyContent="space-between">
+                        <Typography variant="h6" sx={getTitleStyle(editClassification, haveClassificationErrors)}>
+                          Classification
+                        </Typography>
+                        {editClassification && (
+                          <Tooltip title="Edit classification details" placement="bottom" sx={tooltipStyle}>
+                            <IconButton onClick={doEditClassification} size="small">
+                              <EditIcon sx={ActionIconStyle(true)} />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </Stack>
+                      <Grid container rowSpacing={1}>
+                        <Grid item xs={3}>
+                          <Typography variant="body2">Classification</Typography>
+                        </Grid>
+                        <Grid item xs={1}>
+                          {blpuClassificationError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                        </Grid>
+                        <Grid item xs={8}>
+                          <Typography variant="body2" sx={getWizardValueStyle(blpuClassificationError)}>
+                            {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={3}>
+                          <Typography variant="body2">Scheme</Typography>
+                        </Grid>
+                        <Grid item xs={1}>
+                          {classificationSchemeError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                        </Grid>
+                        <Grid item xs={8}>
+                          <Typography variant="body2" sx={getWizardValueStyle(classificationSchemeError)}>
+                            {classificationScheme}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={3}>
+                          <Typography variant="body2">Start date</Typography>
+                        </Grid>
+                        <Grid item xs={1}>
+                          {classificationStartDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                        </Grid>
+                        <Grid item xs={8}>
+                          <Typography variant="body2" sx={getWizardValueStyle(classificationStartDateError)}>
+                            {DateString(classificationStartDate)}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </Stack>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+          )}
           <Grid item xs={6}>
             <Card
               variant="outlined"

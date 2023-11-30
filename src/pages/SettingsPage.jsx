@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   03.11.23 Sean Flook                 Updated TreeView and TreeItem.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    005   30.11.23 Sean Flook                 Hide items that have not been developed yet.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -216,28 +217,32 @@ function SettingsPage() {
                       }
                       sx={TreeItemStyle(selectedNode === "2.5")}
                     />
-                    <TreeItem
-                      nodeId="2.6"
-                      label={
-                        <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
-                          Bookmarks
-                        </Typography>
-                      }
-                      sx={TreeItemStyle(selectedNode === "2.6")}
-                    />
+                    {process.env.NODE_ENV === "development" && (
+                      <TreeItem
+                        nodeId="2.6"
+                        label={
+                          <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
+                            Bookmarks
+                          </Typography>
+                        }
+                        sx={TreeItemStyle(selectedNode === "2.6")}
+                      />
+                    )}
                   </TreeItem>
-                  <TreeItem
-                    nodeId="3.0"
-                    label={
-                      <Stack direction="row" spacing={1}>
-                        <PeopleOutlineIcon sx={{ color: "inherit" }} />
-                        <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
-                          Users and permissions
-                        </Typography>
-                      </Stack>
-                    }
-                    sx={TreeItemStyle(selectedNode === "3.0")}
-                  />
+                  {process.env.NODE_ENV === "development" && (
+                    <TreeItem
+                      nodeId="3.0"
+                      label={
+                        <Stack direction="row" spacing={1}>
+                          <PeopleOutlineIcon sx={{ color: "inherit" }} />
+                          <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
+                            Users and permissions
+                          </Typography>
+                        </Stack>
+                      }
+                      sx={TreeItemStyle(selectedNode === "3.0")}
+                    />
+                  )}
                 </TreeView>
               </Box>
             </Grid>

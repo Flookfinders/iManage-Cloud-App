@@ -22,6 +22,7 @@
 //    009   03.11.23 Sean Flook       IMANN-175 Added mapSelectSearchString and modified StringAvatar.
 //    010   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    011   24.11.23 Sean Flook                 Moved Stack to @mui/system and ignore connecting words in TitleCase.
+//    012   30.11.23 Sean Flook                 added ' of ' to the ignore list in TitleCase.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -587,6 +588,7 @@ export function lookupToTitleCase(option, doNotSetTitleCase) {
       .replace("Lo_asd", "LO_ASD")
       .replaceAll(" And ", " and ")
       .replaceAll(" The ", " the ")
+      .replaceAll(" Of ", " of ")
       .replaceAll(" To ", " to ");
   else
     return option
@@ -602,6 +604,7 @@ export function lookupToTitleCase(option, doNotSetTitleCase) {
       .replace("Lo_asd", "LO_ASD")
       .replaceAll(" And ", " and ")
       .replaceAll(" The ", " the ")
+      .replaceAll(" Of ", " of ")
       .replaceAll(" To ", " to ");
 }
 

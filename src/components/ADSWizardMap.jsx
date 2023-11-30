@@ -17,6 +17,7 @@
 //    004   06.10.23 Sean Flook                 Use colour variables.
 //    005   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
 //    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    007   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1003,9 +1004,15 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
                   Easting: Number(pointData[0].easting ? pointData[0].easting : initialMidX),
                   Northing: Number(pointData[0].northing ? pointData[0].northing : initialMidY),
                   LogicalStatus: pointData[0].blpu.logicalStatus,
-                  Classification: pointData[0].blpu.classification,
+                  Classification: settingsContext.isScottish
+                    ? pointData[0].classification.classification
+                    : pointData[0].blpu.classification,
                   MapLabel: isRange ? `${pointData.length} BLPU${pointData.length > 1 ? "s" : ""}` : "1 BLPU",
-                  SymbolCode: `${pointData[0].blpu.logicalStatus}, ${pointData[0].blpu.classification.substring(0, 1)}`,
+                  SymbolCode: `${pointData[0].blpu.logicalStatus}, ${
+                    settingsContext.isScottish
+                      ? pointData[0].classification.classification.substring(0, 1)
+                      : pointData[0].blpu.classification.substring(0, 1)
+                  }`,
                 },
               },
             ]
@@ -1022,9 +1029,15 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
                 Easting: Number(rec.easting ? rec.easting : initialMidX),
                 Northing: Number(rec.northing ? rec.northing : initialMidY),
                 LogicalStatus: rec.blpu.logicalStatus,
-                Classification: rec.blpu.classification,
+                Classification: settingsContext.isScottish
+                  ? rec.classification.classification
+                  : rec.blpu.classification,
                 MapLabel: getMapLabel(rec),
-                SymbolCode: `${rec.blpu.logicalStatus}, ${rec.blpu.classification.substring(0, 1)}`,
+                SymbolCode: `${rec.blpu.logicalStatus}, ${
+                  settingsContext.isScottish
+                    ? rec.classification.classification.substring(0, 1)
+                    : rec.blpu.classification.substring(0, 1)
+                }`,
               },
             }));
 
@@ -1125,7 +1138,9 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
               pointY,
               data[0].id,
               data[0].blpu.logicalStatus,
-              data[0].blpu.classification.substring(0, 1),
+              settingsContext.isScottish
+                ? data[0].classification.classification.substring(0, 1)
+                : data[0].blpu.classification.substring(0, 1),
               false
             )
           );
@@ -1144,7 +1159,9 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
                   pointY,
                   property.id,
                   property.blpu.logicalStatus,
-                  property.blpu.classification.substring(0, 1),
+                  settingsContext.isScottish
+                    ? property.classification.classification.substring(0, 1)
+                    : property.blpu.classification.substring(0, 1),
                   false
                 )
               );
@@ -1153,7 +1170,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
 
       editGraphicsLayer.current.listMode = "show";
     } else editGraphicsLayer.current.listMode = "hide";
-  }, [data, placeStyle, isRange, view]);
+  }, [data, placeStyle, isRange, view, settingsContext.isScottish]);
 
   // Layer list tool
   useEffect(() => {

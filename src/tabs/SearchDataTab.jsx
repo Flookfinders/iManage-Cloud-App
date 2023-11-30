@@ -32,6 +32,7 @@
 //    018   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs, and improve some functions.
 //    019   20.11.23 Sean Flook                 Undone above change.
 //    020   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
+//    021   29.11.23 Sean Flook       IMANN-163 Do not clear the street or property contexts if viewing ranges.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -388,9 +389,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
     } else propertyContext.onWizardDone(wizardData, false, null, "search");
 
     sandboxContext.resetSandbox();
-    streetContext.resetStreet();
+    if (wizardData.type !== "view" && wizardData.variant !== "range") streetContext.resetStreet();
     streetContext.resetStreetErrors();
-    propertyContext.resetProperty();
+    if (wizardData.type !== "view" && wizardData.variant !== "rangeChildren") propertyContext.resetProperty();
     propertyContext.resetPropertyErrors();
     mapContext.onEditMapObject(null, null);
   };
@@ -1140,7 +1141,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
 
           switch (propertyContext.wizardData.type) {
             case "view":
-              const rangeEngLpis = propertyContext.wizardData.savedProperty[0].lpis.filter((x) => x.language === "ENG");
+              const rangeEngLpis = ["range", "rangeChildren"].includes(propertyContext.wizardData.variant)
+                ? propertyContext.wizardData.savedProperty[0].lpis.filter((x) => x.language === "ENG")
+                : null;
               switch (propertyContext.wizardData.variant) {
                 case "range":
                   doOpenRecord(
@@ -1148,7 +1151,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                       type: 15,
                       usrn: rangeEngLpis[0].usrn,
                     },
-                    rangeEngLpis[0].uprn,
+                    savedUprn,
                     searchContext.currentSearchData.results,
                     mapContext,
                     streetContext,

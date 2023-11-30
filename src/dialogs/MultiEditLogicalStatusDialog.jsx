@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   17.10.23 Sean Flook       IMANN-175 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
+//    003   30.11.23 Sean Flook                 Removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -190,10 +191,10 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
   const dataValid = () => {
     const validationData = {
       logicalStatus: variant === "historic" ? 8 : 1,
-      blpuState: !settingsContext.isScottish ? state : null,
+      blpuState: state,
       rpc: rpc,
-      officialFlag: !settingsContext.isScottish ? officialFlag : null,
-      postalAddress: !settingsContext.isScottish ? postalAddress : null,
+      officialFlag: officialFlag,
+      postalAddress: postalAddress,
       postTownRef: postTown,
       postcodeRef: postcode,
     };

@@ -17,6 +17,7 @@
 //    004   03.11.23 Sean Flook                 Updated propTypes.
 //    005   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
 //    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    007   30.11.23 Sean Flook                 Added sub-locality.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -50,7 +51,7 @@ import { useTheme } from "@mui/styles";
 
 WizardActionDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  variant: PropTypes.oneOf(["classification", "level", "postcode", "postTown", "note", "rpc"]),
+  variant: PropTypes.oneOf(["classification", "level", "postcode", "postTown", "subLocality", "note", "rpc"]),
   data: PropTypes.any,
   recordCount: PropTypes.number,
   onClose: PropTypes.func.isRequired,
@@ -112,17 +113,33 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
       else setActionData({ eng: actionData.eng, alt: newValue });
     };
 
+    const handleEngSubLocalityChanged = (newValue) => {
+      const selectedRecord = lookupContext.currentLookups.subLocalities.find((x) => x.subLocalityRef === newValue);
+      if (selectedRecord && selectedRecord.linkedRef !== newValue)
+        setActionData({ eng: newValue, alt: selectedRecord.linkedRef });
+      else setActionData({ eng: newValue, alt: actionData.alt });
+    };
+
+    const handleAltSubLocalityChanged = (newValue) => {
+      const selectedRecord = lookupContext.currentLookups.subLocalities.find((x) => x.subLocalityRef === newValue);
+      if (selectedRecord && selectedRecord.linkedRef !== newValue)
+        setActionData({ eng: selectedRecord.linkedRef, alt: newValue });
+      else setActionData({ eng: actionData.eng, alt: newValue });
+    };
+
+    const getEditTitle = (type) => {
+      return `Edit ${type} for ${
+        recordCount && recordCount > 1 ? recordCount.toString() + " " : ""
+      }property ${recordText}`;
+    };
+
     const recordText = recordCount && recordCount > 1 ? "records" : "record";
 
     if (!variant) return;
 
     switch (variant) {
       case "classification":
-        setTitle(
-          `Edit classification for ${
-            recordCount && recordCount > 1 ? recordCount.toString() + " " : ""
-          }property ${recordText}`
-        );
+        setTitle(getEditTitle("classification"));
         setContent(
           <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
             <ADSSelectControl
@@ -146,9 +163,7 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
         break;
 
       case "level":
-        setTitle(
-          `Edit level for ${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}property ${recordText}`
-        );
+        setTitle(getEditTitle("level"));
         setContent(
           <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
             {settingsContext.isScottish ? (
@@ -177,11 +192,7 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
         break;
 
       case "postcode":
-        setTitle(
-          `Edit postcode for ${
-            recordCount && recordCount > 1 ? recordCount.toString() + " " : ""
-          }property ${recordText}`
-        );
+        setTitle(getEditTitle("postcode"));
         setContent(
           <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
             <ADSSelectControl
@@ -202,11 +213,7 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
         break;
 
       case "postTown":
-        setTitle(
-          `Edit post town for ${
-            recordCount && recordCount > 1 ? recordCount.toString() + " " : ""
-          }property ${recordText}`
-        );
+        setTitle(getEditTitle("post town"));
         setContent(
           <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
             <ADSSelectControl
@@ -251,6 +258,37 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
         );
         break;
 
+      case "subLocality":
+        setTitle(getEditTitle("sub-locality"));
+        setContent(
+          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+            <ADSSelectControl
+              label={"English sub-locality"}
+              isEditable
+              isFocused
+              useRounded
+              lookupData={lookupContext.currentLookups.subLocalities.filter((x) => x.language === "ENG")}
+              lookupId="subLocalityRef"
+              lookupLabel="subLocality"
+              value={actionData ? actionData.eng : null}
+              onChange={handleEngSubLocalityChanged}
+              helperText="Third level of geographic area name. e.g. to record an island name or property group."
+            />
+            <ADSSelectControl
+              label="Gaelic sub-locality"
+              isEditable
+              useRounded
+              lookupData={lookupContext.currentLookups.subLocalities.filter((x) => x.language === "GAE")}
+              lookupId="subLocalityRef"
+              lookupLabel="subLocality"
+              value={actionData ? actionData.alt : null}
+              onChange={handleAltSubLocalityChanged}
+              helperText="Third level of geographic area name. e.g. to record an island name or property group."
+            />
+          </Box>
+        );
+        break;
+
       case "note":
         setTitle(
           `Add note for ${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}property ${recordText}`
@@ -271,11 +309,7 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
         break;
 
       case "rpc":
-        setTitle(
-          `Edit representative point code for ${
-            recordCount && recordCount > 1 ? recordCount.toString() + " " : ""
-          }property ${recordText}`
-        );
+        setTitle(getEditTitle("representative point code"));
         setContent(
           <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
             <ADSSelectControl

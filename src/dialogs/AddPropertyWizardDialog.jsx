@@ -23,6 +23,7 @@
 //    010   03.11.23 Sean Flook                 Added Message dialog for confirmation of cancelling the wizard.
 //    011   10.11.23 Sean Flook                 Updated action string.
 //    012   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    013   30.11.23 Sean Flook                 Changes required for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -69,6 +70,8 @@ import { GetPropertyFromUPRNUrl } from "../configuration/ADSConfig";
 import { stringToSentenceCase } from "../utils/HelperUtils";
 import { streetDescriptorToTitleCase } from "../utils/StreetUtils";
 import { ValidateAddressDetails, ValidateCrossReference, ValidatePropertyDetails } from "../utils/WizardValidation";
+
+import { OSGScheme } from "../data/OSGClassification";
 
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -117,6 +120,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
   const [altLangRangeAddressData, setAltLangRangeAddressData] = useState(null);
   const [blpuData, setBlpuData] = useState(null);
   const [lpiData, setLpiData] = useState(null);
+  const [classificationData, setClassificationData] = useState(null);
   const [otherData, setOtherData] = useState(null);
   const [crossReferenceData, setCrossReferenceData] = useState([]);
   const [addressPoints, setAddressPoints] = useState(null);
@@ -212,6 +216,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
 
       for (const address of addressPoints.filter((x) => x.language === "ENG")) {
         const newCrossRefs = [];
+        const newClassifications = [];
         const newProvenances = [];
         const newNotes = [];
         const newLpis = [];
@@ -221,52 +226,102 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
         const engPostTownRecord = lookupContext.currentLookups.postTowns.find(
           (x) => x.postTownRef === address.addressDetails.postTownRef
         );
+        const subLocalityRecord = settingsContext.isScottish
+          ? lookupContext.currentLookups.subLocalities.find(
+              (x) => x.subLocalityRef === address.addressDetails.subLocalityRef
+            )
+          : null;
         const postcodeRecord = lookupContext.currentLookups.postcodes.find(
           (x) => x.postcodeRef === address.addressDetails.postcodeRef
         );
 
-        newLpis.push({
-          pkId: lpiPkId--,
-          changeType: "I",
-          language: "ENG",
-          startDate: address.lpi.startDate,
-          endDate: null,
-          saoStartNumber:
-            address.addressDetails.saoStartNumber && Number(address.addressDetails.saoStartNumber) > 0
-              ? address.addressDetails.saoStartNumber
-              : null,
-          saoStartSuffix: address.addressDetails.saoStartSuffix,
-          saoEndNumber:
-            address.addressDetails.saoEndNumber && Number(address.addressDetails.saoEndNumber) > 0
-              ? address.addressDetails.saoEndNumber
-              : null,
-          saoEndSuffix: address.addressDetails.saoEndSuffix,
-          saoText: address.addressDetails.saoText,
-          paoStartNumber:
-            address.addressDetails.paoStartNumber && Number(address.addressDetails.paoStartNumber) > 0
-              ? address.addressDetails.paoStartNumber
-              : null,
-          paoStartSuffix: address.addressDetails.paoStartSuffix,
-          paoEndNumber:
-            address.addressDetails.paoEndNumber && Number(address.addressDetails.paoEndNumber) > 0
-              ? address.addressDetails.paoEndNumber
-              : null,
-          paoEndSuffix: address.addressDetails.paoEndSuffix,
-          paoText: address.addressDetails.paoText,
-          usrn: address.addressDetails.usrn,
-          postcodeRef: address.addressDetails.postcodeRef,
-          postTownRef: address.addressDetails.postTownRef,
-          neverExport: false,
-          address: address.addressDetails.address,
-          postTown: engPostTownRecord ? engPostTownRecord.postTown : null,
-          postcode: postcodeRecord ? postcodeRecord.postcode : null,
-          uprn: 0,
-          logicalStatus: address.lpi.logicalStatus,
-          level: address.lpi.level,
-          postalAddress: address.lpi.postallyAddressable,
-          officialFlag: address.lpi.officialAddress,
-          dualLanguageLink: settingsContext.isWelsh ? dualLanguageLink : 0,
-        });
+        if (settingsContext.isScottish)
+          newLpis.push({
+            pkId: lpiPkId--,
+            changeType: "I",
+            language: "ENG",
+            startDate: address.lpi.startDate,
+            endDate: null,
+            saoStartNumber:
+              address.addressDetails.saoStartNumber && Number(address.addressDetails.saoStartNumber) > 0
+                ? address.addressDetails.saoStartNumber
+                : null,
+            saoStartSuffix: address.addressDetails.saoStartSuffix,
+            saoEndNumber:
+              address.addressDetails.saoEndNumber && Number(address.addressDetails.saoEndNumber) > 0
+                ? address.addressDetails.saoEndNumber
+                : null,
+            saoEndSuffix: address.addressDetails.saoEndSuffix,
+            saoText: address.addressDetails.saoText,
+            paoStartNumber:
+              address.addressDetails.paoStartNumber && Number(address.addressDetails.paoStartNumber) > 0
+                ? address.addressDetails.paoStartNumber
+                : null,
+            paoStartSuffix: address.addressDetails.paoStartSuffix,
+            paoEndNumber:
+              address.addressDetails.paoEndNumber && Number(address.addressDetails.paoEndNumber) > 0
+                ? address.addressDetails.paoEndNumber
+                : null,
+            paoEndSuffix: address.addressDetails.paoEndSuffix,
+            paoText: address.addressDetails.paoText,
+            usrn: address.addressDetails.usrn,
+            postcodeRef: address.addressDetails.postcodeRef,
+            postTownRef: address.addressDetails.postTownRef,
+            subLocalityRef: address.addressDetails.subLocalityRef,
+            neverExport: false,
+            address: address.addressDetails.address,
+            postTown: engPostTownRecord ? engPostTownRecord.postTown : null,
+            subLocality: subLocalityRecord ? subLocalityRecord.subLocality : null,
+            postcode: postcodeRecord ? postcodeRecord.postcode : null,
+            uprn: 0,
+            logicalStatus: address.lpi.logicalStatus,
+            postalAddress: address.lpi.postallyAddressable,
+            officialFlag: address.lpi.officialAddress,
+            dualLanguageLink: 0,
+          });
+        else
+          newLpis.push({
+            pkId: lpiPkId--,
+            changeType: "I",
+            language: "ENG",
+            startDate: address.lpi.startDate,
+            endDate: null,
+            saoStartNumber:
+              address.addressDetails.saoStartNumber && Number(address.addressDetails.saoStartNumber) > 0
+                ? address.addressDetails.saoStartNumber
+                : null,
+            saoStartSuffix: address.addressDetails.saoStartSuffix,
+            saoEndNumber:
+              address.addressDetails.saoEndNumber && Number(address.addressDetails.saoEndNumber) > 0
+                ? address.addressDetails.saoEndNumber
+                : null,
+            saoEndSuffix: address.addressDetails.saoEndSuffix,
+            saoText: address.addressDetails.saoText,
+            paoStartNumber:
+              address.addressDetails.paoStartNumber && Number(address.addressDetails.paoStartNumber) > 0
+                ? address.addressDetails.paoStartNumber
+                : null,
+            paoStartSuffix: address.addressDetails.paoStartSuffix,
+            paoEndNumber:
+              address.addressDetails.paoEndNumber && Number(address.addressDetails.paoEndNumber) > 0
+                ? address.addressDetails.paoEndNumber
+                : null,
+            paoEndSuffix: address.addressDetails.paoEndSuffix,
+            paoText: address.addressDetails.paoText,
+            usrn: address.addressDetails.usrn,
+            postcodeRef: address.addressDetails.postcodeRef,
+            postTownRef: address.addressDetails.postTownRef,
+            neverExport: false,
+            address: address.addressDetails.address,
+            postTown: engPostTownRecord ? engPostTownRecord.postTown : null,
+            postcode: postcodeRecord ? postcodeRecord.postcode : null,
+            uprn: 0,
+            logicalStatus: address.lpi.logicalStatus,
+            level: settingsContext.isScottish ? address.blpu.level : address.lpi.level,
+            postalAddress: address.lpi.postallyAddressable,
+            officialFlag: address.lpi.officialAddress,
+            dualLanguageLink: settingsContext.isWelsh ? dualLanguageLink : 0,
+          });
 
         if (settingsContext.isWelsh) {
           const cymPostTownRecord = lookupContext.currentLookups.postTowns.find(
@@ -335,6 +390,18 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
           }
         }
 
+        if (settingsContext.isScottish && address.classification) {
+          newClassifications.push({
+            changeType: "I",
+            uprn: 0,
+            classScheme: address.classification.classScheme,
+            blpuClass: address.classification.classification,
+            startDate: address.classification.startDate,
+            endDate: null,
+            neverExport: false,
+          });
+        }
+
         if (address.other) {
           if (address.other.provCode)
             newProvenances.push({
@@ -368,33 +435,62 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
           }
         }
 
-        newProperties.push({
-          pkId: blpuPkId,
-          changeType: "I",
-          blpuStateDate: address.blpu.stateDate,
-          xcoordinate: Number(address.easting),
-          ycoordinate: Number(address.northing),
-          rpc: address.blpu.rpc,
-          startDate: address.blpu.startDate,
-          endDate: null,
-          parentUprn: address.parentUprn,
-          neverExport: false,
-          siteSurvey: false,
-          uprn: 0,
-          logicalStatus: address.blpu.logicalStatus,
-          blpuState: address.blpu.state,
-          blpuClass: address.blpu.classification,
-          localCustodianCode: settingsContext.authorityCode,
-          organisation: null,
-          wardCode: null,
-          parishCode: null,
-          relatedPropertyCount: 0,
-          relatedStreetCount: 0,
-          blpuAppCrossRefs: newCrossRefs,
-          blpuProvenances: newProvenances,
-          blpuNotes: newNotes,
-          lpis: newLpis,
-        });
+        if (settingsContext.isScottish)
+          newProperties.push({
+            pkId: blpuPkId,
+            changeType: "I",
+            blpuStateDate: address.blpu.stateDate,
+            xcoordinate: Number(address.easting),
+            ycoordinate: Number(address.northing),
+            rpc: address.blpu.rpc,
+            startDate: address.blpu.startDate,
+            endDate: null,
+            parentUprn: address.parentUprn,
+            neverExport: false,
+            siteSurvey: false,
+            uprn: 0,
+            logicalStatus: address.blpu.logicalStatus,
+            blpuState: address.blpu.state,
+            level: address.blpu.level,
+            localCustodianCode: settingsContext.authorityCode,
+            relatedPropertyCount: 0,
+            relatedStreetCount: 0,
+            blpuAppCrossRefs: newCrossRefs,
+            blpuProvenances: newProvenances,
+            blpuNotes: newNotes,
+            classifications: newClassifications,
+            organisations: [],
+            successorCrossRefs: [],
+            lpis: newLpis,
+          });
+        else
+          newProperties.push({
+            pkId: blpuPkId,
+            changeType: "I",
+            blpuStateDate: address.blpu.stateDate,
+            xcoordinate: Number(address.easting),
+            ycoordinate: Number(address.northing),
+            rpc: address.blpu.rpc,
+            startDate: address.blpu.startDate,
+            endDate: null,
+            parentUprn: address.parentUprn,
+            neverExport: false,
+            siteSurvey: false,
+            uprn: 0,
+            logicalStatus: address.blpu.logicalStatus,
+            blpuState: address.blpu.state,
+            blpuClass: address.blpu.classification,
+            localCustodianCode: settingsContext.authorityCode,
+            organisation: null,
+            wardCode: null,
+            parishCode: null,
+            relatedPropertyCount: 0,
+            relatedStreetCount: 0,
+            blpuAppCrossRefs: newCrossRefs,
+            blpuProvenances: newProvenances,
+            blpuNotes: newNotes,
+            lpis: newLpis,
+          });
 
         newErrorIds.push({ pkId: blpuPkId--, addressId: address.id });
       }
@@ -1106,6 +1202,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
     const propertyDetailErrors = ValidatePropertyDetails(
       blpuData,
       lpiData,
+      classificationData,
       otherData,
       lookupContext.currentLookups,
       settingsContext.isScottish,
@@ -1116,6 +1213,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
     const havePropertyErrors =
       propertyDetailErrors.blpu.length > 0 ||
       propertyDetailErrors.lpi.length > 0 ||
+      propertyDetailErrors.classification.length > 0 ||
       propertyDetailErrors.other.length > 0;
 
     setHaveErrors(havePropertyErrors);
@@ -1252,14 +1350,23 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
         if (addressDetailsValid()) {
           if (selectedTemplate.current) {
             if (!blpuData)
-              setBlpuData({
-                logicalStatus: selectedTemplate.current.blpuLogicalStatus,
-                rpc: selectedTemplate.current.rpc,
-                state: selectedTemplate.current.state,
-                stateDate: selectedTemplate.current.state ? new Date() : null,
-                classification: selectedTemplate.current.classification,
-                startDate: new Date(),
-              });
+              setBlpuData(
+                settingsContext.isScottish
+                  ? {
+                      logicalStatus: selectedTemplate.current.blpuLogicalStatus,
+                      rpc: selectedTemplate.current.rpc,
+                      level: selectedTemplate.current.level,
+                      startDate: new Date(),
+                    }
+                  : {
+                      logicalStatus: selectedTemplate.current.blpuLogicalStatus,
+                      rpc: selectedTemplate.current.rpc,
+                      state: selectedTemplate.current.state,
+                      stateDate: selectedTemplate.current.state ? new Date() : null,
+                      classification: selectedTemplate.current.classification,
+                      startDate: new Date(),
+                    }
+              );
 
             if (!lpiData)
               setLpiData({
@@ -1269,6 +1376,19 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                 postallyAddressable: selectedTemplate.current.postallyAddressable,
                 startDate: new Date(),
               });
+
+            if (!classificationData)
+              setClassificationData(
+                settingsContext.isScottish
+                  ? {
+                      classification: selectedTemplate.current.classification,
+                      classificationScheme: selectedTemplate.current.classScheme
+                        ? selectedTemplate.current.classScheme
+                        : OSGScheme,
+                      startDate: new Date(),
+                    }
+                  : null
+              );
 
             if (!otherData)
               setOtherData({
@@ -1319,6 +1439,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                         },
                         blpu: blpuData,
                         lpi: lpiData,
+                        classification: classificationData,
                         other: otherData,
                         parentUprn: null,
                         easting: null,
@@ -1361,6 +1482,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                         },
                         blpu: blpuData,
                         lpi: lpiData,
+                        classification: classificationData,
                         other: otherData,
                         parentUprn: parent.uprn,
                         easting: parent.easting,
@@ -1415,6 +1537,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                       },
                       blpu: blpuData,
                       lpi: lpiData,
+                      classification: classificationData,
                       other: otherData,
                       parentUprn: null,
                       easting: null,
@@ -1460,6 +1583,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                       },
                       blpu: blpuData,
                       lpi: lpiData,
+                      classification: classificationData,
                       other: otherData,
                       parentUprn: parent.uprn,
                       easting: parent.easting,
@@ -1595,6 +1719,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
         setAltLangRangeAddressData(null);
         setBlpuData(null);
         setLpiData(null);
+        setClassificationData(null);
         setOtherData(null);
         setCrossReferenceData([]);
 
@@ -1662,6 +1787,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
     if (data) {
       setBlpuData(data.blpu);
       setLpiData(data.lpi);
+      setClassificationData(data.classification);
       setOtherData(data.other);
     }
   };
@@ -1761,7 +1887,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
           case 2: // Property details
             return (
               <WizardPropertyDetailsPage
-                data={{ blpu: blpuData, lpi: lpiData, other: otherData }}
+                data={{ blpu: blpuData, lpi: lpiData, classification: classificationData, other: otherData }}
                 errors={propertyErrors}
                 onDataChanged={handlePropertyDetailsChanged}
                 onErrorChanged={handlePropertyDetailsErrorChanged}
@@ -1817,7 +1943,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
           case 2: // Property details
             return (
               <WizardPropertyDetailsPage
-                data={{ blpu: blpuData, lpi: lpiData, other: otherData }}
+                data={{ blpu: blpuData, lpi: lpiData, classification: classificationData, other: otherData }}
                 errors={propertyErrors}
                 onDataChanged={handlePropertyDetailsChanged}
                 onErrorChanged={handlePropertyDetailsErrorChanged}
@@ -1872,7 +1998,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
           case 2: // Property details
             return (
               <WizardPropertyDetailsPage
-                data={{ blpu: blpuData, lpi: lpiData, other: otherData }}
+                data={{ blpu: blpuData, lpi: lpiData, classification: classificationData, other: otherData }}
                 errors={propertyErrors}
                 onDataChanged={handlePropertyDetailsChanged}
                 onErrorChanged={handlePropertyDetailsErrorChanged}
@@ -1939,7 +2065,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
           case 2: // Property details
             return (
               <WizardPropertyDetailsPage
-                data={{ blpu: blpuData, lpi: lpiData, other: otherData }}
+                data={{ blpu: blpuData, lpi: lpiData, classification: classificationData, other: otherData }}
                 errors={propertyErrors}
                 onDataChanged={handlePropertyDetailsChanged}
                 onErrorChanged={handlePropertyDetailsErrorChanged}
@@ -2033,6 +2159,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
       setAltLangRangeAddressData(null);
       setBlpuData(null);
       setLpiData(null);
+      setClassificationData(null);
       setOtherData(null);
       setCrossReferenceData([]);
       setAddressPoints(null);
@@ -2076,6 +2203,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
             addressDetails: addressPoint.addressDetails,
             blpu: addressPoint.blpu,
             lpi: addressPoint.lpi,
+            classification: addressPoint.classification,
             other: addressPoint.other,
             parentUprn: addressPoint.parentUprn,
             easting: mapContext.currentWizardPoint.x,
@@ -2099,6 +2227,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                   addressDetails: addressPoint.addressDetails,
                   blpu: addressPoint.blpu,
                   lpi: addressPoint.lpi,
+                  classification: addressPoint.classification,
                   other: addressPoint.other,
                   parentUprn: addressPoint.parentUprn,
                   easting: mapContext.currentWizardPoint.x,

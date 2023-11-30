@@ -26,6 +26,7 @@
 //    013   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    014   03.11.23 Sean Flook                 Added tooltip to the actions button.
 //    015   24.11.23 Sean Flook                 Moved Box to @mui/system and changes required for Scottish authorities.
+//    016   30.11.23 Sean Flook                 Make state and state date visible for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1051,11 +1052,13 @@ function PropertyDetailsTab({
               <MenuItem dense disabled={!userCanEdit} onClick={handleHistoricise} sx={menuItemStyle(false)}>
                 <Typography variant="inherit">Historicise</Typography>
               </MenuItem>
-              <MenuItem dense disabled onClick={handleDelete} sx={menuItemStyle(false)}>
-                <Typography variant="inherit" color="error">
-                  Delete
-                </Typography>
-              </MenuItem>
+              {process.env.NODE_ENV === "development" && (
+                <MenuItem dense disabled={!userCanEdit} onClick={handleDelete} sx={menuItemStyle(false)}>
+                  <Typography variant="inherit" color="error">
+                    Delete
+                  </Typography>
+                </MenuItem>
+              )}
             </Menu>
           </Grid>
         </Grid>
@@ -1225,38 +1228,34 @@ function PropertyDetailsTab({
             onChange={handleRPCChangeEvent}
             helperText="Representative Point Code."
           />
-          {!settingsContext.isScottish && (
-            <ADSSelectControl
-              label="State"
-              isEditable={userCanEdit}
-              isRequired={blpuLogicalStatus === 6}
-              isFocused={focusedField ? focusedField === "BlpuState" : false}
-              loading={loading}
-              useRounded
-              doNotSetTitleCase
-              lookupData={blpuStateLookup}
-              lookupId="id"
-              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-              lookupColour="colour"
-              value={state}
-              errorText={stateError}
-              onChange={handleStateChangeEvent}
-              helperText="A code identifying the current state of a BLPU."
-            />
-          )}
-          {!settingsContext.isScottish && (
-            <ADSDateControl
-              label="State date"
-              isEditable={userCanEdit}
-              isRequired={blpuLogicalStatus === 6}
-              isFocused={focusedField ? focusedField === "BlpuStateDate" : false}
-              loading={loading}
-              value={stateDate}
-              errorText={stateDateError}
-              onChange={handleStateDateChangeEvent}
-              helperText="Date at which the BLPU achieved its current state in the real-world."
-            />
-          )}
+          <ADSSelectControl
+            label="State"
+            isEditable={userCanEdit}
+            isRequired={blpuLogicalStatus === 6}
+            isFocused={focusedField ? focusedField === "BlpuState" : false}
+            loading={loading}
+            useRounded
+            doNotSetTitleCase
+            lookupData={blpuStateLookup}
+            lookupId="id"
+            lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+            lookupColour="colour"
+            value={state}
+            errorText={stateError}
+            onChange={handleStateChangeEvent}
+            helperText="A code identifying the current state of a BLPU."
+          />
+          <ADSDateControl
+            label="State date"
+            isEditable={userCanEdit}
+            isRequired={blpuLogicalStatus === 6}
+            isFocused={focusedField ? focusedField === "BlpuStateDate" : false}
+            loading={loading}
+            value={stateDate}
+            errorText={stateDateError}
+            onChange={handleStateDateChangeEvent}
+            helperText="Date at which the BLPU achieved its current state in the real-world."
+          />
           {!settingsContext.isScottish && (
             <ADSSelectControl
               label="Classification"

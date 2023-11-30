@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   03.11.23 Sean Flook                 Make labels the same within application.
 //    003   24.11.23 Sean Flook                 Moved Stack to @mui/system.
+//    004   30.11.23 Sean Flook                 Hide items if not required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -158,16 +159,18 @@ function LookupTablesTab() {
                     }
                     sx={TreeItemStyle(selectedNode === "ADMINISTRATIVE_AREAS")}
                   />
-                  <TreeItem
-                    nodeId="AUTHORITIES"
-                    label={
-                      <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
-                        Authorities
-                      </Typography>
-                    }
-                    sx={TreeItemStyle(selectedNode === "AUTHORITIES")}
-                  />
-                  {HasProperties() && (
+                  {process.env.NODE_ENV === "development" && (
+                    <TreeItem
+                      nodeId="AUTHORITIES"
+                      label={
+                        <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
+                          Authorities
+                        </Typography>
+                      }
+                      sx={TreeItemStyle(selectedNode === "AUTHORITIES")}
+                    />
+                  )}
+                  {!settingsContext.isScottish && HasProperties() && (
                     <TreeItem
                       nodeId="WARDS"
                       label={
@@ -178,7 +181,7 @@ function LookupTablesTab() {
                       sx={TreeItemStyle(selectedNode === "WARDS")}
                     />
                   )}
-                  {HasProperties() && (
+                  {!settingsContext.isScottish && HasProperties() && (
                     <TreeItem
                       nodeId="PARISHES"
                       label={

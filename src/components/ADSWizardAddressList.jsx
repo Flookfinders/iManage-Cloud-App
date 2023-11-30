@@ -19,6 +19,7 @@
 //    006   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs.
 //    007   20.11.23 Sean Flook                 Undone above change.
 //    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and sorted some warnings.
+//    009   30.11.23 Sean Flook                 Change required for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -212,7 +213,9 @@ function ADSWizardAddressList({
       if (editRecord) {
         switch (variant) {
           case "classification":
-            setActionData(editRecord.blpu.classification);
+            setActionData(
+              settingsContext.isScottish ? editRecord.classification.classification : editRecord.blpu.classification
+            );
             break;
 
           case "level":
@@ -336,8 +339,10 @@ function ADSWizardAddressList({
     setItemSelected(null);
 
     if (!checked.includes(rec.id)) {
-      const checkedIndex = mapContext.currentHighlight.property.indexOf(rec.id);
-      const newChecked = [...mapContext.currentHighlight.property];
+      const checkedIndex = mapContext.currentHighlight.property
+        ? mapContext.currentHighlight.property.indexOf(rec.id)
+        : -1;
+      const newChecked = mapContext.currentHighlight.property ? [...mapContext.currentHighlight.property] : [];
       if (checkedIndex > -1) newChecked.splice(checkedIndex, 1);
       mapContext.onHighlightStreetProperty(null, newChecked);
     }
@@ -385,7 +390,7 @@ function ADSWizardAddressList({
       addressListData.current = data;
       actionAddressIds.current = getActionAddressIds(rec);
       actionCount.current = 1;
-      setActionData(rec.blpu.classification);
+      setActionData(settingsContext.isScottish ? rec.classification.classification : rec.blpu.classification);
       setActionType("classification");
       setOpenAction(true);
     }
@@ -403,7 +408,7 @@ function ADSWizardAddressList({
       addressListData.current = data;
       actionAddressIds.current = getActionAddressIds(rec);
       actionCount.current = 1;
-      setActionData(rec.lpi.level);
+      setActionData(settingsContext.isScottish ? rec.blpu.level : rec.lpi.level);
       setActionType("level");
       setOpenAction(true);
     }
@@ -457,6 +462,27 @@ function ADSWizardAddressList({
         }
       } else setActionData({ eng: rec.addressDetails.postTownRef, alt: null });
       setActionType("postTown");
+      setOpenAction(true);
+    }
+  };
+
+  /**
+   * Event to handle editing the sub-locality.
+   *
+   * @param {object} event The event object.
+   * @param {object} rec The record object.
+   */
+  const handleEditSubLocality = (event, rec) => {
+    handleActionsMenuClose(event);
+    if (rec) {
+      addressListData.current = data;
+      actionAddressIds.current = getActionAddressIds(rec);
+      actionCount.current = 1;
+      const gaeRecord = data.find((x) => x.id === rec.id.replace("ENG", "GAE"));
+      if (gaeRecord)
+        setActionData({ eng: rec.addressDetails.subLocalityRef, alt: gaeRecord.addressDetails.subLocalityRef });
+      else setActionData({ eng: rec.addressDetails.subLocalityRef, alt: null });
+      setActionType("subLocality");
       setOpenAction(true);
     }
   };
@@ -519,15 +545,24 @@ function ADSWizardAddressList({
                       id: updateId,
                       language: currentRecord.language,
                       addressDetails: currentRecord.addressDetails,
-                      blpu: {
-                        logicalStatus: currentRecord.blpu.logicalStatus,
-                        rpc: currentRecord.blpu.rpc,
-                        state: currentRecord.blpu.state,
-                        stateDate: currentRecord.blpu.stateDate,
-                        classification: updatedData,
-                        startDate: currentRecord.blpu.startDate,
-                      },
+                      blpu: settingsContext.isScottish
+                        ? currentRecord.blpu
+                        : {
+                            logicalStatus: currentRecord.blpu.logicalStatus,
+                            rpc: currentRecord.blpu.rpc,
+                            state: currentRecord.blpu.state,
+                            stateDate: currentRecord.blpu.stateDate,
+                            classification: updatedData,
+                            startDate: currentRecord.blpu.startDate,
+                          },
                       lpi: currentRecord.lpi,
+                      classification: settingsContext.isScottish
+                        ? {
+                            classification: updatedData,
+                            classScheme: currentRecord.classification.classScheme,
+                            startDate: currentRecord.classification.startDate,
+                          }
+                        : currentRecord.classification,
                       other: currentRecord.other,
                       parentUprn: currentRecord.parentUprn,
                       easting: currentRecord.easting,
@@ -545,14 +580,24 @@ function ADSWizardAddressList({
                       id: updateId,
                       language: currentRecord.language,
                       addressDetails: currentRecord.addressDetails,
-                      blpu: currentRecord.blpu,
-                      lpi: {
-                        logicalStatus: currentRecord.lpi.logicalStatus,
-                        level: updatedData,
-                        officialAddress: currentRecord.lpi.officialAddress,
-                        postallyAddressable: currentRecord.lpi.postallyAddressable,
-                        startDate: currentRecord.lpi.startDate,
-                      },
+                      blpu: settingsContext.isScottish
+                        ? {
+                            logicalStatus: currentRecord.blpu.logicalStatus,
+                            rpc: currentRecord.blpu.rpc,
+                            level: updatedData,
+                            startDate: currentRecord.blpu.startDate,
+                          }
+                        : currentRecord.blpu,
+                      lpi: settingsContext.isScottish
+                        ? currentRecord.lpi
+                        : {
+                            logicalStatus: currentRecord.lpi.logicalStatus,
+                            level: updatedData,
+                            officialAddress: currentRecord.lpi.officialAddress,
+                            postallyAddressable: currentRecord.lpi.postallyAddressable,
+                            startDate: currentRecord.lpi.startDate,
+                          },
+                      classification: currentRecord.classification,
                       other: currentRecord.other,
                       parentUprn: currentRecord.parentUprn,
                       easting: currentRecord.easting,
@@ -586,11 +631,13 @@ function ADSWizardAddressList({
                         paoDetails: currentRecord.addressDetails.paoDetails,
                         usrn: currentRecord.addressDetails.usrn,
                         postTownRef: currentRecord.addressDetails.postTownRef,
+                        subLocalityRef: currentRecord.addressDetails.subLocalityRef,
                         postcodeRef: updatedData,
                         included: currentRecord.addressDetails.included,
                       },
                       blpu: currentRecord.blpu,
                       lpi: currentRecord.lpi,
+                      classification: currentRecord.classification,
                       other: currentRecord.other,
                       parentUprn: currentRecord.parentUprn,
                       easting: currentRecord.easting,
@@ -624,11 +671,53 @@ function ADSWizardAddressList({
                         paoDetails: currentRecord.addressDetails.paoDetails,
                         usrn: currentRecord.addressDetails.usrn,
                         postTownRef: currentRecord.language === "ENG" ? updatedData.eng : updatedData.alt,
+                        subLocalityRef: currentRecord.addressDetails.subLocalityRef,
                         postcodeRef: currentRecord.addressDetails.postcodeRef,
                         included: currentRecord.addressDetails.included,
                       },
                       blpu: currentRecord.blpu,
                       lpi: currentRecord.lpi,
+                      classification: currentRecord.classification,
+                      other: currentRecord.other,
+                      parentUprn: currentRecord.parentUprn,
+                      easting: currentRecord.easting,
+                      northing: currentRecord.northing,
+                    },
+                  ].find((rec) => rec.id === x.id) || x
+              );
+              break;
+
+            case "subLocality":
+              updatedRecords = updatedRecords.map(
+                (x) =>
+                  [
+                    {
+                      id: updateId,
+                      language: currentRecord.language,
+                      addressDetails: {
+                        id: currentRecord.addressDetails.id,
+                        address: currentRecord.addressDetails.address,
+                        mapLabel: currentRecord.addressDetails.mapLabel,
+                        saoStartNumber: currentRecord.addressDetails.saoStartNumber,
+                        saoStartSuffix: currentRecord.addressDetails.saoStartSuffix,
+                        saoEndNumber: currentRecord.addressDetails.saoEndNumber,
+                        saoEndSuffix: currentRecord.addressDetails.saoEndSuffix,
+                        saoText: currentRecord.addressDetails.saoText,
+                        paoStartNumber: currentRecord.addressDetails.paoStartNumber,
+                        paoStartSuffix: currentRecord.addressDetails.paoStartSuffix,
+                        paoEndNumber: currentRecord.addressDetails.paoEndNumber,
+                        paoEndSuffix: currentRecord.addressDetails.paoEndSuffix,
+                        paoText: currentRecord.addressDetails.paoText,
+                        paoDetails: currentRecord.addressDetails.paoDetails,
+                        usrn: currentRecord.addressDetails.usrn,
+                        postTownRef: currentRecord.addressDetails.postTownRef,
+                        subLocalityRef: currentRecord.language === "ENG" ? updatedData.eng : updatedData.alt,
+                        postcodeRef: currentRecord.addressDetails.postcodeRef,
+                        included: currentRecord.addressDetails.included,
+                      },
+                      blpu: currentRecord.blpu,
+                      lpi: currentRecord.lpi,
+                      classification: currentRecord.classification,
                       other: currentRecord.other,
                       parentUprn: currentRecord.parentUprn,
                       easting: currentRecord.easting,
@@ -656,6 +745,7 @@ function ADSWizardAddressList({
                       addressDetails: currentRecord.addressDetails,
                       blpu: currentRecord.blpu,
                       lpi: currentRecord.lpi,
+                      classification: currentRecord.classification,
                       other: {
                         provCode: currentRecord.other.provCode,
                         provStartDate: currentRecord.other.provStartDate,
@@ -677,15 +767,23 @@ function ADSWizardAddressList({
                       id: updateId,
                       language: currentRecord.language,
                       addressDetails: currentRecord.addressDetails,
-                      blpu: {
-                        logicalStatus: currentRecord.blpu.logicalStatus,
-                        rpc: updatedData,
-                        state: currentRecord.blpu.state,
-                        stateDate: currentRecord.blpu.stateDate,
-                        classification: currentRecord.blpu.classification,
-                        startDate: currentRecord.blpu.startDate,
-                      },
+                      blpu: settingsContext.isScottish
+                        ? {
+                            logicalStatus: currentRecord.blpu.logicalStatus,
+                            rpc: updatedData,
+                            level: currentRecord.blpu.level,
+                            startDate: currentRecord.blpu.startDate,
+                          }
+                        : {
+                            logicalStatus: currentRecord.blpu.logicalStatus,
+                            rpc: updatedData,
+                            state: currentRecord.blpu.state,
+                            stateDate: currentRecord.blpu.stateDate,
+                            classification: currentRecord.blpu.classification,
+                            startDate: currentRecord.blpu.startDate,
+                          },
                       lpi: currentRecord.lpi,
+                      classification: currentRecord.classification,
                       other: currentRecord.other,
                       parentUprn: currentRecord.parentUprn,
                       easting: currentRecord.easting,
@@ -707,6 +805,7 @@ function ADSWizardAddressList({
           const propertyDetailErrors = ValidatePropertyDetails(
             rec.blpu,
             rec.lpi,
+            rec.classification,
             rec.other,
             lookupContext.currentLookups,
             settingsContext.isScottish,
@@ -718,6 +817,7 @@ function ADSWizardAddressList({
           if (
             propertyDetailErrors.blpu.length > 0 ||
             propertyDetailErrors.lpi.length > 0 ||
+            propertyDetailErrors.classification.length > 0 ||
             propertyDetailErrors.other.length > 0
           ) {
             finaliseErrors.push({ id: rec.id, errors: propertyDetailErrors });
@@ -986,7 +1086,7 @@ function ADSWizardAddressList({
                         title={GetAvatarTooltip(
                           21,
                           rec.blpu.logicalStatus,
-                          rec.blpu.classification,
+                          settingsContext.isScottish ? rec.classification.classification : rec.blpu.classification,
                           settingsContext.isScottish
                         )}
                         arrow
@@ -994,7 +1094,13 @@ function ADSWizardAddressList({
                         sx={tooltipStyle}
                       >
                         {GetClassificationIcon(
-                          rec.blpu.classification ? rec.blpu.classification : "U",
+                          settingsContext.isScottish
+                            ? rec.classification.classification
+                              ? rec.classification.classification
+                              : "U"
+                            : rec.blpu.classification
+                            ? rec.blpu.classification
+                            : "U",
                           GetAvatarColour(rec.blpu.logicalStatus)
                         )}
                       </Tooltip>
@@ -1073,11 +1179,21 @@ function ADSWizardAddressList({
                             {!haveMoveBlpu && (
                               <MenuItem
                                 dense
-                                divider
+                                divider={!settingsContext.isScottish}
                                 onClick={(event) => handleEditPostTown(event, rec)}
                                 sx={menuItemStyle(true)}
                               >
                                 <Typography variant="inherit">Edit post town</Typography>
+                              </MenuItem>
+                            )}
+                            {settingsContext.isScottish && !haveMoveBlpu && (
+                              <MenuItem
+                                dense
+                                divider
+                                onClick={(event) => handleEditSubLocality(event, rec)}
+                                sx={menuItemStyle(true)}
+                              >
+                                <Typography variant="inherit">Edit sub-locality</Typography>
                               </MenuItem>
                             )}
                             {haveMoveBlpu && (

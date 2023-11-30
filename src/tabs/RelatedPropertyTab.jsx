@@ -24,6 +24,7 @@
 //    010   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs.
 //    011   20.11.23 Sean Flook                 Undone above change.
 //    012   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
+//    013   29.11.23 Sean Flook       IMANN-163 Added id's to the TreeItem to remove warning and corrected expanded data type.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -81,7 +82,7 @@ import { useTheme } from "@mui/styles";
 RelatedPropertyTab.propTypes = {
   data: PropTypes.array.isRequired,
   loading: PropTypes.bool.isRequired,
-  expanded: PropTypes.bool.isRequired,
+  expanded: PropTypes.array.isRequired,
   onNodeSelect: PropTypes.func.isRequired,
   onNodeToggle: PropTypes.func.isRequired,
   onSetCopyOpen: PropTypes.func.isRequired,
@@ -909,6 +910,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                   return (
                     <TreeItem
                       key={`property-${rec.uprn}-${index}`}
+                      id={`property-related-tree-${rec.uprn.toString()}`}
                       nodeId={rec.uprn.toString()}
                       sx={treeItemStyle(rec.uprn.toString() === propertyContext.currentProperty.uprn.toString())}
                       label={
@@ -1043,6 +1045,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                             return (
                               <TreeItem
                                 key={`property-${child1.uprn}-${childIndex1}`}
+                                id={`property-related-tree-${child1.uprn.toString()}`}
                                 nodeId={child1.uprn.toString()}
                                 sx={treeItemStyle(
                                   child1.uprn.toString() === propertyContext.currentProperty.uprn.toString()
@@ -1195,6 +1198,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                       return (
                                         <TreeItem
                                           key={`property-${child2.uprn}-${childIndex2}`}
+                                          id={`property-related-tree-${child2.uprn.toString()}`}
                                           nodeId={child2.uprn.toString()}
                                           sx={treeItemStyle(
                                             child2.uprn.toString() === propertyContext.currentProperty.uprn.toString()
@@ -1380,6 +1384,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                 return (
                                                   <TreeItem
                                                     key={`property-${child3.uprn}-${childIndex3}`}
+                                                    id={`property-related-tree-${child3.uprn.toString()}`}
                                                     nodeId={child3.uprn.toString()}
                                                     sx={treeItemStyle(
                                                       child3.uprn.toString() ===

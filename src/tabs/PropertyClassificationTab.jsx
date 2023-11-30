@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record.
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    005   30.11.23 Sean Flook                 Bug fixes in GetCurrentData.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -242,13 +243,14 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
       blpuClass: field && field === "classification" ? newValue : classification,
       endDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
       entryDate: data.classificationData.entryDate,
-      pkId: data.classificationData.pkId,
+      pkId: data.classificationData.id,
       lastUpdateDate: data.classificationData.lastUpdateDate,
       classScheme: field && field === "classScheme" ? newValue : classScheme,
       classKey: data.classificationData.classKey,
       startDate:
         field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
       uprn: data.classificationData.uprn,
+      neverExport: data.classificationData.neverExport,
     };
   }
 

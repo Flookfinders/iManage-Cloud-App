@@ -30,6 +30,7 @@
 //    017   06.10.23 Sean Flook                 Various changes to ensure this works for GeoPlace and OneScotland and use colour variables.
 //    018   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate and set end date for associated records when updating the logical status to historic or rejected.
 //    019   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system, renamed successor to successorCrossRef and changes to handle Scottish data structure.
+//    020   30.11.23 Sean Flook                 Use constant for default classification scheme and various bug fixes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -89,6 +90,7 @@ import RelatedTab from "../tabs/RelatedTab";
 import NotesListTab from "../tabs/NotesListTab";
 import NotesDataTab from "../tabs/NotesDataTab";
 import EntityHistoryTab from "../tabs/EntityHistoryTab";
+import { OSGScheme } from "../data/OSGClassification";
 import { GazetteerRoute } from "../PageRouting";
 import { adsBlueA, adsMidGreyA, adsWhite, adsLightGreyB } from "../utils/ADSColours";
 import {
@@ -854,12 +856,13 @@ function PropertyDataForm({ data, loading }) {
         changeType: "I",
         uprn: propertyData && propertyData.uprn,
         classKey: null,
-        classScheme: "Scottish Gazetteer Conventions v4.5",
+        classScheme: OSGScheme,
         blpuClass: null,
         startDate: currentDate,
         endDate: null,
         entryDate: currentDate,
         lastUpdateDate: currentDate,
+        neverExport: false,
       };
 
       const newClassifications = propertyData.classifications ? propertyData.classifications : [];
@@ -888,6 +891,7 @@ function PropertyDataForm({ data, loading }) {
           endDate: newRec.endDate,
           entryDate: newRec.entryDate,
           lastUpdateDate: newRec.lastUpdateDate,
+          neverExport: newRec.neverExport,
         },
         index: newIdx,
         totalRecords: propertyData.classifications
@@ -2705,7 +2709,7 @@ function PropertyDataForm({ data, loading }) {
         break;
 
       default:
-        discardChanges(srcData ? srcData.id : currentData ? currentData.pkId : 0);
+        discardChanges(srcData ? srcData.pkId : currentData ? currentData.pkId : 0);
         break;
     }
 
