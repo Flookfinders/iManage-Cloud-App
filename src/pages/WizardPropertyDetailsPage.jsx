@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
+//    006   01.12.23 Sean Flook                 Added missing fields.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -208,6 +209,8 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                 ? {
                     logicalStatus: updatedData.blpuLogicalStatus,
                     rpc: updatedData.rpc,
+                    state: updatedData.state,
+                    stateDate: updatedData.stateDate,
                     level: updatedData.level,
                     startDate: updatedData.startDate,
                   }

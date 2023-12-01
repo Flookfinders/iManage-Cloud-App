@@ -24,6 +24,7 @@
 //    011   10.11.23 Sean Flook                 Updated action string.
 //    012   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    013   30.11.23 Sean Flook                 Changes required for Scottish authorities.
+//    014   01.12.23 Sean Flook                 Corrected field names.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -275,7 +276,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
             postcode: postcodeRecord ? postcodeRecord.postcode : null,
             uprn: 0,
             logicalStatus: address.lpi.logicalStatus,
-            postalAddress: address.lpi.postallyAddressable,
+            postallyAddressable: address.lpi.postallyAddressable,
             officialFlag: address.lpi.officialAddress,
             dualLanguageLink: 0,
           });
@@ -452,7 +453,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
             logicalStatus: address.blpu.logicalStatus,
             blpuState: address.blpu.state,
             level: address.blpu.level,
-            localCustodianCode: settingsContext.authorityCode,
+            custodianCode: settingsContext.authorityCode,
             relatedPropertyCount: 0,
             relatedStreetCount: 0,
             blpuAppCrossRefs: newCrossRefs,

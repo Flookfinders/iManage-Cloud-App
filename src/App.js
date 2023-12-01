@@ -29,6 +29,7 @@
 //    016   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
 //    017   20.11.23 Sean Flook                 Removed unwanted code.
 //    018   24.11.23 Sean Flook                 Renamed successor to successorCrossRef.
+//    019   01.12.23 Sean Flook       IMANN-194 Added HandleUpdateLookup to enable updating a single lookup type.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -435,6 +436,30 @@ function App() {
       postcodes: postcodes,
       wards: wards,
       parishes: parishes,
+    });
+  }
+
+  /**
+   * Event to handle when a lookup is updated.
+   *
+   * @param {string} variant The type of lookup that is being updated ["validationMessage", "locality", "town", "island", "administrativeArea", "operationalDistrict", "crossReference", "subLocality", "streetDescriptor", "postTown", "postcode", "ward", "parish"]
+   * @param {Array} newLookups The updated list of lookups.
+   */
+  function HandleUpdateLookup(variant, newLookups) {
+    setLookups({
+      validationMessages: variant === "validationMessage" ? newLookups : lookups.validationMessages,
+      localities: variant === "locality" ? newLookups : lookups.localities,
+      towns: variant === "town" ? newLookups : lookups.towns,
+      islands: variant === "island" ? newLookups : lookups.islands,
+      adminAuthorities: variant === "administrativeArea" ? newLookups : lookups.adminAuthorities,
+      operationalDistricts: variant === "operationalDistrict" ? newLookups : lookups.operationalDistricts,
+      appCrossRefs: variant === "crossReference" ? newLookups : lookups.appCrossRefs,
+      subLocalities: variant === "subLocality" ? newLookups : lookups.subLocalities,
+      streetDescriptors: variant === "streetDescriptor" ? newLookups : lookups.streetDescriptors,
+      postTowns: variant === "postTown" ? newLookups : lookups.postTowns,
+      postcodes: variant === "postcode" ? newLookups : lookups.postcodes,
+      wards: variant === "ward" ? newLookups : lookups.wards,
+      parishes: variant === "parish" ? newLookups : lookups.parishes,
     });
   }
 
@@ -2513,6 +2538,7 @@ function App() {
               currentLookups: lookups,
               metadata: metadata,
               onLookupChange: HandleLookupChange,
+              onUpdateLookup: HandleUpdateLookup,
               onMetadataChange: HandleMetadataChange,
             }}
           >

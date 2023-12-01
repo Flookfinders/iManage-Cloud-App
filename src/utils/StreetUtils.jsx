@@ -20,6 +20,7 @@
 //    007   03.11.23 Sean Flook                 Added hyphen to one-way.
 //    008   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    009   24.11.23 Sean Flook                 Moved Stack to @mui/system and renamed successor to successorCrossRef.
+//    010   01.12.23 Sean Flook       IMANN-194 Update the street descriptor lookup after doing a save or delete.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -513,11 +514,12 @@ export function GetNewStreet(
  *
  * @param {number} usrn The USRN of the street that is being deleted.
  * @param {boolean} deleteEsus If true then the ESUs will also be deleted; otherwise they are left.
+ * @param {object} lookupContext The lookup context object.
  * @param {string} userToken The token for the user who is calling the endpoint.
  * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
  * @return {boolean} True if the street was deleted successfully; otherwise false.
  */
-export async function StreetDelete(usrn, deleteEsus, userToken, isScottish) {
+export async function StreetDelete(usrn, deleteEsus, lookupContext, userToken, isScottish) {
   const deleteUrl = GetDeleteStreetUrl(userToken, isScottish);
 
   if (deleteUrl) {
@@ -529,6 +531,8 @@ export async function StreetDelete(usrn, deleteEsus, userToken, isScottish) {
       .then((res) => (res.ok ? res : Promise.reject(res)))
       .then((res) => res.json())
       .then((result) => {
+        const updatedLookup = lookupContext.currentLookups.streetDescriptors.filter((x) => x.usrn !== usrn);
+        lookupContext.onUpdateLookup("streetDescriptor", updatedLookup);
         return true;
       })
       .catch((res) => {
@@ -2640,6 +2644,8 @@ export async function SaveStreet(
 
         const searchAddresses = [];
         let newSearchData = [];
+        const savedDescriptorLookups = [];
+        let streetAddress = "";
         const returnedDescriptors = isWelsh
           ? result.streetDescriptors
               .sort((a, b) => (a.language > b.language ? 1 : b.language > a.language ? -1 : 0))
@@ -2649,6 +2655,7 @@ export async function SaveStreet(
         for (const descriptor of returnedDescriptors) {
           if (!searchAddresses.includes(descriptor.streetDescriptor)) {
             searchAddresses.push(descriptor.streetDescriptor);
+            streetAddress = getStreetAddress(descriptor.streetDescriptor, descriptor.locRef, descriptor.townRef);
             const newData = {
               type: 15,
               id: `${descriptor.usrn}_${descriptor.language}`,
@@ -2680,9 +2687,15 @@ export async function SaveStreet(
               post_town: null,
               postcode: null,
               crossref: null,
-              address: getStreetAddress(descriptor.streetDescriptor, descriptor.locRef, descriptor.townRef),
+              address: streetAddress,
               sort_code: 0,
             };
+
+            savedDescriptorLookups.push({
+              usrn: descriptor.usrn,
+              language: descriptor.language,
+              address: streetAddress,
+            });
 
             if (searchContext.currentSearchData.results && searchContext.currentSearchData.results.length > 0) {
               const i = searchContext.currentSearchData.results.findIndex(
@@ -2702,6 +2715,17 @@ export async function SaveStreet(
             }
           }
         }
+
+        let updatedDescriptorLookups = [];
+        if (streetContext.currentStreet.newStreet) {
+          updatedDescriptorLookups = lookupContext.currentLookups.streetDescriptors.concat(savedDescriptorLookups);
+        } else {
+          updatedDescriptorLookups = lookupContext.currentLookups.streetDescriptors.map(
+            (x) => savedDescriptorLookups.find((rec) => rec.usrn === x.usrn && rec.language === x.language) || x
+          );
+        }
+
+        lookupContext.onUpdateLookup("streetDescriptor", updatedDescriptorLookups);
 
         const engDescriptor = result.streetDescriptors.find((x) => x.language === "ENG");
 

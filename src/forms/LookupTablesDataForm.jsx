@@ -15,6 +15,7 @@
 //    002   29.06.23 Sean Flook                 Added ability to set enabled flag for cross reference records.
 //    003   07.09.23 Sean Flook                 Removed unnecessary awaits.
 //    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    005   01.12.23 Sean Flook       IMANN-194 Modified UpdateLookups to use the new LookupContext.onUpdateLookup event.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -994,21 +995,7 @@ function LookupTablesDataForm({ nodeId }) {
   }
 
   function UpdateLookups(variant, newLookups) {
-    lookupContext.onLookupChange(
-      lookupContext.currentLookups.validationMessages,
-      variant === "locality" ? newLookups : lookupContext.currentLookups.localities,
-      variant === "town" ? newLookups : lookupContext.currentLookups.towns,
-      variant === "island" ? newLookups : lookupContext.currentLookups.islands,
-      variant === "administrativeArea" ? newLookups : lookupContext.currentLookups.adminAuthorities,
-      lookupContext.currentLookups.operationalDistricts,
-      variant === "crossReference" ? newLookups : lookupContext.currentLookups.appCrossRefs,
-      variant === "subLocality" ? newLookups : lookupContext.currentLookups.subLocalities,
-      lookupContext.currentLookups.streetDescriptors,
-      variant === "postTown" ? newLookups : lookupContext.currentLookups.postTowns,
-      variant === "postcode" ? newLookups : lookupContext.currentLookups.postcodes,
-      variant === "ward" ? newLookups : lookupContext.currentLookups.wards,
-      variant === "parish" ? newLookups : lookupContext.currentLookups.parishes
-    );
+    lookupContext.onUpdateLookup(variant, newLookups);
   }
 
   function GetLinkedRef(variant, lookupId) {
