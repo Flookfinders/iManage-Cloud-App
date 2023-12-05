@@ -17,6 +17,7 @@
 //    004   07.09.23 Sean Flook                 Removed unnecessary awaits.
 //    005   03.11.23 Sean Flook                 Added hyphen to one-way.
 //    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    007   05.12.23 Joel Benford               Various fixes to display and save
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -27,7 +28,15 @@ import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 
-import { Typography, Tooltip, Grid, Card, CardActionArea, CardContent, IconButton } from "@mui/material";
+import {
+  Typography,
+  Tooltip,
+  Grid,
+  Card,
+  CardActionArea,
+  CardContent,
+  IconButton,
+} from "@mui/material";
 import { Box, Stack } from "@mui/system";
 
 import EditTemplateDialog from "../dialogs/EditTemplateDialog";
@@ -37,7 +46,7 @@ import { GetStreetTemplateUrl } from "../configuration/ADSConfig";
 import StreetType from "../data/StreetType";
 import StreetState from "../data/StreetState";
 import StreetClassification from "../data/StreetClassification";
-import StreetSurface from "../data/StreetClassification";
+import StreetSurface from "../data/StreetSurface";
 import ESUDirectionCode from "../data/ESUDirectionCode";
 import ESUState from "../data/ESUState";
 import ESUClassification from "../data/ESUClassification";
@@ -169,7 +178,10 @@ function StreetTemplateTab() {
   const getStreetType = (value) => {
     const rec = StreetType.find((x) => x.id === value);
 
-    if (rec) return `Type ${streetRefType} - ${settingsContext.isScottish ? rec.osText : rec.gpText}`;
+    if (rec)
+      return `Type ${streetRefType} - ${
+        settingsContext.isScottish ? rec.osText : rec.gpText
+      }`;
     else return null;
   };
 
@@ -195,7 +207,9 @@ function StreetTemplateTab() {
    * @returns {string|null} The locality to display for the locality reference number.
    */
   const getLocality = (value) => {
-    const rec = lookupContext.currentLookups.localities.find((x) => x.localityRef === value);
+    const rec = lookupContext.currentLookups.localities.find(
+      (x) => x.localityRef === value
+    );
 
     if (rec) return rec.locality;
     else return null;
@@ -208,7 +222,9 @@ function StreetTemplateTab() {
    * @returns {string|null} The town to display for the town reference number.
    */
   const getTown = (value) => {
-    const rec = lookupContext.currentLookups.towns.find((x) => x.townRef === value);
+    const rec = lookupContext.currentLookups.towns.find(
+      (x) => x.townRef === value
+    );
 
     if (rec) return rec.town;
     else return null;
@@ -221,7 +237,9 @@ function StreetTemplateTab() {
    * @returns {string|null} The island to display for the island reference number.
    */
   const getIsland = (value) => {
-    const rec = lookupContext.currentLookups.islands.find((x) => x.islandRef === value);
+    const rec = lookupContext.currentLookups.islands.find(
+      (x) => x.islandRef === value
+    );
 
     if (rec) return rec.island;
     else return null;
@@ -234,7 +252,9 @@ function StreetTemplateTab() {
    * @returns {string|null} The administrative area to display for the administrative area reference number.
    */
   const getAdminArea = (value) => {
-    const rec = lookupContext.currentLookups.adminAuthorities.find((x) => x.administrativeAreaRef === value);
+    const rec = lookupContext.currentLookups.adminAuthorities.find(
+      (x) => x.administrativeAreaRef === value
+    );
 
     if (rec) return rec.administrativeArea;
     else return null;
@@ -370,9 +390,9 @@ function StreetTemplateTab() {
     setEditVariant("hd");
     setEditData({
       hdCode: data.esuTemplate.highwayDedicationCode,
-      hdPRoW: data.esuTemplate.hdPRoW,
-      hdNCR: data.esuTemplate.hdNCR,
-      hdQuietRoute: data.esuTemplate.HdQuietRoute,
+      hdPRoW: data.esuTemplate.hdProw,
+      hdNCR: data.esuTemplate.hdNcr,
+      hdQuietRoute: data.esuTemplate.hdQuietRoute,
       hdObstruction: data.esuTemplate.hdObstruction,
       hdPlanningOrder: data.esuTemplate.hdPlanningOrder,
       hdVehiclesProhibited: data.esuTemplate.hdVehiclesProhibited,
@@ -387,7 +407,10 @@ function StreetTemplateTab() {
    */
   const handleDoneEditTemplate = async (updatedData) => {
     if (updatedData) {
-      const saveUrl = GetStreetTemplateUrl("PUT", userContext.currentUser.token);
+      const saveUrl = GetStreetTemplateUrl(
+        "PUT",
+        userContext.currentUser.token
+      );
 
       if (saveUrl) {
         const saveData = {
@@ -406,21 +429,26 @@ function StreetTemplateTab() {
                   editVariant === "esu" && !settingsContext.isScottish
                     ? updatedData.esuDirection
                     : data.esuTemplate.esuDirection,
-                oweType:
+                oneWayExemptionType:
                   editVariant === "owe" && !settingsContext.isScottish
                     ? updatedData.oweType
                     : data.esuTemplate.oneWayExemptionType,
-                owePeriodicityCode:
+                oneWayExemptionPeriodicityCode:
                   editVariant === "owe" && !settingsContext.isScottish
                     ? updatedData.owePeriodicityCode
                     : data.esuTemplate.oneWayExemptionPeriodicityCode,
-                hdCode:
+                highwayDedicationCode:
                   editVariant === "hd" && !settingsContext.isScottish
                     ? updatedData.hdCode
                     : data.esuTemplate.highwayDedicationCode,
-                hdPRoW:
-                  editVariant === "hd" && !settingsContext.isScottish ? updatedData.hdPRoW : data.esuTemplate.hdPRoW,
-                hdNCR: editVariant === "hd" && !settingsContext.isScottish ? updatedData.hdNCR : data.esuTemplate.hdNCR,
+                hdProw:
+                  editVariant === "hd" && !settingsContext.isScottish
+                    ? updatedData.hdPRoW
+                    : data.esuTemplate.hdProw,
+                hdNcr:
+                  editVariant === "hd" && !settingsContext.isScottish
+                    ? updatedData.hdNCR
+                    : data.esuTemplate.hdNcr,
                 hdQuietRoute:
                   editVariant === "hd" && !settingsContext.isScottish
                     ? updatedData.hdQuietRoute
@@ -456,24 +484,41 @@ function StreetTemplateTab() {
                     : data.scoEsuTemplate.classification,
               }
             : data.scoEsuTemplate,
-          scoMaintenanceResponsibilityTemplate: data.scoMaintenanceResponsibilityTemplate,
-          scoReinstatementCategoryTemplate: data.scoReinstatementCategoryTemplate,
+          scoMaintenanceResponsibilityTemplate:
+            data.scoMaintenanceResponsibilityTemplate,
+          scoReinstatementCategoryTemplate:
+            data.scoReinstatementCategoryTemplate,
           scoSpecialDesignationTemplate: data.scoSpecialDesignationTemplate,
           specialDesignationTemplate: data.specialDesignationTemplate,
           streetTemplate: {
             pkId: data.streetTemplate.pkId,
             templatePkId: data.streetTemplate.templatePkId,
             language: data.streetTemplate.language,
-            recordType: editVariant === "street" ? updatedData.streetRefType : data.streetTemplate.recordType,
-            state: editVariant === "street" ? updatedData.state : data.streetTemplate.state,
-            townRef: editVariant === "street" ? updatedData.townRef : data.streetTemplate.townRef,
-            localityRef: editVariant === "street" ? updatedData.localityRef : data.streetTemplate.localityRef,
-            adminAreaRef: editVariant === "street" ? updatedData.adminAreaRef : data.streetTemplate.adminAreaRef,
+            recordType:
+              editVariant === "street"
+                ? updatedData.streetRefType
+                : data.streetTemplate.recordType,
+            state:
+              editVariant === "street"
+                ? updatedData.state
+                : data.streetTemplate.state,
+            townRef:
+              editVariant === "street"
+                ? updatedData.townRef
+                : data.streetTemplate.townRef,
+            localityRef:
+              editVariant === "street"
+                ? updatedData.localityRef
+                : data.streetTemplate.localityRef,
+            adminAreaRef:
+              editVariant === "street"
+                ? updatedData.adminAreaRef
+                : data.streetTemplate.adminAreaRef,
             classification:
               editVariant === "street" && !settingsContext.isScottish
                 ? updatedData.classification
                 : data.streetTemplate.classification,
-            surface:
+            streetSurface:
               editVariant === "street" && !settingsContext.isScottish
                 ? updatedData.surface
                 : data.streetTemplate.streetSurface,
@@ -485,7 +530,12 @@ function StreetTemplateTab() {
         };
 
         // if (process.env.NODE_ENV === "development")
-        console.log("[DEBUG] handleDoneEditTemplate", updatedData, saveUrl, JSON.stringify(saveData));
+        console.log(
+          "[DEBUG] handleDoneEditTemplate",
+          updatedData,
+          saveUrl,
+          JSON.stringify(saveData)
+        );
 
         await fetch(saveUrl.url, {
           headers: saveUrl.headers,
@@ -502,7 +552,10 @@ function StreetTemplateTab() {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.log("[400 ERROR] Updating street template", body.errors);
+                  console.log(
+                    "[400 ERROR] Updating street template",
+                    body.errors
+                  );
                 });
                 break;
 
@@ -517,7 +570,10 @@ function StreetTemplateTab() {
                 break;
 
               default:
-                console.log(`[${res.status} ERROR] handleDoneEditTemplate - Updating street template.`, res);
+                console.log(
+                  `[${res.status} ERROR] handleDoneEditTemplate - Updating street template.`,
+                  res
+                );
                 break;
             }
           });
@@ -556,8 +612,8 @@ function StreetTemplateTab() {
       setOweType(data.esuTemplate.oneWayExemptionType);
       setOwePeriodicityCode(data.esuTemplate.oneWayExemptionPeriodicityCode);
       setHdCode(data.esuTemplate.highwayDedicationCode);
-      setHdPRoW(data.esuTemplate.hdPRoW);
-      setHdNCR(data.esuTemplate.hdNCR);
+      setHdPRoW(data.esuTemplate.hdProw);
+      setHdNCR(data.esuTemplate.hdNcr);
       setHdQuietRoute(data.esuTemplate.hdQuietRoute);
       setHdObstruction(data.esuTemplate.hdObstruction);
       setHdPlanningOrder(data.esuTemplate.hdPlanningOrder);
@@ -568,7 +624,11 @@ function StreetTemplateTab() {
   return (
     <Box sx={{ ml: theme.spacing(1), mr: theme.spacing(4) }}>
       <Stack direction="column" spacing={1}>
-        <Typography sx={{ fontSize: 24, flexGrow: 1, paddingLeft: theme.spacing(3) }}>Street template</Typography>
+        <Typography
+          sx={{ fontSize: 24, flexGrow: 1, paddingLeft: theme.spacing(3) }}
+        >
+          Street template
+        </Typography>
         <Typography variant="body2" sx={{ paddingLeft: theme.spacing(3) }}>
           Set default lookup values for streets
         </Typography>
@@ -582,14 +642,22 @@ function StreetTemplateTab() {
               sx={settingsCardStyle(editStreet)}
             >
               <CardActionArea onClick={doEditStreet}>
-                <CardContent sx={settingsCardContentStyle(settingsContext.isScottish ? "os-street" : "street")}>
+                <CardContent
+                  sx={settingsCardContentStyle(
+                    settingsContext.isScottish ? "os-street" : "street"
+                  )}
+                >
                   <Stack direction="column" spacing={1}>
                     <Stack direction="row" justifyContent="space-between">
                       <Typography variant="h6" sx={getTitleStyle(editStreet)}>
                         Street defaults
                       </Typography>
                       {editStreet && (
-                        <Tooltip title="Edit street defaults" placement="bottom" sx={tooltipStyle}>
+                        <Tooltip
+                          title="Edit street defaults"
+                          placement="bottom"
+                          sx={tooltipStyle}
+                        >
                           <IconButton onClick={doEditStreet} size="small">
                             <EditIcon sx={ActionIconStyle(true)} />
                           </IconButton>
@@ -655,7 +723,9 @@ function StreetTemplateTab() {
                       </Grid>
                       {!settingsContext.isScottish && (
                         <Grid item xs={3}>
-                          <Typography variant="body2">Classification</Typography>
+                          <Typography variant="body2">
+                            Classification
+                          </Typography>
                         </Grid>
                       )}
                       {!settingsContext.isScottish && (
@@ -692,14 +762,22 @@ function StreetTemplateTab() {
               sx={settingsCardStyle(editEsu)}
             >
               <CardActionArea onClick={doEditEsu}>
-                <CardContent sx={settingsCardContentStyle(settingsContext.isScottish ? "os-street" : "street")}>
+                <CardContent
+                  sx={settingsCardContentStyle(
+                    settingsContext.isScottish ? "os-street" : "street"
+                  )}
+                >
                   <Stack direction="column" spacing={1}>
                     <Stack direction="row" justifyContent="space-between">
                       <Typography variant="h6" sx={getTitleStyle(editEsu)}>
                         ESU defaults
                       </Typography>
                       {editEsu && (
-                        <Tooltip title="Edit ESU defaults" placement="bottom" sx={tooltipStyle}>
+                        <Tooltip
+                          title="Edit ESU defaults"
+                          placement="bottom"
+                          sx={tooltipStyle}
+                        >
                           <IconButton onClick={doEditEsu} size="small">
                             <EditIcon sx={ActionIconStyle(true)} />
                           </IconButton>
@@ -733,7 +811,9 @@ function StreetTemplateTab() {
                       )}
                       {settingsContext.isScottish && (
                         <Grid item xs={3}>
-                          <Typography variant="body2">Classification</Typography>
+                          <Typography variant="body2">
+                            Classification
+                          </Typography>
                         </Grid>
                       )}
                       {settingsContext.isScottish && (
@@ -762,12 +842,22 @@ function StreetTemplateTab() {
                   <CardContent sx={settingsCardContentStyle("street")}>
                     <Stack direction="column" spacing={1}>
                       <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="h6" sx={getTitleStyle(editOneWayExemption)}>
+                        <Typography
+                          variant="h6"
+                          sx={getTitleStyle(editOneWayExemption)}
+                        >
                           One-way exemption defaults
                         </Typography>
                         {editOneWayExemption && (
-                          <Tooltip title="Edit one-way exemption defaults" placement="bottom" sx={tooltipStyle}>
-                            <IconButton onClick={doEditOneWayExemption} size="small">
+                          <Tooltip
+                            title="Edit one-way exemption defaults"
+                            placement="bottom"
+                            sx={tooltipStyle}
+                          >
+                            <IconButton
+                              onClick={doEditOneWayExemption}
+                              size="small"
+                            >
                               <EditIcon sx={ActionIconStyle(true)} />
                             </IconButton>
                           </Tooltip>
@@ -810,12 +900,22 @@ function StreetTemplateTab() {
                   <CardContent sx={settingsCardContentStyle("street")}>
                     <Stack direction="column" spacing={1}>
                       <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="h6" sx={getTitleStyle(editHighwayDedication)}>
+                        <Typography
+                          variant="h6"
+                          sx={getTitleStyle(editHighwayDedication)}
+                        >
                           Highway dedication defaults
                         </Typography>
                         {editHighwayDedication && (
-                          <Tooltip title="Edit highway dedication defaults" placement="bottom" sx={tooltipStyle}>
-                            <IconButton onClick={doEditHighwayDedication} size="small">
+                          <Tooltip
+                            title="Edit highway dedication defaults"
+                            placement="bottom"
+                            sx={tooltipStyle}
+                          >
+                            <IconButton
+                              onClick={doEditHighwayDedication}
+                              size="small"
+                            >
                               <EditIcon sx={ActionIconStyle(true)} />
                             </IconButton>
                           </Tooltip>
@@ -835,12 +935,30 @@ function StreetTemplateTab() {
                         </Grid>
                         <Grid item xs={9}>
                           <Stack direction="row" spacing={1}>
-                            <PRoWIcon fontSize="small" sx={getTemplateIconStyle(hdPRoW)} />
-                            <DirectionsBikeIcon fontSize="small" sx={getTemplateIconStyle(hdNCR)} />
-                            <QuietRouteIcon fontSize="small" sx={getTemplateIconStyle(hdQuietRoute)} />
-                            <ObstructionIcon fontSize="small" sx={getTemplateIconStyle(hdObstruction)} />
-                            <PlanningOrderIcon fontSize="small" sx={getTemplateIconStyle(hdPlanningOrder)} />
-                            <VehiclesProhibitedIcon fontSize="small" sx={getTemplateIconStyle(hdVehiclesProhibited)} />
+                            <PRoWIcon
+                              fontSize="small"
+                              sx={getTemplateIconStyle(hdPRoW)}
+                            />
+                            <DirectionsBikeIcon
+                              fontSize="small"
+                              sx={getTemplateIconStyle(hdNCR)}
+                            />
+                            <QuietRouteIcon
+                              fontSize="small"
+                              sx={getTemplateIconStyle(hdQuietRoute)}
+                            />
+                            <ObstructionIcon
+                              fontSize="small"
+                              sx={getTemplateIconStyle(hdObstruction)}
+                            />
+                            <PlanningOrderIcon
+                              fontSize="small"
+                              sx={getTemplateIconStyle(hdPlanningOrder)}
+                            />
+                            <VehiclesProhibitedIcon
+                              fontSize="small"
+                              sx={getTemplateIconStyle(hdVehiclesProhibited)}
+                            />
                           </Stack>
                         </Grid>
                       </Grid>
