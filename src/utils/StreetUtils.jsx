@@ -21,6 +21,7 @@
 //    008   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    009   24.11.23 Sean Flook                 Moved Stack to @mui/system and renamed successor to successorCrossRef.
 //    010   01.12.23 Sean Flook       IMANN-194 Update the street descriptor lookup after doing a save or delete.
+//    011   01.12.23 Sean Flook                 Include island in the street address for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2609,11 +2610,14 @@ export async function SaveStreet(
   isScottish,
   isWelsh
 ) {
-  const getStreetAddress = (descriptor, locRef, townRef) => {
+  const getStreetAddress = (descriptor, locRef, townRef, islandRef) => {
     const locality = locRef ? lookupContext.currentLookups.localities.find((x) => x.localityRef === locRef) : null;
     const town = townRef ? lookupContext.currentLookups.towns.find((x) => x.townRef === townRef) : null;
+    const island = islandRef ? lookupContext.currentLookups.islands.find((x) => x.islandRef === islandRef) : null;
 
-    return `${descriptor}${locality ? " " + locality.locality : ""}${town ? " " + town.town : ""}`;
+    return `${descriptor}${locality ? " " + locality.locality : ""}${town ? " " + town.town : ""}${
+      island ? " " + island.island : ""
+    }`;
   };
 
   let streetSaved = null;
@@ -2655,7 +2659,12 @@ export async function SaveStreet(
         for (const descriptor of returnedDescriptors) {
           if (!searchAddresses.includes(descriptor.streetDescriptor)) {
             searchAddresses.push(descriptor.streetDescriptor);
-            streetAddress = getStreetAddress(descriptor.streetDescriptor, descriptor.locRef, descriptor.townRef);
+            streetAddress = getStreetAddress(
+              descriptor.streetDescriptor,
+              descriptor.locRef,
+              descriptor.townRef,
+              isScottish ? descriptor.islandRef : null
+            );
             const newData = {
               type: 15,
               id: `${descriptor.usrn}_${descriptor.language}`,

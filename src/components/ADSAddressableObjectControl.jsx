@@ -38,6 +38,7 @@
 //    003   30.06.23 Sean Flook         WI40770 Ensure the end suffix is uppercase.
 //    004   06.10.23 Sean Flook                 Use colour variables.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    006   05.12.23 Sean Flook       IMANN-198 Only allow characters A-Z for suffixes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -142,8 +143,9 @@ function ADSAddressableObjectControl({
    * @param {object} event The event object.
    */
   const handleStartSuffixChangeEvent = (event) => {
-    if (!/[^A-Z]+/gi.test(event.target.value) && onStartSuffixChange)
-      onStartSuffixChange(event.target.value.toUpperCase());
+    if (onStartSuffixChange) {
+      onStartSuffixChange(event.target.value.replace(/[^A-Za-z]+/g, "").toUpperCase());
+    }
   };
 
   /**
@@ -161,7 +163,9 @@ function ADSAddressableObjectControl({
    * @param {object} event The event object.
    */
   const handleEndSuffixChangeEvent = (event) => {
-    if (!/[^A-Z]+/gi.test(event.target.value) && onEndSuffixChange) onEndSuffixChange(event.target.value.toUpperCase());
+    if (onEndSuffixChange) {
+      onEndSuffixChange(event.target.value.replace(/[^A-Za-z]+/g, "").toUpperCase());
+    }
   };
 
   /**
