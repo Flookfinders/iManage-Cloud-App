@@ -17,7 +17,8 @@ const OSGClassification = [
   },
   {
     id: "CA01",
-    lookup: "Commercial Agricultural Farm or non-residential associated building",
+    lookup:
+      "Commercial Agricultural Farm or non-residential associated building",
     display: "Farm or non-residential associated building",
     colour: adsDarkBlue,
   },
@@ -65,7 +66,8 @@ const OSGClassification = [
   },
   {
     id: "CC04",
-    lookup: "Commercial Community Services Public/village hall or other community facility",
+    lookup:
+      "Commercial Community Services Public/village hall or other community facility",
     display: "Public/village hall or other community facility",
     colour: adsDarkBlue,
   },
@@ -77,13 +79,15 @@ const OSGClassification = [
   },
   {
     id: "CC06",
-    lookup: "Commercial Community Services Cemetery, crematorium or graveyard. In current use",
+    lookup:
+      "Commercial Community Services Cemetery, crematorium or graveyard. In current use",
     display: "Cemetery, crematorium or graveyard. In current use",
     colour: adsDarkBlue,
   },
   {
     id: "CC07",
-    lookup: "Commercial Community Services Church hall or religious meeting place/hall",
+    lookup:
+      "Commercial Community Services Church hall or religious meeting place/hall",
     display: "Church hall or religious meeting place/hall",
     colour: adsDarkBlue,
   },
@@ -95,7 +99,8 @@ const OSGClassification = [
   },
   {
     id: "CC09",
-    lookup: "Commercial Community Services Public household waste recycling centre",
+    lookup:
+      "Commercial Community Services Public household waste recycling centre",
     display: "Public household waste recycling centre",
     colour: adsDarkBlue,
   },
@@ -114,7 +119,7 @@ const OSGClassification = [
   {
     id: "CC12",
     lookup: "Commercial Community Services Job centre",
-    displayText: "Job centre",
+    display: "Job centre",
     colour: adsDarkBlue,
   },
   {
@@ -173,13 +178,15 @@ const OSGClassification = [
   },
   {
     id: "CH01",
-    lookup: "Commercial Hotel, Motel, Boarding or Guest house Boarding or Guest house, Bed & breakfast or Youth hostel",
+    lookup:
+      "Commercial Hotel, Motel, Boarding or Guest house Boarding or Guest house, Bed & breakfast or Youth hostel",
     display: "Boarding or Guest house, Bed & breakfast or Youth hostel",
     colour: adsDarkBlue,
   },
   {
     id: "CH02",
-    lookup: "Commercial Hotel, Motel, Boarding or Guest house Holiday Let or accommodation, other than CH01",
+    lookup:
+      "Commercial Hotel, Motel, Boarding or Guest house Holiday Let or accommodation, other than CH01",
     display: "Holiday Let or accommodation, other than CH01",
     colour: adsDarkBlue,
   },
@@ -275,14 +282,17 @@ const OSGClassification = [
   },
   {
     id: "CL06",
-    lookup: "Commercial Leisure Indoor or Outdoor leisure or sporting activity or centre",
+    lookup:
+      "Commercial Leisure Indoor or Outdoor leisure or sporting activity or centre",
     display: "Indoor or Outdoor leisure or sporting activity or centre",
     colour: adsDarkBlue,
   },
   {
     id: "CL07",
-    lookup: "Commercial Leisure Bingo hall, Cinema, Conference or Exhibition centre, Theatre or Concert hall",
-    display: "Bingo hall, Cinema, Conference or Exhibition centre, Theatre or Concert hall",
+    lookup:
+      "Commercial Leisure Bingo hall, Cinema, Conference or Exhibition centre, Theatre or Concert hall",
+    display:
+      "Bingo hall, Cinema, Conference or Exhibition centre, Theatre or Concert hall",
     colour: adsDarkBlue,
   },
   {
@@ -497,7 +507,8 @@ const OSGClassification = [
   },
   {
     id: "CT01",
-    lookup: "Commercial Transport Airfield, Airstrip, Airport or other Air infrastructure",
+    lookup:
+      "Commercial Transport Airfield, Airstrip, Airport or other Air infrastructure",
     display: "Airfield, Airstrip, Airport or other Air infrastructure",
     colour: adsDarkBlue,
   },
@@ -509,7 +520,8 @@ const OSGClassification = [
   },
   {
     id: "CT03",
-    lookup: "Commercial Transport Car, Coach, Commercial vehicle or Taxi parking. Park and Ride",
+    lookup:
+      "Commercial Transport Car, Coach, Commercial vehicle or Taxi parking. Park and Ride",
     display: "Car, Coach, Commercial vehicle or Taxi parking. Park and Ride",
     colour: adsDarkBlue,
   },
@@ -569,8 +581,10 @@ const OSGClassification = [
   },
   {
     id: "CT13",
-    lookup: "Commercial Transport Harbour, Port, Dockyard, Slipway, Landing stage, Pier, Jetty, Pontoon or Quay",
-    display: "Harbour, Port, Dockyard, Slipway, Landing stage, Pier, Jetty, Pontoon or Quay",
+    lookup:
+      "Commercial Transport Harbour, Port, Dockyard, Slipway, Landing stage, Pier, Jetty, Pontoon or Quay",
+    display:
+      "Harbour, Port, Dockyard, Slipway, Landing stage, Pier, Jetty, Pontoon or Quay",
     colour: adsDarkBlue,
   },
   {
@@ -677,7 +691,8 @@ const OSGClassification = [
   },
   {
     id: "CX05",
-    lookup: "Commercial Emergency Services Coastguard rescue or Lookout station",
+    lookup:
+      "Commercial Emergency Services Coastguard rescue or Lookout station",
     display: "Coastguard rescue or Lookout station",
     colour: adsDarkBlue,
   },
@@ -1067,7 +1082,8 @@ const OSGClassification = [
   },
   {
     id: "RH02",
-    lookup: "Residential House in multiple occupation HMO bedsit or other non self-contained unit",
+    lookup:
+      "Residential House in multiple occupation HMO bedsit or other non self-contained unit",
     display: "HMO bedsit or other non self-contained unit",
     colour: adsDarkBlue,
   },

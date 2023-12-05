@@ -15,7 +15,8 @@ const BLPUClassification = [
   },
   {
     id: "CA01",
-    lookup: "Commercial Agricultural Farm / Non-Residential Associated Building",
+    lookup:
+      "Commercial Agricultural Farm / Non-Residential Associated Building",
     display: "Farm / Non-Residential Associated Building",
     colour: adsDarkBlue,
   },
@@ -63,7 +64,8 @@ const BLPUClassification = [
   },
   {
     id: "CC04",
-    lookup: "Commercial Community Services Public / Village Hall / Other Community Facility",
+    lookup:
+      "Commercial Community Services Public / Village Hall / Other Community Facility",
     display: "Public / Village Hall / Other Community Facility",
     colour: adsDarkBlue,
   },
@@ -75,13 +77,15 @@ const BLPUClassification = [
   },
   {
     id: "CC06",
-    lookup: "Commercial Community Services Cemetery / Crematorium / Graveyard. In Current Use",
+    lookup:
+      "Commercial Community Services Cemetery / Crematorium / Graveyard. In Current Use",
     display: "Cemetery / Crematorium / Graveyard. In Current Use",
     colour: adsDarkBlue,
   },
   {
     id: "CC07",
-    lookup: "Commercial Community Services Church Hall / Religious Meeting Place / Hall",
+    lookup:
+      "Commercial Community Services Church Hall / Religious Meeting Place / Hall",
     display: "Church Hall / Religious Meeting Place / Hall",
     colour: adsDarkBlue,
   },
@@ -93,7 +97,8 @@ const BLPUClassification = [
   },
   {
     id: "CC09",
-    lookup: "Commercial Community Services Public Household Waste Recycling Centre (HWRC)",
+    lookup:
+      "Commercial Community Services Public Household Waste Recycling Centre (HWRC)",
     display: "Public Household Waste Recycling Centre (HWRC)",
     colour: adsDarkBlue,
   },
@@ -112,7 +117,7 @@ const BLPUClassification = [
   {
     id: "CC12",
     lookup: "Commercial Community Services Job Centre",
-    displayText: "Job Centre",
+    display: "Job Centre",
     colour: adsDarkBlue,
   },
   {
@@ -135,7 +140,8 @@ const BLPUClassification = [
   },
   {
     id: "CE03",
-    lookup: "Commercial Education Preparatory / First / Primary / Infant / Junior / Middle School",
+    lookup:
+      "Commercial Education Preparatory / First / Primary / Infant / Junior / Middle School",
     display: "Preparatory / First / Primary / Infant / Junior / Middle School",
     colour: adsDarkBlue,
   },
@@ -275,14 +281,17 @@ const BLPUClassification = [
   },
   {
     id: "CL06",
-    lookup: "Commercial Leisure Indoor / Outdoor Leisure / Sporting Activity/ Centre",
+    lookup:
+      "Commercial Leisure Indoor / Outdoor Leisure / Sporting Activity/ Centre",
     display: "Indoor / Outdoor Leisure / Sporting Activity/ Centre",
     colour: adsDarkBlue,
   },
   {
     id: "CL07",
-    lookup: "Commercial Leisure Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre / Concert Hall",
-    display: "Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre / Concert Hall",
+    lookup:
+      "Commercial Leisure Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre / Concert Hall",
+    display:
+      "Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre / Concert Hall",
     colour: adsDarkBlue,
   },
   {
@@ -293,7 +302,8 @@ const BLPUClassification = [
   },
   {
     id: "CL09",
-    lookup: "Commercial Leisure Beach Hut (Recreational, Non-Residential Use Only)",
+    lookup:
+      "Commercial Leisure Beach Hut (Recreational, Non-Residential Use Only)",
     display: "Beach Hut (Recreational, Non-Residential Use Only)",
     colour: adsDarkBlue,
   },
@@ -491,8 +501,10 @@ const BLPUClassification = [
   },
   {
     id: "CT01",
-    lookup: "Commercial Transport Airfield / Airstrip / Airport / Air Transport Infrastructure Facility",
-    display: "Airfield / Airstrip / Airport / Air Transport Infrastructure Facility",
+    lookup:
+      "Commercial Transport Airfield / Airstrip / Airport / Air Transport Infrastructure Facility",
+    display:
+      "Airfield / Airstrip / Airport / Air Transport Infrastructure Facility",
     colour: adsDarkBlue,
   },
   {
@@ -503,8 +515,10 @@ const BLPUClassification = [
   },
   {
     id: "CT03",
-    lookup: "Commercial Transport Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride Site",
-    display: "Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride Site",
+    lookup:
+      "Commercial Transport Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride Site",
+    display:
+      "Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride Site",
     colour: adsDarkBlue,
   },
   {
@@ -649,7 +663,8 @@ const BLPUClassification = [
   },
   {
     id: "CX01",
-    lookup: "Commercial Emergency / Rescue Service Police / Transport Police / Station",
+    lookup:
+      "Commercial Emergency / Rescue Service Police / Transport Police / Station",
     display: "Police / Transport Police / Station",
     colour: adsDarkBlue,
   },
@@ -673,7 +688,8 @@ const BLPUClassification = [
   },
   {
     id: "CX05",
-    lookup: "Commercial Emergency / Rescue Service Coastguard Rescue / Lookout / Station",
+    lookup:
+      "Commercial Emergency / Rescue Service Coastguard Rescue / Lookout / Station",
     display: "Coastguard Rescue / Lookout / Station",
     colour: adsDarkBlue,
   },
@@ -1015,7 +1031,8 @@ const BLPUClassification = [
   },
   {
     id: "RD06",
-    lookup: "Residential Dwelling Self-Contained Flat (Includes Maisonette / Apartment)",
+    lookup:
+      "Residential Dwelling Self-Contained Flat (Includes Maisonette / Apartment)",
     display: "Self-Contained Flat (Includes Maisonette / Apartment)",
     colour: adsDarkBlue,
   },
@@ -1063,7 +1080,8 @@ const BLPUClassification = [
   },
   {
     id: "RH02",
-    lookup: "Residential House In Multiple Occupation HMO Bedsit / Other Non Self Contained Accommodation",
+    lookup:
+      "Residential House In Multiple Occupation HMO Bedsit / Other Non Self Contained Accommodation",
     display: "HMO Bedsit / Other Non Self Contained Accommodation",
     colour: adsDarkBlue,
   },
