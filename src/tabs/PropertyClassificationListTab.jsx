@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
+//    005   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -181,18 +182,18 @@ function PropertyClassificationListTab({
    * Array of fields (columns) to be displayed in the data grid.
    */
   const classificationColumns = [
-    { field: "id", hide: true },
-    { field: "uprn", hide: true },
-    { field: "changeType", hide: true },
-    { field: "classKey", hide: true },
+    { field: "id" },
+    { field: "uprn" },
+    { field: "changeType" },
+    { field: "classKey" },
     {
       field: "blpuClass",
       headerName: "Classification",
       flex: 30,
       renderCell: getClassificationDisplay,
     },
-    { field: "classScheme", hide: true },
-    { field: "entryDate", hide: true },
+    { field: "classScheme" },
+    { field: "entryDate" },
     {
       field: "startDate",
       headerName: "Start",
@@ -200,6 +201,7 @@ function PropertyClassificationListTab({
       type: "date",
       align: "right",
       headerAlign: "right",
+      valueGetter: (params) => new Date(params.value),
       renderCell: formatTableStartDate,
     },
     {
@@ -209,9 +211,10 @@ function PropertyClassificationListTab({
       type: "date",
       align: "right",
       headerAlign: "right",
+      valueGetter: (params) => new Date(params.value),
       renderCell: formatTableEndDate,
     },
-    { field: "lastUpdateDate", hide: true },
+    { field: "lastUpdateDate" },
     { field: "", flex: 2, sortable: false, renderCell: displayActionButtons },
   ];
 
@@ -364,12 +367,25 @@ function PropertyClassificationListTab({
           <DataGrid
             rows={data.filter((x) => x.changeType !== "D")}
             columns={classificationColumns}
+            initialState={{
+              columns: {
+                columnVisibilityModel: {
+                  id: false,
+                  uprn: false,
+                  changeType: false,
+                  classKey: false,
+                  classScheme: false,
+                  entryDate: false,
+                  lastUpdateDate: false,
+                },
+              },
+            }}
             autoPageSize
             checkboxSelection
             disableColumnMenu
             pagination
             sortModel={sortModel}
-            selectionModel={selectionModel}
+            rowSelectionModel={selectionModel}
             componentsProps={{
               row: {
                 onMouseEnter: handleRowMouseEnter,
@@ -378,7 +394,7 @@ function PropertyClassificationListTab({
             }}
             getRowClassName={(params) => `${isRowInvalid(params.id) ? "invalid-row" : "valid-row"}`}
             onCellClick={handleClassificationClicked}
-            onSelectionModelChange={(newSelectionModel) => {
+            onRowSelectionModelChange={(newSelectionModel) => {
               setSelectionModel(newSelectionModel);
               handleSelectionModelChange(newSelectionModel);
             }}

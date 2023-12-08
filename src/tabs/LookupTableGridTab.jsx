@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and removed a warning.
+//    004   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1594,6 +1595,39 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
     }
   };
 
+  /**
+   * Method to get the list of columns to hide in the grid.
+   *
+   * @returns {object} The initial state object used to hide the columns
+   */
+  const getInitialState = () => {
+    switch (variant) {
+      case "postTown":
+      case "subLocality":
+      case "locality":
+      case "town":
+      case "island":
+      case "administrativeArea":
+        return {
+          columns: {
+            columnVisibilityModel: {
+              id: false,
+              linkedRef: false,
+            },
+          },
+        };
+
+      default:
+        return {
+          columns: {
+            columnVisibilityModel: {
+              id: false,
+            },
+          },
+        };
+    }
+  };
+
   useEffect(() => {
     switch (variant) {
       case "postcode":
@@ -1727,16 +1761,16 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
             <DataGrid
               rows={displayData}
               columns={getColumns()}
+              initialState={getInitialState()}
               autoPageSize
               disableColumnMenu
-              // disableSelectionOnClick
               disableColumnSelector
               disableDensitySelector
               hideFooterSelectedRowCount
               editMode="row"
               pagination
               sortModel={sortModel}
-              componentsProps={{
+              slotProps={{
                 row: {
                   onMouseEnter: handleRowMouseEnter,
                   onMouseLeave: handleRowMouseLeave,

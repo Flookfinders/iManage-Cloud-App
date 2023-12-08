@@ -12,6 +12,7 @@
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   13.07.21 Sean Flook         WI39??? Initial Revision.
+//    002   08.12.23 Sean Flook                 Migrated DatePicker to v6.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -23,6 +24,7 @@ import React, { useState, Fragment, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Grid, Typography, Badge, TextField, MenuItem } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { parseISO } from "date-fns";
 import {
   FormRowStyle,
   FormInputStyle,
@@ -226,7 +228,7 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
             <Grid item xs>
               <DatePicker
                 id={`${label.toLowerCase().replaceAll(" ", "-")}-between-date1`}
-                inputFormat="dd/MM/yyyy"
+                format="dd/MM/yyyy"
                 disableMaskedInput
                 maxDate={new Date()}
                 showTodayButton
@@ -256,7 +258,7 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
             <Grid item xs>
               <DatePicker
                 id={`${label.toLowerCase().replaceAll(" ", "-")}-between-date2`}
-                inputFormat="dd/MM/yyyy"
+                format="dd/MM/yyyy"
                 disableMaskedInput
                 maxDate={new Date()}
                 showTodayButton
@@ -287,7 +289,7 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
           <Grid item xs={8}>
             <DatePicker
               id={`${label.toLowerCase().replaceAll(" ", "-")}-before-date`}
-              inputFormat="dd/MM/yyyy"
+              format="dd/MM/yyyy"
               disableMaskedInput
               maxDate={new Date()}
               value={betweenDate1}
@@ -316,7 +318,7 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
           <Grid item xs={8}>
             <DatePicker
               id={`${label.toLowerCase().replaceAll(" ", "-")}-on-date`}
-              inputFormat="dd/MM/yyyy"
+              format="dd/MM/yyyy"
               maxDate={new Date()}
               disableMaskedInput
               value={betweenDate1}
@@ -347,8 +349,8 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
   };
 
   useEffect(() => {
-    setBetweenDate1(date1);
-    setBetweenDate2(date2);
+    setBetweenDate1(parseISO(date1));
+    setBetweenDate2(parseISO(date2));
   }, [date1, date2]);
 
   return (

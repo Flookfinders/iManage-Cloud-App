@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   07.07.21 Sean Flook                 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    003   08.12.23 Sean Flook                 Migrated DatePicker to v6.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -26,6 +27,7 @@ import { Grid, TextField, Typography, Tooltip, Skeleton } from "@mui/material";
 import { Box } from "@mui/system";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dateFormat from "dateformat";
+import { parseISO } from "date-fns";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { useTheme } from "@mui/styles";
 import { FormBoxRowStyle, FormRowStyle, FormDateInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
@@ -123,8 +125,8 @@ function ADSFromToTimeControl({
   }, [fromErrorText, toErrorText]);
 
   useEffect(() => {
-    if (!loading && fromValue) setSelectedFromTime(fromValue);
-    if (!loading && toValue) setSelectedToTime(toValue);
+    if (!loading && fromValue) setSelectedFromTime(parseISO(fromValue));
+    if (!loading && toValue) setSelectedToTime(parseISO(toValue));
   }, [loading, fromValue, toValue]);
 
   useEffect(() => {

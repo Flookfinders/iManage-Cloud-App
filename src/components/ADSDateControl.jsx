@@ -22,6 +22,7 @@
 //    009   15.06.21 Sean Flook         WI39345 Display the toolbar as temporary fix, until v5 components are fully released.
 //    010   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
 //    011   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    012   08.12.23 Sean Flook                 Migrated DatePicker to v6.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -34,6 +35,7 @@ import PropTypes from "prop-types";
 import { Grid, TextField, Typography, Tooltip, Skeleton } from "@mui/material";
 import { Box } from "@mui/system";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { parseISO } from "date-fns";
 import dateFormat from "dateformat";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { useTheme } from "@mui/styles";
@@ -87,7 +89,7 @@ function ADSDateControl({ label, isEditable, isRequired, isFocused, loading, hel
   }, [errorText]);
 
   useEffect(() => {
-    if (!loading && value && value.toString() !== "0001-01-01T00:00:00") setSelectedDate(value);
+    if (!loading && value && value.toString() !== "0001-01-01T00:00:00") setSelectedDate(parseISO(value));
   }, [loading, value]);
 
   useEffect(() => {
@@ -120,7 +122,7 @@ function ADSDateControl({ label, isEditable, isRequired, isFocused, loading, hel
             helperText && helperText.length > 0 ? (
               <DatePicker
                 id={`${label.toLowerCase().replaceAll(" ", "-")}-date-picker`}
-                inputFormat="dd MMMM yyyy"
+                format="dd MMMM yyyy"
                 disableMaskedInput
                 value={selectedDate}
                 showTodayButton
@@ -155,7 +157,7 @@ function ADSDateControl({ label, isEditable, isRequired, isFocused, loading, hel
             ) : (
               <DatePicker
                 id={`${label.toLowerCase().replaceAll(" ", "-")}-date-picker`}
-                inputFormat="dd MMMM yyyy"
+                format="dd MMMM yyyy"
                 disableMaskedInput
                 value={selectedDate ? selectedDate : new Date()}
                 showTodayButton

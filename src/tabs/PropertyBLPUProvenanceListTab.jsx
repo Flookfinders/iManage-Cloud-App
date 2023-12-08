@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
+//    006   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -193,19 +194,18 @@ function PropertyBLPUProvenanceListTab({
    * Array of fields (columns) to be displayed in the data grid.
    */
   const provenanceColumns = [
-    { field: "id", hide: true },
-    // { field: "proOrder", hide: true },
-    { field: "uprn", hide: true },
-    { field: "changeType", hide: true },
-    { field: "provenanceKey", hide: true },
+    { field: "id" },
+    { field: "uprn" },
+    { field: "changeType" },
+    { field: "provenanceKey" },
     {
       field: "provenanceCode",
       headerName: "Type",
       flex: 30,
       renderCell: getProvenanceAvatar,
     },
-    { field: "annotation", hide: true },
-    { field: "entryDate", hide: true },
+    { field: "annotation" },
+    { field: "entryDate" },
     {
       field: "startDate",
       headerName: "Start",
@@ -213,6 +213,7 @@ function PropertyBLPUProvenanceListTab({
       type: "date",
       align: "right",
       headerAlign: "right",
+      valueGetter: (params) => new Date(params.value),
       renderCell: formatTableStartDate,
     },
     {
@@ -222,15 +223,11 @@ function PropertyBLPUProvenanceListTab({
       type: "date",
       align: "right",
       headerAlign: "right",
+      valueGetter: (params) => new Date(params.value),
       renderCell: formatTableEndDate,
     },
-    { field: "lastUpdateDate", hide: true },
+    { field: "lastUpdateDate" },
     { field: "", flex: 2, sortable: false, renderCell: displayActionButtons },
-    // { field: "wktGeometry", hide: true },
-    // { field: "lastUpdated", hide: true },
-    // { field: "insertedTimestamp", hide: true },
-    // { field: "insertedUser", hide: true },
-    // { field: "lastUser", hide: true },
   ];
 
   /**
@@ -386,12 +383,25 @@ function PropertyBLPUProvenanceListTab({
           <DataGrid
             rows={data.filter((x) => x.changeType !== "D")}
             columns={provenanceColumns}
+            initialState={{
+              columns: {
+                columnVisibilityModel: {
+                  id: false,
+                  uprn: false,
+                  changeType: false,
+                  provenanceKey: false,
+                  annotation: false,
+                  entryDate: false,
+                  lastUpdateDate: false,
+                },
+              },
+            }}
             autoPageSize
             checkboxSelection
             disableColumnMenu
             pagination
             sortModel={sortModel}
-            selectionModel={selectionModel}
+            rowSelectionModel={selectionModel}
             componentsProps={{
               row: {
                 onMouseEnter: handleRowMouseEnter,
@@ -400,7 +410,7 @@ function PropertyBLPUProvenanceListTab({
             }}
             getRowClassName={(params) => `${isRowInvalid(params.id) ? "invalid-row" : "valid-row"}`}
             onCellClick={handleProvenanceClicked}
-            onSelectionModelChange={(newSelectionModel) => {
+            onRowSelectionModelChange={(newSelectionModel) => {
               setSelectionModel(newSelectionModel);
               handleSelectionModelChange(newSelectionModel);
             }}

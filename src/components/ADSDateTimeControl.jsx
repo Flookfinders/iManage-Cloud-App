@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001            Sean Flook                 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    003   08.12.23 Sean Flook                 Migrated DatePicker to v6.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -27,6 +28,7 @@ import { Box } from "@mui/system";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dateFormat from "dateformat";
+import { parseISO } from "date-fns";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { useTheme } from "@mui/styles";
 import { FormBoxRowStyle, FormRowStyle, FormDateInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
@@ -118,8 +120,8 @@ function ADSDateTimeControl({
   }, [dateErrorText, timeErrorText]);
 
   useEffect(() => {
-    if (!loading && dateValue && dateValue.toString() !== "0001-01-01T00:00:00") setSelectedDate(dateValue);
-    if (!loading && timeValue) setSelectedTime(timeValue);
+    if (!loading && dateValue && dateValue.toString() !== "0001-01-01T00:00:00") setSelectedDate(parseISO(dateValue));
+    if (!loading && timeValue) setSelectedTime(parseISO(timeValue));
   }, [loading, dateValue, timeValue]);
 
   useEffect(() => {
@@ -165,7 +167,7 @@ function ADSDateTimeControl({
                   {dateHelperText && dateHelperText.length > 0 ? (
                     <DatePicker
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-date-picker`}
-                      inputFormat="dd MMMM yyyy"
+                      format="dd MMMM yyyy"
                       disableMaskedInput
                       value={selectedDate}
                       showTodayButton
@@ -200,7 +202,7 @@ function ADSDateTimeControl({
                   ) : (
                     <DatePicker
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-date-picker`}
-                      inputFormat="dd MMMM yyyy"
+                      format="dd MMMM yyyy"
                       disableMaskedInput
                       value={selectedDate}
                       showTodayButton

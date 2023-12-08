@@ -19,6 +19,7 @@
 //    006   06.10.23 Sean Flook                 Use colour variables and added some error trapping.
 //    007   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required and corrected display of user avatar.
 //    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and removed a couple of warnings.
+//    009   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -145,8 +146,8 @@ function ADSHomepageLatestEditsControl({ data }) {
   };
 
   const columns = [
-    { field: "uprn", hide: true },
-    { field: "usrn", hide: true },
+    { field: "uprn" },
+    { field: "usrn" },
     { field: "displayId", headerName: "Reference", flex: 15 },
     {
       field: "displayText",
@@ -543,6 +544,14 @@ function ADSHomepageLatestEditsControl({ data }) {
             sx={{ backgroundColor: adsWhite }}
             rows={data}
             columns={columns}
+            initialState={{
+              columns: {
+                columnVisibilityModel: {
+                  uprn: false,
+                  usrn: false,
+                },
+              },
+            }}
             density="compact"
             editMode="row"
             autoPageSize

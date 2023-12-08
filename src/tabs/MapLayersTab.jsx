@@ -16,6 +16,7 @@
 //    003   07.09.23 Sean Flook                 Removed unnecessary awaits.
 //    004   06.10.23 Sean Flook                 Use colour variables.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    006   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -310,21 +311,18 @@ function MapLayersTab(props) {
     {
       field: "id",
       headerClassName: "idox-map-layer-data-grid-header",
-      hide: true,
       sortable: false,
       filterable: false,
     },
     {
       field: "layerType",
       headerClassName: "idox-map-layer-data-grid-header",
-      hide: true,
       sortable: false,
       filterable: false,
     },
     {
       field: "layerPosition",
       headerClassName: "idox-map-layer-data-grid-header",
-      hide: true,
       sortable: false,
       filterable: false,
     },
@@ -340,7 +338,6 @@ function MapLayersTab(props) {
     {
       field: "visible",
       headerClassName: "idox-map-layer-data-grid-header",
-      hide: true,
       sortable: false,
       filterable: false,
     },
@@ -862,16 +859,25 @@ function MapLayersTab(props) {
             <DataGrid
               rows={gridData}
               columns={mapLayerColumns}
+              initialState={{
+                columns: {
+                  columnVisibilityModel: {
+                    id: false,
+                    layerType: false,
+                    layerPosition: false,
+                    visible: false,
+                  },
+                },
+              }}
               autoPageSize
               disableColumnMenu
-              // disableSelectionOnClick
               disableColumnSelector
               disableDensitySelector
               hideFooterSelectedRowCount
               editMode="row"
               pagination
               sortModel={sortModel}
-              componentsProps={{
+              slotProps={{
                 row: {
                   onMouseEnter: handleRowMouseEnter,
                   onMouseLeave: handleRowMouseLeave,

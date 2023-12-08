@@ -14,6 +14,7 @@
 //    001   26.10.23 Sean Flook       IMANN-175 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //    003   30.11.23 Sean Flook                 Use a constant for the default classification scheme.
+//    004   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -151,8 +152,8 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
    * Array of fields (columns) to be displayed in the data grid.
    */
   const columns = [
-    { field: "id", hide: true },
-    { field: "uprn", hide: true },
+    { field: "id" },
+    { field: "uprn" },
     {
       field: "address",
       headerName: "Address",
@@ -795,13 +796,21 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
                       <DataGrid
                         rows={finaliseErrors}
                         columns={columns}
+                        initialState={{
+                          columns: {
+                            columnVisibilityModel: {
+                              id: false,
+                              uprn: false,
+                            },
+                          },
+                        }}
                         autoPageSize
                         disableColumnMenu
-                        disableSelectionOnClick
+                        disableRowSelectionOnClick
                         pagination
                         sortModel={sortModel}
-                        selectionModel={selectionModel}
-                        onSelectionModelChange={(newSelectionModel) => {
+                        rowSelectionModel={selectionModel}
+                        onRowSelectionModelChange={(newSelectionModel) => {
                           setSelectionModel(newSelectionModel);
                         }}
                         onSortModelChange={(model) => setSortModel(model)}

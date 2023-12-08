@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
+//    005   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -166,9 +167,9 @@ function SuccessorListTab({
    * Array of fields (columns) to be displayed in the data grid.
    */
   const successorColumns = [
-    { field: "id", hide: true },
-    { field: "changeType", hide: true },
-    { field: "succKey", hide: true },
+    { field: "id" },
+    { field: "changeType" },
+    { field: "succKey" },
     {
       field: "successor",
       headerName: "Successor",
@@ -179,8 +180,8 @@ function SuccessorListTab({
       headerName: "Predecessor",
       flex: 15,
     },
-    { field: "successorType", hide: true },
-    { field: "entryDate", hide: true },
+    { field: "successorType" },
+    { field: "entryDate" },
     {
       field: "startDate",
       headerName: "Start",
@@ -188,6 +189,7 @@ function SuccessorListTab({
       type: "date",
       align: "right",
       headerAlign: "right",
+      valueGetter: (params) => new Date(params.value),
       renderCell: formatTableStartDate,
     },
     {
@@ -197,9 +199,10 @@ function SuccessorListTab({
       type: "date",
       align: "right",
       headerAlign: "right",
+      valueGetter: (params) => new Date(params.value),
       renderCell: formatTableEndDate,
     },
-    { field: "lastUpdateDate", hide: true },
+    { field: "lastUpdateDate" },
     { field: "", flex: 2, sortable: false, renderCell: displayActionButtons },
   ];
 
@@ -352,13 +355,25 @@ function SuccessorListTab({
           <DataGrid
             rows={data.filter((x) => x.changeType !== "D")}
             columns={successorColumns}
+            initialState={{
+              columns: {
+                columnVisibilityModel: {
+                  id: false,
+                  changeType: false,
+                  succKey: false,
+                  successorType: false,
+                  entryDate: false,
+                  lastUpdateDate: false,
+                },
+              },
+            }}
             autoPageSize
             checkboxSelection
             disableColumnMenu
             pagination
             sortModel={sortModel}
-            selectionModel={selectionModel}
-            componentsProps={{
+            rowSelectionModel={selectionModel}
+            slotProps={{
               row: {
                 onMouseEnter: handleRowMouseEnter,
                 onMouseLeave: handleRowMouseLeave,
@@ -366,7 +381,7 @@ function SuccessorListTab({
             }}
             getRowClassName={(params) => `${isRowInvalid(params.id) ? "invalid-row" : "valid-row"}`}
             onCellClick={handleSuccessorCrossRefClicked}
-            onSelectionModelChange={(newSelectionModel) => {
+            onRowSelectionModelChange={(newSelectionModel) => {
               setSelectionModel(newSelectionModel);
               handleSelectionModelChange(newSelectionModel);
             }}

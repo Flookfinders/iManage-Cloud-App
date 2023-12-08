@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   07.07.21 Sean Flook                 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    003   08.12.23 Sean Flook                 Migrated DatePicker to v6.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -26,6 +27,7 @@ import { Grid, TextField, Typography, Tooltip, Skeleton } from "@mui/material";
 import { Box } from "@mui/system";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dateFormat from "dateformat";
+import { parseISO } from "date-fns";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { useTheme } from "@mui/styles";
 import { FormBoxRowStyle, FormRowStyle, FormDateInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
@@ -123,8 +125,9 @@ function ADSFromToDateControl({
   }, [fromErrorText, toErrorText]);
 
   useEffect(() => {
-    if (!loading && fromValue && fromValue.toString() !== "0001-01-01T00:00:00") setSelectedFromDate(fromValue);
-    if (!loading && toValue && toValue.toString() !== "0001-01-01T00:00:00") setSelectedToDate(toValue);
+    if (!loading && fromValue && fromValue.toString() !== "0001-01-01T00:00:00")
+      setSelectedFromDate(parseISO(fromValue));
+    if (!loading && toValue && toValue.toString() !== "0001-01-01T00:00:00") setSelectedToDate(parseISO(toValue));
   }, [loading, fromValue, toValue]);
 
   useEffect(() => {
@@ -170,7 +173,7 @@ function ADSFromToDateControl({
                   {fromHelperText && fromHelperText.length > 0 ? (
                     <DatePicker
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-from-date-picker`}
-                      inputFormat="dd MMMM yyyy"
+                      format="dd MMMM yyyy"
                       disableMaskedInput
                       value={selectedFromDate}
                       showTodayButton
@@ -205,7 +208,7 @@ function ADSFromToDateControl({
                   ) : (
                     <DatePicker
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-from-date-picker`}
-                      inputFormat="dd MMMM yyyy"
+                      format="dd MMMM yyyy"
                       disableMaskedInput
                       value={selectedFromDate}
                       showTodayButton
@@ -241,7 +244,7 @@ function ADSFromToDateControl({
                   {toHelperText && toHelperText.length > 0 ? (
                     <DatePicker
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-to-date-picker`}
-                      inputFormat="dd MMMM yyyy"
+                      format="dd MMMM yyyy"
                       disableMaskedInput
                       value={selectedToDate}
                       showTodayButton
@@ -276,7 +279,7 @@ function ADSFromToDateControl({
                   ) : (
                     <DatePicker
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-to-date-picker`}
-                      inputFormat="dd MMMM yyyy"
+                      format="dd MMMM yyyy"
                       disableMaskedInput
                       value={selectedToDate}
                       showTodayButton

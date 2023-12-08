@@ -682,7 +682,9 @@ export function GetASDMetadataUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetLLPGMetadataUrl(endPointType, userToken, isScottish) {
-  const url = isScottish ? GetApiSite("settings", "/api/OSMetadata") : GetApiSite("settings", "/api/GPLLPGMetadata");
+  const url = isScottish
+    ? GetApiSite("settings", "/api/OSGazetteerMetadata")
+    : GetApiSite("settings", "/api/GPLLPGMetadata");
   return getUrl(url, endPointType, "application/json", userToken);
 }
 

@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
+//    005   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -185,11 +186,11 @@ function PropertyCrossRefListTab({
    * Array of fields (columns) to be displayed in the data grid.
    */
   const columns = [
-    { field: "id", hide: true },
-    { field: "changeType", hide: true },
-    { field: "uprn", hide: true },
-    { field: "xrefKey", hide: true },
-    { field: "source", hide: true },
+    { field: "id" },
+    { field: "changeType" },
+    { field: "uprn" },
+    { field: "xrefKey" },
+    { field: "source" },
     {
       field: "sourceId",
       headerName: "Source",
@@ -197,8 +198,8 @@ function PropertyCrossRefListTab({
       renderCell: GetCrossRefAvatar,
     },
     { field: "crossReference", headerName: "Cross reference", flex: 25 },
-    { field: "entryDate", hide: true },
-    { field: "startDate", hide: true },
+    { field: "entryDate" },
+    { field: "startDate" },
     {
       field: "historic",
       headerName: "Historic",
@@ -208,8 +209,8 @@ function PropertyCrossRefListTab({
       renderCell: GetHistoricAvatar,
       //valueGetter: (params) => params && params.row.endDate,
     },
-    { field: "lastUpdateDate", hide: true },
-    { field: "neverExport", hide: true },
+    { field: "lastUpdateDate" },
+    { field: "neverExport" },
     { field: "", sortable: false, renderCell: displayActionButtons },
   ];
 
@@ -365,14 +366,29 @@ function PropertyCrossRefListTab({
           <DataGrid
             rows={data}
             columns={columns}
+            initialState={{
+              columns: {
+                columnVisibilityModel: {
+                  id: false,
+                  changeType: false,
+                  uprn: false,
+                  xrefKey: false,
+                  source: false,
+                  entryDate: false,
+                  startDate: false,
+                  lastUpdateDate: false,
+                  neverExport: false,
+                },
+              },
+            }}
             autoPageSize
             checkboxSelection
             disableColumnMenu
-            disableSelectionOnClick
+            disableRowSelectionOnClick
             pagination
             sortModel={sortModel}
-            selectionModel={selectionModel}
-            componentsProps={{
+            rowSelectionModel={selectionModel}
+            slotProps={{
               row: {
                 onMouseEnter: handleRowMouseEnter,
                 onMouseLeave: handleRowMouseLeave,
@@ -380,7 +396,7 @@ function PropertyCrossRefListTab({
             }}
             getRowClassName={(params) => `${isRowInvalid(params.id) ? "invalid-row" : "valid-row"}`}
             onCellClick={handleCrossRefClicked}
-            onSelectionModelChange={(newSelectionModel) => {
+            onRowSelectionModelChange={(newSelectionModel) => {
               setSelectionModel(newSelectionModel);
               handleSelectionModelChange(newSelectionModel);
             }}
