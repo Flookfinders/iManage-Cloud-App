@@ -19,22 +19,27 @@
 //    006   02.07.21 Sean Flook         WI39345 Set font for center text.
 //    007   26.05.23 Joel Benford       WI40689 Changes XDM -> iManage Cloud
 //    008   24.11.23 Sean Flook                 Moved Stack to @mui/system.
+//    009   12.12.23 Sean Flook                 Changes required for React 18. Set the colours according to the street state colour and BLPU logical status colour.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
 /* #region imports */
-import React, { Component } from "react";
+import React, { useRef, useEffect } from "react";
+import PropTypes from "prop-types";
 import _ from "lodash";
 import { Grid, Typography } from "@mui/material";
-import { Stack } from "@mui/system";
+import { Stack, Box } from "@mui/system";
 import { Chart, ArcElement, DoughnutController, Legend, Tooltip } from "chart.js";
 import { toFont } from "chart.js/helpers";
 import { StreetIcon } from "../utils/ADSIcons";
 import HomeIcon from "@mui/icons-material/Home";
 import MiscellaneousIcon from "@mui/icons-material/MoreHoriz";
-import classes from "./ADSDoughnutChart.module.css";
+import StreetState from "../data/StreetState";
+import BLPULogicalStatus from "../data/BLPULogicalStatus";
+import { dashboardIconStyle } from "../utils/ADSStyles";
+import { adsPaleBlueA } from "../utils/ADSColours";
 /* #endregion imports */
 
 Chart.register(ArcElement, DoughnutController, Legend, Tooltip, {
@@ -122,173 +127,247 @@ Chart.register(ArcElement, DoughnutController, Legend, Tooltip, {
   },
 });
 
-class ADSDoughnutChart extends Component {
-  chartRef = React.createRef();
-  labels = _.map(this.props.chartData, this.props.label);
-  data = _.map(this.props.chartData, this.props.value);
-  total = this.data.reduce((a, b) => a + b, 0);
+ADSDoughnutChart.propTypes = {
+  chartData: PropTypes.array.isRequired,
+  title: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+};
 
-  getTypeIcon = () => {
-    if (this.props.title.substring(0, 6).toUpperCase() === "STREET") return <StreetIcon className="dashboardIcon" />;
-    else if (this.props.title.substring(0, 7).toUpperCase() === "PROPERT")
-      return <HomeIcon className="dashboardIcon" />;
-    else return <MiscellaneousIcon className="dashboardIcon" />;
+function ADSDoughnutChart({ chartData, title, label, value }) {
+  const chartRef = useRef(null);
+  const chartTitle = useRef(title);
+  const labels = useRef(_.map(chartData, label));
+  const data = useRef(_.map(chartData, value));
+  const total = useRef(data.current.reduce((a, b) => a + b, 0));
+
+  const getTypeIcon = () => {
+    if (title.substring(0, 6).toUpperCase() === "STREET") return <StreetIcon sx={dashboardIconStyle} />;
+    else if (title.substring(0, 7).toUpperCase() === "PROPERT") return <HomeIcon sx={dashboardIconStyle} />;
+    else return <MiscellaneousIcon sx={dashboardIconStyle} />;
   };
 
-  componentDidMount() {
-    const myChartRef = this.chartRef.current.getContext("2d");
+  useEffect(() => {
+    const defaultColours = [
+      "#2a6ebb",
+      "#dd4c65",
+      "#62a1cd",
+      "#bfede1",
+      "#ffd3bf",
+      "#93003a",
+      "#4887c4",
+      "#7dbbd5",
+      "#f4777f",
+      "#be214d",
+      "#9ad5db",
+      "#ffa59e",
+    ];
+
+    const getBackgroundColours = () => {
+      if (chartTitle.current.substring(0, 6).toUpperCase() === "STREET") {
+        const streetBackgroundColours = [];
+        labels.current.forEach((item) => {
+          const stateRec = StreetState.find((x) => x.gpText === item);
+          if (stateRec) streetBackgroundColours.push(stateRec.colour);
+        });
+        if (streetBackgroundColours.length > 0) return streetBackgroundColours;
+        else return defaultColours;
+      } else if (chartTitle.current.substring(0, 7).toUpperCase() === "PROPERT") {
+        const propertyBackgroundColors = [];
+        labels.current.forEach((item) => {
+          const logicalStatusRec = BLPULogicalStatus.find((x) => x.gpText === item || x.osText === item);
+          if (logicalStatusRec) propertyBackgroundColors.push(logicalStatusRec.colour);
+        });
+        if (propertyBackgroundColors.length > 0) return propertyBackgroundColors;
+        else return defaultColours;
+      } else return defaultColours;
+    };
+
+    const getBorderColours = () => {
+      if (chartTitle.current.substring(0, 6).toUpperCase() === "STREET") {
+        const streetBorderColours = [];
+        labels.current.forEach((item) => {
+          const stateRec = StreetState.find((x) => x.gpText === item);
+          if (stateRec) {
+            streetBorderColours.push(stateRec.colour);
+          }
+        });
+
+        if (streetBorderColours.length > 0) return streetBorderColours;
+        else return defaultColours;
+      } else if (chartTitle.current.substring(0, 7).toUpperCase() === "PROPERT") {
+        const propertyBorderColors = [];
+        labels.current.forEach((item) => {
+          const logicalStatusRec = BLPULogicalStatus.find((x) => x.gpText === item || x.osText === item);
+          if (logicalStatusRec) {
+            propertyBorderColors.push(logicalStatusRec.colour);
+          }
+        });
+        if (propertyBorderColors.length > 0) return propertyBorderColors;
+        else return defaultColours;
+      } else return defaultColours;
+    };
+
+    let maxLabelLength = 0;
+
+    labels.current.forEach((item) => {
+      if (item.length > maxLabelLength) maxLabelLength = item.length;
+    });
+
     const state = {
-      labels: this.labels.length === this.data.length ? this.labels : new Array(this.data.length).fill("Data"),
+      labels:
+        labels.current.length === data.current.length ? labels.current : new Array(data.current.length).fill("Data"),
       datasets: [
         {
-          label: this.props.title,
-          backgroundColor: [
-            "#2a6ebb",
-            "#dd4c65",
-            "#62a1cd",
-            "#bfede1",
-            "#ffd3bf",
-            "#93003a",
-            "#4887c4",
-            "#7dbbd5",
-            "#f4777f",
-            "#be214d",
-            "#9ad5db",
-            "#ffa59e",
-          ],
-          data: this.data,
+          label: chartTitle.current,
+          backgroundColor: getBackgroundColours(),
+          borderColor: getBorderColours(),
+          borderWidth: 1,
+          data: data.current,
         },
       ],
     };
 
-    new Chart(myChartRef, {
-      type: "doughnut",
-      data: state,
-      options: {
-        responsive: true,
-        cutout: "50%",
-        plugins: {
-          tooltip: {
-            // Disable the on-canvas tooltip
-            enabled: false,
+    let doughnutChart = new Chart(
+      document.getElementById(`${chartTitle.current.toLowerCase().replaceAll(" ", "-")}-chart`),
+      {
+        type: "doughnut",
+        data: state,
+        options: {
+          responsive: true,
+          cutout: "50%",
+          plugins: {
+            tooltip: {
+              // Disable the on-canvas tooltip
+              enabled: false,
 
-            external: function (context) {
-              // console.log("DEBUG Custom Tooltip", context);
-              // Tooltip Element
-              let tooltipEl = document.getElementById("chartjs-tooltip");
+              external: function (context) {
+                // Tooltip Element
+                let tooltipEl = document.getElementById("chartjs-tooltip");
 
-              // Create element on first render
-              if (!tooltipEl) {
-                tooltipEl = document.createElement("div");
-                tooltipEl.id = "chartjs-tooltip";
-                tooltipEl.style.backgroundColor = "#ff0000";
-                tooltipEl.innerHTML = "<table></table>";
-                document.body.appendChild(tooltipEl);
-              }
+                // Create element on first render
+                if (!tooltipEl) {
+                  tooltipEl = document.createElement("div");
+                  tooltipEl.id = "chartjs-tooltip";
+                  tooltipEl.style.backgroundColor = "#ff0000";
+                  tooltipEl.innerHTML = "<table></table>";
+                  document.body.appendChild(tooltipEl);
+                }
 
-              // Hide if no tooltip
-              const tooltipModel = context.tooltip;
-              // console.log("DEBUG Custom tooltipModel", context.tooltip);
-              if (tooltipModel.opacity === 0) {
-                tooltipEl.style.opacity = 0;
-                return;
-              }
+                // Hide if no tooltip
+                const tooltipModel = context.tooltip;
+                if (tooltipModel.opacity === 0) {
+                  tooltipEl.style.opacity = 0;
+                  return;
+                }
 
-              // console.log(
-              //   "DEBUG Custom Tooltip Font",
-              //   toFont(tooltipModel.options.bodyFont)
-              // );
+                // Set caret Position
+                tooltipEl.classList.remove("above", "below", "no-transform");
+                if (tooltipModel.yAlign) {
+                  tooltipEl.classList.add(tooltipModel.yAlign);
+                } else {
+                  tooltipEl.classList.add("no-transform");
+                }
 
-              // Set caret Position
-              tooltipEl.classList.remove("above", "below", "no-transform");
-              if (tooltipModel.yAlign) {
-                tooltipEl.classList.add(tooltipModel.yAlign);
-              } else {
-                tooltipEl.classList.add("no-transform");
-              }
+                // Set Text
+                if (tooltipModel.body) {
+                  const dataPoints = tooltipModel.dataPoints[0];
+                  const data = dataPoints.dataset.data || [];
+                  const currentItem = dataPoints.dataIndex;
+                  const legendItems = context.chart.legend.legendItems || [];
+                  const selectedStyle = "font-weight: 700; background-color: " + adsPaleBlueA;
+                  const descriptionStyle = `width: ${maxLabelLength}ch`;
 
-              // Set Text
-              if (tooltipModel.body) {
-                const dataPoints = tooltipModel.dataPoints[0];
-                const data = dataPoints.dataset.data || [];
-                const currentItem = dataPoints.dataIndex;
-                const legendItems = context.chart.legend.legendItems || [];
-                const titleLines = tooltipModel.title || [];
+                  let innerHtml = "<tbody>";
 
-                let innerHtml = "<thead>";
+                  legendItems.forEach(function (legend, i) {
+                    const style =
+                      "display: inline-block; width: 14px; height: 14px; background:" +
+                      legend.fillStyle +
+                      "; color:" +
+                      legend.fillStyle +
+                      "; border-style: solid; border-width: 1px; borderColor:" +
+                      legend.strokeStyle;
 
-                titleLines.forEach(function (title) {
-                  innerHtml += "<tr><th>" + title + "</th></tr>";
-                });
-                innerHtml += "</thead><tbody>";
+                    innerHtml += i === currentItem ? `<tr style="${selectedStyle}">` : "<tr>";
+                    innerHtml += `<td style="${style}" /><td style="${descriptionStyle}">${
+                      legend.text
+                    }</td><td align="right">${data[i].toLocaleString()}</td></tr>`;
+                    // innerHtml += `<td style="${style}" /><td style="${descriptionStyle}">${
+                    //   legend.text
+                    // }</td><td align="right">${data[i].toLocaleString()}</td><td>(${Math.round(
+                    //   (100 * data[i]) / total.current
+                    // )}%)</td></tr>`;
+                  });
+                  innerHtml += "</tbody>";
 
-                legendItems.forEach(function (legend, i) {
-                  let style = "background:" + legend.fillStyle;
-                  style += "; color:" + legend.fillStyle;
-                  const span = `<span style="${style}">SO</span>`;
-                  if (i === currentItem) {
-                    innerHtml += `<tr><td><strong>${span}  ${legend.text}: ${data[i]}</strong></td></tr>`;
-                  } else {
-                    innerHtml += `<tr><td>${span}  ${legend.text}: ${data[i]}</td></tr>`;
-                  }
-                });
-                innerHtml += "</tbody>";
+                  const tableRoot = tooltipEl.querySelector("table");
+                  tableRoot.innerHTML = innerHtml;
+                  tableRoot.style.padding = "2px";
+                  tableRoot.style.borderStyle = "solid";
+                  tableRoot.style.borderWidth = "1px";
+                  tableRoot.style.borderColor = "#4242424D";
+                  tableRoot.style.boxShadow = "4px 4px 8px #535353";
+                }
 
-                const tableRoot = tooltipEl.querySelector("table");
-                tableRoot.innerHTML = innerHtml;
-              }
+                const position = context.chart.canvas.getBoundingClientRect();
+                const bodyFont = toFont(tooltipModel.options.bodyFont);
 
-              const position = context.chart.canvas.getBoundingClientRect();
-              // console.log("DEBUG Custom position", position);
-              const bodyFont = toFont(tooltipModel.options.bodyFont);
-
-              // Display, position, and set styles for font
-              tooltipEl.style.opacity = 1;
-              tooltipEl.style.position = "absolute";
-              tooltipEl.style.left = position.left + window.scrollX + "px";
-              tooltipEl.style.top = position.bottom + window.scrollY + "px";
-              tooltipEl.style.font = bodyFont.string;
-              tooltipEl.style.padding = tooltipModel.padding + "px " + tooltipModel.padding + "px";
-              tooltipEl.style.pointerEvents = "none";
-              tooltipEl.style.zIndex = 10;
+                // Display, position, and set styles for font
+                tooltipEl.style.opacity = 1;
+                tooltipEl.style.position = "absolute";
+                tooltipEl.style.left = position.left + window.scrollX + "px";
+                tooltipEl.style.top = position.bottom + window.scrollY + "px";
+                tooltipEl.style.font = bodyFont.string;
+                tooltipEl.style.padding = tooltipModel.padding + "px " + tooltipModel.padding + "px";
+                tooltipEl.style.pointerEvents = "none";
+                tooltipEl.style.zIndex = 10;
+              },
             },
-          },
-          legend: {
-            display: false,
-          },
-          centerText: {
-            center: {
-              text: `${this.total ? this.total.toLocaleString() : 0}`,
+            legend: {
+              display: false,
+            },
+            centerText: {
+              center: {
+                text: `${total.current ? total.current.toLocaleString() : 0}`,
+              },
             },
           },
         },
-      },
-    });
-  }
-
-  render() {
-    return (
-      <Grid item className={classes.graphContainer}>
-        <Grid container direction="row" justifyContent="center" alignItems="center">
-          {/* <Grid item>{this.getTypeIcon()}</Grid> */}
-          <Grid item>
-            <Stack direction="column" justifyContent="center" alignItems="center">
-              {this.getTypeIcon()}
-              <Typography align="center" variant="subtitle1" display="block">
-                {this.props.title}
-              </Typography>
-            </Stack>
-          </Grid>
-        </Grid>
-        <div>
-          <canvas id={`${this.props.title.toLowerCase().replaceAll(" ", "-")}-chart`} ref={this.chartRef} />
-          <div id="chartjs-tooltip" className={classes.tooltipContainer}>
-            <table></table>
-          </div>
-        </div>
-      </Grid>
+      }
     );
-  }
+
+    return () => {
+      if (doughnutChart) {
+        // destroy the chart
+        doughnutChart.destroy();
+      }
+    };
+  }, []);
+
+  return (
+    <Grid item sx={{ width: "13.3vw" }}>
+      <Grid container direction="row" justifyContent="center" alignItems="center">
+        <Grid item>
+          <Stack direction="column" justifyContent="center" alignItems="center">
+            {getTypeIcon()}
+            <Typography align="center" variant="subtitle1" display="block">
+              {title}
+            </Typography>
+          </Stack>
+        </Grid>
+      </Grid>
+      <div>
+        <canvas id={`${title.toLowerCase().replaceAll(" ", "-")}-chart`} ref={chartRef.current} />
+        <Box
+          id="chartjs-tooltip"
+          sx={{ backgroundColor: "#FFFFFF", borderColor: "#000000", borderWidth: "2px", mt: "4px" }}
+        >
+          <table></table>
+        </Box>
+      </div>
+    </Grid>
+  );
 }
 
 export default ADSDoughnutChart;

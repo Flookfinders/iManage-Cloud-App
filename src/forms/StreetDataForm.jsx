@@ -30,6 +30,7 @@
 //    016   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    017   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //    018   30.11.23 Sean Flook       IMANN-196 Corrected field name in updateDescriptorData.
+//    019   14.12.23 Sean Flook                 Corrected note record type.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -678,13 +679,13 @@ function StreetDataForm({ data, loading }) {
               if (!hwwFormData.hwwData.wholeRoad) mapContext.onEditMapObject(64, hwwFormData.hwwData.pkId);
             } else if (prowFormData) streetContext.onRecordChange(66, prowFormData.index, null);
           } else {
-            if (notesFormData) streetContext.onRecordChange(71, notesFormData.index, null);
+            if (notesFormData) streetContext.onRecordChange(72, notesFormData.index, null);
           }
           break;
 
         case 4:
         case 5:
-          if (notesFormData) streetContext.onRecordChange(71, notesFormData.index, null);
+          if (notesFormData) streetContext.onRecordChange(72, notesFormData.index, null);
           break;
 
         default:
@@ -2826,7 +2827,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("streetNote", newRec);
-      streetContext.onRecordChange(71, newIdx, null, true);
+      streetContext.onRecordChange(72, newIdx, null, true);
     } else if (pkId > 0) {
       setNotesFormData({
         pkId: pkId,
@@ -2836,7 +2837,7 @@ function StreetDataForm({ data, loading }) {
         variant: "street",
       });
 
-      streetContext.onRecordChange(71, dataIdx, null);
+      streetContext.onRecordChange(72, dataIdx, null);
     }
   };
 
@@ -6952,7 +6953,7 @@ function StreetDataForm({ data, loading }) {
           }
           break;
 
-        case 71:
+        case 72:
           setNoteFocusedField(streetContext.goToField.fieldName);
           if (value !== 4) setValue(4);
           const noteData =
@@ -6960,7 +6961,7 @@ function StreetDataForm({ data, loading }) {
               ? streetData.streetNotes[streetContext.goToField.index]
               : null;
           if (noteData) {
-            streetContext.onRecordChange(71, streetContext.goToField.index, null);
+            streetContext.onRecordChange(72, streetContext.goToField.index, null);
             setNotesFormData({
               pkId: noteData.pkId,
               noteData: noteData,

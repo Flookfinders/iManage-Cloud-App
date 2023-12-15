@@ -27,6 +27,7 @@
 //    014   24.11.23 Sean Flook                 Further changes required for Scottish authorities.
 //    015   24.11.23 Joel Benford               Add Scottish option for getting official/postal text.
 //    016   30.11.23 Sean Flook                 Use constant for default classification scheme.
+//    017   14.12.23 Sean Flook                 Removed redundant fields.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1095,8 +1096,6 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               legalName: x.legalName,
               startDate: x.startDate,
               endDate: x.endDate,
-              entryDate: x.entryDate, // TODO: remove once it has been removed from the API
-              lastUpdateDate: x.lastUpdateDate, // TODO: remove once it has been removed from the API
               neverExport: x.neverExport,
             };
           })
@@ -1334,8 +1333,6 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               legalName: x.legalName,
               startDate: x.startDate,
               endDate: x.endDate,
-              entryDate: x.entryDate, // TODO: remove once it has been removed from the API
-              lastUpdateDate: x.lastUpdateDate, // TODO: remove once it has been removed from the API
               neverExport: x.neverExport,
             };
           })

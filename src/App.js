@@ -30,6 +30,7 @@
 //    017   20.11.23 Sean Flook                 Removed unwanted code.
 //    018   24.11.23 Sean Flook                 Renamed successor to successorCrossRef.
 //    019   01.12.23 Sean Flook       IMANN-194 Added HandleUpdateLookup to enable updating a single lookup type.
+//    020   14.12.23 Sean Flook                 Corrected note record type and tidied up validation code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1194,6 +1195,26 @@ function App() {
   function HandleStreetValidateData() {
     let isValid = true;
 
+    const updateStreetErrors = (newErrors, type) => {
+      HandleStreetErrors(
+        type === "street" ? newErrors : streetErrors.street,
+        type === "descriptor" ? newErrors : streetErrors.descriptor,
+        type === "esu" ? newErrors : streetErrors.esu,
+        type === "highwayDedication" ? newErrors : streetErrors.highwayDedication,
+        type === "oneWayExemption" ? newErrors : streetErrors.oneWayExemption,
+        type === "successorCrossRef" ? newErrors : streetErrors.successorCrossRef,
+        type === "maintenanceResponsibility" ? newErrors : streetErrors.maintenanceResponsibility,
+        type === "reinstatementCategory" ? newErrors : streetErrors.reinstatementCategory,
+        type === "osSpecialDesignation" ? newErrors : streetErrors.osSpecialDesignation,
+        type === "interest" ? newErrors : streetErrors.interest,
+        type === "construction" ? newErrors : streetErrors.construction,
+        type === "specialDesignation" ? newErrors : streetErrors.specialDesignation,
+        type === "heightWidthWeight" ? newErrors : streetErrors.heightWidthWeight,
+        type === "publicRightOfWay" ? newErrors : streetErrors.publicRightOfWay,
+        type === "note" ? newErrors : streetErrors.note
+      );
+    };
+
     if (streetModified) {
       switch (streetRecord.type) {
         case 11:
@@ -1217,25 +1238,9 @@ function App() {
               esus: sandbox.currentStreet.esus,
               successorCrossRefs: sandbox.currentStreet.successorCrossRefs,
             };
-            const errorStreet = ValidateStreetData(streetData, lookups, isScottish);
+            const errorStreet = ValidateStreetData(streetData, lookups, isScottish, authorityCode);
             isValid = errorStreet.length === 0;
-            HandleStreetErrors(
-              errorStreet,
-              streetErrors.descriptor,
-              streetErrors.esu,
-              streetErrors.highwayDedication,
-              streetErrors.oneWayExemption,
-              streetErrors.successorCrossRef,
-              streetErrors.maintenanceResponsibility,
-              streetErrors.reinstatementCategory,
-              streetErrors.osSpecialDesignation,
-              streetErrors.interest,
-              streetErrors.construction,
-              streetErrors.specialDesignation,
-              streetErrors.heightWidthWeight,
-              streetErrors.publicRightOfWay,
-              streetErrors.note
-            );
+            updateStreetErrors(errorStreet, "street");
           }
           break;
 
@@ -1248,23 +1253,7 @@ function App() {
               isScottish
             );
             isValid = esuErrors.length === 0;
-            HandleStreetErrors(
-              streetErrors.street,
-              streetErrors.descriptor,
-              esuErrors,
-              streetErrors.highwayDedication,
-              streetErrors.oneWayExemption,
-              streetErrors.successorCrossRef,
-              streetErrors.maintenanceResponsibility,
-              streetErrors.reinstatementCategory,
-              streetErrors.osSpecialDesignation,
-              streetErrors.interest,
-              streetErrors.construction,
-              streetErrors.specialDesignation,
-              streetErrors.heightWidthWeight,
-              streetErrors.publicRightOfWay,
-              streetErrors.note
-            );
+            updateStreetErrors(esuErrors, "esu");
           }
           break;
 
@@ -1278,23 +1267,7 @@ function App() {
               isWelsh
             );
             isValid = descriptorErrors.length === 0;
-            HandleStreetErrors(
-              streetErrors.street,
-              descriptorErrors,
-              streetErrors.esu,
-              streetErrors.highwayDedication,
-              streetErrors.oneWayExemption,
-              streetErrors.successorCrossRef,
-              streetErrors.maintenanceResponsibility,
-              streetErrors.reinstatementCategory,
-              streetErrors.osSpecialDesignation,
-              streetErrors.interest,
-              streetErrors.construction,
-              streetErrors.specialDesignation,
-              streetErrors.heightWidthWeight,
-              streetErrors.publicRightOfWay,
-              streetErrors.note
-            );
+            updateStreetErrors(descriptorErrors, "descriptor");
           }
           break;
 
@@ -1308,23 +1281,7 @@ function App() {
               isScottish
             );
             isValid = oneWayExemptionErrors.length === 0;
-            HandleStreetErrors(
-              streetErrors.street,
-              streetErrors.descriptor,
-              streetErrors.esu,
-              streetErrors.highwayDedication,
-              oneWayExemptionErrors,
-              streetErrors.successorCrossRef,
-              streetErrors.maintenanceResponsibility,
-              streetErrors.reinstatementCategory,
-              streetErrors.osSpecialDesignation,
-              streetErrors.interest,
-              streetErrors.construction,
-              streetErrors.specialDesignation,
-              streetErrors.heightWidthWeight,
-              streetErrors.publicRightOfWay,
-              streetErrors.note
-            );
+            updateStreetErrors(oneWayExemptionErrors, "oneWayExemption");
           }
           break;
 
@@ -1338,23 +1295,7 @@ function App() {
               isScottish
             );
             isValid = highwayDedicationErrors.length === 0;
-            HandleStreetErrors(
-              streetErrors.street,
-              streetErrors.descriptor,
-              streetErrors.esu,
-              highwayDedicationErrors,
-              streetErrors.oneWayExemption,
-              streetErrors.successorCrossRef,
-              streetErrors.maintenanceResponsibility,
-              streetErrors.reinstatementCategory,
-              streetErrors.osSpecialDesignation,
-              streetErrors.interest,
-              streetErrors.construction,
-              streetErrors.specialDesignation,
-              streetErrors.heightWidthWeight,
-              streetErrors.publicRightOfWay,
-              streetErrors.note
-            );
+            updateStreetErrors(highwayDedicationErrors, "highwayDedication");
           }
           break;
 
@@ -1368,23 +1309,7 @@ function App() {
               true
             );
             isValid = successorCrossRefErrors.length === 0;
-            HandleStreetErrors(
-              streetErrors.street,
-              streetErrors.descriptor,
-              streetErrors.esu,
-              streetErrors.highwayDedication,
-              streetErrors.oneWayExemption,
-              successorCrossRefErrors,
-              streetErrors.maintenanceResponsibility,
-              streetErrors.reinstatementCategory,
-              streetErrors.osSpecialDesignation,
-              streetErrors.interest,
-              streetErrors.construction,
-              streetErrors.specialDesignation,
-              streetErrors.heightWidthWeight,
-              streetErrors.publicRightOfWay,
-              streetErrors.note
-            );
+            updateStreetErrors(successorCrossRefErrors, "successorCrossRef");
           }
           break;
 
@@ -1396,23 +1321,7 @@ function App() {
               lookups
             );
             isValid = maintenanceResponsibilityErrors.length === 0;
-            HandleStreetErrors(
-              streetErrors.street,
-              streetErrors.descriptor,
-              streetErrors.esu,
-              streetErrors.highwayDedication,
-              streetErrors.oneWayExemption,
-              streetErrors.successorCrossRef,
-              maintenanceResponsibilityErrors,
-              streetErrors.reinstatementCategory,
-              streetErrors.osSpecialDesignation,
-              streetErrors.interest,
-              streetErrors.construction,
-              streetErrors.specialDesignation,
-              streetErrors.heightWidthWeight,
-              streetErrors.publicRightOfWay,
-              streetErrors.note
-            );
+            updateStreetErrors(maintenanceResponsibilityErrors, "maintenanceResponsibility");
           }
           break;
 
@@ -1424,23 +1333,7 @@ function App() {
               lookups
             );
             isValid = reinstatementCategoryErrors.length === 0;
-            HandleStreetErrors(
-              streetErrors.street,
-              streetErrors.descriptor,
-              streetErrors.esu,
-              streetErrors.highwayDedication,
-              streetErrors.oneWayExemption,
-              streetErrors.successorCrossRef,
-              streetErrors.maintenanceResponsibility,
-              reinstatementCategoryErrors,
-              streetErrors.osSpecialDesignation,
-              streetErrors.interest,
-              streetErrors.construction,
-              streetErrors.specialDesignation,
-              streetErrors.heightWidthWeight,
-              streetErrors.publicRightOfWay,
-              streetErrors.note
-            );
+            updateStreetErrors(reinstatementCategoryErrors, "reinstatementCategory");
           }
           break;
 
@@ -1452,23 +1345,7 @@ function App() {
               lookups
             );
             isValid = osSpecialDesignationErrors.length === 0;
-            HandleStreetErrors(
-              streetErrors.street,
-              streetErrors.descriptor,
-              streetErrors.esu,
-              streetErrors.highwayDedication,
-              streetErrors.oneWayExemption,
-              streetErrors.successorCrossRef,
-              streetErrors.maintenanceResponsibility,
-              streetErrors.reinstatementCategory,
-              osSpecialDesignationErrors,
-              streetErrors.interest,
-              streetErrors.construction,
-              streetErrors.specialDesignation,
-              streetErrors.heightWidthWeight,
-              streetErrors.publicRightOfWay,
-              streetErrors.note
-            );
+            updateStreetErrors(osSpecialDesignationErrors, "osSpecialDesignation");
           }
           break;
 
@@ -1480,23 +1357,7 @@ function App() {
               lookups
             );
             isValid = interestErrors.length === 0;
-            HandleStreetErrors(
-              streetErrors.street,
-              streetErrors.descriptor,
-              streetErrors.esu,
-              streetErrors.highwayDedication,
-              streetErrors.oneWayExemption,
-              streetErrors.successorCrossRef,
-              streetErrors.maintenanceResponsibility,
-              streetErrors.reinstatementCategory,
-              streetErrors.osSpecialDesignation,
-              interestErrors,
-              streetErrors.construction,
-              streetErrors.specialDesignation,
-              streetErrors.heightWidthWeight,
-              streetErrors.publicRightOfWay,
-              streetErrors.note
-            );
+            updateStreetErrors(interestErrors, "interest");
           }
           break;
 
@@ -1508,23 +1369,7 @@ function App() {
               lookups
             );
             isValid = constructionErrors.length === 0;
-            HandleStreetErrors(
-              streetErrors.street,
-              streetErrors.descriptor,
-              streetErrors.esu,
-              streetErrors.highwayDedication,
-              streetErrors.oneWayExemption,
-              streetErrors.successorCrossRef,
-              streetErrors.maintenanceResponsibility,
-              streetErrors.reinstatementCategory,
-              streetErrors.osSpecialDesignation,
-              streetErrors.interest,
-              constructionErrors,
-              streetErrors.specialDesignation,
-              streetErrors.heightWidthWeight,
-              streetErrors.publicRightOfWay,
-              streetErrors.note
-            );
+            updateStreetErrors(constructionErrors, "construction");
           }
           break;
 
@@ -1536,23 +1381,7 @@ function App() {
               lookups
             );
             isValid = specialDesignationErrors.length === 0;
-            HandleStreetErrors(
-              streetErrors.street,
-              streetErrors.descriptor,
-              streetErrors.esu,
-              streetErrors.highwayDedication,
-              streetErrors.oneWayExemption,
-              streetErrors.successorCrossRef,
-              streetErrors.maintenanceResponsibility,
-              streetErrors.reinstatementCategory,
-              streetErrors.osSpecialDesignation,
-              streetErrors.interest,
-              streetErrors.construction,
-              specialDesignationErrors,
-              streetErrors.heightWidthWeight,
-              streetErrors.publicRightOfWay,
-              streetErrors.note
-            );
+            updateStreetErrors(specialDesignationErrors, "specialDesignation");
           }
           break;
 
@@ -1564,23 +1393,7 @@ function App() {
               lookups
             );
             isValid = heightWidthWeightErrors.length === 0;
-            HandleStreetErrors(
-              streetErrors.street,
-              streetErrors.descriptor,
-              streetErrors.esu,
-              streetErrors.highwayDedication,
-              streetErrors.oneWayExemption,
-              streetErrors.successorCrossRef,
-              streetErrors.maintenanceResponsibility,
-              streetErrors.reinstatementCategory,
-              streetErrors.osSpecialDesignation,
-              streetErrors.interest,
-              streetErrors.construction,
-              streetErrors.specialDesignation,
-              heightWidthWeightErrors,
-              streetErrors.publicRightOfWay,
-              streetErrors.note
-            );
+            updateStreetErrors(heightWidthWeightErrors, "heightWidthWeight");
           }
           break;
 
@@ -1593,27 +1406,11 @@ function App() {
               false
             );
             isValid = publicRightOfWayErrors.length === 0;
-            HandleStreetErrors(
-              streetErrors.street,
-              streetErrors.descriptor,
-              streetErrors.esu,
-              streetErrors.highwayDedication,
-              streetErrors.oneWayExemption,
-              streetErrors.successorCrossRef,
-              streetErrors.maintenanceResponsibility,
-              streetErrors.reinstatementCategory,
-              streetErrors.osSpecialDesignation,
-              streetErrors.interest,
-              streetErrors.construction,
-              streetErrors.specialDesignation,
-              streetErrors.heightWidthWeight,
-              publicRightOfWayErrors,
-              streetErrors.note
-            );
+            updateStreetErrors(publicRightOfWayErrors, "publicRightOfWay");
           }
           break;
 
-        case 71:
+        case 72:
           if (sandbox.currentStreetRecords.note) {
             const noteErrors = ValidateStreetNoteData(
               sandbox.currentStreetRecords.note,
@@ -1622,23 +1419,7 @@ function App() {
               isScottish
             );
             isValid = noteErrors.length === 0;
-            HandleStreetErrors(
-              streetErrors.street,
-              streetErrors.descriptor,
-              streetErrors.esu,
-              streetErrors.highwayDedication,
-              streetErrors.oneWayExemption,
-              streetErrors.successorCrossRef,
-              streetErrors.maintenanceResponsibility,
-              streetErrors.reinstatementCategory,
-              streetErrors.osSpecialDesignation,
-              streetErrors.interest,
-              streetErrors.construction,
-              streetErrors.specialDesignation,
-              streetErrors.heightWidthWeight,
-              streetErrors.publicRightOfWay,
-              noteErrors
-            );
+            updateStreetErrors(noteErrors, "note");
           }
           break;
 
@@ -1908,6 +1689,19 @@ function App() {
   function HandlePropertyValidateData() {
     let isValid = true;
 
+    const updatePropertyErrors = (newErrors, type) => {
+      HandlePropertyErrors(
+        type === "blpu" ? newErrors : propertyErrors.blpu,
+        type === "lpi" ? newErrors : propertyErrors.lpi,
+        type === "provenance" ? newErrors : propertyErrors.provenance,
+        type === "crossRef" ? newErrors : propertyErrors.crossRef,
+        type === "classification" ? newErrors : propertyErrors.classification,
+        type === "organisation" ? newErrors : propertyErrors.organisation,
+        type === "successorCrossRef" ? newErrors : propertyErrors.successorCrossRef,
+        type === "note" ? newErrors : propertyErrors.note
+      );
+    };
+
     if (propertyModified) {
       switch (propertyRecord.type) {
         case 21:
@@ -1932,16 +1726,7 @@ function App() {
             };
             const blpuErrors = ValidateBlpuData(blpuData, lookups, isScottish);
             isValid = blpuErrors.length === 0;
-            HandlePropertyErrors(
-              blpuErrors,
-              propertyErrors.lpi,
-              propertyErrors.provenance,
-              propertyErrors.crossRef,
-              propertyErrors.classification,
-              propertyErrors.organisation,
-              propertyErrors.successorCrossRef,
-              propertyErrors.note
-            );
+            updatePropertyErrors(blpuErrors, "blpu");
           }
           break;
 
@@ -1954,16 +1739,7 @@ function App() {
               isScottish
             );
             isValid = provenanceErrors.length === 0;
-            HandlePropertyErrors(
-              propertyErrors.blpu,
-              propertyErrors.lpi,
-              provenanceErrors,
-              propertyErrors.crossRef,
-              propertyErrors.classification,
-              propertyErrors.organisation,
-              propertyErrors.successorCrossRef,
-              propertyErrors.note
-            );
+            updatePropertyErrors(provenanceErrors, "provenance");
           }
           break;
 
@@ -1976,16 +1752,7 @@ function App() {
               isScottish
             );
             isValid = crossRefErrors.length === 0;
-            HandlePropertyErrors(
-              propertyErrors.blpu,
-              propertyErrors.lpi,
-              propertyErrors.provenance,
-              crossRefErrors,
-              propertyErrors.classification,
-              propertyErrors.organisation,
-              propertyErrors.successorCrossRef,
-              propertyErrors.note
-            );
+            updatePropertyErrors(crossRefErrors, "crossRef");
           }
           break;
 
@@ -1999,16 +1766,7 @@ function App() {
               isWelsh
             );
             isValid = lpiErrors.length === 0;
-            HandlePropertyErrors(
-              propertyErrors.blpu,
-              lpiErrors,
-              propertyErrors.provenance,
-              propertyErrors.crossRef,
-              propertyErrors.classification,
-              propertyErrors.organisation,
-              propertyErrors.successorCrossRef,
-              propertyErrors.note
-            );
+            updatePropertyErrors(lpiErrors, "lpi");
           }
           break;
 
@@ -2020,16 +1778,7 @@ function App() {
               lookups
             );
             isValid = successorCrossRefErrors.length === 0;
-            HandlePropertyErrors(
-              propertyErrors.blpu,
-              propertyErrors.lpi,
-              propertyErrors.provenance,
-              propertyErrors.crossRef,
-              propertyErrors.classification,
-              propertyErrors.organisation,
-              successorCrossRefErrors,
-              propertyErrors.note
-            );
+            updatePropertyErrors(successorCrossRefErrors, "successorCrossRef");
           }
           break;
 
@@ -2041,16 +1790,7 @@ function App() {
               lookups
             );
             isValid = organisationErrors.length === 0;
-            HandlePropertyErrors(
-              propertyErrors.blpu,
-              propertyErrors.lpi,
-              propertyErrors.provenance,
-              propertyErrors.crossRef,
-              propertyErrors.classification,
-              organisationErrors,
-              propertyErrors.successorCrossRef,
-              propertyErrors.note
-            );
+            updatePropertyErrors(organisationErrors, "organisation");
           }
           break;
 
@@ -2062,33 +1802,20 @@ function App() {
               lookups
             );
             isValid = classificationErrors.length === 0;
-            HandlePropertyErrors(
-              propertyErrors.blpu,
-              propertyErrors.lpi,
-              propertyErrors.provenance,
-              propertyErrors.crossRef,
-              classificationErrors,
-              propertyErrors.organisation,
-              propertyErrors.successorCrossRef,
-              propertyErrors.note
-            );
+            updatePropertyErrors(classificationErrors, "classification");
           }
           break;
 
-        case 72:
+        case 71:
           if (sandbox.currentPropertyRecords.note) {
-            const noteErrors = ValidatePropertyNoteData(sandbox.currentPropertyRecords.note, propertyRecord.index);
-            isValid = noteErrors.length === 0;
-            HandlePropertyErrors(
-              propertyErrors.blpu,
-              propertyErrors.lpi,
-              propertyErrors.provenance,
-              propertyErrors.crossRef,
-              propertyErrors.classification,
-              propertyErrors.organisation,
-              propertyErrors.successorCrossRef,
-              noteErrors
+            const noteErrors = ValidatePropertyNoteData(
+              sandbox.currentPropertyRecords.note,
+              propertyRecord.index,
+              lookups,
+              isScottish
             );
+            isValid = noteErrors.length === 0;
+            updatePropertyErrors(noteErrors, "note");
           }
           break;
 

@@ -22,6 +22,7 @@
 //    009   24.11.23 Sean Flook                 Moved Stack to @mui/system and renamed successor to successorCrossRef.
 //    010   01.12.23 Sean Flook       IMANN-194 Update the street descriptor lookup after doing a save or delete.
 //    011   01.12.23 Sean Flook                 Include island in the street address for Scottish authorities.
+//    012   12.12.23 Sean Flook                 Modified FilteredStreetType to exclude Unassigned ESU.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -61,9 +62,9 @@ import PRoWStatusCode from "../data/PRoWStatusCode";
  */
 export const FilteredStreetType = (isScottish) => {
   if (isScottish) {
-    return StreetType.filter((x) => x.osText);
+    return StreetType.filter((x) => x.osText && x.id !== 0);
   } else {
-    return StreetType.filter((x) => x.gpText);
+    return StreetType.filter((x) => x.gpText && x.id !== 0);
   }
 };
 
@@ -1228,6 +1229,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
         ? streetData.maintenanceResponsibilities.map((mr) => {
             return {
               usrn: 0,
+              seqNum: mr.seqNum,
               wholeRoad: mr.wholeRoad,
               specificLocation: mr.specificLocation,
               neverExport: mr.neverExport,
@@ -1246,6 +1248,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
         ? streetData.reinstatementCategories.map((rc) => {
             return {
               usrn: 0,
+              seqNum: rc.seqNum,
               wholeRoad: rc.wholeRoad,
               specificLocation: rc.specificLocation,
               neverExport: rc.neverExport,
@@ -1264,6 +1267,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
         ? streetData.specialDesignations.map((sd) => {
             return {
               usrn: 0,
+              seqNum: sd.seqNum,
               wholeRoad: sd.wholeRoad,
               specificLocation: sd.specificLocation,
               neverExport: sd.neverExport,

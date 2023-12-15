@@ -17,6 +17,7 @@
 //    004   27.10.23 Sean Flook                 Updated dataFormStyle and removed redundant methods.
 //    005   03.11.23 Sean Flook       IMANN-175 Added SelectPropertiesIconStyle.
 //    006   10.11.23 Sean Flook       IMANN-175 Modified wizardFinaliseFormStyle to handle Move BLPU seed point.
+//    007   14.12.23 Sean Flook                 Added dashboardIconStyle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -379,6 +380,11 @@ export function RecordCountStyle(isHover) {
       backgroundColor: grey[300],
     };
 }
+
+/**
+ * The styling used for dashboard icons.
+ */
+export const dashboardIconStyle = { color: grey[400] };
 
 /**
  * Return the styling for tab icons.

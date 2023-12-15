@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Added OneScotland record types. Use colour variables.
 //    004   03.11.23 Sean Flook                 Added hyphen to one-way.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
+//    006   14.12.23 Sean Flook                 Corrected note record type.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -154,7 +155,7 @@ function ADSErrorList({ onClose }) {
           updateProwData();
           break;
 
-        case 71:
+        case 72:
           updateStreetNoteData();
           break;
 
@@ -184,7 +185,7 @@ function ADSErrorList({ onClose }) {
           updateClassificationData();
           break;
 
-        case 72:
+        case 71:
           updatePropertyNoteData();
           break;
 

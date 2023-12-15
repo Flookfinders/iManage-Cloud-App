@@ -31,6 +31,7 @@
 //    018   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate and set end date for associated records when updating the logical status to historic or rejected.
 //    019   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system, renamed successor to successorCrossRef and changes to handle Scottish data structure.
 //    020   30.11.23 Sean Flook                 Use constant for default classification scheme and various bug fixes.
+//    021   14.12.23 Sean Flook                 Corrected note record type.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1340,7 +1341,7 @@ function PropertyDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("propertyNote", newRec);
-      propertyContext.onRecordChange(72, newIdx, true);
+      propertyContext.onRecordChange(71, newIdx, true);
     } else {
       setNotesFormData({
         pkId: pkId,
@@ -1350,7 +1351,7 @@ function PropertyDataForm({ data, loading }) {
         variant: "property",
       });
 
-      propertyContext.onRecordChange(72, dataIdx);
+      propertyContext.onRecordChange(71, dataIdx);
     }
   };
 
@@ -4006,7 +4007,7 @@ function PropertyDataForm({ data, loading }) {
           }
           break;
 
-        case 72:
+        case 71:
           setNoteFocusedField(propertyContext.goToField.fieldName);
           if (value !== 4) setValue(4);
           const noteData =
@@ -4014,7 +4015,7 @@ function PropertyDataForm({ data, loading }) {
               ? propertyData.blpuNotes[propertyContext.goToField.index]
               : null;
           if (noteData) {
-            propertyContext.onRecordChange(72, propertyContext.goToField.index);
+            propertyContext.onRecordChange(71, propertyContext.goToField.index);
             setNotesFormData({
               pkId: noteData.pkId,
               noteData: noteData,

@@ -26,6 +26,7 @@
 //    009   21.04.23 Sean Flook         WI40692 Corrected field name.
 //    010   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
 //    011   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
+//    012   15.12.23 Sean Flook                 Added comments.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -82,12 +83,14 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
       case 1: // Single property and child
         switch (templateUseType) {
           case 1: // Single property
+            // Mandatory PAO Details missing.
             currentCheck = GetCheck(2400040, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish))
               paoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
             break;
 
           case 3: // Single child
+            // Mandatory USRN is missing.
             currentCheck = GetCheck(2400042, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish))
               saoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
@@ -99,6 +102,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
         break;
 
       case 2: // Property range and child range
+        // A type of range is required.
         currentCheck = GetCheck(8800001, currentLookups, methodName, isScottish, showDebugMessages);
         if (includeCheck(currentCheck, isScottish)) rangeTypeErrors.push(GetErrorMessage(currentCheck, isScottish));
         break;
@@ -111,10 +115,12 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
       case 1: // Single property and child
         switch (templateUseType) {
           case 1: // Single property
+            // PAO Text is too long.
             currentCheck = GetCheck(2400035, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && data.paoText && data.paoText.length > 90)
               paoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+            // PAO Start Number is invalid.
             currentCheck = GetCheck(2400037, currentLookups, methodName, isScottish, showDebugMessages);
             if (
               includeCheck(currentCheck, isScottish) &&
@@ -123,6 +129,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
             )
               paoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+            // PAO End Number is invalid.
             currentCheck = GetCheck(2400038, currentLookups, methodName, isScottish, showDebugMessages);
             if (
               includeCheck(currentCheck, isScottish) &&
@@ -131,24 +138,29 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
             )
               paoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+            // PAO End Number has a value but PAO Start Number is blank.
             currentCheck = GetCheck(2400039, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && !data.paoStartNumber && data.paoEndNumber)
               paoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+            // Mandatory PAO Details missing.
             currentCheck = GetCheck(2400040, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && !data.paoStartNumber && !data.paoText)
               paoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+            // PAO Start Suffix supplied but no PAO Start Number.
             currentCheck = GetCheck(2400073, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && data.paoStartSuffix && !data.paoStartNumber) {
               paoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
             }
 
+            // PAO End Suffix supplied but no PAO End Number.
             currentCheck = GetCheck(2400074, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && data.paoEndSuffix && !data.paoEndNumber) {
               paoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
             }
 
+            // PAO End Number must be greater than PAO Start Number.
             currentCheck = GetCheck(2400078, currentLookups, methodName, isScottish, showDebugMessages);
             if (
               includeCheck(currentCheck, isScottish) &&
@@ -160,28 +172,34 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
             break;
 
           case 3: // Single child
+            // SAO End Number has a value but SAO Start Number is blank.
             currentCheck = GetCheck(2400034, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && !data.saoStartNumber && data.saoEndNumber)
               saoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+            // SAO Text is too long.
             currentCheck = GetCheck(2400036, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && data.saoText && data.saoText.length > 90)
               saoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+            // Mandatory SAO is missing.
             currentCheck = GetCheck(2400072, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && !data.saoStartNumber && !data.saoText)
               saoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+            // SAO Start Suffix supplied but no SAO Start Number.
             currentCheck = GetCheck(2400075, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && data.saoStartSuffix && !data.saoStartNumber) {
               saoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
             }
 
+            // SAO End Suffix supplied but no SAO End Number.
             currentCheck = GetCheck(2400076, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && data.saoEndSuffix && !data.saoEndNumber) {
               saoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
             }
 
+            // SAO End Number must be greater than SAO Start Number.
             currentCheck = GetCheck(2400077, currentLookups, methodName, isScottish, showDebugMessages);
             if (
               includeCheck(currentCheck, isScottish) &&
@@ -191,10 +209,12 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
             )
               saoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+            // PAO Text is too long.
             currentCheck = GetCheck(2400035, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && data.paoText && data.paoText.length > 90)
               paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+            // PAO Start Number is invalid.
             currentCheck = GetCheck(2400037, currentLookups, methodName, isScottish, showDebugMessages);
             if (
               includeCheck(currentCheck, isScottish) &&
@@ -203,6 +223,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
             )
               paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+            // PAO End Number is invalid.
             currentCheck = GetCheck(2400038, currentLookups, methodName, isScottish, showDebugMessages);
             if (
               includeCheck(currentCheck, isScottish) &&
@@ -211,24 +232,29 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
             )
               paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+            // PAO End Number has a value but PAO Start Number is blank.
             currentCheck = GetCheck(2400039, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && !data.paoStartNumber && data.paoEndNumber)
               paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+            // Mandatory PAO Details missing.
             currentCheck = GetCheck(2400040, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && !data.paoStartNumber && !data.paoText)
               paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+            // PAO Start Suffix supplied but no PAO Start Number.
             currentCheck = GetCheck(2400073, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && data.paoStartSuffix && !data.paoStartNumber) {
               paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
             }
 
+            // PAO End Suffix supplied but no PAO End Number.
             currentCheck = GetCheck(2400074, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && data.paoEndSuffix && !data.paoEndNumber) {
               paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
             }
 
+            // PAO End Number must be greater than PAO Start Number.
             currentCheck = GetCheck(2400078, currentLookups, methodName, isScottish, showDebugMessages);
             if (
               includeCheck(currentCheck, isScottish) &&
@@ -245,18 +271,22 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
         break;
 
       case 2: // Property range and child range
+        // A type of range is required.
         currentCheck = GetCheck(8800001, currentLookups, methodName, isScottish, showDebugMessages);
         if (includeCheck(currentCheck, isScottish) && !data.rangeType)
           rangeTypeErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+        // Creating a range of properties using the PAO text needs some text.
         currentCheck = GetCheck(8800004, currentLookups, methodName, isScottish, showDebugMessages);
         if (includeCheck(currentCheck, isScottish) && data.rangeType === 2 && templateUseType === 2 && !data.rangeText)
           rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+        // Creating a range of children using the SAO text needs some text.
         currentCheck = GetCheck(8800005, currentLookups, methodName, isScottish, showDebugMessages);
         if (includeCheck(currentCheck, isScottish) && data.rangeType === 2 && templateUseType === 4 && !data.rangeText)
           rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+        // Some details are required to create a range of properties.
         currentCheck = GetCheck(8800002, currentLookups, methodName, isScottish, showDebugMessages);
         if (
           includeCheck(currentCheck, isScottish) &&
@@ -266,6 +296,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
         )
           rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+        // Some details are required to create a range of children.
         currentCheck = GetCheck(8800003, currentLookups, methodName, isScottish, showDebugMessages);
         if (
           includeCheck(currentCheck, isScottish) &&
@@ -275,6 +306,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
         )
           rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+        // The end prefix has a value, but the start prefix is blank.
         currentCheck = GetCheck(8800006, currentLookups, methodName, isScottish, showDebugMessages);
         if (
           includeCheck(currentCheck, isScottish) &&
@@ -284,14 +316,17 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
         )
           rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+        // The end number has a value, but the start number is blank.
         currentCheck = GetCheck(8800007, currentLookups, methodName, isScottish, showDebugMessages);
         if (includeCheck(currentCheck, isScottish) && !data.rangeStartNumber && data.rangeEndNumber)
           rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+        // The end suffix has a value, but the start suffix is blank.
         currentCheck = GetCheck(8800008, currentLookups, methodName, isScottish, showDebugMessages);
         if (includeCheck(currentCheck, isScottish) && !data.rangeStartSuffix && data.rangeEndSuffix)
           rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+        // The end prefix should either be the same as or after the start prefix in the alphabet.
         currentCheck = GetCheck(8800009, currentLookups, methodName, isScottish, showDebugMessages);
         if (
           includeCheck(currentCheck, isScottish) &&
@@ -302,6 +337,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
         )
           rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+        // The end number should either be the same or higher than the start number.
         currentCheck = GetCheck(8800011, currentLookups, methodName, isScottish, showDebugMessages);
         if (
           includeCheck(currentCheck, isScottish) &&
@@ -311,6 +347,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
         )
           rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+        // The end suffix should either be the same as or after the start suffix in the alphabet.
         currentCheck = GetCheck(8800010, currentLookups, methodName, isScottish, showDebugMessages);
         if (
           includeCheck(currentCheck, isScottish) &&
@@ -320,6 +357,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
         )
           rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+        // The start and end details cannot be the same.
         currentCheck = GetCheck(8800012, currentLookups, methodName, isScottish, showDebugMessages);
         if (
           includeCheck(currentCheck, isScottish) &&
@@ -332,6 +370,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
         )
           rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+        // The generated PAO text will be too long, reduce the length of the text.
         currentCheck = GetCheck(8800013, currentLookups, methodName, isScottish, showDebugMessages);
         if (
           includeCheck(currentCheck, isScottish) &&
@@ -357,6 +396,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
         )
           rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+        // The generated SAO text will be too long, reduce the length of the text.
         currentCheck = GetCheck(8800014, currentLookups, methodName, isScottish, showDebugMessages);
         if (
           includeCheck(currentCheck, isScottish) &&
@@ -382,6 +422,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
         )
           rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+        // At least 1 property needs to be included.
         currentCheck = GetCheck(8800015, currentLookups, methodName, isScottish, showDebugMessages);
         if (
           includeCheck(currentCheck, isScottish) &&
@@ -393,10 +434,12 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
 
         if (templateUseType === 4) {
           // Range of children
+          // PAO Text is too long.
           currentCheck = GetCheck(2400035, currentLookups, methodName, isScottish, showDebugMessages);
           if (includeCheck(currentCheck, isScottish) && data.paoText && data.paoText.length > 90)
             paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+          // PAO Start Number is invalid.
           currentCheck = GetCheck(2400037, currentLookups, methodName, isScottish, showDebugMessages);
           if (
             includeCheck(currentCheck, isScottish) &&
@@ -405,6 +448,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
           )
             paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+          // PAO End Number is invalid.
           currentCheck = GetCheck(2400038, currentLookups, methodName, isScottish, showDebugMessages);
           if (
             includeCheck(currentCheck, isScottish) &&
@@ -413,24 +457,29 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
           )
             paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+          // PAO End Number has a value but PAO Start Number is blank.
           currentCheck = GetCheck(2400039, currentLookups, methodName, isScottish, showDebugMessages);
           if (includeCheck(currentCheck, isScottish) && !data.paoStartNumber && data.paoEndNumber)
             paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+          // Mandatory PAO Details missing.
           currentCheck = GetCheck(2400040, currentLookups, methodName, isScottish, showDebugMessages);
           if (includeCheck(currentCheck, isScottish) && !data.paoStartNumber && !data.paoText)
             paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+          // PAO Start Suffix supplied but no PAO Start Number.
           currentCheck = GetCheck(2400073, currentLookups, methodName, isScottish, showDebugMessages);
           if (includeCheck(currentCheck, isScottish) && data.paoStartSuffix && !data.paoStartNumber) {
             paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
           }
 
+          // PAO End Suffix supplied but no PAO End Number.
           currentCheck = GetCheck(2400074, currentLookups, methodName, isScottish, showDebugMessages);
           if (includeCheck(currentCheck, isScottish) && data.paoEndSuffix && !data.paoEndNumber) {
             paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
           }
 
+          // PAO End Number must be greater than PAO Start Number.
           currentCheck = GetCheck(2400078, currentLookups, methodName, isScottish, showDebugMessages);
           if (
             includeCheck(currentCheck, isScottish) &&
@@ -446,10 +495,12 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
         break;
     }
 
+    // Mandatory USRN is missing.
     currentCheck = GetCheck(2400042, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && !data.usrn)
       usrnErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Postcode does not exist in the Lookup Table.
     currentCheck = GetCheck(2400049, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
@@ -459,6 +510,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
       postcodeRefErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Post Town does not exist in the Lookup Table.
     currentCheck = GetCheck(2400055, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
@@ -468,10 +520,12 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
       postTownRefErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Open BLPU/LPI on a Closed Street.
     currentCheck = GetCheck(2100013, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && data.usrn && !IsStreetClosed(data.usrn, userToken, isScottish))
       usrnErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Mandatory Classification is missing.
     currentCheck = GetCheck(2100016, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
@@ -585,23 +639,29 @@ export function ValidatePropertyDetails(
   const provStartDateErrors = [];
 
   if (!blpuData && !haveMoveBlpu) {
+    // Mandatory Logical Status is missing.
     currentCheck = GetCheck(2100008, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish)) blpuStatusErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Mandatory Representative Point Code (RPC) is missing.
     currentCheck = GetCheck(2100014, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish)) rpcErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Mandatory Classification is missing.
     currentCheck = GetCheck(2100016, currentLookups, methodName, isScottish, showDebugMessages);
     if (!isScottish && includeCheck(currentCheck, isScottish))
       blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Mandatory Start Date is missing.
     currentCheck = GetCheck(2100027, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish)) blpuStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
   } else {
+    // Mandatory Logical Status is missing.
     currentCheck = GetCheck(2100008, currentLookups, methodName, isScottish, showDebugMessages);
     if (!haveMoveBlpu && includeCheck(currentCheck, isScottish) && !blpuData.logicalStatus)
       blpuStatusErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Logical Status is invalid.
     currentCheck = GetCheck(2100009, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
@@ -611,6 +671,7 @@ export function ValidatePropertyDetails(
       blpuStatusErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // The State is incompatible with the Logical Status.
     currentCheck = GetCheck(2100011, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       !haveMoveBlpu &&
@@ -625,6 +686,7 @@ export function ValidatePropertyDetails(
       stateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // The State must be between 1 and 7.
     currentCheck = GetCheck(2100012, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       !haveMoveBlpu &&
@@ -635,10 +697,12 @@ export function ValidatePropertyDetails(
       stateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Mandatory Representative Point Code (RPC) is missing.
     currentCheck = GetCheck(2100014, currentLookups, methodName, isScottish, showDebugMessages);
     if (!haveMoveBlpu && includeCheck(currentCheck, isScottish) && !blpuData.rpc)
       rpcErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Classification is too long.
     currentCheck = GetCheck(2100015, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       !isScottish &&
@@ -649,10 +713,12 @@ export function ValidatePropertyDetails(
       blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Mandatory Classification is missing.
     currentCheck = GetCheck(2100016, currentLookups, methodName, isScottish, showDebugMessages);
     if (!isScottish && !haveMoveBlpu && includeCheck(currentCheck, isScottish) && !blpuData.classification)
       blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Missing State or State Date.
     currentCheck = GetCheck(2100024, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       !haveMoveBlpu &&
@@ -668,6 +734,7 @@ export function ValidatePropertyDetails(
       stateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // State Date cannot be in the future.
     currentCheck = GetCheck(2100025, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       !haveMoveBlpu &&
@@ -678,6 +745,7 @@ export function ValidatePropertyDetails(
       stateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Representative Point Code (RPC) is invalid.
     currentCheck = GetCheck(2100026, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       !haveMoveBlpu &&
@@ -688,10 +756,12 @@ export function ValidatePropertyDetails(
       rpcErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Mandatory Start Date is missing.
     currentCheck = GetCheck(2100027, currentLookups, methodName, isScottish, showDebugMessages);
     if (!haveMoveBlpu && includeCheck(currentCheck, isScottish) && !blpuData.startDate)
       blpuStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Start Date cannot be in the future.
     currentCheck = GetCheck(2100028, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       !haveMoveBlpu &&
@@ -702,6 +772,7 @@ export function ValidatePropertyDetails(
       blpuStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Start Dates prior to 1753 are not allowed.
     currentCheck = GetCheck(2100029, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       !haveMoveBlpu &&
@@ -712,16 +783,19 @@ export function ValidatePropertyDetails(
       blpuStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // An RPC of 3 can no longer be submitted to GeoPlace.
     currentCheck = GetCheck(2100036, currentLookups, methodName, isScottish, showDebugMessages);
     if (!haveMoveBlpu && includeCheck(currentCheck, isScottish) && blpuData.rpc && blpuData.rpc === 3) {
       rpcErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // An RPC of 5 can no longer be submitted to GeoPlace.
     currentCheck = GetCheck(2100037, currentLookups, methodName, isScottish, showDebugMessages);
     if (!haveMoveBlpu && includeCheck(currentCheck, isScottish) && blpuData.rpc && blpuData.rpc === 5) {
       rpcErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // State is invalid.
     currentCheck = GetCheck(2100048, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       !haveMoveBlpu &&
@@ -732,6 +806,7 @@ export function ValidatePropertyDetails(
       stateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // BLPU Classification does not exist in the Lookup Table.
     currentCheck = GetCheck(2100055, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       !isScottish &&
@@ -742,6 +817,7 @@ export function ValidatePropertyDetails(
       blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Mandatory State missing.
     currentCheck = GetCheck(2100059, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       !haveMoveBlpu &&
@@ -752,6 +828,7 @@ export function ValidatePropertyDetails(
     )
       stateErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Approved BLPU more than a year old, can't be marked as Unclassified.
     currentCheck = GetCheck(2100061, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       !isScottish &&
@@ -770,30 +847,37 @@ export function ValidatePropertyDetails(
 
   if (!haveMoveBlpu) {
     if (!lpiData) {
+      // Mandatory Start Date is missing.
       currentCheck = GetCheck(2400007, currentLookups, methodName, isScottish, showDebugMessages);
       if (includeCheck(currentCheck, isScottish)) lpiStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+      // Mandatory Postal Address Flag is missing.
       currentCheck = GetCheck(2400022, currentLookups, methodName, isScottish, showDebugMessages);
       if (includeCheck(currentCheck, isScottish)) postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+      // Mandatory Logical Status is missing.
       currentCheck = GetCheck(2400064, currentLookups, methodName, isScottish, showDebugMessages);
       if (includeCheck(currentCheck, isScottish)) lpiStatusErrors.push(GetErrorMessage(currentCheck, isScottish));
     } else {
+      // Mandatory Start Date is missing.
       currentCheck = GetCheck(2400007, currentLookups, methodName, isScottish, showDebugMessages);
       if (includeCheck(currentCheck, isScottish) && !lpiData.startDate) {
         lpiStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
+      // Start Date cannot be in the future.
       currentCheck = GetCheck(2400008, currentLookups, methodName, isScottish, showDebugMessages);
       if (includeCheck(currentCheck, isScottish) && lpiData.startDate && isFutureDate(lpiData.startDate)) {
         lpiStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
+      // Mandatory Postal Address Flag is missing.
       currentCheck = GetCheck(2400022, currentLookups, methodName, isScottish, showDebugMessages);
       if (includeCheck(currentCheck, isScottish) && !lpiData.postallyAddressable) {
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
+      // Postal Address Flag is too long.
       currentCheck = GetCheck(2400023, currentLookups, methodName, isScottish, showDebugMessages);
       if (
         includeCheck(currentCheck, isScottish) &&
@@ -803,6 +887,7 @@ export function ValidatePropertyDetails(
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
+      // Postal Address Flag is invalid.
       currentCheck = GetCheck(2400024, currentLookups, methodName, isScottish, showDebugMessages);
       if (
         includeCheck(currentCheck, isScottish) &&
@@ -812,11 +897,13 @@ export function ValidatePropertyDetails(
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
+      // Official Flag is too long.
       currentCheck = GetCheck(2400025, currentLookups, methodName, isScottish, showDebugMessages);
       if (includeCheck(currentCheck, isScottish) && lpiData.officialAddress && lpiData.officialAddress.length > 1) {
         officialFlagErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
+      // Official Flag is invalid.
       currentCheck = GetCheck(2400026, currentLookups, methodName, isScottish, showDebugMessages);
       if (
         includeCheck(currentCheck, isScottish) &&
@@ -826,11 +913,13 @@ export function ValidatePropertyDetails(
         officialFlagErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
+      // Start Dates prior to 1753 are not allowed.
       currentCheck = GetCheck(2400030, currentLookups, methodName, isScottish, showDebugMessages);
       if (includeCheck(currentCheck, isScottish) && lpiData.startDate && isPriorTo1753(lpiData.startDate)) {
         lpiStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
+      // Postal Address Flag of 'N' must not have a Postcode or Post Town.
       currentCheck = GetCheck(2400060, currentLookups, methodName, isScottish, showDebugMessages);
       if (
         includeCheck(currentCheck, isScottish) &&
@@ -843,6 +932,7 @@ export function ValidatePropertyDetails(
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
+      // Postal Address Flag of 'Y', 'A' or 'L' must have a Postcode and Post Town.
       currentCheck = GetCheck(2400061, currentLookups, methodName, isScottish, showDebugMessages);
       if (
         includeCheck(currentCheck, isScottish) &&
@@ -853,6 +943,7 @@ export function ValidatePropertyDetails(
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
+      // Postal Address Flag of 'P' must have a Postcode but no Post Town.
       currentCheck = GetCheck(2400062, currentLookups, methodName, isScottish, showDebugMessages);
       if (
         includeCheck(currentCheck, isScottish) &&
@@ -863,11 +954,13 @@ export function ValidatePropertyDetails(
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
+      // Mandatory Logical Status is missing.
       currentCheck = GetCheck(2400064, currentLookups, methodName, isScottish, showDebugMessages);
       if (includeCheck(currentCheck, isScottish) && !lpiData.logicalStatus) {
         lpiStatusErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
+      // Logical Status is invalid.
       currentCheck = GetCheck(2400069, currentLookups, methodName, isScottish, showDebugMessages);
       if (
         includeCheck(currentCheck, isScottish) &&
@@ -879,12 +972,14 @@ export function ValidatePropertyDetails(
     }
 
     if (blpuData && lpiData) {
+      // BLPU Logical Status is incompatible with LPI Logical Status.
       currentCheck = GetCheck(2100035, currentLookups, methodName, isScottish, showDebugMessages);
       if (includeCheck(currentCheck, isScottish) && blpuData.logicalStatus !== lpiData.logicalStatus)
         blpuStatusErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     if (blpuData && !lpiData) {
+      // A BLPU must have an LPI record.
       currentCheck = GetCheck(2100049, currentLookups, methodName, isScottish, showDebugMessages);
       if (includeCheck(currentCheck, isScottish)) blpuStatusErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -893,10 +988,12 @@ export function ValidatePropertyDetails(
   if (isScottish && !haveMoveBlpu) {
     // TODO: Need to add more validation checks once OneScotland classification record checks have been added.
     if (!classificationData) {
+      // Mandatory Classification Code is missing.
       currentCheck = GetCheck(3200008, currentLookups, methodName, isScottish, showDebugMessages);
       if (includeCheck(currentCheck, isScottish))
         blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
     } else {
+      // Mandatory Classification Code is missing.
       currentCheck = GetCheck(3200008, currentLookups, methodName, isScottish, showDebugMessages);
       if (!haveMoveBlpu && includeCheck(currentCheck, isScottish) && !classificationData.classification)
         blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
@@ -904,6 +1001,7 @@ export function ValidatePropertyDetails(
   }
 
   if (otherData && !haveMoveBlpu) {
+    // Provenance Code is invalid.
     currentCheck = GetCheck(2200010, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
@@ -913,11 +1011,13 @@ export function ValidatePropertyDetails(
       provenanceCodeErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Mandatory Start Date is missing.
     currentCheck = GetCheck(2200011, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && otherData.provCode && !otherData.provStartDate) {
       provStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Start Date cannot be in the future.
     currentCheck = GetCheck(2200012, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && otherData.provStartDate && isFutureDate(otherData.provStartDate)) {
       provStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
@@ -1035,46 +1135,55 @@ export function ValidateCrossReference(data, currentLookups, isScottish) {
   let sourceIdErrors = [];
 
   if (!data) {
+    // Mandatory Start Date is missing.
     currentCheck = GetCheck(2300006, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish)) {
       startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Mandatory Cross Reference is missing.
     currentCheck = GetCheck(2300014, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish)) {
       crossReferenceErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Mandatory Cross Reference Source is missing, historic or not enabled.
     currentCheck = GetCheck(2300016, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish)) {
       sourceIdErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
   } else {
+    // Mandatory Start Date is missing.
     currentCheck = GetCheck(2300006, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && !data.startDate) {
       startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Start Date cannot be in the future.
     currentCheck = GetCheck(2300010, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && data.startDate && isFutureDate(data.startDate)) {
       startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Mandatory Cross Reference is missing.
     currentCheck = GetCheck(2300014, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && !data.crossReference) {
       crossReferenceErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Cross Reference is too long.
     currentCheck = GetCheck(2300015, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && data.crossReference && data.crossReference.length > 50) {
       crossReferenceErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Mandatory Cross Reference Source is missing, historic or not enabled.
     currentCheck = GetCheck(2300016, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && !data.sourceId) {
       sourceIdErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Cross Reference Source does not exist in the Lookup Table or is marked as Historic/Disabled.
     currentCheck = GetCheck(2300025, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
@@ -1084,6 +1193,7 @@ export function ValidateCrossReference(data, currentLookups, isScottish) {
       sourceIdErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Start Dates prior to 1753 are not allowed.
     currentCheck = GetCheck(2300033, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && data.startDate && isPriorTo1753(data.startDate)) {
       startDateErrors.push(GetErrorMessage(currentCheck, isScottish));

@@ -7,7 +7,7 @@
 //
 //  Maximum validation numbers
 //  =================================
-//  Settings: 8700021 - 8700027
+//  Settings: 8700027
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -17,6 +17,7 @@
 //#region Version 1.0.0.0 changes
 //    001   25.04.23 Sean Flook                 Initial Revision.
 //    002   07.09.23 Sean Flook                 Removed unnecessary console logs.
+//    003   15.12.23 Sean Flook                 Added comments.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -55,6 +56,7 @@ export function ValidateMapLayer(data, currentLookups, isScottish) {
   const opacityErrors = [];
 
   if (data) {
+    // Layer type is invalid.
     currentCheck = GetCheck(8700004, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       currentCheck &&
@@ -64,62 +66,77 @@ export function ValidateMapLayer(data, currentLookups, isScottish) {
     )
       layerTypeErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Title is too long.
     currentCheck = GetCheck(8700005, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && data.title && data.title.length > 40)
       titleErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Copyright is too long.
     currentCheck = GetCheck(8700006, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && data.copyright && data.copyright.length > 100)
       copyrightErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Service provider is too long.
     currentCheck = GetCheck(8700007, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && data.serviceProvider && data.serviceProvider.length > 50)
       serviceProviderErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Layer key is too long.
     currentCheck = GetCheck(8700008, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && data.layerKey && data.layerKey.length > 40)
       layerKeyErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Layer username is too long.
     currentCheck = GetCheck(8700009, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && data.layerUsername && data.layerUsername.length > 40)
       layerUsernameErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Layer password is too long.
     currentCheck = GetCheck(8700010, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && data.layerPassword && data.layerPassword.length > 40)
       layerPasswordErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Active layer id is too long.
     currentCheck = GetCheck(8700011, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && data.activeLayerId && data.activeLayerId.length > 40)
       activeLayerIdErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Service mode is too long.
     currentCheck = GetCheck(8700012, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && data.serviceMode && data.serviceMode.length > 40)
       serviceModeErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Property name is too long.
     currentCheck = GetCheck(8700013, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && data.propertyName && data.propertyName.length > 100)
       propertyNameErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Mandatory layer type is missing.
     currentCheck = GetCheck(8700014, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && !data.layerType)
       layerTypeErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Mandatory layer id is missing.
     currentCheck = GetCheck(8700015, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && !data.layerId)
       layerIdErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Mandatory url is missing.
     currentCheck = GetCheck(8700018, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && !data.url)
       urlErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Opacity is invalid.
     currentCheck = GetCheck(8700019, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && !data.opacity)
       opacityErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Mandatory Service provider is missing.
     currentCheck = GetCheck(8700020, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && !data.serviceProvider)
       serviceProviderErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Mandatory copyright is missing.
     currentCheck = GetCheck(8700022, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       currentCheck &&
@@ -132,14 +149,17 @@ export function ValidateMapLayer(data, currentLookups, isScottish) {
     )
       copyrightErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Mandatory service mode is missing.
     currentCheck = GetCheck(8700023, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && data.layerType === 3 && !data.serviceMode)
       serviceModeErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Mandatory property name is missing.
     currentCheck = GetCheck(8700024, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && data.layerType === 1 && !data.propertyName)
       propertyNameErrors.push(GetErrorMessage(currentCheck, isScottish));
 
+    // Mandatory layer key is missing.
     currentCheck = GetCheck(8700027, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && data.serviceProvider === "OS" && !data.layerKey)
       layerKeyErrors.push(GetErrorMessage(currentCheck, isScottish));
