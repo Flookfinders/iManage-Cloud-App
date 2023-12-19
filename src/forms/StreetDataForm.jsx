@@ -31,6 +31,7 @@
 //    017   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //    018   30.11.23 Sean Flook       IMANN-196 Corrected field name in updateDescriptorData.
 //    019   14.12.23 Sean Flook                 Corrected note record type.
+//    020   19.12.23 Sean Flook                 Various bug fixes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1350,7 +1351,6 @@ function StreetDataForm({ data, loading }) {
     } else if (pkId === 0) {
       currentStreetEsuData.current = JSON.parse(JSON.stringify(streetData.esus));
 
-      const currentDate = GetCurrentDate(false);
       const newIdx =
         esuData && esuData.oneWayExemptions ? esuData.oneWayExemptions.filter((x) => x.changeType !== "D").length : 0;
       const minPkId =
@@ -1372,7 +1372,6 @@ function StreetDataForm({ data, loading }) {
           settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
             ? settingsContext.streetTemplate.esuTemplate.oneWayExemptionType
             : null,
-        recordStartDate: currentDate,
         recordEndDate: null,
         oneWayExemptionStartDate: null,
         oneWayExemptionEndDate: null,
@@ -1635,8 +1634,8 @@ function StreetDataForm({ data, loading }) {
             ? settingsContext.streetTemplate.scoMaintenanceResponsibilityTemplate.streetStatus
             : null,
         state: 1,
-        recordStartDate: currentDate,
-        recordEndDate: null,
+        startDate: currentDate,
+        endDate: null,
         wktGeometry: streetData && streetData.esus ? GetWholeRoadGeometry(streetData.esus) : "",
         pkId: newPkId,
         seqNum: newSeqNum,
@@ -1673,7 +1672,8 @@ function StreetDataForm({ data, loading }) {
         null,
         null,
         settingsContext.isScottish,
-        mapContext
+        mapContext,
+        lookupContext.currentLookups
       );
 
       setMaintenanceResponsibilityFormData({
@@ -1807,7 +1807,8 @@ function StreetDataForm({ data, loading }) {
         null,
         null,
         settingsContext.isScottish,
-        mapContext
+        mapContext,
+        lookupContext.currentLookups
       );
 
       setReinstatementCategoryFormData({
@@ -1942,7 +1943,8 @@ function StreetDataForm({ data, loading }) {
         null,
         null,
         settingsContext.isScottish,
-        mapContext
+        mapContext,
+        lookupContext.currentLookups
       );
 
       setOSSpecialDesignationFormData({
@@ -2093,7 +2095,8 @@ function StreetDataForm({ data, loading }) {
         streetData.heightWidthWeights,
         streetData.publicRightOfWays,
         settingsContext.isScottish,
-        mapContext
+        mapContext,
+        lookupContext.currentLookups
       );
 
       setInterestFormData({
@@ -2251,7 +2254,8 @@ function StreetDataForm({ data, loading }) {
         streetData.heightWidthWeights,
         streetData.publicRightOfWays,
         settingsContext.isScottish,
-        mapContext
+        mapContext,
+        lookupContext.currentLookups
       );
 
       setConstructionFormData({
@@ -2402,7 +2406,8 @@ function StreetDataForm({ data, loading }) {
         streetData.heightWidthWeights,
         streetData.publicRightOfWays,
         settingsContext.isScottish,
-        mapContext
+        mapContext,
+        lookupContext.currentLookups
       );
 
       setSpecialDesignationFormData({
@@ -2545,7 +2550,8 @@ function StreetDataForm({ data, loading }) {
         newHeightWidthWeights,
         streetData.publicRightOfWays,
         settingsContext.isScottish,
-        mapContext
+        mapContext,
+        lookupContext.currentLookups
       );
 
       setHwwFormData({
@@ -2733,7 +2739,8 @@ function StreetDataForm({ data, loading }) {
         streetData.heightWidthWeights,
         newPublicRightOfWays,
         settingsContext.isScottish,
-        mapContext
+        mapContext,
+        lookupContext.currentLookups
       );
 
       setProwFormData({
@@ -4041,7 +4048,8 @@ function StreetDataForm({ data, loading }) {
                 !settingsContext.isScottish && HasASD() && streetData ? streetData.heightWidthWeights : null,
                 !settingsContext.isScottish && HasASD() && streetData ? streetData.publicRightOfWays : null,
                 settingsContext.isScottish,
-                mapContext
+                mapContext,
+                lookupContext.currentLookups
               );
             }
           }
@@ -6191,138 +6199,105 @@ function StreetDataForm({ data, loading }) {
    * @param {object} srcData The original state of the data.
    */
   const handleStreetDataChanged = (srcData) => {
-    const newStreetData =
-      !settingsContext.isScottish && !HasASD()
-        ? {
-            changeType: streetData.changeType,
-            usrn: srcData.usrn,
-            swaOrgRefNaming: srcData.swaOrgRefNaming,
-            streetSurface: srcData.streetSurface,
-            streetStartDate: srcData.streetStartDate,
-            streetEndDate: srcData.streetEndDate,
-            neverExport: srcData.neverExport,
-            version: streetData.version,
-            recordType: srcData.recordType,
-            state: srcData.state,
-            stateDate: srcData.stateDate,
-            streetClassification: srcData.streetClassification,
-            streetTolerance: srcData.streetTolerance,
-            streetStartX: srcData.streetStartX,
-            streetStartY: srcData.streetStartY,
-            streetEndX: srcData.streetEndX,
-            streetEndY: srcData.streetEndY,
-            pkId: streetData.pkId,
-            lastUpdateDate: streetData.lastUpdateDate,
-            entryDate: streetData.entryDate,
-            streetLastUpdated: streetData.streetLastUpdated,
-            streetLastUser: streetData.streetLastUser,
-            relatedPropertyCount: streetData.relatedPropertyCount,
-            relatedStreetCount: streetData.relatedStreetCount,
-            esus: streetData.esus,
-            streetDescriptors: streetData.streetDescriptors,
-            streetNotes: streetData.streetNotes,
-          }
-        : !settingsContext.isScottish && HasASD()
-        ? {
-            changeType: streetData.changeType,
-            usrn: srcData.usrn,
-            swaOrgRefNaming: srcData.swaOrgRefNaming,
-            streetSurface: srcData.streetSurface,
-            streetStartDate: srcData.streetStartDate,
-            streetEndDate: srcData.streetEndDate,
-            neverExport: srcData.neverExport,
-            version: streetData.version,
-            recordType: srcData.recordType,
-            state: srcData.state,
-            stateDate: srcData.stateDate,
-            streetClassification: srcData.streetClassification,
-            streetTolerance: srcData.streetTolerance,
-            streetStartX: srcData.streetStartX,
-            streetStartY: srcData.streetStartY,
-            streetEndX: srcData.streetEndX,
-            streetEndY: srcData.streetEndY,
-            pkId: streetData.pkId,
-            lastUpdateDate: streetData.lastUpdateDate,
-            entryDate: streetData.entryDate,
-            streetLastUpdated: streetData.streetLastUpdated,
-            streetLastUser: streetData.streetLastUser,
-            relatedPropertyCount: streetData.relatedPropertyCount,
-            relatedStreetCount: streetData.relatedStreetCount,
-            esus: streetData.esus,
-            streetDescriptors: streetData.streetDescriptors,
-            streetNotes: streetData.streetNotes,
-            interests: streetData.interests,
-            constructions: streetData.constructions,
-            specialDesignations: streetData.specialDesignations,
-            publicRightOfWays: streetData.publicRightOfWays,
-            heightWidthWeights: streetData.heightWidthWeights,
-          }
-        : settingsContext.isScottish && !HasASD()
-        ? {
-            pkId: streetData.pkId,
-            changeType: streetData.changeType,
-            usrn: srcData.usrn,
-            recordType: srcData.recordType,
-            swaOrgRefNaming: srcData.swaOrgRefNaming,
-            version: streetData.version,
-            recordEntryDate: streetData.recordEntryDate,
-            lastUpdateDate: streetData.lastUpdateDate,
-            streetStartDate: srcData.streetStartDate,
-            streetEndDate: srcData.streetEndDate,
-            streetStartX: srcData.streetStartX,
-            streetStartY: srcData.streetStartY,
-            streetEndX: srcData.streetEndX,
-            streetEndY: srcData.streetEndY,
-            streetTolerance: srcData.streetTolerance,
-            esuCount: streetData.esuCount,
-            streetLastUpdated: streetData.streetLastUpdated,
-            streetLastUser: streetData.streetLastUser,
-            neverExport: srcData.neverExport,
-            relatedPropertyCount: streetData.relatedPropertyCount,
-            relatedStreetCount: streetData.relatedStreetCount,
-            lastUpdated: streetData.lastUpdated,
-            insertedTimestamp: streetData.insertedTimestamp,
-            insertedUser: streetData.insertedUser,
-            lastUser: streetData.lastUser,
-            esus: streetData.esus,
-            successorCrossRefs: streetData.successorCrossRefs,
-            streetDescriptors: streetData.streetDescriptors,
-            streetNotes: streetData.streetNotes,
-          }
-        : {
-            pkId: streetData.pkId,
-            changeType: streetData.changeType,
-            usrn: srcData.usrn,
-            recordType: srcData.recordType,
-            swaOrgRefNaming: srcData.swaOrgRefNaming,
-            version: streetData.version,
-            recordEntryDate: streetData.recordEntryDate,
-            lastUpdateDate: streetData.lastUpdateDate,
-            streetStartDate: srcData.streetStartDate,
-            streetEndDate: srcData.streetEndDate,
-            streetStartX: srcData.streetStartX,
-            streetStartY: srcData.streetStartY,
-            streetEndX: srcData.streetEndX,
-            streetEndY: srcData.streetEndY,
-            streetTolerance: srcData.streetTolerance,
-            esuCount: streetData.esuCount,
-            streetLastUpdated: streetData.streetLastUpdated,
-            streetLastUser: streetData.streetLastUser,
-            neverExport: srcData.neverExport,
-            relatedPropertyCount: streetData.relatedPropertyCount,
-            relatedStreetCount: streetData.relatedStreetCount,
-            lastUpdated: streetData.lastUpdated,
-            insertedTimestamp: streetData.insertedTimestamp,
-            insertedUser: streetData.insertedUser,
-            lastUser: streetData.lastUser,
-            esus: streetData.esus,
-            successorCrossRefs: streetData.successorCrossRefs,
-            streetDescriptors: streetData.streetDescriptors,
-            streetNotes: streetData.streetNotes,
-            maintenanceResponsibilities: streetData.maintenanceResponsibilities,
-            reinstatementCategories: streetData.reinstatementCategories,
-            osSpecialDesignations: streetData.specialDesignations,
-          };
+    const newStreetData = settingsContext.isScottish
+      ? {
+          pkId: streetData.pkId,
+          changeType: streetData.changeType,
+          usrn: srcData.usrn,
+          recordType: srcData.recordType,
+          swaOrgRefNaming: srcData.swaOrgRefNaming,
+          version: streetData.version,
+          recordEntryDate: streetData.recordEntryDate,
+          lastUpdateDate: streetData.lastUpdateDate,
+          streetStartDate: srcData.streetStartDate,
+          streetEndDate: srcData.streetEndDate,
+          streetStartX: srcData.streetStartX,
+          streetStartY: srcData.streetStartY,
+          streetEndX: srcData.streetEndX,
+          streetEndY: srcData.streetEndY,
+          streetTolerance: srcData.streetTolerance,
+          esuCount: streetData.esuCount,
+          streetLastUpdated: streetData.streetLastUpdated,
+          streetLastUser: streetData.streetLastUser,
+          neverExport: srcData.neverExport,
+          relatedPropertyCount: streetData.relatedPropertyCount,
+          relatedStreetCount: streetData.relatedStreetCount,
+          lastUpdated: streetData.lastUpdated,
+          insertedTimestamp: streetData.insertedTimestamp,
+          insertedUser: streetData.insertedUser,
+          lastUser: streetData.lastUser,
+          esus: streetData.esus,
+          successorCrossRefs: streetData.successorCrossRefs,
+          streetDescriptors: streetData.streetDescriptors,
+          streetNotes: streetData.streetNotes,
+          maintenanceResponsibilities: streetData.maintenanceResponsibilities,
+          reinstatementCategories: streetData.reinstatementCategories,
+          specialDesignations: streetData.specialDesignations,
+        }
+      : !HasASD()
+      ? {
+          changeType: streetData.changeType,
+          usrn: srcData.usrn,
+          swaOrgRefNaming: srcData.swaOrgRefNaming,
+          streetSurface: srcData.streetSurface,
+          streetStartDate: srcData.streetStartDate,
+          streetEndDate: srcData.streetEndDate,
+          neverExport: srcData.neverExport,
+          version: streetData.version,
+          recordType: srcData.recordType,
+          state: srcData.state,
+          stateDate: srcData.stateDate,
+          streetClassification: srcData.streetClassification,
+          streetTolerance: srcData.streetTolerance,
+          streetStartX: srcData.streetStartX,
+          streetStartY: srcData.streetStartY,
+          streetEndX: srcData.streetEndX,
+          streetEndY: srcData.streetEndY,
+          pkId: streetData.pkId,
+          lastUpdateDate: streetData.lastUpdateDate,
+          entryDate: streetData.entryDate,
+          streetLastUpdated: streetData.streetLastUpdated,
+          streetLastUser: streetData.streetLastUser,
+          relatedPropertyCount: streetData.relatedPropertyCount,
+          relatedStreetCount: streetData.relatedStreetCount,
+          esus: streetData.esus,
+          streetDescriptors: streetData.streetDescriptors,
+          streetNotes: streetData.streetNotes,
+        }
+      : {
+          changeType: streetData.changeType,
+          usrn: srcData.usrn,
+          swaOrgRefNaming: srcData.swaOrgRefNaming,
+          streetSurface: srcData.streetSurface,
+          streetStartDate: srcData.streetStartDate,
+          streetEndDate: srcData.streetEndDate,
+          neverExport: srcData.neverExport,
+          version: streetData.version,
+          recordType: srcData.recordType,
+          state: srcData.state,
+          stateDate: srcData.stateDate,
+          streetClassification: srcData.streetClassification,
+          streetTolerance: srcData.streetTolerance,
+          streetStartX: srcData.streetStartX,
+          streetStartY: srcData.streetStartY,
+          streetEndX: srcData.streetEndX,
+          streetEndY: srcData.streetEndY,
+          pkId: streetData.pkId,
+          lastUpdateDate: streetData.lastUpdateDate,
+          entryDate: streetData.entryDate,
+          streetLastUpdated: streetData.streetLastUpdated,
+          streetLastUser: streetData.streetLastUser,
+          relatedPropertyCount: streetData.relatedPropertyCount,
+          relatedStreetCount: streetData.relatedStreetCount,
+          esus: streetData.esus,
+          streetDescriptors: streetData.streetDescriptors,
+          streetNotes: streetData.streetNotes,
+          interests: streetData.interests,
+          constructions: streetData.constructions,
+          specialDesignations: streetData.specialDesignations,
+          publicRightOfWays: streetData.publicRightOfWays,
+          heightWidthWeights: streetData.heightWidthWeights,
+        };
 
     updateStreetData(newStreetData);
   };
@@ -6498,38 +6473,6 @@ function StreetDataForm({ data, loading }) {
               publicRightOfWays: streetData.publicRightOfWays,
               heightWidthWeights: streetData.heightWidthWeights,
             }
-          : settingsContext.isScottish && !HasASD()
-          ? {
-              pkId: streetData.pkId,
-              changeType: streetData.changeType,
-              usrn: streetData.usrn,
-              recordType: streetData.recordType,
-              swaOrgRefNaming: streetData.swaOrgRefNaming,
-              version: streetData.version,
-              recordEntryDate: streetData.recordEntryDate,
-              lastUpdateDate: streetData.lastUpdateDate,
-              streetStartDate: streetData.streetStartDate,
-              streetEndDate: currentDate,
-              streetStartX: streetData.streetStartX,
-              streetStartY: streetData.streetStartY,
-              streetEndX: streetData.streetEndX,
-              streetEndY: streetData.streetEndY,
-              streetTolerance: streetData.streetTolerance,
-              esuCount: streetData.esuCount,
-              streetLastUpdated: streetData.streetLastUpdated,
-              streetLastUser: streetData.streetLastUser,
-              neverExport: streetData.neverExport,
-              relatedPropertyCount: streetData.relatedPropertyCount,
-              relatedStreetCount: streetData.relatedStreetCount,
-              lastUpdated: streetData.lastUpdated,
-              insertedTimestamp: streetData.insertedTimestamp,
-              insertedUser: streetData.insertedUser,
-              lastUser: streetData.lastUser,
-              esus: streetData.esus,
-              successorCrossRefs: streetData.successorCrossRefs,
-              streetDescriptors: streetData.streetDescriptors,
-              streetNotes: streetData.streetNotes,
-            }
           : {
               pkId: streetData.pkId,
               changeType: streetData.changeType,
@@ -6562,7 +6505,7 @@ function StreetDataForm({ data, loading }) {
               streetNotes: streetData.streetNotes,
               maintenanceResponsibilities: streetData.maintenanceResponsibilities,
               reinstatementCategories: streetData.reinstatementCategories,
-              osSpecialDesignations: streetData.specialDesignations,
+              specialDesignations: streetData.specialDesignations,
             };
 
       setStreetData(newStreetData);
@@ -7851,7 +7794,8 @@ function StreetDataForm({ data, loading }) {
           !settingsContext.isScottish && HasASD() && newStreetData ? newStreetData.heightWidthWeights : null,
           !settingsContext.isScottish && HasASD() && newStreetData ? newStreetData.publicRightOfWays : null,
           settingsContext.isScottish,
-          mapContext
+          mapContext,
+          lookupContext.currentLookups
         );
 
         setStreetData(newStreetData);
@@ -7900,7 +7844,15 @@ function StreetDataForm({ data, loading }) {
         setSaveDisabled(false);
       }
     }
-  }, [mapContext.currentLineGeometry, streetData, sandboxContext, mapContext, streetContext, settingsContext]);
+  }, [
+    mapContext.currentLineGeometry,
+    streetData,
+    sandboxContext,
+    mapContext,
+    streetContext,
+    settingsContext,
+    lookupContext,
+  ]);
 
   // Create an ESU if the start and end coordinates are supplied
   useEffect(() => {
@@ -8168,7 +8120,7 @@ function StreetDataForm({ data, loading }) {
                 streetNotes: contextStreet.streetNotes,
                 maintenanceResponsibility: contextStreet.maintenanceResponsibility,
                 reinstatementCategory: contextStreet.reinstatementCategory,
-                osSpecialDesignations: contextStreet.osSpecialDesignations,
+                specialDesignations: contextStreet.specialDesignations,
               };
       }
     }
@@ -8993,8 +8945,8 @@ function StreetDataForm({ data, loading }) {
       const contextStreet = sandboxContext.currentSandbox.currentStreet || sandboxContext.currentSandbox.sourceStreet;
       GetEsuData(streetContext.assignEsu, userContext.currentUser.token)
         .then((result) => {
-          if (!contextStreet.esus.find((x) => x.esuId === result.esuId)) {
-            const newEsus = contextStreet.esus.map((x) => x);
+          if (!contextStreet.esus || !contextStreet.esus.find((x) => x.esuId === result.esuId)) {
+            const newEsus = contextStreet.esus ? contextStreet.esus.map((x) => x) : [];
             newEsus.push({ ...result, assignUnassign: 1 });
 
             const newEsuStreetData = GetNewEsuStreetData(

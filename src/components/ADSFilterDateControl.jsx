@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   13.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   08.12.23 Sean Flook                 Migrated DatePicker to v6.
+//    003   18.12.23 Sean Flook                 Ensure tooltip is displayed
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -25,6 +26,7 @@ import PropTypes from "prop-types";
 import { Grid, Typography, Badge, TextField, MenuItem } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { parseISO } from "date-fns";
+import { isValidDate } from "../utils/HelperUtils";
 import {
   FormRowStyle,
   FormInputStyle,
@@ -233,16 +235,16 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
                 maxDate={new Date()}
                 showTodayButton
                 value={betweenDate1}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    sx={FormDateInputStyle()}
-                    variant="outlined"
-                    margin="none"
-                    fullWidth
-                    size="small"
-                  />
-                )}
+                slotProps={{
+                  textField: {
+                    id: `${label.toLowerCase().replaceAll(" ", "-")}-between-date1-picker-textfield`,
+                    sx: FormDateInputStyle(),
+                    variant: "outlined",
+                    margin: "dense",
+                    fullWidth: "true",
+                    size: "small",
+                  },
+                }}
                 onChange={(date) => handleBetweenDate1ChangeEvent(date)}
                 KeyboardButtonProps={{
                   "aria-label": "change date",
@@ -264,16 +266,16 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
                 showTodayButton
                 value={betweenDate2}
                 initialFocusedDate={betweenDate2}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    sx={FormDateInputStyle()}
-                    variant="outlined"
-                    margin="none"
-                    fullWidth
-                    size="small"
-                  />
-                )}
+                slotProps={{
+                  textField: {
+                    id: `${label.toLowerCase().replaceAll(" ", "-")}-between-date2-picker-textfield`,
+                    sx: FormDateInputStyle(),
+                    variant: "outlined",
+                    margin: "dense",
+                    fullWidth: "true",
+                    size: "small",
+                  },
+                }}
                 onChange={(date) => handleBetweenDate2ChangeEvent(date)}
                 KeyboardButtonProps={{
                   "aria-label": "change date",
@@ -294,16 +296,16 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
               maxDate={new Date()}
               value={betweenDate1}
               showTodayButton
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  sx={FormDateInputStyle()}
-                  variant="outlined"
-                  margin="none"
-                  fullWidth
-                  size="small"
-                />
-              )}
+              slotProps={{
+                textField: {
+                  id: `${label.toLowerCase().replaceAll(" ", "-")}-before-date-picker-textfield`,
+                  sx: FormDateInputStyle(),
+                  variant: "outlined",
+                  margin: "dense",
+                  fullWidth: "true",
+                  size: "small",
+                },
+              }}
               onChange={(date) => handleBetweenDate1ChangeEvent(date)}
               KeyboardButtonProps={{
                 "aria-label": "change date",
@@ -323,16 +325,16 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
               disableMaskedInput
               value={betweenDate1}
               showTodayButton
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  sx={FormDateInputStyle()}
-                  variant="outlined"
-                  margin="none"
-                  fullWidth
-                  size="small"
-                />
-              )}
+              slotProps={{
+                textField: {
+                  id: `${label.toLowerCase().replaceAll(" ", "-")}-on-date-picker-textfield`,
+                  sx: FormDateInputStyle(),
+                  variant: "outlined",
+                  margin: "dense",
+                  fullWidth: "true",
+                  size: "small",
+                },
+              }}
               onChange={(date) => handleBetweenDate1ChangeEvent(date)}
               KeyboardButtonProps={{
                 "aria-label": "change date",
@@ -349,8 +351,10 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
   };
 
   useEffect(() => {
-    setBetweenDate1(parseISO(date1));
-    setBetweenDate2(parseISO(date2));
+    if (isValidDate(date1)) setBetweenDate1(date1);
+    else setBetweenDate1(parseISO(date1));
+    if (isValidDate(date2)) setBetweenDate2(date2);
+    else setBetweenDate2(parseISO(date2));
   }, [date1, date2]);
 
   return (

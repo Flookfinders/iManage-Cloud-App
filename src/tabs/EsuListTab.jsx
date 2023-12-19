@@ -21,6 +21,7 @@
 //    008   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    009   03.11.23 Sean Flook                 Added hyphen to one-way.
 //    010   24.11.23 Sean Flook                 Moved Box to @mui/system and fixed a warning.
+//    011   19.12.23 Sean Flook                 Various bug fixes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -301,7 +302,7 @@ function EsuListTab({
 
       setChecked(newChecked);
 
-      setAllChecked(newChecked.length === data.length);
+      setAllChecked(data && newChecked.length === data.length);
 
       if (newChecked.length > 0) {
         setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
@@ -312,7 +313,7 @@ function EsuListTab({
       }
       streetContext.onEsuSelected(null);
     }
-  }, [streetContext.selectedMapEsuId, checked, data.length, mapContext, streetContext]);
+  }, [streetContext.selectedMapEsuId, checked, data, mapContext, streetContext]);
 
   useEffect(() => {
     if (mapContext.currentDivideEsu) {

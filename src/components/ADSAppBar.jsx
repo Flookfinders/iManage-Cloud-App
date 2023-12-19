@@ -23,6 +23,7 @@
 //    010   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    011   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and added getClassificationCode.
 //    012   30.11.23 Sean Flook       IMANN-175 Make the button visible to all.
+//    013   19.12.23 Sean Flook                 Various bug fixes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -523,11 +524,13 @@ function ADSAppBar(props) {
         town: foundStreetDescriptor.town,
         state: !settingsContext.isScottish ? foundStreet.state : undefined,
         type: foundStreet.recordType,
-        esus: foundStreet.esus.map((esu) => ({
-          esuId: esu.esuId,
-          state: settingsContext.isScottish ? esu.state : undefined,
-          geometry: esu.wktGeometry ? GetWktCoordinates(esu.wktGeometry) : undefined,
-        })),
+        esus: foundStreet.esus
+          ? foundStreet.esus.map((esu) => ({
+              esuId: esu.esuId,
+              state: settingsContext.isScottish ? esu.state : undefined,
+              geometry: esu.wktGeometry ? GetWktCoordinates(esu.wktGeometry) : undefined,
+            }))
+          : [],
         asdType51:
           settingsContext.isScottish &&
           foundStreet.maintenanceResponsibilities.map((asdRec) => ({
@@ -635,7 +638,9 @@ function ADSAppBar(props) {
       };
 
     const currentSearchStreets =
-      streetContext.currentStreet && streetContext.currentStreet.newStreet
+      streetContext.currentStreet && streetContext.currentStreet.newStreet && discardChanges
+        ? mapContext.sourceSearchData.streets.filter((x) => x.usrn !== 0)
+        : streetContext.currentStreet && streetContext.currentStreet.newStreet && !discardChanges
         ? mapContext.currentSearchData.streets.filter((x) => x.usrn !== 0)
         : discardChanges && originalStreet
         ? mapContext.sourceSearchData.streets.map(
@@ -665,7 +670,9 @@ function ADSAppBar(props) {
       };
 
     const currentSearchProperties =
-      propertyContext.currentProperty && propertyContext.currentProperty.newProperty
+      propertyContext.currentProperty && propertyContext.currentProperty.newProperty && discardChanges
+        ? mapContext.sourceSearchData.properties.filter((x) => x.uprn !== 0)
+        : propertyContext.currentProperty && propertyContext.currentProperty.newProperty && !discardChanges
         ? mapContext.currentSearchData.properties.filter((x) => x.uprn !== 0)
         : discardChanges && originalProperty
         ? mapContext.sourceSearchData.properties.map(

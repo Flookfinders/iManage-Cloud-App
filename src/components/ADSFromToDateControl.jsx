@@ -14,6 +14,7 @@
 //    001   07.07.21 Sean Flook                 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    003   08.12.23 Sean Flook                 Migrated DatePicker to v6.
+//    004   18.12.23 Sean Flook                 Ensure tooltip is displayed
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -23,11 +24,12 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Grid, TextField, Typography, Tooltip, Skeleton } from "@mui/material";
+import { Grid, Typography, Tooltip, Skeleton } from "@mui/material";
 import { Box } from "@mui/system";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dateFormat from "dateformat";
 import { parseISO } from "date-fns";
+import { isValidDate } from "../utils/HelperUtils";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { useTheme } from "@mui/styles";
 import { FormBoxRowStyle, FormRowStyle, FormDateInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
@@ -125,9 +127,14 @@ function ADSFromToDateControl({
   }, [fromErrorText, toErrorText]);
 
   useEffect(() => {
-    if (!loading && fromValue && fromValue.toString() !== "0001-01-01T00:00:00")
-      setSelectedFromDate(parseISO(fromValue));
-    if (!loading && toValue && toValue.toString() !== "0001-01-01T00:00:00") setSelectedToDate(parseISO(toValue));
+    if (!loading && fromValue && fromValue.toString() !== "0001-01-01T00:00:00") {
+      if (isValidDate(fromValue)) setSelectedFromDate(fromValue);
+      else setSelectedFromDate(parseISO(fromValue));
+    }
+    if (!loading && toValue && toValue.toString() !== "0001-01-01T00:00:00") {
+      if (isValidDate(toValue)) setSelectedToDate(toValue);
+      else setSelectedToDate(parseISO(toValue));
+    }
   }, [loading, fromValue, toValue]);
 
   useEffect(() => {
@@ -171,40 +178,41 @@ function ADSFromToDateControl({
                 </Grid>
                 <Grid item>
                   {fromHelperText && fromHelperText.length > 0 ? (
-                    <DatePicker
-                      id={`${label.toLowerCase().replaceAll(" ", "-")}-from-date-picker`}
-                      format="dd MMMM yyyy"
-                      disableMaskedInput
-                      value={selectedFromDate}
-                      showTodayButton
-                      required={isRequired}
-                      disabled={!isEditable}
-                      renderInput={(params) => (
-                        <Tooltip
-                          title={isRequired ? fromHelperText + " This is a required field." : fromHelperText}
-                          arrow
-                          placement="right"
-                          sx={tooltipStyle}
-                        >
-                          <TextField
-                            {...params}
-                            id={`${label.toLowerCase().replaceAll(" ", "-")}-from-date-picker-textfield`}
-                            sx={FormDateInputStyle(hasFromError.current)}
-                            variant="outlined"
-                            margin="dense"
-                            error={hasFromError.current}
-                            fullWidth
-                            size="small"
-                          />
-                        </Tooltip>
-                      )}
-                      onChange={(newValue) => handleFromChange(newValue)}
-                      KeyboardButtonProps={{
-                        "aria-label": "change from date",
-                      }}
-                      aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-from-date-label`}
-                      aria-describedby={`${label.toLowerCase().replaceAll(" ", "-")}-error`}
-                    />
+                    <Tooltip
+                      title={isRequired ? fromHelperText + " This is a required field." : fromHelperText}
+                      arrow
+                      placement="right"
+                      sx={tooltipStyle}
+                    >
+                      <div>
+                        <DatePicker
+                          id={`${label.toLowerCase().replaceAll(" ", "-")}-from-date-picker`}
+                          format="dd MMMM yyyy"
+                          disableMaskedInput
+                          value={selectedFromDate}
+                          showTodayButton
+                          required={isRequired}
+                          disabled={!isEditable}
+                          slotProps={{
+                            textField: {
+                              id: `${label.toLowerCase().replaceAll(" ", "-")}-from-date-picker-textfield`,
+                              sx: FormDateInputStyle(hasFromError.current),
+                              variant: "outlined",
+                              error: hasFromError.current,
+                              margin: "dense",
+                              fullWidth: "true",
+                              size: "small",
+                            },
+                          }}
+                          onChange={(newValue) => handleFromChange(newValue)}
+                          KeyboardButtonProps={{
+                            "aria-label": "change from date",
+                          }}
+                          aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-from-date-label`}
+                          aria-describedby={`${label.toLowerCase().replaceAll(" ", "-")}-error`}
+                        />
+                      </div>
+                    </Tooltip>
                   ) : (
                     <DatePicker
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-from-date-picker`}
@@ -214,18 +222,17 @@ function ADSFromToDateControl({
                       showTodayButton
                       required={isRequired}
                       disabled={!isEditable}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          id={`${label.toLowerCase().replaceAll(" ", "-")}-from-date-picker-textfield`}
-                          sx={FormDateInputStyle(hasFromError.current)}
-                          variant="outlined"
-                          margin="dense"
-                          error={hasFromError.current}
-                          fullWidth
-                          size="small"
-                        />
-                      )}
+                      slotProps={{
+                        textField: {
+                          id: `${label.toLowerCase().replaceAll(" ", "-")}-from-date-picker-textfield`,
+                          sx: FormDateInputStyle(hasFromError.current),
+                          variant: "outlined",
+                          error: hasFromError.current,
+                          margin: "dense",
+                          fullWidth: "true",
+                          size: "small",
+                        },
+                      }}
                       onChange={(newValue) => handleFromChange(newValue)}
                       KeyboardButtonProps={{
                         "aria-label": "change from date",
@@ -242,40 +249,41 @@ function ADSFromToDateControl({
                 </Grid>
                 <Grid item>
                   {toHelperText && toHelperText.length > 0 ? (
-                    <DatePicker
-                      id={`${label.toLowerCase().replaceAll(" ", "-")}-to-date-picker`}
-                      format="dd MMMM yyyy"
-                      disableMaskedInput
-                      value={selectedToDate}
-                      showTodayButton
-                      required={isRequired}
-                      disabled={!isEditable}
-                      renderInput={(params) => (
-                        <Tooltip
-                          title={isRequired ? toHelperText + " This is a required field." : toHelperText}
-                          arrow
-                          placement="right"
-                          sx={tooltipStyle}
-                        >
-                          <TextField
-                            {...params}
-                            id={`${label.toLowerCase().replaceAll(" ", "-")}-to-date-picker-textfield`}
-                            sx={FormDateInputStyle(hasToError.current)}
-                            variant="outlined"
-                            margin="dense"
-                            error={hasToError.current}
-                            fullWidth
-                            size="small"
-                          />
-                        </Tooltip>
-                      )}
-                      onChange={(newValue) => handleToChange(newValue)}
-                      KeyboardButtonProps={{
-                        "aria-label": "change to date",
-                      }}
-                      aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-to-date-label`}
-                      aria-describedby={`${label.toLowerCase().replaceAll(" ", "-")}-error`}
-                    />
+                    <Tooltip
+                      title={isRequired ? toHelperText + " This is a required field." : toHelperText}
+                      arrow
+                      placement="right"
+                      sx={tooltipStyle}
+                    >
+                      <div>
+                        <DatePicker
+                          id={`${label.toLowerCase().replaceAll(" ", "-")}-to-date-picker`}
+                          format="dd MMMM yyyy"
+                          disableMaskedInput
+                          value={selectedToDate}
+                          showTodayButton
+                          required={isRequired}
+                          disabled={!isEditable}
+                          slotProps={{
+                            textField: {
+                              id: `${label.toLowerCase().replaceAll(" ", "-")}-to-date-picker-textfield`,
+                              sx: FormDateInputStyle(hasToError.current),
+                              variant: "outlined",
+                              error: hasToError.current,
+                              margin: "dense",
+                              fullWidth: "true",
+                              size: "small",
+                            },
+                          }}
+                          onChange={(newValue) => handleToChange(newValue)}
+                          KeyboardButtonProps={{
+                            "aria-label": "change to date",
+                          }}
+                          aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-to-date-label`}
+                          aria-describedby={`${label.toLowerCase().replaceAll(" ", "-")}-error`}
+                        />
+                      </div>
+                    </Tooltip>
                   ) : (
                     <DatePicker
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-to-date-picker`}
@@ -285,18 +293,17 @@ function ADSFromToDateControl({
                       showTodayButton
                       required={isRequired}
                       disabled={!isEditable}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          id={`${label.toLowerCase().replaceAll(" ", "-")}-to-date-picker-textfield`}
-                          sx={FormDateInputStyle(hasToError.current)}
-                          variant="outlined"
-                          margin="dense"
-                          error={hasToError.current}
-                          fullWidth
-                          size="small"
-                        />
-                      )}
+                      slotProps={{
+                        textField: {
+                          id: `${label.toLowerCase().replaceAll(" ", "-")}-to-date-picker-textfield`,
+                          sx: FormDateInputStyle(hasToError.current),
+                          variant: "outlined",
+                          error: hasToError.current,
+                          margin: "dense",
+                          fullWidth: "true",
+                          size: "small",
+                        },
+                      }}
                       onChange={(newValue) => handleToChange(newValue)}
                       KeyboardButtonProps={{
                         "aria-label": "change to date",

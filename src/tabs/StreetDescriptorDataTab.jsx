@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial version.
 //    002   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    004   19.12.23 Sean Flook                 Various bug fixes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -353,7 +354,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
               noWrap
               align="left"
             >
-              {`| ${data.index + 1} of ${data.totalRecords}: ${streetToTitleCase(data.sdData.streetDescriptor)}`}
+              {`| ${data.index + 1} of ${data.totalRecords}: ${streetToTitleCase(description)}`}
             </Typography>
           </Grid>
         </Grid>

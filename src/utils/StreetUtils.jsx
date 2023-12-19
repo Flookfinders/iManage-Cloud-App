@@ -23,6 +23,7 @@
 //    010   01.12.23 Sean Flook       IMANN-194 Update the street descriptor lookup after doing a save or delete.
 //    011   01.12.23 Sean Flook                 Include island in the street address for Scottish authorities.
 //    012   12.12.23 Sean Flook                 Modified FilteredStreetType to exclude Unassigned ESU.
+//    013   19.12.23 Sean Flook                 Various bug fixes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2755,7 +2756,8 @@ export async function SaveStreet(
           !isScottish && HasASD() ? result.heightWidthWeights : null,
           !isScottish && HasASD() ? result.publicRightOfWays : null,
           isScottish,
-          mapContext
+          mapContext,
+          lookupContext.currentLookups
         );
 
         streetSaved = result;
@@ -2982,6 +2984,7 @@ export function GetAsdSecondaryText(value, variant, isScottish) {
  * @param {object|null} asdType66 The ASD type 66 data (GeoPlace only).
  * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
  * @param {object} mapContext The map context object.
+ * @param {object} currentlookups The current lookups.
  */
 export const updateMapStreetData = (
   streetData,
@@ -2994,24 +2997,28 @@ export const updateMapStreetData = (
   asdType64,
   asdType66,
   isScottish,
-  mapContext
+  mapContext,
+  currentlookups
 ) => {
   const engDescriptor = streetData.streetDescriptors.find((x) => x.language === "ENG");
+
+  const townRec = currentlookups.towns.find((x) => x.townRef === engDescriptor.townRef);
+  const localityRec = currentlookups.localities.find((x) => x.localityRef === engDescriptor.locRef);
 
   const currentSearchStreets = [
     {
       usrn: streetData.usrn,
       description: engDescriptor.streetDescriptor,
       language: "ENG",
-      locality: engDescriptor.locality,
-      town: engDescriptor.town,
+      locality: localityRec ? localityRec.locality : engDescriptor.locality,
+      town: townRec ? townRec.town : engDescriptor.town,
       state: !isScottish ? streetData.state : undefined,
       type: streetData.recordType,
       esus: streetData.esus
-        .filter((esu) => esu.pkId > 0)
+        // .filter((esu) => esu.pkId > 0)
         .map((esu) => ({
           esuId: esu.esuId,
-          state: isScottish ? esu.sate : undefined,
+          state: isScottish ? esu.state : undefined,
           geometry: esu.wktGeometry && esu.wktGeometry !== "" ? GetWktCoordinates(esu.wktGeometry) : undefined,
         })),
       asdType51:

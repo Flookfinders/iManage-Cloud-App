@@ -31,6 +31,7 @@
 //    018   24.11.23 Sean Flook                 Renamed successor to successorCrossRef.
 //    019   01.12.23 Sean Flook       IMANN-194 Added HandleUpdateLookup to enable updating a single lookup type.
 //    020   14.12.23 Sean Flook                 Corrected note record type and tidied up validation code.
+//    021   19.12.23 Sean Flook                 Various bug fixes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1258,9 +1259,9 @@ function App() {
           break;
 
         case 15:
-          if (sandbox.currentStreetRecords.descriptor) {
+          if (sandbox.currentStreetRecords.streetDescriptor) {
             const descriptorErrors = ValidateDescriptorData(
-              sandbox.currentStreetRecords.descriptor,
+              sandbox.currentStreetRecords.streetDescriptor,
               streetRecord.index,
               lookups,
               isScottish,
@@ -1854,7 +1855,7 @@ function App() {
       editProperty: editProperty,
     });
 
-    if (!editStreet && !editProperty) {
+    if (!editStreet && editStreet !== 0 && !editProperty && editProperty !== 0) {
       setSourceMapSearchData({ streets: streets, properties: properties });
     }
   }

@@ -23,6 +23,7 @@
 //    010   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    011   24.11.23 Sean Flook                 Moved Stack to @mui/system and ignore connecting words in TitleCase.
 //    012   30.11.23 Sean Flook                 added ' of ' to the ignore list in TitleCase.
+//    013   19.12.23 Sean Flook                 Various bug fixes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -144,7 +145,7 @@ export function getMonthString(month) {
  * @return {boolean} True if it is a valid date; otherwise false.
  */
 export function isValidDate(d) {
-  return d instanceof Date && !isNaN(d);
+  return d && Object.prototype.toString.call(d) === "[object Date]" && !isNaN(d);
 }
 
 /**

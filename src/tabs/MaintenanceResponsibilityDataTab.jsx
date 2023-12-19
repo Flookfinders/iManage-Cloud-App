@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record and use colour variables.
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    005   19.12.23 Sean Flook                 Various bug fixes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -80,30 +81,14 @@ function MaintenanceResponsibilityDataTab({
   const [roadStatusCodeLookup, setRoadStatusCodeLookup] = useState(FilteredRoadStatusCode(true));
   const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(FilteredSwaOrgRef(true));
 
-  const [streetStatus, setStreetStatus] = useState(
-    data && data.maintenanceResponsibilityData ? data.maintenanceResponsibilityData.streetStatus : null
-  );
-  const [custodian, setCustodian] = useState(
-    data && data.maintenanceResponsibilityData ? data.maintenanceResponsibilityData.custodianCode : null
-  );
-  const [authority, setAuthority] = useState(
-    data && data.maintenanceResponsibilityData ? data.maintenanceResponsibilityData.maintainingAuthorityCode : null
-  );
-  const [startDate, setStartDate] = useState(
-    data && data.maintenanceResponsibilityData ? data.maintenanceResponsibilityData.startDate : null
-  );
-  const [endDate, setEndDate] = useState(
-    data && data.maintenanceResponsibilityData ? data.maintenanceResponsibilityData.endDate : null
-  );
-  const [state, setState] = useState(
-    data && data.maintenanceResponsibilityData ? data.maintenanceResponsibilityData.state : null
-  );
-  const [wholeRoad, setWholeRoad] = useState(
-    data && data.maintenanceResponsibilityData ? data.maintenanceResponsibilityData.wholeRoad : true
-  );
-  const [specificLocation, setSpecificLocation] = useState(
-    data && data.maintenanceResponsibilityData ? data.maintenanceResponsibilityData.specificLocation : null
-  );
+  const [streetStatus, setStreetStatus] = useState(null);
+  const [custodian, setCustodian] = useState(null);
+  const [authority, setAuthority] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [state, setState] = useState(null);
+  const [wholeRoad, setWholeRoad] = useState(true);
+  const [specificLocation, setSpecificLocation] = useState(null);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -393,9 +378,10 @@ function MaintenanceResponsibilityDataTab({
         setDataChanged(
           !ObjectComparison(sourceMaintenanceResponsibility, data.maintenanceResponsibilityData, [
             "changeType",
-            "recordEntryDate",
-            "recordEndDate",
+            "entryDate",
+            "endDate",
             "lastUpdated",
+            "lastUpdateDate",
             "insertedTimestamp",
             "insertedUser",
             "lastUser",

@@ -18,7 +18,7 @@
 //  Reinstatement Category:     5200023
 //  OS Special Designation:     5300025
 //  Interest:                   6100024
-//  Construction:               6200033
+//  Construction:               6200034
 //  Special Designation:        6300034
 //  Height Width Weight:        6400016
 //  Public Right of Way:        6600015
@@ -36,6 +36,7 @@
 //    004   20.09.23 Sean Flook                 Added holder for ValidateStreetSuccessorData.
 //    005   24.11.23 Sean Flook                 Renamed successor to successorCrossRef.
 //    006   15.12.23 Sean Flook                 Added new checks and comments.
+//    007   19.12.23 Sean Flook                 Various bug fixes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -122,6 +123,7 @@ export function ValidateStreetData(data, currentLookups, isScottish, authorityCo
     ) {
       startCoordErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
+
     if (
       includeCheck(currentCheck, isScottish) &&
       data.streetEndX &&
@@ -1274,7 +1276,7 @@ export function ValidateReinstatementCategoryData(data, index, currentLookups) {
     if (
       includeCheck(currentCheck, true) &&
       data.reinstatementCategoryCode &&
-      !ReinstatementType.find((x) => x.id === data.reinstatementTypeCode && x.osText)
+      !ReinstatementType.find((x) => x.id === data.reinstatementCategoryCode && x.osText)
     ) {
       reinstatementCategoryErrors.push(GetErrorMessage(currentCheck, true));
     }
@@ -1358,7 +1360,7 @@ export function ValidateReinstatementCategoryData(data, index, currentLookups) {
     if (reinstatementCategoryErrors.length > 0)
       validationErrors.push({
         index: index,
-        field: "StreetStatus",
+        field: "ReinstatementCategory",
         errors: reinstatementCategoryErrors,
       });
 
@@ -1452,7 +1454,7 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
     if (
       includeCheck(currentCheck, true) &&
       data.specialDesig &&
-      !SpecialDesignationCode.find((x) => x.id === data.streetSpecialDesig)
+      !SpecialDesignationCode.find((x) => x.id === data.specialDesig && x.osText)
     ) {
       specialDesignationErrors.push(GetErrorMessage(currentCheck, true));
     }

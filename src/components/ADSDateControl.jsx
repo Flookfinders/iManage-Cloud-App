@@ -23,6 +23,7 @@
 //    010   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
 //    011   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    012   08.12.23 Sean Flook                 Migrated DatePicker to v6.
+//    013   18.12.23 Sean Flook                 Ensure tooltip is displayed
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -32,11 +33,12 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Grid, TextField, Typography, Tooltip, Skeleton } from "@mui/material";
+import { Grid, Typography, Tooltip, Skeleton } from "@mui/material";
 import { Box } from "@mui/system";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { parseISO } from "date-fns";
 import dateFormat from "dateformat";
+import { isValidDate } from "../utils/HelperUtils";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { useTheme } from "@mui/styles";
 import { FormBoxRowStyle, FormRowStyle, FormDateInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
@@ -48,6 +50,7 @@ ADSDateControl.propTypes = {
   isEditable: PropTypes.bool,
   isRequired: PropTypes.bool,
   isFocused: PropTypes.bool,
+  allowFutureDates: PropTypes.bool,
   loading: PropTypes.bool,
   helperText: PropTypes.string,
   value: PropTypes.string,
@@ -59,10 +62,22 @@ ADSDateControl.defaultProps = {
   isEditable: false,
   isRequired: false,
   isFocused: false,
+  allowFutureDates: false,
   loading: false,
 };
 
-function ADSDateControl({ label, isEditable, isRequired, isFocused, loading, helperText, value, errorText, onChange }) {
+function ADSDateControl({
+  label,
+  isEditable,
+  isRequired,
+  isFocused,
+  allowFutureDates,
+  loading,
+  helperText,
+  value,
+  errorText,
+  onChange,
+}) {
   const theme = useTheme();
   const [selectedDate, setSelectedDate] = useState(null);
   const [displayError, setDisplayError] = useState("");
@@ -89,7 +104,10 @@ function ADSDateControl({ label, isEditable, isRequired, isFocused, loading, hel
   }, [errorText]);
 
   useEffect(() => {
-    if (!loading && value && value.toString() !== "0001-01-01T00:00:00") setSelectedDate(parseISO(value));
+    if (!loading && value && value.toString() !== "0001-01-01T00:00:00") {
+      if (isValidDate(value)) setSelectedDate(value);
+      else setSelectedDate(parseISO(value));
+    }
   }, [loading, value]);
 
   useEffect(() => {
@@ -120,40 +138,42 @@ function ADSDateControl({ label, isEditable, isRequired, isFocused, loading, hel
             <Skeleton variant="rectangular" animation="wave" height="52px" width="100%" />
           ) : isEditable ? (
             helperText && helperText.length > 0 ? (
-              <DatePicker
-                id={`${label.toLowerCase().replaceAll(" ", "-")}-date-picker`}
-                format="dd MMMM yyyy"
-                disableMaskedInput
-                value={selectedDate}
-                showTodayButton
-                required={isRequired}
-                disabled={!isEditable}
-                renderInput={(params) => (
-                  <Tooltip
-                    title={isRequired ? helperText + " This is a required field." : helperText}
-                    arrow
-                    placement="right"
-                    sx={tooltipStyle}
-                  >
-                    <TextField
-                      {...params}
-                      id={`${label.toLowerCase().replaceAll(" ", "-")}-date-picker-textfield`}
-                      sx={FormDateInputStyle(hasError.current)}
-                      variant="outlined"
-                      error={hasError.current}
-                      margin="dense"
-                      fullWidth
-                      size="small"
-                    />
-                  </Tooltip>
-                )}
-                onChange={(newValue) => handleDateChange(newValue)}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
-                }}
-                aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-                aria-describedby={`${label.toLowerCase().replaceAll(" ", "-")}-error`}
-              />
+              <Tooltip
+                title={isRequired ? helperText + " This is a required field." : helperText}
+                arrow
+                placement="right"
+                sx={tooltipStyle}
+              >
+                <div>
+                  <DatePicker
+                    id={`${label.toLowerCase().replaceAll(" ", "-")}-date-picker`}
+                    format="dd MMMM yyyy"
+                    disableMaskedInput
+                    value={selectedDate}
+                    showTodayButton
+                    required={isRequired}
+                    disabled={!isEditable}
+                    disableFuture={!allowFutureDates}
+                    slotProps={{
+                      textField: {
+                        id: `${label.toLowerCase().replaceAll(" ", "-")}-date-picker-textfield`,
+                        sx: FormDateInputStyle(hasError.current),
+                        variant: "outlined",
+                        error: hasError.current,
+                        margin: "dense",
+                        fullWidth: "true",
+                        size: "small",
+                      },
+                    }}
+                    onChange={(newValue) => handleDateChange(newValue)}
+                    KeyboardButtonProps={{
+                      "aria-label": "change date",
+                    }}
+                    aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+                    aria-describedby={`${label.toLowerCase().replaceAll(" ", "-")}-error`}
+                  />
+                </div>
+              </Tooltip>
             ) : (
               <DatePicker
                 id={`${label.toLowerCase().replaceAll(" ", "-")}-date-picker`}
@@ -163,18 +183,18 @@ function ADSDateControl({ label, isEditable, isRequired, isFocused, loading, hel
                 showTodayButton
                 required={isRequired}
                 disabled={!isEditable}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    id={`${label.toLowerCase().replaceAll(" ", "-")}-date-picker-textfield`}
-                    sx={FormDateInputStyle(hasError.current)}
-                    variant="outlined"
-                    error={hasError.current}
-                    margin="dense"
-                    fullWidth
-                    size="small"
-                  />
-                )}
+                disableFuture={!allowFutureDates}
+                slotProps={{
+                  textField: {
+                    id: `${label.toLowerCase().replaceAll(" ", "-")}-date-picker-textfield`,
+                    sx: FormDateInputStyle(hasError.current),
+                    variant: "outlined",
+                    error: hasError.current,
+                    margin: "dense",
+                    fullWidth: "true",
+                    size: "small",
+                  },
+                }}
                 onChange={(newValue) => handleDateChange(newValue)}
                 KeyboardButtonProps={{
                   "aria-label": "change date",

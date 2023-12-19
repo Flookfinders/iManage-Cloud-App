@@ -36,6 +36,7 @@
 //    011   27.10.23 Sean Flook       IMANN-175 Added ValidateMultiEditLogicalStatus.
 //    012   24.11.23 Sean Flook                 Renamed successor to successorCrossRef.
 //    013   15.12.23 Sean Flook                 Added new checks and comments.
+//    014   19.12.23 Sean Flook                 Various bug fixes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -174,20 +175,38 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
 
     // Coordinates must be within the valid coordinate range.
     currentCheck = GetCheck(2100021, currentLookups, methodName, isScottish, showDebugMessages);
-    if (
-      includeCheck(currentCheck, isScottish) &&
-      data.xcoordinate &&
-      (data.xcoordinate < 80000 || data.xcoordinate > 656100)
-    ) {
-      xCoordinateErrors.push(GetErrorMessage(currentCheck, isScottish));
-    }
+    if (isScottish) {
+      if (
+        includeCheck(currentCheck, isScottish) &&
+        data.xcoordinate &&
+        (data.xcoordinate < 1 || data.xcoordinate > 660000)
+      ) {
+        xCoordinateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
 
-    if (
-      includeCheck(currentCheck, isScottish) &&
-      data.ycoordinate &&
-      (data.ycoordinate < 5000 || data.ycoordinate > 657700)
-    ) {
-      yCoordinateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      if (
+        includeCheck(currentCheck, isScottish) &&
+        data.ycoordinate &&
+        (data.ycoordinate < 1 || data.ycoordinate > 1300000)
+      ) {
+        yCoordinateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+    } else {
+      if (
+        includeCheck(currentCheck, isScottish) &&
+        data.xcoordinate &&
+        (data.xcoordinate < 80000 || data.xcoordinate > 656100)
+      ) {
+        xCoordinateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+
+      if (
+        includeCheck(currentCheck, isScottish) &&
+        data.ycoordinate &&
+        (data.ycoordinate < 5000 || data.ycoordinate > 657700)
+      ) {
+        yCoordinateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
     }
 
     // Ward Code is too long.

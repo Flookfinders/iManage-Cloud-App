@@ -34,7 +34,8 @@
 //    020   10.11.23 Sean Flook       IMANN-175 Added code try and correctly highlight properties after doing a move BLPU.
 //    021   20.11.23 Sean Flook                 Added street BLPU to the list of classifications that display an icon.
 //    022   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and changed code to use map rather than foreach.
-//    017   16.10.23 Sean Flook       IMANN-149 Uncomment the type 64 and 66 layers as the API has now been written.
+//    023   06.12.23 Sean Flook       IMANN-149 Uncomment the type 64 and 66 layers as the API has now been written.
+//    024   19.12.23 Sean Flook                 Various bug fixes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2563,132 +2564,150 @@ function ADSEsriMap(startExtent) {
         let mapAsd66 = [];
 
         currentStreets.forEach((street) => {
-          mapStreets = street.esus.map((esu) => {
-            return {
-              usrn: street.usrn,
-              description: street.description,
-              language: street.language,
-              locality: street.locality,
-              town: street.town,
-              type: street.type,
-              state: settingsContext.isScottish ? esu.state : street.state,
-              esuId: esu.esuId,
-              geometry: esu.geometry,
-            };
-          });
+          mapStreets = mapStreets.concat(
+            street.esus.map((esu) => {
+              return {
+                usrn: street.usrn,
+                description: street.description,
+                language: street.language,
+                locality: street.locality,
+                town: street.town,
+                type: street.type,
+                state: settingsContext.isScottish ? esu.state : street.state,
+                esuId: esu.esuId,
+                geometry: esu.geometry,
+              };
+            })
+          );
 
           if (mapContext.currentSearchData.editStreet && street.asdType51) {
-            mapAsd51 = street.asdType51.map((asd) => {
-              return {
-                pkId: asd.pkId,
-                usrn: asd.usrn,
-                streetStatus: asd.streetStatus,
-                custodianCode: asd.custodianCode,
-                maintainingAuthorityCode: asd.maintainingAuthorityCode,
-                wholeRoad: asd.wholeRoad,
-                geometry: asd.geometry,
-              };
-            });
+            mapAsd51 = mapAsd51.concat(
+              street.asdType51.map((asd) => {
+                return {
+                  pkId: asd.pkId,
+                  usrn: asd.usrn,
+                  streetStatus: asd.streetStatus,
+                  custodianCode: asd.custodianCode,
+                  maintainingAuthorityCode: asd.maintainingAuthorityCode,
+                  wholeRoad: asd.wholeRoad,
+                  geometry: asd.geometry,
+                };
+              })
+            );
           }
 
           if (mapContext.currentSearchData.editStreet && street.asdType52) {
-            mapAsd52 = street.asdType52.map((asd) => {
-              return {
-                pkId: asd.pkId,
-                usrn: asd.usrn,
-                reinstatementCategoryCode: asd.reinstatementCategoryCode,
-                custodianCode: asd.custodianCode,
-                reinstatementAuthorityCode: asd.reinstatementAuthorityCode,
-                wholeRoad: asd.wholeRoad,
-                geometry: asd.geometry,
-              };
-            });
+            mapAsd52 = mapAsd52.concat(
+              street.asdType52.map((asd) => {
+                return {
+                  pkId: asd.pkId,
+                  usrn: asd.usrn,
+                  reinstatementCategoryCode: asd.reinstatementCategoryCode,
+                  custodianCode: asd.custodianCode,
+                  reinstatementAuthorityCode: asd.reinstatementAuthorityCode,
+                  wholeRoad: asd.wholeRoad,
+                  geometry: asd.geometry,
+                };
+              })
+            );
           }
 
           if (mapContext.currentSearchData.editStreet && street.asdType53) {
-            mapAsd53 = street.asdType53.map((asd) => {
-              return {
-                pkId: asd.pkId,
-                usrn: asd.usrn,
-                specialDesig: asd.specialDesig,
-                custodianCode: asd.custodianCode,
-                authorityCode: asd.authorityCode,
-                wholeRoad: asd.wholeRoad,
-                geometry: asd.geometry,
-              };
-            });
+            mapAsd53 = mapAsd53.concat(
+              street.asdType53.map((asd) => {
+                return {
+                  pkId: asd.pkId,
+                  usrn: asd.usrn,
+                  specialDesig: asd.specialDesig,
+                  custodianCode: asd.custodianCode,
+                  authorityCode: asd.authorityCode,
+                  wholeRoad: asd.wholeRoad,
+                  geometry: asd.geometry,
+                };
+              })
+            );
           }
 
           if (mapContext.currentSearchData.editStreet && street.asdType61) {
-            mapAsd61 = street.asdType61.map((asd) => {
-              return {
-                pkId: asd.pkId,
-                usrn: asd.usrn,
-                streetStatus: asd.streetStatus,
-                interestType: asd.interestType,
-                swaOrgRefAuthority: asd.swaOrgRefAuthority,
-                districtRefAuthority: asd.districtRefAuthority,
-                wholeRoad: asd.wholeRoad,
-                geometry: asd.geometry,
-              };
-            });
+            mapAsd61 = mapAsd61.concat(
+              street.asdType61.map((asd) => {
+                return {
+                  pkId: asd.pkId,
+                  usrn: asd.usrn,
+                  streetStatus: asd.streetStatus,
+                  interestType: asd.interestType,
+                  swaOrgRefAuthority: asd.swaOrgRefAuthority,
+                  districtRefAuthority: asd.districtRefAuthority,
+                  wholeRoad: asd.wholeRoad,
+                  geometry: asd.geometry,
+                };
+              })
+            );
           }
 
           if (mapContext.currentSearchData.editStreet && street.asdType62) {
-            mapAsd62 = street.asdType62.map((asd) => {
-              return {
-                pkId: asd.pkId,
-                usrn: asd.usrn,
-                constructionType: asd.constructionType,
-                reinstatementTypeCode: asd.reinstatementTypeCode,
-                swaOrgRefConsultant: asd.swaOrgRefConsultant,
-                districtRefConsultant: asd.districtRefConsultant,
-                wholeRoad: asd.wholeRoad,
-                geometry: asd.geometry,
-              };
-            });
+            mapAsd62 = mapAsd62.concat(
+              street.asdType62.map((asd) => {
+                return {
+                  pkId: asd.pkId,
+                  usrn: asd.usrn,
+                  constructionType: asd.constructionType,
+                  reinstatementTypeCode: asd.reinstatementTypeCode,
+                  swaOrgRefConsultant: asd.swaOrgRefConsultant,
+                  districtRefConsultant: asd.districtRefConsultant,
+                  wholeRoad: asd.wholeRoad,
+                  geometry: asd.geometry,
+                };
+              })
+            );
           }
 
           if (mapContext.currentSearchData.editStreet && street.asdType63) {
-            mapAsd63 = street.asdType63.map((asd) => {
-              return {
-                pkId: asd.pkId,
-                usrn: asd.usrn,
-                streetSpecialDesigCode: asd.streetSpecialDesigCode,
-                swaOrgRefConsultant: asd.swaOrgRefConsultant,
-                districtRefConsultant: asd.districtRefConsultant,
-                wholeRoad: asd.wholeRoad,
-                geometry: asd.geometry,
-              };
-            });
+            mapAsd63 = mapAsd63.concat(
+              street.asdType63.map((asd) => {
+                return {
+                  pkId: asd.pkId,
+                  usrn: asd.usrn,
+                  streetSpecialDesigCode: asd.streetSpecialDesigCode,
+                  swaOrgRefConsultant: asd.swaOrgRefConsultant,
+                  districtRefConsultant: asd.districtRefConsultant,
+                  wholeRoad: asd.wholeRoad,
+                  geometry: asd.geometry,
+                };
+              })
+            );
           }
 
           if (mapContext.currentSearchData.editStreet && street.asdType64) {
-            mapAsd64 = street.asdType64.map((asd) => {
-              return {
-                pkId: asd.pkId,
-                usrn: asd.usrn,
-                hwwRestrictionCode: asd.hwwRestrictionCode,
-                swaOrgRefConsultant: asd.swaOrgRefConsultant,
-                districtRefConsultant: asd.districtRefConsultant,
-                wholeRoad: asd.wholeRoad,
-                geometry: asd.geometry,
-              };
-            });
+            mapAsd64 = mapAsd64.concat(
+              street.asdType64.map((asd) => {
+                return {
+                  pkId: asd.pkId,
+                  usrn: asd.usrn,
+                  hwwRestrictionCode: asd.hwwRestrictionCode,
+                  swaOrgRefConsultant: asd.swaOrgRefConsultant,
+                  districtRefConsultant: asd.districtRefConsultant,
+                  wholeRoad: asd.wholeRoad,
+                  geometry: asd.geometry,
+                };
+              })
+            );
           }
 
           if (mapContext.currentSearchData.editStreet && street.asdType66) {
-            mapAsd66 = street.asdType66.map((asd) => {
-              return {
-                pkId: asd.pkId,
-                usrn: asd.usrn,
-                prowRights: asd.prowRights,
-                prowOrgRefConsultant: asd.prowOrgRefConsultant,
-                prowDistrictRefConsultant: asd.prowDistrictRefConsultant,
-                defMapGeometryType: asd.defMapGeometryType,
-                geometry: asd.geometry,
-              };
-            });
+            mapAsd66 = mapAsd66.concat(
+              street.asdType66.map((asd) => {
+                return {
+                  pkId: asd.pkId,
+                  usrn: asd.usrn,
+                  prowRights: asd.prowRights,
+                  prowOrgRefConsultant: asd.prowOrgRefConsultant,
+                  prowDistrictRefConsultant: asd.prowDistrictRefConsultant,
+                  defMapGeometryType: asd.defMapGeometryType,
+                  geometry: asd.geometry,
+                };
+              })
+            );
           }
         });
 
@@ -4100,6 +4119,7 @@ function ADSEsriMap(startExtent) {
                 ? streetLayer.fullExtent.ymax
                 : propertyLayer.fullExtent.ymax) + extentBorder,
             spatialReference: { wkid: 27700 },
+            zoomLevel: view.zoom,
           };
         } else if (streetLayer.fullExtent) {
           backgroundExtent.current = {
@@ -4108,9 +4128,11 @@ function ADSEsriMap(startExtent) {
             xmax: streetLayer.fullExtent.xmax + extentBorder,
             ymax: streetLayer.fullExtent.ymax + extentBorder,
             spatialReference: { wkid: 27700 },
+            zoomLevel: view.zoom,
           };
         }
         view.extent = backgroundExtent.current;
+        // console.log("[SF] Set street extent");
       }
     });
 
@@ -4135,6 +4157,7 @@ function ADSEsriMap(startExtent) {
                 ? streetLayer.fullExtent.ymax
                 : propertyLayer.fullExtent.ymax) + extentBorder,
             spatialReference: { wkid: 27700 },
+            zoomLevel: view.zoom,
           };
         } else if (propertyLayer.fullExtent) {
           backgroundExtent.current = {
@@ -4143,9 +4166,11 @@ function ADSEsriMap(startExtent) {
             xmax: propertyLayer.fullExtent.xmax + extentBorder,
             ymax: propertyLayer.fullExtent.ymax + extentBorder,
             spatialReference: { wkid: 27700 },
+            zoomLevel: view.zoom,
           };
         }
         view.extent = backgroundExtent.current;
+        // console.log("[SF] Set property extent");
       }
     });
 
@@ -4156,6 +4181,7 @@ function ADSEsriMap(startExtent) {
         xmax: zoomPropertyDataRef[0].easting + extentBorder,
         ymax: zoomPropertyDataRef[0].northing + extentBorder,
         spatialReference: { wkid: 27700 },
+        zoomLevel: view.zoom,
       };
       view.extent = backgroundExtent.current;
     } else if (mapContext.currentLayers.zoomStreet && zoomStreetDataRef) {
@@ -4179,6 +4205,7 @@ function ADSEsriMap(startExtent) {
         xmax: maxX + extentBorder,
         ymax: maxY + extentBorder,
         spatialReference: { wkid: 27700 },
+        zoomLevel: view.zoom,
       };
       view.extent = backgroundExtent.current;
     }
