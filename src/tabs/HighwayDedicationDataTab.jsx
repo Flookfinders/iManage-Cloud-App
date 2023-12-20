@@ -16,6 +16,7 @@
 //    003   16.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record and use colour variables.
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    005   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    006   20.12.23 Sean Flook       IMANN-201 Corrected controls and form layout.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -23,11 +24,13 @@
 
 import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
+
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
+
 import { GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
-import HighwayDedicationCode from "../data/HighwayDedicationCode";
+
 import { Grid, Typography, FormControlLabel, Checkbox } from "@mui/material";
 import { Box } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
@@ -36,6 +39,9 @@ import ADSDateTimeControl from "../components/ADSDateTimeControl";
 import ADSDateControl from "../components/ADSDateControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+
+import HighwayDedicationCode from "../data/HighwayDedicationCode";
+
 import { DirectionsBike as NCRIcon } from "@mui/icons-material";
 import {
   PRoWIcon,
@@ -44,6 +50,7 @@ import {
   PlanningOrderIcon,
   VehiclesProhibitedIcon,
 } from "../utils/ADSIcons";
+
 import { useTheme } from "@mui/styles";
 import { adsBlueA, adsMidGreyA } from "../utils/ADSColours";
 import { streetToolbarStyle, dataFormStyle, FormRowStyle } from "../utils/ADSStyles";
@@ -79,12 +86,10 @@ function HighwayDedicationDataTab({
   const [highwayDedicationCode, setHighwayDedicationCode] = useState(
     data && data.hdData ? data.hdData.highwayDedicationCode : null
   );
-  const [seasonalStartDate, setSeasonalStartDate] = useState(
-    data && data.hdData ? data.hdData.hdSeasonalStartDate : null
-  );
-  const [seasonalStartTime, setSeasonalStartTime] = useState(data && data.hdData ? data.hdData.hdStartTime : null);
-  const [seasonalEndDate, setSeasonalEndDate] = useState(data && data.hdData ? data.hdData.hdSeasonalEndDate : null);
-  const [seasonalEndTime, setSeasonalEndTime] = useState(data && data.hdData ? data.hdData.hdEndTime : null);
+  const [startDate, setStartDate] = useState(data && data.hdData ? data.hdData.hdStartDate : null);
+  const [endDate, setEndDate] = useState(data && data.hdData ? data.hdData.hdEndDate : null);
+  const [startTime, setStartTime] = useState(data && data.hdData ? data.hdData.hdStartTime : null);
+  const [endTime, setEndTime] = useState(data && data.hdData ? data.hdData.hdEndTime : null);
   const [prow, setProw] = useState(data && data.hdData ? data.hdData.hdProw : false);
   const [ncr, setNcr] = useState(data && data.hdData ? data.hdData.hdNcr : false);
   const [quietRoute, setQuietRoute] = useState(data && data.hdData ? data.hdData.hdQuietRoute : false);
@@ -93,8 +98,11 @@ function HighwayDedicationDataTab({
   const [vehiclesProhibited, setVehiclesProhibited] = useState(
     data && data.hdData ? data.hdData.hdVehiclesProhibited : false
   );
-  const [startDate, setStartDate] = useState(data && data.hdData ? data.hdData.hdStartDate : null);
-  const [endDate, setEndDate] = useState(data && data.hdData ? data.hdData.hdEndDate : null);
+  const [seasonalStartDate, setSeasonalStartDate] = useState(
+    data && data.hdData ? data.hdData.hdSeasonalStartDate : null
+  );
+  const [seasonalEndDate, setSeasonalEndDate] = useState(data && data.hdData ? data.hdData.hdSeasonalEndDate : null);
+  const [recordEndDate, setRecordEndDate] = useState(data && data.hdData ? data.hdData.recordEndDate : null);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -108,12 +116,13 @@ function HighwayDedicationDataTab({
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
 
   const [highwayDedicationCodeError, setHighwayDedicationCodeError] = useState(null);
-  const [seasonalStartDateError, setSeasonalStartDateError] = useState(null);
-  const [seasonalStartTimeError, setSeasonalStartTimeError] = useState(null);
-  const [seasonalEndDateError, setSeasonalEndDateError] = useState(null);
-  const [seasonalEndTimeError, setSeasonalEndTimeError] = useState(null);
   const [startDateError, setStartDateError] = useState(null);
   const [endDateError, setEndDateError] = useState(null);
+  const [startTimeError, setStartTimeError] = useState(null);
+  const [endTimeError, setEndTimeError] = useState(null);
+  const [seasonalStartDateError, setSeasonalStartDateError] = useState(null);
+  const [seasonalEndDateError, setSeasonalEndDateError] = useState(null);
+  const [recordEndDateError, setRecordEndDateError] = useState(null);
 
   /**
    * Method used to update the current sandbox record.
@@ -141,59 +150,59 @@ function HighwayDedicationDataTab({
   };
 
   /**
-   * Event to handle when the seasonal start date is changed.
+   * Event to handle when the start date is changed.
    *
-   * @param {Date} newValue The new seasonal start date.
+   * @param {Date} newValue The new start date.
    */
-  const handleSeasonalStartDateChangeEvent = (newValue) => {
-    setSeasonalStartDate(newValue);
+  const handleStartDateChangeEvent = (newValue) => {
+    setStartDate(newValue);
     if (!dataChanged) {
-      setDataChanged(seasonalStartDate !== newValue);
-      if (onDataChanged && seasonalStartDate !== newValue) onDataChanged();
+      setDataChanged(startDate !== newValue);
+      if (onDataChanged && startDate !== newValue) onDataChanged();
     }
-    UpdateSandbox("seasonalStartDate", newValue);
+    UpdateSandbox("startDate", newValue);
   };
 
   /**
-   * Event to handle when the seasonal start time is changed.
+   * Event to handle when the end date is changed.
    *
-   * @param {Time} newValue The new seasonal start time.
+   * @param {Date} newValue The new end date.
    */
-  const handleSeasonalStartTimeChangeEvent = (newValue) => {
-    setSeasonalStartTime(newValue);
+  const handleEndDateChangeEvent = (newValue) => {
+    setEndDate(newValue);
     if (!dataChanged) {
-      setDataChanged(seasonalStartTime !== newValue);
-      if (onDataChanged && seasonalStartTime !== newValue) onDataChanged();
+      setDataChanged(endDate !== newValue);
+      if (onDataChanged && endDate !== newValue) onDataChanged();
     }
-    UpdateSandbox("seasonalStartTime", newValue);
+    UpdateSandbox("endDate", newValue);
   };
 
   /**
-   * Event to handle when the seasonal end date is changed.
+   * Event to handle when the start time is changed.
    *
-   * @param {Date} newValue The new seasonal end date.
+   * @param {Time} newValue The new start time.
    */
-  const handleSeasonalEndDateChangeEvent = (newValue) => {
-    setSeasonalEndDate(newValue);
+  const handleStartTimeChangeEvent = (newValue) => {
+    setStartTime(newValue);
     if (!dataChanged) {
-      setDataChanged(seasonalEndDate !== newValue);
-      if (onDataChanged && seasonalEndDate !== newValue) onDataChanged();
+      setDataChanged(startTime !== newValue);
+      if (onDataChanged && startTime !== newValue) onDataChanged();
     }
-    UpdateSandbox("seasonalEndDate", newValue);
+    UpdateSandbox("startTime", newValue);
   };
 
   /**
-   * Event to handle when the seasonal end time is changed.
+   * Event to handle when the end time is changed.
    *
-   * @param {Time} newValue The new seasonal end time.
+   * @param {Time} newValue The new end time.
    */
-  const handleSeasonalEndTimeChangeEvent = (newValue) => {
-    setSeasonalEndTime(newValue);
+  const handleEndTimeChangeEvent = (newValue) => {
+    setEndTime(newValue);
     if (!dataChanged) {
-      setDataChanged(seasonalEndTime !== newValue);
-      if (onDataChanged && seasonalEndTime !== newValue) onDataChanged();
+      setDataChanged(endTime !== newValue);
+      if (onDataChanged && endTime !== newValue) onDataChanged();
     }
-    UpdateSandbox("seasonalEndTime", newValue);
+    UpdateSandbox("endTime", newValue);
   };
 
   /**
@@ -287,31 +296,45 @@ function HighwayDedicationDataTab({
   };
 
   /**
-   * Event to handle when the start date is changed.
+   * Event to handle when the seasonal start date is changed.
    *
-   * @param {Date} newValue The new start date.
+   * @param {Date} newValue The new seasonal start date.
    */
-  const handleStartDateChangeEvent = (newValue) => {
-    setStartDate(newValue);
+  const handleSeasonalStartDateChangeEvent = (newValue) => {
+    setSeasonalStartDate(newValue);
     if (!dataChanged) {
-      setDataChanged(startDate !== newValue);
-      if (onDataChanged && startDate !== newValue) onDataChanged();
+      setDataChanged(seasonalStartDate !== newValue);
+      if (onDataChanged && seasonalStartDate !== newValue) onDataChanged();
     }
-    UpdateSandbox("startDate", newValue);
+    UpdateSandbox("seasonalStartDate", newValue);
   };
 
   /**
-   * Event to handle when the end date is changed.
+   * Event to handle when the seasonal end date is changed.
    *
-   * @param {Date} newValue The new end date.
+   * @param {Date} newValue The new seasonal end date.
    */
-  const handleEndDateChangeEvent = (newValue) => {
-    setEndDate(newValue);
+  const handleSeasonalEndDateChangeEvent = (newValue) => {
+    setSeasonalEndDate(newValue);
     if (!dataChanged) {
-      setDataChanged(endDate !== newValue);
-      if (onDataChanged && endDate !== newValue) onDataChanged();
+      setDataChanged(seasonalEndDate !== newValue);
+      if (onDataChanged && seasonalEndDate !== newValue) onDataChanged();
     }
-    UpdateSandbox("endDate", newValue);
+    UpdateSandbox("seasonalEndDate", newValue);
+  };
+
+  /**
+   * Event to handle when the record end date is changed.
+   *
+   * @param {Date} newValue The new record end date.
+   */
+  const handleRecordEndDateChangeEvent = (newValue) => {
+    setRecordEndDate(newValue);
+    if (!dataChanged) {
+      setDataChanged(recordEndDate !== newValue);
+      if (onDataChanged && recordEndDate !== newValue) onDataChanged();
+    }
+    UpdateSandbox("recordEndDate", newValue);
   };
 
   /**
@@ -354,18 +377,19 @@ function HighwayDedicationDataTab({
     if (dataChanged) {
       if (data && data.hdData) {
         setHighwayDedicationCode(data.hdData.highwayDedicationCode);
-        setSeasonalStartDate(data.hdData.hdSeasonalStartDate);
-        setSeasonalStartTime(data.hdData.hdStartTime);
-        setSeasonalEndDate(data.hdData.hdSeasonalEndDate);
-        setSeasonalEndTime(data.hdData.hdEndTime);
+        setStartDate(data.hdData.hdStartDate);
+        setEndDate(data.hdData.hdEndDate);
+        setStartTime(data.hdData.hdStartTime);
+        setEndTime(data.hdData.hdEndTime);
         setProw(data.hdData.hdProw);
         setNcr(data.hdData.hdNcr);
         setQuietRoute(data.hdData.hdQuietRoute);
         setObstruction(data.hdData.hdObstruction);
         setPlanningOrder(data.hdData.hdPlanningOrder);
         setVehiclesProhibited(data.hdData.hdVehiclesProhibited);
-        setStartDate(data.hdData.hdStartDate);
-        setEndDate(data.hdData.hdEndDate);
+        setSeasonalStartDate(data.hdData.hdSeasonalStartDate);
+        setSeasonalEndDate(data.hdData.hdSeasonalEndDate);
+        setRecordEndDate(data.hdData.recordEndDate);
       }
     }
     setDataChanged(false);
@@ -383,10 +407,17 @@ function HighwayDedicationDataTab({
     return {
       changeType: field && field === "changeType" ? newValue : !data.hdData.pkId || data.hdData.pkId < 0 ? "I" : "U",
       highwayDedicationCode: field && field === "highwayDedicationCode" ? newValue : highwayDedicationCode,
-      recordEndDate: data.hdData.recordEndDate,
       hdStartDate:
         field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
       hdEndDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
+      hdStartTime: field && field === "startTime" ? newValue : startTime,
+      hdEndTime: field && field === "endTime" ? newValue : endTime,
+      hdProw: field && field === "prow" ? newValue : prow,
+      hdNcr: field && field === "ncr" ? newValue : ncr,
+      hdQuietRoute: field && field === "quietRoute" ? newValue : quietRoute,
+      hdObstruction: field && field === "obstruction" ? newValue : obstruction,
+      hdPlanningOrder: field && field === "planningOrder" ? newValue : planningOrder,
+      hdVehiclesProhibited: field && field === "vehiclesProhibited" ? newValue : vehiclesProhibited,
       hdSeasonalStartDate:
         field && field === "seasonalStartDate"
           ? newValue && ConvertDate(newValue)
@@ -395,14 +426,10 @@ function HighwayDedicationDataTab({
         field && field === "seasonalEndDate"
           ? newValue && ConvertDate(newValue)
           : seasonalEndDate && ConvertDate(seasonalEndDate),
-      hdStartTime: field && field === "seasonalStartTime" ? newValue : seasonalStartTime,
-      hdEndTime: field && field === "seasonalEndTime" ? newValue : seasonalEndTime,
-      hdProw: field && field === "prow" ? newValue : prow,
-      hdNcr: field && field === "ncr" ? newValue : ncr,
-      hdQuietRoute: field && field === "quietRoute" ? newValue : quietRoute,
-      hdObstruction: field && field === "obstruction" ? newValue : obstruction,
-      hdPlanningOrder: field && field === "planningOrder" ? newValue : planningOrder,
-      hdVehiclesProhibited: field && field === "vehiclesProhibited" ? newValue : vehiclesProhibited,
+      recordEndDate:
+        field && field === "recordEndDate"
+          ? newValue && ConvertDate(newValue)
+          : recordEndDate && ConvertDate(recordEndDate),
       pkId: data.hdData.pkId,
       esuId: data.hdData.esuId,
       seqNum: data.hdData.seqNum,
@@ -550,18 +577,19 @@ function HighwayDedicationDataTab({
   useEffect(() => {
     if (!loading && data && data.hdData) {
       setHighwayDedicationCode(data.hdData.highwayDedicationCode);
-      setSeasonalStartDate(data.hdData.hdSeasonalStartDate);
-      setSeasonalStartTime(data.hdData.hdStartTime);
-      setSeasonalEndDate(data.hdData.hdSeasonalEndDate);
-      setSeasonalEndTime(data.hdData.hdEndTime);
+      setStartDate(data.hdData.hdStartDate);
+      setEndDate(data.hdData.hdEndDate);
+      setStartTime(data.hdData.hdStartTime);
+      setEndTime(data.hdData.hdEndTime);
       setProw(data.hdData.hdProw);
       setNcr(data.hdData.hdNcr);
       setQuietRoute(data.hdData.hdQuietRoute);
       setObstruction(data.hdData.hdObstruction);
       setPlanningOrder(data.hdData.hdPlanningOrder);
       setVehiclesProhibited(data.hdData.hdVehiclesProhibited);
-      setStartDate(data.hdData.hdStartDate);
-      setEndDate(data.hdData.hdEndDate);
+      setSeasonalStartDate(data.hdData.hdSeasonalStartDate);
+      setSeasonalEndDate(data.hdData.hdSeasonalEndDate);
+      setRecordEndDate(data.hdData.recordEndDate);
     }
   }, [loading, data]);
 
@@ -593,12 +621,13 @@ function HighwayDedicationDataTab({
 
   useEffect(() => {
     setHighwayDedicationCodeError(null);
-    setSeasonalStartDateError(null);
-    setSeasonalStartTimeError(null);
-    setSeasonalEndDateError(null);
-    setSeasonalEndTimeError(null);
     setStartDateError(null);
     setEndDateError(null);
+    setStartTimeError(null);
+    setEndTimeError(null);
+    setSeasonalStartDateError(null);
+    setSeasonalEndDateError(null);
+    setRecordEndDateError(null);
 
     if (errors && errors.length > 0) {
       for (const error of errors) {
@@ -607,28 +636,32 @@ function HighwayDedicationDataTab({
             setHighwayDedicationCodeError(error.errors);
             break;
 
-          case "hdseasonalstartdate":
-            setSeasonalStartDateError(error.errors);
-            break;
-
-          case "hdseasonalstarttime":
-            setSeasonalStartTimeError(error.errors);
-            break;
-
-          case "hdseasonalenddate":
-            setSeasonalEndDateError(error.errors);
-            break;
-
-          case "hdseasonalendtime":
-            setSeasonalEndTimeError(error.errors);
-            break;
-
           case "hdstartdate":
             setStartDateError(error.errors);
             break;
 
           case "hdenddate":
             setEndDateError(error.errors);
+            break;
+
+          case "hdstarttime":
+            setStartTimeError(error.errors);
+            break;
+
+          case "hdendtime":
+            setEndTimeError(error.errors);
+            break;
+
+          case "hdseasonalstartdate":
+            setSeasonalStartDateError(error.errors);
+            break;
+
+          case "hdseasonalenddate":
+            setSeasonalEndDateError(error.errors);
+            break;
+
+          case "recordenddate":
+            setRecordEndDateError(error.errors);
             break;
 
           default:
@@ -714,36 +747,39 @@ function HighwayDedicationDataTab({
           helperText="The type of Highway Dedication that applies to this section of the Street."
         />
         <ADSDateTimeControl
-          label="Seasonal start"
+          label="Dedication start"
           isEditable={userCanEdit}
-          isRequired={seasonalEndDate || seasonalEndTime}
-          isDateFocused={focusedField ? focusedField === "HdSeasonalStartDate" : false}
+          isDateRequired
+          isTimeRequired={!!endTime}
+          isDateFocused={focusedField ? focusedField === "HdStartDate" : false}
           isTimeFocused={focusedField ? focusedField === "HdStartTime" : false}
           loading={loading}
-          dateValue={seasonalStartDate}
-          timeValue={seasonalStartTime}
-          dateHelperText="If the Highway Dedication is seasonal or periodical, date when the Highway Dedication starts."
+          dateValue={startDate}
+          timeValue={startTime}
+          dateHelperText="The date the Highway Dedication legally starts."
           timeHelperText="If the Highway Dedication has a specified time period, time when the designation starts."
-          dateErrorText={seasonalStartDateError}
-          timeErrorText={seasonalStartTimeError}
-          onDateChange={handleSeasonalStartDateChangeEvent}
-          onTimeChange={handleSeasonalStartTimeChangeEvent}
+          dateErrorText={startDateError}
+          timeErrorText={startTimeError}
+          allowFutureDates
+          onDateChange={handleStartDateChangeEvent}
+          onTimeChange={handleStartTimeChangeEvent}
         />
         <ADSDateTimeControl
-          label="Seasonal end"
+          label="Dedication end"
           isEditable={userCanEdit}
-          isRequired={seasonalStartDate || seasonalStartTime}
-          isDateFocused={focusedField ? focusedField === "HdSeasonalEndDate" : false}
+          isTimeRequired={!!startTime}
+          isDateFocused={focusedField ? focusedField === "HdEndDate" : false}
           isTimeFocused={focusedField ? focusedField === "HdEndTime" : false}
           loading={loading}
-          dateValue={seasonalEndDate}
-          timeValue={seasonalEndTime}
-          dateHelperText="If the Highway Dedication is seasonal or periodical, date when the Highway Dedication ends."
+          dateValue={endDate}
+          timeValue={endTime}
+          dateHelperText="The date the Highway Dedication legally ends."
           timeHelperText="If the Highway Dedication has a specified time period, time when the designation ends."
-          dateErrorText={seasonalEndDateError}
-          timeErrorText={seasonalEndTimeError}
-          onDateChange={handleSeasonalEndDateChangeEvent}
-          onTimeChange={handleSeasonalEndTimeChangeEvent}
+          dateErrorText={endDateError}
+          timeErrorText={endTimeError}
+          allowFutureDates
+          onDateChange={handleEndDateChangeEvent}
+          onTimeChange={handleEndTimeChangeEvent}
         />
         <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
           <Grid item xs={3}>
@@ -849,25 +885,39 @@ function HighwayDedicationDataTab({
           </Grid>
         </Grid>
         <ADSDateControl
-          label="Start date"
+          label="Seasonal start"
           isEditable={userCanEdit}
-          isRequired
-          isFocused={focusedField ? focusedField === "HdStartDate" : false}
+          isFocused={focusedField ? focusedField === "HdSeasonalStartDate" : false}
           loading={loading}
-          value={startDate}
-          helperText="The date the Highway Dedication legally starts."
-          errorText={startDateError}
-          onChange={handleStartDateChangeEvent}
+          value={seasonalStartDate}
+          helperText="If the Highway Dedication is seasonal or periodical, date when the Highway Dedication starts."
+          errorText={seasonalStartDateError}
+          allowFutureDates
+          hideYear
+          onChange={handleSeasonalStartDateChangeEvent}
         />
         <ADSDateControl
-          label="End date"
+          label="Seasonal end"
           isEditable={userCanEdit}
-          isFocused={focusedField ? focusedField === "HdEndDate" : false}
+          isRequired={seasonalStartDate}
+          isFocused={focusedField ? focusedField === "HdSeasonalEndDate" : false}
           loading={loading}
-          value={endDate}
-          helperText="The date the Highway Dedication legally ends."
-          errorText={endDateError}
-          onChange={handleEndDateChangeEvent}
+          value={seasonalEndDate}
+          helperText="If the Highway Dedication is seasonal or periodical, date when the Highway Dedication ends."
+          errorText={seasonalEndDateError}
+          allowFutureDates
+          hideYear
+          onChange={handleSeasonalEndDateChangeEvent}
+        />
+        <ADSDateControl
+          label="Record end"
+          isEditable={userCanEdit}
+          isFocused={focusedField ? focusedField === "RecordEndDate" : false}
+          loading={loading}
+          value={recordEndDate}
+          helperText="Date when the Record ended."
+          errorText={recordEndDateError}
+          onChange={handleRecordEndDateChangeEvent}
         />
         <ADSOkCancelControl
           okDisabled={!dataChanged}

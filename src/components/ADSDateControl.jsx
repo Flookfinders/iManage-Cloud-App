@@ -24,6 +24,7 @@
 //    011   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    012   08.12.23 Sean Flook                 Migrated DatePicker to v6.
 //    013   18.12.23 Sean Flook                 Ensure tooltip is displayed
+//    014   20.12.23 Sean Flook       IMANN-201 Added hideYear property to hide the year in the control.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -33,13 +34,16 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Grid, Typography, Tooltip, Skeleton } from "@mui/material";
-import { Box } from "@mui/system";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+
 import { parseISO } from "date-fns";
 import dateFormat from "dateformat";
 import { isValidDate } from "../utils/HelperUtils";
+
+import { Grid, Typography, Tooltip, Skeleton } from "@mui/material";
+import { Box } from "@mui/system";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import ADSErrorDisplay from "./ADSErrorDisplay";
+
 import { useTheme } from "@mui/styles";
 import { FormBoxRowStyle, FormRowStyle, FormDateInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
 
@@ -51,6 +55,7 @@ ADSDateControl.propTypes = {
   isRequired: PropTypes.bool,
   isFocused: PropTypes.bool,
   allowFutureDates: PropTypes.bool,
+  hideYear: PropTypes.bool,
   loading: PropTypes.bool,
   helperText: PropTypes.string,
   value: PropTypes.string,
@@ -63,6 +68,7 @@ ADSDateControl.defaultProps = {
   isRequired: false,
   isFocused: false,
   allowFutureDates: false,
+  hideYear: false,
   loading: false,
 };
 
@@ -72,6 +78,7 @@ function ADSDateControl({
   isRequired,
   isFocused,
   allowFutureDates,
+  hideYear,
   loading,
   helperText,
   value,
@@ -147,13 +154,14 @@ function ADSDateControl({
                 <div>
                   <DatePicker
                     id={`${label.toLowerCase().replaceAll(" ", "-")}-date-picker`}
-                    format="dd MMMM yyyy"
+                    format={`${hideYear ? "dd MMM" : "dd MMMM yyyy"}`}
                     disableMaskedInput
                     value={selectedDate}
                     showTodayButton
                     required={isRequired}
                     disabled={!isEditable}
                     disableFuture={!allowFutureDates}
+                    views={hideYear ? ["day", "month"] : ["day", "month", "year"]}
                     slotProps={{
                       textField: {
                         id: `${label.toLowerCase().replaceAll(" ", "-")}-date-picker-textfield`,
@@ -177,13 +185,14 @@ function ADSDateControl({
             ) : (
               <DatePicker
                 id={`${label.toLowerCase().replaceAll(" ", "-")}-date-picker`}
-                format="dd MMMM yyyy"
+                format={`${hideYear ? "dd MMM" : "dd MMMM yyyy"}`}
                 disableMaskedInput
                 value={selectedDate ? selectedDate : new Date()}
                 showTodayButton
                 required={isRequired}
                 disabled={!isEditable}
                 disableFuture={!allowFutureDates}
+                views={hideYear ? ["day", "month"] : ["day", "month", "year"]}
                 slotProps={{
                   textField: {
                     id: `${label.toLowerCase().replaceAll(" ", "-")}-date-picker-textfield`,

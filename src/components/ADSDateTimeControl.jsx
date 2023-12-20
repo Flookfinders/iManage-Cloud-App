@@ -15,6 +15,7 @@
 //    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    003   08.12.23 Sean Flook                 Migrated DatePicker to v6.
 //    004   18.12.23 Sean Flook                 Ensure tooltip is displayed
+//    005   20.12.23 Sean Flook       IMANN-201 Added the isDateRequired and isTimeRequired properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,16 +25,20 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
+
+import dateFormat from "dateformat";
+import { parseISO } from "date-fns";
+import { isValidDate } from "../utils/HelperUtils";
+
 import { Grid, Typography, Tooltip, Skeleton } from "@mui/material";
 import { Box } from "@mui/system";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import dateFormat from "dateformat";
-import { parseISO } from "date-fns";
-import { isValidDate } from "../utils/HelperUtils";
 import ADSErrorDisplay from "./ADSErrorDisplay";
+
+import { adsMidGreyA } from "../utils/ADSColours";
+import { FormBoxRowStyle, FormRowStyle, FormDateInputStyle, tooltipStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
-import { FormBoxRowStyle, FormRowStyle, FormDateInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
 
 /* #endregion imports */
 
@@ -41,6 +46,8 @@ ADSDateTimeControl.propTypes = {
   label: PropTypes.string.isRequired,
   isEditable: PropTypes.bool,
   isRequired: PropTypes.bool,
+  isDateRequired: PropTypes.bool,
+  isTimeRequired: PropTypes.bool,
   isDateFocused: PropTypes.bool,
   isTimeFocused: PropTypes.bool,
   allowFutureDates: PropTypes.bool,
@@ -58,6 +65,8 @@ ADSDateTimeControl.propTypes = {
 ADSDateTimeControl.defaultProps = {
   isEditable: false,
   isRequired: false,
+  isDateRequired: false,
+  isTimeRequired: false,
   isDateFocused: false,
   isTimeFocused: false,
   allowFutureDates: false,
@@ -68,6 +77,8 @@ function ADSDateTimeControl({
   label,
   isEditable,
   isRequired,
+  isDateRequired,
+  isTimeRequired,
   isDateFocused,
   isTimeFocused,
   allowFutureDates,
@@ -160,7 +171,7 @@ function ADSDateTimeControl({
             variant="body2"
             align="left"
             id={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-            sx={controlLabelStyle}
+            sx={{ fontSize: "14px", color: adsMidGreyA, pt: "24px" }}
           >
             {`${label}${isRequired ? "*" : ""}`}
           </Typography>
@@ -172,7 +183,7 @@ function ADSDateTimeControl({
             <Grid container justifyContent="flex-start" alignItems="center" spacing={1}>
               <Grid item xs={6} container direction="column">
                 <Grid item>
-                  <Typography variant="body2">Date</Typography>
+                  <Typography variant="body2">{`Date${isDateRequired ? "*" : ""}`}</Typography>
                 </Grid>
                 <Grid item>
                   {dateHelperText && dateHelperText.length > 0 ? (
@@ -245,7 +256,7 @@ function ADSDateTimeControl({
               </Grid>
               <Grid item xs={6} container direction="column">
                 <Grid item>
-                  <Typography variant="body2">Time</Typography>
+                  <Typography variant="body2">{`Time${isTimeRequired ? "*" : ""}`}</Typography>
                 </Grid>
                 <Grid item>
                   {timeHelperText && timeHelperText.length > 0 ? (
@@ -315,7 +326,7 @@ function ADSDateTimeControl({
             <Grid container justifyContent="flex-start" alignItems="center">
               <Grid item xs={6} container direction="column">
                 <Grid item>
-                  <Typography variant="body2">Date</Typography>
+                  <Typography variant="body2">{`Date${isDateRequired ? "*" : ""}`}</Typography>
                 </Grid>
                 <Grid item>
                   {selectedDate && selectedDate.toString() !== "0001-01-01T00:00:00" && (
@@ -337,7 +348,7 @@ function ADSDateTimeControl({
               </Grid>
               <Grid item xs={6} container direction="column">
                 <Grid item>
-                  <Typography variant="body2">Time</Typography>
+                  <Typography variant="body2">{`Time${isTimeRequired ? "*" : ""}`}</Typography>
                 </Grid>
                 <Grid item>
                   {selectedTime && selectedTime.toString() !== "0001-01-01T00:00:00" && (
