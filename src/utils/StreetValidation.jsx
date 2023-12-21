@@ -1449,7 +1449,7 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
       specialDesignationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
-    // Special Designation is invalid.
+    // Special Designation Type Code is invalid.
     currentCheck = GetCheck(5300014, currentLookups, methodName, true, showDebugMessages);
     if (
       includeCheck(currentCheck, true) &&

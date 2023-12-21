@@ -36,6 +36,7 @@
 //    022   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and changed code to use map rather than foreach.
 //    023   06.12.23 Sean Flook       IMANN-149 Uncomment the type 64 and 66 layers as the API has now been written.
 //    024   19.12.23 Sean Flook                 Various bug fixes.
+//    025   20.12.23 Sean Flook       IMANN-152 Display a dialog when user selects the polyline tool when editing.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -126,6 +127,7 @@ import { Box, Stack } from "@mui/system";
 import AddPropertyWizardDialog from "../dialogs/AddPropertyWizardDialog";
 import HistoricPropertyDialog from "../dialogs/HistoricPropertyDialog";
 import SelectPropertiesDialog from "../dialogs/SelectPropertiesDialog";
+import MessageDialog from "../dialogs/MessageDialog";
 
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -964,6 +966,9 @@ function ADSEsriMap(startExtent) {
   const [openSelectProperties, setOpenSelectProperties] = useState(false);
   const [selectedProperties, setSelectedProperties] = useState([]);
 
+  const [openMessageDialog, setOpenMessageDialog] = useState(false);
+  const messageDialogVariant = useRef(null);
+
   const oldMapData = useRef({
     streets: [],
     properties: [],
@@ -1586,6 +1591,13 @@ function ADSEsriMap(startExtent) {
 
     setSelectedProperties([]);
     mapContext.onSelectPropertiesChange(false);
+  };
+
+  /**
+   * Method to handle when the message dialog is closed.
+   */
+  const handleMessageDialogClose = () => {
+    setOpenMessageDialog(false);
   };
 
   /**
@@ -4747,6 +4759,22 @@ function ADSEsriMap(startExtent) {
         coordinateConversionRef.current.conversions.add(new Conversion({ format: f }));
       });
 
+    reactiveUtils.watch(
+      () => sketchRef.current.activeTool,
+      () => {
+        if (
+          sketchRef.current.activeTool === "polyline" &&
+          editingObject.current &&
+          editingObject.current.objectId > 0
+        ) {
+          if ([51, 52, 53, 61, 62, 63, 64, 66].includes(editingObject.current.objectType))
+            messageDialogVariant.current = "editASDGeometry";
+          else if (editingObject.current.objectType === 13) messageDialogVariant.current = "editESUGeometry";
+          setOpenMessageDialog(true);
+        }
+      }
+    );
+
     sketchRef.current.on("create", (event) => {
       if (event.state === "start") {
         editGraphicsLayer.current.graphics.removeAll();
@@ -5945,8 +5973,7 @@ function ADSEsriMap(startExtent) {
               sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
           }
 
-          if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
-          else sketchRef.current.availableCreateTools = ["polyline"];
+          sketchRef.current.availableCreateTools = ["polyline"];
           break;
 
         case 52: // Reinstatement Category
@@ -5982,8 +6009,7 @@ function ADSEsriMap(startExtent) {
               sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
           }
 
-          if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
-          else sketchRef.current.availableCreateTools = ["polyline"];
+          sketchRef.current.availableCreateTools = ["polyline"];
           break;
 
         case 53: // Special Designation
@@ -5998,21 +6024,17 @@ function ADSEsriMap(startExtent) {
             if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
             if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
             if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
-            if (asd61Layer) asd61Layer.opacity = 0.5;
-            if (asd62Layer) asd62Layer.opacity = 0.5;
-            if (asd63Layer) asd63Layer.opacity = 0.5;
-            if (asd64Layer) asd64Layer.opacity = 0.5;
-            if (asd66Layer) asd66Layer.opacity = 0.5;
+            if (asd51Layer) asd51Layer.opacity = 0.5;
+            if (asd52Layer) asd52Layer.opacity = 0.5;
+            if (asd53Layer) asd53Layer.opacity = 0.5;
 
             editGraphicsLayer.current.listMode = "show";
 
             if (editGraphicsLayer.current)
               LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
-            if (asd61Layer) LayersUsedForSnapping.push({ layer: asd61Layer, enabled: true });
-            if (asd62Layer) LayersUsedForSnapping.push({ layer: asd62Layer, enabled: true });
-            if (asd63Layer) LayersUsedForSnapping.push({ layer: asd63Layer, enabled: true });
-            if (asd64Layer) LayersUsedForSnapping.push({ layer: asd64Layer, enabled: true });
-            if (asd66Layer) LayersUsedForSnapping.push({ layer: asd66Layer, enabled: true });
+            if (asd51Layer) LayersUsedForSnapping.push({ layer: asd51Layer, enabled: true });
+            if (asd52Layer) LayersUsedForSnapping.push({ layer: asd52Layer, enabled: true });
+            if (asd53Layer) LayersUsedForSnapping.push({ layer: asd53Layer, enabled: true });
             if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
             let baseLayer = null;
             baseLayersSnapEsu.current.forEach((layerId) => {
@@ -6023,8 +6045,7 @@ function ADSEsriMap(startExtent) {
               sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
           }
 
-          if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
-          else sketchRef.current.availableCreateTools = ["polyline"];
+          sketchRef.current.availableCreateTools = ["polyline"];
           break;
 
         case 61: // Interest
@@ -6064,8 +6085,7 @@ function ADSEsriMap(startExtent) {
               sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
           }
 
-          if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
-          else sketchRef.current.availableCreateTools = ["polyline"];
+          sketchRef.current.availableCreateTools = ["polyline"];
           break;
 
         case 62: // Construction
@@ -6105,8 +6125,7 @@ function ADSEsriMap(startExtent) {
               sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
           }
 
-          if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
-          else sketchRef.current.availableCreateTools = ["polyline"];
+          sketchRef.current.availableCreateTools = ["polyline"];
           break;
 
         case 63: // Special Designation
@@ -6146,8 +6165,7 @@ function ADSEsriMap(startExtent) {
               sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
           }
 
-          if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
-          else sketchRef.current.availableCreateTools = ["polyline"];
+          sketchRef.current.availableCreateTools = ["polyline"];
           break;
 
         case 64: // Height, Width & Weight Restriction
@@ -6185,8 +6203,7 @@ function ADSEsriMap(startExtent) {
               sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
           }
 
-          if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
-          else sketchRef.current.availableCreateTools = ["polyline"];
+          sketchRef.current.availableCreateTools = ["polyline"];
           break;
 
         case 66: // Public right of way
@@ -6226,8 +6243,7 @@ function ADSEsriMap(startExtent) {
               sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
           }
 
-          if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
-          else sketchRef.current.availableCreateTools = ["polyline"];
+          sketchRef.current.availableCreateTools = ["polyline"];
           break;
 
         default:
@@ -7482,6 +7498,11 @@ function ADSEsriMap(startExtent) {
           open={openSelectProperties}
           propertyCount={selectedProperties.length}
           onClose={handleSelectPropertiesClose}
+        />
+        <MessageDialog
+          isOpen={openMessageDialog}
+          variant={messageDialogVariant.current}
+          onClose={handleMessageDialogClose}
         />
       </div>
     </Fragment>

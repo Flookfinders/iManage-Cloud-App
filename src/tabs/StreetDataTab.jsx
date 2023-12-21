@@ -20,6 +20,7 @@
 //    007   03.11.23 Sean Flook                 Corrected actions icon and closing a street.
 //    008   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    009   24.11.23 Sean Flook                 Moved Box to @mui/system and fixed a warning.
+//    010   20.12.23 Sean Flook                 Hide the Delete button until code has been written.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -952,7 +953,7 @@ function StreetDataTab({
               <MenuItem dense disabled={!userCanEdit} onClick={handleCloseStreet} sx={menuItemStyle(false)}>
                 <Typography variant="inherit">Close street</Typography>
               </MenuItem>
-              {!settingsContext.isScottish && (
+              {process.env.NODE_ENV === "development" && !settingsContext.isScottish && (
                 <MenuItem dense disabled={!userCanEdit} onClick={handleDeleteStreet} sx={menuItemStyle(false)}>
                   <Typography variant="inherit" color="error">
                     Delete

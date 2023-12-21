@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   03/11/23 Sean Flook                 Initial Revision.
 //    002   10.11.23 Sean Flook       IMANN-175 Added Move BLPU.
+//    003   20.12.23 Sean Flook       IMANN-152 Added Edit ASD Geometry and Edit ESU Geometry.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -32,7 +33,7 @@ import { useTheme } from "@mui/styles";
 
 MessageDialog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
-  variant: PropTypes.oneOf(["cancelWizard", "cancelMoveBlpu"]).isRequired,
+  variant: PropTypes.oneOf(["cancelWizard", "cancelMoveBlpu", "editASDGeometry", "editESUGeometry"]).isRequired,
   onClose: PropTypes.func.isRequired,
 };
 
@@ -66,6 +67,12 @@ function MessageDialog({ isOpen, variant, onClose }) {
       case "cancelMoveBlpu":
         return "Cancel move BLPU seed point";
 
+      case "editASDGeometry":
+        return "Edit ASD geometry";
+
+      case "editESUGeometry":
+        return "Edit ESU geometry";
+
       default:
         return `Unknown variant: ${variant}`;
     }
@@ -89,6 +96,15 @@ function MessageDialog({ isOpen, variant, onClose }) {
         return (
           <Typography variant="body2">
             This will close the move BLPU seed point dialog and any changes you have made will be lost.
+          </Typography>
+        );
+
+      case "editASDGeometry":
+      case "editESUGeometry":
+        return (
+          <Typography variant="body2">
+            This will delete the existing geometry, if you just want to edit the existing geometry then select the
+            existing geometry on the map first using the selection tool.
           </Typography>
         );
 

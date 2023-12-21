@@ -6933,7 +6933,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300014,
-    errorMessage: "Special Designation is invalid.",
+    errorMessage: "Special Designation Type Code is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.3.8",
@@ -6942,7 +6942,7 @@ const ValidationMessages = [
     ignoreCheck: false,
     risk: "M",
     usedByApi: true,
-    usedByFrontEnd: false,
+    usedByFrontEnd: true,
     gpCheck: false,
     osCheck: true,
   },
