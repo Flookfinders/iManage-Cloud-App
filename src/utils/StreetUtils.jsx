@@ -24,6 +24,7 @@
 //    011   01.12.23 Sean Flook                 Include island in the street address for Scottish authorities.
 //    012   12.12.23 Sean Flook                 Modified FilteredStreetType to exclude Unassigned ESU.
 //    013   19.12.23 Sean Flook                 Various bug fixes.
+//    014   21.12.23 Sean Flook                 Corrected street type filter for NSG only.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -39,6 +40,7 @@ import {
   GetDeleteStreetUrl,
   GetCreateStreetUrl,
   GetUpdateStreetUrl,
+  HasProperties,
   HasASD,
   GetEsuByIdUrl,
 } from "../configuration/ADSConfig";
@@ -65,7 +67,7 @@ export const FilteredStreetType = (isScottish) => {
   if (isScottish) {
     return StreetType.filter((x) => x.osText && x.id !== 0);
   } else {
-    return StreetType.filter((x) => x.gpText && x.id !== 0);
+    return StreetType.filter((x) => x.gpText && x.id !== 0 && (HasProperties() || x.id !== 9));
   }
 };
 

@@ -32,6 +32,7 @@
 //    018   30.11.23 Sean Flook       IMANN-196 Corrected field name in updateDescriptorData.
 //    019   14.12.23 Sean Flook                 Corrected note record type.
 //    020   19.12.23 Sean Flook                 Various bug fixes.
+//    021   21.12.23 Sean Flook                 Ensure the sandbox is correctly updated.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -901,6 +902,7 @@ function StreetDataForm({ data, loading }) {
           totalRecords: dataLength,
         });
 
+        sandboxContext.onSandboxChange("streetDescriptor", sdData);
         streetContext.onRecordChange(15, dataIdx, null);
       } else if (streetChanged) {
         failedValidation.current = true;
@@ -1148,6 +1150,7 @@ function StreetDataForm({ data, loading }) {
         totalRecords: streetData.esus.filter((x) => x.changeType !== "D" && x.assignUnassign !== -1).length,
       });
 
+      sandboxContext.onSandboxChange("esu", esuData);
       streetContext.onRecordChange(13, dataIdx, null);
       mapContext.onEditMapObject(13, esuData.esuId);
     }
@@ -1308,6 +1311,7 @@ function StreetDataForm({ data, loading }) {
         totalRecords: currentHighwayDedicationCount,
       });
 
+      sandboxContext.onSandboxChange("highwayDedication", hdData);
       streetContext.onRecordChange(17, index, esuIndex);
     }
   };
@@ -1441,6 +1445,7 @@ function StreetDataForm({ data, loading }) {
         totalRecords: currentOneWayExemptionCount,
       });
 
+      sandboxContext.onSandboxChange("oneWayExemption", oweData);
       streetContext.onRecordChange(16, index, esuIndex);
     }
   };
@@ -1533,7 +1538,8 @@ function StreetDataForm({ data, loading }) {
         totalRecords: dataLength,
       });
 
-      propertyContext.onRecordChange(30, dataIdx);
+      sandboxContext.onSandboxChange("successorCrossRef", successorCrossRefData);
+      streetContext.onRecordChange(30, dataIdx);
       mapContext.onEditMapObject(30, pkId);
     }
   };
@@ -1695,6 +1701,7 @@ function StreetDataForm({ data, loading }) {
         totalRecords: dataLength,
       });
 
+      sandboxContext.onSandboxChange("maintenanceResponsibility", maintenanceResponsibilityData);
       streetContext.onRecordChange(51, dataIdx, null);
       if (!maintenanceResponsibilityData.wholeRoad) mapContext.onEditMapObject(51, pkId);
     }
@@ -1830,6 +1837,7 @@ function StreetDataForm({ data, loading }) {
         totalRecords: dataLength,
       });
 
+      sandboxContext.onSandboxChange("reinstatementCategory", reinstatementCategoryData);
       streetContext.onRecordChange(52, dataIdx, null);
       if (!reinstatementCategoryData.wholeRoad) mapContext.onEditMapObject(52, pkId);
     }
@@ -1966,6 +1974,7 @@ function StreetDataForm({ data, loading }) {
         totalRecords: dataLength,
       });
 
+      sandboxContext.onSandboxChange("osSpecialDesignation", osSpecialDesignationData);
       streetContext.onRecordChange(53, dataIdx, null);
       if (!osSpecialDesignationData.wholeRoad) mapContext.onEditMapObject(53, pkId);
     }
@@ -2116,6 +2125,7 @@ function StreetDataForm({ data, loading }) {
         totalRecords: dataLength,
       });
 
+      sandboxContext.onSandboxChange("interest", interestData);
       streetContext.onRecordChange(61, dataIdx, null);
       if (!interestData.wholeRoad) mapContext.onEditMapObject(61, pkId);
     }
@@ -2277,6 +2287,7 @@ function StreetDataForm({ data, loading }) {
         totalRecords: dataLength,
       });
 
+      sandboxContext.onSandboxChange("construction", constructionData);
       streetContext.onRecordChange(62, dataIdx, null);
       if (!constructionData.wholeRoad) mapContext.onEditMapObject(62, pkId);
     }
@@ -2429,6 +2440,7 @@ function StreetDataForm({ data, loading }) {
         totalRecords: dataLength,
       });
 
+      sandboxContext.onSandboxChange("specialDesignation", specialDesignationData);
       streetContext.onRecordChange(63, dataIdx, null);
       if (!specialDesignationData.wholeRoad) mapContext.onEditMapObject(63, pkId);
     }
@@ -2573,6 +2585,7 @@ function StreetDataForm({ data, loading }) {
         totalRecords: dataLength,
       });
 
+      sandboxContext.onSandboxChange("hww", hwwData);
       streetContext.onRecordChange(64, dataIdx, null);
       if (!hwwData.wholeRoad) mapContext.onEditMapObject(64, pkId);
     }
@@ -2762,6 +2775,7 @@ function StreetDataForm({ data, loading }) {
         totalRecords: dataLength,
       });
 
+      sandboxContext.onSandboxChange("prow", prowData);
       streetContext.onRecordChange(66, dataIdx, null);
     }
   };
@@ -2844,6 +2858,7 @@ function StreetDataForm({ data, loading }) {
         variant: "street",
       });
 
+      sandboxContext.onSandboxChange("streetNote", noteData);
       streetContext.onRecordChange(72, dataIdx, null);
     }
   };

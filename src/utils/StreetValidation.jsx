@@ -21,7 +21,7 @@
 //  Construction:               6200034
 //  Special Designation:        6300034
 //  Height Width Weight:        6400016
-//  Public Right of Way:        6600015
+//  Public Right of Way:        6600016
 //  Note:                       7200012
 //
 //--------------------------------------------------------------------------------------------------

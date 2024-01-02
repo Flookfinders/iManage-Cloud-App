@@ -3,7 +3,7 @@
 //
 //  Description: ESRI Map component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -37,6 +37,7 @@
 //    023   06.12.23 Sean Flook       IMANN-149 Uncomment the type 64 and 66 layers as the API has now been written.
 //    024   19.12.23 Sean Flook                 Various bug fixes.
 //    025   20.12.23 Sean Flook       IMANN-152 Display a dialog when user selects the polyline tool when editing.
+//    026   02.01.24 Sean Flook                 Changes required to load shape files.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -67,6 +68,7 @@ import {
   ArraysEqual,
   openInStreetView,
   doOpenRecord,
+  defaultMapLayerIds,
 } from "../utils/HelperUtils";
 import {
   GetStreetStateLabel,
@@ -93,12 +95,15 @@ import {
   GetPropertyMapData,
 } from "../utils/PropertyUtils";
 
+import shp from "shpjs";
+
 import WMSLayer from "@arcgis/core/layers/WMSLayer";
 import WMTSLayer from "@arcgis/core/layers/WMTSLayer";
 import Map from "@arcgis/core/Map";
 import MapView from "@arcgis/core/views/MapView";
 import TileInfo from "@arcgis/core/layers/support/TileInfo";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
+import GeoJSONLayer from "@arcgis/core/layers/GeoJSONLayer";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import ScaleBar from "@arcgis/core/widgets/ScaleBar";
 import Sketch from "@arcgis/core/widgets/Sketch";
@@ -122,18 +127,20 @@ import {
   GetESUMapSymbol,
   GetASDMapSymbol,
 } from "../utils/ADSMapSymbols";
-import { CircularProgress, IconButton, Divider, Snackbar, Alert } from "@mui/material";
+import { CircularProgress, IconButton, Divider, Snackbar, Alert, Backdrop } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import AddPropertyWizardDialog from "../dialogs/AddPropertyWizardDialog";
 import HistoricPropertyDialog from "../dialogs/HistoricPropertyDialog";
 import SelectPropertiesDialog from "../dialogs/SelectPropertiesDialog";
 import MessageDialog from "../dialogs/MessageDialog";
+import UploadShpFileDialog from "../dialogs/UploadShpFileDialog";
 
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import LayersIcon from "@mui/icons-material/Layers";
 import MergeIcon from "@mui/icons-material/Merge";
 import StraightenIcon from "@mui/icons-material/Straighten";
+import UploadIcon from "@mui/icons-material/Upload";
 import { useTheme } from "@mui/styles";
 import { adsWhite } from "../utils/ADSColours";
 import { ActionIconStyle, GetAlertStyle, GetAlertIcon, GetAlertSeverity } from "../utils/ADSStyles";
@@ -908,6 +915,7 @@ function ADSEsriMap(startExtent) {
   const theme = useTheme();
 
   const [loading, setLoading] = useState(true);
+  const [loadingShp, setLoadingShp] = useState(false);
 
   const [displayLayerList, setDisplayLayerList] = useState(false);
   const [displayESUMergeTool, setDisplayESUMergeTool] = useState(false);
@@ -968,6 +976,8 @@ function ADSEsriMap(startExtent) {
 
   const [openMessageDialog, setOpenMessageDialog] = useState(false);
   const messageDialogVariant = useRef(null);
+
+  const [openUploadShpFileDialog, setOpenUploadShpFileDialog] = useState(false);
 
   const oldMapData = useRef({
     streets: [],
@@ -1146,6 +1156,13 @@ function ADSEsriMap(startExtent) {
    */
   function handleDisplayLayerList() {
     setDisplayLayerList(!displayLayerList);
+  }
+
+  /**
+   * Method to handle when the upload shp file button is clicked.
+   */
+  function handleUploadShpFile() {
+    setOpenUploadShpFileDialog(true);
   }
 
   /**
@@ -1601,6 +1618,63 @@ function ADSEsriMap(startExtent) {
   };
 
   /**
+   * Method to handle when the upload shp file dialog is closed.
+   */
+  const handleUploadShpFileDialogClose = (shpFile) => {
+    setOpenUploadShpFileDialog(false);
+
+    if (shpFile) {
+      setLoadingShp(true);
+
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        if (reader.readyState !== 2 || reader.error) {
+          setLoadingShp(false);
+          return;
+        } else {
+          shp(reader.result).then(function (geojson) {
+            console.log("[SF] GeoJSON", JSON.stringify(geojson));
+            mapRef.current.remove(mapRef.current.findLayerById(shpFile.layerId));
+            const blob = new Blob([JSON.stringify(geojson)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const shpLayer = new GeoJSONLayer({
+              url: url,
+              id: shpFile.layerId,
+              copyright:
+                shpFile.copyright && shpFile.copyright.includes("<<year>>")
+                  ? shpFile.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                  : shpFile.copyright,
+              title: `${shpFile.title}`,
+              listMode: shpFile.displayInList ? "show" : "hide",
+              maxScale: shpFile.maxScale,
+              minScale: shpFile.minScale,
+              opacity: shpFile.opacity,
+              spatialReference: { wkid: 27700 },
+              visible: "true",
+            });
+
+            if (shpFile.esuSnap) baseLayersSnapEsu.current = baseLayersSnapEsu.current.concat([shpFile.layerId]);
+            if (shpFile.blpuSnap) baseLayersSnapBlpu.current = baseLayersSnapBlpu.current.concat([shpFile.layerId]);
+            if (shpFile.extentSnap)
+              baseLayersSnapExtent.current = baseLayersSnapExtent.current.concat([shpFile.layerId]);
+
+            mapRef.current.add(shpLayer);
+            saveResult.current = true;
+            featuresDownloaded.current = shpFile.title;
+            saveType.current = "uploadedShpFile";
+            saveOpenRef.current = true;
+            setSaveOpen(true);
+            setLoadingShp(false);
+          });
+        }
+      };
+
+      reader.readAsArrayBuffer(shpFile.file);
+    }
+  };
+
+  /**
    * Method to get the required alert text.
    *
    * @returns {string|null} the required alert text.
@@ -1643,6 +1717,9 @@ function ADSEsriMap(startExtent) {
 
         case "maxSelectProperties":
           return "You have exceeded the maximum number of properties (300), reduce the size and use the add to existing option.";
+
+        case "uploadedShpFile":
+          return `${featuresDownloaded.current} has been successfully uploaded.`;
 
         default:
           if (saveResult.current) return `The ${saveType.current} has been successfully saved.`;
@@ -1705,9 +1782,10 @@ function ADSEsriMap(startExtent) {
                   // Create an empty GraphicsLayer as a placeholder for when the user actually gets the features
                   newBaseLayer = new GraphicsLayer({
                     id: baseLayer.layerId,
-                    copyright: baseLayer.copyright.includes("<<year>>")
-                      ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                      : baseLayer.copyright,
+                    copyright:
+                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                        : baseLayer.copyright,
                     title: baseLayer.title,
                     listMode: baseLayer.displayInList ? "show" : "hide",
                     maxScale: baseLayer.maxScale,
@@ -1722,9 +1800,10 @@ function ADSEsriMap(startExtent) {
                   // Create an empty GraphicsLayer as a placeholder for when the user actually gets the features
                   newBaseLayer = new GraphicsLayer({
                     id: baseLayer.layerId,
-                    copyright: baseLayer.copyright.includes("<<year>>")
-                      ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                      : baseLayer.copyright,
+                    copyright:
+                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                        : baseLayer.copyright,
                     title: baseLayer.title,
                     listMode: baseLayer.displayInList ? "show" : "hide",
                     maxScale: baseLayer.maxScale,
@@ -1752,9 +1831,10 @@ function ADSEsriMap(startExtent) {
                         title: baseLayer.activeLayerTitle,
                       },
                     ],
-                    copyright: baseLayer.copyright.includes("<<year>>")
-                      ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                      : baseLayer.copyright,
+                    copyright:
+                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                        : baseLayer.copyright,
                     title: baseLayer.title,
                     listMode: baseLayer.displayInList ? "show" : "hide",
                     maxScale: baseLayer.maxScale,
@@ -1787,9 +1867,10 @@ function ADSEsriMap(startExtent) {
                       key: baseLayer.layerKey,
                     },
                     id: baseLayer.layerId,
-                    copyright: baseLayer.copyright.includes("<<year>>")
-                      ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                      : baseLayer.copyright,
+                    copyright:
+                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                        : baseLayer.copyright,
                     title: baseLayer.title,
                     listMode: baseLayer.displayInList ? "show" : "hide",
                     maxScale: baseLayer.maxScale,
@@ -4508,9 +4589,10 @@ function ADSEsriMap(startExtent) {
                       const updatedFeatureLayer = new GraphicsLayer({
                         id: featureLayer.layer.layerId,
                         graphics: graphics,
-                        copyright: featureLayer.layer.copyright.includes("<<year>>")
-                          ? featureLayer.layer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                          : featureLayer.layer.copyright,
+                        copyright:
+                          featureLayer.layer.copyright && featureLayer.layer.copyright.includes("<<year>>")
+                            ? featureLayer.layer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                            : featureLayer.layer.copyright,
                         title: featureLayer.layer.title,
                         listMode: featureLayer.layer.displayInList ? "show" : "hide",
                         maxScale: featureLayer.layer.maxScale,
@@ -5379,9 +5461,10 @@ function ADSEsriMap(startExtent) {
             const updatedFeatureLayer = new GraphicsLayer({
               id: featureLayer.layer.layerId,
               graphics: graphics,
-              copyright: featureLayer.layer.copyright.includes("<<year>>")
-                ? featureLayer.layer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                : featureLayer.layer.copyright,
+              copyright:
+                featureLayer.layer.copyright && featureLayer.layer.copyright.includes("<<year>>")
+                  ? featureLayer.layer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                  : featureLayer.layer.copyright,
               title: featureLayer.layer.title,
               listMode: featureLayer.layer.displayInList ? "show" : "hide",
               maxScale: featureLayer.layer.maxScale,
@@ -7452,6 +7535,9 @@ function ADSEsriMap(startExtent) {
             <IconButton onClick={handleDisplayLayerList} size="small" title="Show/hide layers">
               <LayersIcon sx={ActionIconStyle()} />
             </IconButton>
+            <IconButton onClick={handleUploadShpFile} size="small" title="Upload shp file">
+              <UploadIcon sx={ActionIconStyle()} />
+            </IconButton>
             {displayESUMergeTool && (
               <IconButton onClick={handleMergeFeatures} size="small" title="Use selected lines for ESU">
                 <MergeIcon sx={ActionIconStyle()} />
@@ -7504,7 +7590,17 @@ function ADSEsriMap(startExtent) {
           variant={messageDialogVariant.current}
           onClose={handleMessageDialogClose}
         />
+        <UploadShpFileDialog
+          isOpen={openUploadShpFileDialog}
+          currentIds={baseMappingLayerIds.current.concat(defaultMapLayerIds)}
+          onClose={handleUploadShpFileDialogClose}
+        />
       </div>
+      {loadingShp && (
+        <Backdrop open={loadingShp}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      )}
     </Fragment>
   );
 }

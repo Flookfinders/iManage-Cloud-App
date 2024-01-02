@@ -3,7 +3,7 @@
 //
 //  Description: Edit map layers dialog
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    004   02.01.24 Sean Flook                 Changes required to load shape files.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -39,6 +40,7 @@ import MinMaxDialog from "../dialogs/MinMaxDialog";
 import MapLayerTypes from "../data/MapLayerTypes";
 import MapServiceProviders from "../data/MapServiceProviders";
 
+import { defaultMapLayerIds } from "../utils/HelperUtils";
 import { ValidateMapLayer } from "../utils/SettingsValidation";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -226,7 +228,8 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
   const handleLayerIdChangeEvent = (newValue) => {
     setLayerId(newValue);
     if (newValue !== data.layerId && onDataChanged) onDataChanged(getUpdatedData("layerId", newValue));
-    if (errors && onErrorsChanged) onErrorsChanged(errors.filter((x) => x.field.toLowerCase() !== "layerid"));
+    if (defaultMapLayerIds.includes(newValue)) setLayerIdError(`${newValue} is not unique.`);
+    else if (errors && onErrorsChanged) onErrorsChanged(errors.filter((x) => x.field.toLowerCase() !== "layerid"));
   };
 
   /**

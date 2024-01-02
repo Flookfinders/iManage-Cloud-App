@@ -27,3 +27,4 @@ yarn-error.log*
 src.zip
 web.zip
 src/data/MapLayers - Copy.js
+old-webpack.config.js

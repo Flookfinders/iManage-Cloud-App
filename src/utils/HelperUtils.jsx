@@ -3,7 +3,7 @@
 //
 //  Description: Helper utilities
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -24,6 +24,7 @@
 //    011   24.11.23 Sean Flook                 Moved Stack to @mui/system and ignore connecting words in TitleCase.
 //    012   30.11.23 Sean Flook                 added ' of ' to the ignore list in TitleCase.
 //    013   19.12.23 Sean Flook                 Various bug fixes.
+//    014   02.01.24 Sean Flook                 Added defaultMapLayerIds.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -60,6 +61,25 @@ import {
 import { tooltipStyle } from "./ADSStyles";
 
 export const mapSelectSearchString = "IDX:MAP";
+
+export const defaultMapLayerIds = [
+  "backgroundPropertyLayer",
+  "backgroundStreetLayer",
+  "unassignedEsusLayer",
+  "streetLayer",
+  "propertyLayer",
+  "extentLayer",
+  "asd51Layer",
+  "asd52Layer",
+  "asd53Layer",
+  "asd61Layer",
+  "asd62Layer",
+  "asd63Layer",
+  "asd64Layer",
+  "asd66Layer",
+  "zoomGraphicLayer",
+  "editGraphicLayer",
+];
 
 /**
  * Format the time element using AM/PM

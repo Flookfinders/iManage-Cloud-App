@@ -13,7 +13,8 @@
 //#region Version 1.0.0.0 changes
 //    001   07.07.21 Sean Flook                 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
-//    003   08.12.23 Sean Flook                 Migrated DatePicker to v6.
+//    003   08.12.23 Sean Flook                 Migrated TimePicker to v6.
+//    004   22.12.23 Sean Flook                 Ensure tooltip is displayed
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -170,38 +171,51 @@ function ADSFromToTimeControl({
                 </Grid>
                 <Grid item>
                   {fromHelperText && fromHelperText.length > 0 ? (
-                    <TimePicker
-                      id={`${label.toLowerCase().replaceAll(" ", "-")}-from-time-picker`}
-                      value={selectedFromTime}
-                      showTodayButton
-                      required={isRequired}
-                      disabled={!isEditable}
-                      renderInput={(params) => (
-                        <Tooltip
-                          title={isRequired ? fromHelperText + " This is a required field." : fromHelperText}
-                          arrow
-                          placement="right"
-                          sx={tooltipStyle}
-                        >
-                          <TextField
-                            {...params}
-                            id={`${label.toLowerCase().replaceAll(" ", "-")}-from-time-picker-textfield`}
-                            sx={FormDateInputStyle(hasFromError.current)}
-                            variant="outlined"
-                            margin="dense"
-                            error={hasFromError.current}
-                            fullWidth
-                            size="small"
-                          />
-                        </Tooltip>
-                      )}
-                      onChange={(newValue) => handleFromChange(newValue)}
-                      KeyboardButtonProps={{
-                        "aria-label": "change from time",
-                      }}
-                      aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-from-time-label`}
-                      aria-describedby={`${label.toLowerCase().replaceAll(" ", "-")}-time-error`}
-                    />
+                    <Tooltip
+                      title={isRequired ? fromHelperText + " This is a required field." : fromHelperText}
+                      arrow
+                      placement="right"
+                      sx={tooltipStyle}
+                    >
+                      <div>
+                        <TimePicker
+                          id={`${label.toLowerCase().replaceAll(" ", "-")}-from-time-picker`}
+                          value={selectedFromTime}
+                          showTodayButton
+                          required={isRequired}
+                          disabled={!isEditable}
+                          slotProps={{
+                            textField: {
+                              id: `${label.toLowerCase().replaceAll(" ", "-")}-from-time-picker-textfield`,
+                              sx: FormDateInputStyle(hasFromError.current),
+                              variant: "outlined",
+                              error: hasFromError.current,
+                              margin: "dense",
+                              fullWidth: "true",
+                              size: "small",
+                            },
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              id={`${label.toLowerCase().replaceAll(" ", "-")}-from-time-picker-textfield`}
+                              sx={FormDateInputStyle(hasFromError.current)}
+                              variant="outlined"
+                              margin="dense"
+                              error={hasFromError.current}
+                              fullWidth
+                              size="small"
+                            />
+                          )}
+                          onChange={(newValue) => handleFromChange(newValue)}
+                          KeyboardButtonProps={{
+                            "aria-label": "change from time",
+                          }}
+                          aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-from-time-label`}
+                          aria-describedby={`${label.toLowerCase().replaceAll(" ", "-")}-time-error`}
+                        />
+                      </div>
+                    </Tooltip>
                   ) : (
                     <TimePicker
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-from-time-picker`}
@@ -209,18 +223,17 @@ function ADSFromToTimeControl({
                       showTodayButton
                       required={isRequired}
                       disabled={!isEditable}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          id={`${label.toLowerCase().replaceAll(" ", "-")}-from-time-picker-textfield`}
-                          sx={FormDateInputStyle(hasFromError.current)}
-                          variant="outlined"
-                          margin="dense"
-                          error={hasFromError.current}
-                          fullWidth
-                          size="small"
-                        />
-                      )}
+                      slotProps={{
+                        textField: {
+                          id: `${label.toLowerCase().replaceAll(" ", "-")}-from-time-picker-textfield`,
+                          sx: FormDateInputStyle(hasFromError.current),
+                          variant: "outlined",
+                          error: hasFromError.current,
+                          margin: "dense",
+                          fullWidth: "true",
+                          size: "small",
+                        },
+                      }}
                       onChange={(newValue) => handleFromChange(newValue)}
                       KeyboardButtonProps={{
                         "aria-label": "change from time",
@@ -237,38 +250,39 @@ function ADSFromToTimeControl({
                 </Grid>
                 <Grid item>
                   {toHelperText && toHelperText.length > 0 ? (
-                    <TimePicker
-                      id={`${label.toLowerCase().replaceAll(" ", "-")}-to-time-picker`}
-                      value={selectedToTime}
-                      showTodayButton
-                      required={isRequired}
-                      disabled={!isEditable}
-                      renderInput={(params) => (
-                        <Tooltip
-                          title={isRequired ? toHelperText + " This is a required field." : toHelperText}
-                          arrow
-                          placement="right"
-                          sx={tooltipStyle}
-                        >
-                          <TextField
-                            {...params}
-                            id={`${label.toLowerCase().replaceAll(" ", "-")}-to-time-picker-textfield`}
-                            sx={FormDateInputStyle(hasToError.current)}
-                            variant="outlined"
-                            margin="dense"
-                            error={hasToError.current}
-                            fullWidth
-                            size="small"
-                          />
-                        </Tooltip>
-                      )}
-                      onChange={(newValue) => handleToChange(newValue)}
-                      KeyboardButtonProps={{
-                        "aria-label": "change to time",
-                      }}
-                      aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-to-time-label`}
-                      aria-describedby={`${label.toLowerCase().replaceAll(" ", "-")}-time-error`}
-                    />
+                    <Tooltip
+                      title={isRequired ? toHelperText + " This is a required field." : toHelperText}
+                      arrow
+                      placement="right"
+                      sx={tooltipStyle}
+                    >
+                      <div>
+                        <TimePicker
+                          id={`${label.toLowerCase().replaceAll(" ", "-")}-to-time-picker`}
+                          value={selectedToTime}
+                          showTodayButton
+                          required={isRequired}
+                          disabled={!isEditable}
+                          slotProps={{
+                            textField: {
+                              id: `${label.toLowerCase().replaceAll(" ", "-")}-to-time-picker-textfield`,
+                              sx: FormDateInputStyle(hasToError.current),
+                              variant: "outlined",
+                              error: hasToError.current,
+                              margin: "dense",
+                              fullWidth: "true",
+                              size: "small",
+                            },
+                          }}
+                          onChange={(newValue) => handleToChange(newValue)}
+                          KeyboardButtonProps={{
+                            "aria-label": "change to time",
+                          }}
+                          aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-to-time-label`}
+                          aria-describedby={`${label.toLowerCase().replaceAll(" ", "-")}-time-error`}
+                        />
+                      </div>
+                    </Tooltip>
                   ) : (
                     <TimePicker
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-to-time-picker`}
@@ -276,18 +290,17 @@ function ADSFromToTimeControl({
                       showTodayButton
                       required={isRequired}
                       disabled={!isEditable}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          id={`${label.toLowerCase().replaceAll(" ", "-")}-to-time-picker-textfield`}
-                          sx={FormDateInputStyle(hasToError.current)}
-                          variant="outlined"
-                          margin="dense"
-                          error={hasToError.current}
-                          fullWidth
-                          size="small"
-                        />
-                      )}
+                      slotProps={{
+                        textField: {
+                          id: `${label.toLowerCase().replaceAll(" ", "-")}-to-time-picker-textfield`,
+                          sx: FormDateInputStyle(hasToError.current),
+                          variant: "outlined",
+                          error: hasToError.current,
+                          margin: "dense",
+                          fullWidth: "true",
+                          size: "small",
+                        },
+                      }}
                       onChange={(newValue) => handleToChange(newValue)}
                       KeyboardButtonProps={{
                         "aria-label": "change to time",

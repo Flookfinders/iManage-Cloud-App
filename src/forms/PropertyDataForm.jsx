@@ -32,6 +32,7 @@
 //    019   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system, renamed successor to successorCrossRef and changes to handle Scottish data structure.
 //    020   30.11.23 Sean Flook                 Use constant for default classification scheme and various bug fixes.
 //    021   14.12.23 Sean Flook                 Corrected note record type.
+//    022   21.12.23 Sean Flook                 Ensure the sandbox is correctly updated.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -816,6 +817,7 @@ function PropertyDataForm({ data, loading }) {
           totalRecords: dataLength,
         });
 
+        sandboxContext.onSandboxChange("lpi", lpiData);
         propertyContext.onRecordChange(24, dataIdx);
       } else if (propertyChanged) {
         failedValidation.current = true;
@@ -911,6 +913,7 @@ function PropertyDataForm({ data, loading }) {
         totalRecords: dataLength,
       });
 
+      sandboxContext.onSandboxChange("classification", classificationData);
       propertyContext.onRecordChange(32, dataIdx);
       mapContext.onEditMapObject(32, pkId);
     }
@@ -1000,6 +1003,7 @@ function PropertyDataForm({ data, loading }) {
         totalRecords: dataLength,
       });
 
+      sandboxContext.onSandboxChange("organisation", organisationData);
       propertyContext.onRecordChange(31, dataIdx);
       mapContext.onEditMapObject(31, pkId);
     }
@@ -1089,6 +1093,7 @@ function PropertyDataForm({ data, loading }) {
         totalRecords: dataLength,
       });
 
+      sandboxContext.onSandboxChange("successorCrossRef", successorCrossRefData);
       propertyContext.onRecordChange(30, dataIdx);
       mapContext.onEditMapObject(30, pkId);
     }
@@ -1182,6 +1187,7 @@ function PropertyDataForm({ data, loading }) {
         totalRecords: dataLength,
       });
 
+      sandboxContext.onSandboxChange("provenance", provenanceData);
       propertyContext.onRecordChange(22, dataIdx);
       mapContext.onEditMapObject(22, pkId);
     }
@@ -1273,6 +1279,7 @@ function PropertyDataForm({ data, loading }) {
         totalRecords: dataLength,
       });
 
+      sandboxContext.onSandboxChange("appCrossRef", xrefData);
       propertyContext.onRecordChange(23, dataIdx);
     }
   };
@@ -1351,6 +1358,7 @@ function PropertyDataForm({ data, loading }) {
         variant: "property",
       });
 
+      sandboxContext.onSandboxChange("propertyNote", noteData);
       propertyContext.onRecordChange(71, dataIdx);
     }
   };
