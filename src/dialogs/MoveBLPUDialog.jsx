@@ -3,7 +3,7 @@
 //
 //  Description: Move BLPU seed point dialog
 //
-//  Copyright:    © 2023 Idox Software Limited.
+//  Copyright:    © 2023 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   06/11/23 Sean Flook       IMANN-175 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system, renamed successor to successorCrossRef and simplified handleFinaliseClose.
+//    003   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -352,7 +353,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
               return result;
             },
             (error) => {
-              console.log("ERROR Getting selected properties", error);
+              console.error("[ERROR] Getting selected properties", error);
               return null;
             }
           );

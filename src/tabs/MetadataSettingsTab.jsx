@@ -3,7 +3,7 @@
 //
 //  Description: ESU Data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   07.09.23 Sean Flook                 Cleaned the code.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -870,7 +871,7 @@ function MetadataSettingsTab({ variant }) {
               setNationalCycleRoutes(result.contentNationalCycleRoute);
             },
             (error) => {
-              console.log("ERROR Getting street metadata", error);
+              console.error("[ERROR] Getting street metadata", error);
             }
           )
           .then(() => {
@@ -975,7 +976,7 @@ function MetadataSettingsTab({ variant }) {
               setEmergencyServicesRoutes(result.mdEmergencyRoute);
             },
             (error) => {
-              console.log("ERROR Getting ASD metadata", error);
+              console.error("[ERROR] Getting ASD metadata", error);
             }
           )
           .then(() => {
@@ -1034,7 +1035,7 @@ function MetadataSettingsTab({ variant }) {
               setLanguage(result.language);
             },
             (error) => {
-              console.log("ERROR Getting property metadata", error);
+              console.error("[ERROR] Getting property metadata", error);
             }
           )
           .then(() => {

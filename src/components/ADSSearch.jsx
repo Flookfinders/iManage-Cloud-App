@@ -3,7 +3,7 @@
 //
 //  Description: Search component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -25,6 +25,7 @@
 //    012   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs.
 //    013   20.11.23 Sean Flook                 Undone above change.
 //    014   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1026,7 +1027,7 @@ function ADSSearch({ placeholder, onSearchClick }) {
               return result;
             },
             (error) => {
-              console.log("ERROR Getting all Street data", error);
+              console.error("[ERROR] Getting all Street data", error);
               return null;
             }
           );
@@ -1071,7 +1072,7 @@ function ADSSearch({ placeholder, onSearchClick }) {
               return result;
             },
             (error) => {
-              console.log("ERROR Getting all unassigned ESU data", error);
+              console.error("[ERROR] Getting all unassigned ESU data", error);
               return null;
             }
           );
@@ -1117,7 +1118,7 @@ function ADSSearch({ placeholder, onSearchClick }) {
               return result;
             },
             (error) => {
-              console.log("ERROR Getting all Property data", error);
+              console.error("[ERROR] Getting all Property data", error);
               return null;
             }
           );

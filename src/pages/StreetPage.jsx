@@ -3,7 +3,7 @@
 //
 //  Description: Street Page
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   23.08.23 Sean Flook       IMANN-159 Use the street template defaults whe getting a new street.
 //    003   07.09.23 Sean Flook                 Cleaned the code.
 //    004   06.10.23 Sean Flook                 Added lookupContext so it can be passed through to GetNewStreet.
+//    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -80,7 +81,7 @@ function StreetPage() {
                   sandboxContext.onUpdateAndClear("sourceStreet", result, "allStreet");
                 },
                 (error) => {
-                  console.log("ERROR Get Street data", error);
+                  console.error("[ERROR] Get Street data", error);
                 }
               )
               .then(() => {

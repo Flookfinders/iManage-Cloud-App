@@ -3,7 +3,7 @@
 //
 //  Description: Property Details Tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -20,6 +20,7 @@
 //    007   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    008   03.11.23 Sean Flook                 Added debug code.
 //    009   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and changes required for Scottish authorities.
+//    010   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -841,7 +842,7 @@ function PropertyLPITab({
               return addressToTitleCase(tempAddress, postcode);
             },
             (error) => {
-              console.log("ERROR Get temp address data", error);
+              console.error("[ERROR] Get temp address data", error);
             }
           );
       } else return "";

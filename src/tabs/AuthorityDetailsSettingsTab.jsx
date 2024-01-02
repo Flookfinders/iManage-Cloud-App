@@ -3,7 +3,7 @@
 //
 //  Description: ESU Data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   07.09.23 Sean Flook                 Removed unnecessary awaits.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -128,13 +129,13 @@ function AuthorityDetailsSettingsTab() {
               res
                 .json()
                 .then((body) => {
-                  console.log(
+                  console.error(
                     `[400 ERROR] ${newRecord ? "Creating" : "Updating"} authority details object`,
                     body.errors
                   );
                 })
                 .catch((err400) => {
-                  console.log(`[400 ERROR] ${newRecord ? "Creating" : "Updating"} authority details object.`, err400);
+                  console.error(`[400 ERROR] ${newRecord ? "Creating" : "Updating"} authority details object.`, err400);
                 });
               break;
 
@@ -142,19 +143,19 @@ function AuthorityDetailsSettingsTab() {
               res
                 .json()
                 .then((body) => {
-                  console.log(`[401 ERROR] ${newRecord ? "Creating" : "Updating"} authority details`, body);
+                  console.error(`[401 ERROR] ${newRecord ? "Creating" : "Updating"} authority details`, body);
                 })
                 .catch((err401) => {
-                  console.log(`[401 ERROR] ${newRecord ? "Creating" : "Updating"} authority details object.`, err401);
+                  console.error(`[401 ERROR] ${newRecord ? "Creating" : "Updating"} authority details object.`, err401);
                 });
               break;
 
             case 500:
-              console.log(`[500 ERROR] ${newRecord ? "Creating" : "Updating"} authority details`, res);
+              console.error(`[500 ERROR] ${newRecord ? "Creating" : "Updating"} authority details`, res);
               break;
 
             default:
-              console.log(
+              console.error(
                 `[${res.status} ERROR] handleDoneEditAuthority - ${
                   newRecord ? "Creating" : "Updating"
                 } authority details.`,

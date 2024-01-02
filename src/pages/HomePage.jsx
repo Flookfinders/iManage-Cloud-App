@@ -3,7 +3,7 @@
 //
 //  Description: URL data about the api calls we need to make
 //
-//  Copyright:    � 2021-23 Idox Software Limited
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   02.06.23 Joel Benford       WI40689 Invoke homepage control
 //    003   23.08.23 Sean Flook       IMANN-159 Include the street template and sub-locality lookup.
 //    004   07.09.23 Sean Flook                 Remove unnecessary awaits.
+//    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -224,7 +225,7 @@ const HomePage = () => {
         setData(lookup.id, result);
       })
       .catch((e) => {
-        console.log("Error fetching data", {
+        console.error("[ERROR] Fetching data", {
           lookup: lookup,
           error: e,
         });

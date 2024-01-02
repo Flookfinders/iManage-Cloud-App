@@ -3,7 +3,7 @@
 //
 //  Description: ASD template tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -19,6 +19,7 @@
 //    006   03.11.23 Sean Flook                 Make labels the same within application.
 //    007   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    008   05.12.23 Joel Benford               Various fixes to display and save
+//    009   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -29,15 +30,7 @@ import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 
-import {
-  Typography,
-  Tooltip,
-  Grid,
-  Card,
-  CardActionArea,
-  CardContent,
-  IconButton,
-} from "@mui/material";
+import { Typography, Tooltip, Grid, Card, CardActionArea, CardContent, IconButton } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 
 import EditTemplateDialog from "../dialogs/EditTemplateDialog";
@@ -85,55 +78,28 @@ function AsdTemplateTab() {
 
   const [data, setData] = useState(null);
 
-  const [
-    maintenanceResponsibilityStreetStatus,
-    setMaintenanceResponsibilityStreetStatus,
-  ] = useState(null);
-  const [
-    maintenanceResponsibilityCustodian,
-    setMaintenanceResponsibilityCustodian,
-  ] = useState(null);
-  const [
-    maintenanceResponsibilityAuthority,
-    setMaintenanceResponsibilityAuthority,
-  ] = useState(null);
-  const [
-    reinstatementCategoryReinstatementCategory,
-    setReinstatementCategoryReinstatementCategory,
-  ] = useState(null);
-  const [reinstatementCategoryCustodian, setReinstatementCategoryCustodian] =
-    useState(null);
-  const [reinstatementCategoryAuthority, setReinstatementCategoryAuthority] =
-    useState(null);
-  const [
-    osSpecialDesignationSpecialDesignation,
-    setOsSpecialDesignationSpecialDesignation,
-  ] = useState(null);
-  const [osSpecialDesignationCustodian, setOsSpecialDesignationCustodian] =
-    useState(null);
-  const [osSpecialDesignationAuthority, setOsSpecialDesignationAuthority] =
-    useState(null);
+  const [maintenanceResponsibilityStreetStatus, setMaintenanceResponsibilityStreetStatus] = useState(null);
+  const [maintenanceResponsibilityCustodian, setMaintenanceResponsibilityCustodian] = useState(null);
+  const [maintenanceResponsibilityAuthority, setMaintenanceResponsibilityAuthority] = useState(null);
+  const [reinstatementCategoryReinstatementCategory, setReinstatementCategoryReinstatementCategory] = useState(null);
+  const [reinstatementCategoryCustodian, setReinstatementCategoryCustodian] = useState(null);
+  const [reinstatementCategoryAuthority, setReinstatementCategoryAuthority] = useState(null);
+  const [osSpecialDesignationSpecialDesignation, setOsSpecialDesignationSpecialDesignation] = useState(null);
+  const [osSpecialDesignationCustodian, setOsSpecialDesignationCustodian] = useState(null);
+  const [osSpecialDesignationAuthority, setOsSpecialDesignationAuthority] = useState(null);
   const [interestStreetStatus, setInterestStreetStatus] = useState(null);
   const [interestOrganisation, setInterestOrganisation] = useState(null);
   const [interestType, setInterestType] = useState(null);
   const [interestDistrict, setInterestDistrict] = useState(null);
-  const [interestMaintainingOrganisation, setInterestMaintainingOrganisation] =
-    useState(null);
+  const [interestMaintainingOrganisation, setInterestMaintainingOrganisation] = useState(null);
   const [constructionType, setConstructionType] = useState(null);
-  const [constructionReinstatementType, setConstructionReinstatementType] =
-    useState(null);
-  const [
-    constructionAggregateAbrasionValue,
-    setConstructionAggregateAbrasionValue,
-  ] = useState(null);
-  const [constructionPolishedStoneValue, setConstructionPolishedStoneValue] =
-    useState(null);
-  const [constructionOrganisation, setConstructionOrganisation] =
-    useState(null);
+  const [constructionReinstatementType, setConstructionReinstatementType] = useState(null);
+  const [constructionAggregateAbrasionValue, setConstructionAggregateAbrasionValue] = useState(null);
+  const [constructionPolishedStoneValue, setConstructionPolishedStoneValue] = useState(null);
+  const [constructionOrganisation, setConstructionOrganisation] = useState(null);
   const [constructionDistrict, setConstructionDistrict] = useState(null);
   const [specialDesigType, setSpecialDesigType] = useState(null);
-  const [specialDesigOrganisation, setSpecialDesigOrganisation] =
-    useState(null);
+  const [specialDesigOrganisation, setSpecialDesigOrganisation] = useState(null);
   const [specialDesigDistrict, setSpecialDesigDistrict] = useState(null);
   const [specialDesigPeriodicity, setSpecialDesigPeriodicity] = useState(null);
   const [hwwDesignation, setHwwDesignation] = useState(null);
@@ -143,22 +109,17 @@ function AsdTemplateTab() {
   const [prowStatus, setProwStatus] = useState(null);
   const [prowPedestrianAccess, setProwPedestrianAccess] = useState(false);
   const [prowEquestrianAccess, setProwEquestrianAccess] = useState(false);
-  const [prowNonMotorisedVehicleAccess, setProwNonMotorisedVehicleAccess] =
-    useState(false);
+  const [prowNonMotorisedVehicleAccess, setProwNonMotorisedVehicleAccess] = useState(false);
   const [prowBicycleAccess, setProwBicycleAccess] = useState(false);
-  const [prowMotorisedVehicleAccess, setProwMotorisedVehicleAccess] =
-    useState(false);
+  const [prowMotorisedVehicleAccess, setProwMotorisedVehicleAccess] = useState(false);
   const [prowPromotedRoute, setProwPromotedRoute] = useState(false);
   const [prowAccessibleRoute, setProwAccessibleRoute] = useState(false);
   const [prowOrganisation, setProwOrganisation] = useState(null);
   const [prowDistrict, setProwDistrict] = useState(null);
 
-  const [editMaintenanceResponsibility, setEditMaintenanceResponsibility] =
-    useState(false);
-  const [editReinstatementCategory, setEditReinstatementCategory] =
-    useState(false);
-  const [editOsSpecialDesignation, setEditOsSpecialDesignation] =
-    useState(false);
+  const [editMaintenanceResponsibility, setEditMaintenanceResponsibility] = useState(false);
+  const [editReinstatementCategory, setEditReinstatementCategory] = useState(false);
+  const [editOsSpecialDesignation, setEditOsSpecialDesignation] = useState(false);
   const [editInterest, setEditInterest] = useState(false);
   const [editConstruction, setEditConstruction] = useState(false);
   const [editSpecialDesignation, setEditSpecialDesignation] = useState(false);
@@ -368,9 +329,7 @@ function AsdTemplateTab() {
    * @returns {string|null} The description to display for the aggregate abrasion value.
    */
   const getAggregateAbrasionValue = (value, reinstatementCode) => {
-    const rec = AggregateAbrasionValue.find(
-      (x) => x.id === value && x.reinstatementCode === reinstatementCode
-    );
+    const rec = AggregateAbrasionValue.find((x) => x.id === value && x.reinstatementCode === reinstatementCode);
 
     if (rec) return rec.gpText;
     else return null;
@@ -383,9 +342,7 @@ function AsdTemplateTab() {
    * @returns {string|null} The description to display for the polished stone value.
    */
   const getPolishedStoneValue = (value, reinstatementCode) => {
-    const rec = PolishedStoneValue.find(
-      (x) => x.id === value && x.reinstatementCode === reinstatementCode
-    );
+    const rec = PolishedStoneValue.find((x) => x.id === value && x.reinstatementCode === reinstatementCode);
 
     if (rec) return rec.gpText;
     else return null;
@@ -463,8 +420,7 @@ function AsdTemplateTab() {
    * @returns {JSX.Element|null} The check icon.
    */
   const getCheck = (value) => {
-    if (value)
-      return <DoneIcon fontSize="small" sx={{ color: adsLightBlue }} />;
+    if (value) return <DoneIcon fontSize="small" sx={{ color: adsLightBlue }} />;
     else return null;
   };
 
@@ -474,12 +430,9 @@ function AsdTemplateTab() {
   const doEditMaintenanceResponsibility = () => {
     setEditVariant("maintenanceResponsibility");
     setEditData({
-      maintenanceResponsibilityStreetStatus:
-        data.scoMaintenanceResponsibilityTemplate.streetStatus,
-      maintenanceResponsibilityCustodian:
-        data.scoMaintenanceResponsibilityTemplate.custodianCode,
-      maintenanceResponsibilityAuthority:
-        data.scoMaintenanceResponsibilityTemplate.maintainingAuthorityCode,
+      maintenanceResponsibilityStreetStatus: data.scoMaintenanceResponsibilityTemplate.streetStatus,
+      maintenanceResponsibilityCustodian: data.scoMaintenanceResponsibilityTemplate.custodianCode,
+      maintenanceResponsibilityAuthority: data.scoMaintenanceResponsibilityTemplate.maintainingAuthorityCode,
     });
     setShowEditDialog(true);
   };
@@ -490,12 +443,9 @@ function AsdTemplateTab() {
   const doEditReinstatementCategory = () => {
     setEditVariant("reinstatementCategory");
     setEditData({
-      reinstatementCategoryReinstatementCategory:
-        data.scoReinstatementCategoryTemplate.reinstatementCategory,
-      reinstatementCategoryCustodian:
-        data.scoReinstatementCategoryTemplate.custodianCode,
-      reinstatementCategoryAuthority:
-        data.scoReinstatementCategoryTemplate.reinstatementAuthorityCode,
+      reinstatementCategoryReinstatementCategory: data.scoReinstatementCategoryTemplate.reinstatementCategory,
+      reinstatementCategoryCustodian: data.scoReinstatementCategoryTemplate.custodianCode,
+      reinstatementCategoryAuthority: data.scoReinstatementCategoryTemplate.reinstatementAuthorityCode,
     });
     setShowEditDialog(true);
   };
@@ -506,12 +456,9 @@ function AsdTemplateTab() {
   const doEditOsSpecialDesignation = () => {
     setEditVariant("osSpecialDesignation");
     setEditData({
-      osSpecialDesignationSpecialDesignation:
-        data.scoSpecialDesignationTemplate.specialDesignation,
-      osSpecialDesignationCustodian:
-        data.scoSpecialDesignationTemplate.custodianCode,
-      osSpecialDesignationAuthority:
-        data.scoSpecialDesignationTemplate.authorityCode,
+      osSpecialDesignationSpecialDesignation: data.scoSpecialDesignationTemplate.specialDesignation,
+      osSpecialDesignationCustodian: data.scoSpecialDesignationTemplate.custodianCode,
+      osSpecialDesignationAuthority: data.scoSpecialDesignationTemplate.authorityCode,
     });
     setShowEditDialog(true);
   };
@@ -554,12 +501,9 @@ function AsdTemplateTab() {
     setEditVariant("specialDesignation");
     setEditData({
       specialDesigType: data.specialDesignationTemplate.type,
-      specialDesigOrganisation:
-        data.specialDesignationTemplate.swaOrgRefConsultant,
-      specialDesigDistrict:
-        data.specialDesignationTemplate.districtRefConsultant,
-      specialDesigPeriodicity:
-        data.specialDesignationTemplate.specialDesigPeriodicityCode,
+      specialDesigOrganisation: data.specialDesignationTemplate.swaOrgRefConsultant,
+      specialDesigDistrict: data.specialDesignationTemplate.districtRefConsultant,
+      specialDesigPeriodicity: data.specialDesignationTemplate.specialDesigPeriodicityCode,
     });
     setShowEditDialog(true);
   };
@@ -587,8 +531,7 @@ function AsdTemplateTab() {
       prowStatus: data.publicRightOfWayTemplate.status,
       pedestrianAccess: data.publicRightOfWayTemplate.pedestrianAccess,
       equestrianAccess: data.publicRightOfWayTemplate.equestrianAccess,
-      nonMotorisedVehicleAccess:
-        data.publicRightOfWayTemplate.nonMotVehicleAccess,
+      nonMotorisedVehicleAccess: data.publicRightOfWayTemplate.nonMotVehicleAccess,
       bicycleAccess: data.publicRightOfWayTemplate.bicycleAccess,
       motorisedVehicleAccess: data.publicRightOfWayTemplate.motVehicleAccess,
       promotedRoute: data.publicRightOfWayTemplate.promotedRoute,
@@ -606,10 +549,7 @@ function AsdTemplateTab() {
    */
   const handleDoneEditTemplate = async (updatedData) => {
     if (updatedData) {
-      const saveUrl = GetStreetTemplateUrl(
-        "PUT",
-        userContext.currentUser.token
-      );
+      const saveUrl = GetStreetTemplateUrl("PUT", userContext.currentUser.token);
 
       if (saveUrl) {
         const saveData = {
@@ -673,17 +613,13 @@ function AsdTemplateTab() {
                 pkId: data.interestTemplate.pkId,
                 templatePkId: data.interestTemplate.templatePkId,
                 streetStatus:
-                  editVariant === "interest"
-                    ? updatedData.interestStreetStatus
-                    : data.interestTemplate.streetStatus,
+                  editVariant === "interest" ? updatedData.interestStreetStatus : data.interestTemplate.streetStatus,
                 swaOrgRefAuthority:
                   editVariant === "interest"
                     ? updatedData.interestOrganisation
                     : data.interestTemplate.swaOrgRefAuthority,
                 interestType:
-                  editVariant === "interest"
-                    ? updatedData.interestType
-                    : data.interestTemplate.interestType,
+                  editVariant === "interest" ? updatedData.interestType : data.interestTemplate.interestType,
                 districtRefAuthority:
                   editVariant === "interest"
                     ? updatedData.interestDistrict
@@ -699,13 +635,8 @@ function AsdTemplateTab() {
                 pkId: data.publicRightOfWayTemplate.pkId,
                 templatePkId: data.publicRightOfWayTemplate.templatePkId,
                 prowRights:
-                  editVariant === "prow"
-                    ? updatedData.prowDedication
-                    : data.publicRightOfWayTemplate.prowRights,
-                status:
-                  editVariant === "prow"
-                    ? updatedData.prowStatus
-                    : data.publicRightOfWayTemplate.status,
+                  editVariant === "prow" ? updatedData.prowDedication : data.publicRightOfWayTemplate.prowRights,
+                status: editVariant === "prow" ? updatedData.prowStatus : data.publicRightOfWayTemplate.status,
                 pedestrianAccess:
                   editVariant === "prow"
                     ? updatedData.pedestrianAccess
@@ -719,37 +650,25 @@ function AsdTemplateTab() {
                     ? updatedData.nonMotorisedVehicleAccess
                     : data.publicRightOfWayTemplate.nonMotVehicleAccess,
                 bicycleAccess:
-                  editVariant === "prow"
-                    ? updatedData.bicycleAccess
-                    : data.publicRightOfWayTemplate.bicycleAccess,
+                  editVariant === "prow" ? updatedData.bicycleAccess : data.publicRightOfWayTemplate.bicycleAccess,
                 motVehicleAccess:
                   editVariant === "prow"
                     ? updatedData.motorisedVehicleAccess
                     : data.publicRightOfWayTemplate.motVehicleAccess,
                 promotedRoute:
-                  editVariant === "prow"
-                    ? updatedData.promotedRoute
-                    : data.publicRightOfWayTemplate.promotedRoute,
+                  editVariant === "prow" ? updatedData.promotedRoute : data.publicRightOfWayTemplate.promotedRoute,
                 accessibleRoute:
-                  editVariant === "prow"
-                    ? updatedData.accessibleRoute
-                    : data.publicRightOfWayTemplate.accessibleRoute,
+                  editVariant === "prow" ? updatedData.accessibleRoute : data.publicRightOfWayTemplate.accessibleRoute,
                 organisation:
-                  editVariant === "prow"
-                    ? updatedData.prowOrganisation
-                    : data.publicRightOfWayTemplate.organisation,
-                district:
-                  editVariant === "prow"
-                    ? updatedData.prowDistrict
-                    : data.publicRightOfWayTemplate.district,
+                  editVariant === "prow" ? updatedData.prowOrganisation : data.publicRightOfWayTemplate.organisation,
+                district: editVariant === "prow" ? updatedData.prowDistrict : data.publicRightOfWayTemplate.district,
               }
             : data.publicRightOfWayTemplate,
           scoEsuTemplate: data.scoEsuTemplate,
           scoMaintenanceResponsibilityTemplate: settingsContext.isScottish
             ? {
                 pkId: data.scoMaintenanceResponsibilityTemplate.pkId,
-                templatePkId:
-                  data.scoMaintenanceResponsibilityTemplate.templatePkId,
+                templatePkId: data.scoMaintenanceResponsibilityTemplate.templatePkId,
                 streetStatus:
                   editVariant === "maintenanceResponsibility"
                     ? updatedData.maintenanceResponsibilityStreetStatus
@@ -761,20 +680,17 @@ function AsdTemplateTab() {
                 maintainingAuthorityCode:
                   editVariant === "maintenanceResponsibility"
                     ? updatedData.maintenanceResponsibilityAuthority
-                    : data.scoMaintenanceResponsibilityTemplate
-                        .maintainingAuthorityCode,
+                    : data.scoMaintenanceResponsibilityTemplate.maintainingAuthorityCode,
               }
             : data.scoMaintenanceResponsibilityTemplate,
           scoReinstatementCategoryTemplate: settingsContext.isScottish
             ? {
                 pkId: data.scoReinstatementCategoryTemplate.pkId,
-                templatePkId:
-                  data.scoReinstatementCategoryTemplate.templatePkId,
+                templatePkId: data.scoReinstatementCategoryTemplate.templatePkId,
                 reinstatementCategory:
                   editVariant === "reinstatementCategory"
                     ? updatedData.reinstatementCategoryReinstatementCategory
-                    : data.scoReinstatementCategoryTemplate
-                        .reinstatementCategory,
+                    : data.scoReinstatementCategoryTemplate.reinstatementCategory,
                 custodianCode:
                   editVariant === "reinstatementCategory"
                     ? updatedData.reinstatementCategoryCustodian
@@ -782,8 +698,7 @@ function AsdTemplateTab() {
                 reinstatementAuthorityCode:
                   editVariant === "reinstatementCategory"
                     ? updatedData.reinstatementCategoryAuthority
-                    : data.scoReinstatementCategoryTemplate
-                        .reinstatementAuthorityCode,
+                    : data.scoReinstatementCategoryTemplate.reinstatementAuthorityCode,
               }
             : data.scoReinstatementCategoryTemplate,
           scoSpecialDesignationTemplate: settingsContext.isScottish
@@ -823,20 +738,14 @@ function AsdTemplateTab() {
                 specialDesigPeriodicityCode:
                   editVariant === "specialDesignation"
                     ? updatedData.specialDesigPeriodicity
-                    : data.specialDesignationTemplate
-                        .specialDesigPeriodicityCode,
+                    : data.specialDesignationTemplate.specialDesigPeriodicityCode,
               }
             : data.specialDesignationTemplate,
           streetTemplate: data.streetTemplate,
         };
 
         // if (process.env.NODE_ENV === "development")
-        console.log(
-          "[DEBUG] handleDoneEditTemplate",
-          updatedData,
-          saveUrl,
-          JSON.stringify(saveData)
-        );
+        console.log("[DEBUG] handleDoneEditTemplate", updatedData, saveUrl, JSON.stringify(saveData));
 
         await fetch(saveUrl.url, {
           headers: saveUrl.headers,
@@ -853,25 +762,22 @@ function AsdTemplateTab() {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.log("[400 ERROR] Updating ASD template", body.errors);
+                  console.error("[400 ERROR] Updating ASD template", body.errors);
                 });
                 break;
 
               case 401:
                 res.json().then((body) => {
-                  console.log("[401 ERROR] Updating ASD template", body);
+                  console.error("[401 ERROR] Updating ASD template", body);
                 });
                 break;
 
               case 500:
-                console.log("[500 ERROR] Updating ASD template", res);
+                console.error("[500 ERROR] Updating ASD template", res);
                 break;
 
               default:
-                console.log(
-                  `[${res.status} ERROR] handleDoneEditTemplate - Updating ASD template.`,
-                  res
-                );
+                console.error(`[${res.status} ERROR] handleDoneEditTemplate - Updating ASD template.`, res);
                 break;
             }
           });
@@ -896,64 +802,30 @@ function AsdTemplateTab() {
 
   useEffect(() => {
     if (data) {
-      setMaintenanceResponsibilityStreetStatus(
-        data.scoMaintenanceResponsibilityTemplate.streetStatus
-      );
-      setMaintenanceResponsibilityCustodian(
-        data.scoMaintenanceResponsibilityTemplate.custodianCode
-      );
-      setMaintenanceResponsibilityAuthority(
-        data.scoMaintenanceResponsibilityTemplate.maintainingAuthorityCode
-      );
-      setReinstatementCategoryReinstatementCategory(
-        data.scoReinstatementCategoryTemplate.reinstatementCategory
-      );
-      setReinstatementCategoryCustodian(
-        data.scoReinstatementCategoryTemplate.custodianCode
-      );
-      setReinstatementCategoryAuthority(
-        data.scoReinstatementCategoryTemplate.reinstatementAuthorityCode
-      );
-      setOsSpecialDesignationSpecialDesignation(
-        data.scoSpecialDesignationTemplate.specialDesignation
-      );
-      setOsSpecialDesignationCustodian(
-        data.scoSpecialDesignationTemplate.custodianCode
-      );
-      setOsSpecialDesignationAuthority(
-        data.scoSpecialDesignationTemplate.authorityCode
-      );
+      setMaintenanceResponsibilityStreetStatus(data.scoMaintenanceResponsibilityTemplate.streetStatus);
+      setMaintenanceResponsibilityCustodian(data.scoMaintenanceResponsibilityTemplate.custodianCode);
+      setMaintenanceResponsibilityAuthority(data.scoMaintenanceResponsibilityTemplate.maintainingAuthorityCode);
+      setReinstatementCategoryReinstatementCategory(data.scoReinstatementCategoryTemplate.reinstatementCategory);
+      setReinstatementCategoryCustodian(data.scoReinstatementCategoryTemplate.custodianCode);
+      setReinstatementCategoryAuthority(data.scoReinstatementCategoryTemplate.reinstatementAuthorityCode);
+      setOsSpecialDesignationSpecialDesignation(data.scoSpecialDesignationTemplate.specialDesignation);
+      setOsSpecialDesignationCustodian(data.scoSpecialDesignationTemplate.custodianCode);
+      setOsSpecialDesignationAuthority(data.scoSpecialDesignationTemplate.authorityCode);
       setInterestStreetStatus(data.interestTemplate.streetStatus);
       setInterestOrganisation(data.interestTemplate.swaOrgRefAuthority);
       setInterestType(data.interestTemplate.interestType);
       setInterestDistrict(data.interestTemplate.districtRefAuthority);
-      setInterestMaintainingOrganisation(
-        data.interestTemplate.swaOrgRefMaintaining
-      );
+      setInterestMaintainingOrganisation(data.interestTemplate.swaOrgRefMaintaining);
       setConstructionType(data.constructionTemplate.constructionType);
-      setConstructionReinstatementType(
-        data.constructionTemplate.reinstatementTypeCode
-      );
-      setConstructionAggregateAbrasionValue(
-        data.constructionTemplate.aggregateAbrasionValue
-      );
-      setConstructionPolishedStoneValue(
-        data.constructionTemplate.polishedStoneValue
-      );
-      setConstructionOrganisation(
-        data.constructionTemplate.swaOrgRefConsultant
-      );
+      setConstructionReinstatementType(data.constructionTemplate.reinstatementTypeCode);
+      setConstructionAggregateAbrasionValue(data.constructionTemplate.aggregateAbrasionValue);
+      setConstructionPolishedStoneValue(data.constructionTemplate.polishedStoneValue);
+      setConstructionOrganisation(data.constructionTemplate.swaOrgRefConsultant);
       setConstructionDistrict(data.constructionTemplate.districtRefConsultant);
       setSpecialDesigType(data.specialDesignationTemplate.type);
-      setSpecialDesigOrganisation(
-        data.specialDesignationTemplate.swaOrgRefConsultant
-      );
-      setSpecialDesigDistrict(
-        data.specialDesignationTemplate.districtRefConsultant
-      );
-      setSpecialDesigPeriodicity(
-        data.specialDesignationTemplate.specialDesigPeriodicityCode
-      );
+      setSpecialDesigOrganisation(data.specialDesignationTemplate.swaOrgRefConsultant);
+      setSpecialDesigDistrict(data.specialDesignationTemplate.districtRefConsultant);
+      setSpecialDesigPeriodicity(data.specialDesignationTemplate.specialDesigPeriodicityCode);
       setHwwDesignation(data.heightWidthWeightTemplate.hwwRestrictionCode);
       setHwwOrganisation(data.heightWidthWeightTemplate.swaOrgRefConsultant);
       setHwwDistrict(data.heightWidthWeightTemplate.districtRefConsultant);
@@ -961,13 +833,9 @@ function AsdTemplateTab() {
       setProwStatus(data.publicRightOfWayTemplate.status);
       setProwPedestrianAccess(data.publicRightOfWayTemplate.pedestrianAccess);
       setProwEquestrianAccess(data.publicRightOfWayTemplate.equestrianAccess);
-      setProwNonMotorisedVehicleAccess(
-        data.publicRightOfWayTemplate.nonMotVehicleAccess
-      );
+      setProwNonMotorisedVehicleAccess(data.publicRightOfWayTemplate.nonMotVehicleAccess);
       setProwBicycleAccess(data.publicRightOfWayTemplate.bicycleAccess);
-      setProwMotorisedVehicleAccess(
-        data.publicRightOfWayTemplate.motVehicleAccess
-      );
+      setProwMotorisedVehicleAccess(data.publicRightOfWayTemplate.motVehicleAccess);
       setProwPromotedRoute(data.publicRightOfWayTemplate.promotedRoute);
       setProwAccessibleRoute(data.publicRightOfWayTemplate.accessibleRoute);
       setProwOrganisation(data.publicRightOfWayTemplate.organisation);
@@ -984,11 +852,7 @@ function AsdTemplateTab() {
       }}
     >
       <Stack direction="column" spacing={1}>
-        <Typography
-          sx={{ fontSize: 24, flexGrow: 1, paddingLeft: theme.spacing(3) }}
-        >
-          ASD template
-        </Typography>
+        <Typography sx={{ fontSize: 24, flexGrow: 1, paddingLeft: theme.spacing(3) }}>ASD template</Typography>
         <Typography variant="body2" sx={{ paddingLeft: theme.spacing(3) }}>
           Set default lookup values for ASD records
         </Typography>
@@ -1013,10 +877,7 @@ function AsdTemplateTab() {
                   <CardContent sx={settingsCardContentStyle("os-asd")}>
                     <Stack direction="column" spacing={1}>
                       <Stack direction="row" justifyContent="space-between">
-                        <Typography
-                          variant="h6"
-                          sx={getTitleStyle(editMaintenanceResponsibility)}
-                        >
+                        <Typography variant="h6" sx={getTitleStyle(editMaintenanceResponsibility)}>
                           Maintenance responsibility defaults
                         </Typography>
                         {editMaintenanceResponsibility && (
@@ -1025,10 +886,7 @@ function AsdTemplateTab() {
                             placement="bottom"
                             sx={tooltipStyle}
                           >
-                            <IconButton
-                              onClick={doEditMaintenanceResponsibility}
-                              size="small"
-                            >
+                            <IconButton onClick={doEditMaintenanceResponsibility} size="small">
                               <EditIcon sx={ActionIconStyle(true)} />
                             </IconButton>
                           </Tooltip>
@@ -1040,9 +898,7 @@ function AsdTemplateTab() {
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getStreetStatus(
-                              maintenanceResponsibilityStreetStatus
-                            )}
+                            {getStreetStatus(maintenanceResponsibilityStreetStatus)}
                           </Typography>
                         </Grid>
                         <Grid item xs={3}>
@@ -1050,9 +906,7 @@ function AsdTemplateTab() {
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getOrganisation(
-                              maintenanceResponsibilityCustodian
-                            )}
+                            {getOrganisation(maintenanceResponsibilityCustodian)}
                           </Typography>
                         </Grid>
                         <Grid item xs={3}>
@@ -1060,9 +914,7 @@ function AsdTemplateTab() {
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getOrganisation(
-                              maintenanceResponsibilityAuthority
-                            )}
+                            {getOrganisation(maintenanceResponsibilityAuthority)}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -1085,22 +937,12 @@ function AsdTemplateTab() {
                   <CardContent sx={settingsCardContentStyle("os-asd")}>
                     <Stack direction="column" spacing={1}>
                       <Stack direction="row" justifyContent="space-between">
-                        <Typography
-                          variant="h6"
-                          sx={getTitleStyle(editReinstatementCategory)}
-                        >
+                        <Typography variant="h6" sx={getTitleStyle(editReinstatementCategory)}>
                           Reinstatement category defaults
                         </Typography>
                         {editReinstatementCategory && (
-                          <Tooltip
-                            title="Edit reinstatement category defaults"
-                            placement="bottom"
-                            sx={tooltipStyle}
-                          >
-                            <IconButton
-                              onClick={doEditReinstatementCategory}
-                              size="small"
-                            >
+                          <Tooltip title="Edit reinstatement category defaults" placement="bottom" sx={tooltipStyle}>
+                            <IconButton onClick={doEditReinstatementCategory} size="small">
                               <EditIcon sx={ActionIconStyle(true)} />
                             </IconButton>
                           </Tooltip>
@@ -1112,9 +954,7 @@ function AsdTemplateTab() {
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getReinstatementType(
-                              reinstatementCategoryReinstatementCategory
-                            )}
+                            {getReinstatementType(reinstatementCategoryReinstatementCategory)}
                           </Typography>
                         </Grid>
                         <Grid item xs={3}>
@@ -1153,22 +993,12 @@ function AsdTemplateTab() {
                   <CardContent sx={settingsCardContentStyle("os-asd")}>
                     <Stack direction="column" spacing={1}>
                       <Stack direction="row" justifyContent="space-between">
-                        <Typography
-                          variant="h6"
-                          sx={getTitleStyle(editOsSpecialDesignation)}
-                        >
+                        <Typography variant="h6" sx={getTitleStyle(editOsSpecialDesignation)}>
                           Special designation defaults
                         </Typography>
                         {editOsSpecialDesignation && (
-                          <Tooltip
-                            title="Edit special designation defaults"
-                            placement="bottom"
-                            sx={tooltipStyle}
-                          >
-                            <IconButton
-                              onClick={doEditOsSpecialDesignation}
-                              size="small"
-                            >
+                          <Tooltip title="Edit special designation defaults" placement="bottom" sx={tooltipStyle}>
+                            <IconButton onClick={doEditOsSpecialDesignation} size="small">
                               <EditIcon sx={ActionIconStyle(true)} />
                             </IconButton>
                           </Tooltip>
@@ -1176,15 +1006,11 @@ function AsdTemplateTab() {
                       </Stack>
                       <Grid container rowSpacing={1}>
                         <Grid item xs={3}>
-                          <Typography variant="body2">
-                            Special designation
-                          </Typography>
+                          <Typography variant="body2">Special designation</Typography>
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getSpecialDesignationType(
-                              osSpecialDesignationSpecialDesignation
-                            )}
+                            {getSpecialDesignationType(osSpecialDesignationSpecialDesignation)}
                           </Typography>
                         </Grid>
                         <Grid item xs={3}>
@@ -1223,18 +1049,11 @@ function AsdTemplateTab() {
                   <CardContent sx={settingsCardContentStyle("asd")}>
                     <Stack direction="column" spacing={1}>
                       <Stack direction="row" justifyContent="space-between">
-                        <Typography
-                          variant="h6"
-                          sx={getTitleStyle(editInterest)}
-                        >
+                        <Typography variant="h6" sx={getTitleStyle(editInterest)}>
                           Interested organisation defaults
                         </Typography>
                         {editInterest && (
-                          <Tooltip
-                            title="Edit interest defaults"
-                            placement="bottom"
-                            sx={tooltipStyle}
-                          >
+                          <Tooltip title="Edit interest defaults" placement="bottom" sx={tooltipStyle}>
                             <IconButton onClick={doEditInterest} size="small">
                               <EditIcon sx={ActionIconStyle(true)} />
                             </IconButton>
@@ -1251,9 +1070,7 @@ function AsdTemplateTab() {
                           </Typography>
                         </Grid>
                         <Grid item xs={3}>
-                          <Typography variant="body2">
-                            Interested organisation
-                          </Typography>
+                          <Typography variant="body2">Interested organisation</Typography>
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -1273,17 +1090,11 @@ function AsdTemplateTab() {
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getDistrict(
-                              interestOrganisation,
-                              interestDistrict,
-                              true
-                            )}
+                            {getDistrict(interestOrganisation, interestDistrict, true)}
                           </Typography>
                         </Grid>
                         <Grid item xs={3}>
-                          <Typography variant="body2">
-                            Maintaining organisation
-                          </Typography>
+                          <Typography variant="body2">Maintaining organisation</Typography>
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -1310,22 +1121,12 @@ function AsdTemplateTab() {
                   <CardContent sx={settingsCardContentStyle("asd")}>
                     <Stack direction="column" spacing={1}>
                       <Stack direction="row" justifyContent="space-between">
-                        <Typography
-                          variant="h6"
-                          sx={getTitleStyle(editConstruction)}
-                        >
+                        <Typography variant="h6" sx={getTitleStyle(editConstruction)}>
                           Construction defaults
                         </Typography>
                         {editConstruction && (
-                          <Tooltip
-                            title="Edit construction defaults"
-                            placement="bottom"
-                            sx={tooltipStyle}
-                          >
-                            <IconButton
-                              onClick={doEditConstruction}
-                              size="small"
-                            >
+                          <Tooltip title="Edit construction defaults" placement="bottom" sx={tooltipStyle}>
+                            <IconButton onClick={doEditConstruction} size="small">
                               <EditIcon sx={ActionIconStyle(true)} />
                             </IconButton>
                           </Tooltip>
@@ -1333,9 +1134,7 @@ function AsdTemplateTab() {
                       </Stack>
                       <Grid container rowSpacing={1}>
                         <Grid item xs={3}>
-                          <Typography variant="body2">
-                            Construction type
-                          </Typography>
+                          <Typography variant="body2">Construction type</Typography>
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -1343,21 +1142,15 @@ function AsdTemplateTab() {
                           </Typography>
                         </Grid>
                         <Grid item xs={3}>
-                          <Typography variant="body2">
-                            Reinstatement type
-                          </Typography>
+                          <Typography variant="body2">Reinstatement type</Typography>
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getReinstatementType(
-                              constructionReinstatementType
-                            )}
+                            {getReinstatementType(constructionReinstatementType)}
                           </Typography>
                         </Grid>
                         <Grid item xs={3}>
-                          <Typography variant="body2">
-                            Aggregate abrasion value
-                          </Typography>
+                          <Typography variant="body2">Aggregate abrasion value</Typography>
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -1368,16 +1161,11 @@ function AsdTemplateTab() {
                           </Typography>
                         </Grid>
                         <Grid item xs={3}>
-                          <Typography variant="body2">
-                            Polished stone value
-                          </Typography>
+                          <Typography variant="body2">Polished stone value</Typography>
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getPolishedStoneValue(
-                              constructionPolishedStoneValue,
-                              constructionReinstatementType
-                            )}
+                            {getPolishedStoneValue(constructionPolishedStoneValue, constructionReinstatementType)}
                           </Typography>
                         </Grid>
                         <Grid item xs={3}>
@@ -1393,10 +1181,7 @@ function AsdTemplateTab() {
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getDistrict(
-                              constructionOrganisation,
-                              constructionDistrict
-                            )}
+                            {getDistrict(constructionOrganisation, constructionDistrict)}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -1419,22 +1204,12 @@ function AsdTemplateTab() {
                   <CardContent sx={settingsCardContentStyle("asd")}>
                     <Stack direction="column" spacing={1}>
                       <Stack direction="row" justifyContent="space-between">
-                        <Typography
-                          variant="h6"
-                          sx={getTitleStyle(editSpecialDesignation)}
-                        >
+                        <Typography variant="h6" sx={getTitleStyle(editSpecialDesignation)}>
                           Special designation defaults
                         </Typography>
                         {editSpecialDesignation && (
-                          <Tooltip
-                            title="Edit special designation defaults"
-                            placement="bottom"
-                            sx={tooltipStyle}
-                          >
-                            <IconButton
-                              onClick={doEditSpecialDesignation}
-                              size="small"
-                            >
+                          <Tooltip title="Edit special designation defaults" placement="bottom" sx={tooltipStyle}>
+                            <IconButton onClick={doEditSpecialDesignation} size="small">
                               <EditIcon sx={ActionIconStyle(true)} />
                             </IconButton>
                           </Tooltip>
@@ -1462,10 +1237,7 @@ function AsdTemplateTab() {
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getDistrict(
-                              specialDesigOrganisation,
-                              specialDesigDistrict
-                            )}
+                            {getDistrict(specialDesigOrganisation, specialDesigDistrict)}
                           </Typography>
                         </Grid>
                         <Grid item xs={3}>
@@ -1473,9 +1245,7 @@ function AsdTemplateTab() {
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getSpecialDesignationPeriodicity(
-                              specialDesigPeriodicity
-                            )}
+                            {getSpecialDesignationPeriodicity(specialDesigPeriodicity)}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -1562,11 +1332,7 @@ function AsdTemplateTab() {
                           Public right of way defaults
                         </Typography>
                         {editPRoW && (
-                          <Tooltip
-                            title="Edit public right of way defaults"
-                            placement="bottom"
-                            sx={tooltipStyle}
-                          >
+                          <Tooltip title="Edit public right of way defaults" placement="bottom" sx={tooltipStyle}>
                             <IconButton onClick={doEditPRoW} size="small">
                               <EditIcon sx={ActionIconStyle(true)} />
                             </IconButton>
@@ -1595,44 +1361,24 @@ function AsdTemplateTab() {
                         </Grid>
                         <Grid item xs={9}>
                           <Stack direction="row" spacing={1}>
-                            <DirectionsWalkIcon
-                              fontSize="small"
-                              sx={getTemplateIconStyle(prowPedestrianAccess)}
-                            />
-                            <EquestrianIcon
-                              fontSize="small"
-                              sx={getTemplateIconStyle(prowEquestrianAccess)}
-                            />
+                            <DirectionsWalkIcon fontSize="small" sx={getTemplateIconStyle(prowPedestrianAccess)} />
+                            <EquestrianIcon fontSize="small" sx={getTemplateIconStyle(prowEquestrianAccess)} />
                             <SkateboardingIcon
                               fontSize="small"
-                              sx={getTemplateIconStyle(
-                                prowNonMotorisedVehicleAccess
-                              )}
+                              sx={getTemplateIconStyle(prowNonMotorisedVehicleAccess)}
                             />
-                            <DirectionsBikeIcon
-                              fontSize="small"
-                              sx={getTemplateIconStyle(prowBicycleAccess)}
-                            />
-                            <DirectionsCarIcon
-                              fontSize="small"
-                              sx={getTemplateIconStyle(
-                                prowMotorisedVehicleAccess
-                              )}
-                            />
+                            <DirectionsBikeIcon fontSize="small" sx={getTemplateIconStyle(prowBicycleAccess)} />
+                            <DirectionsCarIcon fontSize="small" sx={getTemplateIconStyle(prowMotorisedVehicleAccess)} />
                           </Stack>
                         </Grid>
                         <Grid item xs={3}>
-                          <Typography variant="body2">
-                            Promoted route
-                          </Typography>
+                          <Typography variant="body2">Promoted route</Typography>
                         </Grid>
                         <Grid item xs={9}>
                           {getCheck(prowPromotedRoute)}
                         </Grid>
                         <Grid item xs={3}>
-                          <Typography variant="body2">
-                            Accessible route
-                          </Typography>
+                          <Typography variant="body2">Accessible route</Typography>
                         </Grid>
                         <Grid item xs={9}>
                           {getCheck(prowAccessibleRoute)}

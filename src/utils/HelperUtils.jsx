@@ -25,6 +25,7 @@
 //    012   30.11.23 Sean Flook                 added ' of ' to the ignore list in TitleCase.
 //    013   19.12.23 Sean Flook                 Various bug fixes.
 //    014   02.01.24 Sean Flook                 Added defaultMapLayerIds.
+//    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -347,7 +348,6 @@ export function GetCurrentDate(includeTime = false) {
   const dd = String(today.getDate()).padStart(2, "0");
   const mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
   const yyyy = today.getFullYear();
-  // console.log("DEBUG GetCurrentDate", yyyy + "-" + mm + "-" + dd + "T00:00:00");
   if (includeTime) {
     const hh = String(today.getHours()).padStart(2, "0");
     const nn = String(today.getMinutes()).padStart(2, "0");
@@ -363,14 +363,11 @@ export function GetCurrentDate(includeTime = false) {
  * @return {string} The formatted date.
  */
 export function FormatDate(params) {
-  // console.log("DEBUG FormatDate", params);
-
   if (params) {
     const today = new Date();
     const todayDay = today.getDate();
     const todayMonth = today.getMonth();
     const todayYear = today.getFullYear();
-    // console.log("DEBUG FormatDate today", todayDay, todayMonth, todayYear);
 
     let paramsDate;
     if (params.value) paramsDate = new Date(params.value);
@@ -378,7 +375,6 @@ export function FormatDate(params) {
     const luDay = paramsDate.getDate();
     const luMonth = paramsDate.getMonth();
     const luYear = paramsDate.getFullYear();
-    // console.log("DEBUG FormatDate params", luDay, luMonth, luYear);
 
     // if param dates is today show AM/PM time
     if (luDay === todayDay && luMonth === todayMonth && luYear === todayYear) return formatAMPM(paramsDate);
@@ -748,7 +744,7 @@ export async function GetUserInformation(userToken) {
           return result;
         },
         (error) => {
-          console.log("ERROR Get user information", error);
+          console.error("[ERROR] Get user information", error);
           return null;
         }
       );

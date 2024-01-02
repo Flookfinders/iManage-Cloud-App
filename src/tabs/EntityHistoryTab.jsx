@@ -3,7 +3,7 @@
 //
 //  Description: ESU Data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    005   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    006   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -91,10 +92,9 @@ function EntityHistoryTab({ variant }) {
             .then(
               (result) => {
                 setData(result);
-                //console.log("[JB] SetUpEntityHistory result", result);
               },
               (error) => {
-                console.log(`ERROR Get ${variant} history`, error);
+                console.error(`[ERROR] Get ${variant} history`, error);
               }
             )
             .then(() => {
@@ -106,7 +106,7 @@ function EntityHistoryTab({ variant }) {
               setLoading(false);
             });
         } else {
-          console.log("Property history apiUrl is null");
+          console.error("[ERROR] Property history apiUrl is null");
         }
       }
     }

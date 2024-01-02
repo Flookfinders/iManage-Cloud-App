@@ -3,7 +3,7 @@
 //
 //  Description: Property Page
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   20.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   07.09.23 Sean Flook                 Cleaned the code.
+//    003   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -71,7 +72,7 @@ function PropertyPage() {
                   sandboxContext.onUpdateAndClear("sourceProperty", result, "allProperty");
                 },
                 (error) => {
-                  console.log("ERROR Get Property data", error);
+                  console.error("[ERROR] Get Property data", error);
                 }
               )
               .then(() => {

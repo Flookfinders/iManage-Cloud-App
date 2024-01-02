@@ -3,7 +3,7 @@
 //
 //  Description: Navigation Bar component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   17.08.23 Sean Flook       IMANN-156 Modified to allow the login dialog to be displayed again after user has clicked cancel.
 //    003   07.09.23 Sean Flook                 Changed function name and cleaned the code.
 //    004   06.10.23 Sean Flook                 Use colour variables.
+//    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -134,12 +135,12 @@ function LoginDialog({ isOpen, title, message }) {
 
             default:
               setLoginError("An unknown error occurred, please report to support.");
-              // console.log("ERROR failed to log in", error);
+              // console.error("ERROR failed to log in", error);
               break;
           }
           setUsername("");
           setPassword("");
-          // console.log("ERROR failed to log in", e);
+          // console.error("ERROR failed to log in", e);
           return null;
         });
 
@@ -159,7 +160,7 @@ function LoginDialog({ isOpen, title, message }) {
                 return result;
               },
               (error) => {
-                console.log("ERROR Get user information", error);
+                console.error("[ERROR] Get user information", error);
                 return null;
               }
             );
@@ -197,7 +198,7 @@ function LoginDialog({ isOpen, title, message }) {
         setPassword("");
         // setShowDialog(true);
       }
-    } else console.log("Security apiUrl is null");
+    } else console.error("[ERROR] Security apiUrl is null");
   };
 
   /**

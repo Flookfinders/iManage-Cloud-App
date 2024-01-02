@@ -3,7 +3,7 @@
 //
 //  Description: Application Bar component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -24,6 +24,7 @@
 //    011   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and added getClassificationCode.
 //    012   30.11.23 Sean Flook       IMANN-175 Make the button visible to all.
 //    013   19.12.23 Sean Flook                 Various bug fixes.
+//    014   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -343,7 +344,7 @@ function ADSAppBar(props) {
         break;
 
       default:
-        console.log(`Unknown action: "${action}" passed in to HandleReturnClick.`);
+        console.error(`Unknown action: "${action}" passed in to HandleReturnClick.`);
         break;
     }
   }

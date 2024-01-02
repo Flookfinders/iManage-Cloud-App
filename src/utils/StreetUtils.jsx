@@ -3,7 +3,7 @@
 //
 //  Description: Street utilities
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -25,6 +25,7 @@
 //    012   12.12.23 Sean Flook                 Modified FilteredStreetType to exclude Unassigned ESU.
 //    013   19.12.23 Sean Flook                 Various bug fixes.
 //    014   21.12.23 Sean Flook                 Corrected street type filter for NSG only.
+//    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -541,7 +542,7 @@ export async function StreetDelete(usrn, deleteEsus, lookupContext, userToken, i
         return true;
       })
       .catch((res) => {
-        console.log("ERROR Deleting Street - response", res);
+        console.error("[ERROR] Deleting Street - response", res);
         return false;
       });
   } else return false;
@@ -2413,53 +2414,56 @@ export function GetStreetValidationErrors(body, newStreet) {
 
   if (errorStreet.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Street`, errorStreet);
+    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Street`, errorStreet);
   }
   if (errorDescriptor.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Descriptor`, errorDescriptor);
+    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Descriptor`, errorDescriptor);
   }
   if (errorEsu.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - ESU`, errorEsu);
+    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - ESU`, errorEsu);
   }
   if (errorHighwayDedication.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(
+    console.error(
       `[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Highway Dedication`,
       errorHighwayDedication
     );
   }
   if (errorOneWayException.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - One-way Exemption`, errorOneWayException);
+    console.error(
+      `[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - One-way Exemption`,
+      errorOneWayException
+    );
   }
   if (errorInterest.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Interest`, errorInterest);
+    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Interest`, errorInterest);
   }
   if (errorConstruction.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Construction`, errorConstruction);
+    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Construction`, errorConstruction);
   }
   if (errorSpecialDesignation.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(
+    console.error(
       `[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Special Designation`,
       errorSpecialDesignation
     );
   }
   if (errorHww.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Height, Width and Weight`, errorHww);
+    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Height, Width and Weight`, errorHww);
   }
   if (errorProw.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Public Right of Way`, errorProw);
+    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Public Right of Way`, errorProw);
   }
   if (errorNote.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Note`, errorNote);
+    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Note`, errorNote);
   }
 
   return {
@@ -2503,7 +2507,7 @@ export async function GetStreetMapData(usrn, userToken, isScottish) {
           return result;
         },
         (error) => {
-          console.log("ERROR Get Street data", error);
+          console.error("[ERROR] Get Street data", error);
           return null;
         }
       );
@@ -2569,7 +2573,7 @@ export async function GetEsuData(esuId, userToken) {
           return result;
         },
         (error) => {
-          console.log("ERROR Get Street data", error);
+          console.error("[ERROR] Get Street data", error);
           return null;
         }
       );
@@ -2768,7 +2772,7 @@ export async function SaveStreet(
         switch (res.status) {
           case 400:
             res.json().then((body) => {
-              console.log(
+              console.error(
                 `[400 ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} Street object`,
                 body.errors
               );
@@ -2792,7 +2796,7 @@ export async function SaveStreet(
 
           case 401:
             res.json().then((body) => {
-              console.log(
+              console.error(
                 `[401 ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} Street`,
                 body
               );
@@ -2800,11 +2804,11 @@ export async function SaveStreet(
             break;
 
           case 500:
-            console.log(`[500 ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} Street`, res);
+            console.error(`[500 ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} Street`, res);
             break;
 
           default:
-            console.log(
+            console.error(
               `[${res.status} ERROR] HandleSaveStreet - ${
                 streetContext.currentStreet.newStreet ? "Creating" : "Updating"
               } street.`,

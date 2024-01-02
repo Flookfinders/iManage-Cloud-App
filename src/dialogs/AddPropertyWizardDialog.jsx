@@ -3,7 +3,7 @@
 //
 //  Description: Add Property Wizard Dialog
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -25,6 +25,7 @@
 //    012   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    013   30.11.23 Sean Flook                 Changes required for Scottish authorities.
 //    014   01.12.23 Sean Flook                 Corrected field names.
+//    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -772,7 +773,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                     return result;
                   },
                   (error) => {
-                    console.log("ERROR Get Property data", error);
+                    console.error("[ERROR] Get Property data", error);
                     return null;
                   }
                 )

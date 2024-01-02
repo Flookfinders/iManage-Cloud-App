@@ -3,7 +3,7 @@
 //
 //  Description: The main application file used for contexts etc.
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -32,6 +32,7 @@
 //    019   01.12.23 Sean Flook       IMANN-194 Added HandleUpdateLookup to enable updating a single lookup type.
 //    020   14.12.23 Sean Flook                 Corrected note record type and tidied up validation code.
 //    021   19.12.23 Sean Flook                 Various bug fixes.
+//    022   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1474,7 +1475,7 @@ function App() {
               return result.parentUprn;
             },
             (error) => {
-              console.log("ERROR Get Property data", error);
+              console.error("[ERROR] Get Property data", error);
               return null;
             }
           );
@@ -1936,7 +1937,7 @@ function App() {
             return result;
           },
           (error) => {
-            console.log("ERROR getting background street data", error);
+            console.error("[ERROR] getting background street data", error);
             return null;
           }
         );
@@ -1972,7 +1973,7 @@ function App() {
             return result;
           },
           (error) => {
-            console.log("ERROR getting unassigned ESU data", error);
+            console.error("[ERROR] getting unassigned ESU data", error);
             return null;
           }
         );
@@ -2008,7 +2009,7 @@ function App() {
             return result;
           },
           (error) => {
-            console.log("ERROR getting background property data", error);
+            console.error("[ERROR] getting background property data", error);
             return null;
           }
         );

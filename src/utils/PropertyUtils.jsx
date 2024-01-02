@@ -3,7 +3,7 @@
 //
 //  Description: Property utilities
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -28,6 +28,7 @@
 //    015   24.11.23 Joel Benford               Add Scottish option for getting official/postal text.
 //    016   30.11.23 Sean Flook                 Use constant for default classification scheme.
 //    017   14.12.23 Sean Flook                 Removed redundant fields.
+//    018   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -299,7 +300,7 @@ export async function GetTempAddress(lpiRecord, organisation, lookupContext, use
           return addressToTitleCase(tempAddress, addressData.postcode);
         },
         (error) => {
-          console.log("ERROR Get temp address data", error);
+          console.error("[ERROR] Get temp address data", error);
           return "";
         }
       );
@@ -726,7 +727,7 @@ export async function PropertyDelete(uprn, userToken) {
         return true;
       })
       .catch((res) => {
-        console.log("ERROR Deleting Property - response", res);
+        console.error("[ERROR] Deleting Property - response", res);
         return false;
       });
   } else return false;
@@ -1560,38 +1561,41 @@ export function GetPropertyValidationErrors(body, newProperty) {
 
   if (errorBlpu.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - BLPU`, errorBlpu);
+    console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - BLPU`, errorBlpu);
   }
   if (errorLpi.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - LPI`, errorLpi);
+    console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - LPI`, errorLpi);
   }
   if (errorProvenance.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Provenance`, errorProvenance);
+    console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Provenance`, errorProvenance);
   }
   if (errorCrossRef.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Cross Ref`, errorCrossRef);
+    console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Cross Ref`, errorCrossRef);
   }
   if (errorClassification.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Classification`, errorClassification);
+    console.error(
+      `[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Classification`,
+      errorClassification
+    );
   }
   if (errorOrganisation.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Organisation`, errorOrganisation);
+    console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Organisation`, errorOrganisation);
   }
   if (errorSuccessorCrossRef.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(
+    console.error(
       `[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Successor cross reference`,
       errorSuccessorCrossRef
     );
   }
   if (errorNote.length > 0) {
     // if (process.env.NODE_ENV === "development")
-    console.log(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Note`, errorNote);
+    console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Note`, errorNote);
   }
 
   return {
@@ -1629,7 +1633,7 @@ export async function GetPropertyMapData(uprn, userToken) {
           return result;
         },
         (error) => {
-          console.log("ERROR Get Property data", error);
+          console.error("[ERROR] Get Property data", error);
           return null;
         }
       );
@@ -1675,7 +1679,7 @@ export async function SaveProperty(currentProperty, newProperty, userToken, prop
         switch (res.status) {
           case 400:
             res.json().then((body) => {
-              console.log(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} property`, body.errors);
+              console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} property`, body.errors);
               const propertyErrors = GetPropertyValidationErrors(body, newProperty);
 
               propertyContext.onPropertyErrors(
@@ -1694,19 +1698,19 @@ export async function SaveProperty(currentProperty, newProperty, userToken, prop
 
           case 401:
             res.json().then((body) => {
-              console.log(`[401 ERROR] ${newProperty ? "Creating" : "Updating"} property`, body);
+              console.error(`[401 ERROR] ${newProperty ? "Creating" : "Updating"} property`, body);
             });
             break;
 
           default:
             const contentType = res.headers.get("content-type");
-            console.log("[SF] SaveProperty - Failed", {
+            console.error("[SF] SaveProperty - Failed", {
               res: res,
               contentType: contentType,
             });
             if (contentType && contentType.indexOf("application/json") !== -1) {
               res.json().then((body) => {
-                console.log(`[${res.status} ERROR] ${newProperty ? "Creating" : "Updating"} property.`, body);
+                console.error(`[${res.status} ERROR] ${newProperty ? "Creating" : "Updating"} property.`, body);
 
                 propertyContext.onPropertyErrors(
                   [
@@ -1729,7 +1733,11 @@ export async function SaveProperty(currentProperty, newProperty, userToken, prop
               });
             } else if (contentType && contentType.indexOf("text")) {
               res.text().then((response) => {
-                console.log(`[${res.status} ERROR] ${newProperty ? "Creating" : "Updating"} property.`, response, res);
+                console.error(
+                  `[${res.status} ERROR] ${newProperty ? "Creating" : "Updating"} property.`,
+                  response,
+                  res
+                );
 
                 const responseData = response.replace("[{", "").replace("}]", "").split(',"');
 
@@ -1765,7 +1773,7 @@ export async function SaveProperty(currentProperty, newProperty, userToken, prop
                 );
               });
             } else {
-              console.log(`[${res.status} ERROR] ${newProperty ? "Creating" : "Updating"} property (other)`, res);
+              console.error(`[${res.status} ERROR] ${newProperty ? "Creating" : "Updating"} property (other)`, res);
             }
             break;
         }

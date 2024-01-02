@@ -3,7 +3,7 @@
 //
 //  Description: Related tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -22,6 +22,7 @@
 //    007   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    009   30.11.23 Sean Flook                 Renamed variable to avoid confusion.
+//    010   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -764,7 +765,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
                 else setStreetData(result);
               },
               (error) => {
-                console.log(`ERROR Get ${relatedType} related data`, error);
+                console.error(`[ERROR] Get ${relatedType} related data`, error);
               }
             )
             .then(() => {
@@ -776,7 +777,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
               setLoading(false);
             });
         } else {
-          console.log("Related apiUrl is null");
+          console.error("[ERROR] Related apiUrl is null");
         }
       }
     }

@@ -3,7 +3,7 @@
 //
 //  Description: Dialog used to edit an existing lookup
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   07.09.23 Sean Flook                 Removed unnecessary awaits.
 //    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    005   01.12.23 Sean Flook       IMANN-194 Modified UpdateLookups to use the new LookupContext.onUpdateLookup event.
+//    006   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -685,22 +686,22 @@ function LookupTablesDataForm({ nodeId }) {
           switch (res.status) {
             case 400:
               res.json().then((body) => {
-                console.log(`[400 ERROR] Getting ${GetVariantString(variant)} object`, body.errors);
+                console.error(`[400 ERROR] Getting ${GetVariantString(variant)} object`, body.errors);
               });
               break;
 
             case 401:
               res.json().then((body) => {
-                console.log(`[401 ERROR] Getting ${GetVariantString(variant)} object`, body);
+                console.error(`[401 ERROR] Getting ${GetVariantString(variant)} object`, body);
               });
               break;
 
             case 500:
-              console.log(`[500 ERROR] Getting ${GetVariantString(variant)} object`, res);
+              console.error(`[500 ERROR] Getting ${GetVariantString(variant)} object`, res);
               break;
 
             default:
-              console.log(`[${res.status} ERROR] Getting ${GetVariantString(variant)} object`, res);
+              console.error(`[${res.status} ERROR] Getting ${GetVariantString(variant)} object`, res);
               break;
           }
         });
@@ -1290,7 +1291,7 @@ function LookupTablesDataForm({ nodeId }) {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.log(`[400 ERROR] Creating ${GetVariantString(data.variant)} object`, body.errors);
+                  console.error(`[400 ERROR] Creating ${GetVariantString(data.variant)} object`, body.errors);
                   let lookupEngErrors = [];
                   for (const [key, value] of Object.entries(body.errors)) {
                     lookupEngErrors.push({ key: key, value: value });
@@ -1303,16 +1304,16 @@ function LookupTablesDataForm({ nodeId }) {
 
               case 401:
                 res.json().then((body) => {
-                  console.log(`[401 ERROR] Creating ${GetVariantString(data.variant)} object`, body);
+                  console.error(`[401 ERROR] Creating ${GetVariantString(data.variant)} object`, body);
                 });
                 break;
 
               case 500:
-                console.log(`[500 ERROR] Creating ${GetVariantString(data.variant)} object`, res);
+                console.error(`[500 ERROR] Creating ${GetVariantString(data.variant)} object`, res);
                 break;
 
               default:
-                console.log(`[${res.status} ERROR] Creating ${GetVariantString(data.variant)} object`, res);
+                console.error(`[${res.status} ERROR] Creating ${GetVariantString(data.variant)} object`, res);
                 break;
             }
           });
@@ -1352,7 +1353,7 @@ function LookupTablesDataForm({ nodeId }) {
                   switch (res.status) {
                     case 400:
                       res.json().then((body) => {
-                        console.log(`[400 ERROR] Creating ${GetVariantString(data.variant)} object`, body.errors);
+                        console.error(`[400 ERROR] Creating ${GetVariantString(data.variant)} object`, body.errors);
                         let lookupCymErrors = [];
                         for (const [key, value] of Object.entries(body.errors)) {
                           lookupCymErrors.push({ key: key, value: value });
@@ -1365,16 +1366,16 @@ function LookupTablesDataForm({ nodeId }) {
 
                     case 401:
                       res.json().then((body) => {
-                        console.log(`[401 ERROR] Creating ${GetVariantString(data.variant)} object`, body);
+                        console.error(`[401 ERROR] Creating ${GetVariantString(data.variant)} object`, body);
                       });
                       break;
 
                     case 500:
-                      console.log(`[500 ERROR] Creating ${GetVariantString(data.variant)} object`, res);
+                      console.error(`[500 ERROR] Creating ${GetVariantString(data.variant)} object`, res);
                       break;
 
                     default:
-                      console.log(`[${res.status} ERROR] Creating ${GetVariantString(data.variant)} object`, res);
+                      console.error(`[${res.status} ERROR] Creating ${GetVariantString(data.variant)} object`, res);
                       break;
                   }
                 });
@@ -1409,7 +1410,7 @@ function LookupTablesDataForm({ nodeId }) {
                   switch (res.status) {
                     case 400:
                       res.json().then((body) => {
-                        console.log(`[400 ERROR] Creating ${GetVariantString(data.variant)} object`, body.errors);
+                        console.error(`[400 ERROR] Creating ${GetVariantString(data.variant)} object`, body.errors);
                         let lookupGaeErrors = [];
                         for (const [key, value] of Object.entries(body.errors)) {
                           lookupGaeErrors.push({ key: key, value: value });
@@ -1422,16 +1423,16 @@ function LookupTablesDataForm({ nodeId }) {
 
                     case 401:
                       res.json().then((body) => {
-                        console.log(`[401 ERROR] Creating ${GetVariantString(data.variant)} object`, body);
+                        console.error(`[401 ERROR] Creating ${GetVariantString(data.variant)} object`, body);
                       });
                       break;
 
                     case 500:
-                      console.log(`[500 ERROR] Creating ${GetVariantString(data.variant)} object`, res);
+                      console.error(`[500 ERROR] Creating ${GetVariantString(data.variant)} object`, res);
                       break;
 
                     default:
-                      console.log(`[${res.status} ERROR] Creating ${GetVariantString(data.variant)} object`, res);
+                      console.error(`[${res.status} ERROR] Creating ${GetVariantString(data.variant)} object`, res);
                       break;
                   }
                 });
@@ -2975,7 +2976,7 @@ function LookupTablesDataForm({ nodeId }) {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.log(`[400 ERROR] Updating ${GetVariantString(data.variant)} object`, body.errors);
+                  console.error(`[400 ERROR] Updating ${GetVariantString(data.variant)} object`, body.errors);
                   let lookupEngErrors = [];
                   for (const [key, value] of Object.entries(body.errors)) {
                     lookupEngErrors.push({ key: key, value: value });
@@ -2988,16 +2989,16 @@ function LookupTablesDataForm({ nodeId }) {
 
               case 401:
                 res.json().then((body) => {
-                  console.log(`[401 ERROR] Updating ${GetVariantString(data.variant)} object`, body);
+                  console.error(`[401 ERROR] Updating ${GetVariantString(data.variant)} object`, body);
                 });
                 break;
 
               case 500:
-                console.log(`[500 ERROR] Updating ${GetVariantString(data.variant)} object`, res);
+                console.error(`[500 ERROR] Updating ${GetVariantString(data.variant)} object`, res);
                 break;
 
               default:
-                console.log(`[${res.status} ERROR] Updating ${GetVariantString(data.variant)} object`, res);
+                console.error(`[${res.status} ERROR] Updating ${GetVariantString(data.variant)} object`, res);
                 break;
             }
           });
@@ -3033,7 +3034,7 @@ function LookupTablesDataForm({ nodeId }) {
                   switch (res.status) {
                     case 400:
                       res.json().then((body) => {
-                        console.log(`[400 ERROR] Updating ${GetVariantString(data.variant)} object`, body.errors);
+                        console.error(`[400 ERROR] Updating ${GetVariantString(data.variant)} object`, body.errors);
                         let lookupCymErrors = [];
                         for (const [key, value] of Object.entries(body.errors)) {
                           lookupCymErrors.push({ key: key, value: value });
@@ -3046,16 +3047,16 @@ function LookupTablesDataForm({ nodeId }) {
 
                     case 401:
                       res.json().then((body) => {
-                        console.log(`[401 ERROR] Updating ${GetVariantString(data.variant)} object`, body);
+                        console.error(`[401 ERROR] Updating ${GetVariantString(data.variant)} object`, body);
                       });
                       break;
 
                     case 500:
-                      console.log(`[500 ERROR] Updating ${GetVariantString(data.variant)} object`, res);
+                      console.error(`[500 ERROR] Updating ${GetVariantString(data.variant)} object`, res);
                       break;
 
                     default:
-                      console.log(`[${res.status} ERROR] Updating ${GetVariantString(data.variant)} object`, res);
+                      console.error(`[${res.status} ERROR] Updating ${GetVariantString(data.variant)} object`, res);
                       break;
                   }
                 });
@@ -3083,7 +3084,7 @@ function LookupTablesDataForm({ nodeId }) {
                   switch (res.status) {
                     case 400:
                       res.json().then((body) => {
-                        console.log(`[400 ERROR] Updating ${GetVariantString(data.variant)} object`, body.errors);
+                        console.error(`[400 ERROR] Updating ${GetVariantString(data.variant)} object`, body.errors);
                         let lookupGaeErrors = [];
                         for (const [key, value] of Object.entries(body.errors)) {
                           lookupGaeErrors.push({ key: key, value: value });
@@ -3096,16 +3097,16 @@ function LookupTablesDataForm({ nodeId }) {
 
                     case 401:
                       res.json().then((body) => {
-                        console.log(`[401 ERROR] Updating ${GetVariantString(data.variant)} object`, body);
+                        console.error(`[401 ERROR] Updating ${GetVariantString(data.variant)} object`, body);
                       });
                       break;
 
                     case 500:
-                      console.log(`[500 ERROR] Updating ${GetVariantString(data.variant)} object`, res);
+                      console.error(`[500 ERROR] Updating ${GetVariantString(data.variant)} object`, res);
                       break;
 
                     default:
-                      console.log(`[${res.status} ERROR] Updating ${GetVariantString(data.variant)} object`, res);
+                      console.error(`[${res.status} ERROR] Updating ${GetVariantString(data.variant)} object`, res);
                       break;
                   }
                 });
@@ -3164,7 +3165,7 @@ function LookupTablesDataForm({ nodeId }) {
           switch (res.status) {
             case 400:
               res.json().then((body) => {
-                console.log(`[400 ERROR] Deleting ${currentVariant.current} object`, body.errors);
+                console.error(`[400 ERROR] Deleting ${currentVariant.current} object`, body.errors);
                 let lookupEngErrors = [];
                 for (const [key, value] of Object.entries(body.errors)) {
                   lookupEngErrors.push({ key: key, value: value });
@@ -3177,16 +3178,16 @@ function LookupTablesDataForm({ nodeId }) {
 
             case 401:
               res.json().then((body) => {
-                console.log(`[401 ERROR] Deleting ${currentVariant.current} object`, body);
+                console.error(`[401 ERROR] Deleting ${currentVariant.current} object`, body);
               });
               break;
 
             case 500:
-              console.log(`[500 ERROR] Deleting ${currentVariant.current} object`, res);
+              console.error(`[500 ERROR] Deleting ${currentVariant.current} object`, res);
               break;
 
             default:
-              console.log(`[${res.status} ERROR] Deleting ${currentVariant.current} object`, res);
+              console.error(`[${res.status} ERROR] Deleting ${currentVariant.current} object`, res);
               break;
           }
         });
@@ -3208,7 +3209,7 @@ function LookupTablesDataForm({ nodeId }) {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.log(`[400 ERROR] Deleting ${currentVariant.current} object`, body.errors);
+                  console.error(`[400 ERROR] Deleting ${currentVariant.current} object`, body.errors);
                   let lookupAltErrors = [];
                   for (const [key, value] of Object.entries(body.errors)) {
                     lookupAltErrors.push({ key: key, value: value });
@@ -3221,16 +3222,16 @@ function LookupTablesDataForm({ nodeId }) {
 
               case 401:
                 res.json().then((body) => {
-                  console.log(`[401 ERROR] Deleting ${currentVariant.current} object`, body);
+                  console.error(`[401 ERROR] Deleting ${currentVariant.current} object`, body);
                 });
                 break;
 
               case 500:
-                console.log(`[500 ERROR] Deleting ${currentVariant.current} object`, res);
+                console.error(`[500 ERROR] Deleting ${currentVariant.current} object`, res);
                 break;
 
               default:
-                console.log(`[${res.status} ERROR] Deleting ${GetVariantString(variant)} object`, res);
+                console.error(`[${res.status} ERROR] Deleting ${GetVariantString(variant)} object`, res);
                 break;
             }
           });
@@ -3859,7 +3860,7 @@ function LookupTablesDataForm({ nodeId }) {
           switch (res.status) {
             case 400:
               res.json().then((body) => {
-                console.log(`[400 ERROR] Updating ${GetVariantString(variant)} object`, body.errors);
+                console.error(`[400 ERROR] Updating ${GetVariantString(variant)} object`, body.errors);
                 let lookupEngErrors = [];
                 for (const [key, value] of Object.entries(body.errors)) {
                   lookupEngErrors.push({ key: key, value: value });
@@ -3872,16 +3873,16 @@ function LookupTablesDataForm({ nodeId }) {
 
             case 401:
               res.json().then((body) => {
-                console.log(`[401 ERROR] Updating ${GetVariantString(variant)} object`, body);
+                console.error(`[401 ERROR] Updating ${GetVariantString(variant)} object`, body);
               });
               break;
 
             case 500:
-              console.log(`[500 ERROR] Updating ${GetVariantString(variant)} object`, res);
+              console.error(`[500 ERROR] Updating ${GetVariantString(variant)} object`, res);
               break;
 
             default:
-              console.log(`[${res.status} ERROR] Updating ${GetVariantString(variant)} object`, res);
+              console.error(`[${res.status} ERROR] Updating ${GetVariantString(variant)} object`, res);
               break;
           }
         });
@@ -3917,7 +3918,7 @@ function LookupTablesDataForm({ nodeId }) {
                 switch (res.status) {
                   case 400:
                     res.json().then((body) => {
-                      console.log(`[400 ERROR] Updating ${GetVariantString(variant)} object`, body.errors);
+                      console.error(`[400 ERROR] Updating ${GetVariantString(variant)} object`, body.errors);
                       let lookupCymErrors = [];
                       for (const [key, value] of Object.entries(body.errors)) {
                         lookupCymErrors.push({ key: key, value: value });
@@ -3930,16 +3931,16 @@ function LookupTablesDataForm({ nodeId }) {
 
                   case 401:
                     res.json().then((body) => {
-                      console.log(`[401 ERROR] Updating ${GetVariantString(variant)} object`, body);
+                      console.error(`[401 ERROR] Updating ${GetVariantString(variant)} object`, body);
                     });
                     break;
 
                   case 500:
-                    console.log(`[500 ERROR] Updating ${GetVariantString(variant)} object`, res);
+                    console.error(`[500 ERROR] Updating ${GetVariantString(variant)} object`, res);
                     break;
 
                   default:
-                    console.log(`[${res.status} ERROR] Updating ${GetVariantString(variant)} object`, res);
+                    console.error(`[${res.status} ERROR] Updating ${GetVariantString(variant)} object`, res);
                     break;
                 }
               });
@@ -3967,7 +3968,7 @@ function LookupTablesDataForm({ nodeId }) {
                 switch (res.status) {
                   case 400:
                     res.json().then((body) => {
-                      console.log(`[400 ERROR] Updating ${GetVariantString(variant)} object`, body.errors);
+                      console.error(`[400 ERROR] Updating ${GetVariantString(variant)} object`, body.errors);
                       let lookupGaeErrors = [];
                       for (const [key, value] of Object.entries(body.errors)) {
                         lookupGaeErrors.push({ key: key, value: value });
@@ -3980,16 +3981,16 @@ function LookupTablesDataForm({ nodeId }) {
 
                   case 401:
                     res.json().then((body) => {
-                      console.log(`[401 ERROR] Updating ${GetVariantString(variant)} object`, body);
+                      console.error(`[401 ERROR] Updating ${GetVariantString(variant)} object`, body);
                     });
                     break;
 
                   case 500:
-                    console.log(`[500 ERROR] Updating ${GetVariantString(variant)} object`, res);
+                    console.error(`[500 ERROR] Updating ${GetVariantString(variant)} object`, res);
                     break;
 
                   default:
-                    console.log(`[${res.status} ERROR] Updating ${GetVariantString(variant)} object`, res);
+                    console.error(`[${res.status} ERROR] Updating ${GetVariantString(variant)} object`, res);
                     break;
                 }
               });

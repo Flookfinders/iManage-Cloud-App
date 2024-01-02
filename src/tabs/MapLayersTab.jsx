@@ -3,7 +3,7 @@
 //
 //  Description: Confirm delete dialog
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -17,6 +17,7 @@
 //    004   06.10.23 Sean Flook                 Use colour variables.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    006   08.12.23 Sean Flook                 Migrated DataGrid to v6.
+//    007   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -207,24 +208,24 @@ function MapLayersTab(props) {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.log(`[400 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body.errors);
+                  console.error(`[400 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body.errors);
                 });
                 break;
 
               case 401:
                 res.json().then((body) => {
-                  console.log(`[401 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body);
+                  console.error(`[401 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body);
                 });
                 break;
 
               default:
-                console.log(
+                console.error(
                   `[${res.status} ERROR] HandleDoneEditLayer - ${isNewLayer ? "Creating" : "Updating"} map layer.`,
                   res
                 );
 
                 res.text().then((response) => {
-                  console.log(
+                  console.error(
                     `[${res.status} ERROR] HandleDoneEditLayer - ${isNewLayer ? "Creating" : "Updating"} map layer.`,
                     response,
                     res
@@ -463,19 +464,19 @@ function MapLayersTab(props) {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.log(`[400 ERROR] Deleting map layer`, body.errors);
+                  console.error(`[400 ERROR] Deleting map layer`, body.errors);
                 });
                 break;
 
               case 401:
                 res.json().then((body) => {
-                  console.log(`[401 ERROR] Deleting map layer`, body);
+                  console.error(`[401 ERROR] Deleting map layer`, body);
                 });
                 break;
 
               default:
                 res.text().then((response) => {
-                  console.log(`[${res.status} ERROR] doDeleteMapLayer - Deleting map layer.`, response, res);
+                  console.error(`[${res.status} ERROR] doDeleteMapLayer - Deleting map layer.`, response, res);
 
                   const responseData = response.replace("[{", "").replace("}]", "").split(',"');
 
@@ -612,24 +613,24 @@ function MapLayersTab(props) {
           switch (res.status) {
             case 400:
               res.json().then((body) => {
-                console.log(`[400 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body.errors);
+                console.error(`[400 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body.errors);
               });
               break;
 
             case 401:
               res.json().then((body) => {
-                console.log(`[401 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body);
+                console.error(`[401 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body);
               });
               break;
 
             default:
-              console.log(
+              console.error(
                 `[${res.status} ERROR] HandleDoneEditLayer - ${isNewLayer ? "Creating" : "Updating"} map layer.`,
                 res
               );
 
               res.text().then((response) => {
-                console.log(
+                console.error(
                   `[${res.status} ERROR] HandleDoneEditLayer - ${isNewLayer ? "Creating" : "Updating"} map layer.`,
                   response,
                   res

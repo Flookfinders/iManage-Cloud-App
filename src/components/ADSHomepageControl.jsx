@@ -3,7 +3,7 @@
 //
 //  Description: Homepage Control containing dashboard information
 //
-//  Copyright:    © 2021-23 Idox Software Limited
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   07.09.23 Sean Flook                 Modified function name.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -68,9 +69,7 @@ function ADSHomepageControl() {
             setApiData(result);
           },
           (error) => {
-            // if (error.status === 204) setApiData({pieCharts:[], latestStreetAndPropertyEdits:[]});
-            // else console.log("ERROR Get Homepage data", error);
-            console.log("ERROR Get Homepage data", error);
+            console.error("[ERROR] Get Homepage data", error);
             setApiData({ pieCharts: [], latestStreetAndPropertyEdits: [] });
           }
         );
