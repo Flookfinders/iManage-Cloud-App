@@ -3,7 +3,7 @@
 //
 //  Description: Construction data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   16.10.23 Sean Flook                 Hide the button for the coordinates.
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle and removed start and end coordinates as no longer required.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    006   02.01.24 Sean Flook       IMANN-205 Added end date.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -108,6 +109,7 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
   const [startDate, setStartDate] = useState(
     data && data.constructionData ? data.constructionData.recordStartDate : null
   );
+  const [endDate, setEndDate] = useState(data && data.constructionData ? data.constructionData.recordEndDate : null);
   const [wholeRoad, setWholeRoad] = useState(data && data.constructionData ? data.constructionData.wholeRoad : true);
   const [specifyLocation, setSpecifyLocation] = useState(
     data && data.constructionData ? data.constructionData.specificLocation : null
@@ -139,6 +141,7 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
   const [organisationError, setOrganisationError] = useState(null);
   const [districtError, setDistrictError] = useState(null);
   const [startDateError, setStartDateError] = useState(null);
+  const [endDateError, setEndDateError] = useState(null);
   const [wholeRoadError, setWholeRoadError] = useState(null);
   const [specifyLocationError, setSpecifyLocationError] = useState(null);
 
@@ -294,6 +297,20 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
   };
 
   /**
+   * Event to handle when the end date is changed.
+   *
+   * @param {Date|null} newValue The new end date.
+   */
+  const handleEndDateChangeEvent = (newValue) => {
+    setEndDate(newValue);
+    if (!dataChanged) {
+      setDataChanged(endDate !== newValue);
+      if (onDataChanged && endDate !== newValue) onDataChanged();
+    }
+    UpdateSandbox("endDate", newValue);
+  };
+
+  /**
    * Event to handle when the whole road flag is changed.
    *
    * @param {boolean} newValue The new whole road flag.
@@ -370,6 +387,7 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
         setOrganisation(data.constructionData.swaOrgRefConsultant);
         setDistrict(data.constructionData.districtRefConsultant);
         setStartDate(data.constructionData.recordStartDate);
+        setEndDate(data.constructionData.recordEndDate);
         setWholeRoad(data.constructionData.wholeRoad);
         setSpecifyLocation(data.constructionData.specificLocation);
         setConstructionStartX(data.constructionData.constructionStartX);
@@ -404,7 +422,7 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
       neverExport: data.constructionData.neverExport,
       recordStartDate:
         field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
-      recordEndDate: data.constructionData.recordEndDate,
+      recordEndDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
       reinstatementTypeCode: field && field === "reinstatementType" ? newValue : reinstatementType,
       constructionType: field && field === "constructionType" ? newValue : constructionType,
       aggregateAbrasionVal: field && field === "aggregateAbrasionValue" ? newValue : aggregateAbrasionValue,
@@ -470,6 +488,7 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
       setOrganisation(data.constructionData.swaOrgRefConsultant);
       setDistrict(data.constructionData.districtRefConsultant);
       setStartDate(data.constructionData.recordStartDate);
+      setEndDate(data.constructionData.recordEndDate);
       setWholeRoad(data.constructionData.wholeRoad);
       setSpecifyLocation(data.constructionData.specificLocation);
       setConstructionStartX(data.constructionData.constructionStartX);
@@ -520,6 +539,7 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
     setOrganisationError(null);
     setDistrictError(null);
     setStartDateError(null);
+    setEndDateError(null);
     setWholeRoadError(null);
     setSpecifyLocationError(null);
 
@@ -564,6 +584,10 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
 
           case "recordstartdate":
             setStartDateError(error.errors);
+            break;
+
+          case "recordenddate":
+            setEndDateError(error.errors);
             break;
 
           case "wholeroad":
@@ -816,6 +840,16 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
           helperText="Date when the Record started."
           errorText={startDateError}
           onChange={handleStartDateChangeEvent}
+        />
+        <ADSDateControl
+          label="End date"
+          isEditable={userCanEdit}
+          isFocused={focusedField ? focusedField === "RecordEndDate" : false}
+          loading={loading}
+          value={endDate}
+          helperText="Date when the Record ends."
+          errorText={endDateError}
+          onChange={handleEndDateChangeEvent}
         />
         <ADSWholeRoadControl
           label="Applied to"

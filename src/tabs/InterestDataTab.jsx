@@ -3,7 +3,7 @@
 //
 //  Description: Interest data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -18,6 +18,7 @@
 //    005   27.10.23 Sean Flook                 Use new dataFormStyle and removed start and end coordinates as no longer required.
 //    006   03.11.23 Sean Flook                 Make labels the same within application.
 //    007   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    008   02.01.24 Sean Flook       IMANN-205 Added end date.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -86,6 +87,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
     data && data.interestData ? data.interestData.swaOrgRefAuthMaintaining : null
   );
   const [startDate, setStartDate] = useState(data && data.interestData ? data.interestData.recordStartDate : null);
+  const [endDate, setEndDate] = useState(data && data.interestData ? data.interestData.recordEndDate : null);
   const [wholeRoad, setWholeRoad] = useState(data && data.interestData ? data.interestData.wholeRoad : true);
   const [specificLocation, setSpecificLocation] = useState(
     data && data.interestData ? data.interestData.specificLocation : null
@@ -105,6 +107,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
   const [districtError, setDistrictError] = useState(null);
   const [maintainingOrganisationError, setMaintainingOrganisationError] = useState(null);
   const [startDateError, setStartDateError] = useState(null);
+  const [endDateError, setEndDateError] = useState(null);
   const [wholeRoadError, setWholeRoadError] = useState(null);
   const [specifyLocationError, setSpecifyLocationError] = useState(null);
 
@@ -204,6 +207,20 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
   };
 
   /**
+   * Event to handle when the end date is changed.
+   *
+   * @param {Date|null} newValue The new end date.
+   */
+  const handleEndDateChangeEvent = (newValue) => {
+    setEndDate(newValue);
+    if (!dataChanged) {
+      setDataChanged(endDate !== newValue);
+      if (onDataChanged && endDate !== newValue) onDataChanged();
+    }
+    UpdateSandbox("endDate", newValue);
+  };
+
+  /**
    * Event to handle when the whole road flag is changed.
    *
    * @param {boolean} newValue The new whole road flag.
@@ -272,6 +289,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
         setDistrict(data.interestData.districtRefAuthority);
         setMaintainingOrganisation(data.interestData.swaOrgRefAuthMaintaining);
         setStartDate(data.interestData.recordStartDate);
+        setEndDate(data.interestData.recordEndDate);
         setWholeRoad(data.interestData.wholeRoad);
         setSpecificLocation(data.interestData.specificLocation);
         setStartX(data.interestData.startX);
@@ -304,7 +322,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
       districtRefAuthority: field && field === "district" ? newValue : district,
       recordStartDate:
         field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
-      recordEndDate: data.interestData.recordEndDate,
+      recordEndDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
       asdCoordinate: data.interestData.asdCoordinate,
       asdCoordinateCount: data.interestData.asdCoordinateCount,
       swaOrgRefAuthMaintaining: field && field === "maintainingOrganisation" ? newValue : maintainingOrganisation,
@@ -360,6 +378,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
       setDistrict(data.interestData.districtRefAuthority);
       setMaintainingOrganisation(data.interestData.swaOrgRefAuthMaintaining);
       setStartDate(data.interestData.recordStartDate);
+      setEndDate(data.interestData.recordEndDate);
       setWholeRoad(data.interestData.wholeRoad);
       setSpecificLocation(data.interestData.specificLocation);
       setStartX(data.interestData.startX);
@@ -403,6 +422,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
     setDistrictError(null);
     setMaintainingOrganisationError(null);
     setStartDateError(null);
+    setEndDateError(null);
     setWholeRoadError(null);
     setSpecifyLocationError(null);
 
@@ -431,6 +451,10 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
 
           case "recordstartdate":
             setStartDateError(error.errors);
+            break;
+
+          case "recordenddate":
+            setEndDateError(error.errors);
             break;
 
           case "wholeroad":
@@ -631,6 +655,16 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
           helperText="Date when the Record started."
           errorText={startDateError}
           onChange={handleStartDateChangeEvent}
+        />
+        <ADSDateControl
+          label="End date"
+          isEditable={userCanEdit}
+          isFocused={focusedField ? focusedField === "recordEndDate" : false}
+          loading={loading}
+          value={endDate}
+          helperText="Date when the Record ends."
+          errorText={endDateError}
+          onChange={handleEndDateChangeEvent}
         />
         <ADSWholeRoadControl
           label="Applied to"

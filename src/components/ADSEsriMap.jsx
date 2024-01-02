@@ -38,6 +38,7 @@
 //    024   19.12.23 Sean Flook                 Various bug fixes.
 //    025   20.12.23 Sean Flook       IMANN-152 Display a dialog when user selects the polyline tool when editing.
 //    026   02.01.24 Sean Flook                 Changes required to load shape files.
+//    027   02.01.24 Sean Flook                 Handle errors when loading shape files.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1597,7 +1598,7 @@ function ADSEsriMap(startExtent) {
               return result;
             },
             (error) => {
-              console.log("ERROR Getting selected properties", error);
+              console.error("[ERROR] Getting selected properties", error);
               return null;
             }
           );
@@ -1630,11 +1631,19 @@ function ADSEsriMap(startExtent) {
 
       reader.onload = function () {
         if (reader.readyState !== 2 || reader.error) {
+          console.error(`[ERROR] failed to upload ${shpFile.title}`, {
+            readyState: reader.readyState,
+            error: reader.error,
+          });
+          saveResult.current = false;
+          featuresDownloaded.current = shpFile.title;
+          saveType.current = "uploadedShpFileError";
+          saveOpenRef.current = true;
+          setSaveOpen(true);
           setLoadingShp(false);
           return;
         } else {
           shp(reader.result).then(function (geojson) {
-            console.log("[SF] GeoJSON", JSON.stringify(geojson));
             mapRef.current.remove(mapRef.current.findLayerById(shpFile.layerId));
             const blob = new Blob([JSON.stringify(geojson)], { type: "application/json" });
             const url = URL.createObjectURL(blob);
@@ -1721,6 +1730,9 @@ function ADSEsriMap(startExtent) {
         case "uploadedShpFile":
           return `${featuresDownloaded.current} has been successfully uploaded.`;
 
+        case "uploadedShpFileError":
+          return `${featuresDownloaded.current} failed to be uploaded.`;
+
         default:
           if (saveResult.current) return `The ${saveType.current} has been successfully saved.`;
           else if (failedValidation.current) return `Failed to validate the ${saveType.current} record.`;
@@ -1751,7 +1763,7 @@ function ADSEsriMap(startExtent) {
               return result;
             },
             (error) => {
-              console.log("ERROR Getting base map layers", error);
+              console.error("[ERROR] Getting base map layers", error);
               return null;
             }
           );
@@ -4678,7 +4690,7 @@ function ADSEsriMap(startExtent) {
           return response;
         })
         .catch((error) => {
-          console.log("ERROR getting function", { error: error });
+          console.error("[ERROR] getting function", { error: error });
         });
     }
 
@@ -4710,7 +4722,7 @@ function ADSEsriMap(startExtent) {
           return response;
         })
         .catch((error) => {
-          console.log("ERROR getting function", { error: error });
+          console.error("[ERROR] getting function", { error: error });
         });
     }
 
@@ -4895,7 +4907,7 @@ function ADSEsriMap(startExtent) {
           break;
 
         default:
-          console.log("[ERROR] Trying to create a new " + event.graphic.geometry.type);
+          console.error("[ERROR] Trying to create a new " + event.graphic.geometry.type);
           break;
       }
     });
@@ -5035,7 +5047,7 @@ function ADSEsriMap(startExtent) {
           return response;
         })
         .catch((error) => {
-          console.log("ERROR getting OS functions", { layer: layer, wfsParams: wfsParams, url: url, error: error });
+          console.error("[ERROR] getting OS functions", { layer: layer, wfsParams: wfsParams, url: url, error: error });
         });
     }
 
@@ -5076,7 +5088,7 @@ function ADSEsriMap(startExtent) {
           return response;
         })
         .catch((error) => {
-          console.log("ERROR getting thinkWare functions", {
+          console.error("[ERROR] getting thinkWare functions", {
             layer: layer,
             wfsParams: wfsParams,
             url: url,
@@ -6643,7 +6655,7 @@ function ADSEsriMap(startExtent) {
               return result;
             },
             (error) => {
-              console.log("ERROR Get Property data", error);
+              console.error("[ERROR] Get Property data", error);
               return null;
             }
           );

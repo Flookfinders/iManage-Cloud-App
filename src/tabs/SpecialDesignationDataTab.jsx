@@ -3,7 +3,7 @@
 //
 //  Description: GeoPlace special designation data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -17,6 +17,7 @@
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle and removed start and end coordinates as no longer required.
 //    005   03.11.23 Sean Flook                 If the type has not been selected default to Special designation.
 //    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    007   02.01.24 Sean Flook       IMANN-205 Added end date.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -120,6 +121,9 @@ function SpecialDesignationDataTab({
   const [startDate, setStartDate] = useState(
     data && data.specialDesignationData ? data.specialDesignationData.recordStartDate : null
   );
+  const [endDate, setEndDate] = useState(
+    data && data.specialDesignationData ? data.specialDesignationData.recordEndDate : null
+  );
   const [source, setSource] = useState(
     data && data.specialDesignationData ? data.specialDesignationData.specialDesigSourceText : null
   );
@@ -157,6 +161,7 @@ function SpecialDesignationDataTab({
   const [operationalEndDateError, setOperationalEndDateError] = useState(null);
   const [sourceError, setSourceError] = useState(null);
   const [startDateError, setStartDateError] = useState(null);
+  const [endDateError, setEndDateError] = useState(null);
   const [wholeRoadError, setWholeRoadError] = useState(true);
   const [specificLocationError, setSpecificLocationError] = useState(null);
 
@@ -312,6 +317,20 @@ function SpecialDesignationDataTab({
   };
 
   /**
+   * Event to handle when the end date is changed.
+   *
+   * @param {Date|null} newValue The new end date.
+   */
+  const handleEndDateChangeEvent = (newValue) => {
+    setEndDate(newValue);
+    if (!dataChanged) {
+      setDataChanged(endDate !== newValue);
+      if (onDataChanged && endDate !== newValue) onDataChanged();
+    }
+    UpdateSandbox("endDate", newValue);
+  };
+
+  /**
    * Event to handle when the source is changed.
    *
    * @param {string|null} newValue The new source.
@@ -402,6 +421,7 @@ function SpecialDesignationDataTab({
         setOperationalStartDate(data.specialDesignationData.specialDesigStartDate);
         setOperationalEndDate(data.specialDesignationData.specialDesigEndDate);
         setStartDate(data.specialDesignationData.recordStartDate);
+        setEndDate(data.specialDesignationData.recordEndDate);
         setSource(data.specialDesignationData.specialDesigSourceText);
         setWholeRoad(data.specialDesignationData.wholeRoad);
         setSpecificLocation(data.specialDesignationData.specificLocation);
@@ -445,7 +465,7 @@ function SpecialDesignationDataTab({
       specialDesigEndY: field && field === "specialDesigEndY" ? newValue : specialDesigEndY,
       recordStartDate:
         field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
-      recordEndDate: data.specialDesignationData.recordEndDate,
+      recordEndDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
       specialDesigStartDate:
         field && field === "operationalStartDate"
           ? newValue && ConvertDate(newValue)
@@ -523,6 +543,7 @@ function SpecialDesignationDataTab({
       setOperationalStartDate(data.specialDesignationData.specialDesigStartDate);
       setOperationalEndDate(data.specialDesignationData.specialDesigEndDate);
       setStartDate(data.specialDesignationData.recordStartDate);
+      setEndDate(data.specialDesignationData.recordEndDate);
       setSource(data.specialDesignationData.specialDesigSourceText);
       setWholeRoad(data.specialDesignationData.wholeRoad);
       setSpecificLocation(data.specialDesignationData.specificLocation);
@@ -575,6 +596,7 @@ function SpecialDesignationDataTab({
     setOperationalEndDateError(null);
     setSourceError(null);
     setStartDateError(null);
+    setEndDateError(null);
     setWholeRoadError(true);
     setSpecificLocationError(null);
 
@@ -623,6 +645,10 @@ function SpecialDesignationDataTab({
 
           case "recordstartdate":
             setStartDateError(error.errors);
+            break;
+
+          case "recordenddate":
+            setEndDateError(error.errors);
             break;
 
           case "wholeroad":
@@ -859,6 +885,16 @@ function SpecialDesignationDataTab({
           helperText="Date when the Record started."
           errorText={startDateError}
           onChange={handleStartDateChangeEvent}
+        />
+        <ADSDateControl
+          label="End date"
+          isEditable={userCanEdit}
+          isFocused={focusedField ? focusedField === "RecordEndDate" : false}
+          loading={loading}
+          value={endDate}
+          helperText="Date when the Record ends."
+          errorText={endDateError}
+          onChange={handleEndDateChangeEvent}
         />
         <ADSTextControl
           label="Source"

@@ -3,7 +3,7 @@
 //
 //  Description: Height, width & weight restriction data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   16.10.23 Sean Flook                 Hide the button for the coordinates.
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle and removed start and end coordinates as no longer required.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    006   02.01.24 Sean Flook       IMANN-205 Added end date.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -84,6 +85,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
   const [organisation, setOrganisation] = useState(data && data.hwwData ? data.hwwData.swaOrgRefConsultant : null);
   const [district, setDistrict] = useState(data && data.hwwData ? data.hwwData.districtRefConsultant : null);
   const [startDate, setStartDate] = useState(data && data.hwwData ? data.hwwData.recordStartDate : null);
+  const [endDate, setEndDate] = useState(data && data.hwwData ? data.hwwData.recordEndDate : null);
   const [wholeRoad, setWholeRoad] = useState(data && data.hwwData ? data.hwwData.wholeRoad : true);
   const [specificLocation, setSpecificLocation] = useState(data && data.hwwData ? data.hwwData.specificLocation : null);
   const [hwwStartX, setHwwStartX] = useState(data && data.hwwData ? data.hwwData.hwwStartX : null);
@@ -103,6 +105,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
   const [organisationError, setOrganisationError] = useState(null);
   const [districtError, setDistrictError] = useState(null);
   const [startDateError, setStartDateError] = useState(null);
+  const [endDateError, setEndDateError] = useState(null);
   const [wholeRoadError, setWholeRoadError] = useState(null);
   const [specifyLocationError, setSpecifyLocationError] = useState(null);
 
@@ -230,6 +233,20 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
   };
 
   /**
+   * Event to handle when the end date is changed.
+   *
+   * @param {Date|null} newValue The new end date.
+   */
+  const handleEndDateChangeEvent = (newValue) => {
+    setEndDate(newValue);
+    if (!dataChanged) {
+      setDataChanged(endDate !== newValue);
+      if (onDataChanged && endDate !== newValue) onDataChanged();
+    }
+    UpdateSandbox("endDate", newValue);
+  };
+
+  /**
    * Event to handle when the whole road flag is changed.
    *
    * @param {boolean} newValue The new whole road flag.
@@ -299,6 +316,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
         setOrganisation(data.hwwData.swaOrgRefConsultant);
         setDistrict(data.hwwData.districtRefConsultant);
         setStartDate(data.hwwData.recordStartDate);
+        setEndDate(data.hwwData.recordEndDate);
         setWholeRoad(data.hwwData.wholeRoad);
         setSpecificLocation(data.hwwData.specificLocation);
         setHwwStartX(data.hwwData.hwwStartX);
@@ -329,7 +347,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
       hwwRestrictionCode: field && field === "restrictionCode" ? newValue : restrictionCode,
       recordStartDate:
         field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
-      recordEndDate: data.hwwData.recordEndDate,
+      recordEndDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
       asdCoordinate: data.hwwData.asdCoordinate,
       asdCoordinateCount: data.hwwData.asdCoordinateCount,
       hwwStartX: field && field === "hwwStartX" ? newValue : hwwStartX,
@@ -390,6 +408,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
       setOrganisation(data.hwwData.swaOrgRefConsultant);
       setDistrict(data.hwwData.districtRefConsultant);
       setStartDate(data.hwwData.recordStartDate);
+      setEndDate(data.hwwData.recordEndDate);
       setWholeRoad(data.hwwData.wholeRoad);
       setSpecificLocation(data.hwwData.specificLocation);
       setHwwStartX(data.hwwData.hwwStartX);
@@ -433,6 +452,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
     setOrganisationError(null);
     setDistrictError(null);
     setStartDateError(null);
+    setEndDateError(null);
     setWholeRoadError(null);
     setSpecifyLocationError(null);
 
@@ -469,6 +489,10 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
 
           case "recordstartdate":
             setStartDateError(error.errors);
+            break;
+
+          case "recordenddate":
+            setEndDateError(error.errors);
             break;
 
           case "wholeroad":
@@ -691,6 +715,16 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
           helperText="Date when the HWW Restriction came into effect."
           errorText={startDateError}
           onChange={handleStartDateChangeEvent}
+        />
+        <ADSDateControl
+          label="End date"
+          isEditable={userCanEdit}
+          isFocused={focusedField ? focusedField === "RecordEndDate" : false}
+          loading={loading}
+          value={endDate}
+          helperText="Date when the Record ends."
+          errorText={endDateError}
+          onChange={handleEndDateChangeEvent}
         />
         <ADSWholeRoadControl
           label="Applied to"
