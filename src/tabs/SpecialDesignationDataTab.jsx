@@ -17,7 +17,7 @@
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle and removed start and end coordinates as no longer required.
 //    005   03.11.23 Sean Flook                 If the type has not been selected default to Special designation.
 //    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    007   02.01.24 Sean Flook       IMANN-205 Added end date.
+//    007   02.01.24 Sean Flook       IMANN-205 Added end date to form.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
