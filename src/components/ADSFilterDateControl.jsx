@@ -3,7 +3,7 @@
 //
 //  Description: Filter by Date component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -14,6 +14,7 @@
 //    001   13.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   08.12.23 Sean Flook                 Migrated DatePicker to v6.
 //    003   18.12.23 Sean Flook                 Ensure tooltip is displayed
+//    004   03.01.24 Sean Flook                 Fixed warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -241,7 +242,7 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
                     sx: FormDateInputStyle(),
                     variant: "outlined",
                     margin: "dense",
-                    fullWidth: "true",
+                    fullWidth: true,
                     size: "small",
                   },
                 }}
@@ -272,7 +273,7 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
                     sx: FormDateInputStyle(),
                     variant: "outlined",
                     margin: "dense",
-                    fullWidth: "true",
+                    fullWidth: true,
                     size: "small",
                   },
                 }}
@@ -302,7 +303,7 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
                   sx: FormDateInputStyle(),
                   variant: "outlined",
                   margin: "dense",
-                  fullWidth: "true",
+                  fullWidth: true,
                   size: "small",
                 },
               }}
@@ -331,7 +332,7 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
                   sx: FormDateInputStyle(),
                   variant: "outlined",
                   margin: "dense",
-                  fullWidth: "true",
+                  fullWidth: true,
                   size: "small",
                 },
               }}

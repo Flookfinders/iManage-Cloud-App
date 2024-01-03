@@ -3,7 +3,7 @@
 //
 //  Description: Street data form
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -33,6 +33,7 @@
 //    019   14.12.23 Sean Flook                 Corrected note record type.
 //    020   19.12.23 Sean Flook                 Various bug fixes.
 //    021   21.12.23 Sean Flook                 Ensure the sandbox is correctly updated.
+//    022   03.01.24 Sean Flook                 Fixed warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -9144,12 +9145,11 @@ function StreetDataForm({ data, loading }) {
           value={value}
           onChange={handleTabChange}
           TabIndicatorProps={{ style: { background: adsBlueA, height: "2px" } }}
-          textColor={adsMidGreyA}
           variant="scrollable"
           scrollButtons="auto"
           selectionFollowsFocus
           aria-label="street-data-tabs"
-          sx={{ backgroundColor: adsWhite }}
+          sx={{ backgroundColor: adsWhite, color: adsMidGreyA }}
         >
           <Tab
             sx={tabStyle}

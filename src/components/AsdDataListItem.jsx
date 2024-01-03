@@ -3,7 +3,7 @@
 //
 //  Description: ASD data list item component
 //
-//  Copyright:    � 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   11.10.23 Sean Flook                 Correctly handle expand and collapse.
 //    004   12.10.23 Sean Flook                 Use the street context to handle storing the expanded state of the item.
 //    005   24.11.23 Sean Flook                 Moved Stack to @mui/system and fixed some warnings.
+//    006   03.01.24 Sean Flook                 Fixed warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -379,6 +380,8 @@ function AsdDataListItem({
   return (
     <Fragment>
       <ListItemButton
+        id={variant}
+        key={`asd_type${variant}`}
         divider
         dense
         disabled={!data || data.length === 0}
@@ -446,6 +449,7 @@ function AsdDataListItem({
               <List component="div" disablePadding key={`asd_type${variant}_${index}`}>
                 <ListItemButton
                   id={d.pkId}
+                  key={`asd_type${variant}_${index}_${d.pkId}`}
                   alignItems="flex-start"
                   dense
                   disableGutters

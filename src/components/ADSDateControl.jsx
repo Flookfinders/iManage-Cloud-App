@@ -3,7 +3,7 @@
 //
 //  Description: Date component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -25,6 +25,7 @@
 //    012   08.12.23 Sean Flook                 Migrated DatePicker to v6.
 //    013   18.12.23 Sean Flook                 Ensure tooltip is displayed
 //    014   20.12.23 Sean Flook       IMANN-201 Added hideYear property to hide the year in the control.
+//    015   03.01.24 Sean Flook                 Fixed warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -169,7 +170,7 @@ function ADSDateControl({
                         variant: "outlined",
                         error: hasError.current,
                         margin: "dense",
-                        fullWidth: "true",
+                        fullWidth: true,
                         size: "small",
                       },
                     }}
@@ -200,7 +201,7 @@ function ADSDateControl({
                     variant: "outlined",
                     error: hasError.current,
                     margin: "dense",
-                    fullWidth: "true",
+                    fullWidth: true,
                     size: "small",
                   },
                 }}

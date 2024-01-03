@@ -3,7 +3,7 @@
 //
 //  Description: Date Time control
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   08.12.23 Sean Flook                 Migrated DatePicker to v6.
 //    004   18.12.23 Sean Flook                 Ensure tooltip is displayed
 //    005   20.12.23 Sean Flook       IMANN-201 Added the isDateRequired and isTimeRequired properties.
+//    006   03.01.24 Sean Flook                 Fixed warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -210,7 +211,7 @@ function ADSDateTimeControl({
                               variant: "outlined",
                               error: hasDateError.current,
                               margin: "dense",
-                              fullWidth: "true",
+                              fullWidth: true,
                               size: "small",
                             },
                           }}
@@ -240,7 +241,7 @@ function ADSDateTimeControl({
                           variant: "outlined",
                           error: hasDateError.current,
                           margin: "dense",
-                          fullWidth: "true",
+                          fullWidth: true,
                           size: "small",
                         },
                       }}
@@ -280,7 +281,7 @@ function ADSDateTimeControl({
                               variant: "outlined",
                               error: hasTimeError.current,
                               margin: "dense",
-                              fullWidth: "true",
+                              fullWidth: true,
                               size: "small",
                             },
                           }}
@@ -307,7 +308,7 @@ function ADSDateTimeControl({
                           variant: "outlined",
                           error: hasTimeError.current,
                           margin: "dense",
-                          fullWidth: "true",
+                          fullWidth: true,
                           size: "small",
                         },
                       }}

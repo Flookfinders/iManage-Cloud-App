@@ -3,7 +3,7 @@
 //
 //  Description: Edit authority details dialog
 //
-//  Copyright:    � 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    004   03.01.24 Sean Flook                 Fixed warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -72,12 +73,10 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
   const [uppercase, setUppercase] = useState(false);
 
   const [showMinMaxDialog, setShowMinMaxDialog] = useState(false);
-  const [minMaxType, setMinMaxType] = useState(null);
-  // const [minValue, setMinValue] = useState(null);
-  const minValue = useRef(null);
-  const maxValue = useRef(null);
-  // const [maxValue, setMaxValue] = useState(null);
-  const [maximum, setMaximum] = useState(null);
+  const [minMaxType, setMinMaxType] = useState("usrn");
+  const minValue = useRef(0);
+  const maxValue = useRef(0);
+  const [maximum, setMaximum] = useState(99999999);
 
   const custodianCodes = DETRCodes.map(function (x) {
     return { id: x.id, text: `${x.id} - ${x.text}` };

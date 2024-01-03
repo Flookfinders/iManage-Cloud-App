@@ -12,6 +12,7 @@
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   02.01.24 Sean Flook                 Initial Revision.
+//    002   03.01.24 Sean Flook                 Fixed warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -75,10 +76,10 @@ function UploadShpFileDialog({ isOpen, currentIds, onClose }) {
   const [layerIdError, setLayerIdError] = useState(null);
 
   const [showMinMaxDialog, setShowMinMaxDialog] = useState(false);
-  const [minMaxType, setMinMaxType] = useState(null);
-  const minValue = useRef(null);
-  const maxValue = useRef(null);
-  const [maximum, setMaximum] = useState(null);
+  const [minMaxType, setMinMaxType] = useState("scale");
+  const minValue = useRef(0);
+  const maxValue = useRef(0);
+  const [maximum, setMaximum] = useState(23);
 
   const chooseFileId = "upload-shp-file";
 

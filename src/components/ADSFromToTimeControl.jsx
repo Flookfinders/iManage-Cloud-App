@@ -3,7 +3,7 @@
 //
 //  Description: From To time Control component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    003   08.12.23 Sean Flook                 Migrated TimePicker to v6.
 //    004   22.12.23 Sean Flook                 Ensure tooltip is displayed
+//    005   03.01.24 Sean Flook                 Fixed warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,7 +25,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Grid, TextField, Typography, Tooltip, Skeleton } from "@mui/material";
+import { Grid, Typography, Tooltip, Skeleton } from "@mui/material";
 import { Box } from "@mui/system";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dateFormat from "dateformat";
@@ -191,22 +192,10 @@ function ADSFromToTimeControl({
                               variant: "outlined",
                               error: hasFromError.current,
                               margin: "dense",
-                              fullWidth: "true",
+                              fullWidth: true,
                               size: "small",
                             },
                           }}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              id={`${label.toLowerCase().replaceAll(" ", "-")}-from-time-picker-textfield`}
-                              sx={FormDateInputStyle(hasFromError.current)}
-                              variant="outlined"
-                              margin="dense"
-                              error={hasFromError.current}
-                              fullWidth
-                              size="small"
-                            />
-                          )}
                           onChange={(newValue) => handleFromChange(newValue)}
                           KeyboardButtonProps={{
                             "aria-label": "change from time",
@@ -230,7 +219,7 @@ function ADSFromToTimeControl({
                           variant: "outlined",
                           error: hasFromError.current,
                           margin: "dense",
-                          fullWidth: "true",
+                          fullWidth: true,
                           size: "small",
                         },
                       }}
@@ -270,7 +259,7 @@ function ADSFromToTimeControl({
                               variant: "outlined",
                               error: hasToError.current,
                               margin: "dense",
-                              fullWidth: "true",
+                              fullWidth: true,
                               size: "small",
                             },
                           }}
@@ -297,7 +286,7 @@ function ADSFromToTimeControl({
                           variant: "outlined",
                           error: hasToError.current,
                           margin: "dense",
-                          fullWidth: "true",
+                          fullWidth: true,
                           size: "small",
                         },
                       }}

@@ -39,6 +39,7 @@
 //    025   20.12.23 Sean Flook       IMANN-152 Display a dialog when user selects the polyline tool when editing.
 //    026   02.01.24 Sean Flook                 Changes required to load shape files.
 //    027   02.01.24 Sean Flook                 Handle errors when loading shape files.
+//    028   03.01.24 Sean Flook                 Fixed warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -976,7 +977,7 @@ function ADSEsriMap(startExtent) {
   const [selectedProperties, setSelectedProperties] = useState([]);
 
   const [openMessageDialog, setOpenMessageDialog] = useState(false);
-  const messageDialogVariant = useRef(null);
+  const messageDialogVariant = useRef("editASDGeometry");
 
   const [openUploadShpFileDialog, setOpenUploadShpFileDialog] = useState(false);
 

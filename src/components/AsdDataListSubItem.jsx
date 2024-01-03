@@ -3,7 +3,7 @@
 //
 //  Description: ASD data list sub-item component
 //
-//  Copyright:    � 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   11.10.23 Sean Flook                 Correctly handle expand and collapse.
 //    004   12.10.23 Sean Flook                 Use the street context to handle storing the expanded state of the item.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
+//    006   03.01.24 Sean Flook                 Fixed warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -282,9 +283,10 @@ function AsdDataListSubItem({
 
   return (
     <Fragment>
-      <List component="div" disablePadding key={`asd_type${variant}_${index}`}>
+      <List component="div" disablePadding key={`asd_type${variant}_sub_${index}`}>
         <ListItemButton
           id={code}
+          key={`asd_type${variant}_sub_${index}_${code}`}
           dense
           disableGutters
           onClick={handleSubExpandCollapse}
@@ -354,9 +356,10 @@ function AsdDataListSubItem({
           {data
             .filter((x) => x[primaryCodeField] === code)
             .map((subD, index) => (
-              <List component="div" disablePadding key={`asd_type${variant}_${code}_${index}`}>
+              <List component="div" disablePadding key={`asd_type${variant}_sub_${code}_${index}`}>
                 <ListItemButton
                   id={subD.pkId}
+                  key={`asd_type${variant}_sub_${code}_${index}_${subD.pkId}`}
                   alignItems="flex-start"
                   dense
                   disableGutters

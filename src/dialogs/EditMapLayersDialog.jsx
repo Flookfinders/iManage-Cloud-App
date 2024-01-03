@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    004   02.01.24 Sean Flook                 Changes required to load shape files.
+//    005   03.01.24 Sean Flook                 Fixed warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -123,10 +124,10 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
   const [haveErrors, setHaveErrors] = useState(false);
 
   const [showMinMaxDialog, setShowMinMaxDialog] = useState(false);
-  const [minMaxType, setMinMaxType] = useState(null);
-  const minValue = useRef(null);
-  const maxValue = useRef(null);
-  const [maximum, setMaximum] = useState(null);
+  const [minMaxType, setMinMaxType] = useState("scale");
+  const minValue = useRef(0);
+  const maxValue = useRef(0);
+  const [maximum, setMaximum] = useState(23);
 
   const geometryTypes = [
     {

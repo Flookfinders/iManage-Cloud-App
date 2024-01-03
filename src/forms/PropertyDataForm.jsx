@@ -3,7 +3,7 @@
 //
 //  Description: Property Data Form
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -33,6 +33,7 @@
 //    020   30.11.23 Sean Flook                 Use constant for default classification scheme and various bug fixes.
 //    021   14.12.23 Sean Flook                 Corrected note record type.
 //    022   21.12.23 Sean Flook                 Ensure the sandbox is correctly updated.
+//    023   03.01.24 Sean Flook                 Fixed warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4049,12 +4050,11 @@ function PropertyDataForm({ data, loading }) {
           value={value}
           onChange={handleTabChange}
           TabIndicatorProps={{ style: { background: adsBlueA, height: "2px" } }}
-          textColor={adsMidGreyA}
           variant="scrollable"
           scrollButtons="auto"
           selectionFollowsFocus
           aria-label="property-tabs"
-          sx={{ backgroundColor: adsWhite }}
+          sx={{ backgroundColor: adsWhite, color: adsMidGreyA }}
         >
           <Tab
             sx={tabStyle}

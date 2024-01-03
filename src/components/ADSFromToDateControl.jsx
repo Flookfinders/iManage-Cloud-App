@@ -3,7 +3,7 @@
 //
 //  Description: From To date Control component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    003   08.12.23 Sean Flook                 Migrated DatePicker to v6.
 //    004   18.12.23 Sean Flook                 Ensure tooltip is displayed
+//    005   03.01.24 Sean Flook                 Fixed warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -200,7 +201,7 @@ function ADSFromToDateControl({
                               variant: "outlined",
                               error: hasFromError.current,
                               margin: "dense",
-                              fullWidth: "true",
+                              fullWidth: true,
                               size: "small",
                             },
                           }}
@@ -229,7 +230,7 @@ function ADSFromToDateControl({
                           variant: "outlined",
                           error: hasFromError.current,
                           margin: "dense",
-                          fullWidth: "true",
+                          fullWidth: true,
                           size: "small",
                         },
                       }}
@@ -271,7 +272,7 @@ function ADSFromToDateControl({
                               variant: "outlined",
                               error: hasToError.current,
                               margin: "dense",
-                              fullWidth: "true",
+                              fullWidth: true,
                               size: "small",
                             },
                           }}
@@ -300,7 +301,7 @@ function ADSFromToDateControl({
                           variant: "outlined",
                           error: hasToError.current,
                           margin: "dense",
-                          fullWidth: "true",
+                          fullWidth: true,
                           size: "small",
                         },
                       }}
