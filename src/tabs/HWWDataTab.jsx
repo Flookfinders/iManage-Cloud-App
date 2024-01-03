@@ -16,7 +16,7 @@
 //    003   16.10.23 Sean Flook                 Hide the button for the coordinates.
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle and removed start and end coordinates as no longer required.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    006   02.01.24 Sean Flook       IMANN-205 Added end date to form.
+//    006   02.01.24 Sean Flook       IMANN-205 Added end date.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
