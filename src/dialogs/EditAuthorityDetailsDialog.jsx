@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    004   03.01.24 Sean Flook                 Fixed warning.
+//    006   03.01.24 Sean Flook                 For Scottish authorities force Create Street BLPU to true and prevent the user from changing it.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -68,7 +69,7 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
   const [maxUprn, setMaxUprn] = useState(null);
   const [minEsu, setMinEsu] = useState(null);
   const [maxEsu, setMaxEsu] = useState(null);
-  const [createStreetBlpu, setCreateStreetBlpu] = useState(false);
+  const [createStreetBlpu, setCreateStreetBlpu] = useState(settingsContext.isScottish);
   const [displayLanguage, setDisplayLanguage] = useState(null);
   const [uppercase, setUppercase] = useState(false);
 
@@ -122,7 +123,7 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
       maxUprn: maxUprn,
       uppercase: uppercase,
       msaLicenceNumber: msaText,
-      streetBlpu: createStreetBlpu,
+      streetBlpu: settingsContext.isScottish ? true : createStreetBlpu,
       displayLanguage: displayLanguage,
       tabText: tabText,
     };
@@ -401,8 +402,8 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
                   {HasProperties() && (
                     <ADSSwitchControl
                       label="Create street BLPU"
-                      isEditable
-                      checked={createStreetBlpu}
+                      isEditable={!settingsContext.isScottish}
+                      checked={settingsContext.isScottish ? true : createStreetBlpu}
                       trueLabel="Yes"
                       falseLabel="No"
                       helperText="Set this if you want to create a new street BLPU when creating a new street."

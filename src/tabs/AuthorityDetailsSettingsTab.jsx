@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    006   03.01.24 Sean Flook                 For Scottish authorities force Create Street BLPU to true.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -58,7 +59,7 @@ function AuthorityDetailsSettingsTab() {
   const [maxUprn, setMaxUprn] = useState(null);
   const [minEsu, setMinEsu] = useState(null);
   const [maxEsu, setMaxEsu] = useState(null);
-  const [createStreetBlpu, setCreateStreetBlpu] = useState(false);
+  const [createStreetBlpu, setCreateStreetBlpu] = useState(settingsContext.isScottish);
   const [displayLanguage, setDisplayLanguage] = useState(null);
   const [uppercase, setUppercase] = useState(false);
 
@@ -308,7 +309,7 @@ function AuthorityDetailsSettingsTab() {
                         <Typography variant="body2">Create street BLPU</Typography>
                       </Grid>
                       <Grid item xs={9}>
-                        {getCheck(createStreetBlpu)}
+                        {getCheck(settingsContext.isScottish ? true : createStreetBlpu)}
                       </Grid>
                       <Grid item xs={3}>
                         <Typography variant="body2">Display language</Typography>
