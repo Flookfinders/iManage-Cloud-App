@@ -3,7 +3,7 @@
 //
 //  Description: Doughnut Chart component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -20,6 +20,7 @@
 //    007   26.05.23 Joel Benford       WI40689 Changes XDM -> iManage Cloud
 //    008   24.11.23 Sean Flook                 Moved Stack to @mui/system.
 //    009   12.12.23 Sean Flook                 Changes required for React 18. Set the colours according to the street state colour and BLPU logical status colour.
+//    010   04.01.24 Sean Flook                 Fix colours for street type and correctly set the hover colour in the tooltip.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -32,11 +33,12 @@ import _ from "lodash";
 import { Grid, Typography } from "@mui/material";
 import { Stack, Box } from "@mui/system";
 import { Chart, ArcElement, DoughnutController, Legend, Tooltip } from "chart.js";
-import { toFont } from "chart.js/helpers";
+import { toFont, getHoverColor } from "chart.js/helpers";
 import { StreetIcon } from "../utils/ADSIcons";
 import HomeIcon from "@mui/icons-material/Home";
 import MiscellaneousIcon from "@mui/icons-material/MoreHoriz";
 import StreetState from "../data/StreetState";
+import StreetType from "../data/StreetType";
 import BLPULogicalStatus from "../data/BLPULogicalStatus";
 import { dashboardIconStyle } from "../utils/ADSStyles";
 import { adsPaleBlueA } from "../utils/ADSColours";
@@ -171,7 +173,14 @@ function ADSDoughnutChart({ chartData, title, label, value }) {
           if (stateRec) streetBackgroundColours.push(stateRec.colour);
         });
         if (streetBackgroundColours.length > 0) return streetBackgroundColours;
-        else return defaultColours;
+        else {
+          labels.current.forEach((item) => {
+            const typeRec = StreetType.find((x) => x.gpText === item || x.osText === item);
+            if (typeRec) streetBackgroundColours.push(typeRec.chartColour);
+          });
+          if (streetBackgroundColours.length > 0) return streetBackgroundColours;
+          else return defaultColours;
+        }
       } else if (chartTitle.current.substring(0, 7).toUpperCase() === "PROPERT") {
         const propertyBackgroundColors = [];
         labels.current.forEach((item) => {
@@ -194,7 +203,14 @@ function ADSDoughnutChart({ chartData, title, label, value }) {
         });
 
         if (streetBorderColours.length > 0) return streetBorderColours;
-        else return defaultColours;
+        else {
+          labels.current.forEach((item) => {
+            const typeRec = StreetType.find((x) => x.gpText === item || x.osText === item);
+            if (typeRec) streetBorderColours.push(typeRec.chartColour);
+          });
+          if (streetBorderColours.length > 0) return streetBorderColours;
+          else return defaultColours;
+        }
       } else if (chartTitle.current.substring(0, 7).toUpperCase() === "PROPERT") {
         const propertyBorderColors = [];
         labels.current.forEach((item) => {
@@ -281,13 +297,13 @@ function ADSDoughnutChart({ chartData, title, label, value }) {
                   let innerHtml = "<tbody>";
 
                   legendItems.forEach(function (legend, i) {
-                    const style =
-                      "display: inline-block; width: 14px; height: 14px; background:" +
-                      legend.fillStyle +
-                      "; color:" +
-                      legend.fillStyle +
-                      "; border-style: solid; border-width: 1px; borderColor:" +
-                      legend.strokeStyle;
+                    const style = `display: inline-block; width: 14px; height: 14px; background: ${
+                      i === currentItem ? getHoverColor(legend.fillStyle) : legend.fillStyle
+                    }; color: ${
+                      i === currentItem ? getHoverColor(legend.fillStyle) : legend.fillStyle
+                    }; border-style: solid; border-width: 1px; borderColor: ${
+                      i === currentItem ? getHoverColor(legend.strokeStyle) : legend.strokeStyle
+                    }`;
 
                     innerHtml += i === currentItem ? `<tr style="${selectedStyle}">` : "<tr>";
                     innerHtml += `<td style="${style}" /><td style="${descriptionStyle}">${

@@ -1661,7 +1661,7 @@ function ADSEsriMap(startExtent) {
               minScale: shpFile.minScale,
               opacity: shpFile.opacity,
               spatialReference: { wkid: 27700 },
-              visible: "true",
+              visible: true,
             });
 
             if (shpFile.esuSnap) baseLayersSnapEsu.current = baseLayersSnapEsu.current.concat([shpFile.layerId]);

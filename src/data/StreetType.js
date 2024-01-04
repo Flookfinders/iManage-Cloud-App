@@ -6,6 +6,7 @@ const StreetType = [
     gpText: "Unassigned ESU",
     osText: "Unassigned ESU",
     colour: adsPurple,
+    chartColour: "#93003a",
     default: false,
   },
   {
@@ -13,6 +14,7 @@ const StreetType = [
     gpText: "Official Designated Street Name",
     osText: "Designated street name",
     colour: adsPurple,
+    chartColour: "#2a6ebb",
     default: true,
   },
   {
@@ -20,6 +22,7 @@ const StreetType = [
     gpText: "Street Description",
     osText: "Described street",
     colour: adsPurple,
+    chartColour: "#dd4c65",
     default: true,
   },
   {
@@ -27,6 +30,7 @@ const StreetType = [
     gpText: "Numbered Street",
     osText: "Numbered Street",
     colour: adsPurple,
+    chartColour: "#62a1cd",
     default: false,
   },
   {
@@ -34,6 +38,7 @@ const StreetType = [
     gpText: "Unofficial Street Description",
     osText: "Unofficial street name",
     colour: adsPurple,
+    chartColour: "#bfede1",
     default: false,
   },
   {
@@ -41,6 +46,7 @@ const StreetType = [
     gpText: "Description used for LLPG Access",
     osText: undefined,
     colour: adsPurple,
+    chartColour: "#ffd3bf",
     default: false,
   },
 ];
