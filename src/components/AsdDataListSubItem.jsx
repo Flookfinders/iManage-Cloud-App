@@ -18,24 +18,20 @@
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
 //    006   03.01.24 Sean Flook                 Fixed warning.
 //    007   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    008   08.01.24 Sean Flook                 Changes to try and fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import React, { useContext, useState, useRef, Fragment, useEffect } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import UserContext from "../context/userContext";
 import MapContext from "../context/mapContext";
 import SettingsContext from "../context/settingsContext";
 import StreetContext from "../context/streetContext";
 
-import {
-  GetAsdPrimaryCodeText,
-  getAsdDeleteVariant,
-  GetAsdPrimaryText,
-  GetAsdSecondaryText,
-} from "../utils/StreetUtils";
+import { GetAsdPrimaryCodeText, GetAsdPrimaryText, GetAsdSecondaryText } from "../utils/StreetUtils";
 import {
   ListItemButton,
   IconButton,
@@ -49,7 +45,6 @@ import {
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import ADSActionButton from "./ADSActionButton";
-import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import { IndentIcon, WholeRoadIcon } from "../utils/ADSIcons";
 import { ExpandMore, ChevronRight } from "@mui/icons-material";
 import { adsBlueA, adsMidGreyA, adsBlue12 } from "../utils/ADSColours";
@@ -128,15 +123,10 @@ function AsdDataListSubItem({
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
-  const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
-
-  const deletePkId = useRef(null);
   const itemTitle = useRef(`${title}|${GetAsdPrimaryCodeText(variant, code, settingsContext.isScottish)}`);
 
   /**
    * Event to handle the expanding and collapsing of an event.
-   *
-   * @param {number} code The code from the parent item.
    */
   const handleSubExpandCollapse = (event) => {
     streetContext.onToggleAsdExpanded(itemTitle.current);
@@ -205,21 +195,7 @@ function AsdDataListSubItem({
    */
   const handleItemDeleted = (event, id) => {
     event.stopPropagation();
-    deletePkId.current = id;
-    setOpenDeleteConfirmation(true);
-  };
-
-  /**
-   * Event to handle when the delete confirmation dialog closes.
-   *
-   * @param {boolean} deleteConfirmed True if the user has confirmed the deletion; otherwise false.
-   */
-  const handleCloseDeleteConfirmation = (deleteConfirmed) => {
-    setOpenDeleteConfirmation(false);
-
-    if (deleteConfirmed && deletePkId.current && deletePkId.current > 0) {
-      if (onItemDeleted) onItemDeleted(deletePkId.current);
-    }
+    if (onItemDeleted) onItemDeleted(variant, id);
   };
 
   /**
@@ -283,175 +259,166 @@ function AsdDataListSubItem({
   }, [userContext]);
 
   return (
-    <Fragment>
-      <List component="div" disablePadding key={`asd_type${variant}_sub_${index}`}>
-        <ListItemButton
-          id={code}
-          key={`asd_type${variant}_sub_${index}_${code}`}
-          dense
-          disableGutters
-          onClick={handleSubExpandCollapse}
-          onMouseEnter={handleMouseEnterSubItem}
-          onMouseLeave={handleMouseLeaveSubItem}
+    <List component="div" disablePadding key={`list_${variant}_sub_${index}_${code}`}>
+      <ListItemButton
+        id={code}
+        key={`${variant}_sub_${index}_${code}`}
+        dense
+        disableGutters
+        onClick={handleSubExpandCollapse}
+        onMouseEnter={handleMouseEnterSubItem}
+        onMouseLeave={handleMouseLeaveSubItem}
+        sx={{
+          height: "50px",
+          backgroundColor: grey[100],
+          "&:hover": {
+            backgroundColor: adsBlue12,
+            color: adsBlueA,
+          },
+        }}
+      >
+        <ListItemAvatar
           sx={{
-            height: "50px",
-            backgroundColor: grey[100],
-            "&:hover": {
-              backgroundColor: adsBlue12,
-              color: adsBlueA,
-            },
+            pl: theme.spacing(5),
+            pr: theme.spacing(1),
+            minWidth: 24,
           }}
         >
-          <ListItemAvatar
-            sx={{
-              pl: theme.spacing(5),
-              pr: theme.spacing(1),
-              minWidth: 24,
-            }}
-          >
-            <IndentIcon />
-          </ListItemAvatar>
-          <ListItemText
-            primary={
-              <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                <IconButton
-                  onClick={() => handleSubExpandCollapse(code)}
-                  sx={{
-                    pb: theme.spacing(1),
-                    color: adsMidGreyA,
-                    "&:hover": {
-                      color: adsBlueA,
-                    },
-                  }}
-                  aria-controls="expand-collapse"
-                  size="small"
-                >
-                  {subOpen ? <ExpandMore /> : <ChevronRight />}
-                </IconButton>
-                <Avatar
-                  variant={variantAvatar}
-                  sx={getAsdAvatarStyle(avatarClipPath, iconBorderColour, iconColour, iconBackgroundColour)}
-                >
-                  <Typography variant="caption">{code}</Typography>
-                </Avatar>
-                <Typography
-                  variant="subtitle1"
-                  sx={{
-                    pl: theme.spacing(1),
-                    "&:hover": {
-                      color: adsBlueA,
-                    },
-                  }}
-                >
-                  {GetAsdPrimaryCodeText(variant, code, settingsContext.isScottish)}
-                </Typography>
-                <Avatar sx={RecordCountStyle(subItemHover)}>
-                  <Typography variant="caption">{GetSubRecordCount(code)}</Typography>
-                </Avatar>
-              </Stack>
-            }
-          />
-        </ListItemButton>
+          <IndentIcon />
+        </ListItemAvatar>
+        <ListItemText
+          primary={
+            <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
+              <IconButton
+                onClick={handleSubExpandCollapse}
+                sx={{
+                  pb: theme.spacing(1),
+                  color: adsMidGreyA,
+                  "&:hover": {
+                    color: adsBlueA,
+                  },
+                }}
+                aria-controls="expand-collapse"
+                size="small"
+              >
+                {subOpen ? <ExpandMore /> : <ChevronRight />}
+              </IconButton>
+              <Avatar
+                variant={variantAvatar}
+                sx={getAsdAvatarStyle(avatarClipPath, iconBorderColour, iconColour, iconBackgroundColour)}
+              >
+                <Typography variant="caption">{code}</Typography>
+              </Avatar>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  pl: theme.spacing(1),
+                  "&:hover": {
+                    color: adsBlueA,
+                  },
+                }}
+              >
+                {GetAsdPrimaryCodeText(variant, code, settingsContext.isScottish)}
+              </Typography>
+              <Avatar sx={RecordCountStyle(subItemHover)}>
+                <Typography variant="caption">{GetSubRecordCount(code)}</Typography>
+              </Avatar>
+            </Stack>
+          }
+        />
+      </ListItemButton>
 
-        <Collapse in={subOpen} timeout="auto">
+      <Collapse in={subOpen} timeout="auto" key={`collapse_${variant}_sub_${index}_${code}`}>
+        <List component="div" disablePadding key={`list_${variant}_sub_${index}_${code}`}>
           {data
             .filter((x) => x[primaryCodeField] === code)
             .map((subD, index) => (
-              <List component="div" disablePadding key={`asd_type${variant}_sub_${code}_${index}`}>
-                <ListItemButton
-                  id={subD.pkId}
-                  key={`asd_type${variant}_sub_${code}_${index}_${subD.pkId}`}
-                  alignItems="flex-start"
-                  dense
-                  disableGutters
-                  autoFocus={
-                    selectedRecord && selectedRecord >= 0 && selectedRecord.toString() === subD.pkId.toString()
-                  }
-                  selected={selectedRecord && selectedRecord >= 0 && selectedRecord.toString() === subD.pkId.toString()}
-                  sx={getASDListItemStyle(subD.pkId.toString(), true, index, checked, variant, selectedRecord, errors)}
-                  onClick={() => handleItemClicked(subD, index)}
-                  onMouseEnter={handleMouseEnterRecord}
-                  onMouseLeave={handleMouseLeaveRecord}
-                >
-                  <ListItemAvatar
-                    sx={getASDListItemAvatarStyle(subD.pkId.toString(), checked, variant, selectedRecord)}
+              <ListItemButton
+                id={subD.pkId}
+                key={`${variant}_sub_${index}_${code}_${subD.pkId}`}
+                alignItems="flex-start"
+                dense
+                disableGutters
+                autoFocus={
+                  !!(selectedRecord && selectedRecord >= 0 && selectedRecord.toString() === subD.pkId.toString())
+                }
+                selected={
+                  !!(selectedRecord && selectedRecord >= 0 && selectedRecord.toString() === subD.pkId.toString())
+                }
+                sx={getASDListItemStyle(subD.pkId.toString(), true, index, checked, variant, selectedRecord, errors)}
+                onClick={() => handleItemClicked(subD, index)}
+                onMouseEnter={handleMouseEnterRecord}
+                onMouseLeave={handleMouseLeaveRecord}
+              >
+                <ListItemAvatar sx={getASDListItemAvatarStyle(subD.pkId.toString(), checked, variant, selectedRecord)}>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    justifyContent="flex-start"
+                    alignItems="flex-start"
+                    // alignItems="center"
                   >
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      justifyContent="flex-start"
-                      alignItems="flex-start"
-                      // alignItems="center"
-                    >
-                      {(checked.indexOf(`${variant}_${subD.pkId.toString()}`) !== -1 ||
-                        (selectedRecord &&
-                          selectedRecord >= 0 &&
-                          selectedRecord.toString() === subD.pkId.toString())) && (
-                        <Checkbox
-                          sx={{
-                            height: "20px",
-                            mr: theme.spacing(2.5),
-                          }}
-                          edge="end"
-                          checked={checked.indexOf(`${variant}_${subD.pkId.toString()}`) !== -1}
-                          color="default"
-                          tabIndex={-1}
-                          size="small"
-                          onClick={(event) => handleToggle(event, subD.pkId.toString())}
-                        />
-                      )}
-                      <IndentIcon />
-                      <WholeRoadIcon wholeRoad={subD.wholeRoad} />
-                      <Avatar
-                        variant={variantAvatar}
-                        sx={getAsdAvatarStyle(avatarClipPath, iconBorderColour, iconColour, iconBackgroundColour)}
-                      >
-                        <Typography variant="caption">{subD[primaryCodeField]}</Typography>
-                      </Avatar>
-                    </Stack>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={GetAsdPrimaryText(
-                      subD,
-                      startDateField,
-                      endDateField,
-                      variant,
-                      primaryCodeField,
-                      settingsContext.isScottish
-                    )}
-                    secondary={
-                      secondaryCodeField && (
-                        <Typography variant="body2">
-                          {GetAsdSecondaryText(subD[secondaryCodeField], variant, settingsContext.isScottish)}
-                        </Typography>
-                      )
-                    }
-                  />
-                  <ListItemAvatar sx={{ minWidth: 24, pr: "8px" }}>
-                    {selectedRecord && selectedRecord >= 0 && selectedRecord.toString() === subD.pkId.toString() && (
-                      <ADSActionButton
-                        variant="delete"
-                        disabled={!userCanEdit}
-                        inheritBackground
-                        tooltipTitle={`Delete ${title.toLowerCase()} record`}
-                        tooltipPlacement="right"
-                        onClick={(event) => handleItemDeleted(event, subD.pkId)}
+                    {(checked.indexOf(`${variant}_${subD.pkId.toString()}`) !== -1 ||
+                      (selectedRecord &&
+                        selectedRecord >= 0 &&
+                        selectedRecord.toString() === subD.pkId.toString())) && (
+                      <Checkbox
+                        sx={{
+                          height: "20px",
+                          mr: theme.spacing(2.5),
+                        }}
+                        edge="end"
+                        checked={checked.indexOf(`${variant}_${subD.pkId.toString()}`) !== -1}
+                        color="default"
+                        tabIndex={-1}
+                        size="small"
+                        onClick={(event) => handleToggle(event, subD.pkId.toString())}
                       />
                     )}
-                  </ListItemAvatar>
-                </ListItemButton>
-              </List>
+                    <IndentIcon />
+                    <WholeRoadIcon wholeRoad={subD.wholeRoad} />
+                    <Avatar
+                      variant={variantAvatar}
+                      sx={getAsdAvatarStyle(avatarClipPath, iconBorderColour, iconColour, iconBackgroundColour)}
+                    >
+                      <Typography variant="caption">{subD[primaryCodeField]}</Typography>
+                    </Avatar>
+                  </Stack>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={GetAsdPrimaryText(
+                    subD,
+                    startDateField,
+                    endDateField,
+                    variant,
+                    primaryCodeField,
+                    settingsContext.isScottish
+                  )}
+                  secondary={
+                    secondaryCodeField && (
+                      <Typography variant="body2">
+                        {GetAsdSecondaryText(subD[secondaryCodeField], variant, settingsContext.isScottish)}
+                      </Typography>
+                    )
+                  }
+                />
+                <ListItemAvatar sx={{ minWidth: 24, pr: "8px" }}>
+                  {selectedRecord && selectedRecord >= 0 && selectedRecord.toString() === subD.pkId.toString() && (
+                    <ADSActionButton
+                      variant="delete"
+                      disabled={!userCanEdit}
+                      inheritBackground
+                      tooltipTitle={`Delete ${title.toLowerCase()} record`}
+                      tooltipPlacement="right"
+                      onClick={(event) => handleItemDeleted(event, subD.pkId)}
+                    />
+                  )}
+                </ListItemAvatar>
+              </ListItemButton>
             ))}
-        </Collapse>
-      </List>
-      <div>
-        <ConfirmDeleteDialog
-          variant={getAsdDeleteVariant(variant)}
-          open={openDeleteConfirmation}
-          onClose={handleCloseDeleteConfirmation}
-        />
-      </div>
-    </Fragment>
+        </List>
+      </Collapse>
+    </List>
   );
 }
 

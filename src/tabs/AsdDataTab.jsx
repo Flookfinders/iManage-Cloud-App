@@ -22,18 +22,25 @@
 //    009   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    010   24.11.23 Sean Flook                 Moved Box to @mui/system and fixed a warning.
 //    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    012   08.01.24 Sean Flook                 Changes to try and fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import React, { useContext, useState, useEffect, Fragment } from "react";
+import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
+
+import { getAsdDeleteVariant } from "../utils/StreetUtils";
+
 import { Tooltip, IconButton, Typography, List, Skeleton, Menu, MenuItem, Fade, Popper } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSSelectionControl from "../components/ADSSelectionControl";
+
+import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+
 import {
   AddCircleOutlineOutlined as AddCircleIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
@@ -122,6 +129,10 @@ function AsdDataTab({
   const selectionId = selectionOpen ? "esu-selection-popper" : undefined;
 
   const [userCanEdit, setUserCanEdit] = useState(false);
+
+  const deleteVariant = useRef(null);
+  const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
+  const deletePkId = useRef(null);
 
   /**
    * Event to handle the expanding and collapsing of all the ASD records.
@@ -375,71 +386,131 @@ function AsdDataTab({
    *
    * @param {number} id The id of the maintenance responsibility record to be deleted.
    */
-  const handleMaintenanceResponsibilityDeleted = (id) => {
-    if (onMaintenanceResponsibilityDeleted) onMaintenanceResponsibilityDeleted(id);
-  };
+  // const handleMaintenanceResponsibilityDeleted = (id) => {
+  //   if (onMaintenanceResponsibilityDeleted) onMaintenanceResponsibilityDeleted(id);
+  // };
 
   /**
    * Event to handle when a reinstatement category record is deleted.
    *
    * @param {number} id The id of the reinstatement category record to be deleted.
    */
-  const handleReinstatementCategoryDeleted = (id) => {
-    if (onReinstatementCategoryDeleted) onReinstatementCategoryDeleted(id);
-  };
+  // const handleReinstatementCategoryDeleted = (id) => {
+  //   if (onReinstatementCategoryDeleted) onReinstatementCategoryDeleted(id);
+  // };
 
   /**
    * Event to handle when a special designation record is deleted.
    *
    * @param {number} id The id of the special designation record to be deleted.
    */
-  const handleOSSpecialDesignationDeleted = (id) => {
-    if (onOSSpecialDesignationDeleted) onOSSpecialDesignationDeleted(id);
-  };
+  // const handleOSSpecialDesignationDeleted = (id) => {
+  //   if (onOSSpecialDesignationDeleted) onOSSpecialDesignationDeleted(id);
+  // };
 
   /**
    * Event to handle when am interest record is deleted.
    *
    * @param {number} id The id of the interest record to be deleted.
    */
-  const handleInterestedDeleted = (id) => {
-    if (onInterestedDeleted) onInterestedDeleted(id);
-  };
+  // const handleInterestedDeleted = (id) => {
+  //   if (onInterestedDeleted) onInterestedDeleted(id);
+  // };
 
   /**
    * Event to handle when a construction record is deleted.
    *
    * @param {number} id The id of the construction record to be deleted.
    */
-  const handleConstructionDeleted = (id) => {
-    if (onConstructionDeleted) onConstructionDeleted(id);
-  };
+  // const handleConstructionDeleted = (id) => {
+  //   if (onConstructionDeleted) onConstructionDeleted(id);
+  // };
 
   /**
    * Event to handle when a special designation record is deleted.
    *
    * @param {number} id The id of the special designation record to be deleted.
    */
-  const handleSpecialDesignationDeleted = (id) => {
-    if (onSpecialDesignationDeleted) onSpecialDesignationDeleted(id);
-  };
+  // const handleSpecialDesignationDeleted = (id) => {
+  //   if (onSpecialDesignationDeleted) onSpecialDesignationDeleted(id);
+  // };
 
   /**
    * Event to handle when a height, width & weight record is deleted.
    *
    * @param {number} id The id of the height, width & weight record to be deleted.
    */
-  const handleHwwDeleted = (id) => {
-    if (onHWWDeleted) onHWWDeleted(id);
-  };
+  // const handleHwwDeleted = (id) => {
+  //   if (onHWWDeleted) onHWWDeleted(id);
+  // };
 
   /**
    * Event to handle when a public rights of way record is deleted.
    *
    * @param {number} id The id of the public rights of way record to be deleted.
    */
-  const handleProwDeleted = (id) => {
-    if (onPRoWDeleted) onPRoWDeleted(id);
+  // const handleProwDeleted = (id) => {
+  //   if (onPRoWDeleted) onPRoWDeleted(id);
+  // };
+
+  /**
+   * Event to handle when an ASD record is deleted.
+   *
+   * @param {string} variant The variant of the ASD record to be deleted.
+   * @param {number} id The id of the ASD record to be deleted.
+   */
+  const handleItemDeleted = (variant, id) => {
+    deleteVariant.current = variant;
+    deletePkId.current = id;
+    setOpenDeleteConfirmation(true);
+  };
+
+  /**
+   * Event to handle when the delete confirmation dialog closes.
+   *
+   * @param {boolean} deleteConfirmed True if the user has confirmed the deletion; otherwise false.
+   */
+  const handleCloseDeleteConfirmation = (deleteConfirmed) => {
+    setOpenDeleteConfirmation(false);
+
+    if (deleteConfirmed && deletePkId.current && deletePkId.current > 0 && deleteVariant.current) {
+      switch (deleteVariant.current) {
+        case "51":
+          if (onMaintenanceResponsibilityDeleted) onMaintenanceResponsibilityDeleted(deletePkId.current);
+          break;
+
+        case "52":
+          if (onReinstatementCategoryDeleted) onReinstatementCategoryDeleted(deletePkId.current);
+          break;
+
+        case "53":
+          if (onOSSpecialDesignationDeleted) onOSSpecialDesignationDeleted(deletePkId.current);
+          break;
+
+        case "61":
+          if (onInterestedDeleted) onInterestedDeleted(deletePkId.current);
+          break;
+
+        case "62":
+          if (onConstructionDeleted) onConstructionDeleted(deletePkId.current);
+          break;
+
+        case "63":
+          if (onSpecialDesignationDeleted) onSpecialDesignationDeleted(deletePkId.current);
+          break;
+
+        case "64":
+          if (onHWWDeleted) onHWWDeleted(deletePkId.current);
+          break;
+
+        case "66":
+          if (onPRoWDeleted) onPRoWDeleted(deletePkId.current);
+          break;
+
+        default:
+          break;
+      }
+    }
   };
 
   useEffect(() => {
@@ -643,8 +714,70 @@ function AsdDataTab({
               pt: theme.spacing(0),
             }}
             component="nav"
-            key="asd-types-list"
+            key="asd_types"
           >
+            {settingsContext.isScottish && (
+              <AsdDataListItem
+                variant="51"
+                title="Maintenance responsibilities"
+                data={!loading ? data.maintenanceResponsibilities.filter((x) => x.changeType !== "D") : null}
+                errors={maintenanceResponsibilityErrors}
+                checked={checked}
+                itemState={listState}
+                iconColour={adsWhite}
+                iconBackgroundColour={adsBrown}
+                primaryCodeField="streetStatus"
+                secondaryCodeField="maintainingAuthorityCode"
+                onToggleItem={(id) => handleToggleItem(id)}
+                onItemClicked={(maintenanceResponsibilityData, index) =>
+                  handleMaintenanceResponsibilityClicked(maintenanceResponsibilityData, index)
+                }
+                onItemDeleted={(variant, id) => handleItemDeleted(variant, id)}
+                onExpandCollapse={handleItemExpandCollapse}
+              />
+            )}
+            {settingsContext.isScottish && (
+              <AsdDataListItem
+                variant="52"
+                title="Reinstatement categories"
+                data={!loading ? data.reinstatementCategories.filter((x) => x.changeType !== "D") : null}
+                errors={reinstatementCategoryErrors}
+                checked={checked}
+                itemState={listState}
+                iconColour={adsWhite}
+                iconBackgroundColour={adsPink}
+                primaryCodeField="reinstatementCategoryCode"
+                secondaryCodeField="reinstatementAuthorityCode"
+                avatarVariant="hexagon"
+                onToggleItem={(id) => handleToggleItem(id)}
+                onItemClicked={(reinstatementCategoryData, index) =>
+                  handleReinstatementCategoryClicked(reinstatementCategoryData, index)
+                }
+                onItemDeleted={(variant, id) => handleItemDeleted(variant, id)}
+                onExpandCollapse={handleItemExpandCollapse}
+              />
+            )}
+            {settingsContext.isScottish && (
+              <AsdDataListItem
+                variant="53"
+                title="Special designations"
+                data={!loading ? data.specialDesignations.filter((x) => x.changeType !== "D") : null}
+                errors={specialDesignationErrors}
+                checked={checked}
+                itemState={listState}
+                iconColour={adsBlack}
+                iconBackgroundColour={adsYellow}
+                iconBorderColour={`${adsBlack}  !important`}
+                primaryCodeField="specialDesig"
+                secondaryCodeField="authorityCode"
+                onToggleItem={(id) => handleToggleItem(id)}
+                onItemClicked={(specialDesignationData, index) =>
+                  handleOSSpecialDesignationClicked(specialDesignationData, index)
+                }
+                onItemDeleted={(variant, id) => handleItemDeleted(variant, id)}
+                onExpandCollapse={handleItemExpandCollapse}
+              />
+            )}
             {!settingsContext.isScottish && (
               <AsdDataListItem
                 variant="61"
@@ -659,7 +792,7 @@ function AsdDataTab({
                 secondaryCodeField="swaOrgRefAuthority"
                 onToggleItem={(id) => handleToggleItem(id)}
                 onItemClicked={(interestedData, index) => handleInterestedClicked(interestedData, index)}
-                onItemDeleted={(id) => handleInterestedDeleted(id)}
+                onItemDeleted={(variant, id) => handleItemDeleted(variant, id)}
                 onExpandCollapse={handleItemExpandCollapse}
               />
             )}
@@ -678,7 +811,7 @@ function AsdDataTab({
                 avatarVariant="hexagon"
                 onToggleItem={(id) => handleToggleItem(id)}
                 onItemClicked={(constructionData, index) => handleConstructionClicked(constructionData, index)}
-                onItemDeleted={(id) => handleConstructionDeleted(id)}
+                onItemDeleted={(variant, id) => handleItemDeleted(variant, id)}
                 onExpandCollapse={handleItemExpandCollapse}
               />
             )}
@@ -701,7 +834,7 @@ function AsdDataTab({
                 onItemClicked={(specialDesignationData, index) =>
                   handleSpecialDesignationClicked(specialDesignationData, index)
                 }
-                onItemDeleted={(id) => handleSpecialDesignationDeleted(id)}
+                onItemDeleted={(variant, id) => handleItemDeleted(variant, id)}
                 onExpandCollapse={handleItemExpandCollapse}
               />
             )}
@@ -721,7 +854,7 @@ function AsdDataTab({
                 avatarVariant="circular"
                 onToggleItem={(id) => handleToggleItem(id)}
                 onItemClicked={(hwwData, index) => handleHwwClicked(hwwData, index)}
-                onItemDeleted={(id) => handleHwwDeleted(id)}
+                onItemDeleted={(variant, id) => handleItemDeleted(variant, id)}
                 onExpandCollapse={handleItemExpandCollapse}
               />
             )}
@@ -739,69 +872,7 @@ function AsdDataTab({
                 avatarVariant="rightPoint"
                 onToggleItem={(id) => handleToggleItem(id)}
                 onItemClicked={(prowData, index) => handleProwClicked(prowData, index)}
-                onItemDeleted={(id) => handleProwDeleted(id)}
-                onExpandCollapse={handleItemExpandCollapse}
-              />
-            )}
-            {settingsContext.isScottish && (
-              <AsdDataListItem
-                variant="51"
-                title="Maintenance responsibilities"
-                data={!loading ? data.maintenanceResponsibilities.filter((x) => x.changeType !== "D") : null}
-                errors={maintenanceResponsibilityErrors}
-                checked={checked}
-                itemState={listState}
-                iconColour={adsWhite}
-                iconBackgroundColour={adsBrown}
-                primaryCodeField="streetStatus"
-                secondaryCodeField="maintainingAuthorityCode"
-                onToggleItem={(id) => handleToggleItem(id)}
-                onItemClicked={(maintenanceResponsibilityData, index) =>
-                  handleMaintenanceResponsibilityClicked(maintenanceResponsibilityData, index)
-                }
-                onItemDeleted={(id) => handleMaintenanceResponsibilityDeleted(id)}
-                onExpandCollapse={handleItemExpandCollapse}
-              />
-            )}
-            {settingsContext.isScottish && (
-              <AsdDataListItem
-                variant="52"
-                title="Reinstatement categories"
-                data={!loading ? data.reinstatementCategories.filter((x) => x.changeType !== "D") : null}
-                errors={reinstatementCategoryErrors}
-                checked={checked}
-                itemState={listState}
-                iconColour={adsWhite}
-                iconBackgroundColour={adsPink}
-                primaryCodeField="reinstatementCategoryCode"
-                secondaryCodeField="reinstatementAuthorityCode"
-                avatarVariant="hexagon"
-                onToggleItem={(id) => handleToggleItem(id)}
-                onItemClicked={(reinstatementCategoryData, index) =>
-                  handleReinstatementCategoryClicked(reinstatementCategoryData, index)
-                }
-                onItemDeleted={(id) => handleReinstatementCategoryDeleted(id)}
-                onExpandCollapse={handleItemExpandCollapse}
-              />
-            )}
-            {settingsContext.isScottish && (
-              <AsdDataListItem
-                variant="53"
-                title="Special designations"
-                data={!loading ? data.specialDesignations.filter((x) => x.changeType !== "D") : null}
-                errors={specialDesignationErrors}
-                checked={checked}
-                itemState={listState}
-                iconColour={adsBlack}
-                iconBackgroundColour={adsYellow}
-                iconBorderColour={`${adsBlack}  !important`}
-                primaryCodeField="specialDesig"
-                secondaryCodeField="authorityCode"
-                onToggleItem={(id) => handleToggleItem(id)}
-                onItemClicked={(specialDesignationData, index) =>
-                  handleOSSpecialDesignationClicked(specialDesignationData, index)
-                }
-                onItemDeleted={(id) => handleOSSpecialDesignationDeleted(id)}
+                onItemDeleted={(variant, id) => handleItemDeleted(variant, id)}
                 onExpandCollapse={handleItemExpandCollapse}
               />
             )}
@@ -815,6 +886,13 @@ function AsdDataTab({
           onClose={handleCloseSelection}
         />
       </Popper>
+      <div>
+        <ConfirmDeleteDialog
+          variant={getAsdDeleteVariant(deleteVariant.current)}
+          open={openDeleteConfirmation}
+          onClose={handleCloseDeleteConfirmation}
+        />
+      </div>
     </Fragment>
   );
 }

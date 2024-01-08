@@ -20,6 +20,7 @@
 //    007   03.11.23 Sean Flook                 Modified highway dedication and one-way exemption dialog titles.
 //    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //    009   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    010   08.01.24 Sean Flook                 Changes to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -62,6 +63,9 @@ ConfirmDeleteDialog.propTypes = {
     "streetSuccessorCrossRef",
     "hd",
     "owe",
+    "maintenance responsibility",
+    "reinstatement category",
+    "os special designation",
     "interested organisation",
     "construction",
     "special designation",
@@ -306,6 +310,110 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
                   <CircleIcon sx={{ width: "12px", height: "12px" }} />
                 </ListItemIcon>
                 <ListItemText primary="will no longer be associated with this ESU." />
+              </ListItem>
+              <ListItem key="deleteLine2">
+                <ListItemIcon>
+                  <CircleIcon sx={{ width: "12px", height: "12px" }} />
+                </ListItemIcon>
+                <ListItemText primary="will be stored as archived information." />
+              </ListItem>
+              {/* <ListItem key="deleteLine3">
+                <ListItemIcon>
+                  <CircleIcon sx={{ width: "12px", height: "12px" }} />
+                </ListItemIcon>
+                <ListItemText primary="can be retrieved from the archive if necessary." />
+              </ListItem> */}
+            </List>
+          </Box>
+        );
+        break;
+
+      case "maintenance responsibility":
+        setTitle(`Delete ASD ${recordText}`);
+        setSubtitle(
+          `${
+            recordCount && recordCount > 1 ? recordCount.toString() + " " : ""
+          }Maintenance responsibility ${recordText}`
+        );
+        setContent(
+          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+            <Typography variant="body1">{`On deletion ${
+              recordCount && recordCount > 1 ? "these records" : "this record"
+            }`}</Typography>
+            <List dense>
+              <ListItem key="deleteLine1">
+                <ListItemIcon>
+                  <CircleIcon sx={{ width: "12px", height: "12px" }} />
+                </ListItemIcon>
+                <ListItemText primary="will no longer be associated with this street." />
+              </ListItem>
+              <ListItem key="deleteLine2">
+                <ListItemIcon>
+                  <CircleIcon sx={{ width: "12px", height: "12px" }} />
+                </ListItemIcon>
+                <ListItemText primary="will be stored as archived information." />
+              </ListItem>
+              {/* <ListItem key="deleteLine3">
+                <ListItemIcon>
+                  <CircleIcon sx={{ width: "12px", height: "12px" }} />
+                </ListItemIcon>
+                <ListItemText primary="can be retrieved from the archive if necessary." />
+              </ListItem> */}
+            </List>
+          </Box>
+        );
+        break;
+
+      case "reinstatement category":
+        setTitle(`Delete ASD ${recordText}`);
+        setSubtitle(
+          `${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}Reinstatement category ${recordText}`
+        );
+        setContent(
+          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+            <Typography variant="body1">{`On deletion ${
+              recordCount && recordCount > 1 ? "these records" : "this record"
+            }`}</Typography>
+            <List dense>
+              <ListItem key="deleteLine1">
+                <ListItemIcon>
+                  <CircleIcon sx={{ width: "12px", height: "12px" }} />
+                </ListItemIcon>
+                <ListItemText primary="will no longer be associated with this street." />
+              </ListItem>
+              <ListItem key="deleteLine2">
+                <ListItemIcon>
+                  <CircleIcon sx={{ width: "12px", height: "12px" }} />
+                </ListItemIcon>
+                <ListItemText primary="will be stored as archived information." />
+              </ListItem>
+              {/* <ListItem key="deleteLine3">
+                <ListItemIcon>
+                  <CircleIcon sx={{ width: "12px", height: "12px" }} />
+                </ListItemIcon>
+                <ListItemText primary="can be retrieved from the archive if necessary." />
+              </ListItem> */}
+            </List>
+          </Box>
+        );
+        break;
+
+      case "os special designation":
+        setTitle(`Delete ASD ${recordText}`);
+        setSubtitle(
+          `${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}Special designation ${recordText}`
+        );
+        setContent(
+          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+            <Typography variant="body1">{`On deletion ${
+              recordCount && recordCount > 1 ? "these records" : "this record"
+            }`}</Typography>
+            <List dense>
+              <ListItem key="deleteLine1">
+                <ListItemIcon>
+                  <CircleIcon sx={{ width: "12px", height: "12px" }} />
+                </ListItemIcon>
+                <ListItemText primary="will no longer be associated with this street." />
               </ListItem>
               <ListItem key="deleteLine2">
                 <ListItemIcon>

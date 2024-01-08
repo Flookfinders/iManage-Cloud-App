@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //    005   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    007   08.01.24 Sean Flook                 Pass the correct variant to the confirmDeleteDialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -428,7 +429,7 @@ function SuccessorListTab({
       </Popper>
       <div>
         <ConfirmDeleteDialog
-          variant="successorCrossRef"
+          variant={variant === "street" ? "streetSuccessorCrossRef" : "propertySuccessorCrossRef"}
           recordCount={selectionModel && selectionModel.length > 0 ? selectionModel.length : 0}
           open={openDeleteConfirmation}
           onClose={handleCloseDeleteConfirmation}

@@ -26,6 +26,7 @@
 //    013   19.12.23 Sean Flook                 Various bug fixes.
 //    014   21.12.23 Sean Flook                 Corrected street type filter for NSG only.
 //    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    016   08.01.24 Sean Flook                 Changes to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2885,10 +2886,10 @@ export function GetAsdPrimaryCodeText(variant, value, isScottish) {
 export const getAsdDeleteVariant = (variant) => {
   switch (variant) {
     case "51":
-      return "maintenance responsibility ";
+      return "maintenance responsibility";
 
     case "52":
-      return "reinstatement category ";
+      return "reinstatement category";
 
     case "53":
       return "os special designation";

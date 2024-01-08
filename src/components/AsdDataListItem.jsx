@@ -18,12 +18,13 @@
 //    005   24.11.23 Sean Flook                 Moved Stack to @mui/system and fixed some warnings.
 //    006   03.01.24 Sean Flook                 Fixed warning.
 //    007   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    008   08.01.24 Sean Flook                 Changes to try and fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import React, { useContext, useState, useRef, Fragment, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import UserContext from "../context/userContext";
 import MapContext from "../context/mapContext";
@@ -43,7 +44,6 @@ import {
   Checkbox,
 } from "@mui/material";
 import { Stack } from "@mui/system";
-import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import {
   ExpandMore,
   ChevronRight,
@@ -58,7 +58,7 @@ import {
 import AsdDataListSubItem from "./AsdDataListSubItem";
 import ADSActionButton from "./ADSActionButton";
 import { IndentIcon, WholeRoadIcon, SpecialDesignationIcon, EquestrianIcon } from "../utils/ADSIcons";
-import { getAsdDeleteVariant, GetAsdPrimaryText, GetAsdSecondaryText } from "../utils/StreetUtils";
+import { GetAsdPrimaryText, GetAsdSecondaryText } from "../utils/StreetUtils";
 import { adsBlueA, adsMidGreyA, adsLightBlue, adsBlue12 } from "../utils/ADSColours";
 import {
   RecordCountStyle,
@@ -132,10 +132,6 @@ function AsdDataListItem({
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
-  const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
-
-  const deletePkId = useRef(null);
-
   /**
    * Event to handle when an item is clicked.
    *
@@ -154,21 +150,7 @@ function AsdDataListItem({
    */
   const handleItemDeleted = (event, id) => {
     event.stopPropagation();
-    deletePkId.current = id;
-    setOpenDeleteConfirmation(true);
-  };
-
-  /**
-   * Event to handle when the delete confirmation dialog closes.
-   *
-   * @param {boolean} deleteConfirmed True if the user has confirmed the deletion; otherwise false.
-   */
-  const handleCloseDeleteConfirmation = (deleteConfirmed) => {
-    setOpenDeleteConfirmation(false);
-
-    if (deleteConfirmed && deletePkId.current && deletePkId.current > 0) {
-      if (onItemDeleted) onItemDeleted(deletePkId.current);
-    }
+    if (onItemDeleted) onItemDeleted(variant, id);
   };
 
   /**
@@ -379,10 +361,10 @@ function AsdDataListItem({
   }, [userContext]);
 
   return (
-    <Fragment>
+    <List component="div" disablePadding key={`list_asd_type_${variant}`}>
       <ListItemButton
         id={variant}
-        key={`asd_type${variant}`}
+        key={`${variant}`}
         divider
         dense
         disabled={!data || data.length === 0}
@@ -443,19 +425,23 @@ function AsdDataListItem({
       </ListItemButton>
 
       {!subList ? (
-        <Collapse in={open} timeout="auto">
-          {data &&
-            data.length > 0 &&
-            data.map((d, index) => (
-              <List component="div" disablePadding key={`asd_type${variant}_${index}`}>
+        <Collapse in={open} timeout="auto" key={`collapse_${variant}`}>
+          <List component="div" disablePadding key={`list_${variant}`}>
+            {data &&
+              data.length > 0 &&
+              data.map((d, index) => (
                 <ListItemButton
                   id={d.pkId}
-                  key={`asd_type${variant}_${index}_${d.pkId}`}
+                  key={`${variant}_${index}_${d.pkId}`}
                   alignItems="flex-start"
                   dense
                   disableGutters
-                  autoFocus={selectedRecord && selectedRecord >= 0 && selectedRecord.toString() === d.pkId.toString()}
-                  selected={selectedRecord && selectedRecord >= 0 && selectedRecord.toString() === d.pkId.toString()}
+                  autoFocus={
+                    !!(selectedRecord && selectedRecord >= 0 && selectedRecord.toString() === d.pkId.toString())
+                  }
+                  selected={
+                    !!(selectedRecord && selectedRecord >= 0 && selectedRecord.toString() === d.pkId.toString())
+                  }
                   sx={getASDListItemStyle(d.pkId.toString(), false, index, checked, variant, selectedRecord, errors)}
                   onClick={() => handleItemClicked(d, index)}
                   onMouseEnter={handleMouseEnterRecord}
@@ -534,11 +520,11 @@ function AsdDataListItem({
                     )}
                   </ListItemAvatar>
                 </ListItemButton>
-              </List>
-            ))}
+              ))}
+          </List>
         </Collapse>
       ) : (
-        <Collapse in={open} timeout="auto">
+        <Collapse in={open} timeout="auto" key={`collapse_${variant}`}>
           {subList.length > 0 &&
             subList.map((d, index) => (
               <AsdDataListSubItem
@@ -565,14 +551,7 @@ function AsdDataListItem({
             ))}
         </Collapse>
       )}
-      <div>
-        <ConfirmDeleteDialog
-          variant={getAsdDeleteVariant(variant)}
-          open={openDeleteConfirmation}
-          onClose={handleCloseDeleteConfirmation}
-        />
-      </div>
-    </Fragment>
+    </List>
   );
 }
 
