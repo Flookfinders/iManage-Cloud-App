@@ -3,7 +3,7 @@
 //
 //  Description: Maintenance responsibility data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   19.12.23 Sean Flook                 Various bug fixes.
+//    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -32,7 +33,7 @@ import { GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
 import { FilteredRoadStatusCode, FilteredSwaOrgRef } from "../utils/StreetUtils";
 import ObjectComparison from "../utils/ObjectComparison";
 
-import { Avatar, Grid, Typography } from "@mui/material";
+import { Avatar, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -46,7 +47,7 @@ import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import { People } from "@mui/icons-material";
 
 import { adsWhite, adsBrown } from "../utils/ADSColours";
-import { streetToolbarStyle, dataFormStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataFormStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 MaintenanceResponsibilityDataTab.propTypes = {
@@ -449,91 +450,72 @@ function MaintenanceResponsibilityDataTab({
 
   return (
     <Fragment>
-      <Box sx={streetToolbarStyle}>
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Grid container justifyContent="flex-start" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="home"
-                  tooltipTitle="Home"
-                  tooltipPlacement="bottom"
-                  onClick={handleHomeClick}
-                />
-              </Grid>
-              <Grid item>
-                <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                  <Typography
-                    sx={{
-                      flexGrow: 1,
-                      display: "none",
-                      [theme.breakpoints.up("sm")]: {
-                        display: "block",
-                      },
-                    }}
-                    variant="subtitle1"
-                    noWrap
-                    align="left"
-                  >
-                    |
-                  </Typography>
-                  <Avatar
-                    variant="rounded"
-                    sx={{
-                      height: theme.spacing(2),
-                      width: theme.spacing(2),
-                      backgroundColor: adsBrown,
-                      color: adsWhite,
-                    }}
-                  >
-                    <People
-                      sx={{
-                        height: theme.spacing(2),
-                        width: theme.spacing(2),
-                      }}
-                    />
-                  </Avatar>
-                  <Typography
-                    sx={{
-                      flexGrow: 1,
-                      display: "none",
-                      [theme.breakpoints.up("sm")]: {
-                        display: "block",
-                      },
-                    }}
-                    variant="subtitle1"
-                    noWrap
-                    align="left"
-                  >
-                    {` Maintenance responsibility (${data.index + 1} of ${data.totalRecords})`}
-                  </Typography>
-                </Stack>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <Grid container justifyContent="flex-end" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="delete"
-                  disabled={!userCanEdit}
-                  tooltipTitle="Delete maintenance responsibility record"
-                  tooltipPlacement="right"
-                  onClick={handleDeleteMaintenanceResponsibility}
-                />
-              </Grid>
-              <Grid item>
-                <ADSActionButton
-                  variant="add"
-                  disabled={!userCanEdit}
-                  tooltipTitle="Add new maintenance responsibility record"
-                  tooltipPlacement="right"
-                  onClick={handleAddMaintenanceResponsibility}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+      <Box sx={toolbarStyle}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
+            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            <Typography
+              sx={{
+                flexGrow: 1,
+                display: "none",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >
+              |
+            </Typography>
+            <Avatar
+              variant="rounded"
+              sx={{
+                height: theme.spacing(2),
+                width: theme.spacing(2),
+                backgroundColor: adsBrown,
+                color: adsWhite,
+              }}
+            >
+              <People
+                sx={{
+                  height: theme.spacing(2),
+                  width: theme.spacing(2),
+                }}
+              />
+            </Avatar>
+            <Typography
+              sx={{
+                flexGrow: 1,
+                display: "none",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >
+              {` Maintenance responsibility (${data.index + 1} of ${data.totalRecords})`}
+            </Typography>
+          </Stack>
+          <Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <ADSActionButton
+              variant="delete"
+              disabled={!userCanEdit}
+              tooltipTitle="Delete maintenance responsibility record"
+              tooltipPlacement="right"
+              onClick={handleDeleteMaintenanceResponsibility}
+            />
+            <ADSActionButton
+              variant="add"
+              disabled={!userCanEdit}
+              tooltipTitle="Add new maintenance responsibility record"
+              tooltipPlacement="right"
+              onClick={handleAddMaintenanceResponsibility}
+            />
+          </Stack>
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>
         <ADSSelectControl

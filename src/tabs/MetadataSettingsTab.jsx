@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    006   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1091,7 +1092,7 @@ function MetadataSettingsTab({ variant }) {
     <Box sx={{ ml: theme.spacing(1), mr: theme.spacing(4) }}>
       <Stack direction="column" spacing={1}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mr: theme.spacing(0.5) }}>
-          <Typography sx={{ fontSize: 24, flexGrow: 1, paddingLeft: theme.spacing(3) }}>{getTitle()}</Typography>
+          <Typography sx={{ fontSize: 24, flexGrow: 1, pl: theme.spacing(3) }}>{getTitle()}</Typography>
           <Button
             variant="contained"
             disabled={!dataValid}
@@ -1102,7 +1103,7 @@ function MetadataSettingsTab({ variant }) {
             <Typography variant="body2">{getButtonText()}</Typography>
           </Button>
         </Stack>
-        <Grid container sx={{ paddingRight: theme.spacing(3.5) }} spacing={3}>
+        <Grid container sx={{ pr: theme.spacing(3.5) }} spacing={3}>
           <Grid item xs={6}>
             <Card
               variant="outlined"

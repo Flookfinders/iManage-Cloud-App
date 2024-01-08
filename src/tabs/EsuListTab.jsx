@@ -3,7 +3,7 @@
 //
 //  Description: ESU list tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -22,6 +22,7 @@
 //    009   03.11.23 Sean Flook                 Added hyphen to one-way.
 //    010   24.11.23 Sean Flook                 Moved Box to @mui/system and fixed a warning.
 //    011   19.12.23 Sean Flook                 Various bug fixes.
+//    012   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -33,7 +34,6 @@ import MapContext from "../context/mapContext";
 import StreetContext from "../context/streetContext";
 import SettingsContext from "../context/settingsContext";
 import {
-  Grid,
   FormControlLabel,
   Checkbox,
   Tooltip,
@@ -48,7 +48,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { Box } from "@mui/system";
+import { Box, Stack } from "@mui/system";
 import ADSSelectionControl from "../components/ADSSelectionControl";
 import {
   AddCircleOutlineOutlined as AddCircleIcon,
@@ -58,7 +58,7 @@ import {
 import ADSEsuDataListItem from "../components/ADSEsuDataListItem";
 import { adsBlueA, adsLightBlue10 } from "../utils/ADSColours";
 import {
-  streetToolbarStyle,
+  toolbarStyle,
   ActionIconStyle,
   dataFormStyle,
   tooltipStyle,
@@ -325,51 +325,51 @@ function EsuListTab({
 
   return (
     <Fragment>
-      <Box sx={streetToolbarStyle} id="ads-esu-data-grid">
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <FormControlLabel
-              control={
-                <Checkbox checked={allChecked} color="default" size="small" onChange={handleCheckAll} name="checkAll" />
-              }
-              label={<Typography variant="subtitle2">Elementary Street Units</Typography>}
-              sx={{ paddingLeft: theme.spacing(1) }}
-            />
-          </Grid>
-          <Grid item>
-            <Grid container justifyContent="flex-end" spacing={1}>
-              {!settingsContext.isScottish && (
-                <Grid item>
-                  <Tooltip title={`${expandCollapseLabel} items in list`} arrow placement="right" sx={tooltipStyle}>
-                    <IconButton
-                      onClick={handleExpandCollapse}
-                      sx={ActionIconStyle()}
-                      aria-controls="expand-collapse"
-                      size="small"
-                    >
-                      {expandCollapseLabel === "Expand all" ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
-                      <Typography variant="body2">{expandCollapseLabel}</Typography>
-                    </IconButton>
-                  </Tooltip>
-                </Grid>
-              )}
-              <Grid item sx={{ pr: "4px" }}>
-                <Tooltip title="Add new ESU record" arrow placement="right" sx={tooltipStyle}>
-                  <IconButton
-                    sx={ActionIconStyle()}
-                    onClick={handleAddESUClick}
-                    aria_controls="actions-menu"
-                    aria-haspopup="true"
-                    size="small"
-                  >
-                    <AddCircleIcon />
-                    <Typography variant="subtitle2">Add ESU</Typography>
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+      <Box sx={toolbarStyle} id="ads-esu-data-grid">
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <FormControlLabel
+            control={
+              <Checkbox checked={allChecked} color="default" size="small" onChange={handleCheckAll} name="checkAll" />
+            }
+            label={<Typography variant="subtitle1">Elementary Street Units</Typography>}
+            sx={{ pl: theme.spacing(1.5) }}
+          />
+          <Stack direction="row" alignItems="center" justifyContent="flex-end">
+            {!settingsContext.isScottish && (
+              <Tooltip title={`${expandCollapseLabel} items in list`} arrow placement="right" sx={tooltipStyle}>
+                <IconButton
+                  onClick={handleExpandCollapse}
+                  sx={ActionIconStyle()}
+                  aria-controls="expand-collapse"
+                  size="small"
+                >
+                  {expandCollapseLabel === "Expand all" ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
+                  <Typography variant="body2">{expandCollapseLabel}</Typography>
+                </IconButton>
+              </Tooltip>
+            )}
+            <Tooltip title="Add new ESU record" arrow placement="right" sx={tooltipStyle}>
+              <IconButton
+                sx={ActionIconStyle()}
+                onClick={handleAddESUClick}
+                aria_controls="actions-menu"
+                aria-haspopup="true"
+                size="small"
+              >
+                <AddCircleIcon />
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    pl: theme.spacing(1),
+                    pr: theme.spacing(1),
+                  }}
+                >
+                  Add ESU
+                </Typography>
+              </IconButton>
+            </Tooltip>
+          </Stack>
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>
         {loading ? (
@@ -382,7 +382,7 @@ function EsuListTab({
                 sx={{
                   width: "100%",
                   backgroundColor: theme.palette.background.paper,
-                  paddingTop: theme.spacing(0),
+                  pt: theme.spacing(0),
                 }}
                 component="nav"
                 key={`key_${index}`}
@@ -417,7 +417,7 @@ function EsuListTab({
             sx={{
               width: "100%",
               backgroundColor: theme.palette.background.paper,
-              paddingTop: theme.spacing(0),
+              pt: theme.spacing(0),
             }}
             component="nav"
             key="key_no_records"

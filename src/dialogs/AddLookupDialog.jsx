@@ -3,7 +3,7 @@
 //
 //  Description: Dialog used to add a new lookup
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   29.06.23 Sean Flook                 Added enabled flag for cross reference records.
 //    004   06.10.23 Sean Flook                 Use colour variables.
 //    005   24.11.23 Sean Flook                 Moved Stack to @mui/system.
+//    006   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -836,7 +837,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{ marginTop: theme.spacing(2) }}>
+      <DialogContent sx={{ mt: theme.spacing(2) }}>
         {variant === "crossReference" ? (
           <Grid container alignItems="center" rowSpacing={2}>
             <Grid item xs={4}>
@@ -861,8 +862,8 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
                 inputProps={{ maxLength: "200" }}
                 sx={{
                   color: theme.palette.background.contrastText,
-                  paddingLeft: theme.spacing(1),
-                  paddingRight: theme.spacing(1),
+                  pl: theme.spacing(1),
+                  pr: theme.spacing(1),
                 }}
                 onChange={onCrossRefDescriptionChange}
               />
@@ -891,8 +892,8 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
                   inputProps={{ maxLength: "2" }}
                   sx={{
                     color: theme.palette.background.contrastText,
-                    paddingLeft: theme.spacing(1),
-                    paddingRight: theme.spacing(1),
+                    pl: theme.spacing(1),
+                    pr: theme.spacing(1),
                     mb: theme.spacing(1),
                     width: "70px",
                   }}
@@ -946,7 +947,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
             </Grid>
           </Grid>
         ) : variant === "ward" ? (
-          <Grid container alignItems="center" sx={{ marginTop: theme.spacing(1) }} rowSpacing={2}>
+          <Grid container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
             <Grid item xs={4}>
               <Typography variant="body1" align="right" gutterBottom>
                 Ward
@@ -969,8 +970,8 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
                 inputProps={{ maxLength: "200" }}
                 sx={{
                   color: theme.palette.background.contrastText,
-                  paddingLeft: theme.spacing(1),
-                  paddingRight: theme.spacing(1),
+                  pl: theme.spacing(1),
+                  pr: theme.spacing(1),
                 }}
                 onChange={onWardNameChange}
               />
@@ -996,15 +997,15 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
                 inputProps={{ maxLength: "10" }}
                 sx={{
                   color: theme.palette.background.contrastText,
-                  paddingLeft: theme.spacing(1),
-                  paddingRight: theme.spacing(1),
+                  pl: theme.spacing(1),
+                  pr: theme.spacing(1),
                 }}
                 onChange={onWardCodeChange}
               />
             </Grid>
           </Grid>
         ) : variant === "parish" ? (
-          <Grid container alignItems="center" sx={{ marginTop: theme.spacing(1) }} rowSpacing={2}>
+          <Grid container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
             <Grid item xs={4}>
               <Typography variant="body1" align="right" gutterBottom>
                 Parish
@@ -1027,8 +1028,8 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
                 inputProps={{ maxLength: "200" }}
                 sx={{
                   color: theme.palette.background.contrastText,
-                  paddingLeft: theme.spacing(1),
-                  paddingRight: theme.spacing(1),
+                  pl: theme.spacing(1),
+                  pr: theme.spacing(1),
                 }}
                 onChange={onParishNameChange}
               />
@@ -1054,15 +1055,15 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
                 inputProps={{ maxLength: "10" }}
                 sx={{
                   color: theme.palette.background.contrastText,
-                  paddingLeft: theme.spacing(1),
-                  paddingRight: theme.spacing(1),
+                  pl: theme.spacing(1),
+                  pr: theme.spacing(1),
                 }}
                 onChange={onParishCodeChange}
               />
             </Grid>
           </Grid>
         ) : (
-          <Grid container alignItems="center" sx={{ marginTop: theme.spacing(1) }} rowSpacing={2}>
+          <Grid container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
             <Grid item xs={4}>
               <Typography variant="body1" align="right" gutterBottom>
                 {`${
@@ -1091,8 +1092,8 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
                 inputProps={{ maxLength: `${getMaxFieldLength()}` }}
                 sx={{
                   color: theme.palette.background.contrastText,
-                  paddingLeft: theme.spacing(1),
-                  paddingRight: theme.spacing(1),
+                  pl: theme.spacing(1),
+                  pr: theme.spacing(1),
                 }}
                 onChange={onEngChange}
               />
@@ -1120,8 +1121,8 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
                     inputProps={{ maxLength: `${getMaxFieldLength()}` }}
                     sx={{
                       color: theme.palette.background.contrastText,
-                      paddingLeft: theme.spacing(1),
-                      paddingRight: theme.spacing(1),
+                      pl: theme.spacing(1),
+                      pr: theme.spacing(1),
                     }}
                     onChange={onCymChange}
                   />
@@ -1151,8 +1152,8 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
                     inputProps={{ maxLength: `${getMaxFieldLength()}` }}
                     sx={{
                       color: theme.palette.background.contrastText,
-                      paddingLeft: theme.spacing(1),
-                      paddingRight: theme.spacing(1),
+                      pl: theme.spacing(1),
+                      pr: theme.spacing(1),
                     }}
                     onChange={onGaeChange}
                   />

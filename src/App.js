@@ -33,6 +33,7 @@
 //    020   14.12.23 Sean Flook                 Corrected note record type and tidied up validation code.
 //    021   19.12.23 Sean Flook                 Various bug fixes.
 //    022   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    023   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2429,8 +2430,8 @@ function App() {
                                       <main
                                         style={{
                                           flexGrow: 1,
-                                          paddingLeft: "0px",
-                                          paddingRight: "0px",
+                                          pl: "0px",
+                                          pr: "0px",
                                         }}
                                       >
                                         <div style={{ height: "64px" }} />

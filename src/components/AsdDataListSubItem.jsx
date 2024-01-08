@@ -17,6 +17,7 @@
 //    004   12.10.23 Sean Flook                 Use the street context to handle storing the expanded state of the item.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
 //    006   03.01.24 Sean Flook                 Fixed warning.
+//    007   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -303,8 +304,8 @@ function AsdDataListSubItem({
         >
           <ListItemAvatar
             sx={{
-              paddingLeft: theme.spacing(5),
-              paddingRight: theme.spacing(1),
+              pl: theme.spacing(5),
+              pr: theme.spacing(1),
               minWidth: 24,
             }}
           >
@@ -316,7 +317,7 @@ function AsdDataListSubItem({
                 <IconButton
                   onClick={() => handleSubExpandCollapse(code)}
                   sx={{
-                    paddingBottom: theme.spacing(1),
+                    pb: theme.spacing(1),
                     color: adsMidGreyA,
                     "&:hover": {
                       color: adsBlueA,
@@ -336,7 +337,7 @@ function AsdDataListSubItem({
                 <Typography
                   variant="subtitle1"
                   sx={{
-                    paddingLeft: theme.spacing(1),
+                    pl: theme.spacing(1),
                     "&:hover": {
                       color: adsBlueA,
                     },
@@ -389,7 +390,7 @@ function AsdDataListSubItem({
                         <Checkbox
                           sx={{
                             height: "20px",
-                            marginRight: theme.spacing(2.5),
+                            mr: theme.spacing(2.5),
                           }}
                           edge="end"
                           checked={checked.indexOf(`${variant}_${subD.pkId.toString()}`) !== -1}

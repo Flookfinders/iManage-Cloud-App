@@ -16,6 +16,7 @@
 //    003   07.09.23 Sean Flook                 Changed function name and cleaned the code.
 //    004   06.10.23 Sean Flook                 Use colour variables.
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    006   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -229,7 +230,7 @@ function LoginDialog({ isOpen, title, message }) {
       <DialogTitle id="user-login-dialog" sx={{ color: adsWhite, backgroundColor: adsBlueA }}>
         {title ? title : "Login"}
       </DialogTitle>
-      <DialogContent sx={{ marginTop: theme.spacing(1) }}>
+      <DialogContent sx={{ mt: theme.spacing(1) }}>
         {loginError ? (
           <Typography variant="body1" color="error">
             {loginError}

@@ -26,6 +26,7 @@
 //    013   20.11.23 Sean Flook                 Undone above change.
 //    014   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    016   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -50,12 +51,11 @@ import {
   InputAdornment,
   IconButton,
   Popper,
-  Grid,
   Typography,
   Snackbar,
   Alert,
 } from "@mui/material";
-import { Box } from "@mui/system";
+import { Stack } from "@mui/system";
 import ADSFilterControl from "./ADSFilterControl";
 
 import { autocompleteClasses } from "@mui/material/Autocomplete";
@@ -128,7 +128,7 @@ const apiFetch = async (url, headers, dataIfAborted, signal) => {
 
 const StyledPopper = styled(Popper)({
   [`& .${autocompleteClasses.paper}`]: {
-    marginTop: "20px",
+    mt: "20px",
     border: "1px",
     borderColor: adsLightGreyB,
     boxShadow: `4px 4px 7px ${adsLightGreyA50}`,
@@ -1174,40 +1174,42 @@ function ADSSearch({ placeholder, onSearchClick }) {
         PopperComponent={StyledPopper}
         renderOption={(props, option) => {
           return (
-            <Grid
-              {...props}
-              container
-              alignItems="center"
-              spacing={1}
-              sx={{
-                pt: theme.spacing(0.5),
-                pb: theme.spacing(1),
-                color: adsMidGreyA,
-                "&:hover": {
-                  cursor: "pointer",
-                  color: adsBlueA,
-                  backgroundColor: adsPaleBlueA,
-                },
-              }}
-            >
-              <Grid item>
+            <li {...props}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="flex-start"
+                spacing={1}
+                sx={{
+                  // pt: theme.spacing(0.5),
+                  // pb: theme.spacing(1),
+                  color: adsMidGreyA,
+                  "&:hover": { cursor: "pointer", color: adsBlueA, backgroundColor: adsPaleBlueA },
+                }}
+              >
                 {option.type === 15 ? <StreetIcon /> : GetClassificationIcon(option.classification_code)}
-              </Grid>
-              <Grid item xs>
                 <Typography sx={{ fontSize: "15px" }}>{addressToTitleCase(option.address, option.postcode)}</Typography>
-              </Grid>
-            </Grid>
+              </Stack>
+            </li>
           );
         }}
         renderInput={(params) => (
-          <Box
+          <TextField
+            {...params}
             ref={params.InputProps.ref}
+            variant="standard"
+            placeholder={placeholder}
             sx={{
+              color: adsMidGreyA,
+              fontFamily: "Nunito Sans",
+              fontSize: "15px",
+              display: "inline-flex",
+              pl: theme.spacing(1),
+              pr: theme.spacing(1),
               borderStyle: "solid",
               borderWidth: "1px",
               borderRadius: "18px",
-              marginBottom: theme.spacing(1.5),
-              display: "inline-flex",
+              mt: theme.spacing(1),
               height: "36px",
               transition: theme.transitions.create("width"),
               [theme.breakpoints.up("sm")]: {
@@ -1219,91 +1221,68 @@ function ADSSearch({ placeholder, onSearchClick }) {
                 },
               },
             }}
-          >
-            <TextField
-              {...params}
-              variant="standard"
-              placeholder={placeholder}
-              sx={{
-                color: adsMidGreyA,
-                fontFamily: "Nunito Sans",
-                fontSize: "15px",
-                paddingLeft: theme.spacing(1),
-                paddingRight: theme.spacing(1),
-                width: "100%",
-              }}
-              onKeyDownCapture={handleKeyDown}
-              InputProps={{
-                ...params.inputProps,
-                disableUnderline: true,
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <IconButton id="btnSearch" onClick={handleSearchCheck} aria-label="search button" size="large">
-                      <SearchIcon sx={ActionIconStyle()} />
+            fullWidth
+            onKeyDownCapture={handleKeyDown}
+            InputProps={{
+              disableUnderline: true,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <IconButton id="btnSearch" onClick={handleSearchCheck} aria-label="search button" size="large">
+                    <SearchIcon sx={ActionIconStyle()} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton id="btnClear" onClick={handleClearSearch} aria-label="clear button" size="small">
+                    <ClearIcon sx={ClearSearchIconStyle(search)} />
+                  </IconButton>
+                  {process.env.NODE_ENV === "development" && showIcons && (
+                    <IconButton id="filter-button" disabled onClick={handleFilterClick} aria-label="filter button">
+                      <FilterListIcon sx={ActionIconStyle()} />
                     </IconButton>
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton id="btnClear" onClick={handleClearSearch} aria-label="clear button" size="small">
-                      <ClearIcon sx={ClearSearchIconStyle(search)} />
+                  )}
+                  {process.env.NODE_ENV === "development" && showIcons && (
+                    <IconButton
+                      id="query-builder-button"
+                      disabled
+                      onClick={handleQueryBuilderClick}
+                      aria-label="query builder button"
+                    >
+                      <TuneIcon sx={ActionIconStyle()} />
                     </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            {process.env.NODE_ENV === "development" && showIcons && (
-              <Fragment>
-                <IconButton
-                  id="filter-button"
-                  disabled
-                  onClick={handleFilterClick}
-                  aria-label="filter button"
-                  size="large"
-                >
-                  <FilterListIcon sx={ActionIconStyle()} />
-                </IconButton>
-                <IconButton
-                  id="query-builder-button"
-                  disabled
-                  onClick={handleQueryBuilderClick}
-                  aria-label="query builder button"
-                  size="large"
-                >
-                  <TuneIcon sx={ActionIconStyle()} />
-                </IconButton>
-              </Fragment>
-            )}
-          </Box>
+                  )}
+                </InputAdornment>
+              ),
+            }}
+          />
         )}
       />
       <Popper id={filterId} open={filterOpen} anchorEl={filterAnchorEl} placement="bottom-start">
         <ADSFilterControl searchButton="Search" onFilter={handleFilterResults} onCancel={handleCancelFilter} />
       </Popper>
-      <div>
-        <Snackbar
-          open={saveOpen}
-          autoHideDuration={6000}
-          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      <Snackbar
+        open={saveOpen}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        onClose={handleSaveClose}
+      >
+        <Alert
+          sx={GetAlertStyle(saveResult.current)}
+          icon={GetAlertIcon(saveResult.current)}
           onClose={handleSaveClose}
-        >
-          <Alert
-            sx={GetAlertStyle(saveResult.current)}
-            icon={GetAlertIcon(saveResult.current)}
-            onClose={handleSaveClose}
-            severity={GetAlertSeverity(saveResult.current)}
-            elevation={6}
-            variant="filled"
-          >{`${
-            saveResult.current
-              ? `The ${saveType.current} has been successfully saved.`
-              : failedValidation.current
-              ? `Failed to validate the ${saveType.current} record.`
-              : `Failed to save the ${saveType.current}.`
-          }`}</Alert>
-        </Snackbar>
-        <HistoricPropertyDialog open={openHistoricProperty} onClose={handleHistoricPropertyClose} />
-      </div>
+          severity={GetAlertSeverity(saveResult.current)}
+          elevation={6}
+          variant="filled"
+        >{`${
+          saveResult.current
+            ? `The ${saveType.current} has been successfully saved.`
+            : failedValidation.current
+            ? `Failed to validate the ${saveType.current} record.`
+            : `Failed to save the ${saveType.current}.`
+        }`}</Alert>
+      </Snackbar>
+      <HistoricPropertyDialog open={openHistoricProperty} onClose={handleHistoricPropertyClose} />
     </Fragment>
   );
 }

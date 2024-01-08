@@ -3,7 +3,7 @@
 //
 //  Description: Select component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -26,6 +26,7 @@
 //    013   06.10.23 Sean Flook                 Use colour variables.
 //    014   27.10.23 Sean Flook      IMANN-175 Added a placeholder to display 'No change' if required.
 //    015   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    016   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -208,9 +209,9 @@ function ADSSelectControl({
           return (
             <Box
               sx={{
-                paddingLeft: theme.spacing(2),
-                paddingTop: theme.spacing(1.75),
-                paddingBottom: theme.spacing(1.75),
+                pl: theme.spacing(2),
+                pt: theme.spacing(1.75),
+                pb: theme.spacing(1.75),
               }}
             >
               {getIcon(currentRow[0][lookupIcon])}
@@ -231,9 +232,9 @@ function ADSSelectControl({
               variant="body1"
               align="left"
               sx={{
-                paddingLeft: theme.spacing(2),
-                paddingTop: theme.spacing(1.75),
-                paddingBottom: theme.spacing(1.75),
+                pl: theme.spacing(2),
+                pt: theme.spacing(1.75),
+                pb: theme.spacing(1.75),
               }}
               aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
             >

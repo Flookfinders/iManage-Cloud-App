@@ -25,6 +25,7 @@
 //    012   30.11.23 Sean Flook       IMANN-175 Make the button visible to all.
 //    013   19.12.23 Sean Flook                 Various bug fixes.
 //    014   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    015   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -60,7 +61,7 @@ import {
 import { HasASD } from "../configuration/ADSConfig";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
 import { AppBar, IconButton, Typography, Tooltip, Snackbar, Alert, Divider, Link, Popper, Avatar } from "@mui/material";
-import { Box, Stack } from "@mui/system";
+import { Stack } from "@mui/system";
 import { EditConfirmationServiceProvider } from "../pages/EditConfirmationPage";
 import ADSErrorList from "./ADSErrorList";
 import ADSActionButton from "./ADSActionButton";
@@ -76,7 +77,6 @@ import HelpIcon from "@mui/icons-material/HelpOutline";
 import ErrorIcon from "@mui/icons-material/Error";
 import WarningIcon from "@mui/icons-material/Warning";
 import { HomeRoute, GazetteerRoute, AdminSettingsRoute } from "../PageRouting";
-import { alpha } from "@mui/material/styles";
 import { adsBlueA, adsRed, adsMagenta } from "../utils/ADSColours";
 import {
   ActionIconStyle,
@@ -790,8 +790,8 @@ function ADSAppBar(props) {
         sx={{
           width: `calc(100% - ${openHelp || openTask || openBookmark ? navBarWidth + drawerWidth : navBarWidth}px)`,
           height: "56px",
-          marginLeft: navBarWidth,
-          marginRight: `${openHelp || openTask || openBookmark ? drawerWidth : 0}px`,
+          ml: navBarWidth,
+          mr: `${openHelp || openTask || openBookmark ? drawerWidth : 0}px`,
           transition: `theme.transitions.create(["margin", "width"], {
           easing: ${
             openHelp || openTask || openBookmark ? theme.transitions.easing.easeOut : theme.transitions.easing.sharp
@@ -807,12 +807,7 @@ function ADSAppBar(props) {
           borderBottomColor: adsBlueA,
         }}
       >
-        <Stack
-          sx={{ marginLeft: "12px", marginRight: "24px" }}
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
+        <Stack sx={{ ml: "12px", mr: "24px" }} direction="row" justifyContent="space-between" alignItems="center">
           <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={2}>
             {haveStreet ? (
               <Stack
@@ -972,24 +967,7 @@ function ADSAppBar(props) {
             )}
           </Stack>
           <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={1}>
-            <Box
-              sx={{
-                position: "relative",
-                borderRadius: theme.shape.borderRadius,
-                backgroundColor: alpha(theme.palette.common.white, 0.15),
-                "&:hover": {
-                  backgroundColor: alpha(theme.palette.common.white, 0.25),
-                },
-                marginLeft: 0,
-                width: "100%",
-                [theme.breakpoints.up("sm")]: {
-                  marginLeft: theme.spacing(1),
-                  width: "auto",
-                },
-              }}
-            >
-              <ADSSearch placeholder="Search…" onSearchClick={handleSearchClick} />
-            </Box>
+            <ADSSearch placeholder="Search…" onSearchClick={handleSearchClick} />
             {userCanEdit && (haveSearch || haveStreet || haveProperty) ? (
               <Tooltip title="Add street" arrow placement="bottom-end" sx={tooltipStyle}>
                 <IconButton aria-label="add street" onClick={() => HandleChangeCheck("street")} size="large">
@@ -1018,16 +996,20 @@ function ADSAppBar(props) {
             )}
             {process.env.NODE_ENV === "development" && (
               <Tooltip title="Bookmarks and Views" arrow placement="bottom-end" sx={tooltipStyle}>
-                <IconButton aria-label="bookmarks and views" disabled onClick={handleBookmarkOpen} size="large">
-                  <BookmarkIcon sx={ActionIconStyle()} />
-                </IconButton>
+                <span>
+                  <IconButton aria-label="bookmarks and views" disabled onClick={handleBookmarkOpen} size="large">
+                    <BookmarkIcon sx={ActionIconStyle()} />
+                  </IconButton>
+                </span>
               </Tooltip>
             )}
             {process.env.NODE_ENV === "development" && (
               <Tooltip title="Display tasks" arrow placement="bottom-end" sx={tooltipStyle}>
-                <IconButton aria-label="display tasks" disabled onClick={handleTaskOpen} size="large">
-                  <TaskIcon sx={ActionIconStyle()} />
-                </IconButton>
+                <span>
+                  <IconButton aria-label="display tasks" disabled onClick={handleTaskOpen} size="large">
+                    <TaskIcon sx={ActionIconStyle()} />
+                  </IconButton>
+                </span>
               </Tooltip>
             )}
             <Tooltip title="Help & support" arrow placement="bottom-end" sx={tooltipStyle}>

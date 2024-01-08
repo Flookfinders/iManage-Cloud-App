@@ -3,7 +3,7 @@
 //
 //  Description: Street data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -21,6 +21,7 @@
 //    008   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    009   24.11.23 Sean Flook                 Moved Box to @mui/system and fixed a warning.
 //    010   20.12.23 Sean Flook                 Hide the Delete button until code has been written.
+//    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -56,7 +57,7 @@ import {
   Fade,
   Skeleton,
 } from "@mui/material";
-import { Box } from "@mui/system";
+import { Box, Stack } from "@mui/system";
 import ADSNumberControl from "../components/ADSNumberControl";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSDateControl from "../components/ADSDateControl";
@@ -68,7 +69,7 @@ import AddCircleIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import { CopyIcon } from "../utils/ADSIcons";
 import { adsBlueA, adsRed10, adsRed20, adsWhite, adsLightBlue10 } from "../utils/ADSColours";
 import {
-  streetToolbarStyle,
+  toolbarStyle,
   ActionIconStyle,
   dataFormStyle,
   FormRowStyle,
@@ -649,15 +650,15 @@ function StreetDataTab({
   function LanguageChipStyle(recId) {
     if (itemSelected && itemSelected.toString() === recId.toString())
       return {
-        marginLeft: theme.spacing(0.5),
-        marginRight: theme.spacing(1),
+        ml: theme.spacing(0.5),
+        mr: theme.spacing(1),
         backgroundColor: adsBlueA,
         color: adsWhite,
       };
     else
       return {
-        marginLeft: theme.spacing(0.5),
-        marginRight: theme.spacing(1),
+        ml: theme.spacing(0.5),
+        mr: theme.spacing(1),
         "&:hover": {
           backgroundColor: adsBlueA,
           color: adsWhite,
@@ -875,94 +876,90 @@ function StreetDataTab({
 
   return (
     <Fragment>
-      <Box sx={streetToolbarStyle}>
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Typography variant="subtitle2" sx={{ paddingLeft: theme.spacing(1.5) }}>{`${streetToTitleCase(
-              streetContext.currentStreet.descriptor
-            )}: ${streetContext.currentStreet.usrn}`}</Typography>
-          </Grid>
-          <Grid item sx={{ pr: "4px" }}>
-            <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
-              <IconButton onClick={handleActionsClick} aria_controls="actions-menu" aria-haspopup="true" size="small">
-                <ActionsIcon sx={ActionIconStyle()} />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              id="actions-menu"
-              elevation={2}
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              open={Boolean(anchorEl)}
-              onClose={handleActionsMenuClose}
-              TransitionComponent={Fade}
-              sx={menuStyle}
-            >
-              {((data && data.streetDescriptors && data.streetDescriptors.length === 0) ||
-                ((settingsContext.isWelsh || settingsContext.isScottish) &&
-                  data &&
-                  data.streetDescriptors &&
-                  data.streetDescriptors.length === 1)) && (
-                <MenuItem dense disabled onClick={handleAddLanguage} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit">Add language version</Typography>
-                </MenuItem>
-              )}
-              <MenuItem dense disabled={!userCanEdit} onClick={handleAddProperty} sx={menuItemStyle(true)}>
-                <Typography variant="inherit">Add property on street</Typography>
+      <Box sx={toolbarStyle}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Typography variant="subtitle1" sx={{ pl: theme.spacing(1.5) }}>{`${streetToTitleCase(
+            streetContext.currentStreet.descriptor
+          )}: ${streetContext.currentStreet.usrn}`}</Typography>
+          <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
+            <IconButton onClick={handleActionsClick} aria_controls="actions-menu" aria-haspopup="true" size="small">
+              <ActionsIcon sx={ActionIconStyle()} />
+            </IconButton>
+          </Tooltip>
+          <Menu
+            id="actions-menu"
+            elevation={2}
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleActionsMenuClose}
+            TransitionComponent={Fade}
+            sx={menuStyle}
+          >
+            {((data && data.streetDescriptors && data.streetDescriptors.length === 0) ||
+              ((settingsContext.isWelsh || settingsContext.isScottish) &&
+                data &&
+                data.streetDescriptors &&
+                data.streetDescriptors.length === 1)) && (
+              <MenuItem dense disabled onClick={handleAddLanguage} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Add language version</Typography>
               </MenuItem>
-              <MenuItem dense disabled={!userCanEdit} divider onClick={handleAddRange} sx={menuItemStyle(true)}>
-                <Typography variant="inherit">Add properties</Typography>
+            )}
+            <MenuItem dense disabled={!userCanEdit} onClick={handleAddProperty} sx={menuItemStyle(true)}>
+              <Typography variant="inherit">Add property on street</Typography>
+            </MenuItem>
+            <MenuItem dense disabled={!userCanEdit} divider onClick={handleAddRange} sx={menuItemStyle(true)}>
+              <Typography variant="inherit">Add properties</Typography>
+            </MenuItem>
+            <MenuItem dense onClick={handleZoomToStreet} sx={menuItemStyle(false)}>
+              <Typography variant="inherit">Zoom to this</Typography>
+            </MenuItem>
+            <MenuItem dense onClick={handleOpenInStreetview} sx={menuItemStyle(false)}>
+              <Typography variant="inherit">Open in Street View</Typography>
+            </MenuItem>
+            {process.env.NODE_ENV === "development" && (
+              <MenuItem dense divider disabled onClick={handleViewPropertiesOnStreet} sx={menuItemStyle(true)}>
+                <Typography variant="inherit">View properties on street</Typography>
               </MenuItem>
-              <MenuItem dense onClick={handleZoomToStreet} sx={menuItemStyle(false)}>
-                <Typography variant="inherit">Zoom to this</Typography>
+            )}
+            <MenuItem dense onClick={handleCopyUsrn} sx={menuItemStyle(false)}>
+              <Typography variant="inherit">Copy USRN</Typography>
+            </MenuItem>
+            {process.env.NODE_ENV === "development" && (
+              <MenuItem dense disabled onClick={handleBookmark} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Bookmark</Typography>
               </MenuItem>
-              <MenuItem dense onClick={handleOpenInStreetview} sx={menuItemStyle(false)}>
-                <Typography variant="inherit">Open in Street View</Typography>
+            )}
+            {process.env.NODE_ENV === "development" && (
+              <MenuItem dense disabled onClick={handleAddToList} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Add to list</Typography>
               </MenuItem>
-              {process.env.NODE_ENV === "development" && (
-                <MenuItem dense divider disabled onClick={handleViewPropertiesOnStreet} sx={menuItemStyle(true)}>
-                  <Typography variant="inherit">View properties on street</Typography>
-                </MenuItem>
-              )}
-              <MenuItem dense onClick={handleCopyUsrn} sx={menuItemStyle(false)}>
-                <Typography variant="inherit">Copy USRN</Typography>
+            )}
+            {process.env.NODE_ENV === "development" && (
+              <MenuItem dense divider disabled onClick={handleExportTo} sx={menuItemStyle(true)}>
+                <Typography variant="inherit">Export to...</Typography>
               </MenuItem>
-              {process.env.NODE_ENV === "development" && (
-                <MenuItem dense disabled onClick={handleBookmark} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit">Bookmark</Typography>
-                </MenuItem>
-              )}
-              {process.env.NODE_ENV === "development" && (
-                <MenuItem dense disabled onClick={handleAddToList} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit">Add to list</Typography>
-                </MenuItem>
-              )}
-              {process.env.NODE_ENV === "development" && (
-                <MenuItem dense divider disabled onClick={handleExportTo} sx={menuItemStyle(true)}>
-                  <Typography variant="inherit">Export to...</Typography>
-                </MenuItem>
-              )}
-              <MenuItem dense disabled={!userCanEdit} onClick={handleCloseStreet} sx={menuItemStyle(false)}>
-                <Typography variant="inherit">Close street</Typography>
+            )}
+            <MenuItem dense disabled={!userCanEdit} onClick={handleCloseStreet} sx={menuItemStyle(false)}>
+              <Typography variant="inherit">Close street</Typography>
+            </MenuItem>
+            {process.env.NODE_ENV === "development" && !settingsContext.isScottish && (
+              <MenuItem dense disabled={!userCanEdit} onClick={handleDeleteStreet} sx={menuItemStyle(false)}>
+                <Typography variant="inherit" color="error">
+                  Delete
+                </Typography>
               </MenuItem>
-              {process.env.NODE_ENV === "development" && !settingsContext.isScottish && (
-                <MenuItem dense disabled={!userCanEdit} onClick={handleDeleteStreet} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit" color="error">
-                    Delete
-                  </Typography>
-                </MenuItem>
-              )}
-            </Menu>
-          </Grid>
-        </Grid>
+            )}
+          </Menu>
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>
         <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
@@ -980,7 +977,7 @@ function StreetDataTab({
                   sx={{
                     width: "100%",
                     backgroundColor: theme.palette.background.paper,
-                    paddingTop: theme.spacing(0),
+                    pt: theme.spacing(0),
                   }}
                   component="nav"
                   key={`key_${index}`}
@@ -1037,7 +1034,7 @@ function StreetDataTab({
                 sx={{
                   width: "100%",
                   backgroundColor: theme.palette.background.paper,
-                  paddingTop: theme.spacing(0),
+                  pt: theme.spacing(0),
                 }}
                 component="nav"
                 key="key_no_records"

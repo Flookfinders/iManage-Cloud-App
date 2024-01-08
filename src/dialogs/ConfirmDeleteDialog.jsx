@@ -3,7 +3,7 @@
 //
 //  Description: Confirm delete dialog
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -19,6 +19,7 @@
 //    006   06.10.23 Sean Flook                 Use colour variables.
 //    007   03.11.23 Sean Flook                 Modified highway dedication and one-way exemption dialog titles.
 //    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
+//    009   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -987,7 +988,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
       maxWidth="sm"
       open={open}
       aria-labelledby="confirmation-dialog-title"
-      sx={{ padding: "16px 16px 24px 16px", borderRadius: "9px" }}
+      sx={{ p: "16px 16px 24px 16px", borderRadius: "9px" }}
       onClose={handleCancel}
     >
       <DialogTitle
@@ -1003,7 +1004,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
       </DialogTitle>
       <DialogContent sx={{ backgroundColor: theme.palette.background.paper }}>
         {subtitle && (
-          <Typography variant="h6" sx={{ paddingBottom: theme.spacing(2) }}>
+          <Typography variant="h6" sx={{ pb: theme.spacing(2) }}>
             {subtitle}
           </Typography>
         )}

@@ -3,7 +3,7 @@
 //
 //  Description: Related street tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -21,6 +21,7 @@
 //    008   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    009   03.11.23 Sean Flook                 Updated TreeView and TreeItem.
 //    010   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
+//    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -685,10 +686,12 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
               data.street &&
               data.street
                 .sort(function (a, b) {
-                  return a.address.localeCompare(b.address, undefined, {
-                    numeric: true,
-                    sensitivity: "base",
-                  });
+                  return a.address && b.address
+                    ? a.address.localeCompare(b.address, undefined, {
+                        numeric: true,
+                        sensitivity: "base",
+                      })
+                    : 0;
                 })
                 .map((rec, index) => {
                   return (
@@ -703,8 +706,8 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                             streetChecked.includes(rec.usrn.toString()) ? (
                               <Checkbox
                                 sx={{
-                                  paddingLeft: theme.spacing(0),
-                                  paddingRight: theme.spacing(0),
+                                  pl: theme.spacing(0),
+                                  pr: theme.spacing(0),
                                 }}
                                 checked={streetChecked.includes(rec.usrn.toString())}
                                 onChange={(event) =>

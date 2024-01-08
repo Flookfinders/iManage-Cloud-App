@@ -3,7 +3,7 @@
 //
 //  Description: Property Details Tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -18,6 +18,7 @@
 //    005   06.10.23 Sean Flook                 Use colour variables.
 //    006   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    007   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    008   05.01.24 Sean Flook                 Changes to sort out warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,7 +32,7 @@ import UserContext from "./../context/userContext";
 import SettingsContext from "../context/settingsContext";
 import { ConvertDate } from "../utils/HelperUtils";
 import ObjectComparison from "./../utils/ObjectComparison";
-import { Grid, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -43,7 +44,7 @@ import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import ErrorIcon from "@mui/icons-material/Error";
 import { adsDarkPink } from "../utils/ADSColours";
 import { useTheme } from "@mui/styles";
-import { propertyToolbarStyle, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
 
 PropertyCrossRefTab.propTypes = {
   data: PropTypes.object,
@@ -343,51 +344,34 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onDataChange
 
   return (
     <Fragment>
-      <Box sx={propertyToolbarStyle}>
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Grid container justifyContent="flex-start" alignItems="center">
-              <Grid item>
-                <Stack direction="row" spacing={0.5} justifyContent="flex-start" alignItems="center">
-                  <ADSActionButton
-                    variant="home"
-                    tooltipTitle="Home"
-                    tooltipPlacement="bottom"
-                    onClick={handleHomeClick}
-                  />
-                  <Typography
-                    sx={{
-                      flexGrow: 1,
-                      display: "none",
-                      [theme.breakpoints.up("sm")]: {
-                        display: "block",
-                      },
-                    }}
-                    variant="subtitle1"
-                    noWrap
-                    align="left"
-                  >
-                    {`| Cross ref (${data.index + 1} of ${data.totalRecords}): ${getSourceText(sourceId)}`}
-                  </Typography>
-                  {errors && errors.length > 0 && <ErrorIcon sx={errorIconStyle} />}
-                </Stack>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <Grid container justifyContent="flex-end" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="delete"
-                  disabled={!userCanEdit}
-                  tooltipTitle="Delete"
-                  tooltipPlacement="right"
-                  onClick={handleDeleteClick}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+      <Box sx={toolbarStyle}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Stack direction="row" spacing={0.5} justifyContent="flex-start" alignItems="center">
+            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            <Typography
+              sx={{
+                flexGrow: 1,
+                display: "none",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >
+              {`| Cross ref (${data.index + 1} of ${data.totalRecords}): ${getSourceText(sourceId)}`}
+            </Typography>
+            {errors && errors.length > 0 && <ErrorIcon sx={errorIconStyle} />}
+          </Stack>
+          <ADSActionButton
+            variant="delete"
+            disabled={!userCanEdit}
+            tooltipTitle="Delete"
+            tooltipPlacement="right"
+            onClick={handleDeleteClick}
+          />
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>
         <ADSSelectControl

@@ -17,6 +17,7 @@
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle and removed start and end coordinates as no longer required.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    006   02.01.24 Sean Flook       IMANN-205 Added end date.
+//    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -36,7 +37,7 @@ import ObjectComparison from "../utils/ObjectComparison";
 
 import HWWDesignationCode from "./../data/HWWDesignationCode";
 
-import { Avatar, Grid, Typography } from "@mui/material";
+import { Avatar, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { ArrowDropDown } from "@mui/icons-material";
 import ADSActionButton from "../components/ADSActionButton";
@@ -49,7 +50,7 @@ import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 
 import { adsWhite, adsBlack, adsMidRed } from "../utils/ADSColours";
-import { streetToolbarStyle, dataFormStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataFormStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 HWWDataTab.propTypes = {
@@ -512,94 +513,75 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
 
   return (
     <Fragment>
-      <Box sx={streetToolbarStyle}>
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Grid container justifyContent="flex-start" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="home"
-                  tooltipTitle="Home"
-                  tooltipPlacement="bottom"
-                  onClick={handleHomeClick}
-                />
-              </Grid>
-              <Grid item>
-                <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                  <Typography
-                    sx={{
-                      flexGrow: 1,
-                      display: "none",
-                      [theme.breakpoints.up("sm")]: {
-                        display: "block",
-                      },
-                    }}
-                    variant="subtitle1"
-                    noWrap
-                    align="left"
-                  >
-                    |
-                  </Typography>
-                  <Avatar
-                    variant="circular"
-                    sx={{
-                      height: theme.spacing(2),
-                      width: theme.spacing(2),
-                      color: adsBlack,
-                      backgroundColor: adsWhite,
-                      borderStyle: "solid",
-                      borderWidth: "1px",
-                      borderColor: `${adsMidRed} !important`,
-                    }}
-                  >
-                    <ArrowDropDown
-                      sx={{
-                        height: theme.spacing(2),
-                        width: theme.spacing(2),
-                      }}
-                    />
-                  </Avatar>
-                  <Typography
-                    sx={{
-                      flexGrow: 1,
-                      display: "none",
-                      [theme.breakpoints.up("sm")]: {
-                        display: "block",
-                      },
-                    }}
-                    variant="subtitle1"
-                    noWrap
-                    align="left"
-                  >
-                    {` Height, width and weight restriction (${data.index + 1} of ${data.totalRecords})`}
-                  </Typography>
-                </Stack>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <Grid container justifyContent="flex-end" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="delete"
-                  disabled={!userCanEdit}
-                  tooltipTitle="Delete height, width and weight restriction record"
-                  tooltipPlacement="right"
-                  onClick={handleDeleteHWW}
-                />
-              </Grid>
-              <Grid item>
-                <ADSActionButton
-                  variant="add"
-                  disabled={!userCanEdit}
-                  tooltipTitle="Add new height, width and weight restriction record"
-                  tooltipPlacement="right"
-                  onClick={handleAddHWW}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+      <Box sx={toolbarStyle}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
+            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            <Typography
+              sx={{
+                flexGrow: 1,
+                display: "none",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >
+              |
+            </Typography>
+            <Avatar
+              variant="circular"
+              sx={{
+                height: theme.spacing(2),
+                width: theme.spacing(2),
+                color: adsBlack,
+                backgroundColor: adsWhite,
+                borderStyle: "solid",
+                borderWidth: "1px",
+                borderColor: `${adsMidRed} !important`,
+              }}
+            >
+              <ArrowDropDown
+                sx={{
+                  height: theme.spacing(2),
+                  width: theme.spacing(2),
+                }}
+              />
+            </Avatar>
+            <Typography
+              sx={{
+                flexGrow: 1,
+                display: "none",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >
+              {` Height, width and weight restriction (${data.index + 1} of ${data.totalRecords})`}
+            </Typography>
+          </Stack>
+          <Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <ADSActionButton
+              variant="delete"
+              disabled={!userCanEdit}
+              tooltipTitle="Delete height, width and weight restriction record"
+              tooltipPlacement="right"
+              onClick={handleDeleteHWW}
+            />
+            <ADSActionButton
+              variant="add"
+              disabled={!userCanEdit}
+              tooltipTitle="Add new height, width and weight restriction record"
+              tooltipPlacement="right"
+              onClick={handleAddHWW}
+            />
+          </Stack>
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>
         <ADSSelectControl

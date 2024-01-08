@@ -3,7 +3,7 @@
 //
 //  Description: Wizard Address List
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -20,6 +20,7 @@
 //    007   20.11.23 Sean Flook                 Undone above change.
 //    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and sorted some warnings.
 //    009   30.11.23 Sean Flook                 Change required for Scottish authorities.
+//    010   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1012,7 +1013,7 @@ function ADSWizardAddressList({
           <Tooltip title="Toggle select all / none" arrow placement="right" sx={tooltipStyle}>
             <Checkbox
               sx={{
-                paddingRight: theme.spacing(0),
+                pr: theme.spacing(0),
               }}
               checked={allChecked}
               color="primary"
@@ -1048,7 +1049,7 @@ function ADSWizardAddressList({
           sx={{
             width: "100%",
             backgroundColor: theme.palette.background.paper,
-            paddingTop: theme.spacing(0),
+            pt: theme.spacing(0),
           }}
           component="nav"
           key={"list_wizard-address-list"}

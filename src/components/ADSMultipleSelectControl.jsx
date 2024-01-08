@@ -3,7 +3,7 @@
 //
 //  Description: Multiple Select component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -436,9 +437,9 @@ function ADSMultipleSelectControl({
           return (
             <Box
               sx={{
-                paddingLeft: theme.spacing(2),
-                paddingTop: theme.spacing(1.75),
-                paddingBottom: theme.spacing(1.75),
+                pl: theme.spacing(2),
+                pt: theme.spacing(1.75),
+                pb: theme.spacing(1.75),
               }}
             >
               <img src={currentRow[0][lookupIcon]} alt="" width="20" height="20" />
@@ -458,9 +459,9 @@ function ADSMultipleSelectControl({
               variant="body1"
               align="left"
               sx={{
-                paddingLeft: theme.spacing(2),
-                paddingTop: theme.spacing(1.75),
-                paddingBottom: theme.spacing(1.75),
+                pl: theme.spacing(2),
+                pt: theme.spacing(1.75),
+                pb: theme.spacing(1.75),
               }}
             >
               {currentRow[0][lookupLabel]}
@@ -552,7 +553,7 @@ function ADSMultipleSelectControl({
                               icon={getChipIcon(value)}
                               label={getChipDisplayLabel(value)}
                               sx={{
-                                margin: "2px",
+                                m: "2px",
                               }}
                               onDelete={() => handleRemoveItem(value)}
                               onMouseDown={(event) => {
@@ -566,7 +567,7 @@ function ADSMultipleSelectControl({
                               avatar={getChipAvatar(value)}
                               label={getChipDisplayLabel(value)}
                               sx={{
-                                margin: "2px",
+                                m: "2px",
                               }}
                               onDelete={() => handleRemoveItem(value)}
                               onMouseDown={(event) => {
@@ -638,7 +639,7 @@ function ADSMultipleSelectControl({
                             icon={getChipIcon(value)}
                             label={getChipDisplayLabel(value)}
                             sx={{
-                              margin: "2px",
+                              m: "2px",
                             }}
                             onDelete={() => handleRemoveItem(value)}
                             onMouseDown={(event) => {
@@ -652,7 +653,7 @@ function ADSMultipleSelectControl({
                             avatar={getChipAvatar(value)}
                             label={getChipDisplayLabel(value)}
                             sx={{
-                              margin: "2px",
+                              m: "2px",
                             }}
                             onDelete={() => handleRemoveItem(value)}
                             onMouseDown={(event) => {

@@ -21,6 +21,7 @@
 //    008   03.11.23 Sean Flook                 Updated TreeView and TreeItem.
 //    009   24.11.23 Sean Flook                 Moved Stack to @mui/system.
 //    010   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    011   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -346,9 +347,7 @@ function PropertyTemplatesTab() {
             <Grid container spacing={0} justifyContent="flex-start">
               <Grid item xs={12} sm={2}>
                 <Stack direction="column" spacing={2}>
-                  <Typography sx={{ fontSize: 24, flexGrow: 1, paddingLeft: theme.spacing(3.5) }}>
-                    Property templates
-                  </Typography>
+                  <Typography sx={{ fontSize: 24, flexGrow: 1, pl: theme.spacing(3.5) }}>Property templates</Typography>
                   <TreeView
                     aria-label="property templates navigator"
                     defaultCollapseIcon={<ExpandMoreIcon />}

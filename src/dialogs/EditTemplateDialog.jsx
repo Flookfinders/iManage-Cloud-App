@@ -3,7 +3,7 @@
 //
 //  Description: Edit template dialog
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -23,6 +23,7 @@
 //    010   24.11.23 Joel Benford               Show dropdowns for LPI official/postal in Scotland
 //    011   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
 //    012   05.12.23 Joel Benford               Add Scottish classification dialogue
+//    013   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -102,17 +103,8 @@ import {
   VehiclesProhibitedIcon,
 } from "../utils/ADSIcons";
 
-import {
-  adsBlueA,
-  adsMidGreyA,
-  adsDarkPink,
-  adsDarkGreen,
-} from "../utils/ADSColours";
-import {
-  blueButtonStyle,
-  whiteButtonStyle,
-  FormRowStyle,
-} from "../utils/ADSStyles";
+import { adsBlueA, adsMidGreyA, adsDarkPink, adsDarkGreen } from "../utils/ADSColours";
+import { blueButtonStyle, whiteButtonStyle, FormRowStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditTemplateDialog.propTypes = {
@@ -174,8 +166,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [classificationStartDate, setClassificationStartDate] = useState(null);
   const [otherCrossRefSource, setOtherCrossRefSource] = useState(null);
   const [otherProvenance, setOtherProvenance] = useState(null);
-  const [otherProvenanceStartDate, setOtherProvenanceStartDate] =
-    useState(null);
+  const [otherProvenanceStartDate, setOtherProvenanceStartDate] = useState(null);
   const [otherNote, setOtherNote] = useState(null);
   const [streetType, setStreetType] = useState(null);
   const [streetState, setStreetState] = useState(null);
@@ -197,55 +188,28 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [hdObstruction, setHdObstruction] = useState(false);
   const [hdPlanningOrder, setHdPlanningOrder] = useState(false);
   const [hdVehiclesProhibited, setHdVehiclesProhibited] = useState(false);
-  const [
-    maintenanceResponsibilityStreetStatus,
-    setMaintenanceResponsibilityStreetStatus,
-  ] = useState(null);
-  const [
-    maintenanceResponsibilityCustodian,
-    setMaintenanceResponsibilityCustodian,
-  ] = useState(null);
-  const [
-    maintenanceResponsibilityAuthority,
-    setMaintenanceResponsibilityAuthority,
-  ] = useState(null);
-  const [
-    reinstatementCategoryReinstatementCategory,
-    setReinstatementCategoryReinstatementCategory,
-  ] = useState(null);
-  const [reinstatementCategoryCustodian, setReinstatementCategoryCustodian] =
-    useState(null);
-  const [reinstatementCategoryAuthority, setReinstatementCategoryAuthority] =
-    useState(null);
-  const [
-    osSpecialDesignationSpecialDesignation,
-    setOsSpecialDesignationSpecialDesignation,
-  ] = useState(null);
-  const [osSpecialDesignationCustodian, setOsSpecialDesignationCustodian] =
-    useState(null);
-  const [osSpecialDesignationAuthority, setOsSpecialDesignationAuthority] =
-    useState(null);
+  const [maintenanceResponsibilityStreetStatus, setMaintenanceResponsibilityStreetStatus] = useState(null);
+  const [maintenanceResponsibilityCustodian, setMaintenanceResponsibilityCustodian] = useState(null);
+  const [maintenanceResponsibilityAuthority, setMaintenanceResponsibilityAuthority] = useState(null);
+  const [reinstatementCategoryReinstatementCategory, setReinstatementCategoryReinstatementCategory] = useState(null);
+  const [reinstatementCategoryCustodian, setReinstatementCategoryCustodian] = useState(null);
+  const [reinstatementCategoryAuthority, setReinstatementCategoryAuthority] = useState(null);
+  const [osSpecialDesignationSpecialDesignation, setOsSpecialDesignationSpecialDesignation] = useState(null);
+  const [osSpecialDesignationCustodian, setOsSpecialDesignationCustodian] = useState(null);
+  const [osSpecialDesignationAuthority, setOsSpecialDesignationAuthority] = useState(null);
   const [interestStreetStatus, setInterestStreetStatus] = useState(null);
   const [interestOrganisation, setInterestOrganisation] = useState(null);
   const [interestType, setInterestType] = useState(null);
   const [interestDistrict, setInterestDistrict] = useState(null);
-  const [interestMaintainingOrganisation, setInterestMaintainingOrganisation] =
-    useState(null);
+  const [interestMaintainingOrganisation, setInterestMaintainingOrganisation] = useState(null);
   const [constructionType, setConstructionType] = useState(null);
-  const [constructionReinstatementType, setConstructionReinstatementType] =
-    useState(null);
-  const [
-    constructionAggregateAbrasionValue,
-    setConstructionAggregateAbrasionValue,
-  ] = useState(null);
-  const [constructionPolishedStoneValue, setConstructionPolishedStoneValue] =
-    useState(null);
-  const [constructionOrganisation, setConstructionOrganisation] =
-    useState(null);
+  const [constructionReinstatementType, setConstructionReinstatementType] = useState(null);
+  const [constructionAggregateAbrasionValue, setConstructionAggregateAbrasionValue] = useState(null);
+  const [constructionPolishedStoneValue, setConstructionPolishedStoneValue] = useState(null);
+  const [constructionOrganisation, setConstructionOrganisation] = useState(null);
   const [constructionDistrict, setConstructionDistrict] = useState(null);
   const [specialDesigType, setSpecialDesigType] = useState(null);
-  const [specialDesigOrganisation, setSpecialDesigOrganisation] =
-    useState(null);
+  const [specialDesigOrganisation, setSpecialDesigOrganisation] = useState(null);
   const [specialDesigDistrict, setSpecialDesigDistrict] = useState(null);
   const [specialDesigPeriodicity, setSpecialDesigPeriodicity] = useState(null);
   const [hwwDesignation, setHwwDesignation] = useState(null);
@@ -255,11 +219,9 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [prowStatus, setProwStatus] = useState(null);
   const [prowPedestrianAccess, setProwPedestrianAccess] = useState(false);
   const [prowEquestrianAccess, setProwEquestrianAccess] = useState(false);
-  const [prowNonMotorisedVehicleAccess, setProwNonMotorisedVehicleAccess] =
-    useState(false);
+  const [prowNonMotorisedVehicleAccess, setProwNonMotorisedVehicleAccess] = useState(false);
   const [prowBicycleAccess, setProwBicycleAccess] = useState(false);
-  const [prowMotorisedVehicleAccess, setProwMotorisedVehicleAccess] =
-    useState(false);
+  const [prowMotorisedVehicleAccess, setProwMotorisedVehicleAccess] = useState(false);
   const [prowPromotedRoute, setProwPromotedRoute] = useState(false);
   const [prowAccessibleRoute, setProwAccessibleRoute] = useState(false);
   const [prowOrganisation, setProwOrganisation] = useState(null);
@@ -285,11 +247,9 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [lpiPostalAddressError, setLpiPostalAddressError] = useState(null);
   const [lpiStartDateError, setLpiStartDateError] = useState(null);
   const [classSchemeError, setClassSchemeError] = useState(null);
-  const [classificationStartDateError, setClassificationStartDateError] =
-    useState(null);
+  const [classificationStartDateError, setClassificationStartDateError] = useState(null);
   const [otherProvenanceError, setOtherProvenanceError] = useState(null);
-  const [otherProvenanceStartDateError, setOtherProvenanceStartDateError] =
-    useState(null);
+  const [otherProvenanceStartDateError, setOtherProvenanceStartDateError] = useState(null);
   const [otherNoteError, setOtherNoteError] = useState(null);
 
   /**
@@ -380,26 +340,21 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
 
       case "maintenanceResponsibility":
         return {
-          maintenanceResponsibilityStreetStatus:
-            maintenanceResponsibilityStreetStatus,
-          maintenanceResponsibilityCustodian:
-            maintenanceResponsibilityCustodian,
-          maintenanceResponsibilityAuthority:
-            maintenanceResponsibilityAuthority,
+          maintenanceResponsibilityStreetStatus: maintenanceResponsibilityStreetStatus,
+          maintenanceResponsibilityCustodian: maintenanceResponsibilityCustodian,
+          maintenanceResponsibilityAuthority: maintenanceResponsibilityAuthority,
         };
 
       case "reinstatementCategory":
         return {
-          reinstatementCategoryReinstatementCategory:
-            reinstatementCategoryReinstatementCategory,
+          reinstatementCategoryReinstatementCategory: reinstatementCategoryReinstatementCategory,
           reinstatementCategoryCustodian: reinstatementCategoryCustodian,
           reinstatementCategoryAuthority: reinstatementCategoryAuthority,
         };
 
       case "osSpecialDesignation":
         return {
-          osSpecialDesignationSpecialDesignation:
-            osSpecialDesignationSpecialDesignation,
+          osSpecialDesignationSpecialDesignation: osSpecialDesignationSpecialDesignation,
           osSpecialDesignationCustodian: osSpecialDesignationCustodian,
           osSpecialDesignationAuthority: osSpecialDesignationAuthority,
         };
@@ -536,12 +491,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    * @param {string} updatedField The name of the field that was updated.
    */
   const updateErrors = (updatedField) => {
-    if (errors)
-      setErrors(
-        errors.filter(
-          (x) => x.field.toLowerCase() !== updatedField.toLowerCase()
-        )
-      );
+    if (errors) setErrors(errors.filter((x) => x.field.toLowerCase() !== updatedField.toLowerCase()));
   };
 
   /**
@@ -767,8 +717,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const handleOtherProvenanceChangeEvent = (newValue) => {
     setOtherProvenance(newValue);
     if (variant === "otherWizard") {
-      if (newValue && !otherProvenanceStartDate)
-        setOtherProvenanceStartDate(new Date());
+      if (newValue && !otherProvenanceStartDate) setOtherProvenanceStartDate(new Date());
       updateErrors("provenance");
       setOtherProvenanceError(null);
     }
@@ -1012,9 +961,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    *
    * @param {number} newValue The new reinstatement category.
    */
-  const handleReinstatementCategoryReinstatementCategoryChangeEvent = (
-    newValue
-  ) => {
+  const handleReinstatementCategoryReinstatementCategoryChangeEvent = (newValue) => {
     setReinstatementCategoryReinstatementCategory(newValue);
   };
 
@@ -1041,9 +988,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    *
    * @param {number} newValue The new special designation.
    */
-  const handleOsSpecialDesignationSpecialDesignationChangeEvent = (
-    newValue
-  ) => {
+  const handleOsSpecialDesignationSpecialDesignationChangeEvent = (newValue) => {
     setOsSpecialDesignationSpecialDesignation(newValue);
   };
 
@@ -1478,10 +1423,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredBLPULogicalStatus(
-                settingsContext.isScottish,
-                true
-              )}
+              lookupData={FilteredBLPULogicalStatus(settingsContext.isScottish, true)}
               lookupId="id"
               lookupLabel={GetLookupLabel(settingsContext.isScottish)}
               lookupColour="colour"
@@ -1494,10 +1436,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredRepresentativePointCode(
-                settingsContext.isScottish,
-                true
-              )}
+              lookupData={FilteredRepresentativePointCode(settingsContext.isScottish, true)}
               lookupId="id"
               lookupLabel={GetLookupLabel(settingsContext.isScottish)}
               lookupColour="colour"
@@ -1519,10 +1458,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredBLPUState(
-                settingsContext.isScottish,
-                blpuStatus ? blpuStatus : null
-              )}
+              lookupData={FilteredBLPUState(settingsContext.isScottish, blpuStatus ? blpuStatus : null)}
               lookupId="id"
               lookupLabel={GetLookupLabel(settingsContext.isScottish)}
               lookupColour="colour"
@@ -1538,11 +1474,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 includeHiddenCode
                 useRounded
                 doNotSetTitleCase
-                lookupData={
-                  settingsContext.isScottish
-                    ? OSGClassification
-                    : BLPUClassification
-                }
+                lookupData={settingsContext.isScottish ? OSGClassification : BLPUClassification}
                 lookupId="id"
                 lookupLabel="display"
                 lookupColour="colour"
@@ -1562,11 +1494,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredLPILogicalStatus(
-                settingsContext.isScottish,
-                null,
-                true
-              )}
+              lookupData={FilteredLPILogicalStatus(settingsContext.isScottish, null, true)}
               lookupId="id"
               lookupLabel={GetLookupLabel(settingsContext.isScottish)}
               lookupColour="colour"
@@ -1655,11 +1583,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               includeHiddenCode
               useRounded
               doNotSetTitleCase
-              lookupData={
-                settingsContext.isScottish
-                  ? OSGClassification
-                  : BLPUClassification
-              }
+              lookupData={settingsContext.isScottish ? OSGClassification : BLPUClassification}
               lookupId="id"
               lookupLabel="display"
               lookupColour="colour"
@@ -1678,9 +1602,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               isCrossRef
-              lookupData={lookupContext.currentLookups.appCrossRefs.filter(
-                (x) => x.enabled
-              )}
+              lookupData={lookupContext.currentLookups.appCrossRefs.filter((x) => x.enabled)}
               lookupId="pkId"
               lookupLabel="xrefDescription"
               lookupColour={adsDarkPink}
@@ -1810,14 +1732,10 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               lookupData={lookupContext.currentLookups.adminAuthorities
                 .filter((x) => x.language === "ENG" && !x.historic)
                 .sort(function (a, b) {
-                  return a.administrativeArea.localeCompare(
-                    b.administrativeArea,
-                    undefined,
-                    {
-                      numeric: true,
-                      sensitivity: "base",
-                    }
-                  );
+                  return a.administrativeArea.localeCompare(b.administrativeArea, undefined, {
+                    numeric: true,
+                    sensitivity: "base",
+                  });
                 })}
               lookupId="administrativeAreaRef"
               lookupLabel="administrativeArea"
@@ -1963,39 +1881,19 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               onChange={handleHighwayDedicationCodeChangeEvent}
               helperText="The type of Highway Dedication that applies to this section of the Street."
             />
-            <Grid
-              container
-              justifyContent="flex-start"
-              alignItems="baseline"
-              sx={FormRowStyle()}
-            >
+            <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
               <Grid item xs={3}>
-                <Typography
-                  variant="body2"
-                  align="left"
-                  id="indicator-label"
-                  color="textPrimary"
-                >
+                <Typography variant="body2" align="left" id="indicator-label" color="textPrimary">
                   Indicator
                 </Typography>
               </Grid>
               <Grid item xs={9}>
-                <Grid
-                  container
-                  direction="column"
-                  justifyContent="flex-start"
-                  alignItems="flex-start"
-                >
+                <Grid container direction="column" justifyContent="flex-start" alignItems="flex-start">
                   <Grid item>
                     <FormControlLabel
                       control={
                         <Box sx={{ display: "flex", alignItems: "center" }}>
-                          <Checkbox
-                            checked={hdPRoW}
-                            onChange={(e) =>
-                              handleProwChangeEvent(e.target.checked)
-                            }
-                          />
+                          <Checkbox checked={hdPRoW} onChange={(e) => handleProwChangeEvent(e.target.checked)} />
                           <PRoWIcon sx={getIndicatorStyle(hdPRoW, prowHover)} />
                         </Box>
                       }
@@ -2009,15 +1907,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                     <FormControlLabel
                       control={
                         <Box sx={{ display: "flex", alignItems: "center" }}>
-                          <Checkbox
-                            checked={hdNCR}
-                            onChange={(e) =>
-                              handleNcrChangeEvent(e.target.checked)
-                            }
-                          />
-                          <DirectionsBikeIcon
-                            sx={getIndicatorStyle(hdNCR, ncrHover)}
-                          />
+                          <Checkbox checked={hdNCR} onChange={(e) => handleNcrChangeEvent(e.target.checked)} />
+                          <DirectionsBikeIcon sx={getIndicatorStyle(hdNCR, ncrHover)} />
                         </Box>
                       }
                       label="NCR"
@@ -2032,16 +1923,9 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                         <Box sx={{ display: "flex", alignItems: "center" }}>
                           <Checkbox
                             checked={hdQuietRoute}
-                            onChange={(e) =>
-                              handleQuietRouteChangeEvent(e.target.checked)
-                            }
+                            onChange={(e) => handleQuietRouteChangeEvent(e.target.checked)}
                           />
-                          <QuietRouteIcon
-                            sx={getIndicatorStyle(
-                              hdQuietRoute,
-                              quietRouteHover
-                            )}
-                          />
+                          <QuietRouteIcon sx={getIndicatorStyle(hdQuietRoute, quietRouteHover)} />
                         </Box>
                       }
                       label="Quiet route"
@@ -2056,16 +1940,9 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                         <Box sx={{ display: "flex", alignItems: "center" }}>
                           <Checkbox
                             checked={hdObstruction}
-                            onChange={(e) =>
-                              handleObstructionChangeEvent(e.target.checked)
-                            }
+                            onChange={(e) => handleObstructionChangeEvent(e.target.checked)}
                           />
-                          <ObstructionIcon
-                            sx={getIndicatorStyle(
-                              hdObstruction,
-                              obstructionHover
-                            )}
-                          />
+                          <ObstructionIcon sx={getIndicatorStyle(hdObstruction, obstructionHover)} />
                         </Box>
                       }
                       label="Obstruction"
@@ -2080,25 +1957,15 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                         <Box sx={{ display: "flex", alignItems: "center" }}>
                           <Checkbox
                             checked={hdPlanningOrder}
-                            onChange={(e) =>
-                              handlePlanningOrderChangeEvent(e.target.checked)
-                            }
+                            onChange={(e) => handlePlanningOrderChangeEvent(e.target.checked)}
                           />
-                          <PlanningOrderIcon
-                            sx={getIndicatorStyle(
-                              hdPlanningOrder,
-                              planningOrderHover
-                            )}
-                          />
+                          <PlanningOrderIcon sx={getIndicatorStyle(hdPlanningOrder, planningOrderHover)} />
                         </Box>
                       }
                       label="Planning order"
                       onMouseEnter={handlePlanningOrderMouseEnter}
                       onMouseLeave={handlePlanningOrderMouseLeave}
-                      sx={getIndicatorStyle(
-                        hdPlanningOrder,
-                        planningOrderHover
-                      )}
+                      sx={getIndicatorStyle(hdPlanningOrder, planningOrderHover)}
                     />
                   </Grid>
                   <Grid item>
@@ -2107,27 +1974,17 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                         <Box sx={{ display: "flex", alignItems: "center" }}>
                           <Checkbox
                             checked={hdVehiclesProhibited}
-                            onChange={(e) =>
-                              handleVehiclesProhibitedChangeEvent(
-                                e.target.checked
-                              )
-                            }
+                            onChange={(e) => handleVehiclesProhibitedChangeEvent(e.target.checked)}
                           />
                           <VehiclesProhibitedIcon
-                            sx={getIndicatorStyle(
-                              hdVehiclesProhibited,
-                              vehiclesProhibitedHover
-                            )}
+                            sx={getIndicatorStyle(hdVehiclesProhibited, vehiclesProhibitedHover)}
                           />
                         </Box>
                       }
                       label="Vehicles prohibited"
                       onMouseEnter={handleVehiclesProhibitedMouseEnter}
                       onMouseLeave={handleVehiclesProhibitedMouseLeave}
-                      sx={getIndicatorStyle(
-                        hdVehiclesProhibited,
-                        vehiclesProhibitedHover
-                      )}
+                      sx={getIndicatorStyle(hdVehiclesProhibited, vehiclesProhibitedHover)}
                     />
                   </Grid>
                 </Grid>
@@ -2194,9 +2051,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               lookupLabel={GetLookupLabel(true)}
               lookupColour="colour"
               value={reinstatementCategoryReinstatementCategory}
-              onChange={
-                handleReinstatementCategoryReinstatementCategoryChangeEvent
-              }
+              onChange={handleReinstatementCategoryReinstatementCategoryChangeEvent}
               helperText="The reinstatement category of the street, footpath etc."
             />
             <ADSSelectControl
@@ -2320,18 +2175,12 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               includeHistoric
-              lookupData={lookupContext.currentLookups.operationalDistricts.sort(
-                function (a, b) {
-                  return a.districtName.localeCompare(
-                    b.districtName,
-                    undefined,
-                    {
-                      numeric: true,
-                      sensitivity: "base",
-                    }
-                  );
-                }
-              )}
+              lookupData={lookupContext.currentLookups.operationalDistricts.sort(function (a, b) {
+                return a.districtName.localeCompare(b.districtName, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+              })}
               lookupId="districtId"
               lookupLabel="districtName"
               value={interestDistrict}
@@ -2390,9 +2239,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               doNotSetTitleCase
               lookupData={
                 constructionReinstatementType &&
-                AggregateAbrasionValue.filter(
-                  (x) => x.reinstatementCode === constructionReinstatementType
-                )
+                AggregateAbrasionValue.filter((x) => x.reinstatementCode === constructionReinstatementType)
               }
               lookupId="id"
               lookupLabel={GetLookupLabel(false)}
@@ -2407,9 +2254,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               doNotSetTitleCase
               lookupData={
                 constructionReinstatementType &&
-                PolishedStoneValue.filter(
-                  (x) => x.reinstatementCode === constructionReinstatementType
-                )
+                PolishedStoneValue.filter((x) => x.reinstatementCode === constructionReinstatementType)
               }
               lookupId="id"
               lookupLabel={GetLookupLabel(false)}
@@ -2435,18 +2280,12 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               includeHistoric
-              lookupData={lookupContext.currentLookups.operationalDistricts.sort(
-                function (a, b) {
-                  return a.districtName.localeCompare(
-                    b.districtName,
-                    undefined,
-                    {
-                      numeric: true,
-                      sensitivity: "base",
-                    }
-                  );
-                }
-              )}
+              lookupData={lookupContext.currentLookups.operationalDistricts.sort(function (a, b) {
+                return a.districtName.localeCompare(b.districtName, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+              })}
               lookupId="districtId"
               lookupLabel="districtName"
               value={constructionDistrict}
@@ -2490,18 +2329,12 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               includeHistoric
-              lookupData={lookupContext.currentLookups.operationalDistricts.sort(
-                function (a, b) {
-                  return a.districtName.localeCompare(
-                    b.districtName,
-                    undefined,
-                    {
-                      numeric: true,
-                      sensitivity: "base",
-                    }
-                  );
-                }
-              )}
+              lookupData={lookupContext.currentLookups.operationalDistricts.sort(function (a, b) {
+                return a.districtName.localeCompare(b.districtName, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+              })}
               lookupId="districtId"
               lookupLabel="districtName"
               value={specialDesigDistrict}
@@ -2558,18 +2391,12 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               includeHistoric
-              lookupData={lookupContext.currentLookups.operationalDistricts.sort(
-                function (a, b) {
-                  return a.districtName.localeCompare(
-                    b.districtName,
-                    undefined,
-                    {
-                      numeric: true,
-                      sensitivity: "base",
-                    }
-                  );
-                }
-              )}
+              lookupData={lookupContext.currentLookups.operationalDistricts.sort(function (a, b) {
+                return a.districtName.localeCompare(b.districtName, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+              })}
               lookupId="districtId"
               lookupLabel="districtName"
               value={hwwDistrict}
@@ -2608,29 +2435,14 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               onChange={handleProwStatusChangeEvent}
               helperText="The status of the PRoW."
             />
-            <Grid
-              container
-              justifyContent="flex-start"
-              alignItems="baseline"
-              sx={FormRowStyle()}
-            >
+            <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
               <Grid item xs={3}>
-                <Typography
-                  variant="body2"
-                  align="left"
-                  id="access-label"
-                  color="textPrimary"
-                >
+                <Typography variant="body2" align="left" id="access-label" color="textPrimary">
                   Access
                 </Typography>
               </Grid>
               <Grid item xs={9}>
-                <Grid
-                  container
-                  direction="column"
-                  justifyContent="flex-start"
-                  alignItems="flex-start"
-                >
+                <Grid container direction="column" justifyContent="flex-start" alignItems="flex-start">
                   <Grid item>
                     <ADSProwAccessControl
                       variant="Pedestrian"
@@ -2710,18 +2522,12 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={lookupContext.currentLookups.operationalDistricts.sort(
-                function (a, b) {
-                  return a.districtName.localeCompare(
-                    b.districtName,
-                    undefined,
-                    {
-                      numeric: true,
-                      sensitivity: "base",
-                    }
-                  );
-                }
-              )}
+              lookupData={lookupContext.currentLookups.operationalDistricts.sort(function (a, b) {
+                return a.districtName.localeCompare(b.districtName, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+              })}
               lookupId="districtId"
               lookupLabel="districtName"
               lookupColour="colour"
@@ -2740,10 +2546,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredBLPULogicalStatus(
-                settingsContext.isScottish,
-                true
-              )}
+              lookupData={FilteredBLPULogicalStatus(settingsContext.isScottish, true)}
               lookupId="id"
               lookupLabel={GetLookupLabel(settingsContext.isScottish)}
               lookupColour="colour"
@@ -2757,10 +2560,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredRepresentativePointCode(
-                settingsContext.isScottish,
-                true
-              )}
+              lookupData={FilteredRepresentativePointCode(settingsContext.isScottish, true)}
               lookupId="id"
               lookupLabel={GetLookupLabel(settingsContext.isScottish)}
               lookupColour="colour"
@@ -2783,10 +2583,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredBLPUState(
-                settingsContext.isScottish,
-                blpuStatus ? blpuStatus : null
-              )}
+              lookupData={FilteredBLPUState(settingsContext.isScottish, blpuStatus ? blpuStatus : null)}
               lookupId="id"
               lookupLabel={GetLookupLabel(settingsContext.isScottish)}
               lookupColour="colour"
@@ -2839,11 +2636,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredLPILogicalStatus(
-                settingsContext.isScottish,
-                null,
-                true
-              )}
+              lookupData={FilteredLPILogicalStatus(settingsContext.isScottish, null, true)}
               lookupId="id"
               lookupLabel={GetLookupLabel(settingsContext.isScottish)}
               lookupColour="colour"
@@ -2995,12 +2788,12 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   function getIndicatorStyle(isChecked, isHover) {
     if (isChecked || isHover)
       return {
-        marginRight: theme.spacing(1),
+        mr: theme.spacing(1),
         color: adsBlueA,
       };
     else
       return {
-        marginRight: theme.spacing(1),
+        mr: theme.spacing(1),
         color: adsMidGreyA,
         "&:hover": {
           color: adsBlueA,
@@ -3090,19 +2883,13 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           setHdNCR(data.hdNCR ? data.hdNCR : false);
           setHdQuietRoute(data.hdQuietRoute ? data.hdQuietRoute : false);
           setHdObstruction(data.hdObstruction ? data.hdObstruction : false);
-          setHdPlanningOrder(
-            data.hdPlanningOrder ? data.hdPlanningOrder : false
-          );
-          setHdVehiclesProhibited(
-            data.hdVehiclesProhibited ? data.hdVehiclesProhibited : false
-          );
+          setHdPlanningOrder(data.hdPlanningOrder ? data.hdPlanningOrder : false);
+          setHdVehiclesProhibited(data.hdVehiclesProhibited ? data.hdVehiclesProhibited : false);
           break;
 
         case "maintenanceResponsibility":
           setTemplateType("Maintenance responsibility");
-          setMaintenanceResponsibilityStreetStatus(
-            data.maintenanceResponsibilityStreetStatus
-          );
+          setMaintenanceResponsibilityStreetStatus(data.maintenanceResponsibilityStreetStatus);
           setMaintenanceResponsibilityCustodian(
             data.maintenanceResponsibilityCustodian
               ? data.maintenanceResponsibilityCustodian
@@ -3117,35 +2904,23 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
 
         case "reinstatementCategory":
           setTemplateType("Reinstatement category");
-          setReinstatementCategoryReinstatementCategory(
-            data.reinstatementCategoryReinstatementCategory
-          );
+          setReinstatementCategoryReinstatementCategory(data.reinstatementCategoryReinstatementCategory);
           setReinstatementCategoryCustodian(
-            data.reinstatementCategoryCustodian
-              ? data.reinstatementCategoryCustodian
-              : settingsContext.authorityCode
+            data.reinstatementCategoryCustodian ? data.reinstatementCategoryCustodian : settingsContext.authorityCode
           );
           setReinstatementCategoryAuthority(
-            data.reinstatementCategoryAuthority
-              ? data.reinstatementCategoryAuthority
-              : settingsContext.authorityCode
+            data.reinstatementCategoryAuthority ? data.reinstatementCategoryAuthority : settingsContext.authorityCode
           );
           break;
 
         case "osSpecialDesignation":
           setTemplateType("Special designation");
-          setOsSpecialDesignationSpecialDesignation(
-            data.osSpecialDesignationSpecialDesignation
-          );
+          setOsSpecialDesignationSpecialDesignation(data.osSpecialDesignationSpecialDesignation);
           setOsSpecialDesignationCustodian(
-            data.osSpecialDesignationCustodian
-              ? data.osSpecialDesignationCustodian
-              : settingsContext.authorityCode
+            data.osSpecialDesignationCustodian ? data.osSpecialDesignationCustodian : settingsContext.authorityCode
           );
           setOsSpecialDesignationAuthority(
-            data.osSpecialDesignationAuthority
-              ? data.osSpecialDesignationAuthority
-              : settingsContext.authorityCode
+            data.osSpecialDesignationAuthority ? data.osSpecialDesignationAuthority : settingsContext.authorityCode
           );
           break;
 
@@ -3153,16 +2928,12 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           setTemplateType("Interested organisation");
           setInterestStreetStatus(data.interestStreetStatus);
           setInterestOrganisation(
-            data.interestOrganisation
-              ? data.interestOrganisation
-              : settingsContext.authorityCode
+            data.interestOrganisation ? data.interestOrganisation : settingsContext.authorityCode
           );
           setInterestType(data.interestType);
           setInterestDistrict(data.interestDistrict);
           setInterestMaintainingOrganisation(
-            data.maintainingOrganisation
-              ? data.maintainingOrganisation
-              : settingsContext.authorityCode
+            data.maintainingOrganisation ? data.maintainingOrganisation : settingsContext.authorityCode
           );
           break;
 
@@ -3173,9 +2944,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           setConstructionAggregateAbrasionValue(data.aggregateAbrasionValue);
           setConstructionPolishedStoneValue(data.polishedStoneValue);
           setConstructionOrganisation(
-            data.constructionOrganisation
-              ? data.constructionOrganisation
-              : settingsContext.authorityCode
+            data.constructionOrganisation ? data.constructionOrganisation : settingsContext.authorityCode
           );
           setConstructionDistrict(data.constructionDistrict);
           break;
@@ -3184,9 +2953,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           setTemplateType("Special designation");
           setSpecialDesigType(data.specialDesigType);
           setSpecialDesigOrganisation(
-            data.specialDesigOrganisation
-              ? data.specialDesigOrganisation
-              : settingsContext.authorityCode
+            data.specialDesigOrganisation ? data.specialDesigOrganisation : settingsContext.authorityCode
           );
           setSpecialDesigDistrict(data.specialDesigDistrict);
           setSpecialDesigPeriodicity(data.specialDesigPeriodicity);
@@ -3195,11 +2962,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         case "hww":
           setTemplateType("Height, width & weight restriction");
           setHwwDesignation(data.hwwDesignation);
-          setHwwOrganisation(
-            data.hwwOrganisation
-              ? data.hwwOrganisation
-              : settingsContext.authorityCode
-          );
+          setHwwOrganisation(data.hwwOrganisation ? data.hwwOrganisation : settingsContext.authorityCode);
           setHwwDistrict(data.hwwDistrict);
           break;
 
@@ -3207,30 +2970,14 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           setTemplateType("Public right of way");
           setProwDedication(data.prowDedication);
           setProwStatus(data.prowStatus);
-          setProwPedestrianAccess(
-            data.pedestrianAccess ? data.pedestrianAccess : false
-          );
-          setProwEquestrianAccess(
-            data.equestrianAccess ? data.equestrianAccess : false
-          );
-          setProwNonMotorisedVehicleAccess(
-            data.nonMotorisedVehicleAccess
-              ? data.nonMotorisedVehicleAccess
-              : false
-          );
+          setProwPedestrianAccess(data.pedestrianAccess ? data.pedestrianAccess : false);
+          setProwEquestrianAccess(data.equestrianAccess ? data.equestrianAccess : false);
+          setProwNonMotorisedVehicleAccess(data.nonMotorisedVehicleAccess ? data.nonMotorisedVehicleAccess : false);
           setProwBicycleAccess(data.bicycleAccess ? data.bicycleAccess : false);
-          setProwMotorisedVehicleAccess(
-            data.motorisedVehicleAccess ? data.motorisedVehicleAccess : false
-          );
+          setProwMotorisedVehicleAccess(data.motorisedVehicleAccess ? data.motorisedVehicleAccess : false);
           setProwPromotedRoute(data.promotedRoute ? data.promotedRoute : false);
-          setProwAccessibleRoute(
-            data.accessibleRoute ? data.accessibleRoute : false
-          );
-          setProwOrganisation(
-            data.prowOrganisation
-              ? data.prowOrganisation
-              : settingsContext.authorityCode
-          );
+          setProwAccessibleRoute(data.accessibleRoute ? data.accessibleRoute : false);
+          setProwOrganisation(data.prowOrganisation ? data.prowOrganisation : settingsContext.authorityCode);
           setProwDistrict(data.prowDistrict);
           break;
 
@@ -3281,12 +3028,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
       }
 
       if (
-        [
-          "blpuWizard",
-          "lpiWizard",
-          "classificationWizard",
-          "otherWizard",
-        ].includes(variant) &&
+        ["blpuWizard", "lpiWizard", "classificationWizard", "otherWizard"].includes(variant) &&
         data.errors &&
         data.errors.length > 0
       ) {
@@ -3381,13 +3123,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
     }
 
     setShowDialog(isOpen);
-  }, [
-    variant,
-    data,
-    isOpen,
-    settingsContext.authorityCode,
-    settingsContext.isScottish,
-  ]);
+  }, [variant, data, isOpen, settingsContext.authorityCode, settingsContext.isScottish]);
 
   return (
     <Dialog
@@ -3419,9 +3155,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{ marginTop: theme.spacing(2) }}>
-        {getDialogContent()}
-      </DialogContent>
+      <DialogContent sx={{ mt: theme.spacing(2) }}>{getDialogContent()}</DialogContent>
       <DialogActions
         sx={{
           justifyContent: "flex-start",
@@ -3429,21 +3163,10 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           ml: theme.spacing(3),
         }}
       >
-        <Button
-          onClick={handleDoneClick}
-          autoFocus
-          variant="contained"
-          sx={blueButtonStyle}
-          startIcon={<DoneIcon />}
-        >
+        <Button onClick={handleDoneClick} autoFocus variant="contained" sx={blueButtonStyle} startIcon={<DoneIcon />}>
           Done
         </Button>
-        <Button
-          onClick={handleCancelClick}
-          variant="contained"
-          sx={whiteButtonStyle}
-          startIcon={<CloseIcon />}
-        >
+        <Button onClick={handleCancelClick} variant="contained" sx={whiteButtonStyle} startIcon={<CloseIcon />}>
           Cancel
         </Button>
       </DialogActions>

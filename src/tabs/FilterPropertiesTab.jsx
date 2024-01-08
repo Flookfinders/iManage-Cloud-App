@@ -3,7 +3,7 @@
 //
 //  Description: Properties filter tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   07.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   22.09.23 Sean Flook                 Changes required to handle Scottish classifications.
+//    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -418,7 +419,7 @@ function FilterPropertiesTab(props) {
         <Grid item xs={12}>
           <Divider
             sx={{
-              marginTop: theme.spacing(1),
+              mt: theme.spacing(1),
             }}
           />
         </Grid>
@@ -439,7 +440,7 @@ function FilterPropertiesTab(props) {
       <Grid item xs={12}>
         <Divider
           sx={{
-            marginTop: theme.spacing(1),
+            mt: theme.spacing(1),
           }}
         />
       </Grid>
@@ -458,7 +459,7 @@ function FilterPropertiesTab(props) {
       <Grid item xs={12}>
         <Divider
           sx={{
-            marginTop: theme.spacing(1),
+            mt: theme.spacing(1),
           }}
         />
       </Grid>

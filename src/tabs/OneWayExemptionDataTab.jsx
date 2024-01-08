@@ -3,7 +3,7 @@
 //
 //  Description: One-way exemption data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   03.11.23 Sean Flook                 Added hyphen to one-way.
 //    005   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    006   05.01.24 Sean Flook                 Changes to sort out warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -29,15 +30,15 @@ import { GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
 import OneWayExemptionType from "../data/OneWayExemptionType";
 import OneWayExemptionPeriodicity from "../data/OneWayExemptionPeriodicity";
-import { Grid, Typography } from "@mui/material";
-import { Box } from "@mui/system";
+import { Typography } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSDateTimeControl from "../components/ADSDateTimeControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import { useTheme } from "@mui/styles";
-import { streetToolbarStyle, dataFormStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataFormStyle } from "../utils/ADSStyles";
 
 OneWayExemptionDataTab.propTypes = {
   data: PropTypes.object,
@@ -361,59 +362,42 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataCha
 
   return (
     <Fragment>
-      <Box sx={streetToolbarStyle}>
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Grid container justifyContent="flex-start" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="home"
-                  tooltipTitle="Home"
-                  tooltipPlacement="bottom"
-                  onClick={handleHomeClick}
-                />
-              </Grid>
-              <Grid item>
-                <Typography
-                  sx={{
-                    flexGrow: 1,
-                    display: "none",
-                    [theme.breakpoints.up("sm")]: {
-                      display: "block",
-                    },
-                  }}
-                  variant="subtitle1"
-                  noWrap
-                  align="left"
-                >
-                  {`| ${data.oweData.esuId}: One-way exemption (${data.index + 1} of ${data.totalRecords})`}
-                </Typography>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <Grid container justifyContent="flex-end" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="delete"
-                  disabled={!userCanEdit}
-                  tooltipTitle="Delete one-way exemption"
-                  tooltipPlacement="right"
-                  onClick={handleDeleteOneWayExemption}
-                />
-              </Grid>
-              <Grid item>
-                <ADSActionButton
-                  variant="add"
-                  disabled={!userCanEdit}
-                  tooltipTitle="Add new one-way exemption record"
-                  tooltipPlacement="right"
-                  onClick={handleAddOneWayExemption}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+      <Box sx={toolbarStyle}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Stack direction="row" alignItems="center" justifyContent="flex-start">
+            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            <Typography
+              sx={{
+                flexGrow: 1,
+                display: "none",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >
+              {`| ${data.oweData.esuId}: One-way exemption (${data.index + 1} of ${data.totalRecords})`}
+            </Typography>
+          </Stack>
+          <Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <ADSActionButton
+              variant="delete"
+              disabled={!userCanEdit}
+              tooltipTitle="Delete one-way exemption"
+              tooltipPlacement="right"
+              onClick={handleDeleteOneWayExemption}
+            />
+            <ADSActionButton
+              variant="add"
+              disabled={!userCanEdit}
+              tooltipTitle="Add new one-way exemption record"
+              tooltipPlacement="right"
+              onClick={handleAddOneWayExemption}
+            />
+          </Stack>
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>
         <ADSSelectControl

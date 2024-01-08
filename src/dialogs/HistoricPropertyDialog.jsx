@@ -3,7 +3,7 @@
 //
 //  Description: Historic Property Warning dialog
 //
-//  Copyright:    © 2023 Idox Software Limited.
+//  Copyright:    © 2023 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -14,6 +14,7 @@
 //    001   05.04.23 Sean Flook         WI40596 Initial version.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Stack to @mui/system.
+//    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ function HistoricPropertyDialog({ open, onClose }) {
       maxWidth="sm"
       open={open}
       aria-labelledby="confirmation-dialog-title"
-      sx={{ padding: "16px 16px 24px 16px", borderRadius: "9px" }}
+      sx={{ p: "16px 16px 24px 16px", borderRadius: "9px" }}
       onClose={handleOk}
     >
       <DialogTitle
@@ -67,7 +68,7 @@ function HistoricPropertyDialog({ open, onClose }) {
         </Stack>
       </DialogTitle>
       <DialogContent sx={{ backgroundColor: theme.palette.background.paper }}>
-        <Typography variant="h6" sx={{ paddingBottom: theme.spacing(2) }}>
+        <Typography variant="h6" sx={{ pb: theme.spacing(2) }}>
           This is an historic record and is editable.
         </Typography>
       </DialogContent>

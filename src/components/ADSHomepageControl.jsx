@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    006   05.01.24 Sean Flook                 Changes to sort out warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,7 +31,6 @@ import { GetHomepageUrl } from "../configuration/ADSConfig";
 import { getMonthString } from "../utils/HelperUtils";
 
 import { Grid } from "@mui/material";
-import { Box } from "@mui/system";
 import ADSHomepagePieChartsControl from "./ADSHomepagePieChartsControl";
 import ADSHomepageLatestEditsControl from "./ADSHomepageLatestEditsControl";
 
@@ -80,16 +80,21 @@ function ADSHomepageControl() {
   }, [token, apiData, loaded]);
 
   return (
-    <Box sx={{ backgroundColor: adsMidGreyA10 }}>
-      <Grid container direction="column" justify="center" alignItems="center" spacing={4} sx={{ pt: "10px" }}>
-        <Grid item>
-          <ADSHomepagePieChartsControl data={apiData.pieCharts} />
-        </Grid>
-        <Grid item alignItems="bottom">
-          <ADSHomepageLatestEditsControl data={apiData.latestStreetAndPropertyEdits} />
-        </Grid>
+    <Grid
+      container
+      direction="column"
+      justify="center"
+      alignItems="center"
+      spacing={4}
+      sx={{ pt: "10px", backgroundColor: adsMidGreyA10 }}
+    >
+      <Grid item>
+        <ADSHomepagePieChartsControl data={apiData.pieCharts} />
       </Grid>
-    </Box>
+      <Grid item alignItems="bottom">
+        <ADSHomepageLatestEditsControl data={apiData.latestStreetAndPropertyEdits} />
+      </Grid>
+    </Grid>
   );
 }
 

@@ -3,7 +3,7 @@
 //
 //  Description: ESU Data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -18,6 +18,7 @@
 //    005   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    006   03.11.23 Sean Flook                 Added hyphen to one-way.
 //    007   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
+//    008   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,7 +32,6 @@ import StreetContext from "../context/streetContext";
 import SettingsContext from "../context/settingsContext";
 import MapContext from "../context/mapContext";
 import {
-  Grid,
   Typography,
   Tooltip,
   IconButton,
@@ -78,7 +78,7 @@ import ADSOkCancelControl from "../components/ADSOkCancelControl";
 
 import { adsBlueA, adsMidGreyA, adsRed10, adsRed20, adsWhite, adsLightBlue, adsLightBlue10 } from "../utils/ADSColours";
 import {
-  streetToolbarStyle,
+  toolbarStyle,
   ActionIconStyle,
   dataFormStyle,
   GetTabIconStyle,
@@ -714,7 +714,7 @@ function EsuDataTab({
    */
   const getOweStyle = (index) => {
     const defaultOweStyle = {
-      paddingLeft: theme.spacing(4),
+      pl: theme.spacing(4),
       backgroundColor: grey[100],
       "&:hover": {
         backgroundColor: adsLightBlue10,
@@ -726,7 +726,7 @@ function EsuDataTab({
       const oweRecordErrors = oweErrors.filter((x) => x.index === index);
       if (oweRecordErrors && oweRecordErrors.length > 0) {
         return {
-          paddingLeft: theme.spacing(4),
+          pl: theme.spacing(4),
           backgroundColor: adsRed10,
           "&:hover": {
             backgroundColor: adsRed20,
@@ -745,7 +745,7 @@ function EsuDataTab({
    */
   const getHdStyle = (index) => {
     const defaultHdStyle = {
-      paddingLeft: theme.spacing(4),
+      pl: theme.spacing(4),
       backgroundColor: grey[100],
       "&:hover": {
         backgroundColor: adsLightBlue10,
@@ -757,7 +757,7 @@ function EsuDataTab({
       const hdRecordErrors = hdErrors.filter((x) => x.index === index);
       if (hdRecordErrors && hdRecordErrors.length > 0) {
         return {
-          paddingLeft: theme.spacing(4),
+          pl: theme.spacing(4),
           backgroundColor: adsRed10,
           "&:hover": {
             backgroundColor: adsRed20,
@@ -844,131 +844,104 @@ function EsuDataTab({
 
   return (
     <Fragment>
-      <Box sx={streetToolbarStyle}>
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Grid container justifyContent="flex-start" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="home"
-                  tooltipTitle="Home"
-                  tooltipPlacement="bottom"
-                  onClick={handleHomeClick}
-                />
-              </Grid>
-              <Grid item>
-                <Typography
-                  sx={{
-                    flexGrow: 1,
-                    display: "none",
-                    [theme.breakpoints.up("sm")]: {
-                      display: "block",
-                    },
-                  }}
-                  variant="subtitle1"
-                  noWrap
-                  align="left"
+      <Box sx={toolbarStyle}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Stack direction="row" alignItems="center" justifyContent="flex-start">
+            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            <Typography
+              sx={{
+                flexGrow: 1,
+                display: "none",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >
+              {`| ${data.esuData.esuId < 0 ? `New ESU [${data.esuData.esuId * -1 - 9}]` : `${data.esuData.esuId}`}`}
+            </Typography>
+          </Stack>
+          <Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <ADSActionButton
+              variant="copy"
+              tooltipTitle="Copy ESU Id to clipboard"
+              tooltipPlacement="right"
+              onClick={handleCopyEsuId}
+            />
+            <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
+              <IconButton
+                onClick={handleActionsClick}
+                sx={ActionIconStyle()}
+                aria_controls={`actions-menu-${data.esuData.esuId}`}
+                size="small"
+              >
+                <ActionsIcon />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              id={`actions-menu-${data.esuData.esuId}`}
+              elevation={2}
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleActionsMenuClose}
+              TransitionComponent={Fade}
+              sx={menuStyle}
+            >
+              <MenuItem dense divider={settingsContext.isScottish} onClick={handleAddNewEsu} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Add new ESU</Typography>
+              </MenuItem>
+              {!settingsContext.isScottish && (
+                <MenuItem dense onClick={handleAddHighwayDedication} sx={menuItemStyle(false)}>
+                  <Typography variant="inherit">Add highway dedication</Typography>
+                </MenuItem>
+              )}
+              {!settingsContext.isScottish && (
+                <MenuItem
+                  dense
+                  divider
+                  disabled={!canAddOneWayExemption()}
+                  onClick={handleAddOneWayExemption}
+                  sx={menuItemStyle(false)}
                 >
-                  {`| ${data.esuData.esuId < 0 ? `New ESU [${data.esuData.esuId * -1 - 9}]` : `${data.esuData.esuId}`}`}
-                </Typography>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <Grid container justifyContent="flex-end" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="copy"
-                  tooltipTitle="Copy ESU Id to clipboard"
-                  tooltipPlacement="right"
-                  onClick={handleCopyEsuId}
-                />
-              </Grid>
-              <Grid item>
-                <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
-                  <IconButton
-                    onClick={handleActionsClick}
-                    sx={ActionIconStyle()}
-                    aria_controls={`actions-menu-${data.esuData.esuId}`}
-                    size="small"
-                  >
-                    <ActionsIcon />
-                  </IconButton>
-                </Tooltip>
-                <Menu
-                  id={`actions-menu-${data.esuData.esuId}`}
-                  elevation={2}
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  open={Boolean(anchorEl)}
-                  onClose={handleActionsMenuClose}
-                  TransitionComponent={Fade}
-                  sx={menuStyle}
-                >
-                  <MenuItem
-                    dense
-                    divider={settingsContext.isScottish}
-                    onClick={handleAddNewEsu}
-                    sx={menuItemStyle(false)}
-                  >
-                    <Typography variant="inherit">Add new ESU</Typography>
-                  </MenuItem>
-                  {!settingsContext.isScottish && (
-                    <MenuItem dense onClick={handleAddHighwayDedication} sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Add highway dedication</Typography>
-                    </MenuItem>
-                  )}
-                  {!settingsContext.isScottish && (
-                    <MenuItem
-                      dense
-                      divider
-                      disabled={!canAddOneWayExemption()}
-                      onClick={handleAddOneWayExemption}
-                      sx={menuItemStyle(false)}
-                    >
-                      <Typography variant="inherit">Add one-way exemption</Typography>
-                    </MenuItem>
-                  )}
-                  <MenuItem dense disabled={!userCanEdit} onClick={handleDivideEsu} sx={menuItemStyle(false)}>
-                    <Typography variant="inherit">Divide</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    dense
-                    divider
-                    disabled={!userCanEdit}
-                    onClick={handleUnassignFromStreet}
-                    sx={menuItemStyle(false)}
-                  >
-                    <Typography variant="inherit">Unassign from street</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    dense
-                    divider={!settingsContext.isScottish}
-                    onClick={handleCopyEsuId}
-                    sx={menuItemStyle(false)}
-                  >
-                    <Typography variant="inherit">Copy ID</Typography>
-                  </MenuItem>
-                  {!settingsContext.isScottish && (
-                    <MenuItem dense onClick={handleDeleteEsu} sx={menuItemStyle(false)}>
-                      <Typography variant="inherit" color="error">
-                        Delete
-                      </Typography>
-                    </MenuItem>
-                  )}
-                </Menu>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+                  <Typography variant="inherit">Add one-way exemption</Typography>
+                </MenuItem>
+              )}
+              <MenuItem dense disabled={!userCanEdit} onClick={handleDivideEsu} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Divide</Typography>
+              </MenuItem>
+              <MenuItem
+                dense
+                divider
+                disabled={!userCanEdit}
+                onClick={handleUnassignFromStreet}
+                sx={menuItemStyle(false)}
+              >
+                <Typography variant="inherit">Unassign from street</Typography>
+              </MenuItem>
+              <MenuItem dense divider={!settingsContext.isScottish} onClick={handleCopyEsuId} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Copy ID</Typography>
+              </MenuItem>
+              {!settingsContext.isScottish && (
+                <MenuItem dense onClick={handleDeleteEsu} sx={menuItemStyle(false)}>
+                  <Typography variant="inherit" color="error">
+                    Delete
+                  </Typography>
+                </MenuItem>
+              )}
+            </Menu>
+          </Stack>
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>
         {!settingsContext.isScottish && (
@@ -1100,8 +1073,8 @@ function EsuDataTab({
             sx={{
               width: "100%",
               backgroundColor: theme.palette.background.paper,
-              paddingTop: theme.spacing(0),
-              marginTop: theme.spacing(2),
+              pt: theme.spacing(0),
+              mt: theme.spacing(2),
             }}
             component="nav"
             key="key_highway_dedication"
@@ -1125,7 +1098,7 @@ function EsuDataTab({
                   <IconButton
                     onClick={handleHDExpandCollapse}
                     sx={{
-                      paddingBottom: theme.spacing(1),
+                      pb: theme.spacing(1),
                       color: adsMidGreyA,
                       "&:hover": {
                         color: adsBlueA,
@@ -1136,7 +1109,7 @@ function EsuDataTab({
                   >
                     {openHighwayDedication ? <ExpandMore /> : <ChevronRight />}
                   </IconButton>
-                  <Directions sx={{ color: adsBlueA, marginTop: theme.spacing(0.5) }} />
+                  <Directions sx={{ color: adsBlueA, mt: theme.spacing(0.5) }} />
                 </Fragment>
               </ListItemIcon>
               <ListItemText
@@ -1145,7 +1118,7 @@ function EsuDataTab({
                     <Typography
                       variant="subtitle1"
                       sx={{
-                        paddingLeft: theme.spacing(1),
+                        pl: theme.spacing(1),
                       }}
                     >
                       Highway dedication
@@ -1207,7 +1180,7 @@ function EsuDataTab({
                       >
                         <ListItemAvatar
                           sx={{
-                            paddingLeft: theme.spacing(1),
+                            pl: theme.spacing(1),
                             minWidth: 24,
                           }}
                         >
@@ -1280,7 +1253,7 @@ function EsuDataTab({
                   <IconButton
                     onClick={handleOWEExpandCollapse}
                     sx={{
-                      paddingBottom: theme.spacing(1),
+                      pb: theme.spacing(1),
                       color: adsMidGreyA,
                       "&:hover": {
                         color: adsBlueA,
@@ -1295,7 +1268,7 @@ function EsuDataTab({
                     sx={{
                       color: adsWhite,
                       backgroundColor: adsLightBlue,
-                      marginTop: theme.spacing(0.5),
+                      mt: theme.spacing(0.5),
                     }}
                   />
                 </Fragment>
@@ -1306,7 +1279,7 @@ function EsuDataTab({
                     <Typography
                       variant="subtitle1"
                       sx={{
-                        paddingLeft: theme.spacing(1),
+                        pl: theme.spacing(1),
                       }}
                     >
                       One-way exemption
@@ -1370,7 +1343,7 @@ function EsuDataTab({
                       >
                         <ListItemAvatar
                           sx={{
-                            paddingLeft: theme.spacing(1),
+                            pl: theme.spacing(1),
                             minWidth: 24,
                           }}
                         >

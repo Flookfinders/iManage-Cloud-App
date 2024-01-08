@@ -3,7 +3,7 @@
 //
 //  Description: Display the list of classifications for the property.
 //
-//  Copyright:    © 2023 Idox Software Limited.
+//  Copyright:    © 2023 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
 //    005   08.12.23 Sean Flook                 Migrated DataGrid to v6.
+//    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -26,7 +27,6 @@ import PropTypes from "prop-types";
 import UserContext from "../context/userContext";
 import dateFormat from "dateformat";
 import {
-  Grid,
   Tooltip,
   IconButton,
   Typography,
@@ -44,7 +44,7 @@ import ADSSelectionControl from "../components/ADSSelectionControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import { AddCircleOutlineOutlined as AddCircleIcon } from "@mui/icons-material";
 import { adsBlueA, adsLightBlue10 } from "../utils/ADSColours";
-import { propertyToolbarStyle, ActionIconStyle, dataFormStyle, tooltipStyle, gridRowStyle } from "../utils/ADSStyles";
+import { toolbarStyle, ActionIconStyle, dataFormStyle, tooltipStyle, gridRowStyle } from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
 import { useTheme, makeStyles } from "@mui/styles";
 
@@ -301,39 +301,31 @@ function PropertyOrganisationListTab({
 
   return (
     <Fragment>
-      <Box sx={propertyToolbarStyle} id="ads-organisation-data-grid">
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Typography variant="subtitle2" sx={{ paddingLeft: theme.spacing(2) }}>
-              Organisations
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Grid container justifyContent="flex-end" spacing={1}>
-              <Grid item>
-                <Tooltip title="Add new organisation record" arrow placement="right" sx={tooltipStyle}>
-                  <IconButton
-                    sx={ActionIconStyle()}
-                    disabled={!userCanEdit}
-                    onClick={handleAddOrganisationClick}
-                    size="small"
-                  >
-                    <AddCircleIcon />
-                    <Typography
-                      variant="subtitle2"
-                      sx={{
-                        paddingLeft: theme.spacing(1),
-                        paddingRight: theme.spacing(1),
-                      }}
-                    >
-                      Organisation
-                    </Typography>
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+      <Box sx={toolbarStyle} id="ads-organisation-data-grid">
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Typography variant="subtitle1" sx={{ pl: theme.spacing(2) }}>
+            Organisations
+          </Typography>
+          <Tooltip title="Add new organisation record" arrow placement="right" sx={tooltipStyle}>
+            <IconButton
+              sx={ActionIconStyle()}
+              disabled={!userCanEdit}
+              onClick={handleAddOrganisationClick}
+              size="small"
+            >
+              <AddCircleIcon />
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  pl: theme.spacing(1),
+                  pr: theme.spacing(1),
+                }}
+              >
+                Organisation
+              </Typography>
+            </IconButton>
+          </Tooltip>
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")} className={classes.root}>
         {loading ? (
@@ -380,7 +372,7 @@ function PropertyOrganisationListTab({
             sx={{
               width: "100%",
               backgroundColor: theme.palette.background.paper,
-              paddingTop: theme.spacing(0),
+              pt: theme.spacing(0),
             }}
             component="nav"
             key="key_no_records"
@@ -398,7 +390,13 @@ function PropertyOrganisationListTab({
                 },
               }}
             >
-              <ListItemText primary={<Typography variant="subtitle1">No organisation records present</Typography>} />
+              <ListItemText
+                primary={
+                  <Typography variant="subtitle1" sx={{ pl: "16px" }}>
+                    No organisation records present
+                  </Typography>
+                }
+              />
               <ListItemAvatar
                 sx={{
                   minWidth: 32,

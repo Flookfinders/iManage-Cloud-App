@@ -3,7 +3,7 @@
 //
 //  Description: Control for handling a selection of objects
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -22,6 +22,7 @@
 //    009   03.11.23 Sean Flook       IMANN-175 Use the same menu item for classification.
 //    010   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
 //    011   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system, use getClassificationCode method and renamed successor to successorCrossRef.
+//    012   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1106,7 +1107,7 @@ function ADSSelectionControl({
             <Typography variant="body2">{`${selectionCount} selected`}</Typography>
           </Stack>
           {numberOfTypes > 1 && (
-            <Typography variant="body2" color="error" sx={{ paddingRight: "10px" }}>
+            <Typography variant="body2" color="error" sx={{ pr: "10px" }}>
               No shared actions
             </Typography>
           )}

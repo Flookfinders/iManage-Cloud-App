@@ -3,7 +3,7 @@
 //
 //  Description: Related Property tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -25,6 +25,7 @@
 //    011   20.11.23 Sean Flook                 Undone above change.
 //    012   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
 //    013   29.11.23 Sean Flook       IMANN-163 Added id's to the TreeItem to remove warning and corrected expanded data type.
+//    014   05.01.24 Sean Flook                 Changes to sort out warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -901,10 +902,12 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
               data.properties
                 .filter((x) => !x.parentUprn)
                 .sort(function (a, b) {
-                  return a.primary.address.localeCompare(b.primary.address, undefined, {
-                    numeric: true,
-                    sensitivity: "base",
-                  });
+                  return a.primary.address && b.primary.address
+                    ? a.primary.address.localeCompare(b.primary.address, undefined, {
+                        numeric: true,
+                        sensitivity: "base",
+                      })
+                    : 0;
                 })
                 .map((rec, index) => {
                   return (
@@ -1036,10 +1039,12 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                         data.properties
                           .filter((x) => x.parentUprn === rec.uprn)
                           .sort(function (a, b) {
-                            return a.primary.address.localeCompare(b.primary.address, undefined, {
-                              numeric: true,
-                              sensitivity: "base",
-                            });
+                            return a.primary.address && b.primary.address
+                              ? a.primary.address.localeCompare(b.primary.address, undefined, {
+                                  numeric: true,
+                                  sensitivity: "base",
+                                })
+                              : 0;
                           })
                           .map((child1, childIndex1) => {
                             return (
@@ -1189,10 +1194,12 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                   data.properties
                                     .filter((x) => x.parentUprn === child1.uprn)
                                     .sort(function (a, b) {
-                                      return a.primary.address.localeCompare(b.primary.address, undefined, {
-                                        numeric: true,
-                                        sensitivity: "base",
-                                      });
+                                      return a.primary.address && b.primary.address
+                                        ? a.primary.address.localeCompare(b.primary.address, undefined, {
+                                            numeric: true,
+                                            sensitivity: "base",
+                                          })
+                                        : 0;
                                     })
                                     .map((child2, childIndex2) => {
                                       return (
@@ -1375,10 +1382,12 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                             data.properties
                                               .filter((x) => x.parentUprn === child2.uprn)
                                               .sort(function (a, b) {
-                                                return a.primary.address.localeCompare(b.primary.address, undefined, {
-                                                  numeric: true,
-                                                  sensitivity: "base",
-                                                });
+                                                return a.primary.address && b.primary.address
+                                                  ? a.primary.address.localeCompare(b.primary.address, undefined, {
+                                                      numeric: true,
+                                                      sensitivity: "base",
+                                                    })
+                                                  : 0;
                                               })
                                               .map((child3, childIndex3) => {
                                                 return (

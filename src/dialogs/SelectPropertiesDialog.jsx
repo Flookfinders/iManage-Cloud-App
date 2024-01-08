@@ -3,7 +3,7 @@
 //
 //  Description: Dialog used when properties are selected from the map.
 //
-//  Copyright:    © 2023 Idox Software Limited.
+//  Copyright:    © 2023 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   01.11.23 Sean Flook       IMANN-175 Initial version.
 //    002   24.11.23 Sean Flook                 Moved Stack to @mui/system.
+//    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -75,7 +76,7 @@ function SelectPropertiesDialog({ open, propertyCount, onClose }) {
       maxWidth="sm"
       open={open}
       aria-labelledby="select-properties-dialog-title"
-      sx={{ padding: "16px 16px 24px 16px", borderRadius: "9px" }}
+      sx={{ p: "16px 16px 24px 16px", borderRadius: "9px" }}
       onClose={handleCancel}
     >
       <DialogTitle

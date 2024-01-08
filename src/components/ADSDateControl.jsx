@@ -26,6 +26,7 @@
 //    013   18.12.23 Sean Flook                 Ensure tooltip is displayed
 //    014   20.12.23 Sean Flook       IMANN-201 Added hideYear property to hide the year in the control.
 //    015   03.01.24 Sean Flook                 Fixed warning.
+//    016   05.01.24 Sean Flook                 use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -221,9 +222,9 @@ function ADSDateControl({
                 variant="body1"
                 align="left"
                 sx={{
-                  paddingLeft: theme.spacing(2),
-                  paddingTop: theme.spacing(1.75),
-                  paddingBottom: theme.spacing(1.75),
+                  pl: theme.spacing(2),
+                  pt: theme.spacing(1.75),
+                  pb: theme.spacing(1.75),
                 }}
                 aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
               >

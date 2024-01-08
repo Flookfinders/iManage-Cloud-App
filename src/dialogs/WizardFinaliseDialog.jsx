@@ -3,7 +3,7 @@
 //
 //  Description: Control used to display a list of the errors.
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    006   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -332,7 +333,7 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
       maxWidth="sm"
       open={showOpen}
       aria-labelledby="wizard-finalise-dialog-title"
-      sx={{ padding: "16px 16px 24px 16px", borderRadius: "9px" }}
+      sx={{ p: "16px 16px 24px 16px", borderRadius: "9px" }}
       onClose={handleClose}
     >
       <DialogTitle

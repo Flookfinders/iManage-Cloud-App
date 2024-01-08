@@ -3,7 +3,7 @@
 //
 //  Description: Bookmark Drawer component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -14,6 +14,7 @@
 //    001   06.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -116,7 +117,7 @@ function ADSBookmarkDrawer(props) {
         sx={{
           display: "flex",
           alignItems: "center",
-          padding: theme.spacing(0, 1),
+          p: theme.spacing(0, 1),
           // necessary for content to be below app bar
           ...theme.mixins.toolbar,
           justifyContent: "flex-start",
@@ -155,7 +156,7 @@ function ADSBookmarkDrawer(props) {
           justifyContent="center"
           alignItems="flex-start"
           sx={{
-            paddingLeft: theme.spacing(2),
+            pl: theme.spacing(2),
           }}
         >
           {HasProperties() && (
@@ -164,7 +165,7 @@ function ADSBookmarkDrawer(props) {
                 item
                 xs={12}
                 sx={{
-                  paddingTop: theme.spacing(1),
+                  pt: theme.spacing(1),
                 }}
               >
                 <Typography
@@ -181,7 +182,7 @@ function ADSBookmarkDrawer(props) {
                 item
                 xs={12}
                 sx={{
-                  paddingTop: theme.spacing(1),
+                  pt: theme.spacing(1),
                 }}
               >
                 <List dense>
@@ -217,7 +218,7 @@ function ADSBookmarkDrawer(props) {
             item
             xs={12}
             sx={{
-              paddingTop: theme.spacing(1),
+              pt: theme.spacing(1),
             }}
           >
             <Typography
@@ -234,7 +235,7 @@ function ADSBookmarkDrawer(props) {
             item
             xs={12}
             sx={{
-              paddingTop: theme.spacing(1),
+              pt: theme.spacing(1),
             }}
           >
             <List dense>
@@ -264,7 +265,7 @@ function ADSBookmarkDrawer(props) {
                 item
                 xs={12}
                 sx={{
-                  paddingTop: theme.spacing(1),
+                  pt: theme.spacing(1),
                 }}
               >
                 <Typography
@@ -281,7 +282,7 @@ function ADSBookmarkDrawer(props) {
                 item
                 xs={12}
                 sx={{
-                  paddingTop: theme.spacing(1),
+                  pt: theme.spacing(1),
                 }}
               >
                 <List dense>
@@ -313,14 +314,14 @@ function ADSBookmarkDrawer(props) {
                 item
                 xs={12}
                 sx={{
-                  paddingTop: theme.spacing(1),
+                  pt: theme.spacing(1),
                 }}
               >
                 <Grid
                   item
                   xs={12}
                   sx={{
-                    paddingTop: theme.spacing(1),
+                    pt: theme.spacing(1),
                   }}
                 >
                   <Typography
@@ -337,7 +338,7 @@ function ADSBookmarkDrawer(props) {
                   item
                   xs={12}
                   sx={{
-                    paddingTop: theme.spacing(1),
+                    pt: theme.spacing(1),
                   }}
                 ></Grid>
                 {props.bookmarks &&
@@ -358,7 +359,7 @@ function ADSBookmarkDrawer(props) {
             item
             xs={12}
             sx={{
-              paddingTop: theme.spacing(1),
+              pt: theme.spacing(1),
             }}
           >
             <Typography
@@ -375,7 +376,7 @@ function ADSBookmarkDrawer(props) {
             item
             xs={12}
             sx={{
-              paddingTop: theme.spacing(1),
+              pt: theme.spacing(1),
             }}
           >
             <List dense>
@@ -415,7 +416,7 @@ function ADSBookmarkDrawer(props) {
             item
             xs={12}
             sx={{
-              paddingTop: theme.spacing(1),
+              pt: theme.spacing(1),
             }}
           >
             <Typography
@@ -432,7 +433,7 @@ function ADSBookmarkDrawer(props) {
             item
             xs={12}
             sx={{
-              paddingTop: theme.spacing(1),
+              pt: theme.spacing(1),
             }}
           >
             <List dense>

@@ -3,7 +3,7 @@
 //
 //  Description: Dialog used to multi-edit the address fields
 //
-//  Copyright:    © 2023 Idox Software Limited.
+//  Copyright:    © 2023 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -14,6 +14,7 @@
 //    001   23.10.23 Sean Flook       IMANN-175 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //    003   08.12.23 Sean Flook                 Migrated DataGrid to v6.
+//    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -606,7 +607,7 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{ marginTop: theme.spacing(2) }}>
+      <DialogContent sx={{ mt: theme.spacing(2) }}>
         {!completed ? (
           <Fragment>
             <Typography variant="body1" gutterBottom>
@@ -781,7 +782,7 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
           </Fragment>
         )}
       </DialogContent>
-      <DialogActions sx={{ justifyContent: "center", marginBottom: theme.spacing(2) }}>
+      <DialogActions sx={{ justifyContent: "center", mb: theme.spacing(2) }}>
         {!completed ? (
           <Stack direction="column" spacing={3}>
             {!noteOpen && (

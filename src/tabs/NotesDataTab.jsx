@@ -3,7 +3,7 @@
 //
 //  Description: Notes data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   10.08.23 Sean Flook                 Added last user field.
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -34,7 +35,7 @@ import ADSTextControl from "../components/ADSTextControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import ErrorIcon from "@mui/icons-material/Error";
 import { useTheme } from "@mui/styles";
-import { streetToolbarStyle, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
 
 NotesDataTab.propTypes = {
   data: PropTypes.object,
@@ -286,7 +287,7 @@ function NotesDataTab({ data, errors, loading, focusedField, onDataChanged, onDe
 
   return (
     <Fragment>
-      <Box sx={streetToolbarStyle}>
+      <Box sx={toolbarStyle}>
         <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
             <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />

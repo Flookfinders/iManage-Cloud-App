@@ -21,6 +21,7 @@
 //    008   03.11.23 Sean Flook                 Added debug code.
 //    009   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and changes required for Scottish authorities.
 //    010   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    011   05.01.24 Sean Flook                 Changes to sort out warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -57,7 +58,7 @@ import PostallyAddressable from "./../data/PostallyAddressable";
 import { MoreVert as ActionsIcon } from "@mui/icons-material";
 import { adsMidGreyA, adsDarkGrey, adsLightGreyB } from "../utils/ADSColours";
 import {
-  propertyToolbarStyle,
+  toolbarStyle,
   dataFormStyle,
   ActionIconStyle,
   menuStyle,
@@ -1039,10 +1040,9 @@ function PropertyLPITab({
 
   return (
     <Fragment>
-      <Box sx={propertyToolbarStyle}>
+      <Box sx={toolbarStyle}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Stack direction="row" spacing={0} justifyContent="flex-start" alignItems="center">
-            <Box sx={{ width: "12px" }} />
+          <Stack direction="row" spacing={0} justifyContent="flex-start" alignItems="center" sx={{ pl: "4px" }}>
             <ADSActionButton
               variant="home"
               tooltipTitle="Back to property details"

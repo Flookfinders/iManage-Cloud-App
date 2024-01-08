@@ -3,7 +3,7 @@
 //
 //  Description: URL data about the api calls we need to make
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   07.09.23 Sean Flook                 Cleaned the code and function names.
 //    004   03.11.23 Sean Flook       IMANN-175 Added GetMultiEditSearchUrl.
 //    005   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
+//    006   05.01.24 Sean Flook                 Correctly call GetApiSite.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -600,7 +601,7 @@ export function GetOperationalDistrictUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetTempAddressUrl(userToken) {
-  const url = GetApiSite("/api/TempAddress");
+  const url = GetApiSite("main", "/api/TempAddress");
   return getUrl(url, "POST", "application/json", userToken);
 }
 
@@ -611,7 +612,7 @@ export function GetTempAddressUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetApiMetadataUrl(userToken) {
-  const url = GetApiSite("/api/Version");
+  const url = GetApiSite("main", "/api/Version");
   return getUrl(url, "GET", "application/json", userToken);
 }
 

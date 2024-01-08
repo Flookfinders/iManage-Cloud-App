@@ -18,6 +18,7 @@
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    006   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    007   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    008   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -356,7 +357,7 @@ function MapLayersTab(props) {
 
   const sortModel = [{ field: "layerPosition", sort: "desc" }];
 
-  const stackStyle = { marginLeft: theme.spacing(2), marginTop: theme.spacing(1), width: "55vw" };
+  const stackStyle = { ml: theme.spacing(2), mt: theme.spacing(1), width: "55vw" };
 
   /**
    * Event to handle when the add button is clicked.
@@ -786,7 +787,7 @@ function MapLayersTab(props) {
         bgcolor: adsBlueA,
         width: "24px",
         height: "24px",
-        marginTop: "2px",
+        mt: "2px",
       };
     else {
       switch (type) {
@@ -795,7 +796,7 @@ function MapLayersTab(props) {
             bgcolor: adsLightBlue,
             width: "24px",
             height: "24px",
-            marginTop: "2px",
+            mt: "2px",
           };
 
         case 2: // WMS
@@ -803,7 +804,7 @@ function MapLayersTab(props) {
             bgcolor: adsDarkBlue,
             width: "24px",
             height: "24px",
-            marginTop: "2px",
+            mt: "2px",
           };
 
         default: // WMTS
@@ -811,7 +812,7 @@ function MapLayersTab(props) {
             bgcolor: adsMagenta,
             width: "24px",
             height: "24px",
-            marginTop: "2px",
+            mt: "2px",
           };
       }
     }

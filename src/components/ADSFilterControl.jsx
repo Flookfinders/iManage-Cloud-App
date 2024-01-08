@@ -3,7 +3,7 @@
 //
 //  Description: Filter Control
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,7 +13,8 @@
 //#region Version 1.0.0.0 changes
 //    001   12.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
-//    009   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    004   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -58,11 +59,7 @@ function TabPanel(props) {
       aria-labelledby={`full-width-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && <Box p={3}>{children}</Box>}
     </Box>
   );
 }
@@ -290,8 +287,8 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
     <Box
       sx={{
         width: "40ch",
-        marginTop: theme.spacing(2.5),
-        paddingBottom: theme.spacing(7),
+        mt: theme.spacing(2.5),
+        pb: theme.spacing(7),
         borderWidth: "1px",
         borderColor: adsLightGreyB,
         backgroundColor: grey[200],
@@ -386,21 +383,21 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
         position="static"
         color="default"
         sx={{
-          marginTop: theme.spacing(1),
+          mt: theme.spacing(1),
           top: "auto",
           bottom: 0,
         }}
       >
         <Box
           sx={{
-            marginLeft: "auto",
-            marginRight: theme.spacing(1),
+            ml: "auto",
+            mr: theme.spacing(1),
           }}
         >
           <Button
             variant="contained"
             sx={{
-              marginLeft: theme.spacing(1),
+              ml: theme.spacing(1),
               color: adsWhite,
               backgroundColor: adsBlueA,
               "&:hover": {
@@ -415,7 +412,7 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
           </Button>
           <Button
             sx={{
-              marginLeft: theme.spacing(1),
+              ml: theme.spacing(1),
               color: adsBlueA,
               "&:hover": {
                 backgroundColor: adsLightBlue,
@@ -429,7 +426,7 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
           </Button>
           <Button
             sx={{
-              marginLeft: theme.spacing(1),
+              ml: theme.spacing(1),
               color: adsBlueA,
               "&:hover": {
                 backgroundColor: adsLightBlue,

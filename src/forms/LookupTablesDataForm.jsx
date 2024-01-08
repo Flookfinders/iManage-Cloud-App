@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    005   01.12.23 Sean Flook       IMANN-194 Modified UpdateLookups to use the new LookupContext.onUpdateLookup event.
 //    006   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    007   05.01.24 Sean Flook                 Changes to sort out warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -27,7 +28,7 @@ import PropTypes from "prop-types";
 import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
-import { Typography, Snackbar, Alert } from "@mui/material";
+import { Snackbar, Alert } from "@mui/material";
 import { Box } from "@mui/system";
 import {
   GetPostcodeUrl,
@@ -62,11 +63,7 @@ function TabPanel(props) {
       aria-labelledby={`setting-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && <Box p={3}>{children}</Box>}
     </div>
   );
 }

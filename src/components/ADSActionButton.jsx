@@ -3,7 +3,7 @@
 //
 //  Description: Action Button component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   02.07.21 Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
+//    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -306,8 +307,8 @@ function ADSActionButton({
             <Typography
               variant="body2"
               sx={{
-                paddingLeft: theme.spacing(0.5),
-                paddingRight: theme.spacing(1),
+                pl: theme.spacing(0.5),
+                pr: theme.spacing(1),
               }}
             >
               {buttonLabel}

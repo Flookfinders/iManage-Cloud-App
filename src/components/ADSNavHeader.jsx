@@ -3,7 +3,7 @@
 //
 //  Description: Navigation Bar Header component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -14,6 +14,7 @@
 //    001   02.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
 //    003   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate.
+//    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -273,7 +274,7 @@ const ADSNavHeader = () => {
     <Fragment>
       <Grid item xs={12}>
         <img
-          sx={{ marginLeft: theme.spacing(2) }}
+          sx={{ ml: theme.spacing(2) }}
           src="/images/aligned_assets_logo.svg"
           alt="Idox Software Limited"
           width="32"

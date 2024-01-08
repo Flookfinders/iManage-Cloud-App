@@ -3,7 +3,7 @@
 //
 //  Description: PRoW access component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -92,12 +93,12 @@ function ADSProwAccessControl({ variant, value, isEditable, isFocused, loading, 
   function getIndicatorStyle(isChecked, isHover) {
     if (isChecked || isHover)
       return {
-        marginRight: theme.spacing(1),
+        mr: theme.spacing(1),
         color: adsBlueA,
       };
     else
       return {
-        marginRight: theme.spacing(1),
+        mr: theme.spacing(1),
         color: adsMidGreyA,
         "&:hover": {
           color: adsBlueA,

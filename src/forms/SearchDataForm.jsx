@@ -3,7 +3,7 @@
 //
 //  Description: ESU Data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and removed some warnings.
+//    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -78,11 +79,7 @@ function TabPanel(props) {
       aria-labelledby={`full-width-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && <Box p={3}>{children}</Box>}
     </div>
   );
 }
@@ -795,7 +792,7 @@ function SearchDataForm() {
               <Fragment>
                 <Checkbox
                   sx={{
-                    paddingRight: theme.spacing(0),
+                    pr: theme.spacing(0),
                   }}
                   checked={allChecked}
                   color="primary"
@@ -804,7 +801,7 @@ function SearchDataForm() {
                 />
                 <IconButton
                   sx={{
-                    paddingLeft: theme.spacing(0),
+                    pl: theme.spacing(0),
                   }}
                   onClick={handleSelectMenuClick}
                   aria-controls="select-menu"
@@ -830,7 +827,7 @@ function SearchDataForm() {
                 <Typography
                   variant="inherit"
                   sx={{
-                    paddingLeft: theme.spacing(1),
+                    pl: theme.spacing(1),
                   }}
                 >
                   All
@@ -840,7 +837,7 @@ function SearchDataForm() {
                 <Typography
                   variant="inherit"
                   sx={{
-                    paddingLeft: theme.spacing(1),
+                    pl: theme.spacing(1),
                   }}
                 >
                   Properties
@@ -850,7 +847,7 @@ function SearchDataForm() {
                 <Typography
                   variant="inherit"
                   sx={{
-                    paddingLeft: theme.spacing(1),
+                    pl: theme.spacing(1),
                   }}
                 >
                   Streets

@@ -3,7 +3,7 @@
 //
 //  Description: Property template data form
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   17.03.23 Sean Flook         WI40578 Added ability to filter templates by templateUseType.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -77,7 +78,7 @@ function PropertyTemplatesDataForm({
 
   const [selectedCard, setSelectedCard] = useState(null);
 
-  const stackStyle = { marginLeft: theme.spacing(2), marginTop: theme.spacing(1), width: "65vw" };
+  const stackStyle = { ml: theme.spacing(2), mt: theme.spacing(1), width: "65vw" };
 
   /**
    * Event to handle adding a new template.
@@ -151,7 +152,7 @@ function PropertyTemplatesDataForm({
         bgcolor: adsBlueA,
         width: "24px",
         height: "24px",
-        marginTop: "2px",
+        mt: "2px",
       };
     else
       switch (type) {
@@ -160,7 +161,7 @@ function PropertyTemplatesDataForm({
             bgcolor: adsLightBlue,
             width: "24px",
             height: "24px",
-            marginTop: "2px",
+            mt: "2px",
           };
 
         case 3: // User
@@ -168,7 +169,7 @@ function PropertyTemplatesDataForm({
             bgcolor: adsDarkBlue,
             width: "24px",
             height: "24px",
-            marginTop: "2px",
+            mt: "2px",
           };
 
         default:
@@ -176,7 +177,7 @@ function PropertyTemplatesDataForm({
             bgcolor: adsMagenta,
             width: "24px",
             height: "24px",
-            marginTop: "2px",
+            mt: "2px",
           };
       }
   };
@@ -256,13 +257,13 @@ function PropertyTemplatesDataForm({
                   {rec.templateName}
                 </Typography>
               </Stack>
-              <Typography variant="body2" align="left" sx={{ marginTop: theme.spacing(1) }}>
+              <Typography variant="body2" align="left" sx={{ mt: theme.spacing(1) }}>
                 {rec.templateDescription}
               </Typography>
             </CardContent>
           </CardActionArea>
           <CardActions sx={{ height: "30px" }}>
-            <Stack direction="row" spacing={2} sx={{ marginLeft: theme.spacing(1) }}>
+            <Stack direction="row" spacing={2} sx={{ ml: theme.spacing(1) }}>
               {selectedCard && selectedCard === rec.templatePkId && (
                 <Tooltip title="Edit template" placement="bottom" sx={tooltipStyle}>
                   <IconButton onClick={(event) => doEditTemplate(event, rec.templatePkId)} size="small">

@@ -3,7 +3,7 @@
 //
 //  Description: Display the list of BLPU provenances for the property.
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -17,6 +17,7 @@
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
 //    006   08.12.23 Sean Flook                 Migrated DataGrid to v6.
+//    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,7 +32,6 @@ import SettingsContext from "../context/settingsContext";
 import dateFormat from "dateformat";
 import { GetLookupLabel } from "../utils/HelperUtils";
 import {
-  Grid,
   Tooltip,
   IconButton,
   Typography,
@@ -51,7 +51,7 @@ import ADSSelectionControl from "../components/ADSSelectionControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import { AddCircleOutlineOutlined as AddCircleIcon } from "@mui/icons-material";
 import { adsBlueA, adsLightBlue10 } from "../utils/ADSColours";
-import { propertyToolbarStyle, ActionIconStyle, dataFormStyle, tooltipStyle, gridRowStyle } from "../utils/ADSStyles";
+import { toolbarStyle, ActionIconStyle, dataFormStyle, tooltipStyle, gridRowStyle } from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
 import { useTheme, makeStyles } from "@mui/styles";
 
@@ -342,39 +342,26 @@ function PropertyBLPUProvenanceListTab({
 
   return (
     <Fragment>
-      <Box sx={propertyToolbarStyle} id="ads-provenance-data-grid">
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Typography variant="subtitle2" sx={{ paddingLeft: theme.spacing(2) }}>
-              BLPU provenances
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Grid container justifyContent="flex-end" spacing={1}>
-              <Grid item>
-                <Tooltip title="Add new provenance record" arrow placement="right" sx={tooltipStyle}>
-                  <IconButton
-                    sx={ActionIconStyle()}
-                    disabled={!userCanEdit}
-                    onClick={handleAddProvenanceClick}
-                    size="small"
-                  >
-                    <AddCircleIcon />
-                    <Typography
-                      variant="subtitle2"
-                      sx={{
-                        paddingLeft: theme.spacing(1),
-                        paddingRight: theme.spacing(1),
-                      }}
-                    >
-                      BLPU provenance
-                    </Typography>
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+      <Box sx={toolbarStyle} id="ads-provenance-data-grid">
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Typography variant="subtitle1" sx={{ pl: theme.spacing(2) }}>
+            BLPU provenances
+          </Typography>
+          <Tooltip title="Add new provenance record" arrow placement="right" sx={tooltipStyle}>
+            <IconButton sx={ActionIconStyle()} disabled={!userCanEdit} onClick={handleAddProvenanceClick} size="small">
+              <AddCircleIcon />
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  pl: theme.spacing(1),
+                  pr: theme.spacing(1),
+                }}
+              >
+                BLPU provenance
+              </Typography>
+            </IconButton>
+          </Tooltip>
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")} className={classes.root}>
         {loading ? (
@@ -421,7 +408,7 @@ function PropertyBLPUProvenanceListTab({
             sx={{
               width: "100%",
               backgroundColor: theme.palette.background.paper,
-              paddingTop: theme.spacing(0),
+              pt: theme.spacing(0),
             }}
             component="nav"
             key="key_no_records"
@@ -439,7 +426,13 @@ function PropertyBLPUProvenanceListTab({
                 },
               }}
             >
-              <ListItemText primary={<Typography variant="subtitle1">No provenance records present</Typography>} />
+              <ListItemText
+                primary={
+                  <Typography variant="subtitle1" sx={{ pl: "16px" }}>
+                    No provenance records present
+                  </Typography>
+                }
+              />
               <ListItemAvatar
                 sx={{
                   minWidth: 32,

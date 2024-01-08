@@ -3,7 +3,7 @@
 //
 //  Description: Notifications Avatar component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -12,6 +12,7 @@
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   06.07.21 Sean Flook                 Initial Revision.
+//    002   05.01.24 Sean Flook                 Changes to sort out warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -54,13 +55,15 @@ function ADSNotificationsAvatar(props) {
 
   return (
     <Grid item xs={12}>
-      <IconButton aria-label="profile" onClick={handleClick} disabled={notificationCount === 0} size="large">
-        <Tooltip title="Notifications" arrow placement="right" sx={tooltipStyle}>
-          <Badge badgeContent={notificationCount} color="error">
-            <NotificationsIcon fontSize="large" sx={getNotificationIconStyle()} />
-          </Badge>
-        </Tooltip>
-      </IconButton>
+      <Tooltip title="Notifications" arrow placement="right" sx={tooltipStyle}>
+        <span>
+          <IconButton aria-label="profile" onClick={handleClick} disabled={notificationCount === 0} size="large">
+            <Badge badgeContent={notificationCount} color="error">
+              <NotificationsIcon fontSize="large" sx={getNotificationIconStyle()} />
+            </Badge>
+          </IconButton>
+        </span>
+      </Tooltip>
     </Grid>
   );
 }

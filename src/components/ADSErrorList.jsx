@@ -3,7 +3,7 @@
 //
 //  Description: Control used to display a list of the errors.
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -17,6 +17,7 @@
 //    004   03.11.23 Sean Flook                 Added hyphen to one-way.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //    006   14.12.23 Sean Flook                 Corrected note record type.
+//    007   05.01.24 Sean Flook                 use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -59,8 +60,8 @@ function ADSErrorList({ onClose }) {
   const [validationErrorOpen, setValidationErrorOpen] = useState(false);
 
   const getIssueStyle = {
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
+    pl: theme.spacing(1),
+    pr: theme.spacing(1),
     color: adsRed,
     fontWeight: 600,
     fontSize: "14px",
@@ -1322,8 +1323,8 @@ function ADSErrorList({ onClose }) {
                 variant="subtitle1"
                 display="inline-flex"
                 sx={{
-                  marginTop: theme.spacing(0.3),
-                  paddingLeft: theme.spacing(1.1),
+                  mt: theme.spacing(0.3),
+                  pl: theme.spacing(1.1),
                   fontWeight: 600,
                   fontSize: "18px",
                   color: adsDarkGrey,

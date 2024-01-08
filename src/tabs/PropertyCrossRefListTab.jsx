@@ -3,7 +3,7 @@
 //
 //  Description: Property cross reference list tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
 //    005   08.12.23 Sean Flook                 Migrated DataGrid to v6.
+//    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -29,7 +30,6 @@ import SettingsContext from "../context/settingsContext";
 import { copyTextToClipboard, GetCrossRefAvatar, GetHistoricAvatar } from "../utils/HelperUtils";
 import { getBilingualSource } from "../utils/PropertyUtils";
 import {
-  Grid,
   Tooltip,
   IconButton,
   Typography,
@@ -47,7 +47,7 @@ import ADSSelectionControl from "../components/ADSSelectionControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import { AddCircleOutlineOutlined as AddCircleIcon } from "@mui/icons-material";
 import { adsBlueA, adsLightBlue10 } from "../utils/ADSColours";
-import { propertyToolbarStyle, ActionIconStyle, dataFormStyle, tooltipStyle, gridRowStyle } from "../utils/ADSStyles";
+import { toolbarStyle, ActionIconStyle, dataFormStyle, tooltipStyle, gridRowStyle } from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
 import { useTheme, makeStyles } from "@mui/styles";
 
@@ -325,39 +325,26 @@ function PropertyCrossRefListTab({
 
   return (
     <Fragment>
-      <Box sx={propertyToolbarStyle} id="ads-cross-reference-data-grid">
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Typography variant="subtitle2" sx={{ paddingLeft: theme.spacing(2) }}>
-              Cross references
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Grid container justifyContent="flex-end" spacing={1}>
-              <Grid item>
-                <Tooltip title="Add new cross reference record" arrow placement="right" sx={tooltipStyle}>
-                  <IconButton
-                    sx={ActionIconStyle()}
-                    disabled={!userCanEdit}
-                    onClick={handleAddCrossRefClick}
-                    size="small"
-                  >
-                    <AddCircleIcon />
-                    <Typography
-                      variant="subtitle2"
-                      sx={{
-                        paddingLeft: theme.spacing(1),
-                        paddingRight: theme.spacing(1),
-                      }}
-                    >
-                      Cross reference
-                    </Typography>
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+      <Box sx={toolbarStyle} id="ads-cross-reference-data-grid">
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Typography variant="subtitle1" sx={{ pl: theme.spacing(2) }}>
+            Cross references
+          </Typography>
+          <Tooltip title="Add new cross reference record" arrow placement="right" sx={tooltipStyle}>
+            <IconButton sx={ActionIconStyle()} disabled={!userCanEdit} onClick={handleAddCrossRefClick} size="small">
+              <AddCircleIcon />
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  pl: theme.spacing(1),
+                  pr: theme.spacing(1),
+                }}
+              >
+                Cross reference
+              </Typography>
+            </IconButton>
+          </Tooltip>
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")} className={classes.root}>
         {loading ? (
@@ -407,7 +394,7 @@ function PropertyCrossRefListTab({
             sx={{
               width: "100%",
               backgroundColor: theme.palette.background.paper,
-              paddingTop: theme.spacing(0),
+              pt: theme.spacing(0),
             }}
             component="nav"
             key="key_no_records"

@@ -3,7 +3,7 @@
 //
 //  Description: Dialog used to edit an existing lookup
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -17,6 +17,7 @@
 //    004   06.10.23 Sean Flook                 Use colour variables.
 //    005   27.10.23 Sean Flook                 Added missing colour variable.
 //    006   24.11.23 Sean Flook                 Moved Stack to @mui/system.
+//    007   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1399,7 +1400,7 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{ marginTop: theme.spacing(2) }}>
+      <DialogContent sx={{ mt: theme.spacing(2) }}>
         {variant === "crossReference" ? (
           <Grid container alignItems="center" rowSpacing={2}>
             <Grid item xs={4}>
@@ -1422,8 +1423,8 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 inputProps={{ maxLength: "200" }}
                 sx={{
                   color: theme.palette.background.contrastText,
-                  paddingLeft: theme.spacing(1),
-                  paddingRight: theme.spacing(1),
+                  pl: theme.spacing(1),
+                  pr: theme.spacing(1),
                 }}
                 onChange={onCrossRefDescriptionChange}
               />
@@ -1458,8 +1459,8 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                     inputProps={{ maxLength: "2" }}
                     sx={{
                       color: theme.palette.background.contrastText,
-                      paddingLeft: theme.spacing(1),
-                      paddingRight: theme.spacing(1),
+                      pl: theme.spacing(1),
+                      pr: theme.spacing(1),
                       mb: theme.spacing(1),
                       width: "70px",
                     }}
@@ -1552,7 +1553,7 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 sx={{ color: adsMagenta }}
               >{`Editing the ${lookupType} will create a new version and make the existing version historic. Any records attached to the previous version will be updated to the new entry.`}</Typography>
             </Stack>
-            <Grid container alignItems="center" sx={{ marginTop: theme.spacing(1) }} rowSpacing={2}>
+            <Grid container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
               <Grid item xs={4}>
                 <Typography variant="body1" align="right" gutterBottom>
                   Ward
@@ -1573,8 +1574,8 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                   inputProps={{ maxLength: "200" }}
                   sx={{
                     color: theme.palette.background.contrastText,
-                    paddingLeft: theme.spacing(1),
-                    paddingRight: theme.spacing(1),
+                    pl: theme.spacing(1),
+                    pr: theme.spacing(1),
                   }}
                   onChange={onWardNameChange}
                 />
@@ -1599,8 +1600,8 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                   inputProps={{ maxLength: "10" }}
                   sx={{
                     color: theme.palette.background.contrastText,
-                    paddingLeft: theme.spacing(1),
-                    paddingRight: theme.spacing(1),
+                    pl: theme.spacing(1),
+                    pr: theme.spacing(1),
                   }}
                   onChange={onWardCodeChange}
                 />
@@ -1639,7 +1640,7 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 sx={{ color: adsMagenta }}
               >{`Editing the ${lookupType} will create a new version and make the existing version historic. Any records attached to the previous version will be updated to the new entry.`}</Typography>
             </Stack>
-            <Grid container alignItems="center" sx={{ marginTop: theme.spacing(1) }} rowSpacing={2}>
+            <Grid container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
               <Grid item xs={4}>
                 <Typography variant="body1" align="right" gutterBottom>
                   Parish
@@ -1660,8 +1661,8 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                   inputProps={{ maxLength: "200" }}
                   sx={{
                     color: theme.palette.background.contrastText,
-                    paddingLeft: theme.spacing(1),
-                    paddingRight: theme.spacing(1),
+                    pl: theme.spacing(1),
+                    pr: theme.spacing(1),
                   }}
                   onChange={onParishNameChange}
                 />
@@ -1686,8 +1687,8 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                   inputProps={{ maxLength: "10" }}
                   sx={{
                     color: theme.palette.background.contrastText,
-                    paddingLeft: theme.spacing(1),
-                    paddingRight: theme.spacing(1),
+                    pl: theme.spacing(1),
+                    pr: theme.spacing(1),
                   }}
                   onChange={onParishCodeChange}
                 />
@@ -1728,7 +1729,7 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 >{`Editing the ${lookupType} will create a new version and make the existing version historic. Any records attached to the previous version will be updated to the new entry.`}</Typography>
               </Stack>
             )}
-            <Grid container alignItems="center" sx={{ marginTop: theme.spacing(1) }} rowSpacing={2}>
+            <Grid container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
               <Grid item xs={4}>
                 <Typography variant="body1" align="right" gutterBottom>
                   {`${
@@ -1755,8 +1756,8 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                   inputProps={{ maxLength: `${getMaxFieldLength()}` }}
                   sx={{
                     color: theme.palette.background.contrastText,
-                    paddingLeft: theme.spacing(1),
-                    paddingRight: theme.spacing(1),
+                    pl: theme.spacing(1),
+                    pr: theme.spacing(1),
                   }}
                   onChange={onEngChange}
                 />
@@ -1783,8 +1784,8 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                       inputProps={{ maxLength: `${getMaxFieldLength()}` }}
                       sx={{
                         color: theme.palette.background.contrastText,
-                        paddingLeft: theme.spacing(1),
-                        paddingRight: theme.spacing(1),
+                        pl: theme.spacing(1),
+                        pr: theme.spacing(1),
                       }}
                       onChange={onCymChange}
                     />
@@ -1813,8 +1814,8 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                       inputProps={{ maxLength: `${getMaxFieldLength()}` }}
                       sx={{
                         color: theme.palette.background.contrastText,
-                        paddingLeft: theme.spacing(1),
-                        paddingRight: theme.spacing(1),
+                        pl: theme.spacing(1),
+                        pr: theme.spacing(1),
                       }}
                       onChange={onGaeChange}
                     />

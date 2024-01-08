@@ -3,7 +3,7 @@
 //
 //  Description: Place on map component
 //
-//  Copyright:    � 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -253,12 +254,12 @@ function ADSPlaceOnMapControl({
       id="ads-place-on-map-control"
       sx={{
         width: "55ch",
-        margin: "8px",
+        m: "8px",
         cursor: "default",
       }}
     >
       {!isRange ? (
-        <Stack direction="column" spacing={2} sx={{ padding: "8px 16px" }}>
+        <Stack direction="column" spacing={2} sx={{ p: "8px 16px" }}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
             Place on map
           </Typography>
@@ -270,7 +271,7 @@ function ADSPlaceOnMapControl({
           <Typography variant="body2">{`Then click Finish to create ${isChild ? "child" : "property"}.`}</Typography>
         </Stack>
       ) : (
-        <Stack direction="column" spacing={2} sx={{ padding: "8px 16px" }}>
+        <Stack direction="column" spacing={2} sx={{ p: "8px 16px" }}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
             Place on map
           </Typography>

@@ -17,6 +17,7 @@
 //    004   12.10.23 Sean Flook                 Use the street context to handle storing the expanded state of the item.
 //    005   24.11.23 Sean Flook                 Moved Stack to @mui/system and fixed some warnings.
 //    006   03.01.24 Sean Flook                 Fixed warning.
+//    007   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -397,11 +398,11 @@ function AsdDataListItem({
           },
         }}
       >
-        <ListItemIcon sx={{ height: "42px", paddingTop: theme.spacing(1) }}>
+        <ListItemIcon sx={{ height: "42px", pt: theme.spacing(1) }}>
           <IconButton
             onClick={handleExpandCollapse}
             sx={{
-              paddingBottom: theme.spacing(1),
+              pb: theme.spacing(1),
               color: adsMidGreyA,
               "&:hover": {
                 color: adsBlueA,
@@ -425,7 +426,7 @@ function AsdDataListItem({
               <Typography
                 variant="subtitle1"
                 sx={{
-                  paddingLeft: theme.spacing(1),
+                  pl: theme.spacing(1),
                   "&:hover": {
                     color: adsBlueA,
                   },
@@ -509,7 +510,7 @@ function AsdDataListItem({
                       )
                     }
                   />
-                  <ListItemAvatar sx={{ paddingRight: theme.spacing(2) }}>
+                  <ListItemAvatar sx={{ pr: theme.spacing(2) }}>
                     {variant === "66" && (
                       <Stack direction="row" spacing={1} justifyContent="flex-end" alignItems="flex-start">
                         <DirectionsWalk fontSize="small" sx={getPRoWStyle(d.pedAccess)} />

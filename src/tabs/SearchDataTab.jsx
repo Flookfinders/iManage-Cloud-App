@@ -3,7 +3,7 @@
 //
 //  Description: List records returned from a search
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -33,6 +33,7 @@
 //    019   20.11.23 Sean Flook                 Undone above change.
 //    020   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
 //    021   29.11.23 Sean Flook       IMANN-163 Do not clear the street or property contexts if viewing ranges.
+//    022   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1269,7 +1270,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
             sx={{
               width: "100%",
               backgroundColor: theme.palette.background.paper,
-              paddingTop: theme.spacing(0),
+              pt: theme.spacing(0),
             }}
             component="nav"
             key={"list-search-data-list"}

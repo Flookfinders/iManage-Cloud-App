@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   02.01.24 Sean Flook                 Initial Revision.
 //    002   03.01.24 Sean Flook                 Fixed warning.
+//    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -278,7 +279,7 @@ function UploadShpFileDialog({ isOpen, currentIds, onClose }) {
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent sx={{ marginTop: theme.spacing(2) }}>
+        <DialogContent sx={{ mt: theme.spacing(2) }}>
           <Grid container justifyContent="flex-start" spacing={0}>
             <Grid item xs={12}>
               <Stack direction="column" spacing={0}>

@@ -3,7 +3,7 @@
 //
 //  Description: Whats New Avatar component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -12,6 +12,7 @@
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   06.07.21 Sean Flook                 Initial Revision.
+//    002   05.01.24 Sean Flook                 Changes to sort out warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -71,13 +72,15 @@ function ADSWhatsNewAvatar(props) {
 
   return (
     <Grid item xs={12}>
-      <IconButton aria-label="profile" onClick={handleClick} disabled={whatsNewCount === 0} size="large">
-        <Tooltip title="What is new" arrow placement="right" sx={tooltipStyle}>
-          <Badge badgeContent={whatsNewCount} color="error">
-            <WhatsNewIcon fontSize="large" sx={getWhatsNewStyle()} />
-          </Badge>
-        </Tooltip>
-      </IconButton>
+      <Tooltip title="What is new" arrow placement="right" sx={tooltipStyle}>
+        <span>
+          <IconButton aria-label="profile" onClick={handleClick} disabled={whatsNewCount === 0} size="large">
+            <Badge badgeContent={whatsNewCount} color="error">
+              <WhatsNewIcon fontSize="large" sx={getWhatsNewStyle()} />
+            </Badge>
+          </IconButton>
+        </span>
+      </Tooltip>
     </Grid>
   );
 }

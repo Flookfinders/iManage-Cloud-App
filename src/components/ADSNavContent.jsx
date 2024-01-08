@@ -3,7 +3,7 @@
 //
 //  Description: Navigation Bar component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -19,6 +19,7 @@
 //    006   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate.
 //    007   10.11.23 Sean Flook                 Modified call to StringAvatar.
 //    008   24.11.23 Sean Flook                 Moved Stack to @mui/system and pass the correct parameter to StringAvatar.
+//    009   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -155,7 +156,7 @@ const ADSNavContent = (props) => {
           </CardContent>
           <CardActions>
             <Stack
-              sx={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2), marginBottom: theme.spacing(2) }}
+              sx={{ ml: theme.spacing(2), mr: theme.spacing(2), mb: theme.spacing(2) }}
               direction="column"
               spacing={1}
               alignItems="flex-start"
@@ -177,7 +178,7 @@ const ADSNavContent = (props) => {
             </CardContent>
             <CardActions>
               <Stack
-                sx={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2), marginBottom: theme.spacing(2) }}
+                sx={{ ml: theme.spacing(2), mr: theme.spacing(2), mb: theme.spacing(2) }}
                 direction="column"
                 spacing={1}
                 alignItems="flex-start"
@@ -587,7 +588,7 @@ const ADSNavContent = (props) => {
       >
         <Grid
           sx={{
-            paddingTop: theme.spacing(2),
+            pt: theme.spacing(2),
             width: navBarWidth,
             height: "98vh",
           }}
@@ -599,49 +600,53 @@ const ADSNavContent = (props) => {
           <Grid item>
             <Grid container direction="column" alignItems="center" justifyContent="flex-start">
               <Grid item xs>
-                {/* <img sx={{ marginLeft: theme.spacing(2) }} src="/images/IdoxCube.svg" alt="Idox" width="32" /> */}
-                <img sx={{ marginLeft: theme.spacing(2) }} src="/images/iManage-Cloud-2.svg" alt="Idox" width="32" />
+                {/* <img sx={{ ml: theme.spacing(2) }} src="/images/IdoxCube.svg" alt="Idox" width="32" /> */}
+                <img sx={{ ml: theme.spacing(2) }} src="/images/iManage-Cloud-2.svg" alt="Idox" width="32" />
               </Grid>
               <Grid item xs>
-                <IconButton aria-label="home" onClick={() => handlePageChangeClick("home")} size="large">
-                  <Tooltip title="Home" arrow placement="right" sx={tooltipStyle}>
+                <Tooltip title="Home" arrow placement="right" sx={tooltipStyle}>
+                  <IconButton aria-label="home" onClick={() => handlePageChangeClick("home")} size="large">
                     <DashboardIcon fontSize="large" sx={navigationIconStyle(homeActive)} />
-                  </Tooltip>
-                </IconButton>
+                  </IconButton>
+                </Tooltip>
               </Grid>
               <Grid item xs>
-                <IconButton aria-label="gazetteer" onClick={() => handlePageChangeClick("gazetteer")} size="large">
-                  <Tooltip title="Gazetteer" arrow placement="right" sx={tooltipStyle}>
+                <Tooltip title="Gazetteer" arrow placement="right" sx={tooltipStyle}>
+                  <IconButton aria-label="gazetteer" onClick={() => handlePageChangeClick("gazetteer")} size="large">
                     <ExploreIcon fontSize="large" sx={navigationIconStyle(gazetteerActive)} />
-                  </Tooltip>
-                </IconButton>
+                  </IconButton>
+                </Tooltip>
               </Grid>
               <Grid item xs>
                 {process.env.NODE_ENV === "development" && (
-                  <IconButton
-                    aria-label="task management"
-                    disabled
-                    onClick={() => handlePageChangeClick("task")}
-                    size="large"
-                  >
-                    <Tooltip title="Task management" arrow placement="right" sx={tooltipStyle}>
-                      <AssignmentTurnedInIcon fontSize="large" sx={navigationIconStyle(taskActive)} />
-                    </Tooltip>
-                  </IconButton>
+                  <Tooltip title="Task management" arrow placement="right" sx={tooltipStyle}>
+                    <span>
+                      <IconButton
+                        aria-label="task management"
+                        disabled
+                        onClick={() => handlePageChangeClick("task")}
+                        size="large"
+                      >
+                        <AssignmentTurnedInIcon fontSize="large" sx={navigationIconStyle(taskActive)} />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
                 )}
               </Grid>
               <Grid item xs>
                 {process.env.NODE_ENV === "development" && (
-                  <IconButton
-                    aria-label="reports"
-                    disabled
-                    onClick={() => handlePageChangeClick("report")}
-                    size="large"
-                  >
-                    <Tooltip title="Reports" arrow placement="right" sx={tooltipStyle}>
-                      <InsertChartIcon fontSize="large" sx={navigationIconStyle(reportActive)} />
-                    </Tooltip>
-                  </IconButton>
+                  <Tooltip title="Reports" arrow placement="right" sx={tooltipStyle}>
+                    <span>
+                      <IconButton
+                        aria-label="reports"
+                        disabled
+                        onClick={() => handlePageChangeClick("report")}
+                        size="large"
+                      >
+                        <InsertChartIcon fontSize="large" sx={navigationIconStyle(reportActive)} />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
                 )}
               </Grid>
             </Grid>
@@ -684,7 +689,7 @@ const ADSNavContent = (props) => {
         <Popper open={settingsOpen} anchorEl={anchorEl} placement={"right-end"} transition>
           {({ TransitionProps }) => (
             <Fade {...TransitionProps} timeout={350}>
-              <Paper sx={{ marginLeft: theme.spacing(3) }}>{GetSettingCards()}</Paper>
+              <Paper sx={{ ml: theme.spacing(3) }}>{GetSettingCards()}</Paper>
             </Fade>
           )}
         </Popper>

@@ -34,6 +34,7 @@
 //    021   14.12.23 Sean Flook                 Corrected note record type.
 //    022   21.12.23 Sean Flook                 Ensure the sandbox is correctly updated.
 //    023   03.01.24 Sean Flook                 Fixed warning.
+//    024   05.01.24 Sean Flook                 Changes to sort out warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -122,11 +123,7 @@ function TabPanel(props) {
       aria-labelledby={`property-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && <Box p={3}>{children}</Box>}
     </div>
   );
 }

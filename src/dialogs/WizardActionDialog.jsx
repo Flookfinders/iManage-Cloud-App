@@ -3,7 +3,7 @@
 //
 //  Description: Wizard Action dialog
 //
-//  Copyright:    � 2023 Idox Software Limited.
+//  Copyright:    © 2023 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -18,6 +18,7 @@
 //    005   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
 //    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    007   30.11.23 Sean Flook                 Added sub-locality.
+//    008   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -349,7 +350,7 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
       maxWidth="sm"
       open={open}
       aria-labelledby="wizard-action-dialog-title"
-      sx={{ padding: "16px 16px 24px 16px", borderRadius: "9px" }}
+      sx={{ p: "16px 16px 24px 16px", borderRadius: "9px" }}
       onClose={handleCancel}
     >
       <DialogTitle

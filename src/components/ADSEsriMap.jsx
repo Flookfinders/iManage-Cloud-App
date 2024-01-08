@@ -40,6 +40,7 @@
 //    026   02.01.24 Sean Flook                 Changes required to load shape files.
 //    027   02.01.24 Sean Flook                 Handle errors when loading shape files.
 //    028   03.01.24 Sean Flook                 Fixed warning.
+//    029   05.01.24 Sean Flook                 use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -7527,7 +7528,7 @@ function ADSEsriMap(startExtent) {
       <Box
         sx={{
           flexGrow: 0,
-          padding: theme.spacing(1),
+          p: theme.spacing(1),
           height: "93vh",
         }}
         ref={mapRef}

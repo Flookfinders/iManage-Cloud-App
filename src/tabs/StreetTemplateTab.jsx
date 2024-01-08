@@ -19,6 +19,7 @@
 //    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    007   05.12.23 Joel Benford               Various fixes to display and save
 //    008   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    009   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -570,11 +571,11 @@ function StreetTemplateTab() {
   return (
     <Box sx={{ ml: theme.spacing(1), mr: theme.spacing(4) }}>
       <Stack direction="column" spacing={1}>
-        <Typography sx={{ fontSize: 24, flexGrow: 1, paddingLeft: theme.spacing(3) }}>Street template</Typography>
-        <Typography variant="body2" sx={{ paddingLeft: theme.spacing(3) }}>
+        <Typography sx={{ fontSize: 24, flexGrow: 1, pl: theme.spacing(3) }}>Street template</Typography>
+        <Typography variant="body2" sx={{ pl: theme.spacing(3) }}>
           Set default lookup values for streets
         </Typography>
-        <Grid container sx={{ paddingRight: theme.spacing(3.5) }} spacing={3}>
+        <Grid container sx={{ pr: theme.spacing(3.5) }} spacing={3}>
           <Grid item xs={6}>
             <Card
               variant="outlined"

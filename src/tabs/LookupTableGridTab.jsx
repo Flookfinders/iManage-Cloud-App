@@ -3,7 +3,7 @@
 //
 //  Description: Lookup table grid tab
 //
-//  Copyright:    � 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and removed a warning.
 //    004   08.12.23 Sean Flook                 Migrated DataGrid to v6.
+//    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -809,8 +810,8 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
    * @returns {object} The styling to be used for the stack.
    */
   const stackStyle = () => {
-    if (variant === "postcode") return { marginLeft: theme.spacing(2), marginTop: theme.spacing(1), width: 500 };
-    else return { marginLeft: theme.spacing(2), marginTop: theme.spacing(1), width: 750 };
+    if (variant === "postcode") return { ml: theme.spacing(2), mt: theme.spacing(1), width: 500 };
+    else return { ml: theme.spacing(2), mt: theme.spacing(1), width: 750 };
   };
 
   /**
@@ -1712,7 +1713,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
               borderWidth: "1px",
               borderColor: adsLightGreyB,
               borderRadius: "18px",
-              marginBottom: theme.spacing(1.5),
+              mb: theme.spacing(1.5),
               display: "inline-flex",
               height: "35px",
             }}
@@ -1724,8 +1725,8 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
               value={searchString}
               sx={{
                 color: theme.palette.background.contrastText,
-                paddingLeft: theme.spacing(1),
-                paddingRight: theme.spacing(1),
+                pl: theme.spacing(1),
+                pr: theme.spacing(1),
                 width: "100%",
               }}
               onChange={onSearchChange}
@@ -1785,7 +1786,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
               sx={{
                 width: "100%",
                 backgroundColor: theme.palette.background.paper,
-                paddingTop: theme.spacing(0),
+                pt: theme.spacing(0),
               }}
               component="nav"
               key="key_no_records"

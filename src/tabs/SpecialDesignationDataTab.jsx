@@ -18,6 +18,7 @@
 //    005   03.11.23 Sean Flook                 If the type has not been selected default to Special designation.
 //    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    007   02.01.24 Sean Flook       IMANN-205 Added end date.
+//    008   05.01.24 Sean Flook                 Changes to sort out warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -38,7 +39,7 @@ import ObjectComparison from "../utils/ObjectComparison";
 import SpecialDesignationCode from "./../data/SpecialDesignationCode";
 import SpecialDesignationPeriodicity from "./../data/SpecialDesignationPeriodicity";
 
-import { Avatar, Grid, Typography } from "@mui/material";
+import { Avatar, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -53,7 +54,7 @@ import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 
 import { SpecialDesignationIcon } from "../utils/ADSIcons";
 import { adsBlack, adsYellow } from "../utils/ADSColours";
-import { streetToolbarStyle, dataFormStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataFormStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 SpecialDesignationDataTab.propTypes = {
@@ -668,94 +669,75 @@ function SpecialDesignationDataTab({
 
   return (
     <Fragment>
-      <Box sx={streetToolbarStyle}>
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Grid container justifyContent="flex-start" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="home"
-                  tooltipTitle="Home"
-                  tooltipPlacement="bottom"
-                  onClick={handleHomeClick}
-                />
-              </Grid>
-              <Grid item>
-                <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                  <Typography
-                    sx={{
-                      flexGrow: 1,
-                      display: "none",
-                      [theme.breakpoints.up("sm")]: {
-                        display: "block",
-                      },
-                    }}
-                    variant="subtitle1"
-                    noWrap
-                    align="left"
-                  >
-                    |
-                  </Typography>
-                  <Avatar
-                    variant="rounded"
-                    sx={{
-                      height: theme.spacing(2),
-                      width: theme.spacing(2),
-                      color: adsBlack,
-                      backgroundColor: adsYellow,
-                      borderStyle: "solid",
-                      borderWidth: "1px",
-                      borderColor: `${adsBlack}  !important`,
-                    }}
-                  >
-                    <SpecialDesignationIcon
-                      sx={{
-                        height: theme.spacing(2),
-                        width: theme.spacing(2),
-                      }}
-                    />
-                  </Avatar>
-                  <Typography
-                    sx={{
-                      flexGrow: 1,
-                      display: "none",
-                      [theme.breakpoints.up("sm")]: {
-                        display: "block",
-                      },
-                    }}
-                    variant="subtitle1"
-                    noWrap
-                    align="left"
-                  >
-                    {` ${getType(designationType)} (${data.index + 1} of ${data.totalRecords})`}
-                  </Typography>
-                </Stack>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <Grid container justifyContent="flex-end" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="delete"
-                  disabled={!userCanEdit}
-                  tooltipTitle="Delete special designation record"
-                  tooltipPlacement="right"
-                  onClick={handleDeleteSpecialDesignation}
-                />
-              </Grid>
-              <Grid item>
-                <ADSActionButton
-                  variant="add"
-                  disabled={!userCanEdit}
-                  tooltipTitle="Add new special designation record"
-                  tooltipPlacement="right"
-                  onClick={handleAddSpecialDesignation}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+      <Box sx={toolbarStyle}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
+            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            <Typography
+              sx={{
+                flexGrow: 1,
+                display: "none",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >
+              |
+            </Typography>
+            <Avatar
+              variant="rounded"
+              sx={{
+                height: theme.spacing(2),
+                width: theme.spacing(2),
+                color: adsBlack,
+                backgroundColor: adsYellow,
+                borderStyle: "solid",
+                borderWidth: "1px",
+                borderColor: `${adsBlack}  !important`,
+              }}
+            >
+              <SpecialDesignationIcon
+                sx={{
+                  height: theme.spacing(2),
+                  width: theme.spacing(2),
+                }}
+              />
+            </Avatar>
+            <Typography
+              sx={{
+                flexGrow: 1,
+                display: "none",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >
+              {` ${getType(designationType)} (${data.index + 1} of ${data.totalRecords})`}
+            </Typography>
+          </Stack>
+          <Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <ADSActionButton
+              variant="delete"
+              disabled={!userCanEdit}
+              tooltipTitle="Delete special designation record"
+              tooltipPlacement="right"
+              onClick={handleDeleteSpecialDesignation}
+            />
+            <ADSActionButton
+              variant="add"
+              disabled={!userCanEdit}
+              tooltipTitle="Add new special designation record"
+              tooltipPlacement="right"
+              onClick={handleAddSpecialDesignation}
+            />
+          </Stack>
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>
         <ADSSelectControl

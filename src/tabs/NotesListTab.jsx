@@ -3,7 +3,7 @@
 //
 //  Description: Notes list tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
+//    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -34,7 +35,7 @@ import {
   DeleteOutline as DeleteIcon,
 } from "@mui/icons-material";
 import { adsBlueA, adsRed10, adsRed20, adsLightBlue10, adsLightGreyA } from "../utils/ADSColours";
-import { propertyToolbarStyle, dataFormStyle, ActionIconStyle, tooltipStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataFormStyle, ActionIconStyle, tooltipStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 NotesListTab.propTypes = {
@@ -134,18 +135,18 @@ function NotesListTab({ data, errors, loading, variant, onNoteSelected, onNoteDe
   const getDateBoxStyle = (pkId) => {
     if (selectedItem && pkId === selectedItem) {
       return {
-        marginLeft: "auto",
-        marginRight: "auto",
-        marginBottom: theme.spacing(1.7),
+        ml: "auto",
+        mr: "auto",
+        mb: theme.spacing(1.7),
         width: "85%",
         backgroundColor: adsLightBlue10,
         color: adsBlueA,
       };
     } else {
       return {
-        marginLeft: "auto",
-        marginRight: "auto",
-        marginBottom: theme.spacing(1.7),
+        ml: "auto",
+        mr: "auto",
+        mb: theme.spacing(1.7),
         width: "85%",
         backgroundColor: adsLightGreyA,
       };
@@ -188,27 +189,33 @@ function NotesListTab({ data, errors, loading, variant, onNoteSelected, onNoteDe
 
   return (
     <Fragment>
-      <Box sx={propertyToolbarStyle} id="ads-notes-data-grid">
-        <Grid container justifyContent="space-between" alignItems="center" sx={{ paddingLeft: theme.spacing(1) }}>
-          <Grid item>
-            <Typography variant="subtitle2">Notes</Typography>
-          </Grid>
-          <Grid item>
-            <Tooltip title="Add new note record" arrow placement="right" sx={tooltipStyle}>
-              <IconButton
-                sx={ActionIconStyle()}
-                disabled={!userCanEdit}
-                onClick={handleAddNoteClick}
-                aria_controls="actions-menu"
-                aria-haspopup="true"
-                size="small"
+      <Box sx={toolbarStyle} id="ads-notes-data-grid">
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Typography variant="subtitle1" sx={{ pl: theme.spacing(2) }}>
+            Notes
+          </Typography>
+          <Tooltip title="Add new note record" arrow placement="right" sx={tooltipStyle}>
+            <IconButton
+              sx={ActionIconStyle()}
+              disabled={!userCanEdit}
+              onClick={handleAddNoteClick}
+              aria_controls="actions-menu"
+              aria-haspopup="true"
+              size="small"
+            >
+              <AddCircleIcon />
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  pl: theme.spacing(1),
+                  pr: theme.spacing(1),
+                }}
               >
-                <AddCircleIcon />
-                <Typography variant="subtitle2">Add note</Typography>
-              </IconButton>
-            </Tooltip>
-          </Grid>
-        </Grid>
+                Add note
+              </Typography>
+            </IconButton>
+          </Tooltip>
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>
         {loading ? (
@@ -224,7 +231,7 @@ function NotesListTab({ data, errors, loading, variant, onNoteSelected, onNoteDe
                 sx={{
                   width: "100%",
                   backgroundColor: theme.palette.background.paper,
-                  paddingTop: theme.spacing(0),
+                  pt: theme.spacing(0),
                 }}
                 component="nav"
                 key={`key_${index}`}
@@ -242,7 +249,7 @@ function NotesListTab({ data, errors, loading, variant, onNoteSelected, onNoteDe
                     container
                     justifyContent="space-between"
                     alignItems="center"
-                    // sx={{ paddingLeft: theme.spacing(1) }}
+                    // sx={{ pl: theme.spacing(1) }}
                   >
                     <Grid item xs={2}>
                       <Box sx={getDateBoxStyle(rec.pkId)}>

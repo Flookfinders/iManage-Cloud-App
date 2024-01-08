@@ -3,7 +3,7 @@
 //
 //  Description: Dialog used to multi-edit add classification for OneScotland authorities
 //
-//  Copyright:    © 2023 Idox Software Limited.
+//  Copyright:    © 2023 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //    003   30.11.23 Sean Flook                 Use a constant for the default classification scheme.
 //    004   08.12.23 Sean Flook                 Migrated DataGrid to v6.
+//    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -653,7 +654,7 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{ marginTop: theme.spacing(2) }}>
+      <DialogContent sx={{ mt: theme.spacing(2) }}>
         {!completed ? (
           <Fragment>
             <Typography variant="body1" gutterBottom>
@@ -823,7 +824,7 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
           </Fragment>
         )}
       </DialogContent>
-      <DialogActions sx={{ justifyContent: "center", marginBottom: theme.spacing(2) }}>
+      <DialogActions sx={{ justifyContent: "center", mb: theme.spacing(2) }}>
         {!completed ? (
           <Stack direction="column" spacing={3}>
             {!noteOpen && (

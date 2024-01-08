@@ -3,7 +3,7 @@
 //
 //  Description: Task Drawer component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -14,6 +14,7 @@
 //    001   06.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -57,7 +58,7 @@ function ADSTaskDrawer(props) {
         sx={{
           display: "flex",
           alignItems: "center",
-          padding: theme.spacing(0, 1),
+          p: theme.spacing(0, 1),
           // necessary for content to be below app bar
           ...theme.mixins.toolbar,
           justifyContent: "flex-start",

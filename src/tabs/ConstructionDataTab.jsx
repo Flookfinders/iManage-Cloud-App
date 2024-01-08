@@ -17,6 +17,7 @@
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle and removed start and end coordinates as no longer required.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    006   02.01.24 Sean Flook       IMANN-205 Added end date.
+//    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,7 +32,7 @@ import UserContext from "./../context/userContext";
 import MapContext from "./../context/mapContext";
 
 import { ConvertDate } from "../utils/HelperUtils";
-import { Avatar, Grid, Typography } from "@mui/material";
+import { Avatar, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { GetLookupLabel } from "../utils/HelperUtils";
 import { FilteredSwaOrgRef, FilteredReinstatementType } from "../utils/StreetUtils";
@@ -52,7 +53,7 @@ import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 
 import { Texture } from "@mui/icons-material";
 import { adsWhite, adsPink } from "../utils/ADSColours";
-import { streetToolbarStyle, dataFormStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataFormStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 ConstructionDataTab.propTypes = {
@@ -607,92 +608,73 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
 
   return (
     <Fragment>
-      <Box sx={streetToolbarStyle}>
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Grid container justifyContent="flex-start" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="home"
-                  tooltipTitle="Home"
-                  tooltipPlacement="bottom"
-                  onClick={handleHomeClick}
-                />
-              </Grid>
-              <Grid item>
-                <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                  <Typography
-                    sx={{
-                      flexGrow: 1,
-                      display: "none",
-                      [theme.breakpoints.up("sm")]: {
-                        display: "block",
-                      },
-                    }}
-                    variant="subtitle1"
-                    noWrap
-                    align="left"
-                  >
-                    |
-                  </Typography>
-                  <Avatar
-                    variant="rounded"
-                    sx={{
-                      height: theme.spacing(2),
-                      width: theme.spacing(2),
-                      color: adsWhite,
-                      clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
-                      backgroundColor: adsPink,
-                    }}
-                  >
-                    <Texture
-                      sx={{
-                        height: theme.spacing(2),
-                        width: theme.spacing(2),
-                      }}
-                    />
-                  </Avatar>
-                  <Typography
-                    sx={{
-                      flexGrow: 1,
-                      display: "none",
-                      [theme.breakpoints.up("sm")]: {
-                        display: "block",
-                      },
-                    }}
-                    variant="subtitle1"
-                    noWrap
-                    align="left"
-                  >
-                    {` Construction (${data.index + 1} of ${data.totalRecords})`}
-                  </Typography>
-                </Stack>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <Grid container justifyContent="flex-end" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="delete"
-                  disabled={!userCanEdit}
-                  tooltipTitle="Delete construction record"
-                  tooltipPlacement="right"
-                  onClick={handleDeleteConstruction}
-                />
-              </Grid>
-              <Grid item>
-                <ADSActionButton
-                  variant="add"
-                  disabled={!userCanEdit}
-                  tooltipTitle="Add new construction record"
-                  tooltipPlacement="right"
-                  onClick={handleAddConstruction}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+      <Box sx={toolbarStyle}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
+            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            <Typography
+              sx={{
+                flexGrow: 1,
+                display: "none",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >
+              |
+            </Typography>
+            <Avatar
+              variant="rounded"
+              sx={{
+                height: theme.spacing(2),
+                width: theme.spacing(2),
+                color: adsWhite,
+                clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
+                backgroundColor: adsPink,
+              }}
+            >
+              <Texture
+                sx={{
+                  height: theme.spacing(2),
+                  width: theme.spacing(2),
+                }}
+              />
+            </Avatar>
+            <Typography
+              sx={{
+                flexGrow: 1,
+                display: "none",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >
+              {` Construction (${data.index + 1} of ${data.totalRecords})`}
+            </Typography>
+          </Stack>
+          <Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <ADSActionButton
+              variant="delete"
+              disabled={!userCanEdit}
+              tooltipTitle="Delete construction record"
+              tooltipPlacement="right"
+              onClick={handleDeleteConstruction}
+            />
+            <ADSActionButton
+              variant="add"
+              disabled={!userCanEdit}
+              tooltipTitle="Add new construction record"
+              tooltipPlacement="right"
+              onClick={handleAddConstruction}
+            />
+          </Stack>
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>
         <ADSSelectControl

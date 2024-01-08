@@ -23,6 +23,7 @@
 //    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    009   30.11.23 Sean Flook                 Renamed variable to avoid confusion.
 //    010   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -46,7 +47,8 @@ import {
   Skeleton,
   ToggleButtonGroup,
   ToggleButton,
-  Button,
+  Tooltip,
+  IconButton,
   Typography,
   Snackbar,
   Alert,
@@ -83,8 +85,9 @@ import {
   GetAlertStyle,
   GetAlertIcon,
   GetAlertSeverity,
+  ActionIconStyle,
+  tooltipStyle,
 } from "../utils/ADSStyles";
-import { useTheme } from "@mui/styles";
 
 RelatedTab.propTypes = {
   variant: PropTypes.string.isRequired,
@@ -95,8 +98,6 @@ RelatedTab.propTypes = {
 };
 
 function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onPropertyAdd }) {
-  const theme = useTheme();
-
   const streetContext = useContext(StreetContext);
   const propertyContext = useContext(PropertyContext);
   const userContext = useContext(UserContext);
@@ -826,7 +827,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
   return (
     <Fragment>
       <Box sx={relatedToolbarStyle} id="ads-related-toolbar">
-        <Stack sx={{ paddingLeft: 1 }} direction="row" spacing={1} justifyContent="space-between" alignItems="center">
+        <Stack sx={{ pl: 1, pr: 1.5 }} direction="row" spacing={1} justifyContent="space-between" alignItems="center">
           <ToggleButtonGroup
             sx={{ height: "30px" }}
             color="primary"
@@ -863,13 +864,12 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
               </Avatar>
             </ToggleButton>
           </ToggleButtonGroup>
-          <Button
-            sx={{ textTransform: "none", marginRight: theme.spacing(2) }}
-            startIcon={expandAll === "Expand all" ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-            onClick={handleExpandAll}
-          >
-            {expandAll}
-          </Button>
+          <Tooltip title={`${expandAll} items in list`} arrow placement="right" sx={tooltipStyle}>
+            <IconButton onClick={handleExpandAll} sx={ActionIconStyle()} aria-controls="expand-collapse" size="small">
+              {expandAll === "Expand all" ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+              <Typography variant="body2">{expandAll}</Typography>
+            </IconButton>
+          </Tooltip>
         </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>

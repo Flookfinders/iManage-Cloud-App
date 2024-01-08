@@ -3,7 +3,7 @@
 //
 //  Description: Edit metadata content dialog
 //
-//  Copyright:    � 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -534,8 +535,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent sx={{ marginTop: theme.spacing(2) }}>
-          <Grid container justifyContent="flex-start" spacing={0} sx={{ paddingLeft: theme.spacing(3.5) }}>
+        <DialogContent sx={{ mt: theme.spacing(2) }}>
+          <Grid container justifyContent="flex-start" spacing={0} sx={{ pl: theme.spacing(3.5) }}>
             <Grid item xs={12}>
               <Stack direction="column" spacing={2}>
                 <Box>

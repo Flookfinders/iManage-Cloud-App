@@ -3,7 +3,7 @@
 //
 //  Description: ASD Data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -21,6 +21,7 @@
 //    008   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    009   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    010   24.11.23 Sean Flook                 Moved Box to @mui/system and fixed a warning.
+//    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,8 +31,8 @@ import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
-import { Grid, Tooltip, IconButton, Typography, List, Skeleton, Menu, MenuItem, Fade, Popper } from "@mui/material";
-import { Box } from "@mui/system";
+import { Tooltip, IconButton, Typography, List, Skeleton, Menu, MenuItem, Fade, Popper } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSSelectionControl from "../components/ADSSelectionControl";
 import {
   AddCircleOutlineOutlined as AddCircleIcon,
@@ -41,7 +42,7 @@ import {
 import AsdDataListItem from "../components/AsdDataListItem";
 import { adsWhite, adsBlack, adsYellow, adsPink, adsMidRed, adsBrown, adsDarkGreen } from "../utils/ADSColours";
 import {
-  streetToolbarStyle,
+  toolbarStyle,
   ActionIconStyle,
   dataFormStyle,
   menuStyle,
@@ -447,189 +448,189 @@ function AsdDataTab({
 
   return (
     <Fragment>
-      <Box sx={streetToolbarStyle} id={"ads-asd-data-grid"}>
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Typography variant="subtitle2" sx={{ paddingLeft: theme.spacing(1.5) }}>
-              Associated Street Data
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Grid container justifyContent="flex-end" spacing={1}>
-              <Grid item>
-                <Tooltip title={`${expandCollapseLabel} items in list`} arrow placement="right" sx={tooltipStyle}>
-                  <IconButton
-                    onClick={handleExpandCollapse}
-                    sx={ActionIconStyle()}
-                    aria-controls="expand-collapse"
-                    size="small"
-                  >
-                    {expandCollapseLabel === "Expand all" ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
-                    <Typography variant="body2">{expandCollapseLabel}</Typography>
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              <Grid item sx={{ pr: "4px" }}>
-                <IconButton
-                  sx={ActionIconStyle()}
+      <Box sx={toolbarStyle} id={"ads-asd-data-grid"}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Typography variant="subtitle1" sx={{ pl: theme.spacing(1.5) }}>
+            Associated Street Data
+          </Typography>
+          <Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <Tooltip title={`${expandCollapseLabel} items in list`} arrow placement="right" sx={tooltipStyle}>
+              <IconButton
+                onClick={handleExpandCollapse}
+                sx={ActionIconStyle()}
+                aria-controls="expand-collapse"
+                size="small"
+              >
+                {expandCollapseLabel === "Expand all" ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
+                <Typography variant="body2">{expandCollapseLabel}</Typography>
+              </IconButton>
+            </Tooltip>
+            <IconButton
+              sx={ActionIconStyle()}
+              disabled={!userCanEdit}
+              onClick={handleAddASDClick}
+              aria_controls="add-menu"
+              aria-haspopup="true"
+              size="small"
+            >
+              <AddCircleIcon />
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  pl: theme.spacing(1),
+                  pr: theme.spacing(1),
+                }}
+              >
+                Add ASD
+              </Typography>
+            </IconButton>
+            <Menu
+              id="asd-add-menu"
+              elevation={2}
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleAddMenuClose}
+              TransitionComponent={Fade}
+              sx={menuStyle}
+            >
+              {!settingsContext.isScottish && (
+                <MenuItem
+                  dense
                   disabled={!userCanEdit}
-                  onClick={handleAddASDClick}
-                  aria_controls="add-menu"
-                  aria-haspopup="true"
-                  size="small"
+                  onClick={handleCreateInterestedRecord}
+                  sx={menuItemStyle(false)}
                 >
-                  <AddCircleIcon />
-                  <Typography variant="subtitle2">Add ASD</Typography>
-                </IconButton>
-                <Menu
-                  id="asd-add-menu"
-                  elevation={2}
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  open={Boolean(anchorEl)}
-                  onClose={handleAddMenuClose}
-                  TransitionComponent={Fade}
-                  sx={menuStyle}
+                  <Typography
+                    variant="inherit"
+                    sx={{
+                      pl: theme.spacing(1),
+                    }}
+                  >
+                    Interested organisation
+                  </Typography>
+                </MenuItem>
+              )}
+              {settingsContext.isScottish && (
+                <MenuItem
+                  dense
+                  disabled={!userCanEdit}
+                  onClick={handleCreateMaintenanceResponsibilityRecord}
+                  sx={menuItemStyle(false)}
                 >
-                  {!settingsContext.isScottish && (
-                    <MenuItem
-                      dense
-                      disabled={!userCanEdit}
-                      onClick={handleCreateInterestedRecord}
-                      sx={menuItemStyle(false)}
-                    >
-                      <Typography
-                        variant="inherit"
-                        sx={{
-                          paddingLeft: theme.spacing(1),
-                        }}
-                      >
-                        Interested organisation
-                      </Typography>
-                    </MenuItem>
-                  )}
-                  {settingsContext.isScottish && (
-                    <MenuItem
-                      dense
-                      disabled={!userCanEdit}
-                      onClick={handleCreateMaintenanceResponsibilityRecord}
-                      sx={menuItemStyle(false)}
-                    >
-                      <Typography
-                        variant="inherit"
-                        sx={{
-                          paddingLeft: theme.spacing(1),
-                        }}
-                      >
-                        Maintenance responsibility
-                      </Typography>
-                    </MenuItem>
-                  )}
-                  {!settingsContext.isScottish && (
-                    <MenuItem
-                      dense
-                      disabled={!userCanEdit}
-                      onClick={handleCreateConstructionRecord}
-                      sx={menuItemStyle(false)}
-                    >
-                      <Typography
-                        variant="inherit"
-                        sx={{
-                          paddingLeft: theme.spacing(1),
-                        }}
-                      >
-                        Construction
-                      </Typography>
-                    </MenuItem>
-                  )}
-                  {settingsContext.isScottish && (
-                    <MenuItem
-                      dense
-                      disabled={!userCanEdit}
-                      onClick={handleCreateReinstatementCategoryRecord}
-                      sx={menuItemStyle(false)}
-                    >
-                      <Typography
-                        variant="inherit"
-                        sx={{
-                          paddingLeft: theme.spacing(1),
-                        }}
-                      >
-                        Reinstatement category
-                      </Typography>
-                    </MenuItem>
-                  )}
-                  {!settingsContext.isScottish && (
-                    <MenuItem
-                      dense
-                      disabled={!userCanEdit}
-                      onClick={handleCreateSpecialDesignationRecord}
-                      sx={menuItemStyle(false)}
-                    >
-                      <Typography
-                        variant="inherit"
-                        sx={{
-                          paddingLeft: theme.spacing(1),
-                        }}
-                      >
-                        Special designation
-                      </Typography>
-                    </MenuItem>
-                  )}
-                  {settingsContext.isScottish && (
-                    <MenuItem
-                      dense
-                      disabled={!userCanEdit}
-                      onClick={handleCreateOSSpecialDesignationRecord}
-                      sx={menuItemStyle(false)}
-                    >
-                      <Typography
-                        variant="inherit"
-                        sx={{
-                          paddingLeft: theme.spacing(1),
-                        }}
-                      >
-                        Special designation
-                      </Typography>
-                    </MenuItem>
-                  )}
-                  {!settingsContext.isScottish && (
-                    <MenuItem dense disabled={!userCanEdit} onClick={handleCreateHWWRecord} sx={menuItemStyle(false)}>
-                      <Typography
-                        variant="inherit"
-                        sx={{
-                          paddingLeft: theme.spacing(1),
-                        }}
-                      >
-                        Height, width and weight restriction
-                      </Typography>
-                    </MenuItem>
-                  )}
-                  {!settingsContext.isScottish && data.recordType === 3 && (
-                    <MenuItem dense disabled={!userCanEdit} onClick={handleCreatePRoWRecord} sx={menuItemStyle(false)}>
-                      <Typography
-                        variant="inherit"
-                        sx={{
-                          paddingLeft: theme.spacing(1),
-                        }}
-                      >
-                        Public right of way
-                      </Typography>
-                    </MenuItem>
-                  )}
-                </Menu>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+                  <Typography
+                    variant="inherit"
+                    sx={{
+                      pl: theme.spacing(1),
+                    }}
+                  >
+                    Maintenance responsibility
+                  </Typography>
+                </MenuItem>
+              )}
+              {!settingsContext.isScottish && (
+                <MenuItem
+                  dense
+                  disabled={!userCanEdit}
+                  onClick={handleCreateConstructionRecord}
+                  sx={menuItemStyle(false)}
+                >
+                  <Typography
+                    variant="inherit"
+                    sx={{
+                      pl: theme.spacing(1),
+                    }}
+                  >
+                    Construction
+                  </Typography>
+                </MenuItem>
+              )}
+              {settingsContext.isScottish && (
+                <MenuItem
+                  dense
+                  disabled={!userCanEdit}
+                  onClick={handleCreateReinstatementCategoryRecord}
+                  sx={menuItemStyle(false)}
+                >
+                  <Typography
+                    variant="inherit"
+                    sx={{
+                      pl: theme.spacing(1),
+                    }}
+                  >
+                    Reinstatement category
+                  </Typography>
+                </MenuItem>
+              )}
+              {!settingsContext.isScottish && (
+                <MenuItem
+                  dense
+                  disabled={!userCanEdit}
+                  onClick={handleCreateSpecialDesignationRecord}
+                  sx={menuItemStyle(false)}
+                >
+                  <Typography
+                    variant="inherit"
+                    sx={{
+                      pl: theme.spacing(1),
+                    }}
+                  >
+                    Special designation
+                  </Typography>
+                </MenuItem>
+              )}
+              {settingsContext.isScottish && (
+                <MenuItem
+                  dense
+                  disabled={!userCanEdit}
+                  onClick={handleCreateOSSpecialDesignationRecord}
+                  sx={menuItemStyle(false)}
+                >
+                  <Typography
+                    variant="inherit"
+                    sx={{
+                      pl: theme.spacing(1),
+                    }}
+                  >
+                    Special designation
+                  </Typography>
+                </MenuItem>
+              )}
+              {!settingsContext.isScottish && (
+                <MenuItem dense disabled={!userCanEdit} onClick={handleCreateHWWRecord} sx={menuItemStyle(false)}>
+                  <Typography
+                    variant="inherit"
+                    sx={{
+                      pl: theme.spacing(1),
+                    }}
+                  >
+                    Height, width and weight restriction
+                  </Typography>
+                </MenuItem>
+              )}
+              {!settingsContext.isScottish && data.recordType === 3 && (
+                <MenuItem dense disabled={!userCanEdit} onClick={handleCreatePRoWRecord} sx={menuItemStyle(false)}>
+                  <Typography
+                    variant="inherit"
+                    sx={{
+                      pl: theme.spacing(1),
+                    }}
+                  >
+                    Public right of way
+                  </Typography>
+                </MenuItem>
+              )}
+            </Menu>
+          </Stack>
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>
         {loading ? (
@@ -639,7 +640,7 @@ function AsdDataTab({
             sx={{
               width: "100%",
               backgroundColor: theme.palette.background.paper,
-              paddingTop: theme.spacing(0),
+              pt: theme.spacing(0),
             }}
             component="nav"
             key="asd-types-list"

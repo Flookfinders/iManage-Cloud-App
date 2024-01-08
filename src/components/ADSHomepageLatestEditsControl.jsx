@@ -3,7 +3,7 @@
 //
 //  Description: Latest Edits control for homepage
 //
-//  Copyright:    © 2021-23 Idox Software Limited
+//  Copyright:    © 2021 - 2024 Idox Software Limited
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -20,6 +20,7 @@
 //    007   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required and corrected display of user avatar.
 //    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and removed a couple of warnings.
 //    009   08.12.23 Sean Flook                 Migrated DataGrid to v6.
+//    010   05.01.24 Sean Flook                 Changes to sort out warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -56,15 +57,11 @@ function TabPanel(props) {
     <div
       role="tabpanel"
       hidden={value !== index}
-      id={`street-tabpanel-${index}`}
-      aria-labelledby={`street-tab-${index}`}
+      id={`homepage-tabpanel-${index}`}
+      aria-labelledby={`homepage-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && <Box p={3}>{children}</Box>}
     </div>
   );
 }
@@ -77,8 +74,8 @@ TabPanel.propTypes = {
 
 function a11yProps(index) {
   return {
-    id: `street-tab-${index}`,
-    "aria-controls": `street-tabpanel-${index}`,
+    id: `homepage-tab-${index}`,
+    "aria-controls": `homepage-tabpanel-${index}`,
   };
 }
 

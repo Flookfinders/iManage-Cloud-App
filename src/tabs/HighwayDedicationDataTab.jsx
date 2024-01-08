@@ -3,7 +3,7 @@
 //
 //  Description: Highway dedication data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -17,6 +17,7 @@
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    005   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    006   20.12.23 Sean Flook       IMANN-201 Corrected controls and form layout.
+//    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -32,7 +33,7 @@ import { GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
 
 import { Grid, Typography, FormControlLabel, Checkbox } from "@mui/material";
-import { Box } from "@mui/system";
+import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSDateTimeControl from "../components/ADSDateTimeControl";
@@ -53,7 +54,7 @@ import {
 
 import { useTheme } from "@mui/styles";
 import { adsBlueA, adsMidGreyA } from "../utils/ADSColours";
-import { streetToolbarStyle, dataFormStyle, FormRowStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataFormStyle, FormRowStyle } from "../utils/ADSStyles";
 
 HighwayDedicationDataTab.propTypes = {
   data: PropTypes.object,
@@ -561,12 +562,12 @@ function HighwayDedicationDataTab({
   function getIndicatorStyle(isChecked, isHover) {
     if (isChecked || isHover)
       return {
-        marginRight: theme.spacing(1),
+        mr: theme.spacing(1),
         color: adsBlueA,
       };
     else
       return {
-        marginRight: theme.spacing(1),
+        mr: theme.spacing(1),
         color: adsMidGreyA,
         "&:hover": {
           color: adsBlueA,
@@ -673,59 +674,42 @@ function HighwayDedicationDataTab({
 
   return (
     <Fragment>
-      <Box sx={streetToolbarStyle}>
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Grid container justifyContent="flex-start" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="home"
-                  tooltipTitle="Home"
-                  tooltipPlacement="bottom"
-                  onClick={handleHomeClick}
-                />
-              </Grid>
-              <Grid item>
-                <Typography
-                  sx={{
-                    flexGrow: 1,
-                    display: "none",
-                    [theme.breakpoints.up("sm")]: {
-                      display: "block",
-                    },
-                  }}
-                  variant="subtitle1"
-                  noWrap
-                  align="left"
-                >
-                  {`| ${data.hdData.esuId}: Highway dedication (${data.index + 1} of ${data.totalRecords})`}
-                </Typography>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <Grid container justifyContent="flex-end" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="delete"
-                  disabled={!userCanEdit}
-                  tooltipTitle="Delete highway dedication"
-                  tooltipPlacement="right"
-                  onClick={handleDeleteHighwayDedication}
-                />
-              </Grid>
-              <Grid item>
-                <ADSActionButton
-                  variant="add"
-                  disabled={!userCanEdit}
-                  tooltipTitle="Add new highway dedication record"
-                  tooltipPlacement="right"
-                  onClick={handleAddHighwayDedication}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+      <Box sx={toolbarStyle}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Stack direction="row" alignItems="center" justifyContent="flex-start">
+            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            <Typography
+              sx={{
+                flexGrow: 1,
+                display: "none",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >
+              {`| ${data.hdData.esuId}: Highway dedication (${data.index + 1} of ${data.totalRecords})`}
+            </Typography>
+          </Stack>
+          <Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <ADSActionButton
+              variant="delete"
+              disabled={!userCanEdit}
+              tooltipTitle="Delete highway dedication"
+              tooltipPlacement="right"
+              onClick={handleDeleteHighwayDedication}
+            />
+            <ADSActionButton
+              variant="add"
+              disabled={!userCanEdit}
+              tooltipTitle="Add new highway dedication record"
+              tooltipPlacement="right"
+              onClick={handleAddHighwayDedication}
+            />
+          </Stack>
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>
         <ADSSelectControl

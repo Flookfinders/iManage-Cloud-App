@@ -3,7 +3,7 @@
 //
 //  Description: All the styling used by the app
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -18,6 +18,7 @@
 //    005   03.11.23 Sean Flook       IMANN-175 Added SelectPropertiesIconStyle.
 //    006   10.11.23 Sean Flook       IMANN-175 Modified wizardFinaliseFormStyle to handle Move BLPU seed point.
 //    007   14.12.23 Sean Flook                 Added dashboardIconStyle.
+//    008   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -287,35 +288,9 @@ export function FormSelectInputStyle(hasError) {
  */
 export const toolbarStyle = {
   backgroundColor: adsWhite,
-  borderBottomWidth: "1px",
-  borderBottomStyle: "solid",
-  borderBottomColor: adsLightGreyB,
-  pl: "4px",
-  pr: "6px",
-};
-
-/**
- * The styling used for street toolbars
- */
-export const streetToolbarStyle = {
-  backgroundColor: adsWhite,
-  borderBottomWidth: "1px",
-  borderBottomStyle: "solid",
-  borderBottomColor: adsLightGreyB,
-  pl: "4px",
-  pr: "6px",
-  height: "34px",
-  width: "100%",
-};
-
-/**
- * The styling used for property toolbars.
- */
-export const propertyToolbarStyle = {
-  backgroundColor: adsWhite,
   borderBottom: `1px solid ${adsLightGreyB}`,
-  pl: 0,
-  pr: "4px",
+  pl: "4px",
+  pr: "6px",
   height: "40px",
   width: "100%",
 };

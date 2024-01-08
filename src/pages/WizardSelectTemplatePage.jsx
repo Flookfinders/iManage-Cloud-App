@@ -3,7 +3,7 @@
 //
 //  Description: Wizard select template page
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   05.04.23 Sean Flook         WI40669 Fixed warnings.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    005   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -65,11 +66,7 @@ function TabPanel(props) {
       aria-labelledby={`wizard-select-template-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && <Box p={3}>{children}</Box>}
     </div>
   );
 }
@@ -124,7 +121,7 @@ function WizardSelectTemplatePage({ variant, onTemplateSelected }) {
         bgcolor: adsBlueA,
         width: "24px",
         height: "24px",
-        marginTop: "2px",
+        mt: "2px",
       };
     else
       switch (type) {
@@ -133,7 +130,7 @@ function WizardSelectTemplatePage({ variant, onTemplateSelected }) {
             bgcolor: adsLightBlue,
             width: "24px",
             height: "24px",
-            marginTop: "2px",
+            mt: "2px",
           };
 
         case 3: // User
@@ -141,7 +138,7 @@ function WizardSelectTemplatePage({ variant, onTemplateSelected }) {
             bgcolor: adsDarkBlue,
             width: "24px",
             height: "24px",
-            marginTop: "2px",
+            mt: "2px",
           };
 
         default:
@@ -149,7 +146,7 @@ function WizardSelectTemplatePage({ variant, onTemplateSelected }) {
             bgcolor: adsMagenta,
             width: "24px",
             height: "24px",
-            marginTop: "2px",
+            mt: "2px",
           };
       }
   };
@@ -228,7 +225,7 @@ function WizardSelectTemplatePage({ variant, onTemplateSelected }) {
                   {rec.templateName}
                 </Typography>
               </Stack>
-              <Typography variant="body2" align="left" sx={{ marginTop: theme.spacing(1) }}>
+              <Typography variant="body2" align="left" sx={{ mt: theme.spacing(1) }}>
                 {rec.templateDescription}
               </Typography>
             </CardContent>

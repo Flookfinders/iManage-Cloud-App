@@ -3,7 +3,7 @@
 //
 //  Description: Help Drawer component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   26.04.23 Sean Flook         WI40697 Updated contact information.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -157,7 +158,7 @@ function ADSHelpDrawer(props) {
         sx={{
           display: "flex",
           alignItems: "center",
-          // padding: theme.spacing(0, 1),
+          // p: theme.spacing(0, 1),
           // necessary for content to be below app bar
           ...theme.mixins.toolbar,
           justifyContent: "flex-start",
@@ -186,7 +187,7 @@ function ADSHelpDrawer(props) {
           justifyContent="center"
           alignItems="flex-start"
           sx={{
-            paddingLeft: "24px",
+            pl: "24px",
           }}
         >
           <Grid item xs={12} sx={{ pt: "24px" }}>
@@ -200,7 +201,7 @@ function ADSHelpDrawer(props) {
             justifyContent="flex-start"
             alignItems="flex-start"
             sx={{
-              paddingTop: theme.spacing(1),
+              pt: theme.spacing(1),
             }}
           >
             <Grid item xs={1}>
@@ -233,7 +234,7 @@ function ADSHelpDrawer(props) {
             justifyContent="flex-start"
             alignItems="flex-start"
             sx={{
-              paddingTop: theme.spacing(1),
+              pt: theme.spacing(1),
             }}
           >
             <Grid item xs={1}>
@@ -270,7 +271,7 @@ function ADSHelpDrawer(props) {
             justifyContent="flex-start"
             alignItems="center"
             sx={{
-              paddingTop: theme.spacing(1),
+              pt: theme.spacing(1),
             }}
           >
             <Grid item xs={1}>
@@ -315,7 +316,7 @@ function ADSHelpDrawer(props) {
             item
             xs={12}
             sx={{
-              paddingTop: theme.spacing(1),
+              pt: theme.spacing(1),
             }}
           >
             <Typography align={"left"} variant="body2" sx={drawerTextStyle}>
@@ -350,7 +351,7 @@ function ADSHelpDrawer(props) {
                 sx={{
                   color: adsMidGreyA,
                   fontSize: "16px",
-                  paddingTop: theme.spacing(2),
+                  pt: theme.spacing(2),
                 }}
               >
                 {`GUI version: ${guiVersion}`}
@@ -363,7 +364,7 @@ function ADSHelpDrawer(props) {
                 sx={{
                   color: adsMidGreyA,
                   fontSize: "16px",
-                  paddingTop: theme.spacing(0.5),
+                  pt: theme.spacing(0.5),
                 }}
               >
                 API versions
@@ -388,7 +389,7 @@ function ADSHelpDrawer(props) {
                 sx={{
                   color: adsMidGreyA,
                   fontSize: "16px",
-                  paddingTop: theme.spacing(0.5),
+                  pt: theme.spacing(0.5),
                 }}
               >
                 Database versions
@@ -410,7 +411,7 @@ function ADSHelpDrawer(props) {
                 sx={{
                   color: adsMidGreyA,
                   fontSize: "16px",
-                  paddingTop: theme.spacing(0.5),
+                  pt: theme.spacing(0.5),
                 }}
               >
                 Search index

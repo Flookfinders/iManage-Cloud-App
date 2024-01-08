@@ -3,7 +3,7 @@
 //
 //  Description: Organisation Tab
 //
-//  Copyright:    © 2023 Idox Software Limited.
+//  Copyright:    © 2023 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record.
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    005   05.01.24 Sean Flook                 Changes to sort out warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,7 +25,7 @@ import React, { useContext, useState, useRef, useEffect, Fragment } from "react"
 import PropTypes from "prop-types";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
-import { Grid, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { ConvertDate } from "../utils/HelperUtils";
 import ObjectComparison from "./../utils/ObjectComparison";
@@ -36,7 +37,7 @@ import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import ErrorIcon from "@mui/icons-material/Error";
 import { useTheme } from "@mui/styles";
-import { propertyToolbarStyle, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
 
 PropertyOrganisationTab.propTypes = {
   data: PropTypes.object,
@@ -313,51 +314,34 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onDataCh
 
   return (
     <Fragment>
-      <Box sx={propertyToolbarStyle}>
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Grid container justifyContent="flex-start" alignItems="center">
-              <Grid item>
-                <Stack direction="row" spacing={0.5} justifyContent="flex-start" alignItems="center">
-                  <ADSActionButton
-                    variant="home"
-                    tooltipTitle="Home"
-                    tooltipPlacement="bottom"
-                    onClick={handleHomeClick}
-                  />
-                  <Typography
-                    sx={{
-                      flexGrow: 1,
-                      display: "none",
-                      [theme.breakpoints.up("sm")]: {
-                        display: "block",
-                      },
-                    }}
-                    variant="subtitle1"
-                    noWrap
-                    align="left"
-                  >
-                    {`| Organisation (${data.index + 1} of ${data.totalRecords}): ${organisation}`}
-                  </Typography>
-                  {errors && errors.length > 0 && <ErrorIcon sx={errorIconStyle} />}
-                </Stack>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <Grid container justifyContent="flex-end" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="delete"
-                  disabled={!userCanEdit}
-                  tooltipTitle="Delete"
-                  tooltipPlacement="right"
-                  onClick={handleDeleteClick}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+      <Box sx={toolbarStyle}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Stack direction="row" spacing={0.5} justifyContent="flex-start" alignItems="center">
+            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            <Typography
+              sx={{
+                flexGrow: 1,
+                display: "none",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >
+              {`| Organisation (${data.index + 1} of ${data.totalRecords}): ${organisation ? organisation : ""}`}
+            </Typography>
+            {errors && errors.length > 0 && <ErrorIcon sx={errorIconStyle} />}
+          </Stack>
+          <ADSActionButton
+            variant="delete"
+            disabled={!userCanEdit}
+            tooltipTitle="Delete"
+            tooltipPlacement="right"
+            onClick={handleDeleteClick}
+          />
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>
         <ADSTextControl

@@ -16,6 +16,7 @@
 //    003   08.12.23 Sean Flook                 Migrated DatePicker to v6.
 //    004   18.12.23 Sean Flook                 Ensure tooltip is displayed
 //    005   03.01.24 Sean Flook                 Fixed warning.
+//    006   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -329,9 +330,9 @@ function ADSFromToDateControl({
                       variant="body1"
                       align="left"
                       sx={{
-                        paddingLeft: theme.spacing(2),
-                        paddingTop: theme.spacing(1.75),
-                        paddingBottom: theme.spacing(1.75),
+                        pl: theme.spacing(2),
+                        pt: theme.spacing(1.75),
+                        pb: theme.spacing(1.75),
                       }}
                       aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-from-label`}
                     >
@@ -351,9 +352,9 @@ function ADSFromToDateControl({
                       variant="body1"
                       align="left"
                       sx={{
-                        paddingLeft: theme.spacing(2),
-                        paddingTop: theme.spacing(1.75),
-                        paddingBottom: theme.spacing(1.75),
+                        pl: theme.spacing(2),
+                        pt: theme.spacing(1.75),
+                        pb: theme.spacing(1.75),
                       }}
                       aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-to-label`}
                     >

@@ -3,7 +3,7 @@
 //
 //  Description: Min max dialog
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    Â© 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
+//    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -164,7 +165,7 @@ function MinMaxDialog({ variant, minValue, maxValue, maximum, isOpen, onNewMinMa
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{ marginTop: theme.spacing(2) }}>
+      <DialogContent sx={{ mt: theme.spacing(2) }}>
         <Grid container alignItems="center" rowSpacing={2}>
           <Grid item xs={4}>
             <Typography variant="body1" align="right" gutterBottom>
@@ -184,8 +185,8 @@ function MinMaxDialog({ variant, minValue, maxValue, maximum, isOpen, onNewMinMa
               value={newMin}
               sx={{
                 color: theme.palette.background.contrastText,
-                paddingLeft: theme.spacing(1),
-                paddingRight: theme.spacing(1),
+                pl: theme.spacing(1),
+                pr: theme.spacing(1),
               }}
               onChange={onMinChangeEvent}
             />
@@ -208,8 +209,8 @@ function MinMaxDialog({ variant, minValue, maxValue, maximum, isOpen, onNewMinMa
               value={newMax}
               sx={{
                 color: theme.palette.background.contrastText,
-                paddingLeft: theme.spacing(1),
-                paddingRight: theme.spacing(1),
+                pl: theme.spacing(1),
+                pr: theme.spacing(1),
               }}
               onChange={onMaxChangeEvent}
             />

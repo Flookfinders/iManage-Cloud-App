@@ -3,7 +3,7 @@
 //
 //  Description: Dialog used to display messages
 //
-//  Copyright:    © 2023 Idox Software Limited.
+//  Copyright:    © 2023 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -14,6 +14,7 @@
 //    001   03/11/23 Sean Flook                 Initial Revision.
 //    002   10.11.23 Sean Flook       IMANN-175 Added Move BLPU.
 //    003   20.12.23 Sean Flook       IMANN-152 Added Edit ASD Geometry and Edit ESU Geometry.
+//    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -176,7 +177,7 @@ function MessageDialog({ isOpen, variant, onClose }) {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{ marginTop: theme.spacing(2) }}>{getDialogContent()}</DialogContent>
+      <DialogContent sx={{ mt: theme.spacing(2) }}>{getDialogContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: "flex-start", mb: theme.spacing(1), ml: theme.spacing(2.25) }}>
         {getDialogActions()}
       </DialogActions>

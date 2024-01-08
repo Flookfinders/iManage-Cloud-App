@@ -3,7 +3,7 @@
 //
 //  Description: Property Details Tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -27,6 +27,7 @@
 //    014   03.11.23 Sean Flook                 Added tooltip to the actions button.
 //    015   24.11.23 Sean Flook                 Moved Box to @mui/system and changes required for Scottish authorities.
 //    016   30.11.23 Sean Flook                 Make state and state date visible for Scottish authorities.
+//    017   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -67,7 +68,7 @@ import {
   ListItemAvatar,
   Tooltip,
 } from "@mui/material";
-import { Box } from "@mui/system";
+import { Box, Stack } from "@mui/system";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSDateControl from "../components/ADSDateControl";
 import ADSTextControl from "../components/ADSTextControl";
@@ -90,7 +91,7 @@ import {
   adsMidBlueA,
 } from "../utils/ADSColours";
 import {
-  propertyToolbarStyle,
+  toolbarStyle,
   ActionIconStyle,
   dataFormStyle,
   FormRowStyle,
@@ -695,15 +696,15 @@ function PropertyDetailsTab({
   function LanguageChipStyle(recId, status) {
     if (itemSelected && itemSelected.toString() === recId.toString())
       return {
-        marginLeft: theme.spacing(0.5),
-        marginRight: theme.spacing(1),
+        ml: theme.spacing(0.5),
+        mr: theme.spacing(1),
         backgroundColor: adsBlueA,
         color: adsWhite,
       };
     else if (!status) {
       return {
-        marginLeft: theme.spacing(0.5),
-        marginRight: theme.spacing(1),
+        ml: theme.spacing(0.5),
+        mr: theme.spacing(1),
         backgroundColor: adsMidBlueA,
         color: adsWhite,
         "&:hover": {
@@ -714,8 +715,8 @@ function PropertyDetailsTab({
       const logicalStatusRec = LPILogicalStatus.filter((x) => x.id === status);
       const chipColour = logicalStatusRec ? logicalStatusRec[0].colour : "";
       return {
-        marginLeft: theme.spacing(0.5),
-        marginRight: theme.spacing(1),
+        ml: theme.spacing(0.5),
+        mr: theme.spacing(1),
         backgroundColor: chipColour,
         color: adsWhite,
         "&:hover": {
@@ -951,475 +952,471 @@ function PropertyDetailsTab({
 
   return (
     <Fragment>
-      <Grid container direction="column" justifyContent="space-around" alignItems="baseline" id="property-details-grid">
-        <Grid container sx={propertyToolbarStyle} direction="row" justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Typography
-              variant="subtitle2"
-              display="inline-flex"
-              sx={{
-                marginTop: theme.spacing(0.3),
-                paddingLeft: theme.spacing(1.1),
-                fontSize: "15px",
-                color: adsMidGreyA,
-              }}
-            >
-              {propertyContext.currentProperty.uprn}
+      <Box sx={toolbarStyle}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Typography
+            variant="subtitle1"
+            display="inline-flex"
+            sx={{
+              mt: theme.spacing(0.3),
+              pl: theme.spacing(1.1),
+              fontSize: "15px",
+              color: adsMidGreyA,
+            }}
+          >
+            {propertyContext.currentProperty.uprn}
+          </Typography>
+          <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
+            <IconButton onClick={handleBLPUMenuClick} aria-controls="blpu-menu" aria-haspopup="true" size="small">
+              <MoreVertIcon sx={ActionIconStyle()} />
+            </IconButton>
+          </Tooltip>
+          <Menu
+            id="blpu-menu"
+            elevation={2}
+            anchorEl={anchorEl}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleBLPUMenuClose}
+            sx={menuStyle}
+          >
+            <MenuItem dense disabled={!userCanEdit} onClick={handleAddLpi} sx={menuItemStyle(false)}>
+              <Typography variant="inherit">Add new LPI</Typography>
+            </MenuItem>
+            {process.env.NODE_ENV === "development" && (
+              <MenuItem dense disabled={!userCanEdit} onClick={handleAddChild} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Add child</Typography>
+              </MenuItem>
+            )}
+            {process.env.NODE_ENV === "development" && (
+              <MenuItem dense disabled divider sx={menuItemStyle(true)}>
+                <Typography variant="inherit">Add children</Typography>
+              </MenuItem>
+            )}
+            <MenuItem dense onClick={handleZoomToProperty} sx={menuItemStyle(false)}>
+              <Typography variant="inherit">Zoom to this</Typography>
+            </MenuItem>
+            <MenuItem dense onClick={handleOpenInStreetView} sx={menuItemStyle(false)}>
+              <Typography variant="inherit">Open in Street View</Typography>
+            </MenuItem>
+            {process.env.NODE_ENV === "development" && (
+              <MenuItem dense disabled onClick={handleSearchNearby} divider sx={menuItemStyle(true)}>
+                <Typography variant="inherit">Search nearby</Typography>
+              </MenuItem>
+            )}
+            <MenuItem dense onClick={handleCopyUprn} divider sx={menuItemStyle(true)}>
+              <Typography variant="inherit">Copy UPRN</Typography>
+            </MenuItem>
+            {process.env.NODE_ENV === "development" && (
+              <MenuItem dense disabled onClick={handleBookmark} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Bookmark</Typography>
+              </MenuItem>
+            )}
+            {process.env.NODE_ENV === "development" && (
+              <MenuItem dense disabled onClick={handleAddToList} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Add to List</Typography>
+              </MenuItem>
+            )}
+            {process.env.NODE_ENV === "development" && (
+              <MenuItem dense disabled onClick={handleExportTo} divider sx={menuItemStyle(true)}>
+                <Typography variant="inherit">Export to...</Typography>
+              </MenuItem>
+            )}
+            {process.env.NODE_ENV === "development" && (
+              <MenuItem dense disabled onClick={handleMoveBlpu} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Move BLPU</Typography>
+              </MenuItem>
+            )}
+            {process.env.NODE_ENV === "development" && (
+              <MenuItem dense disabled onClick={handleMoveStreet} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Move street</Typography>
+              </MenuItem>
+            )}
+            {process.env.NODE_ENV === "development" && (
+              <MenuItem dense disabled onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Make child of...</Typography>
+              </MenuItem>
+            )}
+            {process.env.NODE_ENV === "development" && (
+              <MenuItem dense disabled onClick={handleRemoveFromParent} divider sx={menuItemStyle(true)}>
+                <Typography variant="inherit">Remove from parent</Typography>
+              </MenuItem>
+            )}
+            <MenuItem dense disabled={!userCanEdit} onClick={handleReject} sx={menuItemStyle(false)}>
+              <Typography variant="inherit">Reject</Typography>
+            </MenuItem>
+            <MenuItem dense disabled={!userCanEdit} onClick={handleHistoricise} sx={menuItemStyle(false)}>
+              <Typography variant="inherit">Historicise</Typography>
+            </MenuItem>
+            {process.env.NODE_ENV === "development" && (
+              <MenuItem dense disabled={!userCanEdit} onClick={handleDelete} sx={menuItemStyle(false)}>
+                <Typography variant="inherit" color="error">
+                  Delete
+                </Typography>
+              </MenuItem>
+            )}
+          </Menu>
+        </Stack>
+      </Box>
+      <Box sx={dataFormStyle("77.7vh")}>
+        <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
+          <Grid item xs={3}>
+            <Typography variant="body2" color="textPrimary" align="left" sx={controlLabelStyle}>
+              LPI*
             </Typography>
           </Grid>
-          <Grid item>
-            <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
-              <IconButton onClick={handleBLPUMenuClick} aria-controls="blpu-menu" aria-haspopup="true" size="small">
-                <MoreVertIcon sx={ActionIconStyle()} />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              id="blpu-menu"
-              elevation={2}
-              anchorEl={anchorEl}
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              transformOrigin={{ vertical: "top", horizontal: "right" }}
-              keepMounted
-              open={Boolean(anchorEl)}
-              onClose={handleBLPUMenuClose}
-              sx={menuStyle}
-            >
-              <MenuItem dense disabled={!userCanEdit} onClick={handleAddLpi} sx={menuItemStyle(false)}>
-                <Typography variant="inherit">Add new LPI</Typography>
-              </MenuItem>
-              {process.env.NODE_ENV === "development" && (
-                <MenuItem dense disabled={!userCanEdit} onClick={handleAddChild} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit">Add child</Typography>
-                </MenuItem>
-              )}
-              {process.env.NODE_ENV === "development" && (
-                <MenuItem dense disabled divider sx={menuItemStyle(true)}>
-                  <Typography variant="inherit">Add children</Typography>
-                </MenuItem>
-              )}
-              <MenuItem dense onClick={handleZoomToProperty} sx={menuItemStyle(false)}>
-                <Typography variant="inherit">Zoom to this</Typography>
-              </MenuItem>
-              <MenuItem dense onClick={handleOpenInStreetView} sx={menuItemStyle(false)}>
-                <Typography variant="inherit">Open in Street View</Typography>
-              </MenuItem>
-              {process.env.NODE_ENV === "development" && (
-                <MenuItem dense disabled onClick={handleSearchNearby} divider sx={menuItemStyle(true)}>
-                  <Typography variant="inherit">Search nearby</Typography>
-                </MenuItem>
-              )}
-              <MenuItem dense onClick={handleCopyUprn} divider sx={menuItemStyle(true)}>
-                <Typography variant="inherit">Copy UPRN</Typography>
-              </MenuItem>
-              {process.env.NODE_ENV === "development" && (
-                <MenuItem dense disabled onClick={handleBookmark} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit">Bookmark</Typography>
-                </MenuItem>
-              )}
-              {process.env.NODE_ENV === "development" && (
-                <MenuItem dense disabled onClick={handleAddToList} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit">Add to List</Typography>
-                </MenuItem>
-              )}
-              {process.env.NODE_ENV === "development" && (
-                <MenuItem dense disabled onClick={handleExportTo} divider sx={menuItemStyle(true)}>
-                  <Typography variant="inherit">Export to...</Typography>
-                </MenuItem>
-              )}
-              {process.env.NODE_ENV === "development" && (
-                <MenuItem dense disabled onClick={handleMoveBlpu} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit">Move BLPU</Typography>
-                </MenuItem>
-              )}
-              {process.env.NODE_ENV === "development" && (
-                <MenuItem dense disabled onClick={handleMoveStreet} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit">Move street</Typography>
-                </MenuItem>
-              )}
-              {process.env.NODE_ENV === "development" && (
-                <MenuItem dense disabled onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit">Make child of...</Typography>
-                </MenuItem>
-              )}
-              {process.env.NODE_ENV === "development" && (
-                <MenuItem dense disabled onClick={handleRemoveFromParent} divider sx={menuItemStyle(true)}>
-                  <Typography variant="inherit">Remove from parent</Typography>
-                </MenuItem>
-              )}
-              <MenuItem dense disabled={!userCanEdit} onClick={handleReject} sx={menuItemStyle(false)}>
-                <Typography variant="inherit">Reject</Typography>
-              </MenuItem>
-              <MenuItem dense disabled={!userCanEdit} onClick={handleHistoricise} sx={menuItemStyle(false)}>
-                <Typography variant="inherit">Historicise</Typography>
-              </MenuItem>
-              {process.env.NODE_ENV === "development" && (
-                <MenuItem dense disabled={!userCanEdit} onClick={handleDelete} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit" color="error">
-                    Delete
-                  </Typography>
-                </MenuItem>
-              )}
-            </Menu>
-          </Grid>
-        </Grid>
-        <Box sx={dataFormStyle("77.7vh")}>
-          <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
-            <Grid item xs={3}>
-              <Typography variant="body2" color="textPrimary" align="left" sx={controlLabelStyle}>
-                LPI*
-              </Typography>
-            </Grid>
-            <Grid item xs={9}>
-              {loading ? (
-                <Skeleton variant="rectangular" height="50px" width="100%" />
-              ) : data && data.lpis && data.lpis.length > 0 ? (
-                data.lpis
-                  .filter((x) => x.changeType !== "D")
-                  .sort((a, b) =>
-                    settingsContext.isWelsh
-                      ? b.language > a.language
-                        ? 1
-                        : a.language > b.language
-                        ? -1
-                        : 0
-                      : a.language > b.language
+          <Grid item xs={9}>
+            {loading ? (
+              <Skeleton variant="rectangular" height="50px" width="100%" />
+            ) : data && data.lpis && data.lpis.length > 0 ? (
+              data.lpis
+                .filter((x) => x.changeType !== "D")
+                .sort((a, b) =>
+                  settingsContext.isWelsh
+                    ? b.language > a.language
                       ? 1
-                      : b.language > a.language
+                      : a.language > b.language
                       ? -1
                       : 0
-                  )
-                  .sort((a, b) => a.logicalStatus - b.logicalStatus)
-                  .map((rec, index) => (
-                    <List
-                      sx={{
-                        width: "100%",
-                        backgroundColor: theme.palette.background.paper,
-                        paddingTop: theme.spacing(0),
-                        paddingBottom: theme.spacing(0),
-                      }}
-                      component="nav"
-                      key={`key_${index}`}
-                    >
-                      <ListItemButton
-                        dense
-                        disableGutters
-                        sx={getLpiStyle(index)}
-                        onClick={() => handleOpenLpi(rec.pkId, index)}
-                        onMouseEnter={() => handleMouseEnter(rec.pkId)}
-                        onMouseLeave={handleMouseLeave}
-                      >
-                        <ListItemIcon>
-                          <Chip size="small" label={rec.language} sx={LanguageChipStyle(rec.pkId, rec.logicalStatus)} />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={
-                            <Typography variant="body1" sx={{ fontSize: "15px", color: adsMidGreyA }}>
-                              {AddressToTitleCase(rec)}
-                            </Typography>
-                          }
-                          secondary={
-                            <Typography variant="body2">
-                              <strong>{getLpiLogicalStatus(rec.logicalStatus)}</strong>
-                            </Typography>
-                          }
-                        />
-                        <ListItemAvatar
-                          sx={{
-                            minWidth: 32,
-                          }}
-                        >
-                          {itemSelected && itemSelected.toString() === rec.pkId.toString() && (
-                            <Fragment>
-                              <Tooltip title="Copy address to clipboard" arrow placement="bottom" sx={tooltipStyle}>
-                                <IconButton onClick={(event) => handleCopyAddress(event, rec)} size="small">
-                                  <CopyIcon sx={ActionIconStyle()} />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip title="Add new LPI" arrow placement="bottom" sx={tooltipStyle}>
-                                <IconButton onClick={handleAddLpi} size="small" disabled={!userCanEdit}>
-                                  <AddCircleIcon sx={ActionIconStyle()} />
-                                </IconButton>
-                              </Tooltip>
-                              <ADSActionButton
-                                variant="delete"
-                                disabled={!userCanEdit}
-                                inheritBackground
-                                tooltipTitle="Delete LPI"
-                                tooltipPlacement="right"
-                                onClick={(event) => handleDeleteLpi(event, rec)}
-                              />
-                            </Fragment>
-                          )}
-                        </ListItemAvatar>
-                      </ListItemButton>
-                    </List>
-                  ))
-              ) : (
-                <List
-                  sx={{
-                    width: "100%",
-                    backgroundColor: theme.palette.background.paper,
-                    paddingTop: theme.spacing(0),
-                  }}
-                  component="nav"
-                  key="key_no_records"
-                >
-                  <ListItemButton
-                    dense
-                    disableGutters
-                    disabled={!userCanEdit}
-                    onClick={handleAddLpi}
+                    : a.language > b.language
+                    ? 1
+                    : b.language > a.language
+                    ? -1
+                    : 0
+                )
+                .sort((a, b) => a.logicalStatus - b.logicalStatus)
+                .map((rec, index) => (
+                  <List
                     sx={{
-                      height: "30px",
-                      "&:hover": {
-                        backgroundColor: adsLightBlue10,
-                        color: adsBlueA,
-                      },
+                      width: "100%",
+                      backgroundColor: theme.palette.background.paper,
+                      pt: theme.spacing(0),
+                      pb: theme.spacing(0),
+                    }}
+                    component="nav"
+                    key={`key_${index}`}
+                  >
+                    <ListItemButton
+                      dense
+                      disableGutters
+                      sx={getLpiStyle(index)}
+                      onClick={() => handleOpenLpi(rec.pkId, index)}
+                      onMouseEnter={() => handleMouseEnter(rec.pkId)}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      <ListItemIcon>
+                        <Chip size="small" label={rec.language} sx={LanguageChipStyle(rec.pkId, rec.logicalStatus)} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={
+                          <Typography variant="body1" sx={{ fontSize: "15px", color: adsMidGreyA }}>
+                            {AddressToTitleCase(rec)}
+                          </Typography>
+                        }
+                        secondary={
+                          <Typography variant="body2">
+                            <strong>{getLpiLogicalStatus(rec.logicalStatus)}</strong>
+                          </Typography>
+                        }
+                      />
+                      <ListItemAvatar
+                        sx={{
+                          minWidth: 32,
+                        }}
+                      >
+                        {itemSelected && itemSelected.toString() === rec.pkId.toString() && (
+                          <Fragment>
+                            <Tooltip title="Copy address to clipboard" arrow placement="bottom" sx={tooltipStyle}>
+                              <IconButton onClick={(event) => handleCopyAddress(event, rec)} size="small">
+                                <CopyIcon sx={ActionIconStyle()} />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Add new LPI" arrow placement="bottom" sx={tooltipStyle}>
+                              <IconButton onClick={handleAddLpi} size="small" disabled={!userCanEdit}>
+                                <AddCircleIcon sx={ActionIconStyle()} />
+                              </IconButton>
+                            </Tooltip>
+                            <ADSActionButton
+                              variant="delete"
+                              disabled={!userCanEdit}
+                              inheritBackground
+                              tooltipTitle="Delete LPI"
+                              tooltipPlacement="right"
+                              onClick={(event) => handleDeleteLpi(event, rec)}
+                            />
+                          </Fragment>
+                        )}
+                      </ListItemAvatar>
+                    </ListItemButton>
+                  </List>
+                ))
+            ) : (
+              <List
+                sx={{
+                  width: "100%",
+                  backgroundColor: theme.palette.background.paper,
+                  pt: theme.spacing(0),
+                }}
+                component="nav"
+                key="key_no_records"
+              >
+                <ListItemButton
+                  dense
+                  disableGutters
+                  disabled={!userCanEdit}
+                  onClick={handleAddLpi}
+                  sx={{
+                    height: "30px",
+                    "&:hover": {
+                      backgroundColor: adsLightBlue10,
+                      color: adsBlueA,
+                    },
+                  }}
+                >
+                  <ListItemText primary={<Typography variant="subtitle1">No LPI records present</Typography>} />
+                  <ListItemAvatar
+                    sx={{
+                      minWidth: 32,
                     }}
                   >
-                    <ListItemText primary={<Typography variant="subtitle1">No LPI records present</Typography>} />
-                    <ListItemAvatar
-                      sx={{
-                        minWidth: 32,
-                      }}
-                    >
-                      <Tooltip title="Add new LPI" arrow placement="bottom" sx={tooltipStyle}>
-                        <IconButton onClick={handleAddLpi} size="small" disabled={!userCanEdit}>
-                          <AddCircleIcon sx={ActionIconStyle()} />
-                        </IconButton>
-                      </Tooltip>
-                    </ListItemAvatar>
-                  </ListItemButton>
-                </List>
-              )}
-            </Grid>
+                    <Tooltip title="Add new LPI" arrow placement="bottom" sx={tooltipStyle}>
+                      <IconButton onClick={handleAddLpi} size="small" disabled={!userCanEdit}>
+                        <AddCircleIcon sx={ActionIconStyle()} />
+                      </IconButton>
+                    </Tooltip>
+                  </ListItemAvatar>
+                </ListItemButton>
+              </List>
+            )}
           </Grid>
+        </Grid>
+        <ADSSelectControl
+          label="BLPU logical status"
+          isEditable={userCanEdit}
+          isRequired
+          isFocused={focusedField ? focusedField === "LogicalStatus" : false}
+          loading={loading}
+          useRounded
+          doNotSetTitleCase
+          lookupData={blpuLogicalStatusLookup}
+          lookupId="id"
+          lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+          lookupColour="colour"
+          value={blpuLogicalStatus}
+          errorText={blpuLogicalStatusError}
+          onChange={handleBLPULogicalStatusChangeEvent}
+          helperText="Logical Status of the BLPU."
+        />
+        <ADSSelectControl
+          label="RPC"
+          isEditable={userCanEdit}
+          isRequired
+          isFocused={focusedField ? focusedField === "Rpc" : false}
+          loading={loading}
+          useRounded
+          doNotSetTitleCase
+          lookupData={representativePointCodeLookup}
+          lookupId="id"
+          lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+          lookupColour="colour"
+          value={rpc}
+          errorText={rpcError}
+          onChange={handleRPCChangeEvent}
+          helperText="Representative Point Code."
+        />
+        <ADSSelectControl
+          label="State"
+          isEditable={userCanEdit}
+          isRequired={blpuLogicalStatus === 6}
+          isFocused={focusedField ? focusedField === "BlpuState" : false}
+          loading={loading}
+          useRounded
+          doNotSetTitleCase
+          lookupData={blpuStateLookup}
+          lookupId="id"
+          lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+          lookupColour="colour"
+          value={state}
+          errorText={stateError}
+          onChange={handleStateChangeEvent}
+          helperText="A code identifying the current state of a BLPU."
+        />
+        <ADSDateControl
+          label="State date"
+          isEditable={userCanEdit}
+          isRequired={blpuLogicalStatus === 6}
+          isFocused={focusedField ? focusedField === "BlpuStateDate" : false}
+          loading={loading}
+          value={stateDate}
+          errorText={stateDateError}
+          onChange={handleStateDateChangeEvent}
+          helperText="Date at which the BLPU achieved its current state in the real-world."
+        />
+        {!settingsContext.isScottish && (
           <ADSSelectControl
-            label="BLPU logical status"
+            label="Classification"
             isEditable={userCanEdit}
             isRequired
-            isFocused={focusedField ? focusedField === "LogicalStatus" : false}
+            isFocused={focusedField ? focusedField === "BlpuClass" : false}
+            isClassification
+            includeHiddenCode
             loading={loading}
             useRounded
             doNotSetTitleCase
-            lookupData={blpuLogicalStatusLookup}
+            lookupData={settingsContext.isScottish ? OSGClassification : BLPUClassification}
             lookupId="id"
-            lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+            lookupLabel="display"
             lookupColour="colour"
-            value={blpuLogicalStatus}
-            errorText={blpuLogicalStatusError}
-            onChange={handleBLPULogicalStatusChangeEvent}
-            helperText="Logical Status of the BLPU."
+            value={classification}
+            errorText={classificationError}
+            onChange={handleClassificationChangeEvent}
+            helperText="Classification code for the BLPU."
           />
-          <ADSSelectControl
-            label="RPC"
+        )}
+        {!settingsContext.isScottish && (
+          <ADSTextControl
+            label="Organisation"
             isEditable={userCanEdit}
-            isRequired
-            isFocused={focusedField ? focusedField === "Rpc" : false}
+            isFocused={focusedField ? focusedField === "Organisation" : false}
             loading={loading}
-            useRounded
-            doNotSetTitleCase
-            lookupData={representativePointCodeLookup}
-            lookupId="id"
-            lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-            lookupColour="colour"
-            value={rpc}
-            errorText={rpcError}
-            onChange={handleRPCChangeEvent}
-            helperText="Representative Point Code."
+            maxLength={100}
+            value={organisation}
+            id="property-organisation"
+            errorText={organisationError}
+            characterSet="GeoPlaceProperty1"
+            helperText="Name of current occupier on the fascia of the BLPU."
+            onChange={handleOrganisationChangeEvent}
           />
-          <ADSSelectControl
-            label="State"
+        )}
+        {settingsContext.isScottish && (
+          <ADSNumberControl
+            label="Level"
             isEditable={userCanEdit}
-            isRequired={blpuLogicalStatus === 6}
-            isFocused={focusedField ? focusedField === "BlpuState" : false}
+            isFocused={focusedField ? focusedField === "Level" : false}
+            loading={loading}
+            value={level}
+            errorText={levelError}
+            helperText="Code describing vertical position of BLPU."
+            onChange={handleLevelChangeEvent}
+          />
+        )}
+        {!settingsContext.isScottish && (
+          <ADSSelectControl
+            label="Ward"
+            isEditable={userCanEdit}
+            isFocused={focusedField ? focusedField === "WardCode" : false}
             loading={loading}
             useRounded
             doNotSetTitleCase
-            lookupData={blpuStateLookup}
-            lookupId="id"
-            lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-            lookupColour="colour"
-            value={state}
-            errorText={stateError}
-            onChange={handleStateChangeEvent}
-            helperText="A code identifying the current state of a BLPU."
+            lookupData={lookupContext.currentLookups.wards}
+            lookupId="wardCode"
+            lookupLabel="ward"
+            value={ward}
+            errorText={wardError}
+            onChange={handleWardChangeEvent}
+            helperText="The ONS code of the electoral ward (ENG) or electoral division (CYM) name in which the BLPU is situated."
           />
+        )}
+        {!settingsContext.isScottish && (
+          <ADSSelectControl
+            label="Parish"
+            isEditable={userCanEdit}
+            isFocused={focusedField ? focusedField === "ParishCode" : false}
+            loading={loading}
+            useRounded
+            doNotSetTitleCase
+            lookupData={lookupContext.currentLookups.parishes}
+            lookupId="parishCode"
+            lookupLabel="parish"
+            value={parish}
+            errorText={parishError}
+            onChange={handleParishChangeEvent}
+            helperText="The ONS code of the Parish, Town or Community Council in which the BLPU is situated."
+          />
+        )}
+        <ADSSelectControl
+          label="Authority"
+          isRequired
+          isFocused={focusedField ? focusedField === "LocalCustodian" : false}
+          loading={loading}
+          useRounded
+          lookupData={DETRCodes}
+          lookupId="id"
+          lookupLabel="text"
+          value={localCustodian}
+          errorText={localCustodianError}
+          onChange={handleLocalCustodianChangeEvent}
+          helperText="Unique identifier of the Authority Address Custodian."
+        />
+        <ADSCoordinateControl
+          label="Representative point coordinate"
+          isEditable={userCanEdit}
+          isRequired
+          isEastFocused={focusedField ? focusedField === "XCoordinate" || focusedField === "Easting" : false}
+          isNorthFocused={focusedField ? focusedField === "YCoordinate" || focusedField === "Northing" : false}
+          loading={loading}
+          eastErrorText={eastingError}
+          northErrorText={northingError}
+          helperText="The representative point coordinate for the property."
+          eastValue={easting}
+          northValue={northing}
+          eastLabel="Easting:"
+          northLabel="Northing:"
+          onEastChange={handleEastingChangeEvent}
+          onNorthChange={handleNorthingChangeEvent}
+          onButtonClick={handleMoveClickEvent}
+        />
+        <ADSSwitchControl
+          label="Exclude from export"
+          isEditable={userCanEdit}
+          isFocused={focusedField ? focusedField === "NeverExport" : false}
+          loading={loading}
+          checked={excludeFromExport}
+          trueLabel="Yes"
+          falseLabel="No"
+          errorText={excludeFromExportError}
+          helperText="Set this if you do not want this property to be included in any exports."
+          onChange={handleExcludeFromExportChangeEvent}
+        />
+        <ADSSwitchControl
+          label="Site visit required"
+          isEditable={userCanEdit}
+          isFocused={focusedField ? focusedField === "SiteSurvey" : false}
+          loading={loading}
+          checked={siteSurvey}
+          trueLabel="Yes"
+          falseLabel="No"
+          errorText={siteSurveyError}
+          helperText="Set this if the property requires a site visit."
+          onChange={handleSiteSurveyChangeEvent}
+        />
+        <ADSDateControl
+          label="Start date"
+          isEditable={userCanEdit}
+          isRequired
+          isFocused={focusedField ? focusedField === "StartDate" : false}
+          loading={loading}
+          value={startDate}
+          helperText="Date on which this BLPU was defined."
+          errorText={startDateError}
+          onChange={handleStartDateChangeEvent}
+        />
+        {blpuLogicalStatus && blpuLogicalStatus > 6 && (
           <ADSDateControl
-            label="State date"
+            label="End date"
             isEditable={userCanEdit}
-            isRequired={blpuLogicalStatus === 6}
-            isFocused={focusedField ? focusedField === "BlpuStateDate" : false}
+            isFocused={focusedField ? focusedField === "EndDate" : false}
             loading={loading}
-            value={stateDate}
-            errorText={stateDateError}
-            onChange={handleStateDateChangeEvent}
-            helperText="Date at which the BLPU achieved its current state in the real-world."
+            value={endDate}
+            helperText="Date on which this BLPU ceased to exist or became a rejected Candidate."
+            errorText={endDateError}
+            onChange={handleEndDateChangeEvent}
           />
-          {!settingsContext.isScottish && (
-            <ADSSelectControl
-              label="Classification"
-              isEditable={userCanEdit}
-              isRequired
-              isFocused={focusedField ? focusedField === "BlpuClass" : false}
-              isClassification
-              includeHiddenCode
-              loading={loading}
-              useRounded
-              doNotSetTitleCase
-              lookupData={settingsContext.isScottish ? OSGClassification : BLPUClassification}
-              lookupId="id"
-              lookupLabel="display"
-              lookupColour="colour"
-              value={classification}
-              errorText={classificationError}
-              onChange={handleClassificationChangeEvent}
-              helperText="Classification code for the BLPU."
-            />
-          )}
-          {!settingsContext.isScottish && (
-            <ADSTextControl
-              label="Organisation"
-              isEditable={userCanEdit}
-              isFocused={focusedField ? focusedField === "Organisation" : false}
-              loading={loading}
-              maxLength={100}
-              value={organisation}
-              id="property-organisation"
-              errorText={organisationError}
-              characterSet="GeoPlaceProperty1"
-              helperText="Name of current occupier on the fascia of the BLPU."
-              onChange={handleOrganisationChangeEvent}
-            />
-          )}
-          {settingsContext.isScottish && (
-            <ADSNumberControl
-              label="Level"
-              isEditable={userCanEdit}
-              isFocused={focusedField ? focusedField === "Level" : false}
-              loading={loading}
-              value={level}
-              errorText={levelError}
-              helperText="Code describing vertical position of BLPU."
-              onChange={handleLevelChangeEvent}
-            />
-          )}
-          {!settingsContext.isScottish && (
-            <ADSSelectControl
-              label="Ward"
-              isEditable={userCanEdit}
-              isFocused={focusedField ? focusedField === "WardCode" : false}
-              loading={loading}
-              useRounded
-              doNotSetTitleCase
-              lookupData={lookupContext.currentLookups.wards}
-              lookupId="wardCode"
-              lookupLabel="ward"
-              value={ward}
-              errorText={wardError}
-              onChange={handleWardChangeEvent}
-              helperText="The ONS code of the electoral ward (ENG) or electoral division (CYM) name in which the BLPU is situated."
-            />
-          )}
-          {!settingsContext.isScottish && (
-            <ADSSelectControl
-              label="Parish"
-              isEditable={userCanEdit}
-              isFocused={focusedField ? focusedField === "ParishCode" : false}
-              loading={loading}
-              useRounded
-              doNotSetTitleCase
-              lookupData={lookupContext.currentLookups.parishes}
-              lookupId="parishCode"
-              lookupLabel="parish"
-              value={parish}
-              errorText={parishError}
-              onChange={handleParishChangeEvent}
-              helperText="The ONS code of the Parish, Town or Community Council in which the BLPU is situated."
-            />
-          )}
-          <ADSSelectControl
-            label="Authority"
-            isRequired
-            isFocused={focusedField ? focusedField === "LocalCustodian" : false}
-            loading={loading}
-            useRounded
-            lookupData={DETRCodes}
-            lookupId="id"
-            lookupLabel="text"
-            value={localCustodian}
-            errorText={localCustodianError}
-            onChange={handleLocalCustodianChangeEvent}
-            helperText="Unique identifier of the Authority Address Custodian."
-          />
-          <ADSCoordinateControl
-            label="Representative point coordinate"
-            isEditable={userCanEdit}
-            isRequired
-            isEastFocused={focusedField ? focusedField === "XCoordinate" || focusedField === "Easting" : false}
-            isNorthFocused={focusedField ? focusedField === "YCoordinate" || focusedField === "Northing" : false}
-            loading={loading}
-            eastErrorText={eastingError}
-            northErrorText={northingError}
-            helperText="The representative point coordinate for the property."
-            eastValue={easting}
-            northValue={northing}
-            eastLabel="Easting:"
-            northLabel="Northing:"
-            onEastChange={handleEastingChangeEvent}
-            onNorthChange={handleNorthingChangeEvent}
-            onButtonClick={handleMoveClickEvent}
-          />
-          <ADSSwitchControl
-            label="Exclude from export"
-            isEditable={userCanEdit}
-            isFocused={focusedField ? focusedField === "NeverExport" : false}
-            loading={loading}
-            checked={excludeFromExport}
-            trueLabel="Yes"
-            falseLabel="No"
-            errorText={excludeFromExportError}
-            helperText="Set this if you do not want this property to be included in any exports."
-            onChange={handleExcludeFromExportChangeEvent}
-          />
-          <ADSSwitchControl
-            label="Site visit required"
-            isEditable={userCanEdit}
-            isFocused={focusedField ? focusedField === "SiteSurvey" : false}
-            loading={loading}
-            checked={siteSurvey}
-            trueLabel="Yes"
-            falseLabel="No"
-            errorText={siteSurveyError}
-            helperText="Set this if the property requires a site visit."
-            onChange={handleSiteSurveyChangeEvent}
-          />
-          <ADSDateControl
-            label="Start date"
-            isEditable={userCanEdit}
-            isRequired
-            isFocused={focusedField ? focusedField === "StartDate" : false}
-            loading={loading}
-            value={startDate}
-            helperText="Date on which this BLPU was defined."
-            errorText={startDateError}
-            onChange={handleStartDateChangeEvent}
-          />
-          {blpuLogicalStatus && blpuLogicalStatus > 6 && (
-            <ADSDateControl
-              label="End date"
-              isEditable={userCanEdit}
-              isFocused={focusedField ? focusedField === "EndDate" : false}
-              loading={loading}
-              value={endDate}
-              helperText="Date on which this BLPU ceased to exist or became a rejected Candidate."
-              errorText={endDateError}
-              onChange={handleEndDateChangeEvent}
-            />
-          )}
-          <Box sx={{ height: "24px" }} />
-        </Box>
-      </Grid>
+        )}
+        <Box sx={{ height: "24px" }} />
+      </Box>
       <div>
         <ConfirmDeleteDialog
           variant={deleteVariant}

@@ -3,7 +3,7 @@
 //
 //  Description: Entity history list component
 //
-//  Copyright:    � 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Stack to @mui/system and use StringAvatar to display the user initials.
+//    004   05.01.24 Sean Flook                 use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -41,7 +42,7 @@ const ADSEntityHistoryList = ({ historySummaryData }) => {
       <Stack direction="row" spacing={1} key={keySeq++}>
         <Avatar {...StringAvatar(historyEntry.auditUser, false)} />
         <Stack spacing={0} key={keySeq++}>
-          <Typography variant="subtitle2" sx={{ marginTop: theme.spacing(0.5) }}>
+          <Typography variant="subtitle2" sx={{ mt: theme.spacing(0.5) }}>
             {historyEntry.entryDescription}
           </Typography>
           <Typography variant="caption">{historyEntry.displayDateTime}</Typography>
@@ -64,9 +65,9 @@ const ADSEntityHistoryList = ({ historySummaryData }) => {
           variant="body2"
           align="center"
           sx={{
-            marginLeft: theme.spacing(1),
-            marginTop: theme.spacing(1),
-            marginBottom: theme.spacing(1),
+            ml: theme.spacing(1),
+            mt: theme.spacing(1),
+            mb: theme.spacing(1),
             width: "17%",
             backgroundColor: adsLightGreyA,
           }}
@@ -79,9 +80,7 @@ const ADSEntityHistoryList = ({ historySummaryData }) => {
   };
 
   return (
-    <Stack sx={{ marginLeft: theme.spacing(2), marginTop: theme.spacing(1) }}>
-      {historySummaryData.map((day) => DayGroup(day))}
-    </Stack>
+    <Stack sx={{ ml: theme.spacing(2), mt: theme.spacing(1) }}>{historySummaryData.map((day) => DayGroup(day))}</Stack>
   );
 };
 

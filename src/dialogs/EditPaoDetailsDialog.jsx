@@ -3,7 +3,7 @@
 //
 //  Description: Edit PAO details dialog
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    Â© 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
+//    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -168,7 +169,7 @@ function EditPaoDetailsDialog({ isOpen, data, onDone, onClose }) {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{ marginTop: theme.spacing(2) }}>
+      <DialogContent sx={{ mt: theme.spacing(2) }}>
         <ADSAddressableObjectControl
           variant="PAO"
           isEditable

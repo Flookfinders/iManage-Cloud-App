@@ -3,7 +3,7 @@
 //
 //  Description: Edit Property Template tab
 //
-//  Copyright:    © 2023 Idox Software Limited.
+//  Copyright:    © 2023 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   24.11.23 Joel Benford               Include Scottish text for LPI official/postal fields
 //    006   05.12.23 Joel Benford               Classification fixes (still need to add scheme)
+//    007   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -81,13 +82,7 @@ EditPropertyTemplateTab.propTypes = {
   onDeleteClick: PropTypes.func.isRequired,
 };
 
-function EditPropertyTemplateTab({
-  data,
-  onHomeClick,
-  onUpdateData,
-  onDuplicateClick,
-  onDeleteClick,
-}) {
+function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateClick, onDeleteClick }) {
   const theme = useTheme();
 
   const lookupContext = useContext(LookupContext);
@@ -485,11 +480,7 @@ function EditPropertyTemplateTab({
   const getTitleIcon = () => {
     if (data.templateType === 3) {
       return (
-        <Tooltip
-          title="Edit template title"
-          placement="bottom"
-          sx={tooltipStyle}
-        >
+        <Tooltip title="Edit template title" placement="bottom" sx={tooltipStyle}>
           <IconButton onClick={doEditTitle}>
             <EditIcon sx={ActionIconStyle(true)} />
           </IconButton>
@@ -498,9 +489,7 @@ function EditPropertyTemplateTab({
     } else {
       return (
         <IconButton disabled>
-          <LockIcon
-            sx={{ height: "16px", position: "absolute", width: "16px" }}
-          />
+          <LockIcon sx={{ height: "16px", position: "absolute", width: "16px" }} />
         </IconButton>
       );
     }
@@ -567,9 +556,9 @@ function EditPropertyTemplateTab({
   return (
     <Box
       sx={{
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(4.5),
-        marginTop: theme.spacing(2),
+        ml: theme.spacing(1),
+        mr: theme.spacing(4.5),
+        mt: theme.spacing(2),
       }}
     >
       <Stack direction="column" spacing={2}>
@@ -581,12 +570,7 @@ function EditPropertyTemplateTab({
             alignItems="center"
             divider={<Divider orientation="vertical" flexItem />}
           >
-            <ADSActionButton
-              variant="home"
-              tooltipTitle="Home"
-              tooltipPlacement="bottom"
-              onClick={handleHomeClick}
-            />
+            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
             <Stack
               direction="row"
               spacing={1}
@@ -596,9 +580,7 @@ function EditPropertyTemplateTab({
             >
               <Typography
                 variant="h6"
-                sx={getTitleDescriptionStyle(
-                  titleHighlighted && data.templateType === 3
-                )}
+                sx={getTitleDescriptionStyle(titleHighlighted && data.templateType === 3)}
                 onClick={handleTitleClick}
               >
                 {title}
@@ -606,17 +588,8 @@ function EditPropertyTemplateTab({
               {titleHighlighted && getTitleIcon()}
             </Stack>
           </Stack>
-          <Stack
-            direction="row"
-            spacing={1}
-            justifyContent="flex-end"
-            alignItems="center"
-          >
-            <Tooltip
-              title="Duplicate template"
-              placement="bottom"
-              sx={tooltipStyle}
-            >
+          <Stack direction="row" spacing={1} justifyContent="flex-end" alignItems="center">
+            <Tooltip title="Duplicate template" placement="bottom" sx={tooltipStyle}>
               <Button
                 variant="contained"
                 sx={blueButtonStyle}
@@ -627,11 +600,7 @@ function EditPropertyTemplateTab({
               </Button>
             </Tooltip>
             {data.templateType === 3 && (
-              <Tooltip
-                title="Delete template"
-                placement="bottom"
-                sx={tooltipStyle}
-              >
+              <Tooltip title="Delete template" placement="bottom" sx={tooltipStyle}>
                 <Button
                   variant="contained"
                   sx={redButtonStyle}
@@ -650,21 +619,13 @@ function EditPropertyTemplateTab({
           alignItems="center"
           onMouseEnter={doMouseEnterDescription}
           onMouseLeave={doMouseLeaveDescription}
-          sx={{ paddingLeft: theme.spacing(5.75) }}
+          sx={{ pl: theme.spacing(5.75) }}
         >
-          <Typography
-            variant="body2"
-            sx={getTitleDescriptionStyle(descriptionHighlighted)}
-            onClick={doEditDescription}
-          >
+          <Typography variant="body2" sx={getTitleDescriptionStyle(descriptionHighlighted)} onClick={doEditDescription}>
             {description}
           </Typography>
           {descriptionHighlighted && (
-            <Tooltip
-              title="Edit template description"
-              placement="bottom"
-              sx={tooltipStyle}
-            >
+            <Tooltip title="Edit template description" placement="bottom" sx={tooltipStyle}>
               <IconButton onClick={doEditDescription}>
                 <EditIcon sx={ActionIconStyle(true)} />
               </IconButton>
@@ -674,8 +635,8 @@ function EditPropertyTemplateTab({
         <Grid
           container
           sx={{
-            paddingLeft: theme.spacing(2.75),
-            paddingRight: theme.spacing(3.5),
+            pl: theme.spacing(2.75),
+            pr: theme.spacing(3.5),
           }}
           spacing={3}
         >
@@ -696,11 +657,7 @@ function EditPropertyTemplateTab({
                         BLPU settings
                       </Typography>
                       {editBlpu && (
-                        <Tooltip
-                          title="Edit BLPU settings"
-                          placement="bottom"
-                          sx={tooltipStyle}
-                        >
+                        <Tooltip title="Edit BLPU settings" placement="bottom" sx={tooltipStyle}>
                           <IconButton onClick={doEditBlpu} size="small">
                             <EditIcon sx={ActionIconStyle(true)} />
                           </IconButton>
@@ -713,10 +670,7 @@ function EditPropertyTemplateTab({
                       </Grid>
                       <Grid item xs={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getBlpuStatus(
-                            blpuStatus,
-                            settingsContext.isScottish
-                          )}
+                          {getBlpuStatus(blpuStatus, settingsContext.isScottish)}
                         </Typography>
                       </Grid>
                       <Grid item xs={3}>
@@ -738,19 +692,11 @@ function EditPropertyTemplateTab({
                       {!settingsContext.isScottish && (
                         <>
                           <Grid item xs={3}>
-                            <Typography variant="body2">
-                              Classification
-                            </Typography>
+                            <Typography variant="body2">Classification</Typography>
                           </Grid>
                           <Grid item xs={9}>
-                            <Typography
-                              variant="body2"
-                              sx={{ fontWeight: 600 }}
-                            >
-                              {getBlpuClassification(
-                                blpuClassification,
-                                settingsContext.isScottish
-                              )}
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
                             </Typography>
                           </Grid>
                         </>
@@ -778,11 +724,7 @@ function EditPropertyTemplateTab({
                         LPI settings
                       </Typography>
                       {editLpi && (
-                        <Tooltip
-                          title="Edit LPI settings"
-                          placement="bottom"
-                          sx={tooltipStyle}
-                        >
+                        <Tooltip title="Edit LPI settings" placement="bottom" sx={tooltipStyle}>
                           <IconButton onClick={doEditLpi} size="small">
                             <EditIcon sx={ActionIconStyle(true)} />
                           </IconButton>
@@ -803,10 +745,7 @@ function EditPropertyTemplateTab({
                       </Grid>
                       <Grid item xs={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getLpiPostTown(
-                            lpiPostTown,
-                            lookupContext.currentLookups.postTowns
-                          )}
+                          {getLpiPostTown(lpiPostTown, lookupContext.currentLookups.postTowns)}
                         </Typography>
                       </Grid>
                       <Grid item xs={3}>
@@ -818,16 +757,11 @@ function EditPropertyTemplateTab({
                         </Typography>
                       </Grid>
                       <Grid item xs={3}>
-                        <Typography variant="body2">
-                          Official address
-                        </Typography>
+                        <Typography variant="body2">Official address</Typography>
                       </Grid>
                       <Grid item xs={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getLpiOfficialAddress(
-                            lpiOfficialAddress,
-                            settingsContext.isScottish
-                          )}
+                          {getLpiOfficialAddress(lpiOfficialAddress, settingsContext.isScottish)}
                         </Typography>
                       </Grid>
                       <Grid item xs={3}>
@@ -835,10 +769,7 @@ function EditPropertyTemplateTab({
                       </Grid>
                       <Grid item xs={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getLpiPostalAddress(
-                            lpiPostalAddress,
-                            settingsContext.isScottish
-                          )}
+                          {getLpiPostalAddress(lpiPostalAddress, settingsContext.isScottish)}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -861,22 +792,12 @@ function EditPropertyTemplateTab({
                   <CardContent sx={settingsCardContentStyle("property")}>
                     <Stack direction="column" spacing={1}>
                       <Stack direction="row" justifyContent="space-between">
-                        <Typography
-                          variant="h6"
-                          sx={getTitleStyle(editClassification)}
-                        >
+                        <Typography variant="h6" sx={getTitleStyle(editClassification)}>
                           Classification settings
                         </Typography>
                         {editClassification && (
-                          <Tooltip
-                            title="Edit Classification settings"
-                            placement="bottom"
-                            sx={tooltipStyle}
-                          >
-                            <IconButton
-                              onClick={doEditClassification}
-                              size="small"
-                            >
+                          <Tooltip title="Edit Classification settings" placement="bottom" sx={tooltipStyle}>
+                            <IconButton onClick={doEditClassification} size="small">
                               <EditIcon sx={ActionIconStyle(true)} />
                             </IconButton>
                           </Tooltip>
@@ -884,16 +805,11 @@ function EditPropertyTemplateTab({
                       </Stack>
                       <Grid container rowSpacing={1}>
                         <Grid item xs={3}>
-                          <Typography variant="body2">
-                            Classification
-                          </Typography>
+                          <Typography variant="body2">Classification</Typography>
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getBlpuClassification(
-                              blpuClassification,
-                              settingsContext.isScottish
-                            )}
+                            {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
                           </Typography>
                         </Grid>
                         <Grid item xs={3}>
@@ -932,11 +848,7 @@ function EditPropertyTemplateTab({
                         Other settings
                       </Typography>
                       {editOther && (
-                        <Tooltip
-                          title="Edit Other settings"
-                          placement="bottom"
-                          sx={tooltipStyle}
-                        >
+                        <Tooltip title="Edit Other settings" placement="bottom" sx={tooltipStyle}>
                           <IconButton onClick={doEditOther} size="small">
                             <EditIcon sx={ActionIconStyle(true)} />
                           </IconButton>
@@ -945,16 +857,11 @@ function EditPropertyTemplateTab({
                     </Stack>
                     <Grid container rowSpacing={1}>
                       <Grid item xs={3}>
-                        <Typography variant="body2">
-                          Cross ref source
-                        </Typography>
+                        <Typography variant="body2">Cross ref source</Typography>
                       </Grid>
                       <Grid item xs={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getOtherCrossRefSource(
-                            otherCrossRefSource,
-                            lookupContext.currentLookups.appCrossRefs
-                          )}
+                          {getOtherCrossRefSource(otherCrossRefSource, lookupContext.currentLookups.appCrossRefs)}
                         </Typography>
                       </Grid>
                       <Grid item xs={3}>
@@ -962,10 +869,7 @@ function EditPropertyTemplateTab({
                       </Grid>
                       <Grid item xs={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getOtherProvenance(
-                            otherProvenance,
-                            settingsContext.isScottish
-                          )}
+                          {getOtherProvenance(otherProvenance, settingsContext.isScottish)}
                         </Typography>
                       </Grid>
                       <Grid item xs={3}>

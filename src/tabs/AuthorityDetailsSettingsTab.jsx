@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    006   03.01.24 Sean Flook                 For Scottish authorities force Create Street BLPU to true.
+//    007   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -215,8 +216,8 @@ function AuthorityDetailsSettingsTab() {
   return (
     <Box sx={{ ml: theme.spacing(1), mr: theme.spacing(4.5) }}>
       <Stack direction="column" spacing={0.5}>
-        <Typography sx={{ fontSize: 24, flexGrow: 1, paddingLeft: theme.spacing(3) }}>Authority details</Typography>
-        <Grid container sx={{ paddingRight: theme.spacing(3.5) }} spacing={3}>
+        <Typography sx={{ fontSize: 24, flexGrow: 1, pl: theme.spacing(3) }}>Authority details</Typography>
+        <Grid container sx={{ pr: theme.spacing(3.5) }} spacing={3}>
           <Grid item xs={6}>
             <Card
               variant="outlined"

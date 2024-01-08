@@ -17,6 +17,7 @@
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    005   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    006   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,15 +32,14 @@ import SettingsContext from "../context/settingsContext";
 
 import { GetPropertyHistoryByUPRNUrl, GetStreetHistoryByUSRNUrl } from "../configuration/ADSConfig";
 
-import { Chip, Skeleton } from "@mui/material";
+import { Chip, Skeleton, Stack } from "@mui/material";
 import { Box } from "@mui/system";
 import ADSEntityHistoryList from "../components/ADSEntityHistoryList";
 
 import UpdateIcon from "@mui/icons-material/Update";
 import EditIcon from "@mui/icons-material/Edit";
 
-import { adsWhite, adsLightGreyB } from "../utils/ADSColours";
-import { dataFormStyle } from "../utils/ADSStyles";
+import { dataFormStyle, toolbarStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 function EntityHistoryTab({ variant }) {
@@ -126,42 +126,23 @@ function EntityHistoryTab({ variant }) {
 
   return (
     <Fragment>
-      <Box
-        sx={{
-          backgroundColor: adsWhite,
-          borderBottomWidth: "1px",
-          borderBottomStyle: "solid",
-          borderBottomColor: adsLightGreyB,
-          height: "34px",
-          width: "100%",
-        }}
-      >
-        <Chip
-          icon={<UpdateIcon />}
-          onClick={handleUpdateHistory}
-          size="small"
-          label="Update history"
-          color="primary"
-          sx={{
-            marginTop: theme.spacing(0.5),
-            marginLeft: theme.spacing(1),
-            paddingLeft: theme.spacing(2),
-            paddingRight: theme.spacing(2),
-          }}
-        ></Chip>
-        <Chip
-          icon={<EditIcon />}
-          onClick={() => {}}
-          disabled
-          size="small"
-          label="Edits in progress"
-          sx={{
-            marginTop: theme.spacing(0.5),
-            marginLeft: theme.spacing(1),
-            paddingLeft: theme.spacing(2),
-            paddingRight: theme.spacing(2),
-          }}
-        ></Chip>
+      <Box sx={toolbarStyle}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="flex-start"
+          spacing={2}
+          sx={{ pl: theme.spacing(2), pt: theme.spacing(1) }}
+        >
+          <Chip
+            icon={<UpdateIcon />}
+            onClick={handleUpdateHistory}
+            size="small"
+            label="Update history"
+            color="primary"
+          />
+          <Chip icon={<EditIcon />} disabled size="small" label="Edits in progress" />
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>
         {loading ? (

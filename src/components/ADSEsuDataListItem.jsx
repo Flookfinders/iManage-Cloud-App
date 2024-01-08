@@ -3,7 +3,7 @@
 //
 //  Description: ESU Data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -18,6 +18,7 @@
 //    005   12.10.23 Sean Flook                 Use the street context to handle storing the expanded state of the item.
 //    006   03.11.23 Sean Flook                 Added hyphen to one-way.
 //    007   24.11.23 Sean Flook                 Removed unwanted code.
+//    008   05.01.24 Sean Flook                 use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -459,14 +460,14 @@ function ADSEsuDataListItem({
   function getListItemIconStyle() {
     if (itemSelected || itemChecked)
       return {
-        paddingLeft: theme.spacing(1.5),
-        paddingTop: theme.spacing(1),
+        pl: theme.spacing(1.5),
+        pt: theme.spacing(1),
         height: "42px",
       };
     else
       return {
-        paddingLeft: "38px",
-        paddingTop: theme.spacing(1),
+        pl: "38px",
+        pt: theme.spacing(1),
         height: "42px",
       };
   }
@@ -479,7 +480,7 @@ function ADSEsuDataListItem({
    */
   function getHighwayDedicationStyle(index) {
     const defaultHighwayDedicationStyle = {
-      paddingLeft: theme.spacing(9),
+      pl: theme.spacing(9),
       backgroundColor: grey[100],
       "&:hover": {
         backgroundColor: adsLightBlue10,
@@ -491,7 +492,7 @@ function ADSEsuDataListItem({
       const highwayDedicationRecordErrors = highwayDedicationErrors.filter((x) => x.index === index);
       if (highwayDedicationRecordErrors && highwayDedicationRecordErrors.length > 0) {
         return {
-          paddingLeft: theme.spacing(9),
+          pl: theme.spacing(9),
           backgroundColor: adsRed10,
           "&:hover": {
             backgroundColor: adsRed20,
@@ -521,7 +522,7 @@ function ADSEsuDataListItem({
    */
   function getOneWayExemptionStyle(index) {
     const defaultOneWayExemptionStyle = {
-      paddingLeft: theme.spacing(9),
+      pl: theme.spacing(9),
       backgroundColor: grey[100],
       "&:hover": {
         backgroundColor: adsLightBlue10,
@@ -533,7 +534,7 @@ function ADSEsuDataListItem({
       const oneWayExemptionRecordErrors = oneWayExemptionErrors.filter((x) => x.index === index);
       if (oneWayExemptionRecordErrors && oneWayExemptionRecordErrors.length > 0) {
         return {
-          paddingLeft: theme.spacing(9),
+          pl: theme.spacing(9),
           backgroundColor: adsRed10,
           "&:hover": {
             backgroundColor: adsRed20,
@@ -601,7 +602,7 @@ function ADSEsuDataListItem({
             {(itemSelected || itemChecked) && (
               <Checkbox
                 sx={{
-                  paddingBottom: theme.spacing(2),
+                  pb: theme.spacing(2),
                 }}
                 edge="start"
                 checked={itemChecked}
@@ -615,7 +616,7 @@ function ADSEsuDataListItem({
               <IconButton
                 onClick={handleExpandCollapse}
                 sx={{
-                  paddingBottom: theme.spacing(1),
+                  pb: theme.spacing(1),
                   color: adsMidGreyA,
                   "&:hover": {
                     color: adsBlueA,
@@ -635,7 +636,7 @@ function ADSEsuDataListItem({
             <Typography
               variant="subtitle1"
               sx={{
-                paddingLeft: theme.spacing(1),
+                pl: theme.spacing(1),
               }}
             >
               {title}
@@ -741,7 +742,7 @@ function ADSEsuDataListItem({
                   >
                     <ListItemAvatar
                       sx={{
-                        paddingLeft: theme.spacing(1),
+                        pl: theme.spacing(1),
                         minWidth: 24,
                       }}
                     >
@@ -797,7 +798,7 @@ function ADSEsuDataListItem({
               sx={{
                 width: "100%",
                 backgroundColor: theme.palette.background.paper,
-                paddingTop: theme.spacing(0),
+                pt: theme.spacing(0),
               }}
               component="nav"
               key="key_no_highway_dedication_records"
@@ -818,7 +819,7 @@ function ADSEsuDataListItem({
                   },
                 }}
               >
-                <ListItemAvatar sx={{ paddingLeft: theme.spacing(10), minWidth: 32 }}>
+                <ListItemAvatar sx={{ pl: theme.spacing(10), minWidth: 32 }}>
                   <IndentIcon />
                 </ListItemAvatar>
                 <ListItemText
@@ -826,7 +827,7 @@ function ADSEsuDataListItem({
                     <Typography
                       variant="subtitle1"
                       sx={{
-                        paddingLeft: theme.spacing(1),
+                        pl: theme.spacing(1),
                       }}
                     >
                       No highway dedication records present
@@ -872,7 +873,7 @@ function ADSEsuDataListItem({
                   >
                     <ListItemAvatar
                       sx={{
-                        paddingLeft: theme.spacing(1),
+                        pl: theme.spacing(1),
                         minWidth: 24,
                       }}
                     >
@@ -908,7 +909,7 @@ function ADSEsuDataListItem({
               sx={{
                 width: "100%",
                 backgroundColor: theme.palette.background.paper,
-                paddingTop: theme.spacing(0),
+                pt: theme.spacing(0),
               }}
               component="nav"
               key="key_no_one_way_exemption_records"
@@ -928,7 +929,7 @@ function ADSEsuDataListItem({
                   },
                 }}
               >
-                <ListItemAvatar sx={{ paddingLeft: theme.spacing(10), minWidth: 32 }}>
+                <ListItemAvatar sx={{ pl: theme.spacing(10), minWidth: 32 }}>
                   <IndentIcon />
                 </ListItemAvatar>
                 <ListItemText
@@ -936,7 +937,7 @@ function ADSEsuDataListItem({
                     <Typography
                       variant="subtitle1"
                       sx={{
-                        paddingLeft: theme.spacing(1),
+                        pl: theme.spacing(1),
                       }}
                     >
                       No one-way exemption records present

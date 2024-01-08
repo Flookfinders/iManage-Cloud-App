@@ -16,6 +16,7 @@
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    004   03.01.24 Sean Flook                 Fixed warning.
 //    006   03.01.24 Sean Flook                 For Scottish authorities force Create Street BLPU to true and prevent the user from changing it.
+//    007   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -328,8 +329,8 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent sx={{ marginTop: theme.spacing(2) }}>
-          <Grid container justifyContent="flex-start" spacing={0} sx={{ paddingLeft: theme.spacing(3.5) }}>
+        <DialogContent sx={{ mt: theme.spacing(2) }}>
+          <Grid container justifyContent="flex-start" spacing={0} sx={{ pl: theme.spacing(3.5) }}>
             <Grid item xs={12}>
               <Stack direction="column" spacing={2}>
                 <Typography sx={{ fontSize: 24, flexGrow: 1 }}>Authority details</Typography>

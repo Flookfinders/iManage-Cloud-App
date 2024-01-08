@@ -3,7 +3,7 @@
 //
 //  Description: Lookup tables tab
 //
-//  Copyright:    � 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   03.11.23 Sean Flook                 Make labels the same within application.
 //    003   24.11.23 Sean Flook                 Moved Stack to @mui/system.
 //    004   30.11.23 Sean Flook                 Hide items if not required.
+//    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -65,9 +66,7 @@ function LookupTablesTab() {
           <Grid container spacing={0} justifyContent="flex-start">
             <Grid item xs={12} sm={2}>
               <Stack direction="column" spacing={2}>
-                <Typography sx={{ fontSize: 24, flexGrow: 1, paddingLeft: theme.spacing(3.5) }}>
-                  Lookup tables
-                </Typography>
+                <Typography sx={{ fontSize: 24, flexGrow: 1, pl: theme.spacing(3.5) }}>Lookup tables</Typography>
                 <TreeView
                   aria-label="settings navigator"
                   defaultCollapseIcon={<ExpandMoreIcon />}

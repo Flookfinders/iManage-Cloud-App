@@ -3,7 +3,7 @@
 //
 //  Description: Min Max component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -74,7 +75,7 @@ function ADSMinMaxControl({
     borderWidth: "1.5px",
     borderColor: adsBlack20,
     borderRadius: "4px",
-    marginRight: theme.spacing(2),
+    mr: theme.spacing(2),
     height: "38px",
   };
 
@@ -129,7 +130,7 @@ function ADSMinMaxControl({
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-min-value`}
                       variant="body2"
                       align="left"
-                      sx={{ paddingBottom: "8.5px", paddingLeft: "14px", paddingRight: "14px", paddingTop: "8.5px" }}
+                      sx={{ pb: "8.5px", pl: "14px", pr: "14px", pt: "8.5px" }}
                     >{`${minValue ? minValue : 0}`}</Typography>
                   </Box>
                 </Grid>
@@ -144,7 +145,7 @@ function ADSMinMaxControl({
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-max-value`}
                       variant="body2"
                       align="left"
-                      sx={{ paddingBottom: "8.5px", paddingLeft: "14px", paddingRight: "14px", paddingTop: "8.5px" }}
+                      sx={{ pb: "8.5px", pl: "14px", pr: "14px", pt: "8.5px" }}
                     >{`${maxValue ? maxValue : 0}`}</Typography>
                   </Box>
                 </Grid>
@@ -168,7 +169,7 @@ function ADSMinMaxControl({
                     id={`${label.toLowerCase().replaceAll(" ", "-")}-min-value`}
                     variant="body2"
                     align="left"
-                    sx={{ paddingBottom: "8.5px", paddingLeft: "14px", paddingRight: "14px", paddingTop: "8.5px" }}
+                    sx={{ pb: "8.5px", pl: "14px", pr: "14px", pt: "8.5px" }}
                   >{`${minValue ? minValue : 0}`}</Typography>
                 </Box>
               </Grid>
@@ -183,7 +184,7 @@ function ADSMinMaxControl({
                     id={`${label.toLowerCase().replaceAll(" ", "-")}-max-value`}
                     variant="body2"
                     align="left"
-                    sx={{ paddingBottom: "8.5px", paddingLeft: "14px", paddingRight: "14px", paddingTop: "8.5px" }}
+                    sx={{ pb: "8.5px", pl: "14px", pr: "14px", pt: "8.5px" }}
                   >{`${maxValue ? maxValue : 0}`}</Typography>
                 </Box>
               </Grid>

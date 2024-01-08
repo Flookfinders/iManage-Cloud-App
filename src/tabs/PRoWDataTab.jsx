@@ -3,7 +3,7 @@
 //
 //  Description: Public right of way data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record and use colour variables.
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    005   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -48,7 +49,7 @@ import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 
 import { DirectionsWalk, ArrowForwardIosSharp, QuestionAnswer, Flag, Done } from "@mui/icons-material";
 import { adsBlueA, adsWhite, adsLightBlue10, adsBlack125, adsDarkGreen } from "../utils/ADSColours";
-import { streetToolbarStyle, dataFormStyle, FormRowStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataFormStyle, FormRowStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 PRoWDataTab.propTypes = {
@@ -875,92 +876,73 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
 
   return (
     <Fragment>
-      <Box sx={streetToolbarStyle}>
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Grid container justifyContent="flex-start" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="home"
-                  tooltipTitle="Home"
-                  tooltipPlacement="bottom"
-                  onClick={handleHomeClick}
-                />
-              </Grid>
-              <Grid item>
-                <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                  <Typography
-                    sx={{
-                      flexGrow: 1,
-                      display: "none",
-                      [theme.breakpoints.up("sm")]: {
-                        display: "block",
-                      },
-                    }}
-                    variant="subtitle1"
-                    noWrap
-                    align="left"
-                  >
-                    |
-                  </Typography>
-                  <Avatar
-                    variant="square"
-                    sx={{
-                      height: theme.spacing(2),
-                      width: theme.spacing(2),
-                      backgroundColor: adsDarkGreen,
-                      color: adsWhite,
-                      clipPath: "polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)",
-                    }}
-                  >
-                    <DirectionsWalk
-                      sx={{
-                        height: theme.spacing(2),
-                        width: theme.spacing(2),
-                      }}
-                    />
-                  </Avatar>
-                  <Typography
-                    sx={{
-                      flexGrow: 1,
-                      display: "none",
-                      [theme.breakpoints.up("sm")]: {
-                        display: "block",
-                      },
-                    }}
-                    variant="subtitle1"
-                    noWrap
-                    align="left"
-                  >
-                    {` Public right of way (${data.index + 1} of ${data.totalRecords})`}
-                  </Typography>
-                </Stack>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <Grid container justifyContent="flex-end" alignItems="center">
-              <Grid item>
-                <ADSActionButton
-                  variant="delete"
-                  disabled={!userCanEdit}
-                  tooltipTitle="Delete PRoW record"
-                  tooltipPlacement="right"
-                  onClick={handleDeletePRoW}
-                />
-              </Grid>
-              <Grid item>
-                <ADSActionButton
-                  variant="add"
-                  disabled={!userCanEdit}
-                  tooltipTitle="Add new PRoW record"
-                  tooltipPlacement="right"
-                  onClick={handleAddPRoW}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+      <Box sx={toolbarStyle}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
+            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            <Typography
+              sx={{
+                flexGrow: 1,
+                display: "none",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >
+              |
+            </Typography>
+            <Avatar
+              variant="square"
+              sx={{
+                height: theme.spacing(2),
+                width: theme.spacing(2),
+                backgroundColor: adsDarkGreen,
+                color: adsWhite,
+                clipPath: "polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)",
+              }}
+            >
+              <DirectionsWalk
+                sx={{
+                  height: theme.spacing(2),
+                  width: theme.spacing(2),
+                }}
+              />
+            </Avatar>
+            <Typography
+              sx={{
+                flexGrow: 1,
+                display: "none",
+                [theme.breakpoints.up("sm")]: {
+                  display: "block",
+                },
+              }}
+              variant="subtitle1"
+              noWrap
+              align="left"
+            >
+              {` Public right of way (${data.index + 1} of ${data.totalRecords})`}
+            </Typography>
+          </Stack>
+          <Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <ADSActionButton
+              variant="delete"
+              disabled={!userCanEdit}
+              tooltipTitle="Delete PRoW record"
+              tooltipPlacement="right"
+              onClick={handleDeletePRoW}
+            />
+            <ADSActionButton
+              variant="add"
+              disabled={!userCanEdit}
+              tooltipTitle="Add new PRoW record"
+              tooltipPlacement="right"
+              onClick={handleAddPRoW}
+            />
+          </Stack>
+        </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>
         <ADSSelectControl
@@ -1238,7 +1220,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
                 transform: "rotate(90deg)",
               },
               "& .MuiAccordionSummary-content": {
-                marginLeft: theme.spacing(1),
+                ml: theme.spacing(1),
               },
               "&:hover": {
                 backgroundColor: adsLightBlue10,
@@ -1292,7 +1274,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
           </AccordionSummary>
           <AccordionDetails
             sx={{
-              padding: theme.spacing(2),
+              p: theme.spacing(2),
               borderTop: `1px solid ${adsBlack125}`,
             }}
           >
@@ -1365,7 +1347,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
                 transform: "rotate(90deg)",
               },
               "& .MuiAccordionSummary-content": {
-                marginLeft: theme.spacing(1),
+                ml: theme.spacing(1),
               },
               "&:hover": {
                 backgroundColor: adsLightBlue10,
@@ -1419,7 +1401,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
           </AccordionSummary>
           <AccordionDetails
             sx={{
-              padding: theme.spacing(2),
+              p: theme.spacing(2),
               borderTop: `1px solid ${adsBlack125}`,
             }}
           >
