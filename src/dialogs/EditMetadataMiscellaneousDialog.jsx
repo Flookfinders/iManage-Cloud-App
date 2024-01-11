@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    005   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -240,7 +241,7 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
           id="edit-metadata-miscellaneous-dialog"
           sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
         >
-          <Typography variant="h6">{getTitle()}</Typography>
+          <Typography sx={{ textSize: "20px" }}>{getTitle()}</Typography>
           <IconButton
             aria-label="close"
             onClick={handleCancelClick}

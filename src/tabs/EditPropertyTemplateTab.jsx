@@ -18,6 +18,8 @@
 //    005   24.11.23 Joel Benford               Include Scottish text for LPI official/postal fields
 //    006   05.12.23 Joel Benford               Classification fixes (still need to add scheme)
 //    007   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    008   08.01.24 Joel Benford               Classification and sub locality
+//    009   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -35,6 +37,7 @@ import {
   Tooltip,
   Grid,
   Card,
+  CardHeader,
   CardActionArea,
   CardContent,
   IconButton,
@@ -51,11 +54,13 @@ import {
   getBlpuClassification,
   getLpiStatus,
   getLpiPostTown,
+  getLpiSubLocality,
   getLpiOfficialAddress,
   getLpiPostalAddress,
   getOtherCrossRefSource,
   getOtherProvenance,
 } from "../utils/PropertyUtils";
+import { StringToTitleCase } from "../utils/HelperUtils";
 
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -94,8 +99,10 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
   const [blpuRpc, setBlpuRpc] = useState(null);
   const [blpuState, setBlpuState] = useState(null);
   const [blpuClassification, setBlpuClassification] = useState(null);
+  const [classificationScheme, setClassificationScheme] = useState(null);
   const [lpiStatus, setLpiStatus] = useState(null);
   const [lpiPostTown, setLpiPostTown] = useState(null);
+  const [lpiSubLocality, setLpiSubLocality] = useState(null);
   const [lpiLevel, setLpiLevel] = useState(null);
   const [lpiOfficialAddress, setLpiOfficialAddress] = useState(null);
   const [lpiPostalAddress, setLpiPostalAddress] = useState(null);
@@ -158,6 +165,7 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
     setEditData({
       lpiLogicalStatus: data.lpiLogicalStatus,
       postTownRef: data.postTownRef,
+      subLocalityRef: data.subLocalityRef,
       level: data.level,
       officialAddressMaker: data.officialAddressMaker,
       postallyAddressable: data.postallyAddressable,
@@ -172,6 +180,7 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
     setEditVariant("classification");
     setEditData({
       classification: data.classification,
+      classificationScheme: data.scheme,
     });
     setShowEditDialog(true);
   };
@@ -212,9 +221,11 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               rpc: blpuRpc,
               state: blpuState,
               classification: blpuClassification,
+              scheme: classificationScheme,
               lpiTemplatePkId: data.lpiTemplatePkId,
               lpiLogicalStatus: lpiStatus,
               postTownRef: lpiPostTown,
+              subLocalityRef: lpiSubLocality,
               level: lpiLevel,
               officialAddressMaker: lpiOfficialAddress,
               postallyAddressable: lpiPostalAddress,
@@ -240,9 +251,11 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               rpc: blpuRpc,
               state: blpuState,
               classification: blpuClassification,
+              scheme: classificationScheme,
               lpiTemplatePkId: data.lpiTemplatePkId,
               lpiLogicalStatus: lpiStatus,
               postTownRef: lpiPostTown,
+              subLocalityRef: lpiSubLocality,
               level: lpiLevel,
               officialAddressMaker: lpiOfficialAddress,
               postallyAddressable: lpiPostalAddress,
@@ -257,7 +270,6 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
           setBlpuStatus(updatedData.blpuLogicalStatus);
           setBlpuRpc(updatedData.rpc);
           setBlpuState(updatedData.state);
-          setBlpuClassification(updatedData.classification);
           if (onUpdateData)
             onUpdateData({
               templatePkId: data.templatePkId,
@@ -271,9 +283,11 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               rpc: updatedData.rpc,
               state: updatedData.state,
               classification: updatedData.classification,
+              scheme: classificationScheme,
               lpiTemplatePkId: data.lpiTemplatePkId,
               lpiLogicalStatus: lpiStatus,
               postTownRef: lpiPostTown,
+              subLocalityRef: lpiSubLocality,
               level: lpiLevel,
               officialAddressMaker: lpiOfficialAddress,
               postallyAddressable: lpiPostalAddress,
@@ -287,6 +301,7 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
         case "lpi":
           setLpiStatus(updatedData.lpiLogicalStatus);
           setLpiPostTown(updatedData.postTownRef);
+          setLpiSubLocality(updatedData.subLocalityRef);
           setLpiLevel(updatedData.level);
           setLpiOfficialAddress(updatedData.officialAddressMaker);
           setLpiPostalAddress(updatedData.postallyAddressable);
@@ -303,9 +318,11 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               rpc: blpuRpc,
               state: blpuState,
               classification: blpuClassification,
+              scheme: classificationScheme,
               lpiTemplatePkId: data.lpiTemplatePkId,
               lpiLogicalStatus: updatedData.lpiLogicalStatus,
               postTownRef: updatedData.postTownRef,
+              subLocalityRef: updatedData.subLocalityRef,
               level: updatedData.level,
               officialAddressMaker: updatedData.officialAddressMaker,
               postallyAddressable: updatedData.postallyAddressable,
@@ -318,6 +335,7 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
 
         case "classification":
           setBlpuClassification(updatedData.classification);
+          setClassificationScheme(updatedData.classificationScheme);
           if (onUpdateData)
             onUpdateData({
               templatePkId: data.templatePkId,
@@ -331,9 +349,11 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               rpc: data.rpc,
               state: data.state,
               classification: updatedData.classification,
+              scheme: updatedData.classificationScheme,
               lpiTemplatePkId: data.lpiTemplatePkId,
               lpiLogicalStatus: lpiStatus,
               postTownRef: lpiPostTown,
+              subLocalityRef: lpiSubLocality,
               level: lpiLevel,
               officialAddressMaker: lpiOfficialAddress,
               postallyAddressable: lpiPostalAddress,
@@ -361,9 +381,11 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               rpc: blpuRpc,
               state: blpuState,
               classification: blpuClassification,
+              scheme: classificationScheme,
               lpiTemplatePkId: data.lpiTemplatePkId,
               lpiLogicalStatus: lpiStatus,
               postTownRef: lpiPostTown,
+              subLocalityRef: lpiSubLocality,
               level: lpiLevel,
               officialAddressMaker: lpiOfficialAddress,
               postallyAddressable: lpiPostalAddress,
@@ -542,8 +564,10 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
       setBlpuRpc(data.rpc);
       setBlpuState(data.state);
       setBlpuClassification(data.classification);
+      setClassificationScheme(data.scheme);
       setLpiStatus(data.lpiLogicalStatus);
       setLpiPostTown(data.postTownRef);
+      setLpiSubLocality(data.subLocalityRef);
       setLpiLevel(data.level);
       setLpiOfficialAddress(data.officialAddressMaker);
       setLpiPostalAddress(data.postallyAddressable);
@@ -644,65 +668,77 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
             {/* BLPU */}
             <Card
               variant="outlined"
+              elevation={0}
               onMouseEnter={doMouseEnterBlpu}
               onMouseLeave={doMouseLeaveBlpu}
-              raised={editBlpu}
               sx={settingsCardStyle(editBlpu)}
             >
+              <CardHeader
+                action={
+                  editBlpu && (
+                    <Tooltip title="Edit BLPU settings" placement="bottom" sx={tooltipStyle}>
+                      <IconButton onClick={doEditBlpu} sx={{ pr: "16px", pb: "16px" }}>
+                        <EditIcon sx={ActionIconStyle(true)} />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }
+                title="BLPU settings"
+                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editBlpu) }}
+                sx={{ height: "66px" }}
+              />
               <CardActionArea onClick={doEditBlpu}>
                 <CardContent sx={settingsCardContentStyle("property")}>
-                  <Stack direction="column" spacing={1}>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="h6" sx={getTitleStyle(editBlpu)}>
-                        BLPU settings
-                      </Typography>
-                      {editBlpu && (
-                        <Tooltip title="Edit BLPU settings" placement="bottom" sx={tooltipStyle}>
-                          <IconButton onClick={doEditBlpu} size="small">
-                            <EditIcon sx={ActionIconStyle(true)} />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Stack>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Status</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getBlpuStatus(blpuStatus, settingsContext.isScottish)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">RPC</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getBlpuRpc(blpuRpc, settingsContext.isScottish)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">State</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getBlpuState(blpuState, settingsContext.isScottish)}
-                        </Typography>
-                      </Grid>
-                      {!settingsContext.isScottish && (
-                        <>
-                          <Grid item xs={3}>
-                            <Typography variant="body2">Classification</Typography>
-                          </Grid>
-                          <Grid item xs={9}>
-                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
-                            </Typography>
-                          </Grid>
-                        </>
-                      )}
+                  <Grid container rowSpacing={1}>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Status</Typography>
                     </Grid>
-                  </Stack>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {getBlpuStatus(blpuStatus, settingsContext.isScottish)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">RPC</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {getBlpuRpc(blpuRpc, settingsContext.isScottish)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">State</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {getBlpuState(blpuState, settingsContext.isScottish)}
+                      </Typography>
+                    </Grid>
+                    {!settingsContext.isScottish && (
+                      <>
+                        <Grid item xs={3}>
+                          <Typography variant="body2">Classification</Typography>
+                        </Grid>
+                        <Grid item xs={9}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
+                          </Typography>
+                        </Grid>
+                      </>
+                    )}
+                    {settingsContext.isScottish && (
+                      <>
+                        <Grid item xs={3}>
+                          <Typography variant="body2">Level</Typography>
+                        </Grid>
+                        <Grid item xs={9}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {"under development"}
+                          </Typography>
+                        </Grid>
+                      </>
+                    )}
+                  </Grid>
                 </CardContent>
               </CardActionArea>
             </Card>
@@ -711,69 +747,87 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
           <Grid item xs={6}>
             <Card
               variant="outlined"
+              elevation={0}
               onMouseEnter={doMouseEnterLpi}
               onMouseLeave={doMouseLeaveLpi}
-              raised={editLpi}
               sx={settingsCardStyle(editLpi)}
             >
+              <CardHeader
+                action={
+                  editLpi && (
+                    <Tooltip title="Edit LPI settings" placement="bottom" sx={tooltipStyle}>
+                      <IconButton onClick={doEditLpi} sx={{ pr: "16px", pb: "16px" }}>
+                        <EditIcon sx={ActionIconStyle(true)} />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }
+                title="LPI settings"
+                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editLpi) }}
+                sx={{ height: "66px" }}
+              />
               <CardActionArea onClick={doEditLpi}>
                 <CardContent sx={settingsCardContentStyle("property")}>
-                  <Stack direction="column" spacing={1}>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="h6" sx={getTitleStyle(editLpi)}>
-                        LPI settings
-                      </Typography>
-                      {editLpi && (
-                        <Tooltip title="Edit LPI settings" placement="bottom" sx={tooltipStyle}>
-                          <IconButton onClick={doEditLpi} size="small">
-                            <EditIcon sx={ActionIconStyle(true)} />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Stack>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Status</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getLpiStatus(lpiStatus, settingsContext.isScottish)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Post town</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getLpiPostTown(lpiPostTown, lookupContext.currentLookups.postTowns)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Level</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {lpiLevel}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Official address</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getLpiOfficialAddress(lpiOfficialAddress, settingsContext.isScottish)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Postal address</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getLpiPostalAddress(lpiPostalAddress, settingsContext.isScottish)}
-                        </Typography>
-                      </Grid>
+                  <Grid container rowSpacing={1}>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Status</Typography>
                     </Grid>
-                  </Stack>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {getLpiStatus(lpiStatus, settingsContext.isScottish)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Post town</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {StringToTitleCase(getLpiPostTown(lpiPostTown, lookupContext.currentLookups.postTowns))}
+                      </Typography>
+                    </Grid>
+                    {settingsContext.isScottish && (
+                      <>
+                        <Grid item xs={3}>
+                          <Typography variant="body2">Sub locality</Typography>
+                        </Grid>
+                        <Grid item xs={9}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {StringToTitleCase(
+                              getLpiSubLocality(lpiSubLocality, lookupContext.currentLookups.subLocalities)
+                            )}
+                          </Typography>
+                        </Grid>
+                      </>
+                    )}
+                    {!settingsContext.isScottish && (
+                      <>
+                        <Grid item xs={3}>
+                          <Typography variant="body2">Level</Typography>
+                        </Grid>
+                        <Grid item xs={9}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {lpiLevel}
+                          </Typography>
+                        </Grid>
+                      </>
+                    )}
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Official address</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {getLpiOfficialAddress(lpiOfficialAddress, settingsContext.isScottish)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Postal address</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {getLpiPostalAddress(lpiPostalAddress, settingsContext.isScottish)}
+                      </Typography>
+                    </Grid>
+                  </Grid>
                 </CardContent>
               </CardActionArea>
             </Card>
@@ -783,49 +837,45 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
             <Grid item xs={6}>
               <Card
                 variant="outlined"
+                elevation={0}
                 onMouseEnter={doMouseEnterClassification}
                 onMouseLeave={doMouseLeaveClassification}
-                raised={editClassification}
                 sx={settingsCardStyle(editClassification)}
               >
+                <CardHeader
+                  action={
+                    editClassification && (
+                      <Tooltip title="Edit Classification settings" placement="bottom" sx={tooltipStyle}>
+                        <IconButton onClick={doEditClassification} sx={{ pr: "16px", pb: "16px" }}>
+                          <EditIcon sx={ActionIconStyle(true)} />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }
+                  title="Classification settings"
+                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editClassification) }}
+                  sx={{ height: "66px" }}
+                />
                 <CardActionArea onClick={doEditClassification}>
                   <CardContent sx={settingsCardContentStyle("property")}>
-                    <Stack direction="column" spacing={1}>
-                      <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="h6" sx={getTitleStyle(editClassification)}>
-                          Classification settings
-                        </Typography>
-                        {editClassification && (
-                          <Tooltip title="Edit Classification settings" placement="bottom" sx={tooltipStyle}>
-                            <IconButton onClick={doEditClassification} size="small">
-                              <EditIcon sx={ActionIconStyle(true)} />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Stack>
-                      <Grid container rowSpacing={1}>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Classification</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Scheme</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            Awaiting API
-                            {/* {getBlpuClassification(
-                              blpuClassification,
-                              settingsContext.isScottish
-                            )} */}
-                          </Typography>
-                        </Grid>
+                    <Grid container rowSpacing={1}>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Classification</Typography>
                       </Grid>
-                    </Stack>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Scheme</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {classificationScheme}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </CardContent>
                 </CardActionArea>
               </Card>
@@ -835,53 +885,53 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
           <Grid item xs={6}>
             <Card
               variant="outlined"
+              elevation={0}
               onMouseEnter={doMouseEnterOther}
               onMouseLeave={doMouseLeaveOther}
-              raised={editOther}
               sx={settingsCardStyle(editOther)}
             >
+              <CardHeader
+                action={
+                  editOther && (
+                    <Tooltip title="Edit Other settings" placement="bottom" sx={tooltipStyle}>
+                      <IconButton onClick={doEditOther} sx={{ pr: "16px", pb: "16px" }}>
+                        <EditIcon sx={ActionIconStyle(true)} />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }
+                title="Other settings"
+                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editOther) }}
+                sx={{ height: "66px" }}
+              />
               <CardActionArea onClick={doEditOther}>
                 <CardContent sx={settingsCardContentStyle("property")}>
-                  <Stack direction="column" spacing={1}>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="h6" sx={getTitleStyle(editOther)}>
-                        Other settings
-                      </Typography>
-                      {editOther && (
-                        <Tooltip title="Edit Other settings" placement="bottom" sx={tooltipStyle}>
-                          <IconButton onClick={doEditOther} size="small">
-                            <EditIcon sx={ActionIconStyle(true)} />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Stack>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Cross ref source</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getOtherCrossRefSource(otherCrossRefSource, lookupContext.currentLookups.appCrossRefs)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Provenance</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getOtherProvenance(otherProvenance, settingsContext.isScottish)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Note</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {otherNote}
-                        </Typography>
-                      </Grid>
+                  <Grid container rowSpacing={1}>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Cross ref source</Typography>
                     </Grid>
-                  </Stack>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {getOtherCrossRefSource(otherCrossRefSource, lookupContext.currentLookups.appCrossRefs)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Provenance</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {getOtherProvenance(otherProvenance, settingsContext.isScottish)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Note</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {otherNote}
+                      </Typography>
+                    </Grid>
+                  </Grid>
                 </CardContent>
               </CardActionArea>
             </Card>

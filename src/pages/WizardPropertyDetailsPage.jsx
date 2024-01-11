@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
 //    006   01.12.23 Sean Flook                 Added missing fields.
+//    007   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -27,7 +28,7 @@ import PropTypes from "prop-types";
 
 import SettingsContext from "../context/settingsContext";
 
-import { Grid, Card, CardActionArea, CardContent, Typography, Tooltip, IconButton } from "@mui/material";
+import { Grid, Card, CardHeader, CardActionArea, CardContent, Typography, Tooltip, IconButton } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 
 import EditTemplateDialog from "../dialogs/EditTemplateDialog";
@@ -625,232 +626,89 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
           <Grid item xs={6}>
             <Card
               variant="outlined"
+              elevation={0}
               onMouseEnter={doMouseEnterBlpu}
               onMouseLeave={doMouseLeaveBlpu}
-              raised={editBlpu}
               sx={settingsCardStyle(editBlpu, haveBlpuErrors)}
             >
+              <CardHeader
+                action={
+                  editBlpu && (
+                    <Tooltip title="Edit BLPU details" placement="bottom" sx={tooltipStyle}>
+                      <IconButton onClick={doEditBlpu} sx={{ pr: "16px", pb: "16px" }}>
+                        <EditIcon sx={ActionIconStyle(true)} />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }
+                title="BLPU"
+                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editBlpu, haveBlpuErrors) }}
+                sx={{ height: "66px" }}
+              />
               <CardActionArea onClick={doEditBlpu}>
                 <CardContent sx={settingsCardContentStyle("wizard")}>
-                  <Stack direction="column" spacing={1}>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="h6" sx={getTitleStyle(editBlpu, haveBlpuErrors)}>
-                        BLPU
-                      </Typography>
-                      {editBlpu && (
-                        <Tooltip title="Edit BLPU details" placement="bottom" sx={tooltipStyle}>
-                          <IconButton onClick={doEditBlpu} size="small">
-                            <EditIcon sx={ActionIconStyle(true)} />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Stack>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Status</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
-                        {blpuStatusError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={8}>
-                        <Typography variant="body2" sx={getWizardValueStyle(blpuStatusError)}>
-                          {getBlpuStatus(blpuStatus, settingsContext.isScottish)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">RPC</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
-                        {blpuRpcError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={8}>
-                        <Typography variant="body2" sx={getWizardValueStyle(blpuRpcError)}>
-                          {getBlpuRpc(blpuRpc, settingsContext.isScottish)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">State</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
-                        {blpuStateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={8}>
-                        <Typography variant="body2" sx={getWizardValueStyle(blpuStateError)}>
-                          {getBlpuState(blpuState, settingsContext.isScottish)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">State date</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
-                        {blpuStateDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={8}>
-                        <Typography variant="body2" sx={getWizardValueStyle(blpuStateDateError)}>
-                          {DateString(blpuStateDate)}
-                        </Typography>
-                      </Grid>
-                      {settingsContext.isScottish && (
-                        <Fragment>
-                          <Grid item xs={3}>
-                            <Typography variant="body2">Level</Typography>
-                          </Grid>
-                          <Grid item xs={1}>
-                            {lpiLevelError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                          </Grid>
-                          <Grid item xs={8}>
-                            <Typography variant="body2" sx={getWizardValueStyle(lpiLevelError)}>
-                              {lpiLevel}
-                            </Typography>
-                          </Grid>
-                        </Fragment>
-                      )}
-                      {!settingsContext.isScottish && (
-                        <Fragment>
-                          <Grid item xs={3}>
-                            <Typography variant="body2">Classification</Typography>
-                          </Grid>
-                          <Grid item xs={1}>
-                            {blpuClassificationError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                          </Grid>
-                          <Grid item xs={8}>
-                            <Typography variant="body2" sx={getWizardValueStyle(blpuClassificationError)}>
-                              {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
-                            </Typography>
-                          </Grid>
-                        </Fragment>
-                      )}
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Start date</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
-                        {blpuStartDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={8}>
-                        <Typography variant="body2" sx={getWizardValueStyle(blpuStartDateError)}>
-                          {DateString(blpuStartDate)}
-                        </Typography>
-                      </Grid>
+                  <Grid container rowSpacing={1}>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Status</Typography>
                     </Grid>
-                  </Stack>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-          <Grid item xs={6}>
-            <Card
-              variant="outlined"
-              onMouseEnter={doMouseEnterLpi}
-              onMouseLeave={doMouseLeaveLpi}
-              raised={editLpi}
-              sx={settingsCardStyle(editLpi, haveLpiErrors)}
-            >
-              <CardActionArea onClick={doEditLpi}>
-                <CardContent sx={settingsCardContentStyle("wizard")}>
-                  <Stack direction="column" spacing={1}>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="h6" sx={getTitleStyle(editLpi, haveLpiErrors)}>
-                        LPI
-                      </Typography>
-                      {editLpi && (
-                        <Tooltip title="Edit LPI details" placement="bottom" sx={tooltipStyle}>
-                          <IconButton onClick={doEditLpi} size="small">
-                            <EditIcon sx={ActionIconStyle(true)} />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Stack>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Status</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
-                        {lpiStatusError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={8}>
-                        <Typography variant="body2" sx={getWizardValueStyle(lpiStatusError)}>
-                          {getLpiStatus(lpiStatus, settingsContext.isScottish)}
-                        </Typography>
-                      </Grid>
-                      {!settingsContext.isScottish && (
-                        <Fragment>
-                          <Grid item xs={3}>
-                            <Typography variant="body2">Level</Typography>
-                          </Grid>
-                          <Grid item xs={1}>
-                            {lpiLevelError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                          </Grid>
-                          <Grid item xs={8}>
-                            <Typography variant="body2" sx={getWizardValueStyle(lpiLevelError)}>
-                              {lpiLevel}
-                            </Typography>
-                          </Grid>
-                        </Fragment>
-                      )}
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Official address</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
-                        {lpiOfficialAddressError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={8}>
-                        <Typography variant="body2" sx={getWizardValueStyle(lpiOfficialAddressError)}>
-                          {getLpiOfficialAddress(lpiOfficialAddress)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Postal address</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
-                        {lpiPostalAddressError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={8}>
-                        <Typography variant="body2" sx={getWizardValueStyle(lpiPostalAddressError)}>
-                          {getLpiPostalAddress(lpiPostalAddress)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Start date</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
-                        {lpiStartDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={8}>
-                        <Typography variant="body2" sx={getWizardValueStyle(lpiStartDateError)}>
-                          {DateString(lpiStartDate)}
-                        </Typography>
-                      </Grid>
+                    <Grid item xs={1}>
+                      {blpuStatusError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                     </Grid>
-                  </Stack>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-          {settingsContext.isScottish && (
-            <Grid item xs={6}>
-              <Card
-                variant="outlined"
-                onMouseEnter={doMouseEnterClassification}
-                onMouseLeave={doMouseLeaveClassification}
-                raised={editClassification}
-                sx={settingsCardStyle(editClassification, haveClassificationErrors)}
-              >
-                <CardActionArea onClick={doEditClassification}>
-                  <CardContent sx={settingsCardContentStyle("wizard")}>
-                    <Stack direction="column" spacing={1}>
-                      <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="h6" sx={getTitleStyle(editClassification, haveClassificationErrors)}>
-                          Classification
-                        </Typography>
-                        {editClassification && (
-                          <Tooltip title="Edit classification details" placement="bottom" sx={tooltipStyle}>
-                            <IconButton onClick={doEditClassification} size="small">
-                              <EditIcon sx={ActionIconStyle(true)} />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Stack>
-                      <Grid container rowSpacing={1}>
+                    <Grid item xs={8}>
+                      <Typography variant="body2" sx={getWizardValueStyle(blpuStatusError)}>
+                        {getBlpuStatus(blpuStatus, settingsContext.isScottish)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">RPC</Typography>
+                    </Grid>
+                    <Grid item xs={1}>
+                      {blpuRpcError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                    </Grid>
+                    <Grid item xs={8}>
+                      <Typography variant="body2" sx={getWizardValueStyle(blpuRpcError)}>
+                        {getBlpuRpc(blpuRpc, settingsContext.isScottish)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">State</Typography>
+                    </Grid>
+                    <Grid item xs={1}>
+                      {blpuStateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                    </Grid>
+                    <Grid item xs={8}>
+                      <Typography variant="body2" sx={getWizardValueStyle(blpuStateError)}>
+                        {getBlpuState(blpuState, settingsContext.isScottish)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">State date</Typography>
+                    </Grid>
+                    <Grid item xs={1}>
+                      {blpuStateDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                    </Grid>
+                    <Grid item xs={8}>
+                      <Typography variant="body2" sx={getWizardValueStyle(blpuStateDateError)}>
+                        {DateString(blpuStateDate)}
+                      </Typography>
+                    </Grid>
+                    {settingsContext.isScottish && (
+                      <Fragment>
+                        <Grid item xs={3}>
+                          <Typography variant="body2">Level</Typography>
+                        </Grid>
+                        <Grid item xs={1}>
+                          {lpiLevelError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                        </Grid>
+                        <Grid item xs={8}>
+                          <Typography variant="body2" sx={getWizardValueStyle(lpiLevelError)}>
+                            {lpiLevel}
+                          </Typography>
+                        </Grid>
+                      </Fragment>
+                    )}
+                    {!settingsContext.isScottish && (
+                      <Fragment>
                         <Grid item xs={3}>
                           <Typography variant="body2">Classification</Typography>
                         </Grid>
@@ -862,30 +720,176 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                             {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
                           </Typography>
                         </Grid>
+                      </Fragment>
+                    )}
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Start date</Typography>
+                    </Grid>
+                    <Grid item xs={1}>
+                      {blpuStartDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                    </Grid>
+                    <Grid item xs={8}>
+                      <Typography variant="body2" sx={getWizardValueStyle(blpuStartDateError)}>
+                        {DateString(blpuStartDate)}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </Grid>
+          <Grid item xs={6}>
+            <Card
+              variant="outlined"
+              elevation={0}
+              onMouseEnter={doMouseEnterLpi}
+              onMouseLeave={doMouseLeaveLpi}
+              sx={settingsCardStyle(editLpi, haveLpiErrors)}
+            >
+              <CardHeader
+                action={
+                  editLpi && (
+                    <Tooltip title="Edit LPI details" placement="bottom" sx={tooltipStyle}>
+                      <IconButton onClick={doEditLpi} sx={{ pr: "16px", pb: "16px" }}>
+                        <EditIcon sx={ActionIconStyle(true)} />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }
+                title="LPI"
+                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editLpi, haveLpiErrors) }}
+                sx={{ height: "66px" }}
+              />
+              <CardActionArea onClick={doEditLpi}>
+                <CardContent sx={settingsCardContentStyle("wizard")}>
+                  <Grid container rowSpacing={1}>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Status</Typography>
+                    </Grid>
+                    <Grid item xs={1}>
+                      {lpiStatusError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                    </Grid>
+                    <Grid item xs={8}>
+                      <Typography variant="body2" sx={getWizardValueStyle(lpiStatusError)}>
+                        {getLpiStatus(lpiStatus, settingsContext.isScottish)}
+                      </Typography>
+                    </Grid>
+                    {!settingsContext.isScottish && (
+                      <Fragment>
                         <Grid item xs={3}>
-                          <Typography variant="body2">Scheme</Typography>
+                          <Typography variant="body2">Level</Typography>
                         </Grid>
                         <Grid item xs={1}>
-                          {classificationSchemeError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                          {lpiLevelError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                         </Grid>
                         <Grid item xs={8}>
-                          <Typography variant="body2" sx={getWizardValueStyle(classificationSchemeError)}>
-                            {classificationScheme}
+                          <Typography variant="body2" sx={getWizardValueStyle(lpiLevelError)}>
+                            {lpiLevel}
                           </Typography>
                         </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Start date</Typography>
-                        </Grid>
-                        <Grid item xs={1}>
-                          {classificationStartDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                        </Grid>
-                        <Grid item xs={8}>
-                          <Typography variant="body2" sx={getWizardValueStyle(classificationStartDateError)}>
-                            {DateString(classificationStartDate)}
-                          </Typography>
-                        </Grid>
+                      </Fragment>
+                    )}
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Official address</Typography>
+                    </Grid>
+                    <Grid item xs={1}>
+                      {lpiOfficialAddressError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                    </Grid>
+                    <Grid item xs={8}>
+                      <Typography variant="body2" sx={getWizardValueStyle(lpiOfficialAddressError)}>
+                        {getLpiOfficialAddress(lpiOfficialAddress)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Postal address</Typography>
+                    </Grid>
+                    <Grid item xs={1}>
+                      {lpiPostalAddressError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                    </Grid>
+                    <Grid item xs={8}>
+                      <Typography variant="body2" sx={getWizardValueStyle(lpiPostalAddressError)}>
+                        {getLpiPostalAddress(lpiPostalAddress)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Start date</Typography>
+                    </Grid>
+                    <Grid item xs={1}>
+                      {lpiStartDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                    </Grid>
+                    <Grid item xs={8}>
+                      <Typography variant="body2" sx={getWizardValueStyle(lpiStartDateError)}>
+                        {DateString(lpiStartDate)}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </Grid>
+          {settingsContext.isScottish && (
+            <Grid item xs={6}>
+              <Card
+                variant="outlined"
+                elevation={0}
+                onMouseEnter={doMouseEnterClassification}
+                onMouseLeave={doMouseLeaveClassification}
+                sx={settingsCardStyle(editClassification, haveClassificationErrors)}
+              >
+                <CardHeader
+                  action={
+                    editClassification && (
+                      <Tooltip title="Edit classification details" placement="bottom" sx={tooltipStyle}>
+                        <IconButton onClick={doEditClassification} sx={{ pr: "16px", pb: "16px" }}>
+                          <EditIcon sx={ActionIconStyle(true)} />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }
+                  title="Classification"
+                  titleTypographyProps={{
+                    variant: "h6",
+                    sx: getTitleStyle(editClassification, haveClassificationErrors),
+                  }}
+                  sx={{ height: "66px" }}
+                />
+                <CardActionArea onClick={doEditClassification}>
+                  <CardContent sx={settingsCardContentStyle("wizard")}>
+                    <Grid container rowSpacing={1}>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Classification</Typography>
                       </Grid>
-                    </Stack>
+                      <Grid item xs={1}>
+                        {blpuClassificationError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography variant="body2" sx={getWizardValueStyle(blpuClassificationError)}>
+                          {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Scheme</Typography>
+                      </Grid>
+                      <Grid item xs={1}>
+                        {classificationSchemeError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography variant="body2" sx={getWizardValueStyle(classificationSchemeError)}>
+                          {classificationScheme}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Start date</Typography>
+                      </Grid>
+                      <Grid item xs={1}>
+                        {classificationStartDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography variant="body2" sx={getWizardValueStyle(classificationStartDateError)}>
+                          {DateString(classificationStartDate)}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </CardContent>
                 </CardActionArea>
               </Card>
@@ -894,62 +898,62 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
           <Grid item xs={6}>
             <Card
               variant="outlined"
+              elevation={0}
               onMouseEnter={doMouseEnterOther}
               onMouseLeave={doMouseLeaveOther}
-              raised={editOther}
               sx={settingsCardStyle(editOther, haveOtherErrors)}
             >
+              <CardHeader
+                action={
+                  editOther && (
+                    <Tooltip title="Edit other details" placement="bottom" sx={tooltipStyle}>
+                      <IconButton onClick={doEditOther} sx={{ pr: "16px", pb: "16px" }}>
+                        <EditIcon sx={ActionIconStyle(true)} />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }
+                title="Other"
+                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editOther, haveOtherErrors) }}
+                sx={{ height: "66px" }}
+              />
               <CardActionArea onClick={doEditOther}>
                 <CardContent sx={settingsCardContentStyle("wizard")}>
-                  <Stack direction="column" spacing={1}>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="h6" sx={getTitleStyle(editOther, haveOtherErrors)}>
-                        Other
-                      </Typography>
-                      {editOther && (
-                        <Tooltip title="Edit Other details" placement="bottom" sx={tooltipStyle}>
-                          <IconButton onClick={doEditOther} size="small">
-                            <EditIcon sx={ActionIconStyle(true)} />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Stack>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Provenance</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
-                        {otherProvenanceError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={8}>
-                        <Typography variant="body2" sx={getWizardValueStyle(otherProvenanceError)}>
-                          {getOtherProvenance(otherProvenance, settingsContext.isScottish)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Start date</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
-                        {otherProvenanceStartDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={8}>
-                        <Typography variant="body2" sx={getWizardValueStyle(otherProvenanceStartDateError)}>
-                          {DateString(otherProvenanceStartDate)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Note</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
-                        {otherNoteError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={8}>
-                        <Typography variant="body2" sx={getWizardValueStyle(otherNoteError)}>
-                          {otherNote}
-                        </Typography>
-                      </Grid>
+                  <Grid container rowSpacing={1}>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Provenance</Typography>
                     </Grid>
-                  </Stack>
+                    <Grid item xs={1}>
+                      {otherProvenanceError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                    </Grid>
+                    <Grid item xs={8}>
+                      <Typography variant="body2" sx={getWizardValueStyle(otherProvenanceError)}>
+                        {getOtherProvenance(otherProvenance, settingsContext.isScottish)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Start date</Typography>
+                    </Grid>
+                    <Grid item xs={1}>
+                      {otherProvenanceStartDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                    </Grid>
+                    <Grid item xs={8}>
+                      <Typography variant="body2" sx={getWizardValueStyle(otherProvenanceStartDateError)}>
+                        {DateString(otherProvenanceStartDate)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Note</Typography>
+                    </Grid>
+                    <Grid item xs={1}>
+                      {otherNoteError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                    </Grid>
+                    <Grid item xs={8}>
+                      <Typography variant="body2" sx={getWizardValueStyle(otherNoteError)}>
+                        {otherNote}
+                      </Typography>
+                    </Grid>
+                  </Grid>
                 </CardContent>
               </CardActionArea>
             </Card>

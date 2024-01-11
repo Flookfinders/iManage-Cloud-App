@@ -21,6 +21,7 @@
 //    008   05.12.23 Joel Benford               Various fixes to display and save
 //    009   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    010   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    011   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,7 +32,7 @@ import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 
-import { Typography, Tooltip, Grid, Card, CardActionArea, CardContent, IconButton } from "@mui/material";
+import { Typography, Tooltip, Grid, Card, CardHeader, CardActionArea, CardContent, IconButton } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 
 import EditTemplateDialog from "../dialogs/EditTemplateDialog";
@@ -869,57 +870,53 @@ function AsdTemplateTab() {
             <Grid item xs={6}>
               <Card
                 variant="outlined"
+                elevation={0}
                 onMouseEnter={doMouseEnterMaintenanceResponsibility}
                 onMouseLeave={doMouseLeaveMaintenanceResponsibility}
-                raised={editMaintenanceResponsibility}
                 sx={settingsCardStyle(editMaintenanceResponsibility)}
               >
+                <CardHeader
+                  action={
+                    editMaintenanceResponsibility && (
+                      <Tooltip title="Edit maintenance responsibility defaults" placement="bottom" sx={tooltipStyle}>
+                        <IconButton onClick={doEditMaintenanceResponsibility} sx={{ pr: "16px", pb: "16px" }}>
+                          <EditIcon sx={ActionIconStyle(true)} />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }
+                  title="Maintenance responsibility defaults"
+                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editMaintenanceResponsibility) }}
+                  sx={{ height: "66px" }}
+                />
                 <CardActionArea onClick={doEditMaintenanceResponsibility}>
                   <CardContent sx={settingsCardContentStyle("os-asd")}>
-                    <Stack direction="column" spacing={1}>
-                      <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="h6" sx={getTitleStyle(editMaintenanceResponsibility)}>
-                          Maintenance responsibility defaults
-                        </Typography>
-                        {editMaintenanceResponsibility && (
-                          <Tooltip
-                            title="Edit maintenance responsibility defaults"
-                            placement="bottom"
-                            sx={tooltipStyle}
-                          >
-                            <IconButton onClick={doEditMaintenanceResponsibility} size="small">
-                              <EditIcon sx={ActionIconStyle(true)} />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Stack>
-                      <Grid container rowSpacing={1}>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Street status</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getStreetStatus(maintenanceResponsibilityStreetStatus)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Custodian</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getOrganisation(maintenanceResponsibilityCustodian)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Authority</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getOrganisation(maintenanceResponsibilityAuthority)}
-                          </Typography>
-                        </Grid>
+                    <Grid container rowSpacing={1}>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Street status</Typography>
                       </Grid>
-                    </Stack>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getStreetStatus(maintenanceResponsibilityStreetStatus)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Custodian</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getOrganisation(maintenanceResponsibilityCustodian)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Authority</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getOrganisation(maintenanceResponsibilityAuthority)}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </CardContent>
                 </CardActionArea>
               </Card>
@@ -929,53 +926,53 @@ function AsdTemplateTab() {
             <Grid item xs={6}>
               <Card
                 variant="outlined"
+                elevation={0}
                 onMouseEnter={doMouseEnterReinstatementCategory}
                 onMouseLeave={doMouseLeaveReinstatementCategory}
-                raised={editReinstatementCategory}
                 sx={settingsCardStyle(editReinstatementCategory)}
               >
+                <CardHeader
+                  action={
+                    editReinstatementCategory && (
+                      <Tooltip title="Edit reinstatement category defaults" placement="bottom" sx={tooltipStyle}>
+                        <IconButton onClick={doEditReinstatementCategory} sx={{ pr: "16px", pb: "16px" }}>
+                          <EditIcon sx={ActionIconStyle(true)} />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }
+                  title="Reinstatement category defaults"
+                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editReinstatementCategory) }}
+                  sx={{ height: "66px" }}
+                />
                 <CardActionArea onClick={doEditReinstatementCategory}>
                   <CardContent sx={settingsCardContentStyle("os-asd")}>
-                    <Stack direction="column" spacing={1}>
-                      <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="h6" sx={getTitleStyle(editReinstatementCategory)}>
-                          Reinstatement category defaults
-                        </Typography>
-                        {editReinstatementCategory && (
-                          <Tooltip title="Edit reinstatement category defaults" placement="bottom" sx={tooltipStyle}>
-                            <IconButton onClick={doEditReinstatementCategory} size="small">
-                              <EditIcon sx={ActionIconStyle(true)} />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Stack>
-                      <Grid container rowSpacing={1}>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Category</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getReinstatementType(reinstatementCategoryReinstatementCategory)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Custodian</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getOrganisation(reinstatementCategoryCustodian)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Authority</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getOrganisation(reinstatementCategoryAuthority)}
-                          </Typography>
-                        </Grid>
+                    <Grid container rowSpacing={1}>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Category</Typography>
                       </Grid>
-                    </Stack>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getReinstatementType(reinstatementCategoryReinstatementCategory)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Custodian</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getOrganisation(reinstatementCategoryCustodian)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Authority</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getOrganisation(reinstatementCategoryAuthority)}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </CardContent>
                 </CardActionArea>
               </Card>
@@ -985,53 +982,53 @@ function AsdTemplateTab() {
             <Grid item xs={6}>
               <Card
                 variant="outlined"
+                elevation={0}
                 onMouseEnter={doMouseEnterOsSpecialDesignation}
                 onMouseLeave={doMouseLeaveOsSpecialDesignation}
-                raised={editOsSpecialDesignation}
                 sx={settingsCardStyle(editOsSpecialDesignation)}
               >
+                <CardHeader
+                  action={
+                    editOsSpecialDesignation && (
+                      <Tooltip title="Edit special designation defaults" placement="bottom" sx={tooltipStyle}>
+                        <IconButton onClick={doEditReinstatementCategory} sx={{ pr: "16px", pb: "16px" }}>
+                          <EditIcon sx={ActionIconStyle(true)} />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }
+                  title="Special designation defaults"
+                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editOsSpecialDesignation) }}
+                  sx={{ height: "66px" }}
+                />
                 <CardActionArea onClick={doEditOsSpecialDesignation}>
                   <CardContent sx={settingsCardContentStyle("os-asd")}>
-                    <Stack direction="column" spacing={1}>
-                      <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="h6" sx={getTitleStyle(editOsSpecialDesignation)}>
-                          Special designation defaults
-                        </Typography>
-                        {editOsSpecialDesignation && (
-                          <Tooltip title="Edit special designation defaults" placement="bottom" sx={tooltipStyle}>
-                            <IconButton onClick={doEditOsSpecialDesignation} size="small">
-                              <EditIcon sx={ActionIconStyle(true)} />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Stack>
-                      <Grid container rowSpacing={1}>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Special designation</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getSpecialDesignationType(osSpecialDesignationSpecialDesignation)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Custodian</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getOrganisation(osSpecialDesignationCustodian)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Authority</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getOrganisation(osSpecialDesignationAuthority)}
-                          </Typography>
-                        </Grid>
+                    <Grid container rowSpacing={1}>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Special designation</Typography>
                       </Grid>
-                    </Stack>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getSpecialDesignationType(osSpecialDesignationSpecialDesignation)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Custodian</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getOrganisation(osSpecialDesignationCustodian)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Authority</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getOrganisation(osSpecialDesignationAuthority)}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </CardContent>
                 </CardActionArea>
               </Card>
@@ -1041,69 +1038,69 @@ function AsdTemplateTab() {
             <Grid item xs={6}>
               <Card
                 variant="outlined"
+                elevation={0}
                 onMouseEnter={doMouseEnterInterest}
                 onMouseLeave={doMouseLeaveInterest}
-                raised={editInterest}
                 sx={settingsCardStyle(editInterest)}
               >
+                <CardHeader
+                  action={
+                    editInterest && (
+                      <Tooltip title="Edit interest defaults" placement="bottom" sx={tooltipStyle}>
+                        <IconButton onClick={doEditInterest} sx={{ pr: "16px", pb: "16px" }}>
+                          <EditIcon sx={ActionIconStyle(true)} />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }
+                  title="Interested organisation defaults"
+                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editInterest) }}
+                  sx={{ height: "66px" }}
+                />
                 <CardActionArea onClick={doEditInterest}>
                   <CardContent sx={settingsCardContentStyle("asd")}>
-                    <Stack direction="column" spacing={1}>
-                      <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="h6" sx={getTitleStyle(editInterest)}>
-                          Interested organisation defaults
-                        </Typography>
-                        {editInterest && (
-                          <Tooltip title="Edit interest defaults" placement="bottom" sx={tooltipStyle}>
-                            <IconButton onClick={doEditInterest} size="small">
-                              <EditIcon sx={ActionIconStyle(true)} />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Stack>
-                      <Grid container rowSpacing={1}>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Street status</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getStreetStatus(interestStreetStatus)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Interested organisation</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getOrganisation(interestOrganisation)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Interest type</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getInterestType(interestType)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">District</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getDistrict(interestOrganisation, interestDistrict, true)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Maintaining organisation</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getOrganisation(interestMaintainingOrganisation)}
-                          </Typography>
-                        </Grid>
+                    <Grid container rowSpacing={1}>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Street status</Typography>
                       </Grid>
-                    </Stack>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getStreetStatus(interestStreetStatus)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Interested organisation</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getOrganisation(interestOrganisation)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Interest type</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getInterestType(interestType)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">District</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getDistrict(interestOrganisation, interestDistrict, true)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Maintaining organisation</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getOrganisation(interestMaintainingOrganisation)}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </CardContent>
                 </CardActionArea>
               </Card>
@@ -1113,80 +1110,77 @@ function AsdTemplateTab() {
             <Grid item xs={6}>
               <Card
                 variant="outlined"
+                elevation={0}
                 onMouseEnter={doMouseEnterConstruction}
                 onMouseLeave={doMouseLeaveConstruction}
-                raised={editConstruction}
                 sx={settingsCardStyle(editConstruction)}
               >
+                <CardHeader
+                  action={
+                    editConstruction && (
+                      <Tooltip title="Edit construction defaults" placement="bottom" sx={tooltipStyle}>
+                        <IconButton onClick={doEditConstruction} sx={{ pr: "16px", pb: "16px" }}>
+                          <EditIcon sx={ActionIconStyle(true)} />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }
+                  title="Construction defaults"
+                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editConstruction) }}
+                  sx={{ height: "66px" }}
+                />
                 <CardActionArea onClick={doEditConstruction}>
                   <CardContent sx={settingsCardContentStyle("asd")}>
-                    <Stack direction="column" spacing={1}>
-                      <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="h6" sx={getTitleStyle(editConstruction)}>
-                          Construction defaults
-                        </Typography>
-                        {editConstruction && (
-                          <Tooltip title="Edit construction defaults" placement="bottom" sx={tooltipStyle}>
-                            <IconButton onClick={doEditConstruction} size="small">
-                              <EditIcon sx={ActionIconStyle(true)} />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Stack>
-                      <Grid container rowSpacing={1}>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Construction type</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getConstructionType(constructionType)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Reinstatement type</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getReinstatementType(constructionReinstatementType)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Aggregate abrasion value</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getAggregateAbrasionValue(
-                              constructionAggregateAbrasionValue,
-                              constructionReinstatementType
-                            )}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Polished stone value</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getPolishedStoneValue(constructionPolishedStoneValue, constructionReinstatementType)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Organisation</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getOrganisation(constructionOrganisation)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">District</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getDistrict(constructionOrganisation, constructionDistrict)}
-                          </Typography>
-                        </Grid>
+                    <Grid container rowSpacing={1}>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Construction type</Typography>
                       </Grid>
-                    </Stack>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getConstructionType(constructionType)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Reinstatement type</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getReinstatementType(constructionReinstatementType)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Aggregate abrasion value</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getAggregateAbrasionValue(constructionAggregateAbrasionValue, constructionReinstatementType)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Polished stone value</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getPolishedStoneValue(constructionPolishedStoneValue, constructionReinstatementType)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Organisation</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getOrganisation(constructionOrganisation)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">District</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getDistrict(constructionOrganisation, constructionDistrict)}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </CardContent>
                 </CardActionArea>
               </Card>
@@ -1196,61 +1190,61 @@ function AsdTemplateTab() {
             <Grid item xs={6}>
               <Card
                 variant="outlined"
+                elevation={0}
                 onMouseEnter={doMouseEnterSpecialDesignation}
                 onMouseLeave={doMouseLeaveSpecialDesignation}
-                raised={editSpecialDesignation}
                 sx={settingsCardStyle(editSpecialDesignation)}
               >
+                <CardHeader
+                  action={
+                    editSpecialDesignation && (
+                      <Tooltip title="Edit special designation defaults" placement="bottom" sx={tooltipStyle}>
+                        <IconButton onClick={doEditSpecialDesignation} sx={{ pr: "16px", pb: "16px" }}>
+                          <EditIcon sx={ActionIconStyle(true)} />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }
+                  title="Special designation defaults"
+                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editSpecialDesignation) }}
+                  sx={{ height: "66px" }}
+                />
                 <CardActionArea onClick={doEditSpecialDesignation}>
                   <CardContent sx={settingsCardContentStyle("asd")}>
-                    <Stack direction="column" spacing={1}>
-                      <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="h6" sx={getTitleStyle(editSpecialDesignation)}>
-                          Special designation defaults
-                        </Typography>
-                        {editSpecialDesignation && (
-                          <Tooltip title="Edit special designation defaults" placement="bottom" sx={tooltipStyle}>
-                            <IconButton onClick={doEditSpecialDesignation} size="small">
-                              <EditIcon sx={ActionIconStyle(true)} />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Stack>
-                      <Grid container rowSpacing={1}>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Type</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getSpecialDesignationType(specialDesigType)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Organisation</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getOrganisation(specialDesigOrganisation)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">District</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getDistrict(specialDesigOrganisation, specialDesigDistrict)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Periodicity</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getSpecialDesignationPeriodicity(specialDesigPeriodicity)}
-                          </Typography>
-                        </Grid>
+                    <Grid container rowSpacing={1}>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Type</Typography>
                       </Grid>
-                    </Stack>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getSpecialDesignationType(specialDesigType)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Organisation</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getOrganisation(specialDesigOrganisation)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">District</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getDistrict(specialDesigOrganisation, specialDesigDistrict)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Periodicity</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getSpecialDesignationPeriodicity(specialDesigPeriodicity)}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </CardContent>
                 </CardActionArea>
               </Card>
@@ -1260,57 +1254,57 @@ function AsdTemplateTab() {
             <Grid item xs={6}>
               <Card
                 variant="outlined"
+                elevation={0}
                 onMouseEnter={doMouseEnterHww}
                 onMouseLeave={doMouseLeaveHww}
-                raised={editHww}
                 sx={settingsCardStyle(editHww)}
               >
+                <CardHeader
+                  action={
+                    editHww && (
+                      <Tooltip
+                        title="Edit height, width & weight restriction defaults"
+                        placement="bottom"
+                        sx={tooltipStyle}
+                      >
+                        <IconButton onClick={doEditHww} sx={{ pr: "16px", pb: "16px" }}>
+                          <EditIcon sx={ActionIconStyle(true)} />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }
+                  title="Height, width & weight restriction defaults"
+                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editHww) }}
+                  sx={{ height: "66px" }}
+                />
                 <CardActionArea onClick={doEditHww}>
                   <CardContent sx={settingsCardContentStyle("asd")}>
-                    <Stack direction="column" spacing={1}>
-                      <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="h6" sx={getTitleStyle(editHww)}>
-                          Height, width & weight restriction defaults
-                        </Typography>
-                        {editHww && (
-                          <Tooltip
-                            title="Edit height, width & weight restriction defaults"
-                            placement="bottom"
-                            sx={tooltipStyle}
-                          >
-                            <IconButton onClick={doEditHww} size="small">
-                              <EditIcon sx={ActionIconStyle(true)} />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Stack>
-                      <Grid container rowSpacing={1}>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Designation</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getHwwDesignation(hwwDesignation)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Organisation</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getOrganisation(hwwOrganisation)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">District</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getDistrict(hwwOrganisation, hwwDistrict)}
-                          </Typography>
-                        </Grid>
+                    <Grid container rowSpacing={1}>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Designation</Typography>
                       </Grid>
-                    </Stack>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getHwwDesignation(hwwDesignation)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Organisation</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getOrganisation(hwwOrganisation)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">District</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getDistrict(hwwOrganisation, hwwDistrict)}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </CardContent>
                 </CardActionArea>
               </Card>
@@ -1320,88 +1314,88 @@ function AsdTemplateTab() {
             <Grid item xs={6}>
               <Card
                 variant="outlined"
+                elevation={0}
                 onMouseEnter={doMouseEnterPRoW}
                 onMouseLeave={doMouseLeavePRoW}
-                raised={editPRoW}
                 sx={settingsCardStyle(editPRoW)}
               >
+                <CardHeader
+                  action={
+                    editPRoW && (
+                      <Tooltip title="Edit public right of way defaults" placement="bottom" sx={tooltipStyle}>
+                        <IconButton onClick={doEditPRoW} sx={{ pr: "16px", pb: "16px" }}>
+                          <EditIcon sx={ActionIconStyle(true)} />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }
+                  title="Public right of way defaults"
+                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editPRoW) }}
+                  sx={{ height: "66px" }}
+                />
                 <CardActionArea onClick={doEditPRoW}>
                   <CardContent sx={settingsCardContentStyle("asd")}>
-                    <Stack direction="column" spacing={1}>
-                      <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="h6" sx={getTitleStyle(editPRoW)}>
-                          Public right of way defaults
-                        </Typography>
-                        {editPRoW && (
-                          <Tooltip title="Edit public right of way defaults" placement="bottom" sx={tooltipStyle}>
-                            <IconButton onClick={doEditPRoW} size="small">
-                              <EditIcon sx={ActionIconStyle(true)} />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Stack>
-                      <Grid container rowSpacing={1}>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Dedication</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getProwDedication(prowDedication)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Status</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getProwStatus(prowStatus)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Access</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Stack direction="row" spacing={1}>
-                            <DirectionsWalkIcon fontSize="small" sx={getTemplateIconStyle(prowPedestrianAccess)} />
-                            <EquestrianIcon fontSize="small" sx={getTemplateIconStyle(prowEquestrianAccess)} />
-                            <SkateboardingIcon
-                              fontSize="small"
-                              sx={getTemplateIconStyle(prowNonMotorisedVehicleAccess)}
-                            />
-                            <DirectionsBikeIcon fontSize="small" sx={getTemplateIconStyle(prowBicycleAccess)} />
-                            <DirectionsCarIcon fontSize="small" sx={getTemplateIconStyle(prowMotorisedVehicleAccess)} />
-                          </Stack>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Promoted route</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          {getCheck(prowPromotedRoute)}
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Accessible route</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          {getCheck(prowAccessibleRoute)}
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Organisation</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getOrganisation(prowOrganisation)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">District</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getDistrict(prowOrganisation, prowDistrict)}
-                          </Typography>
-                        </Grid>
+                    <Grid container rowSpacing={1}>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Dedication</Typography>
                       </Grid>
-                    </Stack>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getProwDedication(prowDedication)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Status</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getProwStatus(prowStatus)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Access</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Stack direction="row" spacing={1}>
+                          <DirectionsWalkIcon fontSize="small" sx={getTemplateIconStyle(prowPedestrianAccess)} />
+                          <EquestrianIcon fontSize="small" sx={getTemplateIconStyle(prowEquestrianAccess)} />
+                          <SkateboardingIcon
+                            fontSize="small"
+                            sx={getTemplateIconStyle(prowNonMotorisedVehicleAccess)}
+                          />
+                          <DirectionsBikeIcon fontSize="small" sx={getTemplateIconStyle(prowBicycleAccess)} />
+                          <DirectionsCarIcon fontSize="small" sx={getTemplateIconStyle(prowMotorisedVehicleAccess)} />
+                        </Stack>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Promoted route</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        {getCheck(prowPromotedRoute)}
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Accessible route</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        {getCheck(prowAccessibleRoute)}
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Organisation</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getOrganisation(prowOrganisation)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="body2">District</Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getDistrict(prowOrganisation, prowDistrict)}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </CardContent>
                 </CardActionArea>
               </Card>

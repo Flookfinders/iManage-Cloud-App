@@ -35,6 +35,7 @@
 //    021   21.12.23 Sean Flook                 Ensure the sandbox is correctly updated.
 //    022   03.01.24 Sean Flook                 Fixed warning.
 //    023   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    024   09.01.24 Sean Flook       IMANN-197 Calculate the current length of the street when creating a new PRoW record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -112,6 +113,9 @@ import NotesDataTab from "../tabs/NotesDataTab";
 import AddPropertyWizardDialog from "../dialogs/AddPropertyWizardDialog";
 import HistoricPropertyDialog from "../dialogs/HistoricPropertyDialog";
 import { GazetteerRoute } from "../PageRouting";
+
+import Polyline from "@arcgis/core/geometry/Polyline";
+import * as geometryEngine from "@arcgis/core/geometry/geometryEngine";
 
 import { adsBlueA, adsMidGreyA, adsWhite } from "../utils/ADSColours";
 import {
@@ -384,6 +388,33 @@ function StreetDataForm({ data, loading }) {
     setStreetData(newStreetData);
     sandboxContext.onUpdateAndClear("currentStreet", newStreetData, clearType);
     updateSaveButton(false);
+  };
+
+  /**
+   * Method to get the length of the current street.
+   *
+   * @returns {number} The total length of the current street.
+   */
+  const getCurrentStreetLength = () => {
+    if (streetData && streetData.esus && streetData.esus.length > 0) {
+      let totalLength = 0;
+
+      streetData.esus.forEach((esu) => {
+        const esuLine = new Polyline({
+          type: "polyline",
+          paths: esu.wktGeometry && esu.wktGeometry !== "" ? GetWktCoordinates(esu.wktGeometry) : undefined,
+          spatialReference: { wkid: 27700 },
+        });
+
+        const esuLength = geometryEngine.planarLength(esuLine, "meters");
+
+        if (esuLength) totalLength = totalLength + esuLength;
+      });
+
+      if (totalLength > 0) totalLength = Math.round(totalLength);
+
+      return totalLength;
+    } else return 0;
   };
 
   /**
@@ -2631,7 +2662,7 @@ function StreetDataForm({ data, loading }) {
         prowUsrn: streetData && streetData.usrn,
         defMapGeometryType: true,
         defMapGeometryCount: null,
-        prowLength: null,
+        prowLength: getCurrentStreetLength(),
         prowRights:
           settingsContext.streetTemplate &&
           settingsContext.streetTemplate.publicRightOfWayTemplate &&
@@ -6372,6 +6403,7 @@ function StreetDataForm({ data, loading }) {
   };
 
   const handlePropertyWizardClose = () => {
+    streetContext.restoreStreet();
     setOpenPropertyWizard(false);
   };
 

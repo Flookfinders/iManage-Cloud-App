@@ -3,7 +3,7 @@
 //
 //  Description: Wizard Address Details 2 (Range create)
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //  Character Sets used */
 //  -------------------------------------------------------------------------------------------------
@@ -39,6 +39,7 @@
 //    004   06.10.23 Sean Flook                 Use colour variables.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    006   05.12.23 Sean Flook       IMANN-198 Only allow characters A-Z for suffixes.
+//    007   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -64,9 +65,9 @@ ADSAddressableObjectControl.propTypes = {
   isTextFocused: PropTypes.bool,
   loading: PropTypes.bool,
   helperText: PropTypes.string,
-  startNumberValue: PropTypes.any,
+  startNumberValue: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   startSuffixValue: PropTypes.string,
-  endNumberValue: PropTypes.any,
+  endNumberValue: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   endSuffixValue: PropTypes.string,
   textValue: PropTypes.string,
   startNumberErrorText: PropTypes.array,
@@ -124,7 +125,7 @@ function ADSAddressableObjectControl({
 
   const [displayError, setDisplayError] = useState(null);
 
-  const [displayText, setDisplayText] = useState(null);
+  const [displayText, setDisplayText] = useState("");
 
   const hasError = useRef(false);
 
@@ -223,8 +224,7 @@ function ADSAddressableObjectControl({
   });
 
   useEffect(() => {
-    console.log("[SF] ADSAddressableObjectControl", { textValue: textValue });
-    setDisplayText(textValue);
+    setDisplayText(textValue ? textValue : "");
   }, [textValue]);
 
   return (
@@ -274,7 +274,7 @@ function ADSAddressableObjectControl({
                     variant="outlined"
                     margin="dense"
                     size="small"
-                    inputProps={{ min: 0, max: 9999 }}
+                    inputProps={{ min: 1, max: 9999 }}
                     placeholder="e.g. 1"
                     value={startNumberValue}
                     onChange={handleStartNumberChangeEvent}
@@ -293,7 +293,7 @@ function ADSAddressableObjectControl({
                   variant="outlined"
                   margin="dense"
                   size="small"
-                  inputProps={{ min: 0, max: 9999 }}
+                  inputProps={{ min: 1, max: 9999 }}
                   placeholder="e.g. 1"
                   value={startNumberValue}
                   onChange={handleStartNumberChangeEvent}
@@ -375,7 +375,7 @@ function ADSAddressableObjectControl({
                     variant="outlined"
                     margin="dense"
                     size="small"
-                    inputProps={{ min: 0, max: 9999 }}
+                    inputProps={{ min: 1, max: 9999 }}
                     placeholder="e.g. 1"
                     value={endNumberValue}
                     onChange={handleEndNumberChangeEvent}
@@ -393,7 +393,7 @@ function ADSAddressableObjectControl({
                   variant="outlined"
                   margin="dense"
                   size="small"
-                  inputProps={{ min: 0, max: 9999 }}
+                  inputProps={{ min: 1, max: 9999 }}
                   placeholder="e.g. 1"
                   value={endNumberValue}
                   onChange={handleEndNumberChangeEvent}

@@ -3,7 +3,7 @@
 //
 //  Description: Coordinate Control component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   07.07.21 Sean Flook                 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    003   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -94,8 +95,8 @@ function ADSCoordinateControl({
   onButtonClick,
 }) {
   const hasCoordError = useRef(false);
-  const [valueEast, setValueEast] = useState(undefined);
-  const [valueNorth, setValueNorth] = useState(undefined);
+  const [valueEast, setValueEast] = useState(0);
+  const [valueNorth, setValueNorth] = useState(0);
   const [displayError, setDisplayError] = useState("");
 
   /**
@@ -107,7 +108,7 @@ function ADSCoordinateControl({
     setValueEast(event.target.value);
     if (onEastChange) {
       if (event.target.value.length > 0) onEastChange(event.target.value);
-      else onEastChange(undefined);
+      else onEastChange(0);
     }
   };
 
@@ -120,7 +121,7 @@ function ADSCoordinateControl({
     setValueNorth(event.target.value);
     if (onNorthChange) {
       if (event.target.value.length > 0) onNorthChange(event.target.value);
-      else onNorthChange(undefined);
+      else onNorthChange(0);
     }
   };
 

@@ -35,6 +35,7 @@
 //    022   21.12.23 Sean Flook                 Ensure the sandbox is correctly updated.
 //    023   03.01.24 Sean Flook                 Fixed warning.
 //    024   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    025   10.01.24 Sean Flook                 Fix errors.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4464,11 +4465,11 @@ function PropertyDataForm({ data, loading }) {
               variant="property"
               errors={successorCrossRefErrors}
               loading={loading}
-              onSuccessorSelected={(pkId, successorCrossRefData, dataIdx, dataLength) =>
+              onSuccessorCrossRefSelected={(pkId, successorCrossRefData, dataIdx, dataLength) =>
                 handleSuccessorCrossRefSelected(pkId, successorCrossRefData, dataIdx, dataLength)
               }
-              onSuccessorDelete={(pkId) => handleDeleteSuccessorCrossRef(pkId)}
-              onMultiSuccessorDelete={(successorCrossRefIds) =>
+              onSuccessorCrossRefDelete={(pkId) => handleDeleteSuccessorCrossRef(pkId)}
+              onMultiSuccessorCrossRefDelete={(successorCrossRefIds) =>
                 handleMultiDeleteSuccessorCrossRef(successorCrossRefIds)
               }
             />

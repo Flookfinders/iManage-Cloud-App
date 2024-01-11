@@ -24,6 +24,7 @@
 //    009   30.11.23 Sean Flook                 Renamed variable to avoid confusion.
 //    010   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    012   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -108,8 +109,8 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
   const settingsContext = useContext(SettingsContext);
 
   const [apiUrl, setApiUrl] = useState(null);
-  const [propertyData, setPropertyData] = useState(null);
-  const [streetData, setStreetData] = useState(null);
+  const [propertyData, setPropertyData] = useState({});
+  const [streetData, setStreetData] = useState({});
   const dataUsrn = useRef(null);
   const dataUprn = useRef(null);
   const [loading, setLoading] = useState(true);
@@ -798,8 +799,9 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
         streetWithASDUsrn: relatedStreetWithASDUsrnUrl,
         streetWithASDUprn: relatedStreetWithASDUprnUrl,
       });
-    } else if (!relatedType) setRelatedType("property");
-    else if (
+    } else if (!relatedType) {
+      setRelatedType("property");
+    } else if (
       (!propertyData && relatedType === "property") ||
       (!streetData && relatedType === "street") ||
       (variant === "property" &&
@@ -808,9 +810,9 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
       (variant === "street" &&
         streetContext.currentStreet.usrn > 0 &&
         dataUsrn.current !== streetContext.currentStreet.usrn)
-    )
+    ) {
       SetUpRelatedData();
-
+    }
     return () => {};
   }, [
     apiUrl,

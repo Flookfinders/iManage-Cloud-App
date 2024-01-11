@@ -34,6 +34,7 @@
 //    021   19.12.23 Sean Flook                 Various bug fixes.
 //    022   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    023   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    024   10.01.24 Sean Flook       IMANN-163 Added previousStreet and previousProperty.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -228,6 +229,13 @@ function App() {
     openRelated: null,
   });
 
+  const previousStreet = useRef({
+    usrn: 0,
+    descriptor: "",
+    newStreet: false,
+    openRelated: null,
+  });
+
   const [streetErrors, setStreetErrors] = useState({
     street: [],
     descriptor: [],
@@ -267,6 +275,19 @@ function App() {
   const [expandedAsd, setExpandedAsd] = useState([]);
 
   const [property, setProperty] = useState({
+    uprn: 0,
+    usrn: 0,
+    address: "",
+    formatAddress: "",
+    postcode: "",
+    easting: 0,
+    northing: 0,
+    newProperty: false,
+    parent: null,
+    openRelated: null,
+  });
+
+  const previousProperty = useRef({
     uprn: 0,
     usrn: 0,
     address: "",
@@ -1089,9 +1110,17 @@ function App() {
    * Event to handle resetting the street.
    */
   function HandleResetStreet() {
+    previousStreet.current = street;
     HandleStreetChange(0, "", false);
     setExpandedEsu([]);
     setExpandedAsd([]);
+  }
+
+  /**
+   * Event to handle restoring the street state object.
+   */
+  function HandleRestoreStreet() {
+    setStreet(previousStreet.current);
   }
 
   /**
@@ -1645,8 +1674,16 @@ function App() {
    * Event to handle the resetting of the property.
    */
   function HandleResetProperty() {
+    previousProperty.current = property;
     HandlePropertyChange(0, 0, "", "", "", 0, 0, false, null);
     setLogicalStatus(null);
+  }
+
+  /**
+   * Event to handle the restoring of the property state object.
+   */
+  function HandleRestoreProperty() {
+    setProperty(previousProperty.current);
   }
 
   /**
@@ -2347,6 +2384,7 @@ function App() {
                         onToggleEsuExpanded: HandleToggleEsuExpanded,
                         onToggleAsdExpanded: HandleToggleAsdExpanded,
                         resetStreet: HandleResetStreet,
+                        restoreStreet: HandleRestoreStreet,
                         resetStreetErrors: HandleResetStreetErrors,
                         validateData: HandleStreetValidateData,
                       }}
@@ -2372,6 +2410,7 @@ function App() {
                           onWizardDone: HandleWizardDone,
                           onRelatedOpened: HandlePropertyRelatedOpened,
                           resetProperty: HandleResetProperty,
+                          restoreProperty: HandleRestoreProperty,
                           resetPropertyErrors: HandleResetPropertyErrors,
                           validateData: HandlePropertyValidateData,
                         }}

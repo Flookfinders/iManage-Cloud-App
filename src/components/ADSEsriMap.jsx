@@ -41,6 +41,7 @@
 //    027   02.01.24 Sean Flook                 Handle errors when loading shape files.
 //    028   03.01.24 Sean Flook                 Fixed warning.
 //    029   05.01.24 Sean Flook                 use CSS shortcuts.
+//    030   10.01.24 Sean Flook       IMANN-215 Allow ESUs to be assigned to a street when creating a new street.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -6863,7 +6864,11 @@ function ADSEsriMap(startExtent) {
      * Method to handle assigning an ESU from the feature dialog.
      */
     function HandleAssignEsu() {
-      if (recordAttributes.current && streetContext.currentStreet && streetContext.currentStreet.usrn > 0) {
+      if (
+        recordAttributes.current &&
+        streetContext.currentStreet &&
+        (streetContext.currentStreet.usrn > 0 || streetContext.currentStreet.newStreet)
+      ) {
         if (Number(recordAttributes.current.USRN) === streetContext.currentStreet.usrn) {
           saveResult.current = false;
           saveType.current = "assignEsuSameStreet";

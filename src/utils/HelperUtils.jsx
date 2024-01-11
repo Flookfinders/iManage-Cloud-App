@@ -26,6 +26,7 @@
 //    013   19.12.23 Sean Flook                 Various bug fixes.
 //    014   02.01.24 Sean Flook                 Added defaultMapLayerIds.
 //    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    016   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1111,7 +1112,7 @@ export function StringAvatar(username, smallAvatar, clickable = false) {
       if (clickable)
         return {
           sx: {
-            bgcolor: StringToColour(user),
+            backgroundColor: StringToColour(user),
             height: 20,
             width: 20,
             cursor: "pointer",
@@ -1125,7 +1126,7 @@ export function StringAvatar(username, smallAvatar, clickable = false) {
       else
         return {
           sx: {
-            bgcolor: StringToColour(user),
+            backgroundColor: StringToColour(user),
             height: 20,
             width: 20,
           },
@@ -1139,7 +1140,7 @@ export function StringAvatar(username, smallAvatar, clickable = false) {
       if (clickable)
         return {
           sx: {
-            bgcolor: StringToColour(user),
+            backgroundColor: StringToColour(user),
             height: 30,
             width: 30,
             cursor: "pointer",
@@ -1153,7 +1154,7 @@ export function StringAvatar(username, smallAvatar, clickable = false) {
       else
         return {
           sx: {
-            bgcolor: StringToColour(user),
+            backgroundColor: StringToColour(user),
             height: 30,
             width: 30,
           },

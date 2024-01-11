@@ -17,6 +17,7 @@
 //    004   02.01.24 Sean Flook                 Changes required to load shape files.
 //    005   03.01.24 Sean Flook                 Fixed warning.
 //    006   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    007   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -660,7 +661,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
           id="edit-map-layer-dialog"
           sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
         >
-          <Typography variant="h6">{`${isNew ? "Add" : "Edit"} map layer`}</Typography>
+          <Typography sx={{ fontSize: "20px" }}>{`${isNew ? "Add" : "Edit"} map layer`}</Typography>
           <IconButton
             aria-label="close"
             onClick={handleCancelClick}

@@ -19,6 +19,7 @@
 //    006   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    007   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    008   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    009   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -93,7 +94,7 @@ function MapLayersTab(props) {
   const [gridData, setGridData] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
 
-  const [editData, setEditData] = useState(null);
+  const [editData, setEditData] = useState({});
   const [showEditDialog, setShowEditDialog] = useState(false);
 
   const deletePkId = useRef(null);
@@ -784,7 +785,7 @@ function MapLayersTab(props) {
   const getAvatarStyle = (type, highlighted) => {
     if (highlighted)
       return {
-        bgcolor: adsBlueA,
+        backgroundColor: adsBlueA,
         width: "24px",
         height: "24px",
         mt: "2px",
@@ -793,7 +794,7 @@ function MapLayersTab(props) {
       switch (type) {
         case 1: // WFS
           return {
-            bgcolor: adsLightBlue,
+            backgroundColor: adsLightBlue,
             width: "24px",
             height: "24px",
             mt: "2px",
@@ -801,7 +802,7 @@ function MapLayersTab(props) {
 
         case 2: // WMS
           return {
-            bgcolor: adsDarkBlue,
+            backgroundColor: adsDarkBlue,
             width: "24px",
             height: "24px",
             mt: "2px",
@@ -809,7 +810,7 @@ function MapLayersTab(props) {
 
         default: // WMTS
           return {
-            bgcolor: adsMagenta,
+            backgroundColor: adsMagenta,
             width: "24px",
             height: "24px",
             mt: "2px",

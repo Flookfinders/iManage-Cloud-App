@@ -18,6 +18,7 @@
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    006   03.01.24 Sean Flook                 For Scottish authorities force Create Street BLPU to true.
 //    007   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    008   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -27,7 +28,7 @@ import React, { useContext, useState, useEffect } from "react";
 import SettingsContext from "../context/settingsContext";
 import UserContext from "../context/userContext";
 
-import { Typography, Tooltip, Grid, Card, CardActionArea, CardContent, IconButton } from "@mui/material";
+import { Typography, Tooltip, Grid, Card, CardHeader, CardActionArea, CardContent, IconButton } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 
 import EditAuthorityDetailsDialog from "../dialogs/EditAuthorityDetailsDialog";
@@ -65,7 +66,7 @@ function AuthorityDetailsSettingsTab() {
   const [uppercase, setUppercase] = useState(false);
 
   const [editAuthority, setEditAuthority] = useState(false);
-  const [editData, setEditData] = useState(null);
+  const [editData, setEditData] = useState({});
   const [showEditDialog, setShowEditDialog] = useState(false);
 
   /**
@@ -221,113 +222,113 @@ function AuthorityDetailsSettingsTab() {
           <Grid item xs={6}>
             <Card
               variant="outlined"
+              elevation={0}
               onMouseEnter={doMouseEnter}
               onMouseLeave={doMouseLeave}
-              raised={editAuthority}
               sx={settingsCardStyle(editAuthority)}
             >
+              <CardHeader
+                action={
+                  editAuthority && (
+                    <Tooltip title="Edit authority settings" placement="bottom" sx={tooltipStyle}>
+                      <IconButton onClick={doEditAuthority} sx={{ pr: "16px", pb: "16px" }}>
+                        <EditIcon sx={ActionIconStyle(true)} />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }
+                title="Authority details"
+                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editAuthority) }}
+                sx={{ height: "66px" }}
+              />
               <CardActionArea onClick={doEditAuthority}>
                 <CardContent sx={settingsCardContentStyle("authority")}>
-                  <Stack direction="column" spacing={1}>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="h6" sx={getTitleStyle(editAuthority)}>
-                        Authority details
-                      </Typography>
-                      {editAuthority && (
-                        <Tooltip title="Edit authority details" placement="bottom" sx={tooltipStyle}>
-                          <IconButton onClick={doEditAuthority} size="small">
-                            <EditIcon sx={ActionIconStyle(true)} />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Stack>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Name</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {name}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Code</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getAuthorityText(code)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">MSA text</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {msaText}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Tab text</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {tabText}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">USRN range</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {`${minUsrn ? minUsrn : 0} - ${maxUsrn ? maxUsrn : 0}`}
-                        </Typography>
-                      </Grid>
-                      {HasProperties() && (
-                        <Grid item xs={3}>
-                          <Typography variant="body2">UPRN range</Typography>
-                        </Grid>
-                      )}
-                      {HasProperties() && (
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {`${minUprn ? minUprn : 0} - ${maxUprn ? maxUprn : 0}`}
-                          </Typography>
-                        </Grid>
-                      )}
-                      {settingsContext.isScottish && (
-                        <Grid item xs={3}>
-                          <Typography variant="body2">ESU range</Typography>
-                        </Grid>
-                      )}
-                      {settingsContext.isScottish && (
-                        <Grid item xs={9}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {`${minEsu ? minEsu : 0} - ${maxEsu ? maxEsu : 0}`}
-                          </Typography>
-                        </Grid>
-                      )}
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Create street BLPU</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        {getCheck(settingsContext.isScottish ? true : createStreetBlpu)}
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Display language</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getDisplayLanguage(displayLanguage)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Address fields uppercase</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        {getCheck(uppercase)}
-                      </Grid>
+                  <Grid container rowSpacing={1}>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Name</Typography>
                     </Grid>
-                  </Stack>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {name}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Code</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {getAuthorityText(code)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">MSA text</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {msaText}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Tab text</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {tabText}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">USRN range</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {`${minUsrn ? minUsrn : 0} - ${maxUsrn ? maxUsrn : 0}`}
+                      </Typography>
+                    </Grid>
+                    {HasProperties() && (
+                      <Grid item xs={3}>
+                        <Typography variant="body2">UPRN range</Typography>
+                      </Grid>
+                    )}
+                    {HasProperties() && (
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {`${minUprn ? minUprn : 0} - ${maxUprn ? maxUprn : 0}`}
+                        </Typography>
+                      </Grid>
+                    )}
+                    {settingsContext.isScottish && (
+                      <Grid item xs={3}>
+                        <Typography variant="body2">ESU range</Typography>
+                      </Grid>
+                    )}
+                    {settingsContext.isScottish && (
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {`${minEsu ? minEsu : 0} - ${maxEsu ? maxEsu : 0}`}
+                        </Typography>
+                      </Grid>
+                    )}
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Create street BLPU</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      {getCheck(settingsContext.isScottish ? true : createStreetBlpu)}
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Display language</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {getDisplayLanguage(displayLanguage)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Address fields uppercase</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      {getCheck(uppercase)}
+                    </Grid>
+                  </Grid>
                 </CardContent>
               </CardActionArea>
             </Card>

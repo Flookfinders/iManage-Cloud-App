@@ -16,6 +16,7 @@
 //    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    004   19.12.23 Sean Flook                 Various bug fixes.
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    006   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -369,6 +370,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
           onChange={handleLanguageChangeEvent}
         />
         <ADSTextControl
+          id={"street_descriptor"}
           label="Name or descriptor"
           isEditable={userCanEdit}
           isRequired
@@ -384,6 +386,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
               : "GeoPlaceStreet1"
           }
           helperText="This is the name/descriptor for this street."
+          maxLength={100}
           onChange={handleDescriptionChangeEvent}
         />
         <ADSSelectControl

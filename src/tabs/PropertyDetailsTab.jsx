@@ -28,6 +28,7 @@
 //    015   24.11.23 Sean Flook                 Moved Box to @mui/system and changes required for Scottish authorities.
 //    016   30.11.23 Sean Flook                 Make state and state date visible for Scottish authorities.
 //    017   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    018   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -152,24 +153,22 @@ function PropertyDetailsTab({
     FilteredBLPUState(settingsContext.isScottish, data ? data.logicalStatus : null)
   );
 
-  const [blpuLogicalStatus, setBLPULogicalStatus] = useState(data ? data.logicalStatus : null);
-  const [rpc, setRpc] = useState(data ? data.rpc : null);
-  const [state, setState] = useState(data ? data.blpuState : null);
-  const [stateDate, setStateDate] = useState(data ? data.blpuStateDate : null);
-  const [classification, setClassification] = useState(data ? data.blpuClass : null);
-  const [organisation, setOrganisation] = useState(data ? data.organisation : null);
-  const [level, setLevel] = useState(data ? data.level : null);
-  const [ward, setWard] = useState(data ? data.wardCode : null);
-  const [parish, setParish] = useState(data ? data.parishCode : null);
-  const [localCustodian, setLocalCustodian] = useState(
-    data ? (settingsContext.isScottish ? data.custodianCode : data.localCustodianCode) : null
-  );
-  const [easting, setEasting] = useState(data ? data.xcoordinate : null);
-  const [northing, setNorthing] = useState(data ? data.ycoordinate : null);
-  const [excludeFromExport, setExcludeFromExport] = useState(data ? data.neverExport : false);
-  const [siteSurvey, setSiteSurvey] = useState(data ? data.siteSurvey : false);
-  const [startDate, setStartDate] = useState(data ? data.startDate : null);
-  const [endDate, setEndDate] = useState(data ? data.endDate : null);
+  const [blpuLogicalStatus, setBLPULogicalStatus] = useState(null);
+  const [rpc, setRpc] = useState(null);
+  const [state, setState] = useState(null);
+  const [stateDate, setStateDate] = useState(null);
+  const [classification, setClassification] = useState(null);
+  const [organisation, setOrganisation] = useState("");
+  const [level, setLevel] = useState(0);
+  const [ward, setWard] = useState(null);
+  const [parish, setParish] = useState(null);
+  const [localCustodian, setLocalCustodian] = useState(null);
+  const [easting, setEasting] = useState(0);
+  const [northing, setNorthing] = useState(0);
+  const [excludeFromExport, setExcludeFromExport] = useState(false);
+  const [siteSurvey, setSiteSurvey] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -791,16 +790,16 @@ function PropertyDetailsTab({
       setStateDate(data.blpuStateDate);
       if (!settingsContext.isScottish) {
         setClassification(data.blpuClass);
-        setOrganisation(data.organisation);
+        setOrganisation(data.organisation ? data.organisation : "");
         setWard(data.wardCode);
         setParish(data.parishCode);
         setLocalCustodian(data.localCustodianCode);
       } else {
         setLocalCustodian(data.custodianCode);
-        setLevel(data.level);
+        setLevel(data.level ? data.level : 0);
       }
-      setEasting(data.xcoordinate);
-      setNorthing(data.ycoordinate);
+      setEasting(data.xcoordinate ? data.xcoordinate : 0);
+      setNorthing(data.ycoordinate ? data.ycoordinate : 0);
       setExcludeFromExport(data.neverExport);
       setSiteSurvey(data.siteSurvey);
       setStartDate(data.startDate);

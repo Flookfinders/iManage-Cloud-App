@@ -17,6 +17,7 @@
 //    004   03.01.24 Sean Flook                 Fixed warning.
 //    006   03.01.24 Sean Flook                 For Scottish authorities force Create Street BLPU to true and prevent the user from changing it.
 //    007   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    008   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -320,7 +321,7 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
           id="edit-authority-details-dialog"
           sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
         >
-          <Typography variant="h6">Edit authority details</Typography>
+          <Typography sx={{ fontSize: "20px" }}>Edit authority details</Typography>
           <IconButton
             aria-label="close"
             onClick={handleCancelClick}

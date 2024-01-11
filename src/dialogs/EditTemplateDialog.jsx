@@ -24,6 +24,8 @@
 //    011   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
 //    012   05.12.23 Joel Benford               Add Scottish classification dialogue
 //    013   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    014   08.01.24 Joel Benford               Classification and sub locality
+//    015   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -147,8 +149,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [showDialog, setShowDialog] = useState(false);
   const [templateType, setTemplateType] = useState("unknown");
 
-  const [title, setTitle] = useState(null);
-  const [description, setDescription] = useState(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [blpuStatus, setBlpuStatus] = useState(null);
   const [blpuRpc, setBlpuRpc] = useState(null);
   const [blpuState, setBlpuState] = useState(null);
@@ -162,12 +164,12 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [lpiOfficialAddress, setLpiOfficialAddress] = useState(null);
   const [lpiPostalAddress, setLpiPostalAddress] = useState(null);
   const [lpiStartDate, setLpiStartDate] = useState(null);
-  const [classScheme, setClassScheme] = useState(null);
+  const [classificationScheme, setClassificationScheme] = useState("");
   const [classificationStartDate, setClassificationStartDate] = useState(null);
   const [otherCrossRefSource, setOtherCrossRefSource] = useState(null);
   const [otherProvenance, setOtherProvenance] = useState(null);
   const [otherProvenanceStartDate, setOtherProvenanceStartDate] = useState(null);
-  const [otherNote, setOtherNote] = useState(null);
+  const [otherNote, setOtherNote] = useState("");
   const [streetType, setStreetType] = useState(null);
   const [streetState, setStreetState] = useState(null);
   const [streetLocality, setStreetLocality] = useState(null);
@@ -288,7 +290,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         return {
           lpiLogicalStatus: lpiStatus,
           postTownRef: lpiPostTown,
-          level: lpiLevel,
+          subLocalityRef: lpiSubLocality,
+          lpiLevel: lpiLevel,
           officialAddressMaker: lpiOfficialAddress,
           postallyAddressable: lpiPostalAddress,
         };
@@ -296,6 +299,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
       case "classification":
         return {
           classification: blpuClassification,
+          classificationScheme: classificationScheme,
         };
 
       case "other":
@@ -452,7 +456,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
       case "classificationWizard":
         return {
           classification: blpuClassification,
-          classScheme: classScheme,
+          classScheme: classificationScheme,
           startDate: classificationStartDate,
           errors: errors,
         };
@@ -680,7 +684,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    * @param {string} newValue The new classification scheme.
    */
   const handleClassificationSchemeChangeEvent = (newValue) => {
-    setClassScheme(newValue);
+    setClassificationScheme(newValue);
     if (variant === "classificationWizard") {
       updateErrors("classScheme");
       setClassSchemeError(null);
@@ -1525,9 +1529,14 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 label="Sub-locality"
                 isEditable
                 useRounded
-                lookupData={lookupContext.currentLookups.subLocalities.filter(
-                  (x) => x.language === "ENG" && !x.historic
-                )}
+                lookupData={lookupContext.currentLookups.subLocalities
+                  .filter((x) => x.language === "ENG" && !x.historic)
+                  .sort(function (a, b) {
+                    return a.subLocality.localeCompare(b.subLocality, undefined, {
+                      numeric: true,
+                      sensitivity: "base",
+                    });
+                  })}
                 lookupId="subLocalityRef"
                 lookupLabel="subLocality"
                 value={lpiSubLocality}
@@ -1590,6 +1599,16 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               value={blpuClassification}
               onChange={handleBlpuClassificationChangeEvent}
               helperText="Classification code for the BLPU."
+            />
+            <ADSTextControl
+              label="Scheme"
+              isEditable
+              value={classificationScheme}
+              id={"ads-text-textfield-classification-scheme"}
+              maxLength={60}
+              minLines={1}
+              maxLines={1}
+              onChange={handleClassificationSchemeChangeEvent}
             />
           </Stack>
         );
@@ -2715,7 +2734,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             <ADSTextControl
               label="Scheme"
               isEditable
-              value={classScheme}
+              value={classificationScheme}
               id={0}
               maxLength={40}
               errorText={classSchemeError}
@@ -2806,12 +2825,12 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
       switch (variant) {
         case "title":
           setTemplateType("Title");
-          setTitle(data.title);
+          setTitle(data.title ? data.title : "");
           break;
 
         case "description":
           setTemplateType("Description");
-          setDescription(data.description);
+          setDescription(data.description ? data.description : "");
           break;
 
         case "blpu":
@@ -2831,7 +2850,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           setLpiStatus(data.lpiLogicalStatus);
           setLpiPostTown(data.postTownRef);
           if (settingsContext.isScottish) {
-            setLpiSubLocality(data.subLocality);
+            setLpiSubLocality(data.subLocalityRef);
           } else {
             setLpiLevel(data.level);
           }
@@ -2842,13 +2861,14 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         case "classification":
           setTemplateType("Classification");
           setBlpuClassification(data.classification);
+          setClassificationScheme(data.classificationScheme ? data.classificationScheme : "");
           break;
 
         case "other":
           setTemplateType("Other");
           setOtherCrossRefSource(data.source);
           setOtherProvenance(data.provCode);
-          setOtherNote(data.note);
+          setOtherNote(data.note ? data.note : "");
           break;
 
         case "street":
@@ -3011,7 +3031,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         case "classificationWizard":
           setTemplateType("Classification");
           setBlpuClassification(data.classification);
-          setClassScheme(data.classScheme);
+          setClassificationScheme(data.classScheme ? data.classScheme : "");
           setClassificationStartDate(data.startDate);
           break;
 
@@ -3019,7 +3039,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           setTemplateType("Other");
           setOtherProvenance(data.provCode);
           setOtherProvenanceStartDate(data.provStartDate);
-          setOtherNote(data.note);
+          setOtherNote(data.note ? data.note : "");
           break;
 
         default:
@@ -3096,7 +3116,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               break;
 
             case "classscheme":
-              setClassScheme(error.errors);
+              setClassSchemeError(error.errors);
               break;
 
             case "classificationstartdate":
@@ -3141,7 +3161,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           borderBottomColor: adsBlueA,
         }}
       >
-        <Typography variant="h6">{getDialogTitle()}</Typography>
+        <Typography sx={{ fontSize: "20px" }}>{getDialogTitle()}</Typography>
         <IconButton
           aria-label="close"
           onClick={handleCancelClick}

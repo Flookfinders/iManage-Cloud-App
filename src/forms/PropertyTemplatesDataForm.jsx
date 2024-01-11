@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    006   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -149,7 +150,7 @@ function PropertyTemplatesDataForm({
   const getAvatarStyle = (type, highlighted) => {
     if (highlighted)
       return {
-        bgcolor: adsBlueA,
+        backgroundColor: adsBlueA,
         width: "24px",
         height: "24px",
         mt: "2px",
@@ -158,7 +159,7 @@ function PropertyTemplatesDataForm({
       switch (type) {
         case 2: // Library
           return {
-            bgcolor: adsLightBlue,
+            backgroundColor: adsLightBlue,
             width: "24px",
             height: "24px",
             mt: "2px",
@@ -166,7 +167,7 @@ function PropertyTemplatesDataForm({
 
         case 3: // User
           return {
-            bgcolor: adsDarkBlue,
+            backgroundColor: adsDarkBlue,
             width: "24px",
             height: "24px",
             mt: "2px",
@@ -174,7 +175,7 @@ function PropertyTemplatesDataForm({
 
         default:
           return {
-            bgcolor: adsMagenta,
+            backgroundColor: adsMagenta,
             width: "24px",
             height: "24px",
             mt: "2px",
@@ -235,9 +236,9 @@ function PropertyTemplatesDataForm({
         <Card
           id={`template-${index}-card`}
           variant="outlined"
+          elevation={0}
           onMouseEnter={() => handleMouseEnterCard(rec.templatePkId)}
           onMouseLeave={handleMouseLeaveCard}
-          raised={selectedCard && selectedCard === rec.templatePkId}
           sx={settingsCardStyle(selectedCard && selectedCard === rec.templatePkId)}
         >
           <CardActionArea onClick={(event) => doEditTemplate(event, rec.templatePkId)}>

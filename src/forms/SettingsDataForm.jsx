@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    003   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    004   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -104,7 +105,7 @@ function SettingsDataForm({ nodeId }) {
         break;
 
       default:
-        setCurrentTab(null);
+        setCurrentTab(0);
         break;
     }
   }, [nodeId]);

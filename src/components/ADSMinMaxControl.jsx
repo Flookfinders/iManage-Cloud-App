@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    006   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -149,7 +150,7 @@ function ADSMinMaxControl({
                     >{`${maxValue ? maxValue : 0}`}</Typography>
                   </Box>
                 </Grid>
-                <Grid item sx={2}>
+                <Grid item xs={2}>
                   <Button variant="contained" sx={whiteButtonStyle} disabled={!isEditable} onClick={handleUpdateClick}>
                     {buttonText}
                   </Button>
@@ -188,7 +189,7 @@ function ADSMinMaxControl({
                   >{`${maxValue ? maxValue : 0}`}</Typography>
                 </Box>
               </Grid>
-              <Grid item sx={2}>
+              <Grid item xs={2}>
                 <Button variant="contained" sx={whiteButtonStyle} disabled={!isEditable} onClick={handleUpdateClick}>
                   {buttonText}
                 </Button>

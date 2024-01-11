@@ -26,6 +26,7 @@
 //    012   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
 //    013   29.11.23 Sean Flook       IMANN-163 Added id's to the TreeItem to remove warning and corrected expanded data type.
 //    014   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    015   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -81,7 +82,7 @@ import {
 import { useTheme } from "@mui/styles";
 
 RelatedPropertyTab.propTypes = {
-  data: PropTypes.array.isRequired,
+  data: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   expanded: PropTypes.array.isRequired,
   onNodeSelect: PropTypes.func.isRequired,

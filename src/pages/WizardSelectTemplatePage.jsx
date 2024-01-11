@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    006   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -118,7 +119,7 @@ function WizardSelectTemplatePage({ variant, onTemplateSelected }) {
   const getAvatarStyle = (type, highlighted) => {
     if (highlighted)
       return {
-        bgcolor: adsBlueA,
+        backgroundColor: adsBlueA,
         width: "24px",
         height: "24px",
         mt: "2px",
@@ -127,7 +128,7 @@ function WizardSelectTemplatePage({ variant, onTemplateSelected }) {
       switch (type) {
         case 2: // Library
           return {
-            bgcolor: adsLightBlue,
+            backgroundColor: adsLightBlue,
             width: "24px",
             height: "24px",
             mt: "2px",
@@ -135,7 +136,7 @@ function WizardSelectTemplatePage({ variant, onTemplateSelected }) {
 
         case 3: // User
           return {
-            bgcolor: adsDarkBlue,
+            backgroundColor: adsDarkBlue,
             width: "24px",
             height: "24px",
             mt: "2px",
@@ -143,7 +144,7 @@ function WizardSelectTemplatePage({ variant, onTemplateSelected }) {
 
         default:
           return {
-            bgcolor: adsMagenta,
+            backgroundColor: adsMagenta,
             width: "24px",
             height: "24px",
             mt: "2px",

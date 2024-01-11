@@ -23,6 +23,7 @@
 //    010   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
 //    011   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system, use getClassificationCode method and renamed successor to successorCrossRef.
 //    012   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    013   10.01.24 Sean Flook                 Hide Create street from selected ESUs button until code has been written (IMANN-216).
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1283,9 +1284,11 @@ function ADSSelectionControl({
               >
                 <UnassignEsuIcon sx={ActionIconStyle()} />
               </IconButton>
-              <IconButton size="small" disabled={!userCanEdit} title={createStreetTooltip}>
-                <AddStreetIcon sx={ActionIconStyle()} />
-              </IconButton>
+              {process.env.NODE_ENV === "development" && (
+                <IconButton size="small" disabled={!userCanEdit} title={createStreetTooltip}>
+                  <AddStreetIcon sx={ActionIconStyle()} />
+                </IconButton>
+              )}
             </Stack>
           )}
           {numberOfTypes === 1 && haveAsd && (

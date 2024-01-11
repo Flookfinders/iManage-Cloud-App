@@ -18,6 +18,7 @@
 //    005   27.10.23 Sean Flook                 Added missing colour variable.
 //    006   24.11.23 Sean Flook                 Moved Stack to @mui/system.
 //    007   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    008   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -66,6 +67,7 @@ EditLookupDialog.propTypes = {
     "authority",
     "ward",
     "parish",
+    "unknown",
   ]).isRequired,
   isUsed: PropTypes.bool.isRequired,
   isOpen: PropTypes.bool.isRequired,

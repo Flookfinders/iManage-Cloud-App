@@ -22,6 +22,7 @@
 //    009   24.11.23 Sean Flook                 Moved Stack to @mui/system.
 //    010   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    011   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    012   08.02.24 Joel Benford               Classification and sub locality
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -106,9 +107,11 @@ function PropertyTemplatesTab() {
         classification: newRecord.classification,
         lpiLogicalStatus: newRecord.lpiLogicalStatus,
         postTownRef: newRecord.postTownRef,
+        subLocalityRef: newRecord.subLocalityRef,
         level: newRecord.level,
         officialAddressMaker: newRecord.officialAddressMaker,
         postallyAddressable: newRecord.postallyAddressable,
+        scheme: newRecord.scheme,
         source: newRecord.source,
         provCode: newRecord.provCode,
         note: newRecord.note,
@@ -209,9 +212,11 @@ function PropertyTemplatesTab() {
           rpc: updatedData.rpc,
           state: updatedData.state,
           classification: updatedData.classification,
+          scheme: updatedData.scheme,
           lpiTemplatePkId: updatedData.lpiTemplatePkId,
           lpiLogicalStatus: updatedData.lpiLogicalStatus,
           postTownRef: updatedData.postTownRef,
+          subLocalityRef: updatedData.subLocalityRef,
           level: updatedData.level,
           officialAddressMaker: updatedData.officialAddressMaker,
           postallyAddressable: updatedData.postallyAddressable,
@@ -222,7 +227,7 @@ function PropertyTemplatesTab() {
         };
 
         // if (process.env.NODE_ENV === "development")
-        console.log("[DEBUG] handleUpdateData", updatedData, saveUrl, JSON.stringify(saveData));
+        console.log("[DEBUG] handleUpdateData", updatedData, saveData, saveUrl, JSON.stringify(saveData));
 
         await fetch(saveUrl.url, {
           headers: saveUrl.headers,

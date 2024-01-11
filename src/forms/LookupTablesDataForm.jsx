@@ -18,6 +18,7 @@
 //    005   01.12.23 Sean Flook       IMANN-194 Modified UpdateLookups to use the new LookupContext.onUpdateLookup event.
 //    006   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    007   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    008   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -83,8 +84,8 @@ function LookupTablesDataForm({ nodeId }) {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [lookupType, setLookupType] = useState(null);
-  const [lookupId, setLookupId] = useState(null);
+  const [lookupType, setLookupType] = useState("unknown");
+  const [lookupId, setLookupId] = useState(0);
   const [lookupInUse, setLookupInUse] = useState(false);
 
   const [addOpen, setAddOpen] = useState(false);
@@ -112,7 +113,7 @@ function LookupTablesDataForm({ nodeId }) {
           historic: x.historic,
         };
       });
-    else return null;
+    else return [];
   };
 
   const getPostTownData = () => {
@@ -210,7 +211,7 @@ function LookupTablesDataForm({ nodeId }) {
           };
         });
       }
-    } else return null;
+    } else return [];
   };
 
   const getSubLocalitiesData = () => {
@@ -259,7 +260,7 @@ function LookupTablesDataForm({ nodeId }) {
       }
 
       return subLocalityData;
-    } else return null;
+    } else return [];
   };
 
   const getCrossReferencesData = () => {
@@ -277,7 +278,7 @@ function LookupTablesDataForm({ nodeId }) {
           export: x.export,
         };
       });
-    else return null;
+    else return [];
   };
 
   const getLocalitiesData = () => {
@@ -375,7 +376,7 @@ function LookupTablesDataForm({ nodeId }) {
           };
         });
       }
-    } else return null;
+    } else return [];
   };
 
   const getTownsData = () => {
@@ -473,7 +474,7 @@ function LookupTablesDataForm({ nodeId }) {
           };
         });
       }
-    } else return null;
+    } else return [];
   };
 
   const getIslandsData = () => {
@@ -522,7 +523,7 @@ function LookupTablesDataForm({ nodeId }) {
       }
 
       return islandData;
-    } else return null;
+    } else return [];
   };
 
   const getAdministrativeAreasData = () => {
@@ -620,11 +621,11 @@ function LookupTablesDataForm({ nodeId }) {
           };
         });
       }
-    } else return null;
+    } else return [];
   };
 
   const getAuthoritiesData = () => {
-    return null;
+    return [];
   };
 
   const getWardsData = () => {
@@ -642,7 +643,7 @@ function LookupTablesDataForm({ nodeId }) {
           historic: x.historic,
         };
       });
-    else return null;
+    else return [];
   };
 
   const getParishesData = () => {
@@ -660,7 +661,7 @@ function LookupTablesDataForm({ nodeId }) {
           historic: x.historic,
         };
       });
-    else return null;
+    else return [];
   };
 
   const isLookupInUse = async (variant, id) => {
@@ -4093,7 +4094,7 @@ function LookupTablesDataForm({ nodeId }) {
         break;
 
       default:
-        setCurrentTab(null);
+        setCurrentTab(0);
         break;
     }
   }, [nodeId]);

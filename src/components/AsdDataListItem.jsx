@@ -19,6 +19,7 @@
 //    006   03.01.24 Sean Flook                 Fixed warning.
 //    007   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    008   08.01.24 Sean Flook                 Changes to try and fix warnings.
+//    009   10.01.24 Sean Flook                 Changes to try and fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -32,15 +33,15 @@ import SettingsContext from "../context/settingsContext";
 import StreetContext from "../context/streetContext";
 
 import {
-  ListItemButton,
-  IconButton,
   List,
+  ListItemButton,
   ListItemText,
   ListItemAvatar,
+  ListItemIcon,
+  IconButton,
   Avatar,
   Collapse,
   Typography,
-  ListItemIcon,
   Checkbox,
 } from "@mui/material";
 import { Stack } from "@mui/system";
@@ -361,10 +362,10 @@ function AsdDataListItem({
   }, [userContext]);
 
   return (
-    <List component="div" disablePadding key={`list_asd_type_${variant}`}>
+    <List component="div" disablePadding>
       <ListItemButton
         id={variant}
-        key={`${variant}`}
+        key={`asd${variant}`}
         divider
         dense
         disabled={!data || data.length === 0}
@@ -425,14 +426,14 @@ function AsdDataListItem({
       </ListItemButton>
 
       {!subList ? (
-        <Collapse in={open} timeout="auto" key={`collapse_${variant}`}>
-          <List component="div" disablePadding key={`list_${variant}`}>
+        <Collapse in={open} timeout="auto">
+          <List component="div" disablePadding>
             {data &&
               data.length > 0 &&
               data.map((d, index) => (
                 <ListItemButton
                   id={d.pkId}
-                  key={`${variant}_${index}_${d.pkId}`}
+                  key={`asd${variant}.${d.pkId}`}
                   alignItems="flex-start"
                   dense
                   disableGutters
@@ -448,13 +449,7 @@ function AsdDataListItem({
                   onMouseLeave={handleMouseLeaveRecord}
                 >
                   <ListItemAvatar sx={getASDListItemAvatarStyle(d.pkId.toString(), checked, variant, selectedRecord)}>
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      justifyContent="flex-start"
-                      alignItems="flex-start"
-                      // alignItems="center"
-                    >
+                    <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="flex-start">
                       {(checked.indexOf(`${variant}_${d.pkId.toString()}`) !== -1 ||
                         (selectedRecord && selectedRecord >= 0 && selectedRecord.toString() === d.pkId.toString())) && (
                         <Checkbox
@@ -524,15 +519,14 @@ function AsdDataListItem({
           </List>
         </Collapse>
       ) : (
-        <Collapse in={open} timeout="auto" key={`collapse_${variant}`}>
+        <Collapse in={open} timeout="auto">
           {subList.length > 0 &&
-            subList.map((d, index) => (
+            subList.map((d) => (
               <AsdDataListSubItem
                 variant={variant}
                 title={title}
                 data={data}
                 code={d}
-                index={index}
                 checked={checked}
                 itemState={itemState}
                 iconColour={iconColour}

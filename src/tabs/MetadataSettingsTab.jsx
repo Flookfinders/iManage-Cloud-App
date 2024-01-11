@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    006   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    007   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -33,6 +34,7 @@ import {
   Button,
   Grid,
   Card,
+  CardHeader,
   CardActionArea,
   CardContent,
   IconButton,
@@ -139,7 +141,7 @@ function MetadataSettingsTab({ variant }) {
   const [hgvApprovedRoutes, setHgvApprovedRoutes] = useState(null);
   const [emergencyServicesRoutes, setEmergencyServicesRoutes] = useState(null);
 
-  const [editData, setEditData] = useState(null);
+  const [editData, setEditData] = useState({});
   const [showEditGazetteerDialog, setShowEditGazetteerDialog] = useState(false);
   const [showEditCustodianDialog, setShowEditCustodianDialog] = useState(false);
   const [showEditMiscellaneousDialog, setShowEditMiscellaneousDialog] = useState(false);
@@ -1107,115 +1109,115 @@ function MetadataSettingsTab({ variant }) {
           <Grid item xs={6}>
             <Card
               variant="outlined"
+              elevation={0}
               onMouseEnter={doMouseEnterGazetteer}
               onMouseLeave={doMouseLeaveGazetteer}
-              raised={editGazetteer}
               sx={settingsCardStyle(editGazetteer)}
             >
+              <CardHeader
+                action={
+                  editGazetteer && (
+                    <Tooltip title="Edit gazetteer details" placement="bottom" sx={tooltipStyle}>
+                      <IconButton onClick={doEditGazetteer} sx={{ pr: "16px", pb: "16px" }}>
+                        <EditIcon sx={ActionIconStyle(true)} />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }
+                title="Gazetteer details"
+                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editGazetteer) }}
+                sx={{ height: "66px" }}
+              />
               <CardActionArea onClick={doEditGazetteer}>
                 <CardContent
                   sx={settingsCardContentStyle(variant === "property" ? "property-metadata" : "street-asd-metadata")}
                 >
-                  <Stack direction="column" spacing={1}>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="h6" sx={getTitleStyle(editGazetteer)}>
-                        Gazetteer details
-                      </Typography>
-                      {editGazetteer && (
-                        <Tooltip title="Edit gazetteer details" placement="bottom" sx={tooltipStyle}>
-                          <IconButton onClick={doEditGazetteer} size="small">
-                            <EditIcon sx={ActionIconStyle(true)} />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Stack>
-                    <Grid container rowSpacing={1}>
-                      {variant === "property" && (
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Name</Typography>
-                        </Grid>
-                      )}
-                      {variant === "property" && (
-                        <Grid item xs={9}>
-                          {loading ? (
-                            <Skeleton variant="rectangular" height="20px" width="100%" />
-                          ) : (
-                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {name}
-                            </Typography>
-                          )}
-                        </Grid>
-                      )}
-                      {variant === "property" && (
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Scope</Typography>
-                        </Grid>
-                      )}
-                      {variant === "property" && (
-                        <Grid item xs={9}>
-                          {loading ? (
-                            <Skeleton variant="rectangular" height="20px" width="100%" />
-                          ) : (
-                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {scope}
-                            </Typography>
-                          )}
-                        </Grid>
-                      )}
+                  <Grid container rowSpacing={1}>
+                    {variant === "property" && (
                       <Grid item xs={3}>
-                        <Typography variant="body2">Territory</Typography>
+                        <Typography variant="body2">Name</Typography>
                       </Grid>
+                    )}
+                    {variant === "property" && (
                       <Grid item xs={9}>
                         {loading ? (
                           <Skeleton variant="rectangular" height="20px" width="100%" />
                         ) : (
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {territory}
+                            {name}
                           </Typography>
                         )}
                       </Grid>
+                    )}
+                    {variant === "property" && (
                       <Grid item xs={3}>
-                        <Typography variant="body2">Data</Typography>
+                        <Typography variant="body2">Scope</Typography>
                       </Grid>
+                    )}
+                    {variant === "property" && (
                       <Grid item xs={9}>
                         {loading ? (
                           <Skeleton variant="rectangular" height="20px" width="100%" />
                         ) : (
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {metadataData}
+                            {scope}
                           </Typography>
                         )}
                       </Grid>
-                      {variant === "property" && (
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Owner</Typography>
-                        </Grid>
-                      )}
-                      {variant === "property" && (
-                        <Grid item xs={9}>
-                          {loading ? (
-                            <Skeleton variant="rectangular" height="20px" width="100%" />
-                          ) : (
-                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {owner}
-                            </Typography>
-                          )}
-                        </Grid>
-                      )}
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Frequency</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        {loading ? (
-                          <Skeleton variant="rectangular" height="20px" width="100%" />
-                        ) : (
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getFrequency(frequency)}
-                          </Typography>
-                        )}
-                      </Grid>
+                    )}
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Territory</Typography>
                     </Grid>
-                  </Stack>
+                    <Grid item xs={9}>
+                      {loading ? (
+                        <Skeleton variant="rectangular" height="20px" width="100%" />
+                      ) : (
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {territory}
+                        </Typography>
+                      )}
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Data</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      {loading ? (
+                        <Skeleton variant="rectangular" height="20px" width="100%" />
+                      ) : (
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {metadataData}
+                        </Typography>
+                      )}
+                    </Grid>
+                    {variant === "property" && (
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Owner</Typography>
+                      </Grid>
+                    )}
+                    {variant === "property" && (
+                      <Grid item xs={9}>
+                        {loading ? (
+                          <Skeleton variant="rectangular" height="20px" width="100%" />
+                        ) : (
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {owner}
+                          </Typography>
+                        )}
+                      </Grid>
+                    )}
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Frequency</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      {loading ? (
+                        <Skeleton variant="rectangular" height="20px" width="100%" />
+                      ) : (
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getFrequency(frequency)}
+                        </Typography>
+                      )}
+                    </Grid>
+                  </Grid>
                 </CardContent>
               </CardActionArea>
             </Card>
@@ -1223,67 +1225,67 @@ function MetadataSettingsTab({ variant }) {
           <Grid item xs={6}>
             <Card
               variant="outlined"
+              elevation={0}
               onMouseEnter={doMouseEnterCustodian}
               onMouseLeave={doMouseLeaveCustodian}
-              raised={editCustodian}
               sx={settingsCardStyle(editCustodian)}
             >
+              <CardHeader
+                action={
+                  editCustodian && (
+                    <Tooltip title="Edit custodian details" placement="bottom" sx={tooltipStyle}>
+                      <IconButton onClick={doEditCustodian} sx={{ pr: "16px", pb: "16px" }}>
+                        <EditIcon sx={ActionIconStyle(true)} />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }
+                title="Custodian details"
+                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editCustodian) }}
+                sx={{ height: "66px" }}
+              />
               <CardActionArea onClick={doEditCustodian}>
                 <CardContent
                   sx={settingsCardContentStyle(variant === "property" ? "property-metadata" : "street-asd-metadata")}
                 >
-                  <Stack direction="column" spacing={1}>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="h6" sx={getTitleStyle(editCustodian)}>
-                        Custodian details
-                      </Typography>
-                      {editCustodian && (
-                        <Tooltip title="Edit custodian details" placement="bottom" sx={tooltipStyle}>
-                          <IconButton onClick={editCustodian} size="small">
-                            <EditIcon sx={ActionIconStyle(true)} />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Stack>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Name</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        {loading ? (
-                          <Skeleton variant="rectangular" height="20px" width="100%" />
-                        ) : (
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {custodianName}
-                          </Typography>
-                        )}
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">UPRN</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        {loading ? (
-                          <Skeleton variant="rectangular" height="20px" width="100%" />
-                        ) : (
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {custodianUprn}
-                          </Typography>
-                        )}
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Code</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        {loading ? (
-                          <Skeleton variant="rectangular" height="20px" width="100%" />
-                        ) : (
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getAuthorityText(custodianCode)}
-                          </Typography>
-                        )}
-                      </Grid>
+                  <Grid container rowSpacing={1}>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Name</Typography>
                     </Grid>
-                  </Stack>
+                    <Grid item xs={9}>
+                      {loading ? (
+                        <Skeleton variant="rectangular" height="20px" width="100%" />
+                      ) : (
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {custodianName}
+                        </Typography>
+                      )}
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">UPRN</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      {loading ? (
+                        <Skeleton variant="rectangular" height="20px" width="100%" />
+                      ) : (
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {custodianUprn}
+                        </Typography>
+                      )}
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Code</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      {loading ? (
+                        <Skeleton variant="rectangular" height="20px" width="100%" />
+                      ) : (
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getAuthorityText(custodianCode)}
+                        </Typography>
+                      )}
+                    </Grid>
+                  </Grid>
                 </CardContent>
               </CardActionArea>
             </Card>
@@ -1291,67 +1293,67 @@ function MetadataSettingsTab({ variant }) {
           <Grid item xs={6}>
             <Card
               variant="outlined"
+              elevation={0}
               onMouseEnter={doMouseEnterMiscellaneous}
               onMouseLeave={doMouseLeaveMiscellaneous}
-              raised={editMiscellaneous}
               sx={settingsCardStyle(editMiscellaneous)}
             >
+              <CardHeader
+                action={
+                  editMiscellaneous && (
+                    <Tooltip title="Edit miscellaneous details" placement="bottom" sx={tooltipStyle}>
+                      <IconButton onClick={doEditMiscellaneous} sx={{ pr: "16px", pb: "16px" }}>
+                        <EditIcon sx={ActionIconStyle(true)} />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }
+                title="Miscellaneous details"
+                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editMiscellaneous) }}
+                sx={{ height: "66px" }}
+              />
               <CardActionArea onClick={doEditMiscellaneous}>
                 <CardContent
                   sx={settingsCardContentStyle(variant === "property" ? "property-metadata" : "street-asd-metadata")}
                 >
-                  <Stack direction="column" spacing={1}>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="h6" sx={getTitleStyle(editMiscellaneous)}>
-                        Miscellaneous details
-                      </Typography>
-                      {editMiscellaneous && (
-                        <Tooltip title="Edit miscellaneous details" placement="bottom" sx={tooltipStyle}>
-                          <IconButton onClick={doEditMiscellaneous} size="small">
-                            <EditIcon sx={ActionIconStyle(true)} />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Stack>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Classification scheme</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        {loading ? (
-                          <Skeleton variant="rectangular" height="20px" width="100%" />
-                        ) : (
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {scheme}
-                          </Typography>
-                        )}
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Metadata date</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        {loading ? (
-                          <Skeleton variant="rectangular" height="20px" width="100%" />
-                        ) : (
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getMetadataDate(metadataDate)}
-                          </Typography>
-                        )}
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Language</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        {loading ? (
-                          <Skeleton variant="rectangular" height="20px" width="100%" />
-                        ) : (
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {getDisplayLanguage(language)}
-                          </Typography>
-                        )}
-                      </Grid>
+                  <Grid container rowSpacing={1}>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Classification scheme</Typography>
                     </Grid>
-                  </Stack>
+                    <Grid item xs={9}>
+                      {loading ? (
+                        <Skeleton variant="rectangular" height="20px" width="100%" />
+                      ) : (
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {scheme}
+                        </Typography>
+                      )}
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Metadata date</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      {loading ? (
+                        <Skeleton variant="rectangular" height="20px" width="100%" />
+                      ) : (
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getMetadataDate(metadataDate)}
+                        </Typography>
+                      )}
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Language</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      {loading ? (
+                        <Skeleton variant="rectangular" height="20px" width="100%" />
+                      ) : (
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getDisplayLanguage(language)}
+                        </Typography>
+                      )}
+                    </Grid>
+                  </Grid>
                 </CardContent>
               </CardActionArea>
             </Card>
@@ -1360,559 +1362,559 @@ function MetadataSettingsTab({ variant }) {
             <Grid item xs={6}>
               <Card
                 variant="outlined"
+                elevation={0}
                 onMouseEnter={doMouseEnterContent}
                 onMouseLeave={doMouseLeaveContent}
-                raised={editContent}
                 sx={settingsCardStyle(editContent)}
               >
+                <CardHeader
+                  action={
+                    editContent && (
+                      <Tooltip title="Edit content details" placement="bottom" sx={tooltipStyle}>
+                        <IconButton onClick={doEditContent} sx={{ pr: "16px", pb: "16px" }}>
+                          <EditIcon sx={ActionIconStyle(true)} />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }
+                  title="Content details"
+                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editContent) }}
+                  sx={{ height: "66px" }}
+                />
                 <CardActionArea onClick={doEditContent}>
                   <CardContent
                     sx={settingsCardContentStyle(variant === "property" ? "property-metadata" : "street-asd-metadata")}
                   >
-                    <Stack direction="column" spacing={1}>
-                      <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="h6" sx={getTitleStyle(editContent)}>
-                          Content details
-                        </Typography>
-                        {editContent && (
-                          <Tooltip title="Edit content details" placement="bottom" sx={tooltipStyle}>
-                            <IconButton onClick={doEditContent} size="small">
-                              <EditIcon sx={ActionIconStyle(true)} />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Stack>
-                      <Grid container rowSpacing={1} sx={{ height: "260px", overflowY: "auto" }}>
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Motorway trunk roads</Typography>
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${motorwayTrunkRoads ? motorwayTrunkRoads : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Private streets</Typography>
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${privateStreets ? privateStreets : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Primary route network</Typography>
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${primaryRouteNetwork ? primaryRouteNetwork : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Classified roads</Typography>
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${classifiedRoads ? classifiedRoads : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">PRoW footpaths</Typography>
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${prowFootpaths ? prowFootpaths : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">PRoW bridleways</Typography>
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${prowBridleways ? prowBridleways : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">PRoW restricted byways</Typography>
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${prowRestrictedByways ? prowRestrictedByways : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">PRoW BOAT</Typography>
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${prowBoat ? prowBoat : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">National cycle routes</Typography>
-                          </Grid>
-                        )}
-                        {variant === "street" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${nationalCycleRoutes ? nationalCycleRoutes : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Protected streets</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${protectedStreets ? protectedStreets : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Traffic sensitive streets</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${trafficSensitiveStreets ? trafficSensitiveStreets : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Special engineering difficulties</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${specialEngineeringDifficulties ? specialEngineeringDifficulties : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Proposed SEDs</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${proposedSEDs ? proposedSEDs : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Level crossing safety zone</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${levelCrossing ? levelCrossing : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Environmentally sensitive areas</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${environmentallySensitiveAreas ? environmentallySensitiveAreas : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Structures not SEDs</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${structuresNotSEDs ? structuresNotSEDs : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Pipelines and specialist cables</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${pipelinesAndSpecialistCables ? pipelinesAndSpecialistCables : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Priority lanes</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${priorityLanes ? priorityLanes : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Lane rental</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${laneRental ? laneRental : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Early notification streets</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${earlyNotificationStreets ? earlyNotificationStreets : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Special events</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${specialEvents ? specialEvents : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Parking bays and restrictions</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${parking ? parking : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Pedestrian crossings and signals</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${pedestrianCrossings ? pedestrianCrossings : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Speed limits</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${speedLimits ? speedLimits : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Transport authority critical apparatus</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${transportAuthorityCriticalApparatus ? transportAuthorityCriticalApparatus : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Strategic route</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${strategicRoute ? strategicRoute : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Street lighting</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${streetLighting ? streetLighting : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Drainage and flood risk areas</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${drainageAndFlood ? drainageAndFlood : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Unusual traffic layouts</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${unusualTrafficLayouts ? unusualTrafficLayouts : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Local considerations</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${localConsiderations ? localConsiderations : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Winter maintenance routes</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${winterMaintenanceRoutes ? winterMaintenanceRoutes : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">HGV approved routes</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${hgvApprovedRoutes ? hgvApprovedRoutes : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            <Typography variant="body2">Emergency services routes</Typography>
-                          </Grid>
-                        )}
-                        {variant === "asd" && (
-                          <Grid item xs={6}>
-                            {loading ? (
-                              <Skeleton variant="rectangular" height="20px" width="100%" />
-                            ) : (
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                {`${emergencyServicesRoutes ? emergencyServicesRoutes : 0}%`}
-                              </Typography>
-                            )}
-                          </Grid>
-                        )}
-                      </Grid>
-                    </Stack>
+                    <Grid container rowSpacing={1} sx={{ height: "260px", overflowY: "auto" }}>
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Motorway trunk roads</Typography>
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${motorwayTrunkRoads ? motorwayTrunkRoads : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Private streets</Typography>
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${privateStreets ? privateStreets : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Primary route network</Typography>
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${primaryRouteNetwork ? primaryRouteNetwork : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Classified roads</Typography>
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${classifiedRoads ? classifiedRoads : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">PRoW footpaths</Typography>
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${prowFootpaths ? prowFootpaths : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">PRoW bridleways</Typography>
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${prowBridleways ? prowBridleways : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">PRoW restricted byways</Typography>
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${prowRestrictedByways ? prowRestrictedByways : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">PRoW BOAT</Typography>
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${prowBoat ? prowBoat : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">National cycle routes</Typography>
+                        </Grid>
+                      )}
+                      {variant === "street" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${nationalCycleRoutes ? nationalCycleRoutes : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Protected streets</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${protectedStreets ? protectedStreets : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Traffic sensitive streets</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${trafficSensitiveStreets ? trafficSensitiveStreets : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Special engineering difficulties</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${specialEngineeringDifficulties ? specialEngineeringDifficulties : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Proposed SEDs</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${proposedSEDs ? proposedSEDs : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Level crossing safety zone</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${levelCrossing ? levelCrossing : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Environmentally sensitive areas</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${environmentallySensitiveAreas ? environmentallySensitiveAreas : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Structures not SEDs</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${structuresNotSEDs ? structuresNotSEDs : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Pipelines and specialist cables</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${pipelinesAndSpecialistCables ? pipelinesAndSpecialistCables : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Priority lanes</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${priorityLanes ? priorityLanes : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Lane rental</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${laneRental ? laneRental : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Early notification streets</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${earlyNotificationStreets ? earlyNotificationStreets : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Special events</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${specialEvents ? specialEvents : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Parking bays and restrictions</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${parking ? parking : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Pedestrian crossings and signals</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${pedestrianCrossings ? pedestrianCrossings : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Speed limits</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${speedLimits ? speedLimits : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Transport authority critical apparatus</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${transportAuthorityCriticalApparatus ? transportAuthorityCriticalApparatus : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Strategic route</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${strategicRoute ? strategicRoute : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Street lighting</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${streetLighting ? streetLighting : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Drainage and flood risk areas</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${drainageAndFlood ? drainageAndFlood : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Unusual traffic layouts</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${unusualTrafficLayouts ? unusualTrafficLayouts : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Local considerations</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${localConsiderations ? localConsiderations : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Winter maintenance routes</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${winterMaintenanceRoutes ? winterMaintenanceRoutes : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">HGV approved routes</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${hgvApprovedRoutes ? hgvApprovedRoutes : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          <Typography variant="body2">Emergency services routes</Typography>
+                        </Grid>
+                      )}
+                      {variant === "asd" && (
+                        <Grid item xs={6}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {`${emergencyServicesRoutes ? emergencyServicesRoutes : 0}%`}
+                            </Typography>
+                          )}
+                        </Grid>
+                      )}
+                    </Grid>
                   </CardContent>
                 </CardActionArea>
               </Card>
@@ -1941,13 +1943,15 @@ function MetadataSettingsTab({ variant }) {
         onDone={(updatedData) => handleDoneEditMiscellaneousMetadata(updatedData)}
         onClose={handleCloseEditMiscellaneousMetadata}
       />
-      <EditMetadataContentDialog
-        isOpen={showEditContentDialog}
-        data={editData}
-        variant={variant}
-        onDone={(updatedData) => handleDoneEditContentMetadata(updatedData)}
-        onClose={handleCloseEditContentMetadata}
-      />
+      {(variant === "street" || variant === "asd") && (
+        <EditMetadataContentDialog
+          isOpen={showEditContentDialog}
+          data={editData}
+          variant={variant}
+          onDone={(updatedData) => handleDoneEditContentMetadata(updatedData)}
+          onClose={handleCloseEditContentMetadata}
+        />
+      )}
     </Box>
   );
 }

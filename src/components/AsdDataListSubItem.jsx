@@ -19,6 +19,7 @@
 //    006   03.01.24 Sean Flook                 Fixed warning.
 //    007   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    008   08.01.24 Sean Flook                 Changes to try and fix warnings.
+//    009   10.01.24 Sean Flook                 Changes to try and fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -33,11 +34,11 @@ import StreetContext from "../context/streetContext";
 
 import { GetAsdPrimaryCodeText, GetAsdPrimaryText, GetAsdSecondaryText } from "../utils/StreetUtils";
 import {
-  ListItemButton,
-  IconButton,
   List,
+  ListItemButton,
   ListItemText,
   ListItemAvatar,
+  IconButton,
   Avatar,
   Collapse,
   Typography,
@@ -62,7 +63,6 @@ AsdDataListSubItem.propTypes = {
   title: PropTypes.string.isRequired,
   data: PropTypes.array.isRequired,
   code: PropTypes.number.isRequired,
-  index: PropTypes.number.isRequired,
   errors: PropTypes.array,
   checked: PropTypes.array.isRequired,
   itemState: PropTypes.string.isRequired,
@@ -89,7 +89,6 @@ function AsdDataListSubItem({
   title,
   data,
   code,
-  index,
   errors,
   checked,
   itemState,
@@ -212,10 +211,8 @@ function AsdDataListSubItem({
   }
 
   useEffect(() => {
-    setSubOpen(
-      streetContext.expandedAsd.includes(`${title}|${GetAsdPrimaryCodeText(variant, code, settingsContext.isScottish)}`)
-    );
-  }, [setSubOpen, title, variant, code, streetContext.expandedAsd, settingsContext.isScottish]);
+    setSubOpen(streetContext.expandedAsd.includes(itemTitle.current));
+  }, [streetContext.expandedAsd]);
 
   useEffect(() => {
     switch (itemState) {
@@ -259,10 +256,10 @@ function AsdDataListSubItem({
   }, [userContext]);
 
   return (
-    <List component="div" disablePadding key={`list_${variant}_sub_${index}_${code}`}>
+    <List component="div" disablePadding>
       <ListItemButton
         id={code}
-        key={`${variant}_sub_${index}_${code}`}
+        key={`asd${variant}${code}`}
         dense
         disableGutters
         onClick={handleSubExpandCollapse}
@@ -328,14 +325,14 @@ function AsdDataListSubItem({
         />
       </ListItemButton>
 
-      <Collapse in={subOpen} timeout="auto" key={`collapse_${variant}_sub_${index}_${code}`}>
-        <List component="div" disablePadding key={`list_${variant}_sub_${index}_${code}`}>
+      <Collapse in={subOpen} timeout="auto">
+        <List component="div" disablePadding>
           {data
             .filter((x) => x[primaryCodeField] === code)
             .map((subD, index) => (
               <ListItemButton
                 id={subD.pkId}
-                key={`${variant}_sub_${index}_${code}_${subD.pkId}`}
+                key={`asd${variant}${code}.${subD.pkId}`}
                 alignItems="flex-start"
                 dense
                 disableGutters

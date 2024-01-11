@@ -22,6 +22,7 @@
 //    009   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and changes required for Scottish authorities.
 //    010   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    011   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    012   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -107,35 +108,27 @@ function PropertyLPITab({
     FilteredLPILogicalStatus(settingsContext.isScottish, data.blpuLogicalStatus)
   );
 
-  const [language, setLanguage] = useState(data && data.lpiData ? data.lpiData.language : null);
-  const [logicalStatus, setLogicalStatus] = useState(data && data.lpiData ? data.lpiData.logicalStatus : null);
-  const [saoStartNumber, setSaoStartNumber] = useState(data && data.lpiData ? data.lpiData.saoStartNumber : null);
-  const [saoStartSuffix, setSaoStartSuffix] = useState(data && data.lpiData ? data.lpiData.saoStartSuffix : null);
-  const [saoEndNumber, setSaoEndNumber] = useState(data && data.lpiData ? data.lpiData.saoEndNumber : null);
-  const [saoEndSuffix, setSaoEndSuffix] = useState(data && data.lpiData ? data.lpiData.saoEndSuffix : null);
-  const [saoText, setSaoText] = useState(data && data.lpiData ? data.lpiData.saoText : null);
-  const [paoStartNumber, setPaoStartNumber] = useState(data && data.lpiData ? data.lpiData.paoStartNumber : null);
-  const [paoStartSuffix, setPaoStartSuffix] = useState(data && data.lpiData ? data.lpiData.paoStartSuffix : null);
-  const [paoEndNumber, setPaoEndNumber] = useState(data && data.lpiData ? data.lpiData.paoEndNumber : null);
-  const [paoEndSuffix, setPaoEndSuffix] = useState(data && data.lpiData ? data.lpiData.paoEndSuffix : null);
-  const [paoText, setPaoText] = useState(data && data.lpiData ? data.lpiData.paoText : null);
-  const [usrn, setUsrn] = useState(data && data.lpiData ? data.lpiData.usrn : null);
-  const [postTownRef, setPostTownRef] = useState(data && data.lpiData ? data.lpiData.postTownRef : null);
-  const [subLocalityRef, setSubLocalityRef] = useState(
-    settingsContext.isScottish && data && data.lpiData ? data.lpiData.subLocalityRef : null
-  );
-  const [postcodeRef, setPostcodeRef] = useState(data && data.lpiData ? data.lpiData.postcodeRef : null);
-  const [level, setLevel] = useState(data && data.lpiData ? data.lpiData.level : null);
-  const [officialFlag, setOfficialFlag] = useState(data && data.lpiData ? data.lpiData.officialFlag : null);
-  const [postalAddress, setPostalAddress] = useState(
-    data && data.lpiData
-      ? settingsContext.isScottish
-        ? data.lpiData.postallyAddressable
-        : data.lpiData.postalAddress
-      : null
-  );
-  const [startDate, setStartDate] = useState(data && data.lpiData ? data.lpiData.startDate : null);
-  const [endDate, setEndDate] = useState(data && data.lpiData ? data.lpiData.endDate : null);
+  const [language, setLanguage] = useState(null);
+  const [logicalStatus, setLogicalStatus] = useState(null);
+  const [saoStartNumber, setSaoStartNumber] = useState("");
+  const [saoStartSuffix, setSaoStartSuffix] = useState("");
+  const [saoEndNumber, setSaoEndNumber] = useState("");
+  const [saoEndSuffix, setSaoEndSuffix] = useState("");
+  const [saoText, setSaoText] = useState("");
+  const [paoStartNumber, setPaoStartNumber] = useState("");
+  const [paoStartSuffix, setPaoStartSuffix] = useState("");
+  const [paoEndNumber, setPaoEndNumber] = useState("");
+  const [paoEndSuffix, setPaoEndSuffix] = useState("");
+  const [paoText, setPaoText] = useState("");
+  const [usrn, setUsrn] = useState(null);
+  const [postTownRef, setPostTownRef] = useState(null);
+  const [subLocalityRef, setSubLocalityRef] = useState(null);
+  const [postcodeRef, setPostcodeRef] = useState(null);
+  const [level, setLevel] = useState("");
+  const [officialFlag, setOfficialFlag] = useState(null);
+  const [postalAddress, setPostalAddress] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const [lpiAddress, setLpiAddress] = useState("");
 
@@ -721,21 +714,21 @@ function PropertyLPITab({
       if (data && data.lpiData) {
         setLanguage(data.lpiData.language);
         setLogicalStatus(data.lpiData.logicalStatus);
-        setSaoStartNumber(data.lpiData.saoStartNumber);
-        setSaoStartSuffix(data.lpiData.saoStartSuffix);
-        setSaoEndNumber(data.lpiData.saoEndNumber);
-        setSaoEndSuffix(data.lpiData.saoEndSuffix);
-        setSaoText(data.lpiData.saoText);
-        setPaoStartNumber(data.lpiData.paoStartNumber);
-        setPaoStartSuffix(data.lpiData.paoStartSuffix);
-        setPaoEndNumber(data.lpiData.paoEndNumber);
-        setPaoEndSuffix(data.lpiData.paoEndSuffix);
-        setPaoText(data.lpiData.paoText);
+        setSaoStartNumber(data.lpiData.saoStartNumber ? data.lpiData.saoStartNumber : "");
+        setSaoStartSuffix(data.lpiData.saoStartSuffix ? data.lpiData.saoStartSuffix : "");
+        setSaoEndNumber(data.lpiData.saoEndNumber ? data.lpiData.saoEndNumber : "");
+        setSaoEndSuffix(data.lpiData.saoEndSuffix ? data.lpiData.saoEndSuffix : "");
+        setSaoText(data.lpiData.saoText ? data.lpiData.saoText : "");
+        setPaoStartNumber(data.lpiData.paoStartNumber ? data.lpiData.paoStartNumber : "");
+        setPaoStartSuffix(data.lpiData.paoStartSuffix ? data.lpiData.paoStartSuffix : "");
+        setPaoEndNumber(data.lpiData.paoEndNumber ? data.lpiData.paoEndNumber : "");
+        setPaoEndSuffix(data.lpiData.paoEndSuffix ? data.lpiData.paoEndSuffix : "");
+        setPaoText(data.lpiData.paoText ? data.lpiData.paoText : "");
         setUsrn(data.lpiData.usrn);
         setPostTownRef(data.lpiData.postTownRef);
         if (settingsContext.isScottish) setSubLocalityRef(data.lpiData.subLocalityRef);
         setPostcodeRef(data.lpiData.postcodeRef);
-        setLevel(data.lpiData.level);
+        if (!settingsContext.isScottish) setLevel(data.lpiData.level ? data.lpiData.level : "");
         setOfficialFlag(data.lpiData.officialFlag);
         setPostalAddress(settingsContext.isScottish ? data.lpiData.postallyAddressable : data.lpiData.postalAddress);
         setStartDate(data.lpiData.startDate);
@@ -750,21 +743,21 @@ function PropertyLPITab({
     if (!loading && data && data.lpiData) {
       setLanguage(data.lpiData.language);
       setLogicalStatus(data.lpiData.logicalStatus);
-      setSaoStartNumber(data.lpiData.saoStartNumber);
-      setSaoStartSuffix(data.lpiData.saoStartSuffix);
-      setSaoEndNumber(data.lpiData.saoEndNumber);
-      setSaoEndSuffix(data.lpiData.saoEndSuffix);
-      setSaoText(data.lpiData.saoText);
-      setPaoStartNumber(data.lpiData.paoStartNumber);
-      setPaoStartSuffix(data.lpiData.paoStartSuffix);
-      setPaoEndNumber(data.lpiData.paoEndNumber);
-      setPaoEndSuffix(data.lpiData.paoEndSuffix);
-      setPaoText(data.lpiData.paoText);
+      setSaoStartNumber(data.lpiData.saoStartNumber ? data.lpiData.saoStartNumber : "");
+      setSaoStartSuffix(data.lpiData.saoStartSuffix ? data.lpiData.saoStartSuffix : "");
+      setSaoEndNumber(data.lpiData.saoEndNumber ? data.lpiData.saoEndNumber : "");
+      setSaoEndSuffix(data.lpiData.saoEndSuffix ? data.lpiData.saoEndSuffix : "");
+      setSaoText(data.lpiData.saoText ? data.lpiData.saoText : "");
+      setPaoStartNumber(data.lpiData.paoStartNumber ? data.lpiData.paoStartNumber : "");
+      setPaoStartSuffix(data.lpiData.paoStartSuffix ? data.lpiData.paoStartSuffix : "");
+      setPaoEndNumber(data.lpiData.paoEndNumber ? data.lpiData.paoEndNumber : "");
+      setPaoEndSuffix(data.lpiData.paoEndSuffix ? data.lpiData.paoEndSuffix : "");
+      setPaoText(data.lpiData.paoText ? data.lpiData.paoText : "");
       setUsrn(data.lpiData.usrn);
       setPostTownRef(data.lpiData.postTownRef);
       if (settingsContext.isScottish) setSubLocalityRef(data.lpiData.subLocalityRef);
       setPostcodeRef(data.lpiData.postcodeRef);
-      setLevel(data.lpiData.level);
+      if (!settingsContext.isScottish) setLevel(data.lpiData.level ? data.lpiData.level : "");
       setOfficialFlag(data.lpiData.officialFlag);
       setPostalAddress(settingsContext.isScottish ? data.lpiData.postallyAddressable : data.lpiData.postalAddress);
       setStartDate(data.lpiData.startDate);
@@ -794,14 +787,14 @@ function PropertyLPITab({
               usrn: usrn,
               language: language,
               organisation: data.lpiData.organisation,
-              saonStartNum: saoStartNumber,
+              saonStartNum: saoStartNumber ? Number(saoStartNumber) : null,
               saonStartSuffix: saoStartSuffix,
-              saonEndNum: saoEndNumber,
+              saonEndNum: saoEndNumber ? Number(saoEndNumber) : null,
               saonEndSuffix: saoEndSuffix,
               saonText: saoText,
-              paonStartNum: paoStartNumber,
+              paonStartNum: paoStartNumber ? Number(paoStartNumber) : null,
               paonStartSuffix: paoStartSuffix,
-              paonEndNum: paoEndNumber,
+              paonEndNum: paoEndNumber ? Number(paoEndNumber) : null,
               paonEndSuffix: paoEndSuffix,
               paonText: paoText,
               postTown: postTown,
@@ -813,14 +806,14 @@ function PropertyLPITab({
               usrn: usrn,
               language: language,
               organisation: data.lpiData.organisation,
-              saonStartNum: saoStartNumber,
+              saonStartNum: saoStartNumber ? Number(saoStartNumber) : null,
               saonStartSuffix: saoStartSuffix,
-              saonEndNum: saoEndNumber,
+              saonEndNum: saoEndNumber ? Number(saoEndNumber) : null,
               saonEndSuffix: saoEndSuffix,
               saonText: saoText,
-              paonStartNum: paoStartNumber,
+              paonStartNum: paoStartNumber ? Number(paoStartNumber) : null,
               paonStartSuffix: paoStartSuffix,
-              paonEndNum: paoEndNumber,
+              paonEndNum: paoEndNumber ? Number(paoEndNumber) : null,
               paonEndSuffix: paoEndSuffix,
               paonText: paoText,
               postTown: postTown,

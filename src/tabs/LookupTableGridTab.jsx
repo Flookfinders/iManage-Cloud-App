@@ -16,6 +16,7 @@
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and removed a warning.
 //    004   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    006   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -116,13 +117,13 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
   const settingsContext = useContext(SettingsContext);
 
   const [lookupType, setLookupType] = useState("unknown");
-  const [lookupTypeId, setLookupTypeId] = useState("unknown");
+  const [lookupTypeId, setLookupTypeId] = useState(0);
   const [displayData, setDisplayData] = useState(data);
 
   const [sortModel, setSortModel] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
 
-  const [searchString, setSearchString] = useState(null);
+  const [searchString, setSearchString] = useState("");
 
   /**
    * Method to display the action buttons for each row of the grid.

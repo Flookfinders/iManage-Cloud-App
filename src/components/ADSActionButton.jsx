@@ -14,6 +14,7 @@
 //    001   02.07.21 Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    004   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -294,27 +295,29 @@ function ADSActionButton({
 
     return (
       <Tooltip title={tooltipTitle} arrow placement={tooltipPlacement} sx={tooltipStyle}>
-        <IconButton
-          sx={getActionStyle()}
-          id={`ads-action-button-${buttonLabel ? buttonLabel.toLowerCase().replaceAll(" ", "-") : ""}`}
-          size="small"
-          disabled={disabled}
-          onClick={handleClickEvent}
-          aria-label={variant}
-        >
-          {iconComp}
-          {buttonLabel && buttonLabel.length > 0 && (
-            <Typography
-              variant="body2"
-              sx={{
-                pl: theme.spacing(0.5),
-                pr: theme.spacing(1),
-              }}
-            >
-              {buttonLabel}
-            </Typography>
-          )}
-        </IconButton>
+        <span>
+          <IconButton
+            sx={getActionStyle()}
+            id={`ads-action-button-${buttonLabel ? buttonLabel.toLowerCase().replaceAll(" ", "-") : ""}`}
+            size="small"
+            disabled={disabled}
+            onClick={handleClickEvent}
+            aria-label={variant}
+          >
+            {iconComp}
+            {buttonLabel && buttonLabel.length > 0 && (
+              <Typography
+                variant="body2"
+                sx={{
+                  pl: theme.spacing(0.5),
+                  pr: theme.spacing(1),
+                }}
+              >
+                {buttonLabel}
+              </Typography>
+            )}
+          </IconButton>
+        </span>
       </Tooltip>
     );
   };

@@ -17,6 +17,7 @@
 //    004   03.11.23 Sean Flook                 If the type has not been selected default to Special designation.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    007   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -124,7 +125,7 @@ function OSSpecialDesignationDataTab({
   const [startDateError, setStartDateError] = useState(null);
   const [endDateError, setEndDateError] = useState(null);
   const [stateError, setStateError] = useState(null);
-  const [wholeRoadError, setWholeRoadError] = useState(true);
+  const [wholeRoadError, setWholeRoadError] = useState(null);
   const [specificLocationError, setSpecificLocationError] = useState(null);
 
   /**
@@ -453,7 +454,7 @@ function OSSpecialDesignationDataTab({
     setAuthorityError(null);
     setStartDateError(null);
     setEndDateError(null);
-    setWholeRoadError(true);
+    setWholeRoadError(null);
     setSpecificLocationError(null);
 
     if (errors && errors.length > 0) {

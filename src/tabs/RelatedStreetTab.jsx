@@ -22,6 +22,7 @@
 //    009   03.11.23 Sean Flook                 Updated TreeView and TreeItem.
 //    010   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
 //    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    012   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -109,7 +110,7 @@ import {
 import { useTheme } from "@mui/styles";
 
 RelatedStreetTab.propTypes = {
-  data: PropTypes.array.isRequired,
+  data: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   expanded: PropTypes.array.isRequired,
   onNodeSelect: PropTypes.func.isRequired,

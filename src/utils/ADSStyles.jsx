@@ -19,6 +19,7 @@
 //    006   10.11.23 Sean Flook       IMANN-175 Modified wizardFinaliseFormStyle to handle Move BLPU seed point.
 //    007   14.12.23 Sean Flook                 Added dashboardIconStyle.
 //    008   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    009   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -291,7 +292,7 @@ export const toolbarStyle = {
   borderBottom: `1px solid ${adsLightGreyB}`,
   pl: "4px",
   pr: "6px",
-  height: "40px",
+  height: "44px",
   width: "100%",
 };
 

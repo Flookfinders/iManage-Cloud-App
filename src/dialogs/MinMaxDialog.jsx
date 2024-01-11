@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    004   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -156,7 +157,7 @@ function MinMaxDialog({ variant, minValue, maxValue, maximum, isOpen, onNewMinMa
         id="add-lookup-dialog"
         sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
       >
-        <Typography variant="h6">{`Update available ${minMaxType} range`}</Typography>
+        <Typography sx={{ fontSize: "20px" }}>{`Update available ${minMaxType} range`}</Typography>
         <IconButton
           aria-label="close"
           onClick={handleCancelClick}
