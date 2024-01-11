@@ -14,6 +14,7 @@
 //    001   02.01.24 Sean Flook                 Initial Revision.
 //    002   03.01.24 Sean Flook                 Fixed warning.
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    004   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -328,7 +329,7 @@ function UploadShpFileDialog({ isOpen, currentIds, onClose }) {
                     isRequired
                     maxLength={40}
                     value={title}
-                    id={"layer_title"}
+                    id="layer_title"
                     helperText="The title of the layer used to identify it in the layer control."
                     onChange={handleTitleChangeEvent}
                   />
@@ -338,7 +339,7 @@ function UploadShpFileDialog({ isOpen, currentIds, onClose }) {
                     maxLength={50}
                     isRequired
                     value={layerId}
-                    id={"layer_id"}
+                    id="layer_id"
                     characterSet="EsriLayerId"
                     helperText="The unique ID assigned to the layer."
                     errorText={layerIdError}
@@ -349,7 +350,7 @@ function UploadShpFileDialog({ isOpen, currentIds, onClose }) {
                     isEditable
                     maxLength={100}
                     value={copyright}
-                    id={"layer_copyright_information"}
+                    id="layer_copyright_information"
                     helperText="The copyright information that needs to be displayed on the map. If the current year needs to be displayed use <<year>>."
                     onChange={handleCopyrightInformationChangeEvent}
                   />

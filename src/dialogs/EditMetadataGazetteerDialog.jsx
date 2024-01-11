@@ -16,6 +16,7 @@
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   10.01.24 Sean Flook                 Fix warnings.
+//    006   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -299,7 +300,7 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
                       maxLength={60}
                       isRequired
                       value={name}
-                      id={"metadata_name"}
+                      id="metadata_name"
                       helperText={getHelperText("name")}
                       onChange={handleNameChangeEvent}
                     />
@@ -311,7 +312,7 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
                       maxLength={60}
                       isRequired
                       value={scope}
-                      id={"metadata_scope"}
+                      id="metadata_scope"
                       helperText={getHelperText("scope")}
                       onChange={handleScopeChangeEvent}
                     />
@@ -322,7 +323,7 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
                     maxLength={60}
                     isRequired
                     value={territory}
-                    id={"metadata_territory"}
+                    id="metadata_territory"
                     helperText={getHelperText("territory")}
                     onChange={handleTerritoryChangeEvent}
                   />
@@ -331,7 +332,7 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
                     isEditable
                     maxLength={100}
                     value={metadataData}
-                    id={"metadata_data"}
+                    id="metadata_data"
                     helperText={getHelperText("data")}
                     onChange={handleDataChangeEvent}
                   />
@@ -342,7 +343,7 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
                       maxLength={60}
                       isRequired
                       value={owner}
-                      id={"metadata_owner"}
+                      id="metadata_owner"
                       helperText={getHelperText("owner")}
                       onChange={handleOwnerChangeEvent}
                     />

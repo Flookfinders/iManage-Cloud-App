@@ -16,6 +16,7 @@
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   10.01.24 Sean Flook                 Fix warnings.
+//    006   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -248,7 +249,7 @@ function EditMetadataCustodianDialog({ isOpen, data, variant, onDone, onClose })
                     maxLength={40}
                     isRequired
                     value={name}
-                    id={"metadata_name"}
+                    id="metadata_name"
                     helperText={getHelperText("name")}
                     onChange={handleNameChangeEvent}
                   />

@@ -18,6 +18,7 @@
 //    005   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    006   20.12.23 Sean Flook       IMANN-201 Corrected controls and form layout.
 //    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    008   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -84,26 +85,20 @@ function HighwayDedicationDataTab({
 
   const [dataChanged, setDataChanged] = useState(false);
 
-  const [highwayDedicationCode, setHighwayDedicationCode] = useState(
-    data && data.hdData ? data.hdData.highwayDedicationCode : null
-  );
-  const [startDate, setStartDate] = useState(data && data.hdData ? data.hdData.hdStartDate : null);
-  const [endDate, setEndDate] = useState(data && data.hdData ? data.hdData.hdEndDate : null);
-  const [startTime, setStartTime] = useState(data && data.hdData ? data.hdData.hdStartTime : null);
-  const [endTime, setEndTime] = useState(data && data.hdData ? data.hdData.hdEndTime : null);
-  const [prow, setProw] = useState(data && data.hdData ? data.hdData.hdProw : false);
-  const [ncr, setNcr] = useState(data && data.hdData ? data.hdData.hdNcr : false);
-  const [quietRoute, setQuietRoute] = useState(data && data.hdData ? data.hdData.hdQuietRoute : false);
-  const [obstruction, setObstruction] = useState(data && data.hdData ? data.hdData.hdObstruction : false);
-  const [planningOrder, setPlanningOrder] = useState(data && data.hdData ? data.hdData.hdPlanningOrder : false);
-  const [vehiclesProhibited, setVehiclesProhibited] = useState(
-    data && data.hdData ? data.hdData.hdVehiclesProhibited : false
-  );
-  const [seasonalStartDate, setSeasonalStartDate] = useState(
-    data && data.hdData ? data.hdData.hdSeasonalStartDate : null
-  );
-  const [seasonalEndDate, setSeasonalEndDate] = useState(data && data.hdData ? data.hdData.hdSeasonalEndDate : null);
-  const [recordEndDate, setRecordEndDate] = useState(data && data.hdData ? data.hdData.recordEndDate : null);
+  const [highwayDedicationCode, setHighwayDedicationCode] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
+  const [prow, setProw] = useState(false);
+  const [ncr, setNcr] = useState(false);
+  const [quietRoute, setQuietRoute] = useState(false);
+  const [obstruction, setObstruction] = useState(false);
+  const [planningOrder, setPlanningOrder] = useState(false);
+  const [vehiclesProhibited, setVehiclesProhibited] = useState(false);
+  const [seasonalStartDate, setSeasonalStartDate] = useState(null);
+  const [seasonalEndDate, setSeasonalEndDate] = useState(null);
+  const [recordEndDate, setRecordEndDate] = useState(null);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -382,12 +377,12 @@ function HighwayDedicationDataTab({
         setEndDate(data.hdData.hdEndDate);
         setStartTime(data.hdData.hdStartTime);
         setEndTime(data.hdData.hdEndTime);
-        setProw(data.hdData.hdProw);
-        setNcr(data.hdData.hdNcr);
-        setQuietRoute(data.hdData.hdQuietRoute);
-        setObstruction(data.hdData.hdObstruction);
-        setPlanningOrder(data.hdData.hdPlanningOrder);
-        setVehiclesProhibited(data.hdData.hdVehiclesProhibited);
+        setProw(data.hdData.hdProw ? data.hdData.hdProw : false);
+        setNcr(data.hdData.hdNcr ? data.hdData.hdNcr : false);
+        setQuietRoute(data.hdData.hdQuietRoute ? data.hdData.hdQuietRoute : false);
+        setObstruction(data.hdData.hdObstruction ? data.hdData.hdObstruction : false);
+        setPlanningOrder(data.hdData.hdPlanningOrder ? data.hdData.hdPlanningOrder : false);
+        setVehiclesProhibited(data.hdData.hdVehiclesProhibited ? data.hdData.hdVehiclesProhibited : false);
         setSeasonalStartDate(data.hdData.hdSeasonalStartDate);
         setSeasonalEndDate(data.hdData.hdSeasonalEndDate);
         setRecordEndDate(data.hdData.recordEndDate);
@@ -582,12 +577,12 @@ function HighwayDedicationDataTab({
       setEndDate(data.hdData.hdEndDate);
       setStartTime(data.hdData.hdStartTime);
       setEndTime(data.hdData.hdEndTime);
-      setProw(data.hdData.hdProw);
-      setNcr(data.hdData.hdNcr);
-      setQuietRoute(data.hdData.hdQuietRoute);
-      setObstruction(data.hdData.hdObstruction);
-      setPlanningOrder(data.hdData.hdPlanningOrder);
-      setVehiclesProhibited(data.hdData.hdVehiclesProhibited);
+      setProw(data.hdData.hdProw ? data.hdData.hdProw : false);
+      setNcr(data.hdData.hdNcr ? data.hdData.hdNcr : false);
+      setQuietRoute(data.hdData.hdQuietRoute ? data.hdData.hdQuietRoute : false);
+      setObstruction(data.hdData.hdObstruction ? data.hdData.hdObstruction : false);
+      setPlanningOrder(data.hdData.hdPlanningOrder ? data.hdData.hdPlanningOrder : false);
+      setVehiclesProhibited(data.hdData.hdVehiclesProhibited ? data.hdData.hdVehiclesProhibited : false);
       setSeasonalStartDate(data.hdData.hdSeasonalStartDate);
       setSeasonalEndDate(data.hdData.hdSeasonalEndDate);
       setRecordEndDate(data.hdData.recordEndDate);

@@ -19,6 +19,7 @@
 //    006   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    007   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    008   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    009   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -67,10 +68,10 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onDataChange
   const [dataChanged, setDataChanged] = useState(false);
   const currentId = useRef(0);
 
-  const [sourceId, setSourceId] = useState(data && data.xrefData ? data.xrefData.sourceId : null);
-  const [crossReference, setCrossReference] = useState(data && data.xrefData ? data.xrefData.crossReference : null);
-  const [startDate, setStartDate] = useState(data && data.xrefData ? data.xrefData.startDate : null);
-  const [endDate, setEndDate] = useState(data && data.xrefData ? data.xrefData.endDate : null);
+  const [sourceId, setSourceId] = useState(null);
+  const [crossReference, setCrossReference] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -215,7 +216,7 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onDataChange
     if (dataChanged) {
       if (data && data.xrefData) {
         setSourceId(data.xrefData.sourceId);
-        setCrossReference(data.xrefData.crossReference);
+        setCrossReference(data.xrefData.crossReference ? data.xrefData.crossReference : "");
         setStartDate(data.xrefData.startDate);
         setEndDate(data.xrefData.endDate);
       }
@@ -264,7 +265,7 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onDataChange
   useEffect(() => {
     if (!loading && data && data.xrefData) {
       setSourceId(data.xrefData.sourceId);
-      setCrossReference(data.xrefData.crossReference);
+      setCrossReference(data.xrefData.crossReference ? data.xrefData.crossReference : "");
       setStartDate(data.xrefData.startDate);
       setEndDate(data.xrefData.endDate);
     }
@@ -399,7 +400,7 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onDataChange
           isFocused={focusedField ? focusedField === "CrossReference" : false}
           loading={loading}
           value={crossReference}
-          id={data.xrefData.id.toString()}
+          id="cross_reference"
           maxLength={50}
           errorText={crossReferenceError}
           helperText="Primary key of corresponding Record in an external data-set."

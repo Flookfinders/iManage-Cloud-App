@@ -20,6 +20,7 @@
 //    007   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    008   02.01.24 Sean Flook       IMANN-205 Added end date.
 //    009   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    010   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -78,25 +79,19 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
   const [roadStatusCodeLookup, setRoadStatusCodeLookup] = useState(FilteredRoadStatusCode(false));
   const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(FilteredSwaOrgRef(false));
 
-  const [streetStatus, setStreetStatus] = useState(data && data.interestData ? data.interestData.streetStatus : null);
-  const [interestedOrganisation, setInterestedOrganisation] = useState(
-    data && data.interestData ? data.interestData.swaOrgRefAuthority : null
-  );
-  const [interestType, setInterestedType] = useState(data && data.interestData ? data.interestData.interestType : null);
-  const [district, setDistrict] = useState(data && data.interestData ? data.interestData.districtRefAuthority : null);
-  const [maintainingOrganisation, setMaintainingOrganisation] = useState(
-    data && data.interestData ? data.interestData.swaOrgRefAuthMaintaining : null
-  );
-  const [startDate, setStartDate] = useState(data && data.interestData ? data.interestData.recordStartDate : null);
-  const [endDate, setEndDate] = useState(data && data.interestData ? data.interestData.recordEndDate : null);
-  const [wholeRoad, setWholeRoad] = useState(data && data.interestData ? data.interestData.wholeRoad : true);
-  const [specificLocation, setSpecificLocation] = useState(
-    data && data.interestData ? data.interestData.specificLocation : null
-  );
-  const [startX, setStartX] = useState(data && data.interestData ? data.interestData.startX : null);
-  const [startY, setStartY] = useState(data && data.interestData ? data.interestData.startY : null);
-  const [endX, setEndX] = useState(data && data.interestData ? data.interestData.endX : null);
-  const [endY, setEndY] = useState(data && data.interestData ? data.interestData.endY : null);
+  const [streetStatus, setStreetStatus] = useState(null);
+  const [interestedOrganisation, setInterestedOrganisation] = useState(null);
+  const [interestType, setInterestedType] = useState(null);
+  const [district, setDistrict] = useState(null);
+  const [maintainingOrganisation, setMaintainingOrganisation] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [wholeRoad, setWholeRoad] = useState(true);
+  const [specificLocation, setSpecificLocation] = useState("");
+  const [startX, setStartX] = useState(0);
+  const [startY, setStartY] = useState(0);
+  const [endX, setEndX] = useState(0);
+  const [endY, setEndY] = useState(0);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -291,12 +286,12 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
         setMaintainingOrganisation(data.interestData.swaOrgRefAuthMaintaining);
         setStartDate(data.interestData.recordStartDate);
         setEndDate(data.interestData.recordEndDate);
-        setWholeRoad(data.interestData.wholeRoad);
-        setSpecificLocation(data.interestData.specificLocation);
-        setStartX(data.interestData.startX);
-        setStartY(data.interestData.startY);
-        setEndX(data.interestData.endX);
-        setEndY(data.interestData.endY);
+        setWholeRoad(data.interestData.wholeRoad ? data.interestData.wholeRoad : true);
+        setSpecificLocation(data.interestData.specificLocation ? data.interestData.specificLocation : "");
+        setStartX(data.interestData.startX ? data.interestData.startX : 0);
+        setStartY(data.interestData.startY ? data.interestData.startY : 0);
+        setEndX(data.interestData.endX ? data.interestData.endX : 0);
+        setEndY(data.interestData.endY ? data.interestData.endY : 0);
       }
     }
     setDataChanged(false);
@@ -380,12 +375,12 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
       setMaintainingOrganisation(data.interestData.swaOrgRefAuthMaintaining);
       setStartDate(data.interestData.recordStartDate);
       setEndDate(data.interestData.recordEndDate);
-      setWholeRoad(data.interestData.wholeRoad);
-      setSpecificLocation(data.interestData.specificLocation);
-      setStartX(data.interestData.startX);
-      setStartY(data.interestData.startY);
-      setEndX(data.interestData.endX);
-      setEndY(data.interestData.endY);
+      setWholeRoad(data.interestData.wholeRoad ? data.interestData.wholeRoad : true);
+      setSpecificLocation(data.interestData.specificLocation ? data.interestData.specificLocation : "");
+      setStartX(data.interestData.startX ? data.interestData.startX : 0);
+      setStartY(data.interestData.startY ? data.interestData.startY : 0);
+      setEndX(data.interestData.endX ? data.interestData.endX : 0);
+      setEndY(data.interestData.endY ? data.interestData.endY : 0);
 
       setRoadStatusCodeLookup(FilteredRoadStatusCode(false));
       setSwaOrgRefLookup(FilteredSwaOrgRef(false));

@@ -16,6 +16,7 @@
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    006   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -58,12 +59,10 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onDataCh
   const [dataChanged, setDataChanged] = useState(false);
   const currentId = useRef(0);
 
-  const [organisation, setOrganisation] = useState(
-    data && data.organisationData ? data.organisationData.organisation : ""
-  );
-  const [legalName, setLegalName] = useState(data && data.organisationData ? data.organisationData.legalName : null);
-  const [startDate, setStartDate] = useState(data && data.organisationData ? data.organisationData.startDate : null);
-  const [endDate, setEndDate] = useState(data && data.organisationData ? data.organisationData.endDate : null);
+  const [organisation, setOrganisation] = useState("");
+  const [legalName, setLegalName] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -185,8 +184,8 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onDataCh
   const handleCancelClicked = () => {
     if (dataChanged) {
       if (data && data.organisationData) {
-        setOrganisation(data.organisationData.organisation);
-        setLegalName(data.organisationData.legalName);
+        setOrganisation(data.organisationData.organisation ? data.organisationData.organisation : "");
+        setLegalName(data.organisationData.legalName ? data.organisationData.legalName : "");
         setStartDate(data.organisationData.startDate);
         setEndDate(data.organisationData.endDate);
       }
@@ -236,8 +235,8 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onDataCh
 
   useEffect(() => {
     if (data && data.organisationData) {
-      setOrganisation(data.organisationData.organisation);
-      setLegalName(data.organisationData.legalName);
+      setOrganisation(data.organisationData.organisation ? data.organisationData.organisation : "");
+      setLegalName(data.organisationData.legalName ? data.organisationData.legalName : "");
       setStartDate(data.organisationData.startDate);
       setEndDate(data.organisationData.endDate);
     }
@@ -351,7 +350,7 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onDataCh
           isFocused={focusedField ? focusedField === "Organisation" : false}
           loading={loading}
           value={organisation}
-          id={data.organisationData.id}
+          id="organisation"
           maxLength={60}
           errorText={organisationError}
           helperText="Trading name used by organisation at the property."
@@ -363,7 +362,7 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onDataCh
           isFocused={focusedField ? focusedField === "LegalName" : false}
           loading={loading}
           value={legalName}
-          id={data.organisationData.id}
+          id="legal_name"
           maxLength={60}
           errorText={legalNameError}
           helperText="Registered legal name of organisation."

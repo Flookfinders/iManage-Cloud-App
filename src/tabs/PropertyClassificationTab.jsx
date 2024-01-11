@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   30.11.23 Sean Flook                 Bug fixes in GetCurrentData.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    007   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -61,16 +62,10 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
   const [dataChanged, setDataChanged] = useState(false);
   const currentId = useRef(0);
 
-  const [classification, setClassification] = useState(
-    data && data.classificationData ? data.classificationData.blpuClass : ""
-  );
-  const [classScheme, setClassScheme] = useState(
-    data && data.classificationData ? data.classificationData.classScheme : null
-  );
-  const [startDate, setStartDate] = useState(
-    data && data.classificationData ? data.classificationData.startDate : null
-  );
-  const [endDate, setEndDate] = useState(data && data.classificationData ? data.classificationData.endDate : null);
+  const [classification, setClassification] = useState(null);
+  const [classScheme, setClassScheme] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -192,8 +187,8 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
   const handleCancelClicked = () => {
     if (dataChanged) {
       if (data && data.classificationData) {
-        setClassification(data.classificationData.provenanceCode);
-        setClassScheme(data.classificationData.classScheme);
+        setClassification(data.classificationData.blpuClass);
+        setClassScheme(data.classificationData.classScheme ? data.classificationData.classScheme : "");
         setStartDate(data.classificationData.startDate);
         setEndDate(data.classificationData.endDate);
       }
@@ -258,7 +253,7 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
   useEffect(() => {
     if (data && data.classificationData) {
       setClassification(data.classificationData.blpuClass);
-      setClassScheme(data.classificationData.classScheme);
+      setClassScheme(data.classificationData.classScheme ? data.classificationData.classScheme : "");
       setStartDate(data.classificationData.startDate);
       setEndDate(data.classificationData.endDate);
     }
@@ -391,7 +386,7 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
           isFocused={focusedField ? focusedField === "ClassScheme" : false}
           loading={loading}
           value={classScheme}
-          id={data.classificationData.pkId}
+          id="scheme"
           maxLength={40}
           errorText={classSchemeError}
           helperText="The classification scheme used for this record."

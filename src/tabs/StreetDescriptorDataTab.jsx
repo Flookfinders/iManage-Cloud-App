@@ -17,6 +17,7 @@
 //    004   19.12.23 Sean Flook                 Various bug fixes.
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    006   10.01.24 Sean Flook                 Fix warnings.
+//    007   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -59,12 +60,12 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
 
   const [dataChanged, setDataChanged] = useState(false);
 
-  const [language, setLanguage] = useState(data && data.sdData ? data.sdData.language : null);
-  const [description, setDescription] = useState(data && data.sdData ? data.sdData.streetDescriptor : null);
-  const [locality, setLocality] = useState(data && data.sdData ? data.sdData.locRef : null);
-  const [town, setTown] = useState(data && data.sdData ? data.sdData.townRef : null);
-  const [island, setIsland] = useState(data && data.sdData ? data.sdData.islandName : null);
-  const [administrativeArea, setAdministrativeArea] = useState(data && data.sdData ? data.sdData.adminAreaRef : null);
+  const [language, setLanguage] = useState("ENG");
+  const [description, setDescription] = useState("");
+  const [locality, setLocality] = useState(null);
+  const [town, setTown] = useState(null);
+  const [island, setIsland] = useState(null);
+  const [administrativeArea, setAdministrativeArea] = useState(null);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -207,8 +208,8 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
   const handleCancelClicked = () => {
     if (dataChanged) {
       if (data && data.sdData) {
-        setLanguage(data.sdData.language);
-        setDescription(data.sdData.streetDescriptor);
+        setLanguage(data.sdData.language ? data.sdData.language : "ENG");
+        setDescription(data.sdData.streetDescriptor ? data.sdData.streetDescriptor : "");
         setLocality(data.sdData.locRef);
         setTown(data.sdData.townRef);
         setIsland(data.sdData.islandName);
@@ -263,8 +264,8 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
 
   useEffect(() => {
     if (!loading && data && data.sdData) {
-      setLanguage(data.sdData.language);
-      setDescription(data.sdData.streetDescriptor);
+      setLanguage(data.sdData.language ? data.sdData.language : "ENG");
+      setDescription(data.sdData.streetDescriptor ? data.sdData.streetDescriptor : "");
       setLocality(data.sdData.locRef);
       setTown(data.sdData.townRef);
       setIsland(data.sdData.islandRef);
@@ -370,7 +371,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
           onChange={handleLanguageChangeEvent}
         />
         <ADSTextControl
-          id={"street_descriptor"}
+          id="street_descriptor"
           label="Name or descriptor"
           isEditable={userCanEdit}
           isRequired

@@ -18,6 +18,7 @@
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    006   02.01.24 Sean Flook       IMANN-205 Added end date.
 //    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    008   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -80,53 +81,23 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
   const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(FilteredSwaOrgRef(false));
   const [reinstatementTypeLookup, setReinstatementTypeLookup] = useState(FilteredReinstatementType(false));
 
-  const [constructionType, setConstructionType] = useState(
-    data && data.constructionData ? data.constructionData.constructionType : null
-  );
-  const [reinstatementType, setReinstatementType] = useState(
-    data && data.constructionData ? data.constructionData.reinstatementTypeCode : null
-  );
-  const [aggregateAbrasionValue, setAggregateAbrasionValue] = useState(
-    data && data.constructionData ? data.constructionData.aggregateAbrasionVal : null
-  );
-  const [polishedStoneValue, setPolishedStoneValue] = useState(
-    data && data.constructionData ? data.constructionData.polishedStoneVal : null
-  );
-  const [frostHeaveSusceptibility, setFrostHeaveSusceptibility] = useState(
-    data && data.constructionData ? data.constructionData.frostHeaveSusceptibility : false
-  );
-  const [steppedJoint, setSteppedJoint] = useState(
-    data && data.constructionData ? data.constructionData.steppedJoint : false
-  );
-  const [constructionDescription, setConstructionDescription] = useState(
-    data && data.constructionData ? data.constructionData.constructionDescription : null
-  );
-  const [organisation, setOrganisation] = useState(
-    data && data.constructionData ? data.constructionData.swaOrgRefConsultant : null
-  );
-  const [district, setDistrict] = useState(
-    data && data.constructionData ? data.constructionData.districtRefConsultant : null
-  );
-  const [startDate, setStartDate] = useState(
-    data && data.constructionData ? data.constructionData.recordStartDate : null
-  );
-  const [endDate, setEndDate] = useState(data && data.constructionData ? data.constructionData.recordEndDate : null);
-  const [wholeRoad, setWholeRoad] = useState(data && data.constructionData ? data.constructionData.wholeRoad : true);
-  const [specifyLocation, setSpecifyLocation] = useState(
-    data && data.constructionData ? data.constructionData.specificLocation : null
-  );
-  const [constructionStartX, setConstructionStartX] = useState(
-    data && data.constructionData ? data.constructionData.constructionStartX : null
-  );
-  const [constructionStartY, setConstructionStartY] = useState(
-    data && data.constructionData ? data.constructionData.constructionStartY : null
-  );
-  const [constructionEndX, setConstructionEndX] = useState(
-    data && data.constructionData ? data.constructionData.constructionEndX : null
-  );
-  const [constructionEndY, setConstructionEndY] = useState(
-    data && data.constructionData ? data.constructionData.constructionEndY : null
-  );
+  const [constructionType, setConstructionType] = useState(null);
+  const [reinstatementType, setReinstatementType] = useState(null);
+  const [aggregateAbrasionValue, setAggregateAbrasionValue] = useState(null);
+  const [polishedStoneValue, setPolishedStoneValue] = useState(null);
+  const [frostHeaveSusceptibility, setFrostHeaveSusceptibility] = useState(false);
+  const [steppedJoint, setSteppedJoint] = useState(false);
+  const [constructionDescription, setConstructionDescription] = useState("");
+  const [organisation, setOrganisation] = useState(null);
+  const [district, setDistrict] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [wholeRoad, setWholeRoad] = useState(true);
+  const [specifyLocation, setSpecifyLocation] = useState("");
+  const [constructionStartX, setConstructionStartX] = useState(0);
+  const [constructionStartY, setConstructionStartY] = useState(0);
+  const [constructionEndX, setConstructionEndX] = useState(0);
+  const [constructionEndY, setConstructionEndY] = useState(0);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -389,12 +360,12 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
         setDistrict(data.constructionData.districtRefConsultant);
         setStartDate(data.constructionData.recordStartDate);
         setEndDate(data.constructionData.recordEndDate);
-        setWholeRoad(data.constructionData.wholeRoad);
-        setSpecifyLocation(data.constructionData.specificLocation);
-        setConstructionStartX(data.constructionData.constructionStartX);
-        setConstructionStartY(data.constructionData.constructionStartY);
-        setConstructionEndX(data.constructionData.constructionEndX);
-        setConstructionEndY(data.constructionData.constructionEndY);
+        setWholeRoad(data.constructionData.wholeRoad ? data.constructionData.wholeRoad : true);
+        setSpecifyLocation(data.constructionData.specificLocation ? data.constructionData.specificLocation : "");
+        setConstructionStartX(data.constructionData.constructionStartX ? data.constructionData.constructionStartX : 0);
+        setConstructionStartY(data.constructionData.constructionStartY ? data.constructionData.constructionStartY : 0);
+        setConstructionEndX(data.constructionData.constructionEndX ? data.constructionData.constructionEndX : 0);
+        setConstructionEndY(data.constructionData.constructionEndY ? data.constructionData.constructionEndY : 0);
       }
     }
     setDataChanged(false);
@@ -490,12 +461,12 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
       setDistrict(data.constructionData.districtRefConsultant);
       setStartDate(data.constructionData.recordStartDate);
       setEndDate(data.constructionData.recordEndDate);
-      setWholeRoad(data.constructionData.wholeRoad);
-      setSpecifyLocation(data.constructionData.specificLocation);
-      setConstructionStartX(data.constructionData.constructionStartX);
-      setConstructionStartY(data.constructionData.constructionStartY);
-      setConstructionEndX(data.constructionData.constructionEndX);
-      setConstructionEndY(data.constructionData.constructionEndY);
+      setWholeRoad(data.constructionData.wholeRoad ? data.constructionData.wholeRoad : true);
+      setSpecifyLocation(data.constructionData.specificLocation ? data.constructionData.specificLocation : "");
+      setConstructionStartX(data.constructionData.constructionStartX ? data.constructionData.constructionStartX : 0);
+      setConstructionStartY(data.constructionData.constructionStartY ? data.constructionData.constructionStartY : 0);
+      setConstructionEndX(data.constructionData.constructionEndX ? data.constructionData.constructionEndX : 0);
+      setConstructionEndY(data.constructionData.constructionEndY ? data.constructionData.constructionEndY : 0);
 
       setSwaOrgRefLookup(FilteredSwaOrgRef(false));
       setReinstatementTypeLookup(FilteredReinstatementType(false));

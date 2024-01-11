@@ -29,6 +29,7 @@
 //    016   30.11.23 Sean Flook                 Make state and state date visible for Scottish authorities.
 //    017   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    018   10.01.24 Sean Flook                 Fix warnings.
+//    019   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -158,7 +159,7 @@ function PropertyDetailsTab({
   const [state, setState] = useState(null);
   const [stateDate, setStateDate] = useState(null);
   const [classification, setClassification] = useState(null);
-  const [organisation, setOrganisation] = useState("");
+  const [organisation, setOrganisation] = useState(null);
   const [level, setLevel] = useState(0);
   const [ward, setWard] = useState(null);
   const [parish, setParish] = useState(null);
@@ -800,8 +801,8 @@ function PropertyDetailsTab({
       }
       setEasting(data.xcoordinate ? data.xcoordinate : 0);
       setNorthing(data.ycoordinate ? data.ycoordinate : 0);
-      setExcludeFromExport(data.neverExport);
-      setSiteSurvey(data.siteSurvey);
+      setExcludeFromExport(data.neverExport ? data.neverExport : false);
+      setSiteSurvey(data.siteSurvey ? data.siteSurvey : false);
       setStartDate(data.startDate);
       setEndDate(data.endDate);
 
@@ -1282,7 +1283,7 @@ function PropertyDetailsTab({
             loading={loading}
             maxLength={100}
             value={organisation}
-            id="property-organisation"
+            id="property_organisation"
             errorText={organisationError}
             characterSet="GeoPlaceProperty1"
             helperText="Name of current occupier on the fascia of the BLPU."

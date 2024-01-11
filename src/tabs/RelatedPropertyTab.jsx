@@ -27,6 +27,7 @@
 //    013   29.11.23 Sean Flook       IMANN-163 Added id's to the TreeItem to remove warning and corrected expanded data type.
 //    014   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    015   10.01.24 Sean Flook                 Fix warnings.
+//    016   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -900,6 +901,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
           >
             {data &&
               data.properties &&
+              data.properties.length > 0 &&
               data.properties
                 .filter((x) => !x.parentUprn)
                 .sort(function (a, b) {
@@ -910,11 +912,10 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                       })
                     : 0;
                 })
-                .map((rec, index) => {
+                .map((rec) => {
                   return (
                     <TreeItem
-                      key={`property-${rec.uprn}-${index}`}
-                      id={`property-related-tree-${rec.uprn.toString()}`}
+                      key={rec.uprn}
                       nodeId={rec.uprn.toString()}
                       sx={treeItemStyle(rec.uprn.toString() === propertyContext.currentProperty.uprn.toString())}
                       label={
@@ -1047,11 +1048,10 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                 })
                               : 0;
                           })
-                          .map((child1, childIndex1) => {
+                          .map((child1) => {
                             return (
                               <TreeItem
-                                key={`property-${child1.uprn}-${childIndex1}`}
-                                id={`property-related-tree-${child1.uprn.toString()}`}
+                                key={child1.uprn}
                                 nodeId={child1.uprn.toString()}
                                 sx={treeItemStyle(
                                   child1.uprn.toString() === propertyContext.currentProperty.uprn.toString()
@@ -1202,11 +1202,10 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                           })
                                         : 0;
                                     })
-                                    .map((child2, childIndex2) => {
+                                    .map((child2) => {
                                       return (
                                         <TreeItem
-                                          key={`property-${child2.uprn}-${childIndex2}`}
-                                          id={`property-related-tree-${child2.uprn.toString()}`}
+                                          key={child2.uprn}
                                           nodeId={child2.uprn.toString()}
                                           sx={treeItemStyle(
                                             child2.uprn.toString() === propertyContext.currentProperty.uprn.toString()
@@ -1390,11 +1389,10 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                     })
                                                   : 0;
                                               })
-                                              .map((child3, childIndex3) => {
+                                              .map((child3) => {
                                                 return (
                                                   <TreeItem
-                                                    key={`property-${child3.uprn}-${childIndex3}`}
-                                                    id={`property-related-tree-${child3.uprn.toString()}`}
+                                                    key={child3.uprn}
                                                     nodeId={child3.uprn.toString()}
                                                     sx={treeItemStyle(
                                                       child3.uprn.toString() ===
@@ -1440,7 +1438,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                             <Box sx={{ width: "24px" }} />
                                                           )}
                                                           {(propertySelected && propertySelected === child3.uprn) ||
-                                                          propertyChecked.includes(childIndex3.uprn.toString()) ? (
+                                                          propertyChecked.includes(child3.uprn.toString()) ? (
                                                             <Checkbox
                                                               sx={{
                                                                 pl: theme.spacing(0),

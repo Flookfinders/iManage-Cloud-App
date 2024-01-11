@@ -16,6 +16,7 @@
 //    003   30.11.23 Sean Flook                 Use a constant for the default classification scheme.
 //    004   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    006   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -749,7 +750,7 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
                     isEditable
                     disabled={updating}
                     value={note}
-                    id={"ads-text-textfield-note"}
+                    id="classification_note"
                     maxLength={4000}
                     minLines={2}
                     maxLines={10}

@@ -18,6 +18,7 @@
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    006   02.01.24 Sean Flook       IMANN-205 Added end date.
 //    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    008   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -76,23 +77,21 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
 
   const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(FilteredSwaOrgRef(false));
 
-  const [restrictionCode, setRestrictionCode] = useState(data && data.hwwData ? data.hwwData.hwwRestrictionCode : null);
-  const [valueMetric, setValueMetric] = useState(data && data.hwwData ? data.hwwData.valueMetric : null);
-  const [troText, setTroText] = useState(data && data.hwwData ? data.hwwData.troText : null);
-  const [featureDescription, setFeatureDescription] = useState(
-    data && data.hwwData ? data.hwwData.featureDescription : null
-  );
-  const [source, setSource] = useState(data && data.hwwData ? data.hwwData.sourceText : null);
-  const [organisation, setOrganisation] = useState(data && data.hwwData ? data.hwwData.swaOrgRefConsultant : null);
-  const [district, setDistrict] = useState(data && data.hwwData ? data.hwwData.districtRefConsultant : null);
-  const [startDate, setStartDate] = useState(data && data.hwwData ? data.hwwData.recordStartDate : null);
-  const [endDate, setEndDate] = useState(data && data.hwwData ? data.hwwData.recordEndDate : null);
-  const [wholeRoad, setWholeRoad] = useState(data && data.hwwData ? data.hwwData.wholeRoad : true);
-  const [specificLocation, setSpecificLocation] = useState(data && data.hwwData ? data.hwwData.specificLocation : null);
-  const [hwwStartX, setHwwStartX] = useState(data && data.hwwData ? data.hwwData.hwwStartX : null);
-  const [hwwStartY, setHwwStartY] = useState(data && data.hwwData ? data.hwwData.hwwStartY : null);
-  const [hwwEndX, setHwwEndX] = useState(data && data.hwwData ? data.hwwData.hwwEndX : null);
-  const [hwwEndY, setHwwEndY] = useState(data && data.hwwData ? data.hwwData.hwwEndY : null);
+  const [restrictionCode, setRestrictionCode] = useState(null);
+  const [valueMetric, setValueMetric] = useState(0);
+  const [troText, setTroText] = useState("");
+  const [featureDescription, setFeatureDescription] = useState("");
+  const [source, setSource] = useState("");
+  const [organisation, setOrganisation] = useState(null);
+  const [district, setDistrict] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [wholeRoad, setWholeRoad] = useState(true);
+  const [specificLocation, setSpecificLocation] = useState("");
+  const [hwwStartX, setHwwStartX] = useState(0);
+  const [hwwStartY, setHwwStartY] = useState(0);
+  const [hwwEndX, setHwwEndX] = useState(0);
+  const [hwwEndY, setHwwEndY] = useState(0);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -310,20 +309,20 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
     if (dataChanged) {
       if (data && data.hwwData) {
         setRestrictionCode(data.hwwData.hwwRestrictionCode);
-        setValueMetric(data.hwwData.valueMetric);
-        setTroText(data.hwwData.troText);
-        setFeatureDescription(data.hwwData.featureDescription);
-        setSource(data.hwwData.sourceText);
+        setValueMetric(data.hwwData.valueMetric ? data.hwwData.valueMetric : 0);
+        setTroText(data.hwwData.troText ? data.hwwData.troText : "");
+        setFeatureDescription(data.hwwData.featureDescription ? data.hwwData.featureDescription : "");
+        setSource(data.hwwData.sourceText ? data.hwwData.sourceText : "");
         setOrganisation(data.hwwData.swaOrgRefConsultant);
         setDistrict(data.hwwData.districtRefConsultant);
         setStartDate(data.hwwData.recordStartDate);
         setEndDate(data.hwwData.recordEndDate);
-        setWholeRoad(data.hwwData.wholeRoad);
-        setSpecificLocation(data.hwwData.specificLocation);
-        setHwwStartX(data.hwwData.hwwStartX);
-        setHwwStartY(data.hwwData.hwwStartY);
-        setHwwEndX(data.hwwData.hwwEndX);
-        setHwwEndY(data.hwwData.hwwEndY);
+        setWholeRoad(data.hwwData.wholeRoad ? data.hwwData.wholeRoad : true);
+        setSpecificLocation(data.hwwData.specificLocation ? data.hwwData.specificLocation : "");
+        setHwwStartX(data.hwwData.hwwStartX ? data.hwwData.hwwStartX : 0);
+        setHwwStartY(data.hwwData.hwwStartY ? data.hwwData.hwwStartY : 0);
+        setHwwEndX(data.hwwData.hwwEndX ? data.hwwData.hwwEndX : 0);
+        setHwwEndY(data.hwwData.hwwEndY ? data.hwwData.hwwEndY : 0);
       }
     }
     setDataChanged(false);
@@ -402,20 +401,20 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
   useEffect(() => {
     if (!loading && data && data.hwwData) {
       setRestrictionCode(data.hwwData.hwwRestrictionCode);
-      setValueMetric(data.hwwData.valueMetric);
-      setTroText(data.hwwData.troText);
-      setFeatureDescription(data.hwwData.featureDescription);
-      setSource(data.hwwData.sourceText);
+      setValueMetric(data.hwwData.valueMetric ? data.hwwData.valueMetric : 0);
+      setTroText(data.hwwData.troText ? data.hwwData.troText : "");
+      setFeatureDescription(data.hwwData.featureDescription ? data.hwwData.featureDescription : "");
+      setSource(data.hwwData.sourceText ? data.hwwData.sourceText : "");
       setOrganisation(data.hwwData.swaOrgRefConsultant);
       setDistrict(data.hwwData.districtRefConsultant);
       setStartDate(data.hwwData.recordStartDate);
       setEndDate(data.hwwData.recordEndDate);
-      setWholeRoad(data.hwwData.wholeRoad);
-      setSpecificLocation(data.hwwData.specificLocation);
-      setHwwStartX(data.hwwData.hwwStartX);
-      setHwwStartY(data.hwwData.hwwStartY);
-      setHwwEndX(data.hwwData.hwwEndX);
-      setHwwEndY(data.hwwData.hwwEndY);
+      setWholeRoad(data.hwwData.wholeRoad ? data.hwwData.wholeRoad : true);
+      setSpecificLocation(data.hwwData.specificLocation ? data.hwwData.specificLocation : "");
+      setHwwStartX(data.hwwData.hwwStartX ? data.hwwData.hwwStartX : 0);
+      setHwwStartY(data.hwwData.hwwStartY ? data.hwwData.hwwStartY : 0);
+      setHwwEndX(data.hwwData.hwwEndX ? data.hwwData.hwwEndX : 0);
+      setHwwEndY(data.hwwData.hwwEndY ? data.hwwData.hwwEndY : 0);
 
       setSwaOrgRefLookup(FilteredSwaOrgRef(false));
     }

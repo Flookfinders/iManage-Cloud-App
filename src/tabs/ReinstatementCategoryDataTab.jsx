@@ -16,6 +16,7 @@
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    006   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -83,30 +84,14 @@ function ReinstatementCategoryDataTab({
   const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(FilteredSwaOrgRef(true));
   const [reinstatementTypeLookup, setReinstatementTypeLookup] = useState(FilteredReinstatementType(true));
 
-  const [reinstatementCategory, setReinstatementCategory] = useState(
-    data && data.reinstatementCategoryData ? data.reinstatementCategoryData.reinstatementCategoryCode : null
-  );
-  const [custodian, setCustodian] = useState(
-    data && data.reinstatementCategoryData ? data.reinstatementCategoryData.custodianCode : null
-  );
-  const [authority, setAuthority] = useState(
-    data && data.reinstatementCategoryData ? data.reinstatementCategoryData.reinstatementAuthorityCode : null
-  );
-  const [startDate, setStartDate] = useState(
-    data && data.reinstatementCategoryData ? data.reinstatementCategoryData.startDate : null
-  );
-  const [endDate, setEndDate] = useState(
-    data && data.reinstatementCategoryData ? data.reinstatementCategoryData.endDate : null
-  );
-  const [state, setState] = useState(
-    data && data.reinstatementCategoryData ? data.reinstatementCategoryData.state : null
-  );
-  const [wholeRoad, setWholeRoad] = useState(
-    data && data.reinstatementCategoryData ? data.reinstatementCategoryData.wholeRoad : true
-  );
-  const [specificLocation, setSpecificLocation] = useState(
-    data && data.reinstatementCategoryData ? data.reinstatementCategoryData.specificLocation : null
-  );
+  const [reinstatementCategory, setReinstatementCategory] = useState(null);
+  const [custodian, setCustodian] = useState(null);
+  const [authority, setAuthority] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [state, setState] = useState(null);
+  const [wholeRoad, setWholeRoad] = useState(true);
+  const [specificLocation, setSpecificLocation] = useState("");
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -328,8 +313,10 @@ function ReinstatementCategoryDataTab({
         setStartDate(data.reinstatementCategoryData.startDate);
         setEndDate(data.reinstatementCategoryData.endDate);
         setState(data.reinstatementCategoryData.state);
-        setWholeRoad(data.reinstatementCategoryData.wholeRoad);
-        setSpecificLocation(data.reinstatementCategoryData.specificLocation);
+        setWholeRoad(data.reinstatementCategoryData.wholeRoad ? data.reinstatementCategoryData.wholeRoad : true);
+        setSpecificLocation(
+          data.reinstatementCategoryData.specificLocation ? data.reinstatementCategoryData.specificLocation : ""
+        );
       }
     }
     setDataChanged(false);
@@ -375,8 +362,10 @@ function ReinstatementCategoryDataTab({
       setStartDate(data.reinstatementCategoryData.startDate);
       setEndDate(data.reinstatementCategoryData.endDate);
       setState(data.reinstatementCategoryData.state);
-      setWholeRoad(data.reinstatementCategoryData.wholeRoad);
-      setSpecificLocation(data.reinstatementCategoryData.specificLocation);
+      setWholeRoad(data.reinstatementCategoryData.wholeRoad ? data.reinstatementCategoryData.wholeRoad : true);
+      setSpecificLocation(
+        data.reinstatementCategoryData.specificLocation ? data.reinstatementCategoryData.specificLocation : ""
+      );
 
       setSwaOrgRefLookup(FilteredSwaOrgRef(true));
       setReinstatementTypeLookup(FilteredReinstatementType(true));
@@ -645,7 +634,7 @@ function ReinstatementCategoryDataTab({
             maxLength={250}
             minLines={3}
             maxLines={5}
-            id="interest-specify-location"
+            id="reinstatement_category_specify_location"
             errorText={specifyLocationError}
             helperText="Description of the section of street covered by this category."
             onChange={handleSpecificLocationChangeEvent}

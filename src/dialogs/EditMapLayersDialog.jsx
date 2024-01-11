@@ -18,6 +18,7 @@
 //    005   03.01.24 Sean Flook                 Fixed warning.
 //    006   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    007   10.01.24 Sean Flook                 Fix warnings.
+//    008   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -682,7 +683,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                     isRequired
                     maxLength={40}
                     value={title}
-                    id={"layer_title"}
+                    id="layer_title"
                     helperText="The title of the layer used to identify it in the layer control."
                     errorText={titleError}
                     onChange={handleTitleChangeEvent}
@@ -721,7 +722,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                     maxLength={100}
                     isRequired
                     value={url}
-                    id={"layer_url"}
+                    id="layer_url"
                     helperText="The URL used to obtain the layer information from the service."
                     errorText={urlError}
                     onChange={handleUrlChangeEvent}
@@ -732,7 +733,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                     isRequired
                     maxLength={40}
                     value={activeLayerId}
-                    id={"active_layer_id"}
+                    id="active_layer_id"
                     helperText="This is the layer ID of the layer that you want to return from the service."
                     errorText={activeLayerIdError}
                     onChange={handleActiveLayerIdChangeEvent}
@@ -745,7 +746,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                       isRequired
                       maxLength={40}
                       value={layerKey}
-                      id={"layer_key"}
+                      id="layer_key"
                       helperText="This is your key used to access the service to get the layer information."
                       errorText={layerKeyError}
                       onChange={handleLayerKeyChangeEvent}
@@ -757,7 +758,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                       isEditable
                       maxLength={40}
                       value={serviceMode}
-                      id={"layer_service_mode"}
+                      id="layer_service_mode"
                       helperText="This is the service mode used to return the data from the service for WMTS layers from OS this would be KVP."
                       errorText={serviceModeError}
                       onChange={handleServiceModeChangeEvent}
@@ -769,7 +770,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                       isEditable
                       maxLength={100}
                       value={propertyName}
-                      id={"layer_property_name"}
+                      id="layer_property_name"
                       helperText="This is a comma separated list of property names that you want to be returned"
                       errorText={propertyNameError}
                       onChange={handlePropertyNameChangeEvent}
@@ -794,7 +795,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                     maxLength={50}
                     isRequired
                     value={layerId}
-                    id={"layer_id"}
+                    id="layer_id"
                     characterSet="EsriLayerId"
                     helperText="The unique ID assigned to the layer."
                     errorText={layerIdError}
@@ -811,7 +812,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                     }
                     maxLength={100}
                     value={copyright}
-                    id={"layer_copyright_information"}
+                    id="layer_copyright_information"
                     helperText="The copyright information that needs to be displayed on the map. If the current year needs to be displayed use <<year>>."
                     errorText={copyrightError}
                     onChange={handleCopyrightInformationChangeEvent}
@@ -947,7 +948,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                     isEditable
                     maxLength={40}
                     value={layerUsername}
-                    id={"layer_username"}
+                    id="layer_username"
                     // helperText=""
                     errorText={layerUsernameError}
                     onChange={handleLayerUsernameChangeEvent}
@@ -958,7 +959,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                     isHidden
                     maxLength={40}
                     value={layerPassword}
-                    id={"layer_password"}
+                    id="layer_password"
                     helperText="This is your password used to access this layer."
                     errorText={layerPasswordError}
                     onChange={handleLayerPasswordChangeEvent}

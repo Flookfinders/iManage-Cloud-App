@@ -36,6 +36,7 @@
 //    022   03.01.24 Sean Flook                 Fixed warning.
 //    023   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    024   09.01.24 Sean Flook       IMANN-197 Calculate the current length of the street when creating a new PRoW record.
+//    025   11.01.24 Sean Flook       IMANN-163 Close the add property wizard dialog when clicking on view properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -9130,6 +9131,7 @@ function StreetDataForm({ data, loading }) {
                     );
                   break;
               }
+              setOpenPropertyWizard(false);
               break;
 
             case "addChild":

@@ -15,6 +15,7 @@
 //    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //    003   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    005   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -697,7 +698,7 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
                   isRequired
                   value={crossReference}
                   disabled={updating}
-                  id={crossReference}
+                  id="cross_reference"
                   maxLength={50}
                   errorText={crossReferenceError}
                   helperText="Primary key of corresponding Record in an external data-set."
@@ -767,7 +768,7 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
                     isEditable
                     disabled={updating}
                     value={note}
-                    id={"ads-text-textfield-note"}
+                    id="cross_reference_note"
                     maxLength={4000}
                     minLines={2}
                     maxLines={10}

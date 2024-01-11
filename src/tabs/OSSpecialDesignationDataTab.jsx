@@ -18,6 +18,7 @@
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    007   10.01.24 Sean Flook                 Fix warnings.
+//    008   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -86,33 +87,15 @@ function OSSpecialDesignationDataTab({
   );
   const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(FilteredSwaOrgRef(true));
 
-  const [specialDesignation, setSpecialDesignation] = useState(
-    data && data.osSpecialDesignationData ? data.osSpecialDesignationData.specialDesig : null
-  );
-  const [custodian, setCustodian] = useState(
-    data && data.osSpecialDesignationData ? data.osSpecialDesignationData.custodianCode : null
-  );
-  const [authority, setAuthority] = useState(
-    data && data.osSpecialDesignationData ? data.osSpecialDesignationData.authorityCode : null
-  );
-  const [description, setDescription] = useState(
-    data && data.osSpecialDesignationData ? data.osSpecialDesignationData.description : null
-  );
-  const [startDate, setStartDate] = useState(
-    data && data.osSpecialDesignationData ? data.osSpecialDesignationData.startDate : null
-  );
-  const [endDate, setEndDate] = useState(
-    data && data.osSpecialDesignationData ? data.osSpecialDesignationData.endDate : null
-  );
-  const [state, setState] = useState(
-    data && data.osSpecialDesignationData ? data.osSpecialDesignationData.state : null
-  );
-  const [wholeRoad, setWholeRoad] = useState(
-    data && data.osSpecialDesignationData ? data.osSpecialDesignationData.wholeRoad : true
-  );
-  const [specificLocation, setSpecificLocation] = useState(
-    data && data.osSpecialDesignationData ? data.osSpecialDesignationData.specificLocation : null
-  );
+  const [specialDesignation, setSpecialDesignation] = useState(null);
+  const [custodian, setCustodian] = useState(null);
+  const [authority, setAuthority] = useState(null);
+  const [description, setDescription] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [state, setState] = useState(null);
+  const [wholeRoad, setWholeRoad] = useState(true);
+  const [specificLocation, setSpecificLocation] = useState("");
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -345,14 +328,16 @@ function OSSpecialDesignationDataTab({
     if (dataChanged) {
       if (data && data.osSpecialDesignationData) {
         setSpecialDesignation(data.osSpecialDesignationData.specialDesig);
-        setDescription(data.osSpecialDesignationData.description);
+        setDescription(data.osSpecialDesignationData.description ? data.osSpecialDesignationData.description : "");
         setCustodian(data.osSpecialDesignationData.custodianCode);
         setAuthority(data.osSpecialDesignationData.authorityCode);
         setStartDate(data.osSpecialDesignationData.startDate);
         setEndDate(data.osSpecialDesignationData.endDate);
         setState(data.osSpecialDesignationData.state);
-        setWholeRoad(data.osSpecialDesignationData.wholeRoad);
-        setSpecificLocation(data.osSpecialDesignationData.specificLocation);
+        setWholeRoad(data.osSpecialDesignationData.wholeRoad ? data.osSpecialDesignationData.wholeRoad : true);
+        setSpecificLocation(
+          data.osSpecialDesignationData.specificLocation ? data.osSpecialDesignationData.specificLocation : ""
+        );
       }
     }
     setDataChanged(false);
@@ -406,14 +391,16 @@ function OSSpecialDesignationDataTab({
   useEffect(() => {
     if (!loading && data && data.osSpecialDesignationData) {
       setSpecialDesignation(data.osSpecialDesignationData.specialDesig);
-      setDescription(data.osSpecialDesignationData.description);
+      setDescription(data.osSpecialDesignationData.description ? data.osSpecialDesignationData.description : "");
       setCustodian(data.osSpecialDesignationData.custodianCode);
       setAuthority(data.osSpecialDesignationData.authorityCode);
       setStartDate(data.osSpecialDesignationData.startDate);
       setEndDate(data.osSpecialDesignationData.endDate);
       setState(data.osSpecialDesignationData.state);
-      setWholeRoad(data.osSpecialDesignationData.wholeRoad);
-      setSpecificLocation(data.osSpecialDesignationData.specificLocation);
+      setWholeRoad(data.osSpecialDesignationData.wholeRoad ? data.osSpecialDesignationData.wholeRoad : true);
+      setSpecificLocation(
+        data.osSpecialDesignationData.specificLocation ? data.osSpecialDesignationData.specificLocation : ""
+      );
 
       setSpecialDesignationCodeLookup(FilteredSpecialDesignationCode(true));
       setSwaOrgRefLookup(FilteredSwaOrgRef(true));
@@ -637,7 +624,7 @@ function OSSpecialDesignationDataTab({
           minLines={3}
           maxLines={5}
           characterSet="GeoPlaceStreet1"
-          id="special-designation-description"
+          id="os_special_designation_description"
           errorText={descriptionError}
           helperText="Description providing additional information for certain Special Designations."
           onChange={handleDescriptionChangeEvent}
@@ -703,7 +690,7 @@ function OSSpecialDesignationDataTab({
             maxLength={250}
             minLines={3}
             maxLines={5}
-            id="construction-specify-location"
+            id="os_special_designation_specify_location"
             errorText={specificLocationError}
             helperText="Description of the location of the Special Designation within the Street."
             onChange={handleSpecificLocationChangeEvent}

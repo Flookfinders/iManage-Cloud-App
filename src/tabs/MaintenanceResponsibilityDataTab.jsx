@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   19.12.23 Sean Flook                 Various bug fixes.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    007   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -89,7 +90,7 @@ function MaintenanceResponsibilityDataTab({
   const [endDate, setEndDate] = useState(null);
   const [state, setState] = useState(null);
   const [wholeRoad, setWholeRoad] = useState(true);
-  const [specificLocation, setSpecificLocation] = useState(null);
+  const [specificLocation, setSpecificLocation] = useState("");
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -315,8 +316,12 @@ function MaintenanceResponsibilityDataTab({
         setStartDate(data.maintenanceResponsibilityData.startDate);
         setEndDate(data.maintenanceResponsibilityData.endDate);
         setState(data.maintenanceResponsibilityData.state);
-        setWholeRoad(data.maintenanceResponsibilityData.wholeRoad);
-        setSpecificLocation(data.maintenanceResponsibilityData.specificLocation);
+        setWholeRoad(
+          data.maintenanceResponsibilityData.wholeRoad ? data.maintenanceResponsibilityData.wholeRoad : true
+        );
+        setSpecificLocation(
+          data.maintenanceResponsibilityData.specificLocation ? data.maintenanceResponsibilityData.specificLocation : ""
+        );
       }
     }
     setDataChanged(false);
@@ -362,8 +367,10 @@ function MaintenanceResponsibilityDataTab({
       setStartDate(data.maintenanceResponsibilityData.startDate);
       setEndDate(data.maintenanceResponsibilityData.endDate);
       setState(data.maintenanceResponsibilityData.state);
-      setWholeRoad(data.maintenanceResponsibilityData.wholeRoad);
-      setSpecificLocation(data.maintenanceResponsibilityData.specificLocation);
+      setWholeRoad(data.maintenanceResponsibilityData.wholeRoad ? data.maintenanceResponsibilityData.wholeRoad : true);
+      setSpecificLocation(
+        data.maintenanceResponsibilityData.specificLocation ? data.maintenanceResponsibilityData.specificLocation : ""
+      );
 
       setRoadStatusCodeLookup(FilteredRoadStatusCode(true));
       setSwaOrgRefLookup(FilteredSwaOrgRef(true));
@@ -630,7 +637,7 @@ function MaintenanceResponsibilityDataTab({
             maxLength={250}
             minLines={3}
             maxLines={5}
-            id="interest-specify-location"
+            id="maintenance_responsibility_specify_location"
             errorText={specifyLocationError}
             helperText="Description of the location of the parts of the Street to which this additional Street Record applies."
             onChange={handleSpecificLocationChangeEvent}

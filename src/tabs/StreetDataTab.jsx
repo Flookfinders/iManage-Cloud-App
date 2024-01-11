@@ -22,6 +22,7 @@
 //    009   24.11.23 Sean Flook                 Moved Box to @mui/system and fixed a warning.
 //    010   20.12.23 Sean Flook                 Hide the Delete button until code has been written.
 //    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    012   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -117,21 +118,21 @@ function StreetDataTab({
 
   const [streetTypeLookup, setStreetTypeLookup] = useState(FilteredStreetType(settingsContext.isScottish));
 
-  const [usrn, setUsrn] = useState(data ? data.usrn : null);
-  const [streetType, setStreetType] = useState(data ? data.recordType : null);
+  const [usrn, setUsrn] = useState(0);
+  const [streetType, setStreetType] = useState(null);
   const [authority, setAuthority] = useState(settingsContext ? settingsContext.authorityCode : null);
-  const [state, setState] = useState(data ? data.state : null);
-  const [stateDate, setStateDate] = useState(data ? data.stateDate : null);
-  const [classification, setClassification] = useState(data ? data.streetClassification : null);
-  const [surface, setSurface] = useState(data ? data.streetSurface : null);
-  const [eastingStart, setEastingStart] = useState(data ? data.streetStartX : null);
-  const [northingStart, setNorthingStart] = useState(data ? data.streetStartY : null);
-  const [eastingEnd, setEastingEnd] = useState(data ? data.streetEndX : null);
-  const [northingEnd, setNorthingEnd] = useState(data ? data.streetEndY : null);
-  const [tolerance, setTolerance] = useState(data ? data.streetTolerance : null);
-  const [excludeFromExport, setExcludeFromExport] = useState(data ? data.neverExport : null);
-  const [startDate, setStartDate] = useState(data ? data.streetStartDate : null);
-  const [endDate, setEndDate] = useState(data ? data.streetEndDate : null);
+  const [state, setState] = useState(null);
+  const [stateDate, setStateDate] = useState(null);
+  const [classification, setClassification] = useState(null);
+  const [surface, setSurface] = useState(null);
+  const [eastingStart, setEastingStart] = useState(0);
+  const [northingStart, setNorthingStart] = useState(0);
+  const [eastingEnd, setEastingEnd] = useState(0);
+  const [northingEnd, setNorthingEnd] = useState(0);
+  const [tolerance, setTolerance] = useState(0);
+  const [excludeFromExport, setExcludeFromExport] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
   const [adminUser, setAdminUser] = useState(false);
@@ -696,18 +697,18 @@ function StreetDataTab({
 
   useEffect(() => {
     if (data) {
-      setUsrn(data.usrn);
+      setUsrn(data.usrn ? data.usrn : 0);
       setStreetType(data.recordType);
       setState(data.state);
       setStateDate(data.stateDate);
       setClassification(data.streetClassification);
       setSurface(data.streetSurface);
-      setEastingStart(data.streetStartX);
-      setNorthingStart(data.streetStartY);
-      setEastingEnd(data.streetEndX);
-      setNorthingEnd(data.streetEndY);
-      setTolerance(data.streetTolerance);
-      setExcludeFromExport(data.neverExport);
+      setEastingStart(data.streetStartX ? data.streetStartX : 0);
+      setNorthingStart(data.streetStartY ? data.streetStartY : 0);
+      setEastingEnd(data.streetEndX ? data.streetEndX : 0);
+      setNorthingEnd(data.streetEndY ? data.streetEndY : 0);
+      setTolerance(data.streetTolerance ? data.streetTolerance : 0);
+      setExcludeFromExport(data.neverExport ? data.neverExport : false);
       setStartDate(data.streetStartDate);
       setEndDate(data.streetEndDate);
 

@@ -3,7 +3,7 @@
 //
 //  Description: Number component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -20,6 +20,7 @@
 //    007   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
 //    008   10.08.23 Sean Flook                 Ensure we return a number from the control.
 //    009   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    010   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -41,7 +42,7 @@ ADSNumberControl.propTypes = {
   loading: PropTypes.bool,
   helperText: PropTypes.string,
   maximum: PropTypes.number,
-  value: PropTypes.number,
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   errorText: PropTypes.array,
   onChange: PropTypes.func.isRequired,
 };

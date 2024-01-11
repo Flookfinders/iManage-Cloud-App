@@ -19,6 +19,7 @@
 //    006   03.11.23 Sean Flook                 Added hyphen to one-way.
 //    007   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
 //    008   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    009   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -147,16 +148,14 @@ function EsuDataTab({
   const [openHighwayDedication, setOpenHighwayDedication] = useState(true);
   const [openOneWayExemption, setOpenOneWayExemption] = useState(true);
 
-  const [direction, setDirection] = useState(data && data.esuData ? data.esuData.esuDirection : null);
-  const [tolerance, setTolerance] = useState(data && data.esuData ? data.esuData.esuTolerance : null);
-  const [startDate, setStartDate] = useState(data && data.esuData ? data.esuData.esuStartDate : null);
-  const [endDate, setEndDate] = useState(data && data.esuData ? data.esuData.esuEndDate : null);
-  const [state, setState] = useState(data && data.esuData ? data.esuData.state : null);
-  const [stateDate, setStateDate] = useState(data && data.esuData ? data.esuData.stateDate : null);
-  const [classification, setClassification] = useState(data && data.esuData ? data.esuData.esuClassification : null);
-  const [classificationDate, setClassificationDate] = useState(
-    data && data.esuData ? data.esuData.esuClassificationDate : null
-  );
+  const [direction, setDirection] = useState(null);
+  const [tolerance, setTolerance] = useState(0);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [state, setState] = useState(null);
+  const [stateDate, setStateDate] = useState(null);
+  const [classification, setClassification] = useState(null);
+  const [classificationDate, setClassificationDate] = useState(null);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -383,7 +382,7 @@ function EsuDataTab({
     if (streetContext.esuDataChanged) {
       if (data && data.esuData) {
         setDirection(data.esuData.esuDirection);
-        setTolerance(data.esuData.esuTolerance);
+        setTolerance(data.esuData.esuTolerance ? data.esuData.esuTolerance : 0);
         setStartDate(data.esuData.esuStartDate);
         setEndDate(data.esuData.esuEndDate);
       }
@@ -772,7 +771,7 @@ function EsuDataTab({
     if (!loading && data && data.esuData) {
       if (!settingsContext.isScottish) {
         setDirection(data.esuData.esuDirection);
-        setTolerance(data.esuData.esuTolerance);
+        setTolerance(data.esuData.esuTolerance ? data.esuData.esuTolerance : 0);
         setStartDate(data.esuData.esuStartDate);
         setEndDate(data.esuData.esuEndDate);
       } else {

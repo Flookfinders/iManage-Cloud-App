@@ -16,6 +16,7 @@
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    006   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -74,46 +75,32 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
 
   const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(FilteredSwaOrgRef(false));
 
-  const [dedication, setDedication] = useState(data && data.prowData ? data.prowData.prowRights : null);
-  const [status, setStatus] = useState(data && data.prowData ? data.prowData.prowStatus : null);
-  const [location, setLocation] = useState(data && data.prowData ? data.prowData.prowLocation : null);
-  const [details, setDetails] = useState(data && data.prowData ? data.prowData.prowDetails : null);
-  const [prowLength, setProwLength] = useState(data && data.prowData ? data.prowData.prowLength : null);
-  const [promotedRoute, setPromotedRoute] = useState(data && data.prowData ? data.prowData.promotedRoute : false);
-  const [accessibleRoute, setAccessibleRoute] = useState(data && data.prowData ? data.prowData.accessibleRoute : false);
-  const [sourceText, setSourceText] = useState(data && data.prowData ? data.prowData.sourceText : null);
-  const [organisation, setOrganisation] = useState(data && data.prowData ? data.prowData.prowOrgRefConsultant : null);
-  const [district, setDistrict] = useState(data && data.prowData ? data.prowData.prowDistrictRefConsultant : null);
-  const [diversionRelatedUsrn, setDiversionRelatedUsrn] = useState(
-    data && data.prowData ? data.prowData.divRelatedUsrn : null
-  );
-  const [pedestrianAccess, setPedestrianAccess] = useState(data && data.prowData ? data.prowData.pedAccess : false);
-  const [equestrianAccess, setEquestrianAccess] = useState(data && data.prowData ? data.prowData.equAccess : false);
-  const [nonMotorisedAccess, setNonMotorisedAccess] = useState(
-    data && data.prowData ? data.prowData.nonMotAccess : false
-  );
-  const [cycleAccess, setCycleAccess] = useState(data && data.prowData ? data.prowData.cycAccess : false);
-  const [motorisedAccess, setMotorisedAccess] = useState(data && data.prowData ? data.prowData.motAccess : false);
-  const [startDate, setStartDate] = useState(data && data.prowData ? data.prowData.recordStartDate : null);
-  const [relevantStartDate, setRelevantStartDate] = useState(
-    data && data.prowData ? data.prowData.relevantStartDate : null
-  );
-  const [endDate, setEndDate] = useState(data && data.prowData ? data.prowData.recordEndDate : null);
-  const [consultationStartDate, setConsultationStartDate] = useState(
-    data && data.prowData ? data.prowData.consultStartDate : null
-  );
-  const [consultationCloseDate, setConsultationCloseDate] = useState(
-    data && data.prowData ? data.prowData.consultEndDate : null
-  );
-  const [consultationReference, setConsultationReference] = useState(
-    data && data.prowData ? data.prowData.consultRef : null
-  );
-  const [consultationDetails, setConsultationDetails] = useState(
-    data && data.prowData ? data.prowData.consultDetails : null
-  );
-  const [appealDate, setAppealDate] = useState(data && data.prowData ? data.prowData.appealDate : null);
-  const [appealReference, setAppealReference] = useState(data && data.prowData ? data.prowData.appealRef : null);
-  const [appealDetails, setAppealDetails] = useState(data && data.prowData ? data.prowData.appealDetails : null);
+  const [dedication, setDedication] = useState(null);
+  const [status, setStatus] = useState(null);
+  const [location, setLocation] = useState("");
+  const [details, setDetails] = useState("");
+  const [prowLength, setProwLength] = useState(0);
+  const [promotedRoute, setPromotedRoute] = useState(false);
+  const [accessibleRoute, setAccessibleRoute] = useState(false);
+  const [sourceText, setSourceText] = useState("");
+  const [organisation, setOrganisation] = useState(null);
+  const [district, setDistrict] = useState(null);
+  const [diversionRelatedUsrn, setDiversionRelatedUsrn] = useState(null);
+  const [pedestrianAccess, setPedestrianAccess] = useState(false);
+  const [equestrianAccess, setEquestrianAccess] = useState(false);
+  const [nonMotorisedAccess, setNonMotorisedAccess] = useState(false);
+  const [cycleAccess, setCycleAccess] = useState(false);
+  const [motorisedAccess, setMotorisedAccess] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [relevantStartDate, setRelevantStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [consultationStartDate, setConsultationStartDate] = useState(null);
+  const [consultationCloseDate, setConsultationCloseDate] = useState(null);
+  const [consultationReference, setConsultationReference] = useState("");
+  const [consultationDetails, setConsultationDetails] = useState("");
+  const [appealDate, setAppealDate] = useState(null);
+  const [appealReference, setAppealReference] = useState("");
+  const [appealDetails, setAppealDetails] = useState("");
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -555,30 +542,30 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
       if (data && data.prowData) {
         setDedication(data.prowData.prowRights);
         setStatus(data.prowData.prowStatus);
-        setLocation(data.prowData.prowLocation);
-        setDetails(data.prowData.prowDetails);
-        setProwLength(data.prowData.prowLength);
-        setPromotedRoute(data.prowData.promotedRoute);
-        setAccessibleRoute(data.prowData.accessibleRoute);
-        setSourceText(data.prowData.sourceText);
+        setLocation(data.prowData.prowLocation ? data.prowData.prowLocation : "");
+        setDetails(data.prowData.prowDetails ? data.prowData.prowDetails : "");
+        setProwLength(data.prowData.prowLength ? data.prowData.prowLength : 0);
+        setPromotedRoute(data.prowData.promotedRoute ? data.prowData.promotedRoute : false);
+        setAccessibleRoute(data.prowData.accessibleRoute ? data.prowData.accessibleRoute : false);
+        setSourceText(data.prowData.sourceText ? data.prowData.sourceText : "");
         setOrganisation(data.prowData.prowOrgRefConsultant);
         setDistrict(data.prowData.prowDistrictRefConsultant);
         setDiversionRelatedUsrn(data.prowData.divRelatedUsrn);
-        setPedestrianAccess(data.prowData.pedAccess);
-        setEquestrianAccess(data.prowData.equAccess);
-        setNonMotorisedAccess(data.prowData.nonMotAccess);
-        setCycleAccess(data.prowData.cycAccess);
-        setMotorisedAccess(data.prowData.motAccess);
+        setPedestrianAccess(data.prowData.pedAccess ? data.prowData.pedAccess : false);
+        setEquestrianAccess(data.prowData.equAccess ? data.prowData.equAccess : false);
+        setNonMotorisedAccess(data.prowData.nonMotAccess ? data.prowData.nonMotAccess : false);
+        setCycleAccess(data.prowData.cycAccess ? data.prowData.cycAccess : false);
+        setMotorisedAccess(data.prowData.motAccess ? data.prowData.motAccess : false);
         setStartDate(data.prowData.recordStartDate);
         setRelevantStartDate(data.prowData.relevantStartDate);
         setEndDate(data.prowData.recordEndDate);
         setConsultationStartDate(data.prowData.consultStartDate);
         setConsultationCloseDate(data.prowData.consultEndDate);
-        setConsultationReference(data.prowData.consultRef);
-        setConsultationDetails(data.prowData.consultDetails);
+        setConsultationReference(data.prowData.consultRef ? data.prowData.consultRef : "");
+        setConsultationDetails(data.prowData.consultDetails ? data.prowData.consultDetails : "");
         setAppealDate(data.prowData.appealDate);
-        setAppealReference(data.prowData.appealRef);
-        setAppealDetails(data.prowData.appealDetails);
+        setAppealReference(data.prowData.appealRef ? data.prowData.appealRef : "");
+        setAppealDetails(data.prowData.appealDetails ? data.prowData.appealDetails : "");
       }
     }
     setDataChanged(false);
@@ -678,30 +665,30 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
     if (!loading && data && data.prowData) {
       setDedication(data.prowData.prowRights);
       setStatus(data.prowData.prowStatus);
-      setLocation(data.prowData.prowLocation);
-      setDetails(data.prowData.prowDetails);
-      setProwLength(data.prowData.prowLength);
-      setPromotedRoute(data.prowData.promotedRoute);
-      setAccessibleRoute(data.prowData.accessibleRoute);
-      setSourceText(data.prowData.sourceText);
+      setLocation(data.prowData.prowLocation ? data.prowData.prowLocation : "");
+      setDetails(data.prowData.prowDetails ? data.prowData.prowDetails : "");
+      setProwLength(data.prowData.prowLength ? data.prowData.prowLength : 0);
+      setPromotedRoute(data.prowData.promotedRoute ? data.prowData.promotedRoute : false);
+      setAccessibleRoute(data.prowData.accessibleRoute ? data.prowData.accessibleRoute : false);
+      setSourceText(data.prowData.sourceText ? data.prowData.sourceText : "");
       setOrganisation(data.prowData.prowOrgRefConsultant);
       setDistrict(data.prowData.prowDistrictRefConsultant);
       setDiversionRelatedUsrn(data.prowData.divRelatedUsrn);
-      setPedestrianAccess(data.prowData.pedAccess);
-      setEquestrianAccess(data.prowData.equAccess);
-      setNonMotorisedAccess(data.prowData.nonMotAccess);
-      setCycleAccess(data.prowData.cycAccess);
-      setMotorisedAccess(data.prowData.motAccess);
+      setPedestrianAccess(data.prowData.pedAccess ? data.prowData.pedAccess : false);
+      setEquestrianAccess(data.prowData.equAccess ? data.prowData.equAccess : false);
+      setNonMotorisedAccess(data.prowData.nonMotAccess ? data.prowData.nonMotAccess : false);
+      setCycleAccess(data.prowData.cycAccess ? data.prowData.cycAccess : false);
+      setMotorisedAccess(data.prowData.motAccess ? data.prowData.motAccess : false);
       setStartDate(data.prowData.recordStartDate);
       setRelevantStartDate(data.prowData.relevantStartDate);
       setEndDate(data.prowData.recordEndDate);
       setConsultationStartDate(data.prowData.consultStartDate);
       setConsultationCloseDate(data.prowData.consultEndDate);
-      setConsultationReference(data.prowData.consultRef);
-      setConsultationDetails(data.prowData.consultDetails);
+      setConsultationReference(data.prowData.consultRef ? data.prowData.consultRef : "");
+      setConsultationDetails(data.prowData.consultDetails ? data.prowData.consultDetails : "");
       setAppealDate(data.prowData.appealDate);
-      setAppealReference(data.prowData.appealRef);
-      setAppealDetails(data.prowData.appealDetails);
+      setAppealReference(data.prowData.appealRef ? data.prowData.appealRef : "");
+      setAppealDetails(data.prowData.appealDetails ? data.prowData.appealDetails : "");
 
       setSwaOrgRefLookup(FilteredSwaOrgRef(false));
     }
@@ -989,7 +976,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
           maxLength={500}
           minLines={3}
           maxLines={5}
-          id="prow-location"
+          id="prow_location"
           errorText={locationError}
           helperText="Descriptive location of the PRoW as defined in the PRoW Definitive Statement."
           onChange={handleLocationChangeEvent}
@@ -1004,7 +991,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
           maxLength={500}
           minLines={3}
           maxLines={5}
-          id="prow-details"
+          id="prow_details"
           errorText={detailsError}
           helperText="Official Reference of the PROW designation, followed by descriptive details of the PRoW as defined in the PRoW Definitive Statement."
           onChange={handleDetailsChangeEvent}
@@ -1053,7 +1040,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
           maxLength={120}
           minLines={1}
           maxLines={3}
-          id="prow-source"
+          id="prow_source"
           errorText={sourceTextError}
           helperText="A brief textual summary of the department/function and/or organisation that is the source of this data."
           onChange={handleSourceTextChangeEvent}
@@ -1286,7 +1273,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
               loading={loading}
               value={consultationReference}
               maxLength={16}
-              id="prow-consult-ref"
+              id="prow_consult_ref"
               errorText={consultationReferenceError}
               helperText="Any formal reference for the consultation."
               onChange={handleConsultationReferenceChangeEvent}
@@ -1299,7 +1286,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
               loading={loading}
               value={consultationDetails}
               maxLength={30}
-              id="prow-consult-details"
+              id="prow_consult_details"
               errorText={consultationDetailsError}
               helperText="Brief summary of the consultation."
               onChange={handleConsultationDetailsChangeEvent}
@@ -1413,7 +1400,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
               loading={loading}
               value={appealReference}
               maxLength={16}
-              id="prow-appeal-ref"
+              id="prow_appeal_ref"
               errorText={appealReferenceError}
               helperText="Any formal reference for the appeal."
               onChange={handleAppealReferenceChangeEvent}
@@ -1426,7 +1413,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
               loading={loading}
               value={appealDetails}
               maxLength={30}
-              id="prow-appeal-details"
+              id="prow_appeal_details"
               errorText={appealDetailsError}
               helperText="Brief summary of the appeal."
               onChange={handleAppealDetailsChangeEvent}

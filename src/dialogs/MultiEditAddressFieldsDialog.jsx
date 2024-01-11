@@ -15,6 +15,7 @@
 //    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //    003   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    005   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -707,7 +708,7 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                     isEditable
                     disabled={updating}
                     value={note}
-                    id={"ads-text-textfield-note"}
+                    id="property_note"
                     maxLength={4000}
                     minLines={2}
                     maxLines={10}

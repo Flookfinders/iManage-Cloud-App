@@ -26,6 +26,7 @@
 //    013   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    014   08.01.24 Joel Benford               Classification and sub locality
 //    015   10.01.24 Sean Flook                 Fix warnings.
+//    016   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1604,7 +1605,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               label="Scheme"
               isEditable
               value={classificationScheme}
-              id={"ads-text-textfield-classification-scheme"}
+              id="classification_scheme"
               maxLength={60}
               minLines={1}
               maxLines={1}
@@ -1648,7 +1649,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               label="Note"
               isEditable
               value={otherNote}
-              id={"ads-text-textfield-note"}
+              id="other_note"
               maxLength={4000}
               minLines={2}
               maxLines={10}

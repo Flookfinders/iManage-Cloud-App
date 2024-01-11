@@ -16,6 +16,7 @@
 //    003   30.11.23 Sean Flook                 Removed redundant code.
 //    004   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    006   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -971,7 +972,7 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                     isEditable
                     disabled={updating}
                     value={note}
-                    id={"ads-text-textfield-note"}
+                    id="logical_status_note"
                     maxLength={4000}
                     minLines={2}
                     maxLines={10}

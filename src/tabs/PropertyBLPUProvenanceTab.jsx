@@ -20,6 +20,7 @@
 //    007   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    009   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    010   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -69,10 +70,10 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
 
   const [provenanceLookup, setProvenanceLookup] = useState(FilteredBLPUProvenance(settingsContext.isScottish));
 
-  const [code, setCode] = useState(data && data.provenanceData ? data.provenanceData.provenanceCode : null);
-  const [annotation, setAnnotation] = useState(data && data.provenanceData ? data.provenanceData.annotation : "");
-  const [startDate, setStartDate] = useState(data && data.provenanceData ? data.provenanceData.startDate : null);
-  const [endDate, setEndDate] = useState(data && data.provenanceData ? data.provenanceData.endDate : null);
+  const [code, setCode] = useState(null);
+  const [annotation, setAnnotation] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -195,7 +196,7 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
     if (propertyContext.provenanceDataChanged) {
       if (data && data.provenanceData) {
         setCode(data.provenanceData.provenanceCode);
-        setAnnotation(data.provenanceData.annotation);
+        setAnnotation(data.provenanceData.annotation ? data.provenanceData.annotation : "");
         setStartDate(data.provenanceData.startDate);
         setEndDate(data.provenanceData.endDate);
       }
@@ -260,7 +261,7 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
   useEffect(() => {
     if (data && data.provenanceData) {
       setCode(data.provenanceData.provenanceCode);
-      setAnnotation(data.provenanceData.annotation);
+      setAnnotation(data.provenanceData.annotation ? data.provenanceData.annotation : "");
       setStartDate(data.provenanceData.startDate);
       setEndDate(data.provenanceData.endDate);
 
@@ -372,7 +373,7 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
           isFocused={focusedField ? focusedField === "Annotation" : false}
           loading={loading}
           value={annotation}
-          id={data.provenanceData.id}
+          id="annotation"
           maxLength={30}
           errorText={annotationError}
           helperText="Supplementary information to support the provenance."

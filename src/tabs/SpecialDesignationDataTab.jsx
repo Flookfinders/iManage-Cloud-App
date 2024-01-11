@@ -19,6 +19,7 @@
 //    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    007   02.01.24 Sean Flook       IMANN-205 Added end date.
 //    008   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    009   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -92,60 +93,24 @@ function SpecialDesignationDataTab({
   );
   const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(FilteredSwaOrgRef(false));
 
-  const [designationType, setDesignationType] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.streetSpecialDesigCode : null
-  );
-  const [organisation, setOrganisation] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.swaOrgRefConsultant : null
-  );
-  const [district, setDistrict] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.districtRefConsultant : null
-  );
-  const [description, setDescription] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.specialDesigDescription : null
-  );
-  const [periodicity, setPeriodicity] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.specialDesigPeriodicityCode : null
-  );
-  const [operationalStartTime, setOperationalStartTime] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.specialDesigStartTime : null
-  );
-  const [operationalEndTime, setOperationalEndTime] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.specialDesigEndTime : null
-  );
-  const [operationalStartDate, setOperationalStartDate] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.specialDesigStartDate : null
-  );
-  const [operationalEndDate, setOperationalEndDate] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.specialDesigEndDate : null
-  );
-  const [startDate, setStartDate] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.recordStartDate : null
-  );
-  const [endDate, setEndDate] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.recordEndDate : null
-  );
-  const [source, setSource] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.specialDesigSourceText : null
-  );
-  const [wholeRoad, setWholeRoad] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.wholeRoad : true
-  );
-  const [specificLocation, setSpecificLocation] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.specificLocation : null
-  );
-  const [specialDesigStartX, setSpecialDesigStartX] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.specialDesigStartX : null
-  );
-  const [specialDesigStartY, setSpecialDesigStartY] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.specialDesigStartY : null
-  );
-  const [specialDesigEndX, setSpecialDesigEndX] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.specialDesigEndX : null
-  );
-  const [specialDesigEndY, setSpecialDesigEndY] = useState(
-    data && data.specialDesignationData ? data.specialDesignationData.specialDesigEndY : null
-  );
+  const [designationType, setDesignationType] = useState(null);
+  const [organisation, setOrganisation] = useState(null);
+  const [district, setDistrict] = useState(null);
+  const [description, setDescription] = useState("");
+  const [periodicity, setPeriodicity] = useState(null);
+  const [operationalStartTime, setOperationalStartTime] = useState(null);
+  const [operationalEndTime, setOperationalEndTime] = useState(null);
+  const [operationalStartDate, setOperationalStartDate] = useState(null);
+  const [operationalEndDate, setOperationalEndDate] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [source, setSource] = useState("");
+  const [wholeRoad, setWholeRoad] = useState(true);
+  const [specificLocation, setSpecificLocation] = useState("");
+  const [specialDesigStartX, setSpecialDesigStartX] = useState(0);
+  const [specialDesigStartY, setSpecialDesigStartY] = useState(0);
+  const [specialDesigEndX, setSpecialDesigEndX] = useState(0);
+  const [specialDesigEndY, setSpecialDesigEndY] = useState(0);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -415,7 +380,9 @@ function SpecialDesignationDataTab({
         setDesignationType(data.specialDesignationData.streetSpecialDesigCode);
         setOrganisation(data.specialDesignationData.swaOrgRefConsultant);
         setDistrict(data.specialDesignationData.districtRefConsultant);
-        setDescription(data.specialDesignationData.specialDesigDescription);
+        setDescription(
+          data.specialDesignationData.specialDesigDescription ? data.specialDesignationData.specialDesigDescription : ""
+        );
         setPeriodicity(data.specialDesignationData.specialDesigPeriodicityCode);
         setOperationalStartTime(data.specialDesignationData.specialDesigStartTime);
         setOperationalEndTime(data.specialDesignationData.specialDesigEndTime);
@@ -423,13 +390,25 @@ function SpecialDesignationDataTab({
         setOperationalEndDate(data.specialDesignationData.specialDesigEndDate);
         setStartDate(data.specialDesignationData.recordStartDate);
         setEndDate(data.specialDesignationData.recordEndDate);
-        setSource(data.specialDesignationData.specialDesigSourceText);
-        setWholeRoad(data.specialDesignationData.wholeRoad);
-        setSpecificLocation(data.specialDesignationData.specificLocation);
-        setSpecialDesigStartX(data.specialDesignationData.specialDesigStartX);
-        setSpecialDesigStartY(data.specialDesignationData.specialDesigStartY);
-        setSpecialDesigEndX(data.specialDesignationData.specialDesigEndX);
-        setSpecialDesigEndY(data.specialDesignationData.specialDesigEndY);
+        setSource(
+          data.specialDesignationData.specialDesigSourceText ? data.specialDesignationData.specialDesigSourceText : ""
+        );
+        setWholeRoad(data.specialDesignationData.wholeRoad ? data.specialDesignationData.wholeRoad : true);
+        setSpecificLocation(
+          data.specialDesignationData.specificLocation ? data.specialDesignationData.specificLocation : ""
+        );
+        setSpecialDesigStartX(
+          data.specialDesignationData.specialDesigStartX ? data.specialDesignationData.specialDesigStartX : 0
+        );
+        setSpecialDesigStartY(
+          data.specialDesignationData.specialDesigStartY ? data.specialDesignationData.specialDesigStartY : 0
+        );
+        setSpecialDesigEndX(
+          data.specialDesignationData.specialDesigEndX ? data.specialDesignationData.specialDesigEndX : 0
+        );
+        setSpecialDesigEndY(
+          data.specialDesignationData.specialDesigEndY ? data.specialDesignationData.specialDesigEndY : 0
+        );
       }
     }
     setDataChanged(false);
@@ -537,7 +516,9 @@ function SpecialDesignationDataTab({
       setDesignationType(data.specialDesignationData.streetSpecialDesigCode);
       setOrganisation(data.specialDesignationData.swaOrgRefConsultant);
       setDistrict(data.specialDesignationData.districtRefConsultant);
-      setDescription(data.specialDesignationData.specialDesigDescription);
+      setDescription(
+        data.specialDesignationData.specialDesigDescription ? data.specialDesignationData.specialDesigDescription : ""
+      );
       setPeriodicity(data.specialDesignationData.specialDesigPeriodicityCode);
       setOperationalStartTime(data.specialDesignationData.specialDesigStartTime);
       setOperationalEndTime(data.specialDesignationData.specialDesigEndTime);
@@ -545,13 +526,25 @@ function SpecialDesignationDataTab({
       setOperationalEndDate(data.specialDesignationData.specialDesigEndDate);
       setStartDate(data.specialDesignationData.recordStartDate);
       setEndDate(data.specialDesignationData.recordEndDate);
-      setSource(data.specialDesignationData.specialDesigSourceText);
-      setWholeRoad(data.specialDesignationData.wholeRoad);
-      setSpecificLocation(data.specialDesignationData.specificLocation);
-      setSpecialDesigStartX(data.specialDesignationData.specialDesigStartX);
-      setSpecialDesigStartY(data.specialDesignationData.specialDesigStartY);
-      setSpecialDesigEndX(data.specialDesignationData.specialDesigEndX);
-      setSpecialDesigEndY(data.specialDesignationData.specialDesigEndY);
+      setSource(
+        data.specialDesignationData.specialDesigSourceText ? data.specialDesignationData.specialDesigSourceText : ""
+      );
+      setWholeRoad(data.specialDesignationData.wholeRoad ? data.specialDesignationData.wholeRoad : true);
+      setSpecificLocation(
+        data.specialDesignationData.specificLocation ? data.specialDesignationData.specificLocation : ""
+      );
+      setSpecialDesigStartX(
+        data.specialDesignationData.specialDesigStartX ? data.specialDesignationData.specialDesigStartX : 0
+      );
+      setSpecialDesigStartY(
+        data.specialDesignationData.specialDesigStartY ? data.specialDesignationData.specialDesigStartY : 0
+      );
+      setSpecialDesigEndX(
+        data.specialDesignationData.specialDesigEndX ? data.specialDesignationData.specialDesigEndX : 0
+      );
+      setSpecialDesigEndY(
+        data.specialDesignationData.specialDesigEndY ? data.specialDesignationData.specialDesigEndY : 0
+      );
 
       setSpecialDesignationCodeLookup(FilteredSpecialDesignationCode(false));
       setSwaOrgRefLookup(FilteredSwaOrgRef(false));
@@ -799,7 +792,7 @@ function SpecialDesignationDataTab({
           minLines={3}
           maxLines={5}
           characterSet="GeoPlaceStreet1"
-          id="special-designation-description"
+          id="special_designation_description"
           errorText={descriptionError}
           helperText="Description providing additional information for certain Special Designations."
           onChange={handleDescriptionChangeEvent}
@@ -887,7 +880,7 @@ function SpecialDesignationDataTab({
           maxLength={120}
           minLines={3}
           maxLines={5}
-          id="special-designation-source"
+          id="special_designation_source"
           errorText={sourceError}
           helperText="A brief textual summary of the department/function and/or organisation that is the source of this data."
           onChange={handleSourceChangeEvent}
@@ -914,7 +907,7 @@ function SpecialDesignationDataTab({
             maxLength={250}
             minLines={3}
             maxLines={5}
-            id="construction-specify-location"
+            id="special_designation_specify_location"
             errorText={specificLocationError}
             helperText="Description of the location of the Special Designation within the Street."
             onChange={handleSpecificLocationChangeEvent}

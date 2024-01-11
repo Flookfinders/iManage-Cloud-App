@@ -19,6 +19,7 @@
 //    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    007   30.11.23 Sean Flook                 Added sub-locality.
 //    008   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    009   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -182,7 +183,7 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
                 isEditable
                 isFocused
                 value={actionData}
-                id={`lpi_level_1`}
+                id="lpi_level_1"
                 maxLength={30}
                 helperText="Memorandum of the vertical position of the BLPU."
                 onChange={(newValue) => setActionData(newValue)}
@@ -299,7 +300,7 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
             <ADSTextControl
               isEditable
               value={actionData}
-              id={"ads-text-textfield-note"}
+              id="property_note"
               maxLength={4000}
               minLines={2}
               maxLines={10}

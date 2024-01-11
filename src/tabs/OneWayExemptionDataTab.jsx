@@ -17,6 +17,7 @@
 //    004   03.11.23 Sean Flook                 Added hyphen to one-way.
 //    005   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    007   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -59,14 +60,12 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataCha
 
   const [dataChanged, setDataChanged] = useState(false);
 
-  const [oweType, setOweType] = useState(data && data.oweData ? data.oweData.oneWayExemptionTypeCode : null);
-  const [oweStartDate, setOweStartDate] = useState(data && data.oweData ? data.oweData.oneWayExemptionStartDate : null);
-  const [oweEndDate, setOweEndDate] = useState(data && data.oweData ? data.oweData.oneWayExemptionEndDate : null);
-  const [oweStartTime, setOweStartTime] = useState(data && data.oweData ? data.oweData.oneWayExemptionStartTime : null);
-  const [oweEndTime, setOweEndTime] = useState(data && data.oweData ? data.oweData.oneWayExemptionEndTime : null);
-  const [periodicity, setPeriodicity] = useState(
-    data && data.oweData ? data.oweData.oneWayExemptionPeriodicityCode : null
-  );
+  const [oweType, setOweType] = useState(null);
+  const [oweStartDate, setOweStartDate] = useState(null);
+  const [oweEndDate, setOweEndDate] = useState(null);
+  const [oweStartTime, setOweStartTime] = useState(null);
+  const [oweEndTime, setOweEndTime] = useState(null);
+  const [periodicity, setPeriodicity] = useState(null);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 

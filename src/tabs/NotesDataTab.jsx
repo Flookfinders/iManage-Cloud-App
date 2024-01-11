@@ -17,6 +17,7 @@
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    007   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -321,7 +322,7 @@ function NotesDataTab({ data, errors, loading, focusedField, onDataChanged, onDe
           isEditable={userCanEdit}
           loading={loading}
           value={note}
-          id={"ads-text-textfield-note"}
+          id="ads_text_textfield_note"
           maxLength={data.variant === "street" ? 100 : 4000}
           minLines={2}
           maxLines={data.variant === "street" ? 4 : 10}

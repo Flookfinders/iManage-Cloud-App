@@ -23,6 +23,7 @@
 //    010   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    011   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    012   10.01.24 Sean Flook                 Fix warnings.
+//    013   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1283,7 +1284,7 @@ function PropertyLPITab({
             isFocused={focusedField ? focusedField === "Level" : false}
             loading={loading}
             value={level}
-            id={`lpi_level_${data.lpiData.pkId}`}
+            id="lpi_level"
             maxLength={30}
             errorText={levelError}
             helperText="Memorandum of the vertical position of the BLPU."

@@ -25,6 +25,7 @@
 //    010   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    012   10.01.24 Sean Flook                 Fix warnings.
+//    013   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -733,7 +734,13 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
           ? streetContext.currentStreet.usrn !== dataUsrn.current
           : propertyContext.currentProperty.uprn !== dataUprn.current ||
             propertyContext.currentProperty.usrn !== dataUsrn.current;
-      if ((relatedType === "property" && !propertyData) || (relatedType === "street" && !streetData) || changedParent) {
+      if (
+        (relatedType === "property" &&
+          (!propertyData || (Object.keys(propertyData).length === 0 && propertyData.constructor === Object))) ||
+        (relatedType === "street" &&
+          (!streetData || (Object.keys(streetData).length === 0 && streetData.constructor === Object))) ||
+        changedParent
+      ) {
         if (apiUrl) {
           setLoading(true);
           const fetchUrl =
@@ -765,6 +772,14 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
               (result) => {
                 if (relatedType === "property") setPropertyData(result);
                 else setStreetData(result);
+                if (relatedType === "property" && Array.isArray(result.properties)) {
+                  const uprns = result.properties.map((x) => x.uprn);
+                  const deduplicatedUprns = [...new Set(uprns)];
+                  if (uprns.length !== deduplicatedUprns.length)
+                    console.log(
+                      `[ERROR] there are ${uprns.length - deduplicatedUprns.length} duplicate property records.`
+                    );
+                }
               },
               (error) => {
                 console.error(`[ERROR] Get ${relatedType} related data`, error);
@@ -802,8 +817,10 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
     } else if (!relatedType) {
       setRelatedType("property");
     } else if (
-      (!propertyData && relatedType === "property") ||
-      (!streetData && relatedType === "street") ||
+      ((!propertyData || (Object.keys(propertyData).length === 0 && propertyData.constructor === Object)) &&
+        relatedType === "property") ||
+      ((!streetData || (Object.keys(streetData).length === 0 && streetData.constructor === Object)) &&
+        relatedType === "street") ||
       (variant === "property" &&
         ((propertyContext.currentProperty.uprn > 0 && dataUprn.current !== propertyContext.currentProperty.uprn) ||
           (propertyContext.currentProperty.usrn > 0 && dataUsrn.current !== propertyContext.currentProperty.usrn))) ||

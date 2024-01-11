@@ -16,6 +16,7 @@
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    006   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -59,18 +60,10 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
   const [dataChanged, setDataChanged] = useState(false);
   const currentId = useRef(0);
 
-  const [successor, setSuccessor] = useState(
-    data && data.successorCrossRefData ? data.successorCrossRefData.successor : null
-  );
-  const [predecessor, setPredecessor] = useState(
-    data && data.successorCrossRefData ? data.successorCrossRefData.predecessor : null
-  );
-  const [startDate, setStartDate] = useState(
-    data && data.successorCrossRefData ? data.successorCrossRefData.startDate : null
-  );
-  const [endDate, setEndDate] = useState(
-    data && data.successorCrossRefData ? data.successorCrossRefData.endDate : null
-  );
+  const [successor, setSuccessor] = useState("");
+  const [predecessor, setPredecessor] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -208,8 +201,8 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
   const handleCancelClicked = () => {
     if (dataChanged) {
       if (data && data.successorCrossRefData) {
-        setSuccessor(data.successorCrossRefData.successor);
-        setPredecessor(data.successorCrossRefData.predecessor);
+        setSuccessor(data.successorCrossRefData.successor ? data.successorCrossRefData.successor : "");
+        setPredecessor(data.successorCrossRefData.predecessor ? data.successorCrossRefData.predecessor : "");
         setStartDate(data.successorCrossRefData.startDate);
         setEndDate(data.successorCrossRefData.endDate);
       }
@@ -259,8 +252,8 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
 
   useEffect(() => {
     if (data && data.successorCrossRefData) {
-      setSuccessor(data.successorCrossRefData.successor);
-      setPredecessor(data.successorCrossRefData.predecessor);
+      setSuccessor(data.successorCrossRefData.successor ? data.successorCrossRefData.successor : "");
+      setPredecessor(data.successorCrossRefData.predecessor ? data.successorCrossRefData.predecessor : "");
       setStartDate(data.successorCrossRefData.startDate);
       setEndDate(data.successorCrossRefData.endDate);
     }
@@ -435,7 +428,7 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
       </Box>
       <div>
         <ConfirmDeleteDialog
-          variant={`${variant}Successor`}
+          variant={`${variant}SuccessorCrossRef`}
           open={openDeleteConfirmation}
           onClose={handleCloseDeleteConfirmation}
         />

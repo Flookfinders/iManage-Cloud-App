@@ -14,6 +14,7 @@
 //    001   04.04.23 Sean Flook         WI40669 Initial version.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    004   11.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -253,7 +254,7 @@ function EditCrossReferenceDialog({ isOpen, isNew, data, onDone, onClose }) {
           isEditable
           isRequired
           value={crossReference}
-          id={data ? data.id.toString() : "0"}
+          id="cross_reference"
           maxLength={50}
           errorText={crossReferenceError}
           helperText="Primary key of corresponding Record in an external data-set."
