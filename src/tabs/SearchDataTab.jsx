@@ -34,6 +34,7 @@
 //    020   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
 //    021   29.11.23 Sean Flook       IMANN-163 Do not clear the street or property contexts if viewing ranges.
 //    022   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    023   11.01.24 Sean Flook       IMANN-163 Close the add property wizard dialog when clicking on view properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1225,6 +1226,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                     );
                   break;
               }
+              setOpenPropertyWizard(false);
               break;
 
             case "addChild":

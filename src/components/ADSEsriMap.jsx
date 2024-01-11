@@ -42,6 +42,7 @@
 //    028   03.01.24 Sean Flook                 Fixed warning.
 //    029   05.01.24 Sean Flook                 use CSS shortcuts.
 //    030   10.01.24 Sean Flook       IMANN-215 Allow ESUs to be assigned to a street when creating a new street.
+//    031   11.01.24 Sean Flook       IMANN-163 Close the add property wizard dialog when clicking on view properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -7427,6 +7428,7 @@ function ADSEsriMap(startExtent) {
                     );
                   break;
               }
+              setOpenPropertyWizard(false);
               break;
 
             case "addChild":
