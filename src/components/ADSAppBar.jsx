@@ -26,6 +26,7 @@
 //    013   19.12.23 Sean Flook                 Various bug fixes.
 //    014   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    015   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    016   12.01.24 Sean Flook       IMANN-163 Search results should be an array.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -488,7 +489,7 @@ function ADSAppBar(props) {
   const handleHomeClick = () => {
     streetContext.resetStreet();
     propertyContext.resetProperty();
-    searchContext.onSearchDataChange("", {});
+    searchContext.onSearchDataChange("", []);
     sandboxContext.resetSandbox();
     mapContext.onBackgroundDataChange([], [], []);
     mapContext.onSearchDataChange([], [], null, null);

@@ -31,6 +31,7 @@
 //    018   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    019   08.01.24 Joel Benford               Add getLpiSubLocality
 //    020   12.01.24 Sean Flook       IMANN-163 Do not bother to get property map data if we do not have a UPRN.
+//    021   12.01.24 Sean Flook       IMANN-163 Handle when we have no search results.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2019,7 +2020,8 @@ export async function UpdateRangeAfterSave(
             sort_code: 0,
           };
 
-          const i = newSearchData.findIndex((x) => x.id === lpi.lpiKey);
+          const i =
+            newSearchData && newSearchData.length > 0 ? newSearchData.findIndex((x) => x.id === lpi.lpiKey) : -1;
           if (i > -1) {
             newSearchData = newSearchData.map((x) => [newData].find((rec) => rec.id === x.id) || x);
           } else {

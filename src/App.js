@@ -35,6 +35,7 @@
 //    022   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    023   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    024   10.01.24 Sean Flook       IMANN-163 Added previousStreet and previousProperty.
+//    025   12.01.24 Sean Flook       IMANN-163 Search results should be an array.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -161,7 +162,7 @@ function App() {
 
   const [searchData, setSearchData] = useState({
     searchString: "",
-    results: {},
+    results: [],
   });
 
   const [previousSearchData, setPreviousSearchData] = useState({
