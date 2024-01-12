@@ -27,6 +27,7 @@
 //    014   21.12.23 Sean Flook                 Corrected street type filter for NSG only.
 //    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    016   08.01.24 Sean Flook                 Changes to fix warnings.
+//    017   12.01.24 Sean Flook       IMANN-233 Modified GetNewStreetData to update the street start and end coordinates if required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -36,7 +37,13 @@ import React from "react";
 import dateFormat from "dateformat";
 import { Typography } from "@mui/material";
 import { Stack } from "@mui/system";
-import { GetLookupLabel, GetCurrentDate, GetWktCoordinates, openInStreetView } from "./HelperUtils";
+import {
+  GetLookupLabel,
+  GetCurrentDate,
+  GetWktCoordinates,
+  openInStreetView,
+  getStartEndCoordinates,
+} from "./HelperUtils";
 import {
   GetStreetByUSRNUrl,
   GetDeleteStreetUrl,
@@ -566,6 +573,7 @@ export async function StreetDelete(usrn, deleteEsus, lookupContext, userToken, i
  * @param {array|null} prowData The public rights of way data for the street (GeoPlace only).
  * @param {array|null} hwwData The height, width and weight restriction data for the street (GeoPlace only).
  * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {boolean} [updateStreetCoordinates=false] True if the street coordinates need to be updated; otherwise false.
  * @return {object} The new street object.
  */
 export function GetNewStreetData(
@@ -582,8 +590,25 @@ export function GetNewStreetData(
   specialDesignationData,
   prowData,
   hwwData,
-  isScottish
+  isScottish,
+  updateStreetCoordinates = false
 ) {
+  let startX = currentStreet.streetStartX;
+  let startY = currentStreet.streetStartY;
+  let endX = currentStreet.streetEndX;
+  let endY = currentStreet.streetEndY;
+
+  if (updateStreetCoordinates) {
+    const newWholeRoadWkt = GetWholeRoadGeometry(esuData);
+    const coordinates = getStartEndCoordinates(newWholeRoadWkt);
+
+    if (coordinates) {
+      startX = coordinates.startX;
+      startY = coordinates.startY;
+      endX = coordinates.endX;
+      endY = coordinates.endY;
+    }
+  }
   const newStreetData =
     !isScottish && !HasASD()
       ? {
@@ -600,10 +625,10 @@ export function GetNewStreetData(
           stateDate: currentStreet.stateDate,
           streetClassification: currentStreet.streetClassification,
           streetTolerance: currentStreet.streetTolerance,
-          streetStartX: currentStreet.streetStartX,
-          streetStartY: currentStreet.streetStartY,
-          streetEndX: currentStreet.streetEndX,
-          streetEndY: currentStreet.streetEndY,
+          streetStartX: startX,
+          streetStartY: startY,
+          streetEndX: endX,
+          streetEndY: endY,
           pkId: currentStreet.pkId,
           lastUpdateDate: currentStreet.lastUpdateDate,
           entryDate: currentStreet.entryDate,
@@ -630,10 +655,10 @@ export function GetNewStreetData(
           stateDate: currentStreet.stateDate,
           streetClassification: currentStreet.streetClassification,
           streetTolerance: currentStreet.streetTolerance,
-          streetStartX: currentStreet.streetStartX,
-          streetStartY: currentStreet.streetStartY,
-          streetEndX: currentStreet.streetEndX,
-          streetEndY: currentStreet.streetEndY,
+          streetStartX: startX,
+          streetStartY: startY,
+          streetEndX: endX,
+          streetEndY: endY,
           pkId: currentStreet.pkId,
           lastUpdateDate: currentStreet.lastUpdateDate,
           entryDate: currentStreet.entryDate,
@@ -657,10 +682,10 @@ export function GetNewStreetData(
           recordEntryDate: currentStreet.recordEntryDate,
           streetStartDate: currentStreet.streetStartDate,
           streetEndDate: currentStreet.streetEndDate,
-          streetStartX: currentStreet.streetStartX,
-          streetStartY: currentStreet.streetStartY,
-          streetEndX: currentStreet.streetEndX,
-          streetEndY: currentStreet.streetEndY,
+          streetStartX: startX,
+          streetStartY: startY,
+          streetEndX: endX,
+          streetEndY: endY,
           streetLastUpdated: currentStreet.streetLastUpdated,
           streetLastUser: currentStreet.streetLastUser,
           neverExport: currentStreet.neverExport,
@@ -981,7 +1006,8 @@ export function GetNewEsuStreetData(currentSandbox, newEsus, streetData, isScott
     updatedSpecialDesignations,
     streetData.publicRightOfWays,
     updatedHeightWidthWeights,
-    isScottish
+    isScottish,
+    updateWholeRoad
   );
 
   if (newStreetData) {

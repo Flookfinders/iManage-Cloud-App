@@ -38,6 +38,7 @@
 //    024   09.01.24 Sean Flook       IMANN-197 Calculate the current length of the street when creating a new PRoW record.
 //    025   11.01.24 Sean Flook       IMANN-163 Close the add property wizard dialog when clicking on view properties.
 //    026   12.01.24 Sean Flook       IMANN-163 If viewing property create results do not reset everything.
+//    027   12.01.24 Sean Flook       IMANN-233 Use the new getStartEndCoordinates method.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -65,6 +66,7 @@ import {
   ResetContexts,
   GetPolylineAsWKT,
   doOpenRecord,
+  getStartEndCoordinates,
 } from "../utils/HelperUtils";
 import {
   GetNewStreetData,
@@ -7033,17 +7035,13 @@ function StreetDataForm({ data, loading }) {
 
             const newEsus = streetData.esus.map((x) => [updatedEsu].find((rec) => rec.esuId === x.esuId) || x);
 
-            const coordinates = mapContext.currentLineGeometry.wktGeometry
-              .replace("LINESTRING(", "")
-              .replace("LINESTRING (", "")
-              .replace(")", "")
-              .split(", ");
-            const startCoordinate = coordinates[0].split(" ");
-            const endCoordinate = coordinates[coordinates.length - 1].split(" ");
-            startX = Number.parseFloat(startCoordinate[0]).toFixed(4);
-            startY = Number.parseFloat(startCoordinate[1]).toFixed(4);
-            endX = Number.parseFloat(endCoordinate[0]).toFixed(4);
-            endY = Number.parseFloat(endCoordinate[1]).toFixed(4);
+            const coordinates = getStartEndCoordinates(mapContext.currentLineGeometry.wktGeometry);
+            if (coordinates) {
+              startX = coordinates.startX;
+              startY = coordinates.startY;
+              endX = coordinates.endX;
+              endY = coordinates.endY;
+            }
 
             newStreetData =
               !settingsContext.isScottish && !HasASD()
@@ -7419,19 +7417,13 @@ function StreetDataForm({ data, loading }) {
             endY = currentAsd61.endY;
 
             if (!currentAsd61.wholeRoad) {
-              const coordinates = mapContext.currentLineGeometry.wktGeometry
-                .replace("LINESTRING(", "")
-                .replace("LINESTRING (", "")
-                .replace("MULTILINESTRING(", "")
-                .replace("MULTILINESTRING (", "")
-                .replace(")", "")
-                .split(", ");
-              const startCoordinate = coordinates[0].split(" ");
-              const endCoordinate = coordinates[coordinates.length - 1].split(" ");
-              startX = Number.parseFloat(startCoordinate[0]).toFixed(4);
-              startY = Number.parseFloat(startCoordinate[1]).toFixed(4);
-              endX = Number.parseFloat(endCoordinate[0]).toFixed(4);
-              endY = Number.parseFloat(endCoordinate[1]).toFixed(4);
+              const coordinates = getStartEndCoordinates(mapContext.currentLineGeometry.wktGeometry);
+              if (coordinates) {
+                startX = coordinates.startX;
+                startY = coordinates.startY;
+                endX = coordinates.endX;
+                endY = coordinates.endY;
+              }
             }
 
             const updatedAsd61 = {
@@ -7520,19 +7512,13 @@ function StreetDataForm({ data, loading }) {
             endY = currentAsd62.endY;
 
             if (!currentAsd62.wholeRoad) {
-              const coordinates = mapContext.currentLineGeometry.wktGeometry
-                .replace("LINESTRING(", "")
-                .replace("LINESTRING (", "")
-                .replace("MULTILINESTRING(", "")
-                .replace("MULTILINESTRING (", "")
-                .replace(")", "")
-                .split(", ");
-              const startCoordinate = coordinates[0].split(" ");
-              const endCoordinate = coordinates[coordinates.length - 1].split(" ");
-              startX = Number.parseFloat(startCoordinate[0]).toFixed(4);
-              startY = Number.parseFloat(startCoordinate[1]).toFixed(4);
-              endX = Number.parseFloat(endCoordinate[0]).toFixed(4);
-              endY = Number.parseFloat(endCoordinate[1]).toFixed(4);
+              const coordinates = getStartEndCoordinates(mapContext.currentLineGeometry.wktGeometry);
+              if (coordinates) {
+                startX = coordinates.startX;
+                startY = coordinates.startY;
+                endX = coordinates.endX;
+                endY = coordinates.endY;
+              }
             }
 
             const updatedAsd62 = {
@@ -7627,19 +7613,13 @@ function StreetDataForm({ data, loading }) {
             endY = currentAsd63.endY;
 
             if (!currentAsd63.wholeRoad) {
-              const coordinates = mapContext.currentLineGeometry.wktGeometry
-                .replace("LINESTRING(", "")
-                .replace("LINESTRING (", "")
-                .replace("MULTILINESTRING(", "")
-                .replace("MULTILINESTRING (", "")
-                .replace(")", "")
-                .split(", ");
-              const startCoordinate = coordinates[0].split(" ");
-              const endCoordinate = coordinates[coordinates.length - 1].split(" ");
-              startX = Number.parseFloat(startCoordinate[0]).toFixed(4);
-              startY = Number.parseFloat(startCoordinate[1]).toFixed(4);
-              endX = Number.parseFloat(endCoordinate[0]).toFixed(4);
-              endY = Number.parseFloat(endCoordinate[1]).toFixed(4);
+              const coordinates = getStartEndCoordinates(mapContext.currentLineGeometry.wktGeometry);
+              if (coordinates) {
+                startX = coordinates.startX;
+                startY = coordinates.startY;
+                endX = coordinates.endX;
+                endY = coordinates.endY;
+              }
             }
 
             const updatedAsd63 = {
@@ -7735,19 +7715,13 @@ function StreetDataForm({ data, loading }) {
             endY = currentAsd64.endY;
 
             if (!currentAsd64.wholeRoad) {
-              const coordinates = mapContext.currentLineGeometry.wktGeometry
-                .replace("LINESTRING(", "")
-                .replace("LINESTRING (", "")
-                .replace("MULTILINESTRING(", "")
-                .replace("MULTILINESTRING (", "")
-                .replace(")", "")
-                .split(", ");
-              const startCoordinate = coordinates[0].split(" ");
-              const endCoordinate = coordinates[coordinates.length - 1].split(" ");
-              startX = Number.parseFloat(startCoordinate[0]).toFixed(4);
-              startY = Number.parseFloat(startCoordinate[1]).toFixed(4);
-              endX = Number.parseFloat(endCoordinate[0]).toFixed(4);
-              endY = Number.parseFloat(endCoordinate[1]).toFixed(4);
+              const coordinates = getStartEndCoordinates(mapContext.currentLineGeometry.wktGeometry);
+              if (coordinates) {
+                startX = coordinates.startX;
+                startY = coordinates.startY;
+                endX = coordinates.endX;
+                endY = coordinates.endY;
+              }
             }
 
             const updatedAsd64 = {

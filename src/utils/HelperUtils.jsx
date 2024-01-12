@@ -27,6 +27,7 @@
 //    014   02.01.24 Sean Flook                 Added defaultMapLayerIds.
 //    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    016   10.01.24 Sean Flook                 Fix warnings.
+//    017   12.01.24 Sean Flook       IMANN-233 Added getStartEndCoordinates.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1482,3 +1483,31 @@ export async function doOpenRecord(
     mapContext.onEditMapObject(21, rec.uprn);
   }
 }
+
+/**
+ * Method to extract the start and end coordinates from the supplied wkt string.
+ *
+ * @param {string} wktGeometry The wktGeometry to get the start and end coordinates from.
+ * @returns {object} The start and end coordinates from the supplied wkt string.
+ */
+export const getStartEndCoordinates = (wktGeometry) => {
+  if (wktGeometry.includes("LINESTRING")) {
+    const coordinates = wktGeometry
+      .replace("MULTI", "")
+      .replace("LINESTRING(", "")
+      .replace("LINESTRING (", "")
+      .replaceAll("(", "")
+      .replaceAll(")", "")
+      .split(", ");
+
+    const startCoordinate = coordinates[0].split(" ");
+    const endCoordinate = coordinates[coordinates.length - 1].split(" ");
+
+    return {
+      startX: Number.parseFloat(startCoordinate[0]).toFixed(4),
+      startY: Number.parseFloat(startCoordinate[1]).toFixed(4),
+      endX: Number.parseFloat(endCoordinate[0]).toFixed(4),
+      endY: Number.parseFloat(endCoordinate[1]).toFixed(4),
+    };
+  } else return null;
+};
