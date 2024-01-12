@@ -20,6 +20,7 @@
 //    007   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    008   08.01.24 Sean Flook                 Changes to try and fix warnings.
 //    009   10.01.24 Sean Flook                 Changes to try and fix warnings.
+//    010   12.01.24 Sean Flook                 Fixed duplicate key warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -256,7 +257,7 @@ function AsdDataListSubItem({
   }, [userContext]);
 
   return (
-    <List component="div" disablePadding>
+    <List component="div" disablePadding key={`asd${variant}${code}_list1`}>
       <ListItemButton
         id={code}
         key={`asd${variant}${code}`}
@@ -325,8 +326,8 @@ function AsdDataListSubItem({
         />
       </ListItemButton>
 
-      <Collapse in={subOpen} timeout="auto">
-        <List component="div" disablePadding>
+      <Collapse in={subOpen} timeout="auto" key={`${variant}${code}_collapse`}>
+        <List component="div" disablePadding key={`${variant}${code}_list2`}>
           {data
             .filter((x) => x[primaryCodeField] === code)
             .map((subD, index) => (

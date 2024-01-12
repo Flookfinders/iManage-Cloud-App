@@ -28,6 +28,7 @@
 //    014   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    015   10.01.24 Sean Flook                 Fix warnings.
 //    016   11.01.24 Sean Flook                 Fix warnings.
+//    017   12.01.24 Sean Flook                 Fixed duplicate key warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -913,6 +914,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                     : 0;
                 })
                 .map((rec) => {
+                  // console.log("[SF] property", rec);
                   return (
                     <TreeItem
                       key={rec.uprn}
@@ -979,7 +981,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                 </Stack>
                                 {rec.additional.map((recAdd) => {
                                   return (
-                                    <Stack direction="row" spacing={1}>
+                                    <Stack direction="row" spacing={1} key={recAdd.lpiKey}>
                                       <Chip
                                         size="small"
                                         label={recAdd.language}
@@ -1049,6 +1051,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                               : 0;
                           })
                           .map((child1) => {
+                            // console.log("[SF] child1", child1);
                             return (
                               <TreeItem
                                 key={child1.uprn}
@@ -1132,6 +1135,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                 spacing={1}
                                                 justifyContent="flex-start"
                                                 alignItems="center"
+                                                key={child1Add.lpiKey}
                                               >
                                                 <Chip
                                                   size="small"
@@ -1203,6 +1207,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                         : 0;
                                     })
                                     .map((child2) => {
+                                      // console.log("[SF] child2", child2);
                                       return (
                                         <TreeItem
                                           key={child2.uprn}
@@ -1304,6 +1309,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                           spacing={1}
                                                           justifyContent="flex-start"
                                                           alignItems="center"
+                                                          key={child2Add.lpiKey}
                                                         >
                                                           <Chip
                                                             size="small"
@@ -1390,6 +1396,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                   : 0;
                                               })
                                               .map((child3) => {
+                                                // console.log("[SF] child3", child3);
                                                 return (
                                                   <TreeItem
                                                     key={child3.uprn}
@@ -1500,6 +1507,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                                     spacing={1}
                                                                     justifyContent="flex-start"
                                                                     alignItems="center"
+                                                                    key={child3Add.lpiKey}
                                                                   >
                                                                     <Chip
                                                                       size="small"
