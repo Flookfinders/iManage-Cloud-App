@@ -35,6 +35,7 @@
 //    021   29.11.23 Sean Flook       IMANN-163 Do not clear the street or property contexts if viewing ranges.
 //    022   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    023   11.01.24 Sean Flook       IMANN-163 Close the add property wizard dialog when clicking on view properties.
+//    024   12.01.24 Sean Flook                 Fixed duplicate key warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1704,8 +1705,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                   </Grid>
                                 </Fragment>
                               ) : (
-                                formattedAddressToTitleCase(rec.formattedaddress, rec.postcode).map((address) => (
-                                  <Grid item>
+                                formattedAddressToTitleCase(rec.formattedaddress, rec.postcode).map((address, idx) => (
+                                  <Grid item key={`key_${idx}`}>
                                     <Typography variant="body2" sx={{ fontSize: "15px", color: adsMidGreyA }}>
                                       {address}
                                     </Typography>

@@ -21,6 +21,7 @@
 //    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and sorted some warnings.
 //    009   30.11.23 Sean Flook                 Change required for Scottish authorities.
 //    010   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    011   12.01.24 Sean Flook                 Fixed duplicate key warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1058,7 +1059,7 @@ function ADSWizardAddressList({
             data
               .filter((x) => x.language === "ENG")
               .map((rec, idx) => (
-                <Fragment>
+                <Fragment key={`address_list_${idx}`}>
                   <ListItemButton
                     divider
                     dense
