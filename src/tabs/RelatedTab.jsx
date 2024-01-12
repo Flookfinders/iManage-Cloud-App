@@ -26,6 +26,7 @@
 //    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    012   10.01.24 Sean Flook                 Fix warnings.
 //    013   11.01.24 Sean Flook                 Fix warnings.
+//    014   12.01.24 Sean Flook       IMANN-163 Do not try and get the data if we do not have the USRN/UPRN.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -746,53 +747,59 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
           const fetchUrl =
             relatedType === "property"
               ? variant === "street"
-                ? `${apiUrl.propertyUsrn.url}/${streetContext.currentStreet.usrn}`
+                ? streetContext.currentStreet.usrn > 0
+                  ? `${apiUrl.propertyUsrn.url}/${streetContext.currentStreet.usrn}`
+                  : null
                 : propertyContext.currentProperty.uprn > 0
                 ? `${apiUrl.propertyUprn.url}/${propertyContext.currentProperty.uprn}`
-                : `${apiUrl.propertyUsrn.url}/${propertyContext.currentProperty.usrn}`
+                : propertyContext.currentProperty.usrn > 0
+                ? `${apiUrl.propertyUsrn.url}/${propertyContext.currentProperty.usrn}`
+                : null
               : variant === "street"
               ? settingsContext.isScottish || HasASD()
-                ? `${apiUrl.streetWithASDUsrn.url}/${streetContext.currentStreet.usrn}`
-                : `${apiUrl.streetUsrn.url}/${streetContext.currentStreet.usrn}`
+                ? streetContext.currentStreet.usrn > 0
+                  ? `${apiUrl.streetWithASDUsrn.url}/${streetContext.currentStreet.usrn}`
+                  : null
+                : streetContext.currentStreet.usrn > 0
+                ? `${apiUrl.streetUsrn.url}/${streetContext.currentStreet.usrn}`
+                : null
               : propertyContext.currentProperty.uprn > 0
               ? settingsContext.isScottish || HasASD()
                 ? `${apiUrl.streetWithASDUprn.url}/${propertyContext.currentProperty.uprn}`
                 : `${apiUrl.streetUprn.url}/${propertyContext.currentProperty.uprn}`
               : settingsContext.isScottish || HasASD()
-              ? `${apiUrl.streetWithASDUsrn.url}/${propertyContext.currentProperty.usrn}`
-              : `${apiUrl.streetUsrn.url}/${propertyContext.currentProperty.usrn}`;
-          fetch(fetchUrl, {
-            headers: apiUrl.propertyUsrn.headers,
-            crossDomain: true,
-            method: "GET",
-          })
-            .then((res) => (res.ok ? res : Promise.reject(res)))
-            .then((res) => res.json())
-            .then(
-              (result) => {
-                if (relatedType === "property") setPropertyData(result);
-                else setStreetData(result);
-                if (relatedType === "property" && Array.isArray(result.properties)) {
-                  const uprns = result.properties.map((x) => x.uprn);
-                  const deduplicatedUprns = [...new Set(uprns)];
-                  if (uprns.length !== deduplicatedUprns.length)
-                    console.log(
-                      `[ERROR] there are ${uprns.length - deduplicatedUprns.length} duplicate property records.`
-                    );
+              ? propertyContext.currentProperty.usrn > 0
+                ? `${apiUrl.streetWithASDUsrn.url}/${propertyContext.currentProperty.usrn}`
+                : null
+              : propertyContext.currentProperty.usrn > 0
+              ? `${apiUrl.streetUsrn.url}/${propertyContext.currentProperty.usrn}`
+              : null;
+          if (fetchUrl) {
+            fetch(fetchUrl, {
+              headers: apiUrl.propertyUsrn.headers,
+              crossDomain: true,
+              method: "GET",
+            })
+              .then((res) => (res.ok ? res : Promise.reject(res)))
+              .then((res) => res.json())
+              .then(
+                (result) => {
+                  if (relatedType === "property") setPropertyData(result);
+                  else setStreetData(result);
+                },
+                (error) => {
+                  console.error(`[ERROR] Get ${relatedType} related data`, error);
                 }
-              },
-              (error) => {
-                console.error(`[ERROR] Get ${relatedType} related data`, error);
-              }
-            )
-            .then(() => {
-              if (variant === "street") dataUsrn.current = streetContext.currentStreet.usrn;
-              else {
-                dataUprn.current = propertyContext.currentProperty.uprn;
-                dataUsrn.current = propertyContext.currentProperty.usrn;
-              }
-              setLoading(false);
-            });
+              )
+              .then(() => {
+                if (variant === "street") dataUsrn.current = streetContext.currentStreet.usrn;
+                else {
+                  dataUprn.current = propertyContext.currentProperty.uprn;
+                  dataUsrn.current = propertyContext.currentProperty.usrn;
+                }
+                setLoading(false);
+              });
+          }
         } else {
           console.error("[ERROR] Related apiUrl is null");
         }

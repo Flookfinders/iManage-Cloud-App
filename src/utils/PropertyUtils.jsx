@@ -30,6 +30,7 @@
 //    017   14.12.23 Sean Flook                 Removed redundant fields.
 //    018   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    019   08.01.24 Joel Benford               Add getLpiSubLocality
+//    020   12.01.24 Sean Flook       IMANN-163 Do not bother to get property map data if we do not have a UPRN.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -62,13 +63,9 @@ import PostallyAddressable from "../data/PostallyAddressable";
  */
 export const FilteredBLPULogicalStatus = (isScottish, isTemplate = false) => {
   if (isScottish) {
-    return BLPULogicalStatus.filter(
-      (x) => x.osText && (!isTemplate || ![7, 8, 9].includes(x.id))
-    );
+    return BLPULogicalStatus.filter((x) => x.osText && (!isTemplate || ![7, 8, 9].includes(x.id)));
   } else {
-    return BLPULogicalStatus.filter(
-      (x) => x.gpText && (!isTemplate || ![7, 8, 9].includes(x.id))
-    );
+    return BLPULogicalStatus.filter((x) => x.gpText && (!isTemplate || ![7, 8, 9].includes(x.id)));
   }
 };
 
@@ -79,21 +76,12 @@ export const FilteredBLPULogicalStatus = (isScottish, isTemplate = false) => {
  * @param {boolean} [newOnly=false] If true only return values acceptable for a new property.
  * @return {array} The filtered list of representative point codes.
  */
-export const FilteredRepresentativePointCode = (
-  isScottish,
-  newOnly = false
-) => {
+export const FilteredRepresentativePointCode = (isScottish, newOnly = false) => {
   if (isScottish) {
-    if (newOnly)
-      return RepresentativePointCode.filter(
-        (x) => x.osText && [1, 2, 4].includes(x.id)
-      );
+    if (newOnly) return RepresentativePointCode.filter((x) => x.osText && [1, 2, 4].includes(x.id));
     else return RepresentativePointCode.filter((x) => x.osText);
   } else {
-    if (newOnly)
-      return RepresentativePointCode.filter(
-        (x) => x.gpText && [1, 2, 4].includes(x.id)
-      );
+    if (newOnly) return RepresentativePointCode.filter((x) => x.gpText && [1, 2, 4].includes(x.id));
     else return RepresentativePointCode.filter((x) => x.gpText);
   }
 };
@@ -115,9 +103,7 @@ export const FilteredBLPUState = (isScottish, logicalStatus) => {
 
       case 5:
       case 7:
-        return BLPUState.filter(
-          (x) => x.gpText && [1, 2, 3, 4, 6].includes(x.id)
-        );
+        return BLPUState.filter((x) => x.gpText && [1, 2, 3, 4, 6].includes(x.id));
 
       case 6:
         return BLPUState.filter((x) => x.gpText && [1, 5, 6, 7].includes(x.id));
@@ -126,9 +112,7 @@ export const FilteredBLPUState = (isScottish, logicalStatus) => {
         return BLPUState.filter((x) => x.gpText && [4, 7].includes(x.id));
 
       case 9:
-        return BLPUState.filter(
-          (x) => x.gpText && [1, 2, 3, 4, 5, 6, 7].includes(x.id)
-        );
+        return BLPUState.filter((x) => x.gpText && [1, 2, 3, 4, 5, 6, 7].includes(x.id));
 
       default:
         return BLPUState.filter((x) => x.gpText);
@@ -144,52 +128,33 @@ export const FilteredBLPUState = (isScottish, logicalStatus) => {
  * @param {boolean} [isTemplate=false] If true only return values that are acceptable for creating a new record.
  * @return {array} The filtered list of LPI logical statuses.
  */
-export const FilteredLPILogicalStatus = (
-  isScottish,
-  blpuLogicalStatus,
-  isTemplate = false
-) => {
+export const FilteredLPILogicalStatus = (isScottish, blpuLogicalStatus, isTemplate = false) => {
   if (isScottish) {
-    return LPILogicalStatus.filter(
-      (x) => x.osText && (!isTemplate || ![7, 8, 9].includes(x.id))
-    );
+    return LPILogicalStatus.filter((x) => x.osText && (!isTemplate || ![7, 8, 9].includes(x.id)));
   } else {
     switch (blpuLogicalStatus) {
       case 1:
         return LPILogicalStatus.filter(
-          (x) =>
-            x.gpText &&
-            (!isTemplate
-              ? [1, 3, 5, 6, 7, 8, 9].includes(x.id)
-              : [1, 3, 5, 6].includes(x.id))
+          (x) => x.gpText && (!isTemplate ? [1, 3, 5, 6, 7, 8, 9].includes(x.id) : [1, 3, 5, 6].includes(x.id))
         );
 
       case 5:
         return LPILogicalStatus.filter((x) => x.gpText && [5].includes(x.id));
 
       case 6:
-        return LPILogicalStatus.filter(
-          (x) =>
-            x.gpText && (!isTemplate ? [6, 7, 8, 9].includes(x.id) : x.id === 6)
-        );
+        return LPILogicalStatus.filter((x) => x.gpText && (!isTemplate ? [6, 7, 8, 9].includes(x.id) : x.id === 6));
 
       case 7:
-        return LPILogicalStatus.filter(
-          (x) => x.gpText && [7, 9].includes(x.id)
-        );
+        return LPILogicalStatus.filter((x) => x.gpText && [7, 9].includes(x.id));
 
       case 8:
-        return LPILogicalStatus.filter(
-          (x) => x.gpText && [7, 8, 9].includes(x.id)
-        );
+        return LPILogicalStatus.filter((x) => x.gpText && [7, 8, 9].includes(x.id));
 
       case 9:
         return LPILogicalStatus.filter((x) => x.gpText && [9].includes(x.id));
 
       default:
-        return LPILogicalStatus.filter(
-          (x) => x.gpText && (!isTemplate || ![7, 8, 9].includes(x.id))
-        );
+        return LPILogicalStatus.filter((x) => x.gpText && (!isTemplate || ![7, 8, 9].includes(x.id)));
     }
   }
 };
@@ -216,11 +181,7 @@ export const FilteredBLPUProvenance = (isScottish) => {
  * @param {boolean} [includeCode=true] If true include the classification code in the returned label; otherwise do not include the code.
  * @return {string} The classification label for the given code.
  */
-export function GetClassificationLabel(
-  classificationCode,
-  isScottish,
-  includeCode = true
-) {
+export function GetClassificationLabel(classificationCode, isScottish, includeCode = true) {
   const classification = classificationCode
     ? isScottish
       ? OSGClassification.find((x) => x.id === classificationCode)
@@ -228,9 +189,7 @@ export function GetClassificationLabel(
     : null;
 
   if (classification)
-    return includeCode
-      ? `${classificationCode} ${classification.display}`
-      : `${classification.display}`;
+    return includeCode ? `${classificationCode} ${classification.display}` : `${classification.display}`;
   else return classificationCode;
 }
 
@@ -242,14 +201,9 @@ export function GetClassificationLabel(
  * @return {string} The LPI logical status label for the given code.
  */
 export function GetLPILogicalStatusLabel(logicalStatus, isScottish) {
-  const lpiLogicalStatus = logicalStatus
-    ? LPILogicalStatus.find((x) => x.id === logicalStatus)
-    : null;
+  const lpiLogicalStatus = logicalStatus ? LPILogicalStatus.find((x) => x.id === logicalStatus) : null;
 
-  if (lpiLogicalStatus)
-    return `${logicalStatus.toString()} ${
-      lpiLogicalStatus[GetLookupLabel(isScottish)]
-    }`;
+  if (lpiLogicalStatus) return `${logicalStatus.toString()} ${lpiLogicalStatus[GetLookupLabel(isScottish)]}`;
   else if (logicalStatus) return logicalStatus.toString();
   else return null;
 }
@@ -262,12 +216,9 @@ export function GetLPILogicalStatusLabel(logicalStatus, isScottish) {
  * @return {string} The provenance label for the given code.
  */
 export function GetProvenanceLabel(provenanceCode, isScottish) {
-  const provenance = provenanceCode
-    ? BLPUProvenance.find((x) => x.id === provenanceCode)
-    : null;
+  const provenance = provenanceCode ? BLPUProvenance.find((x) => x.id === provenanceCode) : null;
 
-  if (provenance)
-    return `${provenanceCode} ${provenance[GetLookupLabel(isScottish)]}`;
+  if (provenance) return `${provenanceCode} ${provenance[GetLookupLabel(isScottish)]}`;
   else return provenanceCode;
 }
 
@@ -281,30 +232,19 @@ export function GetProvenanceLabel(provenanceCode, isScottish) {
  * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
  * @return {string} The temporary address from the supplied data.
  */
-export async function GetTempAddress(
-  lpiRecord,
-  organisation,
-  lookupContext,
-  userToken,
-  isScottish
-) {
+export async function GetTempAddress(lpiRecord, organisation, lookupContext, userToken, isScottish) {
   const postcode = lpiRecord.postcodeRef
-    ? lookupContext.currentLookups.postcodes.find(
-        (x) => x.postcodeRef === lpiRecord.postcodeRef
-      ).postcode
+    ? lookupContext.currentLookups.postcodes.find((x) => x.postcodeRef === lpiRecord.postcodeRef).postcode
     : "";
 
   const subLocality =
     isScottish && lpiRecord.subLocalityRef
-      ? lookupContext.currentLookups.subLocalities.find(
-          (x) => x.subLocalityRef === lpiRecord.subLocalityRef
-        ).subLocality
+      ? lookupContext.currentLookups.subLocalities.find((x) => x.subLocalityRef === lpiRecord.subLocalityRef)
+          .subLocality
       : "";
 
   const postTown = lpiRecord.postTownRef
-    ? lookupContext.currentLookups.postTowns.find(
-        (x) => x.postTownRef === lpiRecord.postTownRef
-      ).postTown
+    ? lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === lpiRecord.postTownRef).postTown
     : "";
 
   const addressData = isScottish
@@ -349,15 +289,12 @@ export async function GetTempAddress(
   const tempAddressUrl = GetTempAddressUrl(userToken);
 
   if (tempAddressUrl) {
-    const tempAddress = await fetch(
-      `${tempAddressUrl.url}?AddressSeparator=%2C%20`,
-      {
-        headers: tempAddressUrl.headers,
-        crossDomain: true,
-        method: tempAddressUrl.type,
-        body: JSON.stringify(addressData),
-      }
-    )
+    const tempAddress = await fetch(`${tempAddressUrl.url}?AddressSeparator=%2C%20`, {
+      headers: tempAddressUrl.headers,
+      crossDomain: true,
+      method: tempAddressUrl.type,
+      body: JSON.stringify(addressData),
+    })
       .then((res) => (res.ok ? res : Promise.reject(res)))
       .then((res) => res.text())
       .then(
@@ -387,24 +324,19 @@ export function addressToTitleCase(address, postcode) {
   }
 
   if (address && address.length > 0) {
-    if (address === "No records found" || address === "Search failed...")
-      return address;
+    if (address === "No records found" || address === "Search failed...") return address;
     else
       return (
         address
           .replace(postcode, "")
           .replace(/\w\S*/g, function (txt) {
             if (isNumeric(txt.charAt(0))) return txt.toUpperCase();
-            else
-              return (
-                txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
-              );
+            else return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
           })
           .replaceAll(" And ", " and ")
           .replaceAll(" The ", " the ")
           .replaceAll(" Of ", " of ")
-          .replaceAll(" To ", " to ") +
-        (postcode && address.includes(postcode) ? postcode : "")
+          .replaceAll(" To ", " to ") + (postcode && address.includes(postcode) ? postcode : "")
       );
   } else return null;
 }
@@ -439,15 +371,7 @@ export function formattedAddressToTitleCase(address, postcode) {
  * @param {number} northing The northing for the new property location
  * @return {object} The new property object.
  */
-export function GetNewProperty(
-  isWelsh,
-  isScottish,
-  authorityCode,
-  usrn,
-  parent,
-  easting,
-  northing
-) {
+export function GetNewProperty(isWelsh, isScottish, authorityCode, usrn, parent, easting, northing) {
   const currentDate = GetCurrentDate();
 
   if (isWelsh) {
@@ -910,9 +834,7 @@ export function GetNewPropertyData(
  * @returns {number} The id for the bilingual source.
  */
 export const getBilingualSource = (lookupContext) => {
-  const rec = lookupContext.currentLookups.appCrossRefs.find(
-    (x) => x.xrefSourceRef === "BILG"
-  );
+  const rec = lookupContext.currentLookups.appCrossRefs.find((x) => x.xrefSourceRef === "BILG");
 
   return rec ? rec.pkId : null;
 };
@@ -927,68 +849,48 @@ export const getBilingualSource = (lookupContext) => {
  * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
  * @return {object} The current property object.
  */
-export function GetCurrentPropertyData(
-  propertyData,
-  sandboxContext,
-  lookupContext,
-  isWelsh,
-  isScottish
-) {
+export function GetCurrentPropertyData(propertyData, sandboxContext, lookupContext, isWelsh, isScottish) {
   let lpiData = propertyData.lpis;
   if (sandboxContext.currentSandbox.currentPropertyRecords.lpi && isWelsh) {
-    const secondLanguage =
-      sandboxContext.currentSandbox.currentPropertyRecords.lpi.language ===
-      "ENG"
-        ? "CYM"
-        : "ENG";
+    const secondLanguage = sandboxContext.currentSandbox.currentPropertyRecords.lpi.language === "ENG" ? "CYM" : "ENG";
 
     let secondLpi = null;
     secondLpi = propertyData.lpis.find(
       (x) =>
-        x.dualLanguageLink ===
-          sandboxContext.currentSandbox.currentPropertyRecords.lpi
-            .dualLanguageLink && x.language === secondLanguage
+        x.dualLanguageLink === sandboxContext.currentSandbox.currentPropertyRecords.lpi.dualLanguageLink &&
+        x.language === secondLanguage
     );
     if (!secondLpi) {
       const bilingualId = getBilingualSource(lookupContext);
       const linkXRef = propertyData.blpuProvenances.find(
         (x) =>
           x.source === bilingualId &&
-          x.crossReference.includes(
-            sandboxContext.currentSandbox.currentPropertyRecords.lpi.lpiKey
-          )
+          x.crossReference.includes(sandboxContext.currentSandbox.currentPropertyRecords.lpi.lpiKey)
       );
       secondLpi = propertyData.lpis.find(
         (x) =>
           x.lpiKey ===
-          linkXRef.crossReference.replace(
-            sandboxContext.currentSandbox.currentPropertyRecords.lpi.lpiKey,
-            ""
-          )
+          linkXRef.crossReference.replace(sandboxContext.currentSandbox.currentPropertyRecords.lpi.lpiKey, "")
       );
     }
     const secondPostTown = lookupContext.currentLookups.postTowns.find(
       (x) =>
-        x.linkedRef ===
-          sandboxContext.currentSandbox.currentPropertyRecords.lpi
-            .postTownRef && x.language === secondLpi.language
+        x.linkedRef === sandboxContext.currentSandbox.currentPropertyRecords.lpi.postTownRef &&
+        x.language === secondLpi.language
     );
 
     const newSecondLpi = {
       language: secondLpi.language,
-      startDate:
-        sandboxContext.currentSandbox.currentPropertyRecords.lpi.startDate,
+      startDate: sandboxContext.currentSandbox.currentPropertyRecords.lpi.startDate,
       endDate: sandboxContext.currentSandbox.currentPropertyRecords.lpi.endDate,
       saoStartNumber:
         secondLpi && secondLpi.saoStartNumber
           ? secondLpi.saoStartNumber
-          : sandboxContext.currentSandbox.currentPropertyRecords.lpi
-              .saoStartNumber,
+          : sandboxContext.currentSandbox.currentPropertyRecords.lpi.saoStartNumber,
       saoEndNumber:
         secondLpi && secondLpi.saoEndNumber
           ? secondLpi.saoEndNumber
-          : sandboxContext.currentSandbox.currentPropertyRecords.lpi
-              .saoEndNumber,
+          : sandboxContext.currentSandbox.currentPropertyRecords.lpi.saoEndNumber,
       saoText:
         secondLpi && secondLpi.saoText
           ? secondLpi.saoText
@@ -996,55 +898,43 @@ export function GetCurrentPropertyData(
       paoStartNumber:
         secondLpi && secondLpi.paoStartNumber
           ? secondLpi.paoStartNumber
-          : sandboxContext.currentSandbox.currentPropertyRecords.lpi
-              .paoStartNumber,
+          : sandboxContext.currentSandbox.currentPropertyRecords.lpi.paoStartNumber,
       paoEndNumber:
         secondLpi && secondLpi.paoEndNumber
           ? secondLpi.paoEndNumber
-          : sandboxContext.currentSandbox.currentPropertyRecords.lpi
-              .paoEndNumber,
+          : sandboxContext.currentSandbox.currentPropertyRecords.lpi.paoEndNumber,
       paoText:
         secondLpi && secondLpi.paoText
           ? secondLpi.paoText
           : sandboxContext.currentSandbox.currentPropertyRecords.lpi.paoText,
       usrn: sandboxContext.currentSandbox.currentPropertyRecords.lpi.usrn,
-      postcodeRef:
-        sandboxContext.currentSandbox.currentPropertyRecords.lpi.postcodeRef,
+      postcodeRef: sandboxContext.currentSandbox.currentPropertyRecords.lpi.postcodeRef,
       postTownRef: secondPostTown ? secondPostTown.postTownRef : null,
-      neverExport:
-        sandboxContext.currentSandbox.currentPropertyRecords.lpi.neverExport,
+      neverExport: sandboxContext.currentSandbox.currentPropertyRecords.lpi.neverExport,
       postTown: secondPostTown ? secondPostTown.postTown : null,
-      postcode:
-        sandboxContext.currentSandbox.currentPropertyRecords.lpi.postcode,
+      postcode: sandboxContext.currentSandbox.currentPropertyRecords.lpi.postcode,
       dualLanguageLink: secondLpi.dualLanguageLink,
       uprn: secondLpi.uprn,
-      logicalStatus:
-        sandboxContext.currentSandbox.currentPropertyRecords.lpi.logicalStatus,
+      logicalStatus: sandboxContext.currentSandbox.currentPropertyRecords.lpi.logicalStatus,
       paoStartSuffix:
         secondLpi && secondLpi.paoStartSuffix
           ? secondLpi.paoStartSuffix
-          : sandboxContext.currentSandbox.currentPropertyRecords.lpi
-              .paoStartSuffix,
+          : sandboxContext.currentSandbox.currentPropertyRecords.lpi.paoStartSuffix,
       paoEndSuffix:
         secondLpi && secondLpi.paoEndSuffix
           ? secondLpi.paoEndSuffix
-          : sandboxContext.currentSandbox.currentPropertyRecords.lpi
-              .paoEndSuffix,
+          : sandboxContext.currentSandbox.currentPropertyRecords.lpi.paoEndSuffix,
       saoStartSuffix:
         secondLpi && secondLpi.saoStartSuffix
           ? secondLpi.saoStartSuffix
-          : sandboxContext.currentSandbox.currentPropertyRecords.lpi
-              .saoStartSuffix,
+          : sandboxContext.currentSandbox.currentPropertyRecords.lpi.saoStartSuffix,
       saoEndSuffix:
         secondLpi && secondLpi.saoEndSuffix
           ? secondLpi.saoEndSuffix
-          : sandboxContext.currentSandbox.currentPropertyRecords.lpi
-              .saoEndSuffix,
+          : sandboxContext.currentSandbox.currentPropertyRecords.lpi.saoEndSuffix,
       level: sandboxContext.currentSandbox.currentPropertyRecords.lpi.level,
-      postalAddress:
-        sandboxContext.currentSandbox.currentPropertyRecords.lpi.postalAddress,
-      officialFlag:
-        sandboxContext.currentSandbox.currentPropertyRecords.lpi.officialFlag,
+      postalAddress: sandboxContext.currentSandbox.currentPropertyRecords.lpi.postalAddress,
+      officialFlag: sandboxContext.currentSandbox.currentPropertyRecords.lpi.officialFlag,
       pkId: secondLpi.pkId,
       changeType: secondLpi.changeType,
       lpiKey: secondLpi.lpiKey,
@@ -1054,75 +944,61 @@ export function GetCurrentPropertyData(
     };
     lpiData = propertyData.lpis.map(
       (x) =>
-        [sandboxContext.currentSandbox.currentPropertyRecords.lpi].find(
-          (lpi) => lpi.pkId === x.pkId
-        ) ||
+        [sandboxContext.currentSandbox.currentPropertyRecords.lpi].find((lpi) => lpi.pkId === x.pkId) ||
         [newSecondLpi].find((lpi) => lpi.pkId === x.pkId) ||
         x
     );
   } else {
     lpiData = sandboxContext.currentSandbox.currentPropertyRecords.lpi
       ? propertyData.lpis.map(
-          (x) =>
-            [sandboxContext.currentSandbox.currentPropertyRecords.lpi].find(
-              (lpi) => lpi.pkId === x.pkId
-            ) || x
+          (x) => [sandboxContext.currentSandbox.currentPropertyRecords.lpi].find((lpi) => lpi.pkId === x.pkId) || x
         )
       : propertyData.lpis;
   }
 
-  const provenanceData = sandboxContext.currentSandbox.currentPropertyRecords
-    .provenance
+  const provenanceData = sandboxContext.currentSandbox.currentPropertyRecords.provenance
     ? propertyData.blpuProvenances.map(
         (x) =>
-          [
-            sandboxContext.currentSandbox.currentPropertyRecords.provenance,
-          ].find((provenance) => provenance.pkId === x.pkId) || x
+          [sandboxContext.currentSandbox.currentPropertyRecords.provenance].find(
+            (provenance) => provenance.pkId === x.pkId
+          ) || x
       )
     : propertyData.blpuProvenances;
-  const crossRefData = sandboxContext.currentSandbox.currentPropertyRecords
-    .appCrossRef
+  const crossRefData = sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef
     ? propertyData.blpuAppCrossRefs.map(
         (x) =>
-          [
-            sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef,
-          ].find((appCrossRef) => appCrossRef.pkId === x.pkId) || x
+          [sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef].find(
+            (appCrossRef) => appCrossRef.pkId === x.pkId
+          ) || x
       )
     : propertyData.blpuAppCrossRefs;
-  const classificationData = sandboxContext.currentSandbox
-    .currentPropertyRecords.classification
+  const classificationData = sandboxContext.currentSandbox.currentPropertyRecords.classification
     ? propertyData.classifications.map(
         (x) =>
-          [
-            sandboxContext.currentSandbox.currentPropertyRecords.classification,
-          ].find((classification) => classification.pkId === x.pkId) || x
+          [sandboxContext.currentSandbox.currentPropertyRecords.classification].find(
+            (classification) => classification.pkId === x.pkId
+          ) || x
       )
     : propertyData.classifications;
-  const organisationData = sandboxContext.currentSandbox.currentPropertyRecords
-    .organisation
+  const organisationData = sandboxContext.currentSandbox.currentPropertyRecords.organisation
     ? propertyData.organisations.map(
         (x) =>
-          [
-            sandboxContext.currentSandbox.currentPropertyRecords.organisation,
-          ].find((organisation) => organisation.pkId === x.pkId) || x
+          [sandboxContext.currentSandbox.currentPropertyRecords.organisation].find(
+            (organisation) => organisation.pkId === x.pkId
+          ) || x
       )
     : propertyData.organisations;
-  const successorCrossRefData = sandboxContext.currentSandbox
-    .currentPropertyRecords.successorCrossRef
+  const successorCrossRefData = sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef
     ? propertyData.successorCrossRefs.map(
         (x) =>
-          [
-            sandboxContext.currentSandbox.currentPropertyRecords
-              .successorCrossRef,
-          ].find((successorCrossRef) => successorCrossRef.pkId === x.pkId) || x
+          [sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef].find(
+            (successorCrossRef) => successorCrossRef.pkId === x.pkId
+          ) || x
       )
     : propertyData.successorCrossRefs;
   const noteData = sandboxContext.currentSandbox.currentPropertyRecords.note
     ? propertyData.blpuNotes.map(
-        (x) =>
-          [sandboxContext.currentSandbox.currentPropertyRecords.note].find(
-            (note) => note.pkId === x.pkId
-          ) || x
+        (x) => [sandboxContext.currentSandbox.currentPropertyRecords.note].find((note) => note.pkId === x.pkId) || x
       )
     : propertyData.blpuNotes;
   const currentPropertyData = GetNewPropertyData(
@@ -1639,10 +1515,7 @@ export function GetPropertyValidationErrors(body, newProperty) {
     if (!key.includes(".")) {
       errorBlpu.push({ field: key, errors: value });
     } else {
-      if (
-        key.toLowerCase().includes("lpis[") ||
-        key.toLowerCase().includes("lpi[")
-      ) {
+      if (key.toLowerCase().includes("lpis[") || key.toLowerCase().includes("lpi[")) {
         errorLpi.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
@@ -1749,7 +1622,7 @@ export function GetPropertyValidationErrors(body, newProperty) {
 export async function GetPropertyMapData(uprn, userToken) {
   const propertyUrl = GetPropertyFromUPRNUrl(userToken);
 
-  if (propertyUrl) {
+  if (propertyUrl && uprn) {
     const returnValue = await fetch(`${propertyUrl.url}/${uprn}`, {
       headers: propertyUrl.headers,
       crossDomain: true,
@@ -1781,18 +1654,10 @@ export async function GetPropertyMapData(uprn, userToken) {
  * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
  * @return {object|null} If the save was successful the updated property; otherwise null.
  */
-export async function SaveProperty(
-  currentProperty,
-  newProperty,
-  userToken,
-  propertyContext,
-  isScottish
-) {
+export async function SaveProperty(currentProperty, newProperty, userToken, propertyContext, isScottish) {
   propertyContext.resetPropertyErrors();
 
-  const saveUrl = newProperty
-    ? GetCreatePropertyUrl(userToken)
-    : GetUpdatePropertyUrl(userToken);
+  const saveUrl = newProperty ? GetCreatePropertyUrl(userToken) : GetUpdatePropertyUrl(userToken);
   const saveData = newProperty
     ? GetPropertyCreateData(currentProperty, isScottish)
     : GetPropertyUpdateData(currentProperty, isScottish);
@@ -1876,27 +1741,17 @@ export async function SaveProperty(
                   res
                 );
 
-                const responseData = response
-                  .replace("[{", "")
-                  .replace("}]", "")
-                  .split(',"');
+                const responseData = response.replace("[{", "").replace("}]", "").split(',"');
 
                 let errorTitle = "";
                 let errorDescription = "";
 
                 for (const errorData of responseData) {
-                  if (errorData.includes("errorTitle"))
-                    errorTitle = errorData.substr(13).replace('"', "");
+                  if (errorData.includes("errorTitle")) errorTitle = errorData.substr(13).replace('"', "");
                   else if (errorData.includes("errorDescription"))
                     errorDescription = errorData.substr(19).replace('"', "");
 
-                  if (
-                    errorTitle &&
-                    errorTitle.length > 0 &&
-                    errorDescription &&
-                    errorDescription.length > 0
-                  )
-                    break;
+                  if (errorTitle && errorTitle.length > 0 && errorDescription && errorDescription.length > 0) break;
                 }
 
                 // if (process.env.NODE_ENV === "development")
@@ -1942,9 +1797,7 @@ export async function SaveProperty(
  * @return {string|null} The name of the given street.
  */
 const getStreetName = (usrn, lookupContext) => {
-  const street = lookupContext.currentLookups.streetDescriptors.filter(
-    (x) => x.language === "ENG" && x.usrn === usrn
-  );
+  const street = lookupContext.currentLookups.streetDescriptors.filter((x) => x.language === "ENG" && x.usrn === usrn);
 
   if (street) return street[0].address;
   else return null;
@@ -1982,14 +1835,8 @@ export async function UpdateAfterSave(
   const returnedLpis =
     result && result.lpis
       ? isWelsh
-        ? result.lpis
-            .sort((a, b) =>
-              a.language > b.language ? 1 : b.language > a.language ? -1 : 0
-            )
-            .reverse()
-        : result.lpis.sort((a, b) =>
-            a.language > b.language ? 1 : b.language > a.language ? -1 : 0
-          )
+        ? result.lpis.sort((a, b) => (a.language > b.language ? 1 : b.language > a.language ? -1 : 0)).reverse()
+        : result.lpis.sort((a, b) => (a.language > b.language ? 1 : b.language > a.language ? -1 : 0))
       : null;
 
   if (returnedLpis) {
@@ -2031,53 +1878,33 @@ export async function UpdateAfterSave(
           sort_code: 0,
         };
 
-        if (
-          searchContext.currentSearchData.results &&
-          searchContext.currentSearchData.results.length > 0
-        ) {
-          const i = searchContext.currentSearchData.results.findIndex(
-            (x) => x.id === lpi.lpiKey
-          );
+        if (searchContext.currentSearchData.results && searchContext.currentSearchData.results.length > 0) {
+          const i = searchContext.currentSearchData.results.findIndex((x) => x.id === lpi.lpiKey);
           if (i > -1) {
             newSearchData = searchContext.currentSearchData.results.map(
               (x) => [newData].find((rec) => rec.id === x.id) || x
             );
           } else {
-            newSearchData = JSON.parse(
-              JSON.stringify(searchContext.currentSearchData.results)
-            );
+            newSearchData = JSON.parse(JSON.stringify(searchContext.currentSearchData.results));
             newSearchData.push(newData);
           }
 
           if (newSearchData)
-            searchContext.onSearchDataChange(
-              searchContext.currentSearchData.searchString,
-              newSearchData
-            );
+            searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newSearchData);
         }
       }
     }
   }
 
-  if (
-    searchContext.currentSearchData.results &&
-    searchContext.currentSearchData.results.length > 0
-  ) {
-    const addressesOnUPRN = searchContext.currentSearchData.results.filter(
-      (x) => x.uprn === result.uprn
-    );
+  if (searchContext.currentSearchData.results && searchContext.currentSearchData.results.length > 0) {
+    const addressesOnUPRN = searchContext.currentSearchData.results.filter((x) => x.uprn === result.uprn);
 
     if (addressesOnUPRN.length > searchAddresses.length) {
       const currentLpiKeys = result.lpis.map((x) => x.lpiKey);
 
-      const fixedSearchData = newSearchData.filter(
-        (x) => x.uprn !== result.uprn || currentLpiKeys.includes(x.id)
-      );
+      const fixedSearchData = newSearchData.filter((x) => x.uprn !== result.uprn || currentLpiKeys.includes(x.id));
 
-      searchContext.onSearchDataChange(
-        searchContext.currentSearchData.searchString,
-        fixedSearchData
-      );
+      searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, fixedSearchData);
     }
   }
 
@@ -2143,22 +1970,14 @@ export async function UpdateRangeAfterSave(
   sandboxContext.resetSandbox("property");
 
   const searchAddresses = [];
-  let newSearchData = JSON.parse(
-    JSON.stringify(searchContext.currentSearchData.results)
-  );
+  let newSearchData = JSON.parse(JSON.stringify(searchContext.currentSearchData.results));
 
   for (const property of properties) {
     const returnedLpis =
       property && property.lpis
         ? isWelsh
-          ? property.lpis
-              .sort((a, b) =>
-                a.language > b.language ? 1 : b.language > a.language ? -1 : 0
-              )
-              .reverse()
-          : property.lpis.sort((a, b) =>
-              a.language > b.language ? 1 : b.language > a.language ? -1 : 0
-            )
+          ? property.lpis.sort((a, b) => (a.language > b.language ? 1 : b.language > a.language ? -1 : 0)).reverse()
+          : property.lpis.sort((a, b) => (a.language > b.language ? 1 : b.language > a.language ? -1 : 0))
         : null;
 
     if (returnedLpis) {
@@ -2202,9 +2021,7 @@ export async function UpdateRangeAfterSave(
 
           const i = newSearchData.findIndex((x) => x.id === lpi.lpiKey);
           if (i > -1) {
-            newSearchData = newSearchData.map(
-              (x) => [newData].find((rec) => rec.id === x.id) || x
-            );
+            newSearchData = newSearchData.map((x) => [newData].find((rec) => rec.id === x.id) || x);
           } else {
             newSearchData.push(newData);
           }
@@ -2213,32 +2030,19 @@ export async function UpdateRangeAfterSave(
     }
   }
 
-  if (newSearchData)
-    searchContext.onSearchDataChange(
-      searchContext.currentSearchData.searchString,
-      newSearchData
-    );
+  if (newSearchData) searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newSearchData);
 
-  const addressesOnUPRN = searchContext.currentSearchData.results.filter(
-    (x) => x.uprn === properties.uprn
-  );
+  const addressesOnUPRN = searchContext.currentSearchData.results.filter((x) => x.uprn === properties.uprn);
 
   if (addressesOnUPRN.length > searchAddresses.length) {
     const currentLpiKeys = properties.lpis.map((x) => x.lpiKey);
 
-    const fixedSearchData = newSearchData.filter(
-      (x) => x.uprn !== properties.uprn || currentLpiKeys.includes(x.id)
-    );
+    const fixedSearchData = newSearchData.filter((x) => x.uprn !== properties.uprn || currentLpiKeys.includes(x.id));
 
-    searchContext.onSearchDataChange(
-      searchContext.currentSearchData.searchString,
-      fixedSearchData
-    );
+    searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, fixedSearchData);
   }
 
-  let newMapSearchProperties = JSON.parse(
-    JSON.stringify(mapContext.currentSearchData.properties)
-  );
+  let newMapSearchProperties = JSON.parse(JSON.stringify(mapContext.currentSearchData.properties));
 
   for (const property of properties) {
     const engLpi = property.lpis
@@ -2269,12 +2073,7 @@ export async function UpdateRangeAfterSave(
   }
 
   if (newMapSearchProperties)
-    mapContext.onSearchDataChange(
-      mapContext.currentSearchData.streets,
-      newMapSearchProperties,
-      null,
-      null
-    );
+    mapContext.onSearchDataChange(mapContext.currentSearchData.streets, newMapSearchProperties, null, null);
 }
 
 /**
@@ -2304,24 +2103,12 @@ export async function SavePropertyAndUpdate(
   isScottish,
   isWelsh
 ) {
-  const propertySaved = await SaveProperty(
-    currentProperty,
-    newProperty,
-    userToken,
-    propertyContext,
-    isScottish
-  ).then((result) => {
-    UpdateAfterSave(
-      result,
-      lookupContext,
-      mapContext,
-      propertyContext,
-      sandboxContext,
-      isWelsh,
-      searchContext
-    );
-    return result;
-  });
+  const propertySaved = await SaveProperty(currentProperty, newProperty, userToken, propertyContext, isScottish).then(
+    (result) => {
+      UpdateAfterSave(result, lookupContext, mapContext, propertyContext, sandboxContext, isWelsh, searchContext);
+      return result;
+    }
+  );
 
   return propertySaved;
 }
@@ -2428,10 +2215,7 @@ export const getLpiPostTown = (value, postTowns) => {
  * @returns {string|null} The description to display for the sub locality reference number.
  */
 export const getLpiSubLocality = (value, subLocalities) => {
-  const rec = subLocalities.find(
-    (x) =>
-      x.subLocalityRef === value && x.historic === false && x.language === "ENG"
-  );
+  const rec = subLocalities.find((x) => x.subLocalityRef === value && x.historic === false && x.language === "ENG");
 
   if (rec) return rec.subLocality;
   else return null;
@@ -2507,8 +2291,7 @@ export const getOtherProvenance = (value, isScottish) => {
  */
 export const getClassificationCode = (property) => {
   const classificationCode = property.classifications
-    ? property.classifications.sort((a, b) => a.entryDate - b.entryDate)[0]
-        .blpuClass
+    ? property.classifications.sort((a, b) => a.entryDate - b.entryDate)[0].blpuClass
     : property.blpuClass;
 
   return classificationCode ? classificationCode : "U";

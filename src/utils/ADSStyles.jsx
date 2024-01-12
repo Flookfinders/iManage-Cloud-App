@@ -20,6 +20,7 @@
 //    007   14.12.23 Sean Flook                 Added dashboardIconStyle.
 //    008   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    009   10.01.24 Sean Flook                 Fix warnings.
+//    010   12.01.24 Sean Flook                 Added top border to toolbar style.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -290,6 +291,7 @@ export function FormSelectInputStyle(hasError) {
 export const toolbarStyle = {
   backgroundColor: adsWhite,
   borderBottom: `1px solid ${adsLightGreyB}`,
+  borderTop: `1px solid ${adsLightGreyB}`,
   pl: "4px",
   pr: "6px",
   height: "44px",
