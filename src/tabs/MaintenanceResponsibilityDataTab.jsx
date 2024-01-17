@@ -18,6 +18,7 @@
 //    005   19.12.23 Sean Flook                 Various bug fixes.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    007   11.01.24 Sean Flook                 Fix warnings.
+//    008   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,8 +31,7 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
 import MapContext from "./../context/mapContext";
 
-import { GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
-import { FilteredRoadStatusCode, FilteredSwaOrgRef } from "../utils/StreetUtils";
+import { GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
 
 import { Avatar, Typography } from "@mui/material";
@@ -44,6 +44,9 @@ import ADSTextControl from "../components/ADSTextControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ADSTextToggleControl from "../components/ADSTextToggleControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+
+import RoadStatusCode from "../data/RoadStatusCode";
+import SwaOrgRef from "../data/SwaOrgRef";
 
 import { People } from "@mui/icons-material";
 
@@ -80,8 +83,8 @@ function MaintenanceResponsibilityDataTab({
 
   const [dataChanged, setDataChanged] = useState(false);
 
-  const [roadStatusCodeLookup, setRoadStatusCodeLookup] = useState(FilteredRoadStatusCode(true));
-  const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(FilteredSwaOrgRef(true));
+  const [roadStatusCodeLookup, setRoadStatusCodeLookup] = useState(filteredLookup(RoadStatusCode, true));
+  const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(filteredLookup(SwaOrgRef, true));
 
   const [streetStatus, setStreetStatus] = useState(null);
   const [custodian, setCustodian] = useState(null);
@@ -372,8 +375,8 @@ function MaintenanceResponsibilityDataTab({
         data.maintenanceResponsibilityData.specificLocation ? data.maintenanceResponsibilityData.specificLocation : ""
       );
 
-      setRoadStatusCodeLookup(FilteredRoadStatusCode(true));
-      setSwaOrgRefLookup(FilteredSwaOrgRef(true));
+      setRoadStatusCodeLookup(filteredLookup(RoadStatusCode, true));
+      setSwaOrgRefLookup(filteredLookup(SwaOrgRef, true));
     }
   }, [loading, data]);
 

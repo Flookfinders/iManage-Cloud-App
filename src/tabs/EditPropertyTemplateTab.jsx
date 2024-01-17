@@ -20,6 +20,8 @@
 //    007   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    008   08.01.24 Joel Benford               Classification and sub locality
 //    009   10.01.24 Sean Flook                 Fix warnings.
+//    010   16.01.23 Joel Benford               OS/GP level split
+//    011   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -99,11 +101,12 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
   const [blpuRpc, setBlpuRpc] = useState(null);
   const [blpuState, setBlpuState] = useState(null);
   const [blpuClassification, setBlpuClassification] = useState(null);
+  const [blpuLevel, setBlpuLevel] = useState(0); // OS numeric
   const [classificationScheme, setClassificationScheme] = useState(null);
   const [lpiStatus, setLpiStatus] = useState(null);
   const [lpiPostTown, setLpiPostTown] = useState(null);
   const [lpiSubLocality, setLpiSubLocality] = useState(null);
-  const [lpiLevel, setLpiLevel] = useState(null);
+  const [lpiLevel, setLpiLevel] = useState(""); // GP string
   const [lpiOfficialAddress, setLpiOfficialAddress] = useState(null);
   const [lpiPostalAddress, setLpiPostalAddress] = useState(null);
   const [otherCrossRefSource, setOtherCrossRefSource] = useState(null);
@@ -153,6 +156,7 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
       rpc: data.rpc,
       state: data.state,
       classification: data.classification,
+      level: data.blpuLevel,
     });
     setShowEditDialog(true);
   };
@@ -166,7 +170,7 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
       lpiLogicalStatus: data.lpiLogicalStatus,
       postTownRef: data.postTownRef,
       subLocalityRef: data.subLocalityRef,
-      level: data.level,
+      level: data.lpiLevel,
       officialAddressMaker: data.officialAddressMaker,
       postallyAddressable: data.postallyAddressable,
     });
@@ -180,7 +184,7 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
     setEditVariant("classification");
     setEditData({
       classification: data.classification,
-      classificationScheme: data.scheme,
+      classificationScheme: data.classificationScheme,
     });
     setShowEditDialog(true);
   };
@@ -218,15 +222,16 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               numberingSystem: data.numberingSystem,
               blpuTemplatePkId: data.blpuTemplatePkId,
               blpuLogicalStatus: blpuStatus,
+              blpuLevel: blpuLevel,
               rpc: blpuRpc,
               state: blpuState,
               classification: blpuClassification,
-              scheme: classificationScheme,
+              classificationScheme: classificationScheme,
               lpiTemplatePkId: data.lpiTemplatePkId,
               lpiLogicalStatus: lpiStatus,
               postTownRef: lpiPostTown,
               subLocalityRef: lpiSubLocality,
-              level: lpiLevel,
+              lpiLevel: lpiLevel,
               officialAddressMaker: lpiOfficialAddress,
               postallyAddressable: lpiPostalAddress,
               miscTemplatePkId: data.miscTemplatePkId,
@@ -248,15 +253,16 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               numberingSystem: data.numberingSystem,
               blpuTemplatePkId: data.blpuTemplatePkId,
               blpuLogicalStatus: blpuStatus,
+              blpuLevel: blpuLevel,
               rpc: blpuRpc,
               state: blpuState,
               classification: blpuClassification,
-              scheme: classificationScheme,
+              classificationScheme: classificationScheme,
               lpiTemplatePkId: data.lpiTemplatePkId,
               lpiLogicalStatus: lpiStatus,
               postTownRef: lpiPostTown,
               subLocalityRef: lpiSubLocality,
-              level: lpiLevel,
+              lpiLevel: lpiLevel,
               officialAddressMaker: lpiOfficialAddress,
               postallyAddressable: lpiPostalAddress,
               miscTemplatePkId: data.miscTemplatePkId,
@@ -270,6 +276,7 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
           setBlpuStatus(updatedData.blpuLogicalStatus);
           setBlpuRpc(updatedData.rpc);
           setBlpuState(updatedData.state);
+          setBlpuLevel(updatedData.blpuLevel);
           if (onUpdateData)
             onUpdateData({
               templatePkId: data.templatePkId,
@@ -280,15 +287,17 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               numberingSystem: data.numberingSystem,
               blpuTemplatePkId: data.blpuTemplatePkId,
               blpuLogicalStatus: updatedData.blpuLogicalStatus,
+              blpuLevel: updatedData.blpuLevel,
               rpc: updatedData.rpc,
               state: updatedData.state,
-              classification: updatedData.classification,
-              scheme: classificationScheme,
+              // if Scottish this is handled in classification card, so return no change here
+              classification: settingsContext.isScottish ? blpuClassification : updatedData.classification,
+              classificationScheme: classificationScheme,
               lpiTemplatePkId: data.lpiTemplatePkId,
               lpiLogicalStatus: lpiStatus,
               postTownRef: lpiPostTown,
               subLocalityRef: lpiSubLocality,
-              level: lpiLevel,
+              lpiLevel: lpiLevel,
               officialAddressMaker: lpiOfficialAddress,
               postallyAddressable: lpiPostalAddress,
               miscTemplatePkId: data.miscTemplatePkId,
@@ -302,7 +311,7 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
           setLpiStatus(updatedData.lpiLogicalStatus);
           setLpiPostTown(updatedData.postTownRef);
           setLpiSubLocality(updatedData.subLocalityRef);
-          setLpiLevel(updatedData.level);
+          setLpiLevel(updatedData.lpiLevel);
           setLpiOfficialAddress(updatedData.officialAddressMaker);
           setLpiPostalAddress(updatedData.postallyAddressable);
           if (onUpdateData)
@@ -315,15 +324,16 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               numberingSystem: data.numberingSystem,
               blpuTemplatePkId: data.blpuTemplatePkId,
               blpuLogicalStatus: blpuStatus,
+              blpuLevel: blpuLevel,
               rpc: blpuRpc,
               state: blpuState,
               classification: blpuClassification,
-              scheme: classificationScheme,
+              classificationScheme: classificationScheme,
               lpiTemplatePkId: data.lpiTemplatePkId,
               lpiLogicalStatus: updatedData.lpiLogicalStatus,
               postTownRef: updatedData.postTownRef,
               subLocalityRef: updatedData.subLocalityRef,
-              level: updatedData.level,
+              lpiLevel: updatedData.lpiLevel,
               officialAddressMaker: updatedData.officialAddressMaker,
               postallyAddressable: updatedData.postallyAddressable,
               miscTemplatePkId: data.miscTemplatePkId,
@@ -334,6 +344,7 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
           break;
 
         case "classification":
+          // if we're here, it's Scottish
           setBlpuClassification(updatedData.classification);
           setClassificationScheme(updatedData.classificationScheme);
           if (onUpdateData)
@@ -346,15 +357,16 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               numberingSystem: data.numberingSystem,
               blpuTemplatePkId: data.blpuTemplatePkId,
               blpuLogicalStatus: data.blpuLogicalStatus,
+              blpuLevel: blpuLevel,
               rpc: data.rpc,
               state: data.state,
               classification: updatedData.classification,
-              scheme: updatedData.classificationScheme,
+              classificationScheme: updatedData.classificationScheme,
               lpiTemplatePkId: data.lpiTemplatePkId,
               lpiLogicalStatus: lpiStatus,
               postTownRef: lpiPostTown,
               subLocalityRef: lpiSubLocality,
-              level: lpiLevel,
+              lpiLevel: lpiLevel,
               officialAddressMaker: lpiOfficialAddress,
               postallyAddressable: lpiPostalAddress,
               miscTemplatePkId: data.miscTemplatePkId,
@@ -378,15 +390,16 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               numberingSystem: data.numberingSystem,
               blpuTemplatePkId: data.blpuTemplatePkId,
               blpuLogicalStatus: blpuStatus,
+              blpuLevel: blpuLevel,
               rpc: blpuRpc,
               state: blpuState,
               classification: blpuClassification,
-              scheme: classificationScheme,
+              classificationScheme: classificationScheme,
               lpiTemplatePkId: data.lpiTemplatePkId,
               lpiLogicalStatus: lpiStatus,
               postTownRef: lpiPostTown,
               subLocalityRef: lpiSubLocality,
-              level: lpiLevel,
+              lpiLevel: lpiLevel,
               officialAddressMaker: lpiOfficialAddress,
               postallyAddressable: lpiPostalAddress,
               miscTemplatePkId: data.miscTemplatePkId,
@@ -564,11 +577,12 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
       setBlpuRpc(data.rpc);
       setBlpuState(data.state);
       setBlpuClassification(data.classification);
-      setClassificationScheme(data.scheme);
+      setBlpuLevel(data.blpuLevel);
+      setClassificationScheme(data.classificationScheme);
       setLpiStatus(data.lpiLogicalStatus);
       setLpiPostTown(data.postTownRef);
       setLpiSubLocality(data.subLocalityRef);
-      setLpiLevel(data.level);
+      setLpiLevel(data.lpiLevel);
       setLpiOfficialAddress(data.officialAddressMaker);
       setLpiPostalAddress(data.postallyAddressable);
       setOtherCrossRefSource(data.source);
@@ -684,7 +698,10 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
                   )
                 }
                 title="BLPU settings"
-                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editBlpu) }}
+                titleTypographyProps={{
+                  variant: "h6",
+                  sx: getTitleStyle(editBlpu),
+                }}
                 sx={{ height: "66px" }}
               />
               <CardActionArea onClick={doEditBlpu}>
@@ -733,7 +750,7 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
                         </Grid>
                         <Grid item xs={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {"under development"}
+                            {blpuLevel}
                           </Typography>
                         </Grid>
                       </>
@@ -763,7 +780,10 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
                   )
                 }
                 title="LPI settings"
-                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editLpi) }}
+                titleTypographyProps={{
+                  variant: "h6",
+                  sx: getTitleStyle(editLpi),
+                }}
                 sx={{ height: "66px" }}
               />
               <CardActionArea onClick={doEditLpi}>
@@ -775,14 +795,6 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
                     <Grid item xs={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {getLpiStatus(lpiStatus, settingsContext.isScottish)}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={3}>
-                      <Typography variant="body2">Post town</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
-                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        {StringToTitleCase(getLpiPostTown(lpiPostTown, lookupContext.currentLookups.postTowns))}
                       </Typography>
                     </Grid>
                     {settingsContext.isScottish && (
@@ -799,6 +811,14 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
                         </Grid>
                       </>
                     )}
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Post town</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {StringToTitleCase(getLpiPostTown(lpiPostTown, lookupContext.currentLookups.postTowns))}
+                      </Typography>
+                    </Grid>
                     {!settingsContext.isScottish && (
                       <>
                         <Grid item xs={3}>
@@ -853,7 +873,10 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
                     )
                   }
                   title="Classification settings"
-                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editClassification) }}
+                  titleTypographyProps={{
+                    variant: "h6",
+                    sx: getTitleStyle(editClassification),
+                  }}
                   sx={{ height: "66px" }}
                 />
                 <CardActionArea onClick={doEditClassification}>
@@ -901,7 +924,10 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
                   )
                 }
                 title="Other settings"
-                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editOther) }}
+                titleTypographyProps={{
+                  variant: "h6",
+                  sx: getTitleStyle(editOther),
+                }}
                 sx={{ height: "66px" }}
               />
               <CardActionArea onClick={doEditOther}>

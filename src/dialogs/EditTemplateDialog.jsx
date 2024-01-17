@@ -27,6 +27,8 @@
 //    014   08.01.24 Joel Benford               Classification and sub locality
 //    015   10.01.24 Sean Flook                 Fix warnings.
 //    016   11.01.24 Sean Flook                 Fix warnings.
+//    017   16.01.23 Joel Benford               OS/GP level split
+//    018   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -57,29 +59,25 @@ import ADSSwitchControl from "../components/ADSSwitchControl";
 import ADSProwAccessControl from "../components/ADSProwAccessControl";
 import ADSDateControl from "../components/ADSDateControl";
 
-import { GetLookupLabel } from "../utils/HelperUtils";
+import { GetLookupLabel, filteredLookup } from "../utils/HelperUtils";
 import {
   FilteredBLPULogicalStatus,
   FilteredRepresentativePointCode,
   FilteredBLPUState,
   FilteredLPILogicalStatus,
-  FilteredBLPUProvenance,
 } from "../utils/PropertyUtils";
-import {
-  FilteredStreetType,
-  FilteredRoadStatusCode,
-  FilteredSwaOrgRef,
-  FilteredReinstatementType,
-  FilteredSpecialDesignationCode,
-} from "../utils/StreetUtils";
+import { FilteredStreetType } from "../utils/StreetUtils";
 
 import BLPUClassification from "../data/BLPUClassification";
 import OSGClassification from "../data/OSGClassification";
+import BLPUProvenance from "./../data/BLPUProvenance";
 import OfficialAddress from "../data/OfficialAddress";
 import PostallyAddressable from "../data/PostallyAddressable";
 import StreetState from "../data/StreetState";
 import StreetClassification from "../data/StreetClassification";
 import StreetSurface from "../data/StreetSurface";
+import RoadStatusCode from "../data/RoadStatusCode";
+import SwaOrgRef from "../data/SwaOrgRef";
 import ESUDirectionCode from "../data/ESUDirectionCode";
 import ESUState from "../data/ESUState";
 import ESUClassification from "../data/ESUClassification";
@@ -91,6 +89,8 @@ import ConstructionType from "../data/ConstructionType";
 import AggregateAbrasionValue from "../data/AggregateAbrasionValue";
 import PolishedStoneValue from "../data/PolishedStoneValue";
 import SpecialDesignationPeriodicity from "./../data/SpecialDesignationPeriodicity";
+import SpecialDesignationCode from "./../data/SpecialDesignationCode";
+import ReinstatementType from "../data/ReinstatementType";
 import HWWDesignationCode from "./../data/HWWDesignationCode";
 import PRoWDedicationCode from "../data/PRoWDedicationCode";
 import PRoWStatusCode from "../data/PRoWStatusCode";
@@ -158,10 +158,10 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [blpuStateDate, setBlpuStateDate] = useState(null);
   const [blpuClassification, setBlpuClassification] = useState(null);
   const [blpuStartDate, setBlpuStartDate] = useState(null);
+  const [level, setLevel] = useState(""); // numeric on BLPU for OS, string on LPI for GP
   const [lpiStatus, setLpiStatus] = useState(null);
   const [lpiPostTown, setLpiPostTown] = useState(null);
   const [lpiSubLocality, setLpiSubLocality] = useState(null);
-  const [lpiLevel, setLpiLevel] = useState(null);
   const [lpiOfficialAddress, setLpiOfficialAddress] = useState(null);
   const [lpiPostalAddress, setLpiPostalAddress] = useState(null);
   const [lpiStartDate, setLpiStartDate] = useState(null);
@@ -245,11 +245,11 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [blpuClassificationError, setBlpuClassificationError] = useState(null);
   const [blpuStartDateError, setBlpuStartDateError] = useState(null);
   const [lpiStatusError, setLpiStatusError] = useState(null);
-  const [lpiLevelError, setLpiLevelError] = useState(null);
+  const [levelError, setLevelError] = useState(null);
   const [lpiOfficialAddressError, setLpiOfficialAddressError] = useState(null);
   const [lpiPostalAddressError, setLpiPostalAddressError] = useState(null);
   const [lpiStartDateError, setLpiStartDateError] = useState(null);
-  const [classSchemeError, setClassSchemeError] = useState(null);
+  const [classificationSchemeError, setClassificationSchemeError] = useState(null);
   const [classificationStartDateError, setClassificationStartDateError] = useState(null);
   const [otherProvenanceError, setOtherProvenanceError] = useState(null);
   const [otherProvenanceStartDateError, setOtherProvenanceStartDateError] = useState(null);
@@ -285,6 +285,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           rpc: blpuRpc,
           state: blpuState,
           classification: blpuClassification,
+          blpuLevel: level,
         };
 
       case "lpi":
@@ -292,7 +293,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           lpiLogicalStatus: lpiStatus,
           postTownRef: lpiPostTown,
           subLocalityRef: lpiSubLocality,
-          lpiLevel: lpiLevel,
+          lpiLevel: level,
           officialAddressMaker: lpiOfficialAddress,
           postallyAddressable: lpiPostalAddress,
         };
@@ -420,7 +421,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             rpc: blpuRpc,
             state: blpuState,
             stateDate: blpuStateDate,
-            level: lpiLevel,
+            blpuLevel: level,
             startDate: blpuStartDate,
             errors: errors,
           };
@@ -447,7 +448,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         else
           return {
             lpiLogicalStatus: lpiStatus,
-            level: lpiLevel,
+            lpiLevel: level,
             officialAddressMaker: lpiOfficialAddress,
             postallyAddressable: lpiPostalAddress,
             startDate: lpiStartDate,
@@ -457,7 +458,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
       case "classificationWizard":
         return {
           classification: blpuClassification,
-          classScheme: classificationScheme,
+          classificationScheme: classificationScheme,
           startDate: classificationStartDate,
           errors: errors,
         };
@@ -628,15 +629,15 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   };
 
   /**
-   * Event to handle when the LPI level is changed.
+   * Event to handle when the level is changed.
    *
-   * @param {number|string} newValue The new LPI level.
+   * @param {number|string} newValue The new level.
    */
-  const handleLpiLevelChangeEvent = (newValue) => {
-    setLpiLevel(newValue);
+  const handleLevelChangeEvent = (newValue) => {
+    setLevel(newValue);
     if (variant === "lpiWizard" || variant === "blpuWizard") {
       updateErrors("level");
-      setLpiLevelError(null);
+      setLevelError(null);
     }
   };
 
@@ -687,8 +688,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const handleClassificationSchemeChangeEvent = (newValue) => {
     setClassificationScheme(newValue);
     if (variant === "classificationWizard") {
-      updateErrors("classScheme");
-      setClassSchemeError(null);
+      updateErrors("classificationScheme");
+      setClassificationSchemeError(null);
     }
   };
 
@@ -1449,15 +1450,6 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               onChange={handleBlpuRpcChangeEvent}
               helperText="Representative Point Code."
             />
-            {settingsContext.isScottish && (
-              <ADSNumberControl
-                label="Level"
-                isEditable
-                value={lpiLevel}
-                helperText="Memorandum of the vertical position of the BLPU."
-                onChange={handleLpiLevelChangeEvent}
-              />
-            )}
             <ADSSelectControl
               label="State"
               isEditable
@@ -1479,13 +1471,22 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 includeHiddenCode
                 useRounded
                 doNotSetTitleCase
-                lookupData={settingsContext.isScottish ? OSGClassification : BLPUClassification}
+                lookupData={BLPUClassification}
                 lookupId="id"
                 lookupLabel="display"
                 lookupColour="colour"
                 value={blpuClassification}
                 onChange={handleBlpuClassificationChangeEvent}
                 helperText="Classification code for the BLPU."
+              />
+            )}
+            {settingsContext.isScottish && (
+              <ADSNumberControl
+                label="Level"
+                isEditable
+                value={level}
+                helperText="Code describing vertical position of BLPU."
+                onChange={handleLevelChangeEvent}
               />
             )}
           </Stack>
@@ -1507,24 +1508,6 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               onChange={handleLpiStatusChangeEvent}
               helperText="Logical status of this Record."
             />
-            <ADSSelectControl
-              label="Post town"
-              isEditable
-              useRounded
-              lookupData={lookupContext.currentLookups.postTowns
-                .filter((x) => x.language === "ENG" && !x.historic)
-                .sort(function (a, b) {
-                  return a.postTown.localeCompare(b.postTown, undefined, {
-                    numeric: true,
-                    sensitivity: "base",
-                  });
-                })}
-              lookupId="postTownRef"
-              lookupLabel="postTown"
-              value={lpiPostTown}
-              onChange={handleLpiPostTownChangeEvent}
-              helperText="Allocated by the Royal Mail to assist in delivery of mail."
-            />
             {settingsContext.isScottish && (
               <ADSSelectControl
                 label="Sub-locality"
@@ -1545,15 +1528,33 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 helperText="Third level of geographic area name. e.g. to record an island name or property group."
               />
             )}
+            <ADSSelectControl
+              label="Post town"
+              isEditable
+              useRounded
+              lookupData={lookupContext.currentLookups.postTowns
+                .filter((x) => x.language === "ENG" && !x.historic)
+                .sort(function (a, b) {
+                  return a.postTown.localeCompare(b.postTown, undefined, {
+                    numeric: true,
+                    sensitivity: "base",
+                  });
+                })}
+              lookupId="postTownRef"
+              lookupLabel="postTown"
+              value={lpiPostTown}
+              onChange={handleLpiPostTownChangeEvent}
+              helperText="Allocated by the Royal Mail to assist in delivery of mail."
+            />
             {!settingsContext.isScottish && (
               <ADSTextControl
                 label="Level"
                 isEditable
-                value={lpiLevel}
+                value={level}
                 id="lpi_level_settings_template"
                 maxLength={30}
                 helperText="Memorandum of the vertical position of the BLPU."
-                onChange={handleLpiLevelChangeEvent}
+                onChange={handleLevelChangeEvent}
               />
             )}
             <ADSSelectControl
@@ -1561,7 +1562,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={OfficialAddress}
+              lookupData={filteredLookup(OfficialAddress, settingsContext.isScottish)}
               lookupId="id"
               lookupLabel={GetLookupLabel(settingsContext.isScottish)}
               value={lpiOfficialAddress}
@@ -1573,7 +1574,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={PostallyAddressable}
+              lookupData={filteredLookup(PostallyAddressable, settingsContext.isScottish)}
               lookupId="id"
               lookupLabel={GetLookupLabel(settingsContext.isScottish)}
               value={lpiPostalAddress}
@@ -1636,7 +1637,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredBLPUProvenance(settingsContext.isScottish)}
+              lookupData={filteredLookup(BLPUProvenance, settingsContext.isScottish)}
               lookupId="id"
               lookupLabel={GetLookupLabel(settingsContext.isScottish)}
               lookupColour="colour"
@@ -2021,7 +2022,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredRoadStatusCode(true)}
+              lookupData={filteredLookup(RoadStatusCode, true)}
               lookupId="id"
               lookupLabel={GetLookupLabel(true)}
               lookupColour="colour"
@@ -2034,7 +2035,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredSwaOrgRef(true)}
+              lookupData={filteredLookup(SwaOrgRef, true)}
               lookupId="id"
               lookupLabel={GetLookupLabel(true)}
               lookupColour="colour"
@@ -2047,7 +2048,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredSwaOrgRef(true)}
+              lookupData={filteredLookup(SwaOrgRef, true)}
               lookupId="id"
               lookupLabel={GetLookupLabel(true)}
               lookupColour="colour"
@@ -2066,7 +2067,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredReinstatementType(true)}
+              lookupData={filteredLookup(ReinstatementType, true)}
               lookupId="id"
               lookupLabel={GetLookupLabel(true)}
               lookupColour="colour"
@@ -2079,7 +2080,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredSwaOrgRef(true)}
+              lookupData={filteredLookup(SwaOrgRef, true)}
               lookupId="id"
               lookupLabel={GetLookupLabel(true)}
               lookupColour="colour"
@@ -2092,7 +2093,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredSwaOrgRef(true)}
+              lookupData={filteredLookup(SwaOrgRef, true)}
               lookupId="id"
               lookupLabel={GetLookupLabel(true)}
               lookupColour="colour"
@@ -2111,7 +2112,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredSpecialDesignationCode(true)}
+              lookupData={filteredLookup(SpecialDesignationCode, true)}
               lookupId="id"
               lookupLabel={GetLookupLabel(true)}
               lookupColour="colour"
@@ -2124,7 +2125,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredSwaOrgRef(true)}
+              lookupData={filteredLookup(SwaOrgRef, true)}
               lookupId="id"
               lookupLabel={GetLookupLabel(true)}
               lookupColour="colour"
@@ -2137,7 +2138,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredSwaOrgRef(true)}
+              lookupData={filteredLookup(SwaOrgRef, true)}
               lookupId="id"
               lookupLabel={GetLookupLabel(true)}
               lookupColour="colour"
@@ -2156,7 +2157,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredRoadStatusCode(false)}
+              lookupData={filteredLookup(RoadStatusCode, false)}
               lookupId="id"
               lookupLabel={GetLookupLabel(false)}
               lookupColour="colour"
@@ -2169,7 +2170,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredSwaOrgRef(false)}
+              lookupData={filteredLookup(SwaOrgRef, false)}
               lookupId="id"
               lookupLabel={GetLookupLabel(false)}
               lookupColour="colour"
@@ -2182,7 +2183,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={InterestType}
+              lookupData={filteredLookup(InterestType, false)}
               lookupId="id"
               lookupLabel={GetLookupLabel(false)}
               lookupColour="colour"
@@ -2212,7 +2213,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredSwaOrgRef(false)}
+              lookupData={filteredLookup(SwaOrgRef, false)}
               lookupId="id"
               lookupLabel={GetLookupLabel(false)}
               lookupColour="colour"
@@ -2244,7 +2245,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredReinstatementType(false)}
+              lookupData={filteredLookup(ReinstatementType, false)}
               lookupId="id"
               lookupLabel={GetLookupLabel(false)}
               lookupColour="colour"
@@ -2287,7 +2288,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredSwaOrgRef(false)}
+              lookupData={filteredLookup(SwaOrgRef, false)}
               lookupId="id"
               lookupLabel={GetLookupLabel(false)}
               lookupColour="colour"
@@ -2323,7 +2324,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredSpecialDesignationCode(false)}
+              lookupData={filteredLookup(SpecialDesignationCode, false)}
               lookupId="id"
               lookupLabel={GetLookupLabel(false)}
               lookupColour="colour"
@@ -2336,7 +2337,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredSwaOrgRef(false)}
+              lookupData={filteredLookup(SwaOrgRef, false)}
               lookupId="id"
               lookupLabel={GetLookupLabel(false)}
               lookupColour="colour"
@@ -2366,7 +2367,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={SpecialDesignationPeriodicity}
+              lookupData={filteredLookup(SpecialDesignationPeriodicity, false)}
               lookupId="id"
               lookupLabel={GetLookupLabel(false)}
               lookupColour="colour"
@@ -2398,7 +2399,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredSwaOrgRef(false)}
+              lookupData={filteredLookup(SwaOrgRef, false)}
               lookupId="id"
               lookupLabel={GetLookupLabel(false)}
               lookupColour="colour"
@@ -2529,7 +2530,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredSwaOrgRef(false)}
+              lookupData={filteredLookup(SwaOrgRef, false)}
               lookupId="id"
               lookupLabel={GetLookupLabel(false)}
               lookupColour="colour"
@@ -2589,15 +2590,6 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               onChange={handleBlpuRpcChangeEvent}
               helperText="Representative Point Code."
             />
-            {settingsContext.isScottish && (
-              <ADSNumberControl
-                label="Level"
-                isEditable
-                value={lpiLevel}
-                helperText="Memorandum of the vertical position of the BLPU."
-                onChange={handleLpiLevelChangeEvent}
-              />
-            )}
             <ADSSelectControl
               label="State"
               isEditable
@@ -2627,6 +2619,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 includeHiddenCode
                 useRounded
                 doNotSetTitleCase
+                isClassification
                 lookupData={BLPUClassification}
                 lookupId="id"
                 lookupLabel="display"
@@ -2635,6 +2628,15 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 errorText={blpuClassificationError}
                 onChange={handleBlpuClassificationChangeEvent}
                 helperText="Classification code for the BLPU."
+              />
+            )}
+            {settingsContext.isScottish && (
+              <ADSNumberControl
+                label="Level"
+                isEditable
+                value={level}
+                helperText="Memorandum of the vertical position of the BLPU."
+                onChange={handleLevelChangeEvent}
               />
             )}
             <ADSDateControl
@@ -2665,16 +2667,16 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               onChange={handleLpiStatusChangeEvent}
               helperText="Logical status of this Record."
             />
-            {settingsContext.isScottish && (
+            {!settingsContext.isScottish && (
               <ADSTextControl
                 label="Level"
                 isEditable
-                value={lpiLevel}
-                errorText={lpiLevelError}
+                value={level}
+                errorText={levelError}
                 id="lpi_level_settings_template"
                 maxLength={30}
                 helperText="Memorandum of the vertical position of the BLPU."
-                onChange={handleLpiLevelChangeEvent}
+                onChange={handleLevelChangeEvent}
               />
             )}
             <ADSSelectControl
@@ -2682,7 +2684,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={OfficialAddress}
+              lookupData={filteredLookup(OfficialAddress, settingsContext.isScottish)}
               lookupId="id"
               lookupLabel={GetLookupLabel(settingsContext.isScottish)}
               value={lpiOfficialAddress}
@@ -2695,7 +2697,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={PostallyAddressable}
+              lookupData={filteredLookup(PostallyAddressable, settingsContext.isScottish)}
               lookupId="id"
               lookupLabel={GetLookupLabel(settingsContext.isScottish)}
               value={lpiPostalAddress}
@@ -2723,6 +2725,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               includeHiddenCode
               useRounded
               doNotSetTitleCase
+              isClassification
               lookupData={OSGClassification}
               lookupId="id"
               lookupLabel="display"
@@ -2736,9 +2739,9 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               label="Scheme"
               isEditable
               value={classificationScheme}
-              id={0}
+              id="wizard_classification_scheme"
               maxLength={40}
-              errorText={classSchemeError}
+              errorText={classificationSchemeError}
               helperText="The classification scheme used for this record."
               onChange={handleClassificationSchemeChangeEvent}
             />
@@ -2761,7 +2764,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredBLPUProvenance(settingsContext.isScottish)}
+              lookupData={filteredLookup(BLPUProvenance, settingsContext.isScottish)}
               lookupId="id"
               lookupLabel={GetLookupLabel(settingsContext.isScottish)}
               lookupColour="colour"
@@ -2840,7 +2843,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           setBlpuRpc(data.rpc);
           setBlpuState(data.state);
           if (settingsContext.isScottish) {
-            setLpiLevel(data.level);
+            setLevel(data.level ? data.level : 0);
           } else {
             setBlpuClassification(data.classification);
           }
@@ -2853,7 +2856,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           if (settingsContext.isScottish) {
             setLpiSubLocality(data.subLocalityRef);
           } else {
-            setLpiLevel(data.level);
+            setLevel(data.level ? data.level : "");
           }
           setLpiOfficialAddress(data.officialAddressMaker);
           setLpiPostalAddress(data.postallyAddressable);
@@ -3007,9 +3010,9 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           setBlpuStatus(data.blpuLogicalStatus);
           setBlpuRpc(data.rpc);
           setBlpuState(data.state);
-          setBlpuStateDate(data.state);
+          setBlpuStateDate(data.stateDate);
           if (settingsContext.isScottish) {
-            setLpiLevel(data.level);
+            setLevel(data.level ? data.level : 0);
           } else {
             setBlpuClassification(data.classification);
           }
@@ -3022,7 +3025,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           if (settingsContext.isScottish) {
             setLpiSubLocality(data.subLocality);
           } else {
-            setLpiLevel(data.level);
+            setLevel(data.level ? data.level : "");
           }
           setLpiOfficialAddress(data.officialAddressMaker);
           setLpiPostalAddress(data.postallyAddressable);
@@ -3032,7 +3035,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         case "classificationWizard":
           setTemplateType("Classification");
           setBlpuClassification(data.classification);
-          setClassificationScheme(data.classScheme ? data.classScheme : "");
+          setClassificationScheme(data.classificationScheme ? data.classificationScheme : "");
           setClassificationStartDate(data.startDate);
           break;
 
@@ -3061,11 +3064,11 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         setBlpuClassificationError(null);
         setBlpuStartDateError(null);
         setLpiStatusError(null);
-        setLpiLevelError(null);
+        setLevelError(null);
         setLpiOfficialAddressError(null);
         setLpiPostalAddressError(null);
         setLpiStartDateError(null);
-        setClassSchemeError(null);
+        setClassificationSchemeError(null);
         setOtherProvenanceError(null);
         setOtherProvenanceStartDateError(null);
         setOtherNoteError(null);
@@ -3101,7 +3104,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               break;
 
             case "level":
-              setLpiLevelError(error.errors);
+              setLevelError(error.errors);
               break;
 
             case "officialaddress":
@@ -3116,8 +3119,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               setLpiStartDateError(error.errors);
               break;
 
-            case "classscheme":
-              setClassSchemeError(error.errors);
+            case "classificationscheme":
+              setClassificationSchemeError(error.errors);
               break;
 
             case "classificationstartdate":

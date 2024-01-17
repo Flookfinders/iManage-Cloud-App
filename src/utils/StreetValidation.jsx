@@ -8,20 +8,20 @@
 //  Maximum validation numbers
 //  =================================
 //  Metadata:                   1000017
-//  Street:                     1100050
-//  ESU:                        1300009
+//  Street:                     1100051
+//  ESU:                        1300009 - 1300028
 //  Descriptor:                 1500035
 //  One Way Exemption:          1600021
 //  Highway Dedication:         1700021
-//  Successor Cross Reference:  3000016
-//  Maintenance Responsibility: 5100024
-//  Reinstatement Category:     5200023
-//  OS Special Designation:     5300025
+//  Successor Cross Reference:  3000016 - 3000017
+//  Maintenance Responsibility: 5100024 - 5100026
+//  Reinstatement Category:     5200023 - 5200025
+//  OS Special Designation:     5300025 - 5300027
 //  Interest:                   6100024
 //  Construction:               6200034
 //  Special Designation:        6300034
-//  Height Width Weight:        6400016
-//  Public Right of Way:        6600016
+//  Height Width Weight:        6400016 - 6400017
+//  Public Right of Way:        6600016 - 6600052
 //  Note:                       7200012
 //
 //--------------------------------------------------------------------------------------------------

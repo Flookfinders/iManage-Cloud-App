@@ -3,7 +3,7 @@
 //
 //  Description: Wizard Property Details page
 //
-//  Copyright:    © 2023 Idox Software Limited.
+//  Copyright:    © 2023 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -18,6 +18,7 @@
 //    005   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
 //    006   01.12.23 Sean Flook                 Added missing fields.
 //    007   10.01.24 Sean Flook                 Fix warnings.
+//    008   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -76,7 +77,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
   const [blpuClassification, setBlpuClassification] = useState(null);
   const [blpuStartDate, setBlpuStartDate] = useState(null);
   const [lpiStatus, setLpiStatus] = useState(null);
-  const [lpiLevel, setLpiLevel] = useState(null);
+  const [lpiLevel, setLpiLevel] = useState("");
   const [lpiOfficialAddress, setLpiOfficialAddress] = useState(null);
   const [lpiPostalAddress, setLpiPostalAddress] = useState(null);
   const [lpiStartDate, setLpiStartDate] = useState(null);
@@ -174,7 +175,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
     setEditVariant("classificationWizard");
     setEditData({
       classification: blpuClassification,
-      classScheme: classificationScheme,
+      classificationScheme: classificationScheme,
       startDate: classificationStartDate,
       errors: classificationErrors,
     });
@@ -267,7 +268,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
               lpi: lpiData,
               classification: {
                 classification: updatedData.classification,
-                classScheme: updatedData.classScheme,
+                classificationScheme: updatedData.classificationScheme,
                 startDate: updatedData.startDate,
               },
               other: otherData,
@@ -522,7 +523,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
             setHaveClassificationErrors(true);
             break;
 
-          case "classscheme":
+          case "classificationscheme":
             setClassificationSchemeError(true);
             setHaveClassificationErrors(true);
             break;
@@ -586,8 +587,11 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
       setBlpuRpc(blpuData.rpc);
       setBlpuState(blpuData.state);
       setBlpuStateDate(blpuData.stateDate);
-      setBlpuClassification(settingsContext.isScottish ? null : blpuData.classification);
-      setLpiLevel(settingsContext.isScottish ? blpuData.level : null);
+      if (settingsContext.isScottish) {
+        setLpiLevel(blpuData.level ? blpuData.level : 0);
+      } else {
+        setBlpuClassification(blpuData.classification);
+      }
       setBlpuStartDate(blpuData.startDate);
     }
   }, [blpuData, settingsContext.isScottish]);
@@ -595,7 +599,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
   useEffect(() => {
     if (lpiData) {
       setLpiStatus(lpiData.logicalStatus);
-      setLpiLevel(settingsContext.isScottish ? null : lpiData.level);
+      if (!settingsContext.isScottish) setLpiLevel(lpiData.level ? lpiData.level : "");
       setLpiOfficialAddress(lpiData.officialAddress);
       setLpiPostalAddress(lpiData.postallyAddressable);
       setLpiStartDate(lpiData.startDate);
@@ -605,7 +609,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
   useEffect(() => {
     if (classificationData) {
       setBlpuClassification(classificationData.classification);
-      setClassificationScheme(classificationData.classScheme);
+      setClassificationScheme(classificationData.classificationScheme);
       setClassificationStartDate(classificationData.startDate);
     }
   }, [classificationData]);

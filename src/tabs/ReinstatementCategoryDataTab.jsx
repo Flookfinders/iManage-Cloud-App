@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    006   11.01.24 Sean Flook                 Fix warnings.
+//    007   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -32,8 +33,7 @@ import MapContext from "./../context/mapContext";
 import { ConvertDate } from "../utils/HelperUtils";
 import { Avatar, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { GetLookupLabel } from "../utils/HelperUtils";
-import { FilteredSwaOrgRef, FilteredReinstatementType } from "../utils/StreetUtils";
+import { GetLookupLabel, filteredLookup } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
 
 import ADSActionButton from "../components/ADSActionButton";
@@ -45,6 +45,9 @@ import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ADSTextToggleControl from "../components/ADSTextToggleControl";
 // import ADSSwitchControl from "../components/ADSSwitchControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+
+import SwaOrgRef from "../data/SwaOrgRef";
+import ReinstatementType from "../data/ReinstatementType";
 
 import { Texture } from "@mui/icons-material";
 
@@ -81,8 +84,8 @@ function ReinstatementCategoryDataTab({
 
   const [dataChanged, setDataChanged] = useState(false);
 
-  const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(FilteredSwaOrgRef(true));
-  const [reinstatementTypeLookup, setReinstatementTypeLookup] = useState(FilteredReinstatementType(true));
+  const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(filteredLookup(SwaOrgRef, true));
+  const [reinstatementTypeLookup, setReinstatementTypeLookup] = useState(filteredLookup(ReinstatementType, true));
 
   const [reinstatementCategory, setReinstatementCategory] = useState(null);
   const [custodian, setCustodian] = useState(null);
@@ -367,8 +370,8 @@ function ReinstatementCategoryDataTab({
         data.reinstatementCategoryData.specificLocation ? data.reinstatementCategoryData.specificLocation : ""
       );
 
-      setSwaOrgRefLookup(FilteredSwaOrgRef(true));
-      setReinstatementTypeLookup(FilteredReinstatementType(true));
+      setSwaOrgRefLookup(filteredLookup(SwaOrgRef, true));
+      setReinstatementTypeLookup(filteredLookup(ReinstatementType, true));
     }
   }, [loading, data]);
 

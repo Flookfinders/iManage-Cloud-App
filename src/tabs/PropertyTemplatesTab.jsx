@@ -22,7 +22,9 @@
 //    009   24.11.23 Sean Flook                 Moved Stack to @mui/system.
 //    010   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    011   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    012   08.02.24 Joel Benford               Classification and sub locality
+//    012   08.01.24 Joel Benford               Classification and sub locality
+//    013   16.01.23 Joel Benford               OS/GP level split
+//    014   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -108,10 +110,11 @@ function PropertyTemplatesTab() {
         lpiLogicalStatus: newRecord.lpiLogicalStatus,
         postTownRef: newRecord.postTownRef,
         subLocalityRef: newRecord.subLocalityRef,
-        level: newRecord.level,
+        blpuLevel: newRecord.blpuLevel,
+        lpiLevel: newRecord.lpiLevel,
         officialAddressMaker: newRecord.officialAddressMaker,
         postallyAddressable: newRecord.postallyAddressable,
-        scheme: newRecord.scheme,
+        classificationScheme: newRecord.classificationScheme,
         source: newRecord.source,
         provCode: newRecord.provCode,
         note: newRecord.note,
@@ -209,15 +212,16 @@ function PropertyTemplatesTab() {
           numberingSystem: updatedData.numberingSystem,
           blpuTemplatePkId: updatedData.blpuTemplatePkId,
           blpuLogicalStatus: updatedData.blpuLogicalStatus,
+          blpuLevel: updatedData.blpuLevel,
           rpc: updatedData.rpc,
           state: updatedData.state,
           classification: updatedData.classification,
-          scheme: updatedData.scheme,
+          classificationScheme: updatedData.classificationScheme,
           lpiTemplatePkId: updatedData.lpiTemplatePkId,
           lpiLogicalStatus: updatedData.lpiLogicalStatus,
           postTownRef: updatedData.postTownRef,
           subLocalityRef: updatedData.subLocalityRef,
-          level: updatedData.level,
+          lpiLevel: updatedData.lpiLevel,
           officialAddressMaker: updatedData.officialAddressMaker,
           postallyAddressable: updatedData.postallyAddressable,
           miscTemplatePkId: updatedData.miscTemplatePkId,

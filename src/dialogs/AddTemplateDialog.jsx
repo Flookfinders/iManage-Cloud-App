@@ -3,7 +3,7 @@
 //
 //  Description: Add template dialog
 //
-//  Copyright:    � 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -14,6 +14,8 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    004   16.01.24 Joel Benford               OS/GP level split
+//    005   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -88,10 +90,13 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
         rpc: originalRec.rpc,
         state: originalRec.state,
         classification: originalRec.classification,
+        classificationScheme: originalRec.classificationScheme,
         lpiTemplatePkId: originalRec.lpiTemplatePkId,
         lpiLogicalStatus: originalRec.lpiLogicalStatus,
         postTownRef: originalRec.postTownRef,
-        level: originalRec.level,
+        subLocalityRef: originalRec.subLocalityRef,
+        blpuLevel: originalRec.blpuLevel,
+        lpiLevel: originalRec.lpiLevel,
         officialAddressMaker: originalRec.officialAddressMaker,
         postallyAddressable: originalRec.postallyAddressable,
         miscTemplatePkId: originalRec.miscTemplatePkId,
@@ -159,7 +164,11 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
       .sort((a, b) => a.templatePkId - b.templatePkId);
     setOptions(
       filteredTemplates.map((x) => {
-        return { id: x.templatePkId, name: x.templateName, description: x.templateDescription };
+        return {
+          id: x.templatePkId,
+          name: x.templateName,
+          description: x.templateDescription,
+        };
       })
     );
     setCreateFromValue(filteredTemplates[0].templatePkId);
@@ -177,7 +186,11 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
       .sort((a, b) => a.templatePkId - b.templatePkId);
     setOptions(
       filteredTemplates.map((x) => {
-        return { id: x.templatePkId, name: x.templateName, description: x.templateDescription };
+        return {
+          id: x.templatePkId,
+          name: x.templateName,
+          description: x.templateDescription,
+        };
       })
     );
     setCreateFromValue(filteredTemplates[0].templatePkId);
@@ -268,15 +281,24 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
     <Dialog open={showDialog} aria-labelledby="add-lookup-dialog" fullWidth maxWidth="xs" onClose={handleDialogClose}>
       <DialogTitle
         id="add-lookup-dialog"
-        sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
+        sx={{
+          borderBottomWidth: "1px",
+          borderBottomStyle: "solid",
+          borderBottomColor: adsBlueA,
+        }}
       >
-        <Typography variant="h6">{`${
+        <Typography sx={{ sizeFont: "20px" }}>{`${
           step === 1 ? "Create new template" : duplicateId ? "Duplicate template" : "New template: name and description"
         }`}</Typography>
         <IconButton
           aria-label="close"
           onClick={handleCancelClick}
-          sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
+          sx={{
+            position: "absolute",
+            right: 12,
+            top: 12,
+            color: (theme) => theme.palette.grey[500],
+          }}
         >
           <CloseIcon />
         </IconButton>
@@ -387,7 +409,13 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
           )}
         </Box>
       </DialogContent>
-      <DialogActions sx={{ justifyContent: "flex-start", mb: theme.spacing(1), ml: theme.spacing(4) }}>
+      <DialogActions
+        sx={{
+          justifyContent: "flex-start",
+          mb: theme.spacing(1),
+          ml: theme.spacing(4),
+        }}
+      >
         {step === 1 && (
           <Button
             onClick={handleNextClick}

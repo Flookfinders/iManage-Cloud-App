@@ -21,6 +21,7 @@
 //    008   02.01.24 Sean Flook       IMANN-205 Added end date.
 //    009   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    010   11.01.24 Sean Flook                 Fix warnings.
+//    011   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -34,10 +35,10 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
 import MapContext from "./../context/mapContext";
 
-import { GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
-import { FilteredRoadStatusCode, FilteredSwaOrgRef } from "../utils/StreetUtils";
+import { GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
 
+import SwaOrgRef from "../data/SwaOrgRef";
 import InterestType from "../data/InterestType";
 
 import { Avatar, Typography } from "@mui/material";
@@ -49,6 +50,8 @@ import ADSWholeRoadControl from "../components/ADSWholeRoadControl";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+
+import RoadStatusCode from "../data/RoadStatusCode";
 
 import { People } from "@mui/icons-material";
 import { adsWhite, adsBrown } from "../utils/ADSColours";
@@ -76,8 +79,8 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
 
   const [dataChanged, setDataChanged] = useState(false);
 
-  const [roadStatusCodeLookup, setRoadStatusCodeLookup] = useState(FilteredRoadStatusCode(false));
-  const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(FilteredSwaOrgRef(false));
+  const [roadStatusCodeLookup, setRoadStatusCodeLookup] = useState(filteredLookup(RoadStatusCode, false));
+  const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(filteredLookup(SwaOrgRef, false));
 
   const [streetStatus, setStreetStatus] = useState(null);
   const [interestedOrganisation, setInterestedOrganisation] = useState(null);
@@ -382,8 +385,8 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
       setEndX(data.interestData.endX ? data.interestData.endX : 0);
       setEndY(data.interestData.endY ? data.interestData.endY : 0);
 
-      setRoadStatusCodeLookup(FilteredRoadStatusCode(false));
-      setSwaOrgRefLookup(FilteredSwaOrgRef(false));
+      setRoadStatusCodeLookup(filteredLookup(RoadStatusCode, false));
+      setSwaOrgRefLookup(filteredLookup(SwaOrgRef, false));
     }
   }, [loading, data]);
 

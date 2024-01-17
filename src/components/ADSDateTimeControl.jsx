@@ -18,6 +18,7 @@
 //    005   20.12.23 Sean Flook       IMANN-201 Added the isDateRequired and isTimeRequired properties.
 //    006   03.01.24 Sean Flook                 Fixed warning.
 //    007   05.01.24 Sean Flook                 use CSS shortcuts.
+//    008   16.01.24 Sean Flook       IMANN-237 Added a clear button.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -56,8 +57,8 @@ ADSDateTimeControl.propTypes = {
   loading: PropTypes.bool,
   dateHelperText: PropTypes.string,
   timeHelperText: PropTypes.string,
-  dateValue: PropTypes.string,
-  timeValue: PropTypes.string,
+  dateValue: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
+  timeValue: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
   dateErrorText: PropTypes.array,
   timeErrorText: PropTypes.array,
   onDateChange: PropTypes.func,
@@ -215,6 +216,7 @@ function ADSDateTimeControl({
                               fullWidth: true,
                               size: "small",
                             },
+                            field: { clearable: true },
                           }}
                           onChange={(newValue) => handleDateChange(newValue)}
                           KeyboardButtonProps={{
@@ -245,6 +247,7 @@ function ADSDateTimeControl({
                           fullWidth: true,
                           size: "small",
                         },
+                        field: { clearable: true },
                       }}
                       onChange={(newValue) => handleDateChange(newValue)}
                       KeyboardButtonProps={{
@@ -285,6 +288,7 @@ function ADSDateTimeControl({
                               fullWidth: true,
                               size: "small",
                             },
+                            field: { clearable: true },
                           }}
                           onChange={(newValue) => handleTimeChange(newValue)}
                           KeyboardButtonProps={{
@@ -312,6 +316,7 @@ function ADSDateTimeControl({
                           fullWidth: true,
                           size: "small",
                         },
+                        field: { clearable: true },
                       }}
                       onChange={(newValue) => handleTimeChange(newValue)}
                       KeyboardButtonProps={{

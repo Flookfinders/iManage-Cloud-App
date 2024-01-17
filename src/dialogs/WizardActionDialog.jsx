@@ -20,6 +20,7 @@
 //    007   30.11.23 Sean Flook                 Added sub-locality.
 //    008   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    009   11.01.24 Sean Flook                 Fix warnings.
+//    010   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -74,10 +75,9 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
     FilteredRepresentativePointCode(settingsContext.isScottish)
   );
 
-  const [actionData, setActionData] = useState(data);
-  const [title, setTitle] = useState("Edit record");
-  const [content, setContent] = useState(null);
+  const [actionData, setActionData] = useState("");
   const maxContentHeight = "240px";
+  const boxStyle = { maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" };
 
   /**
    * Event to handle when the cancel button is clicked.
@@ -93,42 +93,62 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
     onClose(actionData);
   };
 
-  useEffect(() => {
-    setActionData(data);
-    setRepresentativePointCodeLookup(FilteredRepresentativePointCode(settingsContext.isScottish));
-  }, [data, settingsContext.isScottish]);
-
-  useEffect(() => {
-    const handleEngPostTownChanged = (newValue) => {
-      if (settingsContext.isScottish || settingsContext.isWelsh) {
-        const selectedRecord = lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === newValue);
-        if (selectedRecord && selectedRecord.linkedRef !== newValue)
-          setActionData({ eng: newValue, alt: selectedRecord.linkedRef });
-        else setActionData({ eng: newValue, alt: actionData.alt });
-      } else setActionData({ eng: newValue, alt: actionData.alt });
-    };
-
-    const handleAltPostTownChanged = (newValue) => {
+  /**
+   * Method to handle when the English post town is changed.
+   *
+   * @param {number} newValue The reference for the English post town.
+   */
+  const handleEngPostTownChanged = (newValue) => {
+    if (settingsContext.isScottish || settingsContext.isWelsh) {
       const selectedRecord = lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === newValue);
-      if (selectedRecord && selectedRecord.linkedRef !== newValue)
-        setActionData({ eng: selectedRecord.linkedRef, alt: newValue });
-      else setActionData({ eng: actionData.eng, alt: newValue });
-    };
-
-    const handleEngSubLocalityChanged = (newValue) => {
-      const selectedRecord = lookupContext.currentLookups.subLocalities.find((x) => x.subLocalityRef === newValue);
       if (selectedRecord && selectedRecord.linkedRef !== newValue)
         setActionData({ eng: newValue, alt: selectedRecord.linkedRef });
       else setActionData({ eng: newValue, alt: actionData.alt });
-    };
+    } else setActionData({ eng: newValue, alt: actionData.alt });
+  };
 
-    const handleAltSubLocalityChanged = (newValue) => {
-      const selectedRecord = lookupContext.currentLookups.subLocalities.find((x) => x.subLocalityRef === newValue);
-      if (selectedRecord && selectedRecord.linkedRef !== newValue)
-        setActionData({ eng: selectedRecord.linkedRef, alt: newValue });
-      else setActionData({ eng: actionData.eng, alt: newValue });
-    };
+  /**
+   * Method to handle when the alternative language post town is changed.
+   *
+   * @param {number} newValue The reference for the alternative language post town.
+   */
+  const handleAltPostTownChanged = (newValue) => {
+    const selectedRecord = lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === newValue);
+    if (selectedRecord && selectedRecord.linkedRef !== newValue)
+      setActionData({ eng: selectedRecord.linkedRef, alt: newValue });
+    else setActionData({ eng: actionData.eng, alt: newValue });
+  };
 
+  /**
+   * Method to handle when the English sub-locality is changed.
+   *
+   * @param {number} newValue The reference for the English sub-locality.
+   */
+  const handleEngSubLocalityChanged = (newValue) => {
+    const selectedRecord = lookupContext.currentLookups.subLocalities.find((x) => x.subLocalityRef === newValue);
+    if (selectedRecord && selectedRecord.linkedRef !== newValue)
+      setActionData({ eng: newValue, alt: selectedRecord.linkedRef });
+    else setActionData({ eng: newValue, alt: actionData.alt });
+  };
+
+  /**
+   * Method to handle when the Gaelic sub-locality is changed.
+   *
+   * @param {number} newValue The reference for the Gaelic sub-locality.
+   */
+  const handleAltSubLocalityChanged = (newValue) => {
+    const selectedRecord = lookupContext.currentLookups.subLocalities.find((x) => x.subLocalityRef === newValue);
+    if (selectedRecord && selectedRecord.linkedRef !== newValue)
+      setActionData({ eng: selectedRecord.linkedRef, alt: newValue });
+    else setActionData({ eng: actionData.eng, alt: newValue });
+  };
+
+  /**
+   * Method to get the title for the dialog.
+   *
+   * @returns {string} The title text for the dialog.
+   */
+  const getTitle = () => {
     const getEditTitle = (type) => {
       return `Edit ${type} for ${
         recordCount && recordCount > 1 ? recordCount.toString() + " " : ""
@@ -137,13 +157,45 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
 
     const recordText = recordCount && recordCount > 1 ? "records" : "record";
 
-    if (!variant) return;
-
     switch (variant) {
       case "classification":
-        setTitle(getEditTitle("classification"));
-        setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+        return getEditTitle("classification");
+
+      case "level":
+        return getEditTitle("level");
+
+      case "postcode":
+        return getEditTitle("postcode");
+
+      case "postTown":
+        return getEditTitle("post town");
+
+      case "subLocality":
+        return getEditTitle("sub-locality");
+
+      case "note":
+        return `Add note for ${
+          recordCount && recordCount > 1 ? recordCount.toString() + " " : ""
+        }property ${recordText}`;
+
+      case "rpc":
+        return getEditTitle("representative point code");
+
+      default:
+        return "Edit record";
+    }
+  };
+
+  /**
+   * Method to get the required content of the dialog.
+   *
+   * @returns {JSX.Element} The content required for the dialog
+   */
+  const getContent = () => {
+    switch (variant) {
+      case "classification":
+        return (
+          <Box sx={boxStyle}>
             <ADSSelectControl
               label="Classification"
               isEditable
@@ -162,12 +214,10 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
             />
           </Box>
         );
-        break;
 
       case "level":
-        setTitle(getEditTitle("level"));
-        setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+        return (
+          <Box sx={boxStyle}>
             {settingsContext.isScottish ? (
               <ADSNumberControl
                 label="Level"
@@ -191,12 +241,10 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
             )}
           </Box>
         );
-        break;
 
       case "postcode":
-        setTitle(getEditTitle("postcode"));
-        setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+        return (
+          <Box sx={boxStyle}>
             <ADSSelectControl
               label="Postcode"
               isEditable
@@ -212,12 +260,10 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
             />
           </Box>
         );
-        break;
 
       case "postTown":
-        setTitle(getEditTitle("post town"));
-        setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+        return (
+          <Box sx={boxStyle}>
             <ADSSelectControl
               label={`${settingsContext.isScottish || settingsContext.isWelsh ? "English p" : "P"}ost town`}
               isEditable
@@ -258,12 +304,10 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
             )}
           </Box>
         );
-        break;
 
       case "subLocality":
-        setTitle(getEditTitle("sub-locality"));
-        setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+        return (
+          <Box sx={boxStyle}>
             <ADSSelectControl
               label={"English sub-locality"}
               isEditable
@@ -289,14 +333,10 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
             />
           </Box>
         );
-        break;
 
       case "note":
-        setTitle(
-          `Add note for ${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}property ${recordText}`
-        );
-        setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+        return (
+          <Box sx={boxStyle}>
             <ADSTextControl
               isEditable
               value={actionData}
@@ -308,12 +348,10 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
             />
           </Box>
         );
-        break;
 
       case "rpc":
-        setTitle(getEditTitle("representative point code"));
-        setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+        return (
+          <Box sx={boxStyle}>
             <ADSSelectControl
               label="RPC"
               isEditable
@@ -330,20 +368,18 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
             />
           </Box>
         );
-        break;
 
       default:
         break;
     }
-  }, [
-    recordCount,
-    variant,
-    actionData,
-    representativePointCodeLookup,
-    lookupContext,
-    settingsContext.isScottish,
-    settingsContext.isWelsh,
-  ]);
+  };
+
+  useEffect(() => {
+    setActionData(
+      data ? data : variant === "level" ? (settingsContext.isScottish ? 0 : "") : variant === "note" ? "" : null
+    );
+    setRepresentativePointCodeLookup(FilteredRepresentativePointCode(settingsContext.isScottish));
+  }, [data, variant, settingsContext.isScottish]);
 
   return (
     <Dialog
@@ -360,12 +396,12 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
       >
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ fontWeight: 600 }}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            {title}
+            {getTitle()}
           </Typography>
           <ADSActionButton variant="close" tooltipTitle="Cancel" tooltipPlacement="bottom" onClick={handleCancel} />
         </Stack>
       </DialogTitle>
-      <DialogContent sx={{ backgroundColor: theme.palette.background.paper }}>{content}</DialogContent>
+      <DialogContent sx={{ backgroundColor: theme.palette.background.paper }}>{getContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: "flex-start", pl: "24px", pb: "24px" }}>
         <Button variant="contained" onClick={handleOk} sx={blueButtonStyle} startIcon={<SaveIcon />}>
           Save

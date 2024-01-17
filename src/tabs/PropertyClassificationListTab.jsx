@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
 //    005   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    007   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -192,7 +193,7 @@ function PropertyClassificationListTab({
       flex: 30,
       renderCell: getClassificationDisplay,
     },
-    { field: "classScheme" },
+    { field: "classificationScheme" },
     { field: "entryDate" },
     {
       field: "startDate",
@@ -366,7 +367,7 @@ function PropertyClassificationListTab({
                   uprn: false,
                   changeType: false,
                   classKey: false,
-                  classScheme: false,
+                  classificationScheme: false,
                   entryDate: false,
                   lastUpdateDate: false,
                 },

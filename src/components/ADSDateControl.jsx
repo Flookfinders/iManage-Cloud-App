@@ -27,6 +27,7 @@
 //    014   20.12.23 Sean Flook       IMANN-201 Added hideYear property to hide the year in the control.
 //    015   03.01.24 Sean Flook                 Fixed warning.
 //    016   05.01.24 Sean Flook                 use CSS shortcuts.
+//    017   16.01.24 Sean Flook       IMANN-237 Added a clear button.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -60,7 +61,7 @@ ADSDateControl.propTypes = {
   hideYear: PropTypes.bool,
   loading: PropTypes.bool,
   helperText: PropTypes.string,
-  value: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
   errorText: PropTypes.array,
   onChange: PropTypes.func,
 };
@@ -174,6 +175,7 @@ function ADSDateControl({
                         fullWidth: true,
                         size: "small",
                       },
+                      field: { clearable: true },
                     }}
                     onChange={(newValue) => handleDateChange(newValue)}
                     KeyboardButtonProps={{
@@ -205,6 +207,7 @@ function ADSDateControl({
                     fullWidth: true,
                     size: "small",
                   },
+                  field: { clearable: true },
                 }}
                 onChange={(newValue) => handleDateChange(newValue)}
                 KeyboardButtonProps={{

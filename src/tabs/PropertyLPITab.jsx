@@ -24,6 +24,7 @@
 //    011   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    012   10.01.24 Sean Flook                 Fix warnings.
 //    013   11.01.24 Sean Flook                 Fix warnings.
+//    014   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -38,7 +39,7 @@ import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
 
 import { GetTempAddressUrl } from "../configuration/ADSConfig";
-import { copyTextToClipboard, GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
+import { copyTextToClipboard, GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
 import { addressToTitleCase, FilteredLPILogicalStatus } from "../utils/PropertyUtils";
 import ObjectComparison from "./../utils/ObjectComparison";
 
@@ -1298,7 +1299,7 @@ function PropertyLPITab({
           loading={loading}
           useRounded
           doNotSetTitleCase
-          lookupData={OfficialAddress}
+          lookupData={filteredLookup(OfficialAddress, settingsContext.isScottish)}
           lookupId="id"
           lookupLabel={GetLookupLabel(settingsContext.isScottish)}
           value={officialFlag}
@@ -1314,7 +1315,7 @@ function PropertyLPITab({
           loading={loading}
           useRounded
           doNotSetTitleCase
-          lookupData={PostallyAddressable}
+          lookupData={filteredLookup(PostallyAddressable, settingsContext.isScottish)}
           lookupId="id"
           lookupLabel={GetLookupLabel(settingsContext.isScottish)}
           value={postalAddress}

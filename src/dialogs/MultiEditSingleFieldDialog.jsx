@@ -16,6 +16,7 @@
 //    003   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   11.01.24 Sean Flook                 Fix warnings.
+//    006   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -104,8 +105,15 @@ const useStyles = makeStyles(
 );
 
 MultiEditSingleFieldDialog.propTypes = {
-  variant: PropTypes.oneOf(["classification", "rpc", "level", "excludeFromExport", "siteVisitRequired", "note"])
-    .isRequired,
+  variant: PropTypes.oneOf([
+    "classification",
+    "rpc",
+    "level",
+    "excludeFromExport",
+    "siteVisitRequired",
+    "note",
+    "unknown",
+  ]).isRequired,
   propertyUprns: PropTypes.array.isRequired,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,

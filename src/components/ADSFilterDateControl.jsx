@@ -15,6 +15,7 @@
 //    002   08.12.23 Sean Flook                 Migrated DatePicker to v6.
 //    003   18.12.23 Sean Flook                 Ensure tooltip is displayed
 //    004   03.01.24 Sean Flook                 Fixed warning.
+//    005   16.01.24 Sean Flook       IMANN-237 Added a clear button.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -44,8 +45,8 @@ ADSFilterDateControl.propTypes = {
   filterType: PropTypes.number,
   lastN: PropTypes.number,
   lastPeriod: PropTypes.string,
-  date1: PropTypes.string,
-  date2: PropTypes.string,
+  date1: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
+  date2: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
   helperText: PropTypes.string,
   onChange: PropTypes.func.isRequired,
 };
@@ -245,6 +246,7 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
                     fullWidth: true,
                     size: "small",
                   },
+                  field: { clearable: true },
                 }}
                 onChange={(date) => handleBetweenDate1ChangeEvent(date)}
                 KeyboardButtonProps={{
@@ -276,6 +278,7 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
                     fullWidth: true,
                     size: "small",
                   },
+                  field: { clearable: true },
                 }}
                 onChange={(date) => handleBetweenDate2ChangeEvent(date)}
                 KeyboardButtonProps={{
@@ -306,6 +309,7 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
                   fullWidth: true,
                   size: "small",
                 },
+                field: { clearable: true },
               }}
               onChange={(date) => handleBetweenDate1ChangeEvent(date)}
               KeyboardButtonProps={{
@@ -335,6 +339,7 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
                   fullWidth: true,
                   size: "small",
                 },
+                field: { clearable: true },
               }}
               onChange={(date) => handleBetweenDate1ChangeEvent(date)}
               KeyboardButtonProps={{

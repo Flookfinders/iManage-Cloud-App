@@ -18,6 +18,7 @@
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    006   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    007   10.01.24 Sean Flook                 Fix warnings.
+//    008   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -102,7 +103,7 @@ function MetadataSettingsTab({ variant }) {
   const [custodianUprn, setCustodianUprn] = useState(null);
   const [custodianCode, setCustodianCode] = useState(null);
 
-  const [scheme, setScheme] = useState(null);
+  const [classificationScheme, setClassificationScheme] = useState(null);
   const [metadataDate, setMetadataDate] = useState(null);
   const [language, setLanguage] = useState(null);
 
@@ -414,7 +415,10 @@ function MetadataSettingsTab({ variant }) {
             type === "custodian" && updatedData ? updatedData.custodianUprn : streetCustodianData.custodianUprn,
           custodianCode:
             type === "custodian" && updatedData ? updatedData.custodianCode : streetCustodianData.custodianCode,
-          scheme: type === "miscellaneous" && updatedData ? updatedData.scheme : streetMiscellaneousData.scheme,
+          classificationScheme:
+            type === "miscellaneous" && updatedData
+              ? updatedData.classificationScheme
+              : streetMiscellaneousData.classificationScheme,
           metadataDate:
             type === "miscellaneous" && updatedData ? updatedData.metadataDate : streetMiscellaneousData.metadataDate,
           language: type === "miscellaneous" && updatedData ? updatedData.language : streetMiscellaneousData.language,
@@ -445,7 +449,7 @@ function MetadataSettingsTab({ variant }) {
           !!streetData.custodianName &&
           !!streetData.custodianUprn &&
           !!streetData.custodianCode &&
-          !!streetData.scheme &&
+          !!streetData.classificationScheme &&
           !!streetData.metadataDate &&
           !!streetData.language &&
           !!streetData.motorwayTrunkRoads &&
@@ -470,7 +474,10 @@ function MetadataSettingsTab({ variant }) {
             type === "custodian" && updatedData ? updatedData.custodianUprn : asdCustodianData.custodianUprn,
           custodianCode:
             type === "custodian" && updatedData ? updatedData.custodianCode : asdCustodianData.custodianCode,
-          scheme: type === "miscellaneous" && updatedData ? updatedData.scheme : asdMiscellaneousData.scheme,
+          classificationScheme:
+            type === "miscellaneous" && updatedData
+              ? updatedData.classificationScheme
+              : asdMiscellaneousData.classificationScheme,
           metadataDate:
             type === "miscellaneous" && updatedData ? updatedData.metadataDate : asdMiscellaneousData.metadataDate,
           language: type === "miscellaneous" && updatedData ? updatedData.language : asdMiscellaneousData.language,
@@ -541,7 +548,7 @@ function MetadataSettingsTab({ variant }) {
           !!asdData.custodianName &&
           !!asdData.custodianUprn &&
           !!asdData.custodianCode &&
-          !!asdData.scheme &&
+          !!asdData.classificationScheme &&
           !!asdData.metadataDate &&
           !!asdData.language &&
           !!asdData.protectedStreets &&
@@ -577,7 +584,10 @@ function MetadataSettingsTab({ variant }) {
             type === "custodian" && updatedData ? updatedData.custodianUprn : propertyCustodianData.custodianUprn,
           custodianCode:
             type === "custodian" && updatedData ? updatedData.custodianCode : propertyCustodianData.custodianCode,
-          scheme: type === "miscellaneous" && updatedData ? updatedData.scheme : propertyMiscellaneousData.scheme,
+          classificationScheme:
+            type === "miscellaneous" && updatedData
+              ? updatedData.classificationScheme
+              : propertyMiscellaneousData.classificationScheme,
           metadataDate:
             type === "miscellaneous" && updatedData ? updatedData.metadataDate : propertyMiscellaneousData.metadataDate,
           language: type === "miscellaneous" && updatedData ? updatedData.language : propertyMiscellaneousData.language,
@@ -592,7 +602,7 @@ function MetadataSettingsTab({ variant }) {
           !!propertyData.custodianName &&
           !!propertyData.custodianUprn &&
           !!propertyData.custodianCode &&
-          !!propertyData.scheme &&
+          !!propertyData.classificationScheme &&
           !!propertyData.metadataDate &&
           !!propertyData.language;
         break;
@@ -713,7 +723,7 @@ function MetadataSettingsTab({ variant }) {
           break;
       }
 
-      setScheme(updatedData.scheme);
+      setClassificationScheme(updatedData.classificationScheme);
       setMetadataDate(updatedData.metadataDate);
       setLanguage(updatedData.language);
 
@@ -842,12 +852,12 @@ function MetadataSettingsTab({ variant }) {
               setCustodianCode(result.authCode);
 
               setStreetMiscellaneousData({
-                scheme: result.classScheme,
+                classificationScheme: result.classificationScheme,
                 metadataDate: result.metaDate,
                 language: result.language,
               });
 
-              setScheme(result.classScheme);
+              setClassificationScheme(result.classificationScheme);
               setMetadataDate(result.metaDate);
               setLanguage(result.language);
 
@@ -917,12 +927,12 @@ function MetadataSettingsTab({ variant }) {
               setCustodianCode(result.authCode);
 
               setAsdMiscellaneousData({
-                scheme: result.classScheme,
+                classificationScheme: result.classificationScheme,
                 metadataDate: result.metaDate,
                 language: result.language,
               });
 
-              setScheme(result.classScheme);
+              setClassificationScheme(result.classificationScheme);
               setMetadataDate(result.metaDate);
               setLanguage(result.language);
 
@@ -1028,12 +1038,12 @@ function MetadataSettingsTab({ variant }) {
               setCustodianCode(result.custodianCode);
 
               setPropertyMiscellaneousData({
-                scheme: result.classSCheme,
+                classificationScheme: result.classificationScheme,
                 metadataDate: result.metaDate,
                 language: result.language,
               });
 
-              setScheme(result.classSCheme);
+              setClassificationScheme(result.classificationScheme);
               setMetadataDate(result.metaDate);
               setLanguage(result.language);
             },
@@ -1325,7 +1335,7 @@ function MetadataSettingsTab({ variant }) {
                         <Skeleton variant="rectangular" height="20px" width="100%" />
                       ) : (
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {scheme}
+                          {classificationScheme}
                         </Typography>
                       )}
                     </Grid>

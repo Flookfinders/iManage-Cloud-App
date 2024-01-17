@@ -36,6 +36,7 @@
 //    023   03.01.24 Sean Flook                 Fixed warning.
 //    024   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    025   10.01.24 Sean Flook                 Fix errors.
+//    026   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -339,7 +340,8 @@ function PropertyDataForm({ data, loading }) {
                     changeType: sandboxContext.currentSandbox.currentPropertyRecords.classification.changeType,
                     uprn: sandboxContext.currentSandbox.currentPropertyRecords.classification.uprn,
                     classKey: sandboxContext.currentSandbox.currentPropertyRecords.classification.classKey,
-                    classScheme: sandboxContext.currentSandbox.currentPropertyRecords.classification.classScheme,
+                    classificationScheme:
+                      sandboxContext.currentSandbox.currentPropertyRecords.classification.classificationScheme,
                     blpuClass: sandboxContext.currentSandbox.currentPropertyRecords.classification.blpuClass,
                     startDate: sandboxContext.currentSandbox.currentPropertyRecords.classification.startDate,
                     endDate: sandboxContext.currentSandbox.currentPropertyRecords.classification.endDate,
@@ -858,7 +860,7 @@ function PropertyDataForm({ data, loading }) {
         changeType: "I",
         uprn: propertyData && propertyData.uprn,
         classKey: null,
-        classScheme: OSGScheme,
+        classificationScheme: OSGScheme,
         blpuClass: null,
         startDate: currentDate,
         endDate: null,
@@ -887,7 +889,7 @@ function PropertyDataForm({ data, loading }) {
           changeType: newRec.changeType,
           uprn: newRec.uprn,
           classKey: newRec.classKey,
-          classScheme: newRec.classScheme,
+          classificationScheme: newRec.classificationScheme,
           blpuClass: newRec.blpuClass,
           startDate: newRec.startDate,
           endDate: newRec.endDate,
@@ -1560,7 +1562,7 @@ function PropertyDataForm({ data, loading }) {
           classKey: deleteClassification.classKey,
           uprn: deleteClassification.uprn,
           changeType: "D",
-          classScheme: deleteClassification.classScheme,
+          classificationScheme: deleteClassification.classificationScheme,
           blpuClass: deleteClassification.blpuClass,
           startDate: deleteClassification.startDate,
           endDate: deleteClassification.endDate,
@@ -4357,7 +4359,7 @@ function PropertyDataForm({ data, loading }) {
                       changeType: x.changeType,
                       classKey: x.classKey,
                       blpuClass: x.blpuClass,
-                      classScheme: x.classScheme,
+                      classificationScheme: x.classificationScheme,
                       entryDate: x.entryDate,
                       lastUpdateDate: x.lastUpdateDate,
                       startDate: x.startDate,

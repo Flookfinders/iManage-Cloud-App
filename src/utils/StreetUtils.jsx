@@ -28,6 +28,7 @@
 //    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    016   08.01.24 Sean Flook                 Changes to fix warnings.
 //    017   12.01.24 Sean Flook       IMANN-233 Modified GetNewStreetData to update the street start and end coordinates if required.
+//    018   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -43,6 +44,7 @@ import {
   GetWktCoordinates,
   openInStreetView,
   getStartEndCoordinates,
+  filteredLookup,
 } from "./HelperUtils";
 import {
   GetStreetByUSRNUrl,
@@ -77,62 +79,6 @@ export const FilteredStreetType = (isScottish) => {
     return StreetType.filter((x) => x.osText && x.id !== 0);
   } else {
     return StreetType.filter((x) => x.gpText && x.id !== 0 && (HasProperties() || x.id !== 9));
-  }
-};
-
-/**
- * Returns a list of road status codes depending on if the authority is Scottish or not.
- *
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @return {array} The filtered road status codes.
- */
-export const FilteredRoadStatusCode = (isScottish) => {
-  if (isScottish) {
-    return RoadStatusCode.filter((x) => x.osText);
-  } else {
-    return RoadStatusCode.filter((x) => x.gpText);
-  }
-};
-
-/**
- * Returns a list of SWA organisation references depending on if the authority is Scottish or not.
- *
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @return {array} The filtered SWA organisations
- */
-export const FilteredSwaOrgRef = (isScottish) => {
-  if (isScottish) {
-    return SwaOrgRef.filter((x) => x.osText);
-  } else {
-    return SwaOrgRef.filter((x) => x.gpText);
-  }
-};
-
-/**
- * Returns a list of reinstatement types depending on if the authority is Scottish or not.
- *
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @return {array} The filtered reinstatement types.
- */
-export const FilteredReinstatementType = (isScottish) => {
-  if (isScottish) {
-    return ReinstatementType.filter((x) => x.osText);
-  } else {
-    return ReinstatementType.filter((x) => x.gpText);
-  }
-};
-
-/**
- * Returns a list of special designation codes depending on if the authority is Scottish or not.
- *
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @return {array} The filtered special designation codes.
- */
-export const FilteredSpecialDesignationCode = (isScottish) => {
-  if (isScottish) {
-    return SpecialDesignationCode.filter((x) => x.osText);
-  } else {
-    return SpecialDesignationCode.filter((x) => x.gpText);
   }
 };
 
@@ -191,7 +137,7 @@ export function GetStreetTypeLabel(type, isScottish) {
  * @returns {string} The authority label for the given code.
  */
 export function GetAuthorityLabel(code, isScottish) {
-  const authorities = FilteredSwaOrgRef(isScottish);
+  const authorities = filteredLookup(SwaOrgRef, isScottish);
 
   if (authorities) {
     const authority = code ? authorities.find((x) => x.id === code) : null;
@@ -220,7 +166,7 @@ export function GetWholeRoadLabel(wholeRoad) {
  * @returns {string} The reinstatement label for the given code.
  */
 export function GetReinstatementLabel(code, isScottish) {
-  const reinstatements = FilteredReinstatementType(isScottish);
+  const reinstatements = filteredLookup(ReinstatementType, isScottish);
 
   if (reinstatements) {
     const reinstatement = code ? reinstatements.find((x) => x.id === code) : null;

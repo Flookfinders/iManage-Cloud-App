@@ -20,6 +20,7 @@
 //    007   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
 //    008   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    009   11.01.24 Sean Flook                 Fix warnings.
+//    010   17.01.24 Sean Flook                 Changes after Louise's review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -859,7 +860,11 @@ function EsuDataTab({
               noWrap
               align="left"
             >
-              {`| ${data.esuData.esuId < 0 ? `New ESU [${data.esuData.esuId * -1 - 9}]` : `${data.esuData.esuId}`}`}
+              {`| ${
+                data.esuData.esuId < 0
+                  ? `New ESU - ID set on save [${data.esuData.esuId * -1 - 9}]`
+                  : `${data.esuData.esuId}`
+              }`}
             </Typography>
           </Stack>
           <Stack direction="row" alignItems="center" justifyContent="flex-end">
@@ -1233,149 +1238,153 @@ function EsuDataTab({
                     </List>
                   ))}
             </Collapse>
-            <ListItemButton
-              divider
-              dense
-              disableGutters
-              sx={{
-                height: "50px",
-                "&:hover": {
-                  backgroundColor: adsLightBlue10,
-                  color: adsBlueA,
-                },
-              }}
-              onMouseEnter={handleOWEMouseEnter}
-              onMouseLeave={handleOWEMouseLeave}
-            >
-              <ListItemIcon>
-                <Fragment>
-                  <IconButton
-                    onClick={handleOWEExpandCollapse}
-                    sx={{
-                      pb: theme.spacing(1),
-                      color: adsMidGreyA,
-                      "&:hover": {
-                        color: adsBlueA,
-                      },
-                    }}
-                    aria-controls="expand-collapse"
-                    size="small"
-                  >
-                    {openOneWayExemption ? <ExpandMore /> : <ChevronRight />}
-                  </IconButton>
-                  <ArrowUpward
-                    sx={{
-                      color: adsWhite,
-                      backgroundColor: adsLightBlue,
-                      mt: theme.spacing(0.5),
-                    }}
-                  />
-                </Fragment>
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        pl: theme.spacing(1),
-                      }}
-                    >
-                      One-way exemption
-                    </Typography>
-                    <Avatar
-                      variant="rounded"
-                      sx={GetTabIconStyle(
-                        data.esuData && data.esuData.oneWayExemptions ? data.esuData.oneWayExemptions.length : 0
-                      )}
-                    >
-                      <Typography variant="caption">
-                        <strong>
-                          {data.esuData && data.esuData.oneWayExemptions ? data.esuData.oneWayExemptions.length : 0}
-                        </strong>
-                      </Typography>
-                    </Avatar>
-                  </Stack>
-                }
-              />
-              <ListItemAvatar
+            {direction !== 1 && (
+              <ListItemButton
+                divider
+                dense
+                disableGutters
                 sx={{
-                  minWidth: 32,
+                  height: "50px",
+                  "&:hover": {
+                    backgroundColor: adsLightBlue10,
+                    color: adsBlueA,
+                  },
                 }}
+                onMouseEnter={handleOWEMouseEnter}
+                onMouseLeave={handleOWEMouseLeave}
               >
-                {canAddOneWayExemption() && oweItemSelected && (
-                  <ADSActionButton
-                    variant="add"
-                    disabled={!userCanEdit}
-                    tooltipTitle="Add one-way exemption"
-                    tooltipPlacement="right"
-                    onClick={handleAddOneWayExemption}
-                  />
-                )}
-              </ListItemAvatar>
-            </ListItemButton>
-            <Collapse in={openOneWayExemption} timeout="auto">
-              {data.esuData &&
-                data.esuData.oneWayExemptions &&
-                data.esuData.oneWayExemptions.length > 0 &&
-                data.esuData.oneWayExemptions
-                  .filter((x) => x.changeType !== "D")
-                  .map((d, index) => (
-                    <List component="div" disablePadding key={`one_way_exemption_key_${index}`}>
-                      <ListItemButton
-                        id={d.pkId}
-                        alignItems="flex-start"
-                        dense
-                        disableGutters
-                        autoFocus={
-                          d.selectedItem && d.selectedItem >= 0 && d.selectedItem.toString() === d.pkId.toString()
-                        }
-                        selected={
-                          oweSelectedRecord &&
-                          oweSelectedRecord >= 0 &&
-                          oweSelectedRecord.toString() === d.pkId.toString()
-                        }
-                        sx={getOweStyle(index)}
-                        onClick={() => handleOneWayExemptionClick(d, index)}
-                        onMouseEnter={handleOWEMouseEnterRecord}
-                        onMouseLeave={handleOWEMouseLeaveRecord}
+                <ListItemIcon>
+                  <Fragment>
+                    <IconButton
+                      onClick={handleOWEExpandCollapse}
+                      sx={{
+                        pb: theme.spacing(1),
+                        color: adsMidGreyA,
+                        "&:hover": {
+                          color: adsBlueA,
+                        },
+                      }}
+                      aria-controls="expand-collapse"
+                      size="small"
+                    >
+                      {openOneWayExemption ? <ExpandMore /> : <ChevronRight />}
+                    </IconButton>
+                    <ArrowUpward
+                      sx={{
+                        color: adsWhite,
+                        backgroundColor: adsLightBlue,
+                        mt: theme.spacing(0.5),
+                      }}
+                    />
+                  </Fragment>
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
+                          pl: theme.spacing(1),
+                        }}
                       >
-                        <ListItemAvatar
-                          sx={{
-                            pl: theme.spacing(1),
-                            minWidth: 24,
-                          }}
+                        One-way exemption
+                      </Typography>
+                      <Avatar
+                        variant="rounded"
+                        sx={GetTabIconStyle(
+                          data.esuData && data.esuData.oneWayExemptions ? data.esuData.oneWayExemptions.length : 0
+                        )}
+                      >
+                        <Typography variant="caption">
+                          <strong>
+                            {data.esuData && data.esuData.oneWayExemptions ? data.esuData.oneWayExemptions.length : 0}
+                          </strong>
+                        </Typography>
+                      </Avatar>
+                    </Stack>
+                  }
+                />
+                <ListItemAvatar
+                  sx={{
+                    minWidth: 32,
+                  }}
+                >
+                  {canAddOneWayExemption() && oweItemSelected && (
+                    <ADSActionButton
+                      variant="add"
+                      disabled={!userCanEdit}
+                      tooltipTitle="Add one-way exemption"
+                      tooltipPlacement="right"
+                      onClick={handleAddOneWayExemption}
+                    />
+                  )}
+                </ListItemAvatar>
+              </ListItemButton>
+            )}
+            {direction !== 1 && (
+              <Collapse in={openOneWayExemption} timeout="auto">
+                {data.esuData &&
+                  data.esuData.oneWayExemptions &&
+                  data.esuData.oneWayExemptions.length > 0 &&
+                  data.esuData.oneWayExemptions
+                    .filter((x) => x.changeType !== "D")
+                    .map((d, index) => (
+                      <List component="div" disablePadding key={`one_way_exemption_key_${index}`}>
+                        <ListItemButton
+                          id={d.pkId}
+                          alignItems="flex-start"
+                          dense
+                          disableGutters
+                          autoFocus={
+                            d.selectedItem && d.selectedItem >= 0 && d.selectedItem.toString() === d.pkId.toString()
+                          }
+                          selected={
+                            oweSelectedRecord &&
+                            oweSelectedRecord >= 0 &&
+                            oweSelectedRecord.toString() === d.pkId.toString()
+                          }
+                          sx={getOweStyle(index)}
+                          onClick={() => handleOneWayExemptionClick(d, index)}
+                          onMouseEnter={handleOWEMouseEnterRecord}
+                          onMouseLeave={handleOWEMouseLeaveRecord}
                         >
-                          <IndentIcon />
-                        </ListItemAvatar>
-                        <ListItemAvatar
-                          sx={{
-                            minWidth: 24,
-                          }}
-                        >
-                          <Avatar
-                            variant="rounded"
-                            alt={d.avatarText}
-                            src={d.avatarIcon}
+                          <ListItemAvatar
                             sx={{
-                              width: theme.spacing(2),
-                              height: theme.spacing(2),
-                              color: adsWhite,
-                              backgroundColor: adsLightBlue,
+                              pl: theme.spacing(1),
+                              minWidth: 24,
                             }}
                           >
-                            <Typography variant="caption">{d.oneWayExemptionTypeCode}</Typography>
-                          </Avatar>
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={
-                            <Typography variant="body1">{GetOneWayExemption(d.oneWayExemptionTypeCode)}</Typography>
-                          }
-                        />
-                      </ListItemButton>
-                    </List>
-                  ))}
-            </Collapse>
+                            <IndentIcon />
+                          </ListItemAvatar>
+                          <ListItemAvatar
+                            sx={{
+                              minWidth: 24,
+                            }}
+                          >
+                            <Avatar
+                              variant="rounded"
+                              alt={d.avatarText}
+                              src={d.avatarIcon}
+                              sx={{
+                                width: theme.spacing(2),
+                                height: theme.spacing(2),
+                                color: adsWhite,
+                                backgroundColor: adsLightBlue,
+                              }}
+                            >
+                              <Typography variant="caption">{d.oneWayExemptionTypeCode}</Typography>
+                            </Avatar>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={
+                              <Typography variant="body1">{GetOneWayExemption(d.oneWayExemptionTypeCode)}</Typography>
+                            }
+                          />
+                        </ListItemButton>
+                      </List>
+                    ))}
+              </Collapse>
+            )}
           </List>
         )}
       </Box>

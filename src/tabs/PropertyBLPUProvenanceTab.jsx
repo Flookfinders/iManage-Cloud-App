@@ -21,6 +21,7 @@
 //    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    009   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    010   11.01.24 Sean Flook                 Fix warnings.
+//    011   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -34,8 +35,7 @@ import PropertyContext from "../context/propertyContext";
 import SettingsContext from "../context/settingsContext";
 import { Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
-import { FilteredBLPUProvenance } from "../utils/PropertyUtils";
+import { GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
 import BLPUProvenance from "../data/BLPUProvenance";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -68,7 +68,7 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
 
   const currentId = useRef(0);
 
-  const [provenanceLookup, setProvenanceLookup] = useState(FilteredBLPUProvenance(settingsContext.isScottish));
+  const [provenanceLookup, setProvenanceLookup] = useState(filteredLookup(BLPUProvenance, settingsContext.isScottish));
 
   const [code, setCode] = useState(null);
   const [annotation, setAnnotation] = useState("");
@@ -265,7 +265,7 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
       setStartDate(data.provenanceData.startDate);
       setEndDate(data.provenanceData.endDate);
 
-      setProvenanceLookup(FilteredBLPUProvenance(settingsContext.isScottish));
+      setProvenanceLookup(filteredLookup(BLPUProvenance, settingsContext.isScottish));
     }
   }, [data, settingsContext.isScottish]);
 

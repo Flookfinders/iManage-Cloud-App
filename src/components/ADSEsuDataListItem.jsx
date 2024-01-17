@@ -19,6 +19,7 @@
 //    006   03.11.23 Sean Flook                 Added hyphen to one-way.
 //    007   24.11.23 Sean Flook                 Removed unwanted code.
 //    008   05.01.24 Sean Flook                 use CSS shortcuts.
+//    009   17.01.24 Sean Flook                 Changes after Louise's review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -851,10 +852,10 @@ function ADSEsuDataListItem({
             </List>
           ))}
         {!settingsContext.isScottish &&
-          (data &&
+          data &&
           data.esu &&
-          data.esu.oneWayExemptions &&
-          data.esu.oneWayExemptions.filter((x) => x.changeType !== "D").length > 0 ? (
+          data.esu.esuDirection !== 1 &&
+          (data.esu.oneWayExemptions && data.esu.oneWayExemptions.filter((x) => x.changeType !== "D").length > 0 ? (
             data.esu.oneWayExemptions
               .filter((x) => x.changeType !== "D")
               .map((d, index) => (

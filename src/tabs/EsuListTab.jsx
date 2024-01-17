@@ -23,6 +23,7 @@
 //    010   24.11.23 Sean Flook                 Moved Box to @mui/system and fixed a warning.
 //    011   19.12.23 Sean Flook                 Various bug fixes.
 //    012   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    013   17.01.24 Sean Flook                 Changes after Louise's review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -40,9 +41,11 @@ import {
   IconButton,
   Typography,
   List,
-  ListItemAvatar,
   ListItemButton,
   ListItemText,
+  Menu,
+  MenuItem,
+  Fade,
   Skeleton,
   Popper,
   Snackbar,
@@ -62,6 +65,8 @@ import {
   ActionIconStyle,
   dataFormStyle,
   tooltipStyle,
+  menuStyle,
+  menuItemStyle,
   GetAlertStyle,
   GetAlertIcon,
   GetAlertSeverity,
@@ -114,6 +119,7 @@ function EsuListTab({
 
   const selectedPkId = useRef(-1);
 
+  const [anchorEl, setAnchorEl] = useState(null);
   const [errorOpen, setErrorOpen] = useState(false);
 
   const errorType = useRef(null);
@@ -196,14 +202,43 @@ function EsuListTab({
   };
 
   /**
-   * Event to handle adding a new ESU.
+   * Event to handle displaying the add menu.
    *
    * @param {object} event The event object.
    */
   const handleAddESUClick = (event) => {
+    setAnchorEl(event.nativeEvent.target);
+    event.stopPropagation();
+  };
+
+  /**
+   * Event to handle when the add menu is closed.
+   *
+   * @param {object} event The event object.
+   */
+  const handleAddMenuClose = (event) => {
+    setAnchorEl(null);
+    event.stopPropagation();
+  };
+
+  /**
+   * Event to handle adding a new ESU.
+   *
+   * @param {object} event The event object.
+   */
+  const handleAddNewEsu = (event) => {
     event.stopPropagation();
     streetContext.onEsuDataChange(true);
     if (onEsuSelected) onEsuSelected(0, null, null);
+  };
+
+  /**
+   * Event to handle assigning an ESU.
+   *
+   * @param {object} event The event object.
+   */
+  const handleAssignEsu = (event) => {
+    event.stopPropagation();
   };
 
   /**
@@ -344,11 +379,11 @@ function EsuListTab({
                   size="small"
                 >
                   {expandCollapseLabel === "Expand all" ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
-                  <Typography variant="body2">{expandCollapseLabel}</Typography>
+                  <Typography variant="subtitle1">{expandCollapseLabel}</Typography>
                 </IconButton>
               </Tooltip>
             )}
-            <Tooltip title="Add new ESU record" arrow placement="right" sx={tooltipStyle}>
+            <Tooltip title="Add or assign ESU record" arrow placement="right" sx={tooltipStyle}>
               <IconButton
                 sx={ActionIconStyle()}
                 onClick={handleAddESUClick}
@@ -368,6 +403,31 @@ function EsuListTab({
                 </Typography>
               </IconButton>
             </Tooltip>
+            <Menu
+              id={`add-esu-menu`}
+              elevation={2}
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleAddMenuClose}
+              TransitionComponent={Fade}
+              sx={menuStyle}
+            >
+              <MenuItem dense onClick={handleAddNewEsu} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Create new ESU</Typography>
+              </MenuItem>
+              <MenuItem dense onClick={handleAssignEsu} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Assign ESU from map</Typography>
+              </MenuItem>
+            </Menu>
           </Stack>
         </Stack>
       </Box>
@@ -388,7 +448,7 @@ function EsuListTab({
                 key={`key_${index}`}
               >
                 <ADSEsuDataListItem
-                  title={rec.esuId < 0 ? `New ESU [${rec.esuId * -1 - 9}]` : `${rec.esuId}`}
+                  title={rec.esuId < 0 ? `New ESU - ID set on save [${rec.esuId * -1 - 9}]` : `${rec.esuId}`}
                   data={{ esu: rec, selectedItem: selectedPkId.current }}
                   streetState={streetState}
                   error={errors.find((x) => x.index === index)}
@@ -434,18 +494,7 @@ function EsuListTab({
                 },
               }}
             >
-              <ListItemText primary={<Typography variant="subtitle1">No ESU records present</Typography>} />
-              <ListItemAvatar
-                sx={{
-                  minWidth: 32,
-                }}
-              >
-                <Tooltip title="Add ESU" arrow placement="bottom" sx={tooltipStyle}>
-                  <IconButton onClick={handleAddESUClick} size="small">
-                    <AddCircleIcon sx={ActionIconStyle()} />
-                  </IconButton>
-                </Tooltip>
-              </ListItemAvatar>
+              <ListItemText primary={<Typography variant="subtitle1">Add or assign ESU records</Typography>} />
             </ListItemButton>
           </List>
         )}

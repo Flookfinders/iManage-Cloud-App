@@ -17,6 +17,7 @@
 //    004   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    006   11.01.24 Sean Flook                 Fix warnings.
+//    007   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -48,7 +49,7 @@ import ADSReadOnlyControl from "../components/ADSReadOnlyControl";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSTextControl from "../components/ADSTextControl";
 
-import { GetLookupLabel, GetCurrentDate, GetCheck, GetErrorMessage } from "../utils/HelperUtils";
+import { GetLookupLabel, GetCurrentDate, GetCheck, GetErrorMessage, filteredLookup } from "../utils/HelperUtils";
 import {
   FilteredBLPUState,
   FilteredRepresentativePointCode,
@@ -107,7 +108,7 @@ const useStyles = makeStyles(
 );
 
 MultiEditLogicalStatusDialog.propTypes = {
-  variant: PropTypes.oneOf(["approved", "historic"]).isRequired,
+  variant: PropTypes.oneOf(["approved", "historic", "unknown"]).isRequired,
   propertyUprns: PropTypes.array.isRequired,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
@@ -895,44 +896,40 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                   helperText="Representative Point Code."
                 />
               </Grid>
-              {!settingsContext.isScottish && (
-                <Grid item xs={12}>
-                  <ADSSelectControl
-                    label="Official address"
-                    isEditable
-                    useRounded
-                    disabled={updating}
-                    doNotSetTitleCase
-                    displayNoChange
-                    lookupData={OfficialAddress}
-                    lookupId="id"
-                    lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-                    value={officialFlag}
-                    errorText={officialFlagError}
-                    onChange={handleOfficialFlagChangeEvent}
-                    helperText="Status of address."
-                  />
-                </Grid>
-              )}
-              {!settingsContext.isScottish && (
-                <Grid item xs={12}>
-                  <ADSSelectControl
-                    label="Postal address"
-                    isEditable
-                    useRounded
-                    disabled={updating}
-                    doNotSetTitleCase
-                    displayNoChange
-                    lookupData={PostallyAddressable}
-                    lookupId="id"
-                    lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-                    value={postalAddress}
-                    errorText={postalAddressError}
-                    onChange={handlePostalAddressChangeEvent}
-                    helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
-                  />
-                </Grid>
-              )}
+              <Grid item xs={12}>
+                <ADSSelectControl
+                  label="Official address"
+                  isEditable
+                  useRounded
+                  disabled={updating}
+                  doNotSetTitleCase
+                  displayNoChange
+                  lookupData={filteredLookup(OfficialAddress, settingsContext.isScottish)}
+                  lookupId="id"
+                  lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                  value={officialFlag}
+                  errorText={officialFlagError}
+                  onChange={handleOfficialFlagChangeEvent}
+                  helperText="Status of address."
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <ADSSelectControl
+                  label="Postal address"
+                  isEditable
+                  useRounded
+                  disabled={updating}
+                  doNotSetTitleCase
+                  displayNoChange
+                  lookupData={filteredLookup(PostallyAddressable, settingsContext.isScottish)}
+                  lookupId="id"
+                  lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                  value={postalAddress}
+                  errorText={postalAddressError}
+                  onChange={handlePostalAddressChangeEvent}
+                  helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
+                />
+              </Grid>
               <Grid item xs={12}>
                 <ADSSelectControl
                   label="Post town"

@@ -36,6 +36,7 @@
 //    022   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    023   11.01.24 Sean Flook       IMANN-163 Close the add property wizard dialog when clicking on view properties.
 //    024   12.01.24 Sean Flook                 Fixed duplicate key warning.
+//    025   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -372,7 +373,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
       if (!isRange) history.goBack();
 
       const parentData =
-        isRange && wizardData.savedProperty
+        isRange && wizardData.savedProperty && wizardData.savedProperty.length > 0
           ? await GetPropertyMapData(wizardData.savedProperty[0].parentUprn, userContext.currentUser.token)
           : null;
       const engLpis = parentData && parentData.lpis ? parentData.lpis.filter((x) => x.language === "ENG") : null;

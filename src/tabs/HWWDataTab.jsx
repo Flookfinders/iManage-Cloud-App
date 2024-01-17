@@ -19,6 +19,7 @@
 //    006   02.01.24 Sean Flook       IMANN-205 Added end date.
 //    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    008   11.01.24 Sean Flook                 Fix warnings.
+//    009   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -32,10 +33,10 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
 import MapContext from "./../context/mapContext";
 
-import { GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
-import { FilteredSwaOrgRef } from "../utils/StreetUtils";
+import { GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
 
+import SwaOrgRef from "../data/SwaOrgRef";
 import HWWDesignationCode from "./../data/HWWDesignationCode";
 
 import { Avatar, Typography } from "@mui/material";
@@ -75,7 +76,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
 
   const [dataChanged, setDataChanged] = useState(false);
 
-  const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(FilteredSwaOrgRef(false));
+  const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(filteredLookup(SwaOrgRef, false));
 
   const [restrictionCode, setRestrictionCode] = useState(null);
   const [valueMetric, setValueMetric] = useState(0);
@@ -416,7 +417,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
       setHwwEndX(data.hwwData.hwwEndX ? data.hwwData.hwwEndX : 0);
       setHwwEndY(data.hwwData.hwwEndY ? data.hwwData.hwwEndY : 0);
 
-      setSwaOrgRefLookup(FilteredSwaOrgRef(false));
+      setSwaOrgRefLookup(filteredLookup(SwaOrgRef, false));
     }
   }, [loading, data]);
 

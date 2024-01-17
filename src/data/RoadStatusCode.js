@@ -25,7 +25,7 @@ const RoadStatusCode = [
   {
     id: 4,
     gpText: "Maintenance responsibility is to another Highway Authority",
-    osText: "Trunk Road",
+    osText: "Trunk Road or Motorway",
     colour: adsBrown,
     default: false,
   },

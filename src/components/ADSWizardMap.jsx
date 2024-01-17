@@ -19,6 +19,7 @@
 //    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    007   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
 //    008   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    009   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1257,7 +1258,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
         ref={mapRef}
         id="ads-wizard-map-box"
       >
-        <Box id="map-wizard-buttons" class="esri-widget esri-interactive" sx={{ borderRadius: "6px" }}>
+        <Box id="map-wizard-buttons" className="esri-widget esri-interactive" sx={{ borderRadius: "6px" }}>
           <Stack
             direction="row"
             sx={{ backgroundColor: adsWhite, height: "32px" }}
@@ -1277,7 +1278,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
         {displayPlaceOnMap && (
           <Box
             id="ads-place-on-map-control"
-            class="esri-widget esri-interactive"
+            className="esri-widget esri-interactive"
             sx={{
               boxShadow: `4px 4px 7px ${adsLightGreyA50}`,
               borderRadius: "9px",

@@ -26,6 +26,7 @@
 //    013   30.11.23 Sean Flook                 Changes required for Scottish authorities.
 //    014   01.12.23 Sean Flook                 Corrected field names.
 //    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    016   17.01.24 Sean Flook                 Renamed fields and included sub-locality.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -396,7 +397,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
           newClassifications.push({
             changeType: "I",
             uprn: 0,
-            classScheme: address.classification.classScheme,
+            classificationScheme: address.classification.classificationScheme,
             blpuClass: address.classification.classification,
             startDate: address.classification.startDate,
             endDate: null,
@@ -614,6 +615,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
           usrn: parent.usrn,
           postcodeRef: null,
           postTownRef: selectedTemplate.current.postTownRef,
+          subLocalityRef: settingsContext.isScottish ? selectedTemplate.current.subLocalityRef : null,
           addressList: [],
         };
 
@@ -635,6 +637,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
           usrn: parent.usrn,
           postcodeRef: null,
           postTownRef: selectedTemplate.current.postTownRef,
+          subLocalityRef: settingsContext.isScottish ? selectedTemplate.current.subLocalityRef : null,
         };
 
         setEngSingleAddressData(engData);
@@ -662,6 +665,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
             usrn: parent.usrn,
             postcodeRef: null,
             postTownRef: altLangPostTownRecord ? altLangPostTownRecord.postTownRef : null,
+            subLocalityRef: altLangSubLocalityRecord ? altLangSubLocalityRecord.subLocalityRef : null,
             addressList: [],
           };
 
@@ -683,6 +687,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
             usrn: parent.usrn,
             postcodeRef: null,
             postTownRef: altLangPostTownRecord ? altLangPostTownRecord.postTownRef : null,
+            subLocalityRef: altLangSubLocalityRecord ? altLangSubLocalityRecord.subLocalityRef : null,
           };
 
           setAltLangSingleAddressData(altLangData);
@@ -709,6 +714,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
             usrn: parent.usrn,
             postcodeRef: null,
             postTownRef: altLangPostTownRecord ? altLangPostTownRecord.postTownRef : null,
+            subLocalityRef: null,
             addressList: [],
           };
 
@@ -730,6 +736,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
             usrn: parent.usrn,
             postcodeRef: null,
             postTownRef: altLangPostTownRecord ? altLangPostTownRecord.postTownRef : null,
+            subLocalityRef: null,
           };
 
           setAltLangSingleAddressData(altLangData);
@@ -805,6 +812,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
               usrn: parent.usrn,
               postcodeRef: null,
               postTownRef: selectedTemplate.current.postTownRef,
+              subLocalityRef: selectedTemplate.current.subLocalityRef,
               addressList: [],
             };
 
@@ -826,6 +834,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
               usrn: parent.usrn,
               postcodeRef: null,
               postTownRef: selectedTemplate.current.postTownRef,
+              subLocalityRef: selectedTemplate.current.subLocalityRef,
             };
 
             setEngSingleAddressData(engData);
@@ -857,6 +866,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                 usrn: parent.usrn,
                 postcodeRef: null,
                 postTownRef: altLangPostTownRecord ? altLangPostTownRecord.postTownRef : null,
+                subLocalityRef: altLangSubLocalityRecord ? altLangSubLocalityRecord.subLocalityRef : null,
                 addressList: [],
               };
 
@@ -878,6 +888,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                 usrn: parent.usrn,
                 postcodeRef: null,
                 postTownRef: altLangPostTownRecord ? altLangPostTownRecord.postTownRef : null,
+                subLocalityRef: altLangSubLocalityRecord ? altLangSubLocalityRecord.subLocalityRef : null,
               };
 
               setAltLangSingleAddressData(altLangData);
@@ -908,6 +919,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                 usrn: parent.usrn,
                 postcodeRef: null,
                 postTownRef: altLangPostTownRecord ? altLangPostTownRecord.postTownRef : null,
+                subLocalityRef: null,
                 addressList: [],
               };
 
@@ -929,6 +941,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                 usrn: parent.usrn,
                 postcodeRef: null,
                 postTownRef: altLangPostTownRecord ? altLangPostTownRecord.postTownRef : null,
+                subLocalityRef: null,
               };
 
               setAltLangSingleAddressData(altLangData);
@@ -946,6 +959,13 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
     const altLangPostTownRecord =
       selectedTemplate.current && (settingsContext.isScottish || settingsContext.isWelsh)
         ? lookupContext.currentLookups.postTowns.find((x) => x.linkedRef === selectedTemplate.current.postTownRef)
+        : null;
+
+    const altLangSubLocalityRecord =
+      selectedTemplate.current && settingsContext.isScottish
+        ? lookupContext.currentLookups.subLocalities.find(
+            (x) => x.linkedRef === selectedTemplate.current.subLocalityRef
+          )
         : null;
 
     if ((!isRange.current && !engSingleAddressData) || (isRange.current && !engRangeAddressData)) {
@@ -993,6 +1013,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
               usrn: engRecord.usrn,
               postcodeRef: engRecord.postcodeRef,
               postTownRef: engRecord.postTownRef,
+              subLocalityRef: engRecord.subLocalityRef,
               addressList: engRecord.addressList,
             },
             {
@@ -1021,6 +1042,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
               usrn: altRecord.usrn,
               postcodeRef: altRecord.postcodeRef,
               postTownRef: altRecord.postTownRef,
+              subLocalityRef: altRecord.subLocalityRef,
               addressList: altRecord.addressList,
             },
           ]);
@@ -1046,6 +1068,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
               usrn: engRecord.usrn,
               postcodeRef: engRecord.postcodeRef,
               postTownRef: engRecord.postTownRef,
+              subLocalityRef: engRecord.subLocalityRef,
             },
             {
               language: altRecord.language,
@@ -1067,6 +1090,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
               usrn: altRecord.usrn,
               postcodeRef: altRecord.postcodeRef,
               postTownRef: altRecord.postTownRef,
+              subLocalityRef: altRecord.subLocalityRef,
             },
           ]);
         }
@@ -1099,6 +1123,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
               usrn: engRecord.usrn,
               postcodeRef: engRecord.postcodeRef,
               postTownRef: engRecord.postTownRef,
+              subLocalityRef: engRecord.subLocalityRef,
               addressList: engRecord.addressList,
             },
             {
@@ -1127,6 +1152,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
               usrn: altRecord.usrn,
               postcodeRef: altRecord.postcodeRef,
               postTownRef: altRecord.postTownRef,
+              subLocalityRef: altRecord.subLocalityRef,
               addressList: altRecord.addressList,
             },
           ]);
@@ -1152,6 +1178,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
               usrn: engRecord.usrn,
               postcodeRef: engRecord.postcodeRef,
               postTownRef: engRecord.postTownRef,
+              subLocalityRef: engRecord.subLocalityRef,
             },
             {
               language: altRecord.language,
@@ -1173,6 +1200,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
               usrn: altRecord.usrn,
               postcodeRef: altRecord.postcodeRef,
               postTownRef: altRecord.postTownRef,
+              subLocalityRef: altRecord.subLocalityRef,
             },
           ]);
         }
@@ -1357,7 +1385,9 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                   ? {
                       logicalStatus: selectedTemplate.current.blpuLogicalStatus,
                       rpc: selectedTemplate.current.rpc,
-                      level: selectedTemplate.current.level,
+                      state: selectedTemplate.current.state,
+                      stateDate: selectedTemplate.current.state ? new Date() : null,
+                      level: selectedTemplate.current.blpuLevel ? selectedTemplate.current.blpuLevel : 0,
                       startDate: new Date(),
                     }
                   : {
@@ -1373,7 +1403,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
             if (!lpiData)
               setLpiData({
                 logicalStatus: selectedTemplate.current.lpiLogicalStatus,
-                level: selectedTemplate.current.level,
+                level: selectedTemplate.current.lpiLevel,
                 officialAddress: selectedTemplate.current.officialAddressMaker,
                 postallyAddressable: selectedTemplate.current.postallyAddressable,
                 startDate: new Date(),
@@ -1384,8 +1414,8 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                 settingsContext.isScottish
                   ? {
                       classification: selectedTemplate.current.classification,
-                      classificationScheme: selectedTemplate.current.classScheme
-                        ? selectedTemplate.current.classScheme
+                      classificationScheme: selectedTemplate.current.classificationScheme
+                        ? selectedTemplate.current.classificationScheme
                         : OSGScheme,
                       startDate: new Date(),
                     }
@@ -1437,6 +1467,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                           usrn: addressRecord.usrn,
                           postTownRef: addressRecord.postTownRef,
                           postcodeRef: addressRecord.postcodeRef,
+                          subLocalityRef: addressRecord.subLocalityRef,
                           included: addressRecord.included,
                         },
                         blpu: blpuData,
@@ -1480,6 +1511,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                           usrn: addressRecord.usrn,
                           postTownRef: addressRecord.postTownRef,
                           postcodeRef: addressRecord.postcodeRef,
+                          subLocalityRef: addressRecord.subLocalityRef,
                           included: addressRecord.included,
                         },
                         blpu: blpuData,
@@ -1533,6 +1565,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                         paoText: addressDetailRecord.paoText,
                         paoDetails: addressDetailRecord.paoDetails,
                         usrn: addressDetailRecord.usrn,
+                        subLocalityRef: addressDetailRecord.subLocalityRef,
                         postTownRef: addressDetailRecord.postTownRef,
                         postcodeRef: addressDetailRecord.postcodeRef,
                         included: true,
@@ -1579,6 +1612,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                         paoText: addressDetailRecord.paoText,
                         paoDetails: addressDetailRecord.paoDetails,
                         usrn: addressDetailRecord.usrn,
+                        subLocalityRef: addressDetailRecord.subLocalityRef,
                         postTownRef: addressDetailRecord.postTownRef,
                         postcodeRef: addressDetailRecord.postcodeRef,
                         included: true,
@@ -1956,8 +1990,10 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
             return (
               <WizardCrossReferencesPage
                 data={crossReferenceData}
+                errors={crossReferencesErrors}
                 templateVariant={variant}
                 onDataChanged={handleCrossReferencesChanged}
+                onErrorChanged={handleCrossReferencesErrorChanged}
               />
             );
 
@@ -2011,8 +2047,10 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
             return (
               <WizardCrossReferencesPage
                 data={crossReferenceData}
+                errors={crossReferencesErrors}
                 templateVariant={variant}
                 onDataChanged={handleCrossReferencesChanged}
+                onErrorChanged={handleCrossReferencesErrorChanged}
               />
             );
 
@@ -2078,8 +2116,10 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
             return (
               <WizardCrossReferencesPage
                 data={crossReferenceData}
+                errors={crossReferencesErrors}
                 templateVariant={variant}
                 onDataChanged={handleCrossReferencesChanged}
+                onErrorChanged={handleCrossReferencesErrorChanged}
               />
             );
 

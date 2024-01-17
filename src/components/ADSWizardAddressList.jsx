@@ -22,6 +22,7 @@
 //    009   30.11.23 Sean Flook                 Change required for Scottish authorities.
 //    010   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    011   12.01.24 Sean Flook                 Fixed duplicate key warning.
+//    012   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -111,7 +112,7 @@ function ADSWizardAddressList({
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
   const [openAction, setOpenAction] = useState(false);
   const [actionType, setActionType] = useState(null);
-  const [actionData, setActionData] = useState(null);
+  const [actionData, setActionData] = useState("");
   const addressListData = useRef(null);
 
   const [addressErrors, setAddressErrors] = useState([]);
@@ -221,7 +222,7 @@ function ADSWizardAddressList({
             break;
 
           case "level":
-            setActionData(editRecord.lpi.level);
+            setActionData(editRecord.lpi.level ? editRecord.lpi.level : settingsContext.isScottish ? 0 : "");
             break;
 
           case "postcode":
@@ -561,7 +562,7 @@ function ADSWizardAddressList({
                       classification: settingsContext.isScottish
                         ? {
                             classification: updatedData,
-                            classScheme: currentRecord.classification.classScheme,
+                            classificationScheme: currentRecord.classification.classificationScheme,
                             startDate: currentRecord.classification.startDate,
                           }
                         : currentRecord.classification,
@@ -837,7 +838,7 @@ function ADSWizardAddressList({
 
       actionAddressIds.current = null;
       actionCount.current = 0;
-      setActionData(null);
+      setActionData("");
       setActionType(null);
       setOpenAction(false);
     }
@@ -847,7 +848,7 @@ function ADSWizardAddressList({
    * Event to handle when an action has been canceled.
    */
   const handleCancelAction = () => {
-    setActionData(null);
+    setActionData("");
     setActionType(null);
     setOpenAction(false);
   };
@@ -1169,33 +1170,32 @@ function ADSWizardAddressList({
                                 <Typography variant="inherit">Edit level</Typography>
                               </MenuItem>
                             )}
-                            {!haveMoveBlpu && (
+                            {settingsContext.isScottish && !haveMoveBlpu && (
                               <MenuItem
                                 dense
-                                onClick={(event) => handleEditPostcode(event, rec)}
-                                sx={menuItemStyle(false)}
+                                onClick={(event) => handleEditSubLocality(event, rec)}
+                                sx={menuItemStyle(true)}
                               >
-                                <Typography variant="inherit">Edit postcode</Typography>
+                                <Typography variant="inherit">Edit sub-locality</Typography>
                               </MenuItem>
                             )}
                             {!haveMoveBlpu && (
                               <MenuItem
                                 dense
-                                divider={!settingsContext.isScottish}
                                 onClick={(event) => handleEditPostTown(event, rec)}
                                 sx={menuItemStyle(true)}
                               >
                                 <Typography variant="inherit">Edit post town</Typography>
                               </MenuItem>
                             )}
-                            {settingsContext.isScottish && !haveMoveBlpu && (
+                            {!haveMoveBlpu && (
                               <MenuItem
                                 dense
                                 divider
-                                onClick={(event) => handleEditSubLocality(event, rec)}
-                                sx={menuItemStyle(true)}
+                                onClick={(event) => handleEditPostcode(event, rec)}
+                                sx={menuItemStyle(false)}
                               >
-                                <Typography variant="inherit">Edit sub-locality</Typography>
+                                <Typography variant="inherit">Edit postcode</Typography>
                               </MenuItem>
                             )}
                             {haveMoveBlpu && (

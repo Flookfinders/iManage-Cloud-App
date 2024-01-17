@@ -17,6 +17,7 @@
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   10.01.24 Sean Flook                 Fix warnings.
 //    006   11.01.24 Sean Flook                 Fix warnings.
+//    007   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -54,7 +55,7 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
 
   const [showDialog, setShowDialog] = useState(false);
 
-  const [scheme, setScheme] = useState(null);
+  const [classificationScheme, setClassificationScheme] = useState(null);
   const [metadataDate, setMetadataDate] = useState(null);
   const [language, setLanguage] = useState(null);
 
@@ -107,7 +108,7 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
    */
   const getUpdatedData = () => {
     return {
-      scheme: scheme,
+      classificationScheme: classificationScheme,
       metadataDate: metadataDate,
       language: language,
     };
@@ -118,8 +119,8 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
    *
    * @param {string} newValue The new scheme.
    */
-  const handleSchemeChangeEvent = (newValue) => {
-    setScheme(newValue);
+  const handleClassificationSchemeChangeEvent = (newValue) => {
+    setClassificationScheme(newValue);
   };
 
   /**
@@ -221,7 +222,7 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
 
   useEffect(() => {
     if (data) {
-      setScheme(data.scheme);
+      setClassificationScheme(data.classificationScheme);
       setMetadataDate(data.metadataDate);
       setLanguage(data.language);
     }
@@ -261,10 +262,10 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
                     isEditable
                     maxLength={40}
                     isRequired
-                    value={scheme}
+                    value={classificationScheme}
                     id="classification_scheme"
                     helperText={getHelperText("scheme")}
-                    onChange={handleSchemeChangeEvent}
+                    onChange={handleClassificationSchemeChangeEvent}
                   />
                   <ADSDateControl
                     label="Metadata date"

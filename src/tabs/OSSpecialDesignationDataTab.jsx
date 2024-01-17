@@ -19,6 +19,7 @@
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    007   10.01.24 Sean Flook                 Fix warnings.
 //    008   11.01.24 Sean Flook                 Fix warnings.
+//    009   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,10 +32,10 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
 import MapContext from "./../context/mapContext";
 
-import { GetLookupLabel, ConvertDate, isAfter1stApril2015 } from "../utils/HelperUtils";
-import { FilteredSpecialDesignationCode, FilteredSwaOrgRef } from "../utils/StreetUtils";
+import { GetLookupLabel, ConvertDate, isAfter1stApril2015, filteredLookup } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
 
+import SwaOrgRef from "../data/SwaOrgRef";
 import SpecialDesignationCode from "./../data/SpecialDesignationCode";
 
 import { Avatar, Typography } from "@mui/material";
@@ -83,9 +84,9 @@ function OSSpecialDesignationDataTab({
   const [dataChanged, setDataChanged] = useState(false);
 
   const [specialDesignationCodeLookup, setSpecialDesignationCodeLookup] = useState(
-    FilteredSpecialDesignationCode(true)
+    filteredLookup(SpecialDesignationCode, true)
   );
-  const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(FilteredSwaOrgRef(true));
+  const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(filteredLookup(SwaOrgRef, true));
 
   const [specialDesignation, setSpecialDesignation] = useState(null);
   const [custodian, setCustodian] = useState(null);
@@ -402,8 +403,8 @@ function OSSpecialDesignationDataTab({
         data.osSpecialDesignationData.specificLocation ? data.osSpecialDesignationData.specificLocation : ""
       );
 
-      setSpecialDesignationCodeLookup(FilteredSpecialDesignationCode(true));
-      setSwaOrgRefLookup(FilteredSwaOrgRef(true));
+      setSpecialDesignationCodeLookup(filteredLookup(SpecialDesignationCode, true));
+      setSwaOrgRefLookup(filteredLookup(SwaOrgRef, true));
     }
   }, [loading, data]);
 

@@ -28,6 +28,7 @@
 //    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    016   10.01.24 Sean Flook                 Fix warnings.
 //    017   12.01.24 Sean Flook       IMANN-233 Added getStartEndCoordinates.
+//    018   16.01.24 Sean Flook                 Added filteredLookups.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1510,4 +1511,19 @@ export const getStartEndCoordinates = (wktGeometry) => {
       endY: Number.parseFloat(endCoordinate[1]).toFixed(4),
     };
   } else return null;
+};
+
+/**
+ * Returns a list of lookups depending on if the authority is Scottish or not.
+ *
+ * @param {array} rawLookup The unfiltered lookups.
+ * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @return {array} The filtered lookups.
+ */
+export const filteredLookup = (rawLookup, isScottish) => {
+  if (isScottish) {
+    return rawLookup.filter((x) => x.osText);
+  } else {
+    return rawLookup.filter((x) => x.gpText);
+  }
 };

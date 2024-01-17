@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    006   17.01.24 Sean Flook                 Included sub-locality.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -120,6 +121,9 @@ function WizardAddressDetailsPage({
         const altLangRangePostTownRecord = lookupContext.currentLookups.postTowns.find(
           (x) => x.postTownRef === altLangRangeData.postTownRef
         );
+        const altLangRangeSubLocalityRecord = lookupContext.currentLookups.subLocalities.find(
+          (x) => x.subLocalityRef === altLangRangeData.subLocalityRef
+        );
         const dataRangeEng = {
           language: "ENG",
           rangeType:
@@ -166,6 +170,10 @@ function WizardAddressDetailsPage({
             altLangRangePostTownRecord && engRangeData.postTownRef !== altLangRangePostTownRecord.linkedRef
               ? altLangRangePostTownRecord.linkedRef
               : engRangeData.postTownRef,
+          subLocalityRef:
+            altLangRangeSubLocalityRecord && engRangeData.subLocalityRef !== altLangRangeSubLocalityRecord.linkedRef
+              ? altLangRangeSubLocalityRecord.linkedRef
+              : engRangeData.subLocalityRef,
           addressList: getSyncedAddressList(engRangeData, altLangRangeData),
         };
 
@@ -191,6 +199,7 @@ function WizardAddressDetailsPage({
               usrn: dataRangeEng.usrn,
               postcodeRef: dataRangeEng.postcodeRef,
               postTownRef: dataRangeEng.postTownRef,
+              subLocalityRef: dataRangeEng.subLocalityRef,
               addressList: dataRangeEng.addressList,
             },
             {
@@ -213,12 +222,16 @@ function WizardAddressDetailsPage({
               usrn: altLangRangeData.usrn,
               postcodeRef: altLangRangeData.postcodeRef,
               postTownRef: altLangRangeData.postTownRef,
+              subLocalityRef: altLangRangeData.subLocalityRef,
               addressList: altLangRangeData.addressList,
             },
           ]);
       } else {
         const altLangSinglePostTownRecord = lookupContext.currentLookups.postTowns.find(
           (x) => x.postTownRef === altLangSingleData.postTownRef
+        );
+        const altLangSingleSubLocalityRecord = lookupContext.currentLookups.subLocalities.find(
+          (x) => x.subLocalityRef === altLangSingleData.subLocalityRef
         );
         const dataEng = {
           language: "ENG",
@@ -250,6 +263,10 @@ function WizardAddressDetailsPage({
             altLangSinglePostTownRecord && engSingleData.postTownRef !== altLangSinglePostTownRecord.linkedRef
               ? altLangSinglePostTownRecord.linkedRef
               : engSingleData.postTownRef,
+          subLocalityRef:
+            altLangSingleSubLocalityRecord && engSingleData.subLocalityRef !== altLangSingleSubLocalityRecord.linkedRef
+              ? altLangSingleSubLocalityRecord.linkedRef
+              : engSingleData.subLocalityRef,
         };
 
         if (onDataChanged)
@@ -270,6 +287,7 @@ function WizardAddressDetailsPage({
               usrn: dataEng.usrn,
               postcodeRef: dataEng.postcodeRef,
               postTownRef: dataEng.postTownRef,
+              subLocalityRef: dataEng.subLocalityRef,
             },
             {
               language: altLangSingleData.language,
@@ -287,6 +305,7 @@ function WizardAddressDetailsPage({
               usrn: altLangSingleData.usrn,
               postcodeRef: altLangSingleData.postcodeRef,
               postTownRef: altLangSingleData.postTownRef,
+              subLocalityRef: altLangSingleData.subLocalityRef,
             },
           ]);
       }
@@ -294,6 +313,9 @@ function WizardAddressDetailsPage({
       if (isRange) {
         const engRangePostTownRecord = lookupContext.currentLookups.postTowns.find(
           (x) => x.postTownRef === engRangeData.postTownRef
+        );
+        const engRangeSubLocalityRecord = lookupContext.currentLookups.subLocalities.find(
+          (x) => x.subLocalityRef === engRangeData.subLocalityRef
         );
         const dataRangeAlt = {
           language: settingsContext.isScottish ? "GAE" : "CYM",
@@ -345,6 +367,10 @@ function WizardAddressDetailsPage({
             engRangePostTownRecord && altLangRangeData.postTownRef !== engRangePostTownRecord.linkedRef
               ? engRangePostTownRecord.linkedRef
               : altLangRangeData.postTownRef,
+          subLocalityRef:
+            engRangeSubLocalityRecord && altLangRangeData.subLocalityRef !== engRangeSubLocalityRecord.linkedRef
+              ? engRangeSubLocalityRecord.linkedRef
+              : altLangRangeData.subLocalityRef,
           addressList: getSyncedAddressList(altLangRangeData, engRangeData),
         };
 
@@ -370,6 +396,7 @@ function WizardAddressDetailsPage({
               usrn: engRangeData.usrn,
               postcodeRef: engRangeData.postcodeRef,
               postTownRef: engRangeData.postTownRef,
+              subLocalityRef: engRangeData.subLocalityRef,
               addressList: engRangeData.addressList,
             },
             {
@@ -392,12 +419,16 @@ function WizardAddressDetailsPage({
               usrn: dataRangeAlt.usrn,
               postcodeRef: dataRangeAlt.postcodeRef,
               postTownRef: dataRangeAlt.postTownRef,
+              subLocalityRef: dataRangeAlt.subLocalityRef,
               addressList: dataRangeAlt.addressList,
             },
           ]);
       } else {
         const engSinglePostTownRecord = lookupContext.currentLookups.postTowns.find(
           (x) => x.postTownRef === engSingleData.postTownRef
+        );
+        const engSingleSubLocalityRecord = lookupContext.currentLookups.subLocalities.find(
+          (x) => x.subLocalityRef === engSingleData.subLocalityRef
         );
         const dataAlt = {
           language: settingsContext.isScottish ? "GAE" : "CYM",
@@ -426,6 +457,10 @@ function WizardAddressDetailsPage({
             engSinglePostTownRecord && altLangSingleData.postTownRef !== engSinglePostTownRecord.linkedRef
               ? engSinglePostTownRecord.linkedRef
               : altLangSingleData.postTownRef,
+          subLocalityRef:
+            engSingleSubLocalityRecord && altLangSingleData.subLocalityRef !== engSingleSubLocalityRecord.linkedRef
+              ? engSingleSubLocalityRecord.linkedRef
+              : altLangSingleData.subLocalityRef,
         };
 
         if (onDataChanged)
@@ -446,6 +481,7 @@ function WizardAddressDetailsPage({
               usrn: engSingleData.usrn,
               postcodeRef: engSingleData.postcodeRef,
               postTownRef: engSingleData.postTownRef,
+              subLocalityRef: engSingleData.subLocalityRef,
             },
             {
               language: dataAlt.language,
@@ -463,6 +499,7 @@ function WizardAddressDetailsPage({
               usrn: dataAlt.usrn,
               postcodeRef: dataAlt.postcodeRef,
               postTownRef: dataAlt.postTownRef,
+              subLocalityRef: dataAlt.subLocalityRef,
             },
           ]);
       }
@@ -590,6 +627,9 @@ function WizardAddressDetailsPage({
     const postTownRecord = lookupContext.currentLookups.postTowns.find(
       (x) => x.postTownRef === rangeData.postTownRef && x.language === rangeData.language
     );
+    const subLocalityRecord = lookupContext.currentLookups.subLocalities.find(
+      (x) => x.subLocalityRef === rangeData.subLocalityRef && x.language === rangeData.language
+    );
 
     if (settingsContext.isScottish || settingsContext.isWelsh) {
       if (language === "ENG") {
@@ -651,6 +691,10 @@ function WizardAddressDetailsPage({
             postTownRecord && altLangRangeData.postTownRef !== postTownRecord.linkedRef
               ? postTownRecord.linkedRef
               : altLangRangeData.postTownRef,
+          subLocalityRef:
+            subLocalityRecord && altLangRangeData.subLocalityRef !== subLocalityRecord.linkedRef
+              ? subLocalityRecord.linkedRef
+              : altLangRangeData.subLocalityRef,
           addressList: getSyncedAddressList(altLangRangeData, rangeData),
         };
 
@@ -676,6 +720,7 @@ function WizardAddressDetailsPage({
               usrn: rangeData.usrn,
               postcodeRef: rangeData.postcodeRef,
               postTownRef: rangeData.postTownRef,
+              subLocalityRef: rangeData.subLocalityRef,
               addressList: rangeData.addressList,
             },
             {
@@ -698,6 +743,7 @@ function WizardAddressDetailsPage({
               usrn: dataAlt.usrn,
               postcodeRef: dataAlt.postcodeRef,
               postTownRef: dataAlt.postTownRef,
+              subLocalityRef: dataAlt.subLocalityRef,
               addressList: dataAlt.addressList,
             },
           ]);
@@ -752,6 +798,10 @@ function WizardAddressDetailsPage({
             postTownRecord && engRangeData.postTownRef !== postTownRecord.linkedRef
               ? postTownRecord.linkedRef
               : engRangeData.postTownRef,
+          subLocalityRef:
+            subLocalityRecord && engRangeData.subLocalityRef !== subLocalityRecord.linkedRef
+              ? subLocalityRecord.linkedRef
+              : engRangeData.subLocalityRef,
           addressList: getSyncedAddressList(engRangeData, rangeData),
         };
 
@@ -777,6 +827,7 @@ function WizardAddressDetailsPage({
               usrn: dataEng.usrn,
               postcodeRef: dataEng.postcodeRef,
               postTownRef: dataEng.postTownRef,
+              subLocalityRef: dataEng.subLocalityRef,
               addressList: dataEng.addressList,
             },
             {
@@ -799,6 +850,7 @@ function WizardAddressDetailsPage({
               usrn: rangeData.usrn,
               postcodeRef: rangeData.postcodeRef,
               postTownRef: rangeData.postTownRef,
+              subLocalityRef: rangeData.subLocalityRef,
               addressList: rangeData.addressList,
             },
           ]);
@@ -826,6 +878,7 @@ function WizardAddressDetailsPage({
             usrn: rangeData.usrn,
             postcodeRef: rangeData.postcodeRef,
             postTownRef: rangeData.postTownRef,
+            subLocalityRef: rangeData.subLocalityRef,
             addressList: rangeData.addressList,
           },
         ]);
@@ -849,6 +902,9 @@ function WizardAddressDetailsPage({
   const handleSinglePropertyDataChange = (singleData) => {
     const postTownRecord = lookupContext.currentLookups.postTowns.find(
       (x) => x.postTownRef === singleData.postTownRef && x.language === singleData.language
+    );
+    const subLocalityRecord = lookupContext.currentLookups.subLocalities.find(
+      (x) => x.subLocalityRef === singleData.subLocalityRef && x.language === singleData.language
     );
 
     if (settingsContext.isScottish || settingsContext.isWelsh) {
@@ -899,6 +955,10 @@ function WizardAddressDetailsPage({
             postTownRecord && altLangSingleData.postTownRef !== postTownRecord.linkedRef
               ? postTownRecord.linkedRef
               : altLangSingleData.postTownRef,
+          subLocalityRef:
+            subLocalityRecord && altLangSingleData.subLocalityRef !== postTownRecord.linkedRef
+              ? subLocalityRecord.linkedRef
+              : altLangSingleData.subLocalityRef,
         };
 
         if (onDataChanged)
@@ -919,6 +979,7 @@ function WizardAddressDetailsPage({
               usrn: singleData.usrn,
               postcodeRef: singleData.postcodeRef,
               postTownRef: singleData.postTownRef,
+              subLocalityRef: singleData.subLocalityRef,
             },
             {
               language: dataAlt.language,
@@ -936,6 +997,7 @@ function WizardAddressDetailsPage({
               usrn: dataAlt.usrn,
               postcodeRef: dataAlt.postcodeRef,
               postTownRef: dataAlt.postTownRef,
+              subLocalityRef: dataAlt.subLocalityRef,
             },
           ]);
       } else {
@@ -983,6 +1045,10 @@ function WizardAddressDetailsPage({
             postTownRecord && engSingleData.postTownRef !== postTownRecord.linkedRef
               ? postTownRecord.linkedRef
               : engSingleData.postTownRef,
+          subLocalityRef:
+            subLocalityRecord && engSingleData.subLocalityRef !== subLocalityRecord.linkedRef
+              ? subLocalityRecord.linkedRef
+              : engSingleData.subLocalityRef,
         };
 
         if (onDataChanged)
@@ -1003,6 +1069,7 @@ function WizardAddressDetailsPage({
               usrn: dataEng.usrn,
               postcodeRef: dataEng.postcodeRef,
               postTownRef: dataEng.postTownRef,
+              subLocalityRef: dataEng.subLocalityRef,
             },
             {
               language: altLangSingleData.language,
@@ -1020,6 +1087,7 @@ function WizardAddressDetailsPage({
               usrn: singleData.usrn,
               postcodeRef: singleData.postcodeRef,
               postTownRef: singleData.postTownRef,
+              subLocalityRef: singleData.subLocalityRef,
             },
           ]);
       }
@@ -1042,6 +1110,7 @@ function WizardAddressDetailsPage({
             usrn: singleData.usrn,
             postcodeRef: singleData.postcodeRef,
             postTownRef: singleData.postTownRef,
+            subLocalityRef: singleData.subLocalityRef,
           },
         ]);
     }

@@ -17,6 +17,7 @@
 //    004   22.12.23 Sean Flook                 Ensure tooltip is displayed
 //    005   03.01.24 Sean Flook                 Fixed warning.
 //    006   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    007   16.01.24 Sean Flook       IMANN-237 Added a clear button.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -48,8 +49,8 @@ ADSFromToTimeControl.propTypes = {
   toLabel: PropTypes.string,
   fromHelperText: PropTypes.string,
   toHelperText: PropTypes.string,
-  fromValue: PropTypes.string,
-  toValue: PropTypes.string,
+  fromValue: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
+  toValue: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
   fromErrorText: PropTypes.array,
   toErrorText: PropTypes.array,
   onFromChange: PropTypes.func,
@@ -196,6 +197,7 @@ function ADSFromToTimeControl({
                               fullWidth: true,
                               size: "small",
                             },
+                            field: { clearable: true },
                           }}
                           onChange={(newValue) => handleFromChange(newValue)}
                           KeyboardButtonProps={{
@@ -223,6 +225,7 @@ function ADSFromToTimeControl({
                           fullWidth: true,
                           size: "small",
                         },
+                        field: { clearable: true },
                       }}
                       onChange={(newValue) => handleFromChange(newValue)}
                       KeyboardButtonProps={{
@@ -263,6 +266,7 @@ function ADSFromToTimeControl({
                               fullWidth: true,
                               size: "small",
                             },
+                            field: { clearable: true },
                           }}
                           onChange={(newValue) => handleToChange(newValue)}
                           KeyboardButtonProps={{
@@ -290,6 +294,7 @@ function ADSFromToTimeControl({
                           fullWidth: true,
                           size: "small",
                         },
+                        field: { clearable: true },
                       }}
                       onChange={(newValue) => handleToChange(newValue)}
                       KeyboardButtonProps={{

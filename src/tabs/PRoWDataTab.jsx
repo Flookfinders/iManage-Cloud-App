@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    006   11.01.24 Sean Flook                 Fix warnings.
+//    007   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -29,10 +30,10 @@ import LookupContext from "../context/lookupContext";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
 
-import { GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
-import { FilteredSwaOrgRef } from "../utils/StreetUtils";
+import { GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
 
+import SwaOrgRef from "../data/SwaOrgRef";
 import PRoWDedicationCode from "../data/PRoWDedicationCode";
 import PRoWStatusCode from "../data/PRoWStatusCode";
 
@@ -73,7 +74,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
 
   const [dataChanged, setDataChanged] = useState(false);
 
-  const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(FilteredSwaOrgRef(false));
+  const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(filteredLookup(SwaOrgRef, false));
 
   const [dedication, setDedication] = useState(null);
   const [status, setStatus] = useState(null);
@@ -690,7 +691,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
       setAppealReference(data.prowData.appealRef ? data.prowData.appealRef : "");
       setAppealDetails(data.prowData.appealDetails ? data.prowData.appealDetails : "");
 
-      setSwaOrgRefLookup(FilteredSwaOrgRef(false));
+      setSwaOrgRefLookup(filteredLookup(SwaOrgRef, false));
     }
   }, [loading, data]);
 

@@ -20,6 +20,7 @@
 //    007   02.01.24 Sean Flook       IMANN-205 Added end date.
 //    008   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    009   11.01.24 Sean Flook                 Fix warnings.
+//    010   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -33,10 +34,10 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
 import MapContext from "./../context/mapContext";
 
-import { GetLookupLabel, ConvertDate, isAfter1stApril2015 } from "../utils/HelperUtils";
-import { FilteredSpecialDesignationCode, FilteredSwaOrgRef } from "../utils/StreetUtils";
+import { GetLookupLabel, ConvertDate, isAfter1stApril2015, filteredLookup } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
 
+import SwaOrgRef from "../data/SwaOrgRef";
 import SpecialDesignationCode from "./../data/SpecialDesignationCode";
 import SpecialDesignationPeriodicity from "./../data/SpecialDesignationPeriodicity";
 
@@ -89,9 +90,9 @@ function SpecialDesignationDataTab({
   const [dataChanged, setDataChanged] = useState(false);
 
   const [specialDesignationCodeLookup, setSpecialDesignationCodeLookup] = useState(
-    FilteredSpecialDesignationCode(false)
+    filteredLookup(SpecialDesignationCode, false)
   );
-  const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(FilteredSwaOrgRef(false));
+  const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(filteredLookup(SwaOrgRef, false));
 
   const [designationType, setDesignationType] = useState(null);
   const [organisation, setOrganisation] = useState(null);
@@ -546,8 +547,8 @@ function SpecialDesignationDataTab({
         data.specialDesignationData.specialDesigEndY ? data.specialDesignationData.specialDesigEndY : 0
       );
 
-      setSpecialDesignationCodeLookup(FilteredSpecialDesignationCode(false));
-      setSwaOrgRefLookup(FilteredSwaOrgRef(false));
+      setSpecialDesignationCodeLookup(filteredLookup(SpecialDesignationCode, false));
+      setSwaOrgRefLookup(filteredLookup(SwaOrgRef, false));
     }
   }, [loading, data]);
 
@@ -805,7 +806,7 @@ function SpecialDesignationDataTab({
           loading={loading}
           useRounded
           doNotSetTitleCase
-          lookupData={SpecialDesignationPeriodicity}
+          lookupData={filteredLookup(SpecialDesignationPeriodicity, false)}
           lookupId="id"
           lookupLabel={GetLookupLabel(false)}
           lookupColour="colour"

@@ -19,6 +19,7 @@
 //    006   02.01.24 Sean Flook       IMANN-205 Added end date.
 //    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    008   11.01.24 Sean Flook                 Fix warnings.
+//    009   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -35,13 +36,14 @@ import MapContext from "./../context/mapContext";
 import { ConvertDate } from "../utils/HelperUtils";
 import { Avatar, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { GetLookupLabel } from "../utils/HelperUtils";
-import { FilteredSwaOrgRef, FilteredReinstatementType } from "../utils/StreetUtils";
+import { GetLookupLabel, filteredLookup } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
 
 import ConstructionType from "../data/ConstructionType";
 import AggregateAbrasionValue from "../data/AggregateAbrasionValue";
 import PolishedStoneValue from "../data/PolishedStoneValue";
+import SwaOrgRef from "../data/SwaOrgRef";
+import ReinstatementType from "../data/ReinstatementType";
 
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -78,8 +80,8 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
 
   const [dataChanged, setDataChanged] = useState(false);
 
-  const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(FilteredSwaOrgRef(false));
-  const [reinstatementTypeLookup, setReinstatementTypeLookup] = useState(FilteredReinstatementType(false));
+  const [swaOrgRefLookup, setSwaOrgRefLookup] = useState(filteredLookup(SwaOrgRef, false));
+  const [reinstatementTypeLookup, setReinstatementTypeLookup] = useState(filteredLookup(ReinstatementType, false));
 
   const [constructionType, setConstructionType] = useState(null);
   const [reinstatementType, setReinstatementType] = useState(null);
@@ -468,8 +470,8 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
       setConstructionEndX(data.constructionData.constructionEndX ? data.constructionData.constructionEndX : 0);
       setConstructionEndY(data.constructionData.constructionEndY ? data.constructionData.constructionEndY : 0);
 
-      setSwaOrgRefLookup(FilteredSwaOrgRef(false));
-      setReinstatementTypeLookup(FilteredReinstatementType(false));
+      setSwaOrgRefLookup(filteredLookup(SwaOrgRef, false));
+      setReinstatementTypeLookup(filteredLookup(ReinstatementType, false));
     }
   }, [loading, data]);
 

@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    004   11.01.24 Sean Flook                 Fix warnings.
+//    005   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -61,7 +62,7 @@ function EditCrossReferenceDialog({ isOpen, isNew, data, onDone, onClose }) {
   const [showDialog, setShowDialog] = useState(false);
 
   const [sourceId, setSourceId] = useState(null);
-  const [crossReference, setCrossReference] = useState(null);
+  const [crossReference, setCrossReference] = useState("");
   const [startDate, setStartDate] = useState(null);
 
   const [haveErrors, setHaveErrors] = useState(false);
@@ -178,7 +179,7 @@ function EditCrossReferenceDialog({ isOpen, isNew, data, onDone, onClose }) {
   useEffect(() => {
     if (data) {
       setSourceId(data.sourceId);
-      setCrossReference(data.crossReference);
+      setCrossReference(data.crossReference ? data.crossReference : "");
       setStartDate(data.startDate);
       setHaveErrors(data.errors && data.errors.length > 0);
 
@@ -223,7 +224,7 @@ function EditCrossReferenceDialog({ isOpen, isNew, data, onDone, onClose }) {
         id="edit-cross-reference-dialog"
         sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
       >
-        <Typography variant="h6">{isNew ? "Add cross reference" : "Edit cross reference"}</Typography>
+        <Typography sx={{ fontSize: "20px" }}>{isNew ? "Add cross reference" : "Edit cross reference"}</Typography>
         <IconButton
           aria-label="close"
           onClick={handleCancelClick}

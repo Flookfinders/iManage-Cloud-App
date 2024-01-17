@@ -32,6 +32,7 @@
 //    019   08.01.24 Joel Benford               Add getLpiSubLocality
 //    020   12.01.24 Sean Flook       IMANN-163 Do not bother to get property map data if we do not have a UPRN.
 //    021   12.01.24 Sean Flook       IMANN-163 Handle when we have no search results.
+//    022   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -157,20 +158,6 @@ export const FilteredLPILogicalStatus = (isScottish, blpuLogicalStatus, isTempla
       default:
         return LPILogicalStatus.filter((x) => x.gpText && (!isTemplate || ![7, 8, 9].includes(x.id)));
     }
-  }
-};
-
-/**
- * Returns a list of BLPU provenance codes depending on if the authority is Scottish or not.
- *
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @return {array} The filtered list of BLPU provenances.
- */
-export const FilteredBLPUProvenance = (isScottish) => {
-  if (isScottish) {
-    return BLPUProvenance.filter((x) => x.osText);
-  } else {
-    return BLPUProvenance.filter((x) => x.gpText);
   }
 };
 
@@ -496,7 +483,7 @@ export function GetNewProperty(isWelsh, isScottish, authorityCode, usrn, parent,
           classKey: null,
           changeType: "I",
           uprn: 0,
-          classScheme: OSGScheme,
+          classificationScheme: OSGScheme,
           blpuClass: "U",
           startDate: currentDate,
           endDate: null,
@@ -603,7 +590,7 @@ export function GetNewProperty(isWelsh, isScottish, authorityCode, usrn, parent,
           classKey: null,
           changeType: "I",
           uprn: 0,
-          classScheme: OSGScheme,
+          classificationScheme: OSGScheme,
           blpuClass: "U",
           startDate: currentDate,
           endDate: null,
@@ -1083,7 +1070,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
             return {
               changeType: "I",
               uprn: 0,
-              classScheme: x.classScheme,
+              classificationScheme: x.classificationScheme,
               blpuClass: x.blpuClass,
               startDate: x.startDate,
               endDate: x.endDate,
@@ -1318,7 +1305,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               classKey: x.classKey,
               changeType: x.changeType,
               uprn: propertyData.uprn,
-              classScheme: x.classScheme,
+              classificationScheme: x.classificationScheme,
               blpuClass: x.blpuClass,
               startDate: x.startDate,
               endDate: x.endDate,

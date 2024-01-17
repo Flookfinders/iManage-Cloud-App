@@ -17,6 +17,7 @@
 //    004   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    006   11.01.24 Sean Flook                 Fix warnings.
+//    007   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -276,7 +277,7 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
   const dataValid = () => {
     const validationData = {
       classification: classification,
-      classScheme: OSGScheme,
+      classificationScheme: OSGScheme,
       startDate: startDate,
       endDate: endDate,
     };
@@ -358,7 +359,7 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
               classKey: null,
               changeType: "I",
               uprn: property && property.uprn,
-              classScheme: OSGScheme,
+              classificationScheme: OSGScheme,
               blpuClass: classification,
               startDate: startDate,
               endDate: endDate,
@@ -413,7 +414,7 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
                       classKey: property.classifications[0].classKey,
                       changeType: "U",
                       uprn: property && property.uprn,
-                      classScheme: property.classifications[0].classScheme,
+                      classificationScheme: property.classifications[0].classificationScheme,
                       blpuClass: classification,
                       startDate: startDate,
                       endDate: endDate,

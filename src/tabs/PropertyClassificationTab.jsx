@@ -18,6 +18,7 @@
 //    005   30.11.23 Sean Flook                 Bug fixes in GetCurrentData.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    007   11.01.24 Sean Flook                 Fix warnings.
+//    008   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -63,7 +64,7 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
   const currentId = useRef(0);
 
   const [classification, setClassification] = useState(null);
-  const [classScheme, setClassScheme] = useState("");
+  const [classificationScheme, setClassificationScheme] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
@@ -72,7 +73,7 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
 
   const [classificationError, setClassificationError] = useState(null);
-  const [classSchemeError, setClassSchemeError] = useState(null);
+  const [classificationSchemeError, setClassificationSchemeError] = useState(null);
   const [startDateError, setStartDateError] = useState(null);
   const [endDateError, setEndDateError] = useState(null);
 
@@ -107,12 +108,12 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
    * @param {string|null} newValue The new classification scheme.
    */
   const handleClassificationSchemeChangeEvent = (newValue) => {
-    setClassScheme(newValue);
+    setClassificationScheme(newValue);
     if (!dataChanged) {
-      setDataChanged(classScheme !== newValue);
-      if (onDataChanged && classScheme !== newValue) onDataChanged();
+      setDataChanged(classificationScheme !== newValue);
+      if (onDataChanged && classificationScheme !== newValue) onDataChanged();
     }
-    UpdateSandbox("classScheme", newValue);
+    UpdateSandbox("classificationScheme", newValue);
   };
 
   /**
@@ -188,7 +189,9 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
     if (dataChanged) {
       if (data && data.classificationData) {
         setClassification(data.classificationData.blpuClass);
-        setClassScheme(data.classificationData.classScheme ? data.classificationData.classScheme : "");
+        setClassificationScheme(
+          data.classificationData.classificationScheme ? data.classificationData.classificationScheme : ""
+        );
         setStartDate(data.classificationData.startDate);
         setEndDate(data.classificationData.endDate);
       }
@@ -241,7 +244,7 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
       entryDate: data.classificationData.entryDate,
       pkId: data.classificationData.id,
       lastUpdateDate: data.classificationData.lastUpdateDate,
-      classScheme: field && field === "classScheme" ? newValue : classScheme,
+      classificationScheme: field && field === "classificationScheme" ? newValue : classificationScheme,
       classKey: data.classificationData.classKey,
       startDate:
         field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
@@ -253,7 +256,9 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
   useEffect(() => {
     if (data && data.classificationData) {
       setClassification(data.classificationData.blpuClass);
-      setClassScheme(data.classificationData.classScheme ? data.classificationData.classScheme : "");
+      setClassificationScheme(
+        data.classificationData.classificationScheme ? data.classificationData.classificationScheme : ""
+      );
       setStartDate(data.classificationData.startDate);
       setEndDate(data.classificationData.endDate);
     }
@@ -298,7 +303,7 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
 
   useEffect(() => {
     setClassificationError(null);
-    setClassSchemeError(null);
+    setClassificationSchemeError(null);
     setStartDateError(null);
     setEndDateError(null);
 
@@ -309,8 +314,8 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
             setClassificationError(error.errors);
             break;
 
-          case "classscheme":
-            setClassSchemeError(error.errors);
+          case "classificationscheme":
+            setClassificationSchemeError(error.errors);
             break;
 
           case "startdate":
@@ -383,12 +388,12 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
           label="Scheme"
           isEditable={userCanEdit}
           isRequired
-          isFocused={focusedField ? focusedField === "ClassScheme" : false}
+          isFocused={focusedField ? focusedField === "classificationScheme" : false}
           loading={loading}
-          value={classScheme}
+          value={classificationScheme}
           id="scheme"
           maxLength={40}
-          errorText={classSchemeError}
+          errorText={classificationSchemeError}
           helperText="The classification scheme used for this record."
           onChange={handleClassificationSchemeChangeEvent}
         />

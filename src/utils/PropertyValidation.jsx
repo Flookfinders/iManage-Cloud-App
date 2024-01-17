@@ -8,13 +8,13 @@
 //  Maximum validation numbers
 //  =================================
 //  Metadata:                         1000017
-//  BLPU:                             2100062
+//  BLPU:                             2100062 - 2100063
 //  BLPU Provenance:                  2200020
 //  BLPU Application Cross Reference: 2300033
 //  LPI:                              2400082
-//  Successor Cross Reference:        3000016
+//  Successor Cross Reference:        3000016 - 3000017
 //  Organisation:                     3100016
-//  Classification:                   3200014
+//  Classification:                   3200014 - 3200015
 //  Note:                             7100014
 //
 //--------------------------------------------------------------------------------------------------

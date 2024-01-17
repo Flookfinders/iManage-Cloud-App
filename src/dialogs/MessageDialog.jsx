@@ -15,6 +15,7 @@
 //    002   10.11.23 Sean Flook       IMANN-175 Added Move BLPU.
 //    003   20.12.23 Sean Flook       IMANN-152 Added Edit ASD Geometry and Edit ESU Geometry.
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    005   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -166,9 +167,7 @@ function MessageDialog({ isOpen, variant, onClose }) {
         id="message-dialog"
         sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA, mb: "8px" }}
       >
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>
-          {getDialogTitle()}
-        </Typography>
+        <Typography sx={{ fontSize: "20px", fontWeight: 600 }}>{getDialogTitle()}</Typography>
         <IconButton
           aria-label="close"
           onClick={handleCloseClick}

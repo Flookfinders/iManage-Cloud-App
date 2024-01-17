@@ -18,6 +18,7 @@
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    007   11.01.24 Sean Flook                 Fix warnings.
+//    008   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -57,7 +58,7 @@ function NotesDataTab({ data, errors, loading, focusedField, onDataChanged, onDe
   const [dataChanged, setDataChanged] = useState(false);
   const currentId = useRef(0);
 
-  const [note, setNote] = useState(data && data.noteData ? data.noteData.note : null);
+  const [note, setNote] = useState("");
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -223,7 +224,7 @@ function NotesDataTab({ data, errors, loading, focusedField, onDataChanged, onDe
 
   useEffect(() => {
     if (!loading && data && data.noteData) {
-      setNote(data.noteData.note);
+      setNote(data.noteData.note ? data.noteData.note : "");
     }
   }, [loading, data]);
 

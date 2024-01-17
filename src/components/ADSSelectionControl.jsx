@@ -24,6 +24,7 @@
 //    011   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system, use getClassificationCode method and renamed successor to successorCrossRef.
 //    012   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    013   10.01.24 Sean Flook                 Hide Create street from selected ESUs button until code has been written (IMANN-216).
+//    014   16.01.24 Sean Flook                 Changes required to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -189,8 +190,8 @@ function ADSSelectionControl({
   const [propertyWizardParent, setPropertyWizardParent] = useState(null);
   const [openPropertyWizard, setOpenPropertyWizard] = useState(false);
 
-  const [editLogicalStatusVariant, setEditLogicalStatusVariant] = useState(null);
-  const [editSingleFieldVariant, setEditSingleFieldVariant] = useState(null);
+  const [editLogicalStatusVariant, setEditLogicalStatusVariant] = useState("unknown");
+  const [editSingleFieldVariant, setEditSingleFieldVariant] = useState("unknown");
 
   const [openEditLogicalStatus, setOpenEditLogicalStatus] = useState(false);
   const [openEditSingleField, setOpenEditSingleField] = useState(false);
@@ -914,6 +915,14 @@ function ADSSelectionControl({
   const handleEditPostTown = () => {
     setAnchorWizardActionsEl(null);
     if (onEditWizard) onEditWizard("postTown");
+  };
+
+  /**
+   * Event to handle editing the sub-locality.
+   */
+  const handleEditSubLocality = () => {
+    setAnchorWizardActionsEl(null);
+    if (onEditWizard) onEditWizard("subLocality");
   };
 
   /**
@@ -1718,11 +1727,16 @@ function ADSSelectionControl({
                 <MenuItem dense onClick={handleEditLevel} sx={menuItemStyle(false)}>
                   <Typography variant="inherit">Edit level</Typography>
                 </MenuItem>
-                <MenuItem dense onClick={handleEditPostcode} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit">Edit postcode</Typography>
-                </MenuItem>
-                <MenuItem dense divider onClick={handleEditPostTown} sx={menuItemStyle(true)}>
+                {settingsContext.isScottish && (
+                  <MenuItem dense onClick={handleEditSubLocality} sx={menuItemStyle(true)}>
+                    <Typography variant="inherit">Edit sub-locality</Typography>
+                  </MenuItem>
+                )}
+                <MenuItem dense onClick={handleEditPostTown} sx={menuItemStyle(true)}>
                   <Typography variant="inherit">Edit post town</Typography>
+                </MenuItem>
+                <MenuItem dense divider onClick={handleEditPostcode} sx={menuItemStyle(false)}>
+                  <Typography variant="inherit">Edit postcode</Typography>
                 </MenuItem>
                 <MenuItem dense divider onClick={handleAddNote} sx={menuItemStyle(true)}>
                   <Typography variant="inherit">Add note</Typography>
@@ -1790,37 +1804,41 @@ function ADSSelectionControl({
       />
       <MultiEditLogicalStatusDialog
         variant={editLogicalStatusVariant}
-        propertyUprns={propertyUprns}
+        propertyUprns={propertyUprns ? propertyUprns : []}
         isOpen={openEditLogicalStatus}
         onClose={handleEditLogicalStatusClose}
       />
       <MultiEditSingleFieldDialog
         variant={editSingleFieldVariant}
-        propertyUprns={propertyUprns}
+        propertyUprns={propertyUprns ? propertyUprns : []}
         isOpen={openEditSingleField}
         onClose={handleEditSingleFieldClose}
       />
       <MultiEditAddressFieldsDialog
-        propertyUprns={propertyUprns}
+        propertyUprns={propertyUprns ? propertyUprns : []}
         isOpen={openEditAddressFields}
         onClose={handleEditAddressFieldsClose}
       />
       <MultiEditAddCrossReferenceDialog
-        propertyUprns={propertyUprns}
+        propertyUprns={propertyUprns ? propertyUprns : []}
         isOpen={openAddCrossReference}
         onClose={handleAddCrossReferenceClose}
       />
       <MultiEditRemoveCrossReferenceDialog
-        propertyUprns={propertyUprns}
+        propertyUprns={propertyUprns ? propertyUprns : []}
         isOpen={openRemoveCrossReference}
         onClose={handleRemoveCrossReferenceClose}
       />
       <MultiEditAddClassificationDialog
-        propertyUprns={propertyUprns}
+        propertyUprns={propertyUprns ? propertyUprns : []}
         isOpen={openAddClassification}
         onClose={handleAddClassificationClose}
       />
-      <MoveBLPUDialog propertyUprns={propertyUprns} isOpen={openMoveBlpu} onClose={handleMoveBlpuClose} />
+      <MoveBLPUDialog
+        propertyUprns={propertyUprns ? propertyUprns : []}
+        isOpen={openMoveBlpu}
+        onClose={handleMoveBlpuClose}
+      />
     </Fragment>
   );
 }
