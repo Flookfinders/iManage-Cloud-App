@@ -22,6 +22,7 @@
 //    009   10.01.24 Sean Flook                 Changes to try and fix warnings.
 //    010   12.01.24 Sean Flook                 Fixed duplicate key warning.
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
+//    012   25.01.24 Joel Benford               Update styling for zero record groups
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -194,6 +195,7 @@ function AsdDataListItem({
    * @param {object} event
    */
   const handleExpandCollapse = (event) => {
+    if (data && data.length === 0) return;
     streetContext.onToggleAsdExpanded(title);
     if (onExpandCollapse) onExpandCollapse();
     event.stopPropagation();
@@ -370,7 +372,6 @@ function AsdDataListItem({
         key={`asd${variant}`}
         divider
         dense
-        disabled={!data || data.length === 0}
         disableGutters
         onClick={handleExpandCollapse}
         onMouseEnter={handleMouseEnterItem}
@@ -386,6 +387,7 @@ function AsdDataListItem({
         <ListItemIcon sx={{ height: "42px", pt: theme.spacing(1) }}>
           <IconButton
             onClick={handleExpandCollapse}
+            disabled={data && data.length === 0}
             sx={{
               pb: theme.spacing(1),
               color: adsMidGreyA,
@@ -413,14 +415,17 @@ function AsdDataListItem({
                 sx={{
                   pl: theme.spacing(1),
                   "&:hover": {
-                    color: adsBlueA,
+                    color: `${data && data.length === 0 ? theme.palette.text.disabled : adsBlueA}`,
                   },
+                  color: `${data && data.length === 0 ? theme.palette.text.disabled : theme.palette.text}`,
                 }}
               >
                 {title}
               </Typography>
               <Avatar sx={RecordCountStyle(itemHover)}>
-                <Typography variant="caption">{data ? data.length : 0}</Typography>
+                <Typography variant="caption" sx={{ fontWeight: 700 }}>
+                  {data ? data.length : 0}
+                </Typography>
               </Avatar>
             </Stack>
           }

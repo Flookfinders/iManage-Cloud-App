@@ -22,6 +22,7 @@
 //    009   10.01.24 Sean Flook                 Changes to try and fix warnings.
 //    010   12.01.24 Sean Flook                 Fixed duplicate key warning.
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
+//    012   25.01.24 Joel Benford               Record counts to bold
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -320,7 +321,9 @@ function AsdDataListSubItem({
                 {GetAsdPrimaryCodeText(variant, code, settingsContext.isScottish)}
               </Typography>
               <Avatar sx={RecordCountStyle(subItemHover)}>
-                <Typography variant="caption">{GetSubRecordCount(code)}</Typography>
+                <Typography variant="caption" sx={{ fontWeight: 700 }}>
+                  {GetSubRecordCount(code)}
+                </Typography>
               </Avatar>
             </Stack>
           }
