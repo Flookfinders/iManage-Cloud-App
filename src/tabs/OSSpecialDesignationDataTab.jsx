@@ -20,6 +20,7 @@
 //    007   10.01.24 Sean Flook                 Fix warnings.
 //    008   11.01.24 Sean Flook                 Fix warnings.
 //    009   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    010   23.01.24 Sean Flook       IMANN-246 Display information when selecting Part Road.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,6 +32,7 @@ import PropTypes from "prop-types";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
 import MapContext from "./../context/mapContext";
+import InformationContext from "../context/informationContext";
 
 import { GetLookupLabel, ConvertDate, isAfter1stApril2015, filteredLookup } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
@@ -38,7 +40,7 @@ import ObjectComparison from "../utils/ObjectComparison";
 import SwaOrgRef from "../data/SwaOrgRef";
 import SpecialDesignationCode from "./../data/SpecialDesignationCode";
 
-import { Avatar, Typography } from "@mui/material";
+import { Avatar, Typography, Popper } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { SpecialDesignationIcon } from "../utils/ADSIcons";
 import ADSActionButton from "../components/ADSActionButton";
@@ -48,6 +50,7 @@ import ADSWholeRoadControl from "../components/ADSWholeRoadControl";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ADSTextToggleControl from "../components/ADSTextToggleControl";
+import ADSInformationControl from "../components/ADSInformationControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 
 import { useTheme } from "@mui/styles";
@@ -80,6 +83,7 @@ function OSSpecialDesignationDataTab({
   const sandboxContext = useContext(SandboxContext);
   const userContext = useContext(UserContext);
   const mapContext = useContext(MapContext);
+  const informationContext = useContext(InformationContext);
 
   const [dataChanged, setDataChanged] = useState(false);
 
@@ -111,6 +115,10 @@ function OSSpecialDesignationDataTab({
   const [stateError, setStateError] = useState(null);
   const [wholeRoadError, setWholeRoadError] = useState(null);
   const [specificLocationError, setSpecificLocationError] = useState(null);
+
+  const [informationAnchorEl, setInformationAnchorEl] = useState(null);
+  const informationOpen = Boolean(informationAnchorEl);
+  const informationId = informationOpen ? "asd-information-popper" : undefined;
 
   /**
    * Method to return the current special designation record.
@@ -271,8 +279,13 @@ function OSSpecialDesignationDataTab({
       if (onDataChanged && wholeRoad !== newValue) onDataChanged();
     }
     UpdateSandbox("wholeRoad", newValue);
-    if (newValue) mapContext.onEditMapObject(null, null);
-    else mapContext.onEditMapObject(53, data && data.osSpecialDesignationData && data.osSpecialDesignationData.pkId);
+    if (newValue) {
+      mapContext.onEditMapObject(null, null);
+      informationContext.onClearInformation();
+    } else {
+      mapContext.onEditMapObject(53, data && data.osSpecialDesignationData && data.osSpecialDesignationData.pkId);
+      informationContext.onDisplayInformation("partRoadASD", "OSSpecialDesignationDataTab");
+    }
   };
 
   /**
@@ -436,6 +449,15 @@ function OSSpecialDesignationDataTab({
   }, [userContext]);
 
   useEffect(() => {
+    if (
+      informationContext.informationSource &&
+      informationContext.informationSource === "OSSpecialDesignationDataTab"
+    ) {
+      setInformationAnchorEl(document.getElementById("os-special-designation-data"));
+    } else setInformationAnchorEl(null);
+  }, [informationContext.informationSource]);
+
+  useEffect(() => {
     setDesignationCategoryError(null);
     setDescriptionError(null);
     setCustodianError(null);
@@ -492,7 +514,7 @@ function OSSpecialDesignationDataTab({
 
   return (
     <Fragment>
-      <Box sx={toolbarStyle}>
+      <Box sx={toolbarStyle} id={"os-special-designation-data"}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
             <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
@@ -710,6 +732,9 @@ function OSSpecialDesignationDataTab({
           onClose={handleCloseDeleteConfirmation}
         />
       </div>
+      <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
+        <ADSInformationControl variant={"partRoadASD"} />
+      </Popper>
     </Fragment>
   );
 }

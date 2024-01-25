@@ -33,6 +33,7 @@
 //    020   12.01.24 Sean Flook       IMANN-163 Do not bother to get property map data if we do not have a UPRN.
 //    021   12.01.24 Sean Flook       IMANN-163 Handle when we have no search results.
 //    022   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    023   25.01.24 Sean Flook                 Bug fix.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1130,7 +1131,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               paoEndSuffix: x.paoEndSuffix,
               saoStartSuffix: x.saoStartSuffix,
               saoEndSuffix: x.saoEndSuffix,
-              subLocalityRef: x.subLocalityRef,
+              subLocalityRef: x.subLocalityRef ? x.subLocalityRef : -1,
               subLocality: x.subLocality,
               postallyAddressable: x.postallyAddressable,
               officialFlag: x.officialFlag,
@@ -1368,16 +1369,16 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               paoEndSuffix: x.paoEndSuffix,
               saoStartSuffix: x.saoStartSuffix,
               saoEndSuffix: x.saoEndSuffix,
-              subLocalityRef: x.subLocalityRef,
+              subLocalityRef: x.subLocalityRef ? x.subLocalityRef : -1,
               subLocality: x.subLocality,
               postallyAddressable: x.postallyAddressable,
               officialFlag: x.officialFlag,
               pkId: x.pkId > 0 ? x.pkId : 0,
               changeType: x.changeType,
               lpiKey: x.lpiKey,
-              address: x.address, // TODO: remove once it has been removed from the API
-              entryDate: x.entryDate, // TODO: remove once it has been removed from the API
-              lastUpdateDate: x.lastUpdateDate, // TODO: remove once it has been removed from the API
+              address: x.address, // TODO: remove once it has been removed from the API [IMANN-240]
+              entryDate: x.entryDate, // TODO: remove once it has been removed from the API [IMANN-240]
+              lastUpdateDate: x.lastUpdateDate, // TODO: remove once it has been removed from the API [IMANN-240]
             };
           })
         : [],

@@ -27,6 +27,7 @@
 //    014   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    016   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    017   25.01.24 Sean Flook                 Correctly handle status code 204.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1021,16 +1022,36 @@ function ADSSearch({ placeholder, onSearchClick }) {
           }
         )
           .then((res) => (res.ok ? res : Promise.reject(res)))
-          .then((res) => res.json())
-          .then(
-            (result) => {
-              return result;
-            },
-            (error) => {
-              console.error("[ERROR] Getting all Street data", error);
-              return null;
+          .then((res) => {
+            if (res.status && res.status === 204) return [];
+            else return res.json();
+          })
+          .then((result) => {
+            return result;
+          })
+          .catch((res) => {
+            switch (res.status) {
+              case 400:
+                res.json().then((body) => {
+                  console.error(`[400 ERROR] Getting all Street data`, body.errors);
+                });
+                return null;
+
+              case 401:
+                res.json().then((body) => {
+                  console.error(`[401 ERROR] Getting all Street data`, body);
+                });
+                return null;
+
+              case 500:
+                console.error(`[500 ERROR] Getting all Street data`, res);
+                return null;
+
+              default:
+                console.error(`[${res.status} ERROR] Getting all Street data`, res);
+                return null;
             }
-          );
+          });
 
         backgroundStreetData.current = returnValue ? returnValue : undefined;
 
@@ -1057,6 +1078,12 @@ function ADSSearch({ placeholder, onSearchClick }) {
       const unassignedEsusUrl = GetUnassignedEsusUrl(userContext.currentUser.token);
 
       if (unassignedEsusUrl) {
+        // console.log("[SF] GetUnassignedEsuData", {
+        //   XMin: mapContext.currentExtent.xmin,
+        //   YMin: mapContext.currentExtent.ymin,
+        //   XMax: mapContext.currentExtent.xmax,
+        //   YMax: mapContext.currentExtent.ymax,
+        // });
         const returnValue = await fetch(
           `${unassignedEsusUrl.url}?XMin=${mapContext.currentExtent.xmin}&YMin=${mapContext.currentExtent.ymin}&XMax=${mapContext.currentExtent.xmax}&YMax=${mapContext.currentExtent.ymax}`,
           {
@@ -1066,16 +1093,36 @@ function ADSSearch({ placeholder, onSearchClick }) {
           }
         )
           .then((res) => (res.ok ? res : Promise.reject(res)))
-          .then((res) => res.json())
-          .then(
-            (result) => {
-              return result;
-            },
-            (error) => {
-              console.error("[ERROR] Getting all unassigned ESU data", error);
-              return null;
+          .then((res) => {
+            if (res.status && res.status === 204) return [];
+            else return res.json();
+          })
+          .then((result) => {
+            return result;
+          })
+          .catch((res) => {
+            switch (res.status) {
+              case 400:
+                res.json().then((body) => {
+                  console.error(`[400 ERROR] Getting all unassigned ESU data`, body.errors);
+                });
+                return null;
+
+              case 401:
+                res.json().then((body) => {
+                  console.error(`[401 ERROR] Getting all unassigned ESU data`, body);
+                });
+                return null;
+
+              case 500:
+                console.error(`[500 ERROR] Getting all unassigned ESU data`, res);
+                return null;
+
+              default:
+                console.error(`[${res.status} ERROR] Getting all unassigned ESU data`, res);
+                return null;
             }
-          );
+          });
 
         unassignedEsuData.current = returnValue ? returnValue : undefined;
 
@@ -1112,16 +1159,36 @@ function ADSSearch({ placeholder, onSearchClick }) {
           }
         )
           .then((res) => (res.ok ? res : Promise.reject(res)))
-          .then((res) => res.json())
-          .then(
-            (result) => {
-              return result;
-            },
-            (error) => {
-              console.error("[ERROR] Getting all Property data", error);
-              return null;
+          .then((res) => {
+            if (res.status && res.status === 204) return [];
+            else return res.json();
+          })
+          .then((result) => {
+            return result;
+          })
+          .catch((res) => {
+            switch (res.status) {
+              case 400:
+                res.json().then((body) => {
+                  console.error(`[400 ERROR] Getting all property data`, body.errors);
+                });
+                return null;
+
+              case 401:
+                res.json().then((body) => {
+                  console.error(`[401 ERROR] Getting all property data`, body);
+                });
+                return null;
+
+              case 500:
+                console.error(`[500 ERROR] Getting all property data`, res);
+                return null;
+
+              default:
+                console.error(`[${res.status} ERROR] Getting all property data`, res);
+                return null;
             }
-          );
+          });
 
         backgroundPropertyData.current = returnValue ? returnValue : undefined;
 

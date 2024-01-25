@@ -25,6 +25,7 @@
 //    012   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    013   10.01.24 Sean Flook                 Hide Create street from selected ESUs button until code has been written (IMANN-216).
 //    014   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    015   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -41,10 +42,15 @@ import SettingsContext from "../context/settingsContext";
 import SandboxContext from "../context/sandboxContext";
 import LookupContext from "../context/lookupContext";
 import SearchContext from "../context/searchContext";
+import InformationContext from "../context/informationContext";
 
-import { IconButton, Typography, Menu, MenuItem } from "@mui/material";
+// import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
+
+import { IconButton, Typography, Menu, MenuItem, Popper } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { NestedMenuItem } from "mui-nested-menu";
+import ADSInformationControl from "../components/ADSInformationControl";
+import ADSSelectionButton from "./ADSSelectionButton";
 import AddPropertyWizardDialog from "../dialogs/AddPropertyWizardDialog";
 import MultiEditLogicalStatusDialog from "../dialogs/MultiEditLogicalStatusDialog";
 import MultiEditSingleFieldDialog from "../dialogs/MultiEditSingleFieldDialog";
@@ -62,25 +68,17 @@ import Polyline from "@arcgis/core/geometry/Polyline";
 import * as geometryEngine from "@arcgis/core/geometry/geometryEngine";
 
 import ClearIcon from "@mui/icons-material/Clear";
-import MyLocationIcon from "@mui/icons-material/MyLocation";
-import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import CheckIcon from "@mui/icons-material/Check";
-import CallSplitIcon from "@mui/icons-material/CallSplit";
-import CallMergeIcon from "@mui/icons-material/CallMerge";
-import NoteAddIcon from "@mui/icons-material/NoteAddOutlined";
-import DeleteIcon from "@mui/icons-material/DeleteOutline";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { MoveIcon, UnassignEsuIcon, AddStreetIcon } from "../utils/ADSIcons";
 
 import { adsBlueA, adsWhite, adsLightGreyA50 } from "../utils/ADSColours";
-import { ActionIconStyle, menuStyle, menuItemStyle } from "../utils/ADSStyles";
+import { menuStyle, menuItemStyle } from "../utils/ADSStyles";
 
 ADSSelectionControl.propTypes = {
   selectionCount: PropTypes.number.isRequired,
   haveStreet: PropTypes.bool,
   haveProperty: PropTypes.bool,
   haveEsu: PropTypes.bool,
+  haveMapEsu: PropTypes.bool,
   haveAsd: PropTypes.bool,
   haveClassification: PropTypes.bool,
   haveOrganisation: PropTypes.bool,
@@ -116,6 +114,7 @@ ADSSelectionControl.defaultProps = {
   haveStreet: false,
   haveProperty: false,
   haveEsu: false,
+  haveMapEsu: false,
   haveAsd: false,
   haveClassification: false,
   haveOrganisation: false,
@@ -131,6 +130,7 @@ function ADSSelectionControl({
   haveStreet,
   haveProperty,
   haveEsu,
+  haveMapEsu,
   haveAsd,
   haveClassification,
   haveOrganisation,
@@ -169,17 +169,19 @@ function ADSSelectionControl({
   const sandboxContext = useContext(SandboxContext);
   const lookupContext = useContext(LookupContext);
   const searchContext = useContext(SearchContext);
+  const informationContext = useContext(InformationContext);
 
   const [anchorStreetActionsEl, setAnchorStreetActionsEl] = useState(null);
   const [anchorPropertyActionsEl, setAnchorPropertyActionsEl] = useState(null);
   const [anchorWizardActionsEl, setAnchorWizardActionsEl] = useState(null);
 
+  const [informationAnchorEl, setInformationAnchorEl] = useState(null);
+  const informationOpen = Boolean(informationAnchorEl);
+  const informationId = informationOpen ? "esu-information-popper" : undefined;
+
   const propertyActionsOpen = Boolean(anchorPropertyActionsEl);
 
   const [numberOfTypes, setNumberOfTypes] = useState(0);
-
-  const [unassignEsuTooltip, setUnassignEsuTooltip] = useState("Unassign selected ESU from this street");
-  const [createStreetTooltip, setCreateStreetTooltip] = useState("Create street from selected ESU");
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -486,8 +488,17 @@ function ADSSelectionControl({
     if (streetContext.esuDividedMerged) {
       if (onError) onError("streetAlreadyDividedMerged");
     }
-    if (currentEsu && currentEsu.length === 1) mapContext.onDivideEsu(currentEsu[0]);
-    else mapContext.onDivideEsu(null);
+    if (currentEsu && currentEsu.length === 1) {
+      informationContext.onDisplayInformation("divideESU", "ADSSelectionControl");
+      mapContext.onDivideEsu(currentEsu[0]);
+    } else mapContext.onDivideEsu(null);
+  };
+
+  /**
+   * Event to handle when the information cancel button is clicked.
+   */
+  const handleInformationCancel = () => {
+    informationContext.onClearInformation();
   };
 
   /**
@@ -547,6 +558,40 @@ function ADSSelectionControl({
       streetContext.onUnassignEsus(currentEsu);
       if (onClose) onClose();
     }
+  };
+
+  /**
+   * Event to handle when the assign ESU button is clicked.
+   *
+   * @param {object} event The event object.
+   */
+  const handleAssignEsuClick = (event) => {
+    event.stopPropagation();
+    if (currentEsu && currentEsu.length > 0) {
+      streetContext.onAssignEsus(currentEsu);
+      if (onClose) onClose();
+    }
+  };
+
+  /**
+   * Event to handle when the create street button is clicked.
+   *
+   * @param {object} event The event object.
+   */
+  const handleCreateStreetClick = (event) => {
+    event.stopPropagation();
+    if (currentEsu && currentEsu.length > 0) {
+      streetContext.onLeavingStreet("createStreet", currentEsu);
+    }
+  };
+
+  /**
+   * Event to handle when the delete ASD button is clicked.
+   *
+   * @param {object} event The event object.
+   */
+  const handleDeleteAsdClick = (event) => {
+    event.stopPropagation();
   };
 
   /**
@@ -1037,19 +1082,23 @@ function ADSSelectionControl({
     if (!haveWizard && !haveMoveBlpu)
       return {
         position: "absolute",
-        width: "16ch",
         left: "32.75vw",
-        top: "-42px",
+        top: "-52px",
+        marginTop: "8px",
         boxShadow: `4px 4px 7px ${adsLightGreyA50}`,
         borderRadius: "9px",
         backgroundColor: adsWhite,
+        zIndex: 1,
       };
     else
       return {
-        width: "16ch",
+        position: "absolute",
+        left: "34vw",
+        top: "76px",
         boxShadow: `4px 4px 7px ${adsLightGreyA50}`,
         borderRadius: "9px",
         backgroundColor: adsWhite,
+        zIndex: 1,
       };
   };
 
@@ -1058,6 +1107,7 @@ function ADSSelectionControl({
     if (haveStreet) numTypes++;
     if (haveProperty) numTypes++;
     if (haveEsu) numTypes++;
+    if (haveMapEsu) numTypes++;
     if (haveAsd) numTypes++;
     if (haveClassification) numTypes++;
     if (haveOrganisation) numTypes++;
@@ -1072,6 +1122,7 @@ function ADSSelectionControl({
     haveStreet,
     haveProperty,
     haveEsu,
+    haveMapEsu,
     haveAsd,
     haveClassification,
     haveOrganisation,
@@ -1081,16 +1132,6 @@ function ADSSelectionControl({
     haveWizard,
     haveMoveBlpu,
   ]);
-
-  useEffect(() => {
-    if (selectionCount === 1) {
-      setUnassignEsuTooltip("Unassign selected ESU from this street");
-      setCreateStreetTooltip("Create street from selected ESU");
-    } else {
-      setUnassignEsuTooltip("Unassign selected ESUs from this street");
-      setCreateStreetTooltip("Create street from selected ESUs");
-    }
-  }, [selectionCount]);
 
   useEffect(() => {
     if (currentStreet) setCurrentUsrn(currentStreet.id);
@@ -1106,693 +1147,669 @@ function ADSSelectionControl({
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
   }, [userContext]);
 
+  useEffect(() => {
+    if (informationContext.informationSource && informationContext.informationSource === "ADSSelectionControl")
+      setInformationAnchorEl(document.getElementById("ads-esu-data-grid"));
+    else setInformationAnchorEl(null);
+  }, [informationContext.informationSource]);
+
   return (
     <Fragment>
       <Box id="ads-selection-control" sx={getControlStyle()}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
-          <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={2}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ padding: "4px 12px 4px 0px" }}>
+          <Stack
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="center"
+            spacing={1}
+            sx={{ paddingRight: "32px" }}
+          >
             <IconButton onClick={handleCloseClick} size="small" title="Clear selection">
               <ClearIcon sx={{ backgroundColor: adsBlueA, color: adsWhite }} />
             </IconButton>
-            <Typography variant="body2">{`${selectionCount} selected`}</Typography>
+            <Typography variant="body2" noWrap>{`${selectionCount} selected`}</Typography>
           </Stack>
-          {numberOfTypes > 1 && (
-            <Typography variant="body2" color="error" sx={{ pr: "10px" }}>
-              No shared actions
-            </Typography>
-          )}
-          {numberOfTypes === 1 && haveStreet && (
-            <Stack direction="row" justifyContent="flex-end" alignItems="center">
-              {selectionCount === 1 && (
-                <IconButton
-                  onClick={(event) => zoomToStreet(event, Number(currentUsrn))}
-                  size="small"
-                  title="Zoom to this"
-                >
-                  <MyLocationIcon sx={ActionIconStyle()} />
-                </IconButton>
-              )}
-              <IconButton onClick={handleAddStreetToActivityList} size="small" disabled title="Add to activity list">
-                <PlaylistAddIcon sx={ActionIconStyle()} />
-              </IconButton>
-              <IconButton
-                onClick={handleStreetActionsMenuClick}
-                aria-controls="street-actions-menu"
-                aria-haspopup="true"
-                size="small"
-                title="More actions"
-              >
-                <MoreVertIcon sx={ActionIconStyle()} />
-              </IconButton>
-              {selectionCount === 1 ? (
-                <Menu
-                  id="single-street-actions-menu"
-                  elevation={2}
-                  anchorEl={anchorStreetActionsEl}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  open={Boolean(anchorStreetActionsEl)}
-                  onClose={handleStreetActionsMenuClose}
-                  sx={menuStyle}
-                >
-                  <MenuItem
-                    dense
-                    disabled={!userCanEdit || (currentStreet && ![11, 12, 19].includes(currentStreet.logical_status))}
-                    onClick={HandleAddProperty}
-                    sx={menuItemStyle(false)}
-                  >
-                    <Typography variant="inherit">Add property</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    dense
-                    divider
-                    disabled={!userCanEdit || (currentStreet && ![11, 12, 19].includes(currentStreet.logical_status))}
-                    onClick={HandleAddRange}
-                    sx={menuItemStyle(true)}
-                  >
-                    <Typography variant="inherit">Add properties</Typography>
-                  </MenuItem>
-                  <MenuItem dense onClick={(event) => itemCopy(event, currentUsrn, "USRN")} sx={menuItemStyle(false)}>
-                    <Typography variant="inherit">Copy USRN</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    dense
-                    onClick={(event) => handleStreetViewClick(event, currentUsrn, "USRN")}
-                    sx={menuItemStyle(false)}
-                  >
-                    <Typography variant="inherit">Open in Street View</Typography>
-                  </MenuItem>
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Search nearby</Typography>
-                    </MenuItem>
-                  )}
-                  <MenuItem
-                    dense
-                    divider
+          <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={1}>
+            {numberOfTypes > 1 && (
+              <Typography variant="body2" color="error">
+                No shared actions
+              </Typography>
+            )}
+            {numberOfTypes === 1 && haveStreet && (
+              <Fragment>
+                {selectionCount === 1 && (
+                  <ADSSelectionButton
+                    variant="zoom"
+                    selectionCount={selectionCount}
+                    userCanEdit
                     onClick={(event) => zoomToStreet(event, Number(currentUsrn))}
-                    sx={menuItemStyle(true)}
-                  >
-                    <Typography variant="inherit">Zoom to this</Typography>
-                  </MenuItem>
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Bookmark</Typography>
-                    </MenuItem>
-                  )}
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense divider disabled sx={menuItemStyle(true)}>
-                      <Typography variant="inherit">Add to list</Typography>
-                    </MenuItem>
-                  )}
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Close street</Typography>
-                    </MenuItem>
-                  )}
-                  {!settingsContext.isScottish && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit" color="error">
-                        Delete
-                      </Typography>
-                    </MenuItem>
-                  )}
-                </Menu>
-              ) : (
-                <Menu
-                  id="multiple-street-actions-menu"
-                  elevation={2}
-                  anchorEl={anchorStreetActionsEl}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  open={Boolean(anchorStreetActionsEl)}
-                  onClose={handleStreetActionsMenuClose}
-                  sx={menuStyle}
-                >
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Search nearby</Typography>
-                    </MenuItem>
-                  )}
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Bookmark</Typography>
-                    </MenuItem>
-                  )}
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense divider disabled sx={menuItemStyle(true)}>
-                      <Typography variant="inherit">Add to list</Typography>
-                    </MenuItem>
-                  )}
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Close street</Typography>
-                    </MenuItem>
-                  )}
-                  {!settingsContext.isScottish && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit" color="error">
-                        Delete
-                      </Typography>
-                    </MenuItem>
-                  )}
-                </Menu>
-              )}
-            </Stack>
-          )}
-          {numberOfTypes === 1 && haveEsu && (
-            <Stack direction="row" justifyContent="flex-end" alignItems="center">
-              {selectionCount === 1 ? (
-                <IconButton size="small" disabled={!userCanEdit} title="Divide ESU" onClick={handleDivideEsuClick}>
-                  <CallSplitIcon sx={ActionIconStyle()} />
-                </IconButton>
-              ) : selectionCount === 2 ? (
-                <IconButton size="small" disabled={!userCanEdit} title="Merge ESUs" onClick={handleMergeEsusClick}>
-                  <CallMergeIcon sx={ActionIconStyle()} />
-                </IconButton>
-              ) : null}
-              <IconButton
-                size="small"
-                disabled={!userCanEdit}
-                title={unassignEsuTooltip}
-                onClick={handleUnassignEsuClick}
-              >
-                <UnassignEsuIcon sx={ActionIconStyle()} />
-              </IconButton>
-              {process.env.NODE_ENV === "development" && (
-                <IconButton size="small" disabled={!userCanEdit} title={createStreetTooltip}>
-                  <AddStreetIcon sx={ActionIconStyle()} />
-                </IconButton>
-              )}
-            </Stack>
-          )}
-          {numberOfTypes === 1 && haveAsd && (
-            <Stack direction="row" justifyContent="flex-end" alignItems="center">
-              <IconButton size="small" disabled title={`Delete ASD record${selectionCount === 1 ? "" : "s"}`}>
-                <DeleteIcon sx={ActionIconStyle()} />
-              </IconButton>
-            </Stack>
-          )}
-          {numberOfTypes === 1 && haveProperty && (
-            <Stack direction="row" justifyContent="flex-end" alignItems="center">
-              {selectionCount === 1 && (
-                <IconButton onClick={(event) => zoomToProperty(event, currentUprn)} size="small" title="Zoom to this">
-                  <MyLocationIcon sx={ActionIconStyle()} />
-                </IconButton>
-              )}
-              <IconButton
-                onClick={handleSetApprovedButtonClicked}
-                size="small"
-                disabled={!userCanEdit}
-                title="Set to approved"
-              >
-                <CheckIcon sx={ActionIconStyle()} />
-              </IconButton>
-              {process.env.NODE_ENV === "development" && (
-                <IconButton
-                  onClick={handleAddPropertyToActivityList}
-                  size="small"
-                  disabled
-                  title="Add to activity list"
-                >
-                  <PlaylistAddIcon sx={ActionIconStyle()} />
-                </IconButton>
-              )}
-              <IconButton
-                onClick={handleMoveBlpuButtonClicked}
-                size="small"
-                disabled={!userCanEdit}
-                title={`Move BLPU${selectionCount > 1 ? "s" : ""}`}
-              >
-                <MoveIcon sx={ActionIconStyle()} />
-              </IconButton>
-              <IconButton
-                onClick={handlePropertyActionsMenuClick}
-                aria-controls="property-actions-menu"
-                aria-haspopup="true"
-                size="small"
-                title="More actions"
-              >
-                <MoreVertIcon sx={ActionIconStyle()} />
-              </IconButton>
-              {selectionCount === 1 ? (
-                <Menu
-                  id="single-property-actions-menu"
-                  elevation={2}
-                  anchorEl={anchorPropertyActionsEl}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  open={Boolean(anchorPropertyActionsEl)}
-                  onClose={handlePropertyActionsMenuClose}
-                  sx={menuStyle}
-                >
-                  <MenuItem
-                    dense
-                    disabled={!userCanEdit || (currentProperty && currentProperty.logical_status > 6)}
-                    onClick={HandleAddChild}
-                    sx={menuItemStyle(false)}
-                  >
-                    <Typography variant="inherit">Add child</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    dense
-                    divider
-                    disabled={!userCanEdit || (currentProperty && currentProperty.logical_status > 6)}
-                    onClick={HandleAddChildren}
-                    sx={menuItemStyle(true)}
-                  >
-                    <Typography variant="inherit">Add children</Typography>
-                  </MenuItem>
-                  <MenuItem dense onClick={(event) => itemCopy(event, currentUprn, "UPRN")} sx={menuItemStyle(false)}>
-                    <Typography variant="inherit">Copy UPRN</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    dense
-                    divider
-                    onClick={(event) => itemCopy(event, currentAddress, "Address")}
-                    sx={menuItemStyle(true)}
-                  >
-                    <Typography variant="inherit">Copy address</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    dense
-                    onClick={(event) => handleStreetViewClick(event, currentUprn, "UPRN")}
-                    sx={menuItemStyle(false)}
-                  >
-                    <Typography variant="inherit">Open in Street View</Typography>
-                  </MenuItem>
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Search nearby</Typography>
-                    </MenuItem>
-                  )}
-                  <MenuItem
-                    dense
-                    divider
-                    onClick={(event) => zoomToProperty(event, currentUprn)}
-                    sx={menuItemStyle(true)}
-                  >
-                    <Typography variant="inherit">Zoom to this</Typography>
-                  </MenuItem>
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Bookmark</Typography>
-                    </MenuItem>
-                  )}
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Add to list</Typography>
-                    </MenuItem>
-                  )}
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense divider disabled sx={menuItemStyle(true)}>
-                      <Typography variant="inherit">Export to...</Typography>
-                    </MenuItem>
-                  )}
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Move street</Typography>
-                    </MenuItem>
-                  )}
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Make child of...</Typography>
-                    </MenuItem>
-                  )}
-                  <MenuItem
-                    dense
-                    divider
-                    onClick={handleMoveBlpuClick}
-                    disabled={!userCanEdit}
-                    sx={menuItemStyle(true)}
-                  >
-                    <Typography variant="inherit">Move seed point</Typography>
-                  </MenuItem>
-                  <MenuItem dense disabled={!userCanEdit} onClick={RejectProperty} sx={menuItemStyle(false)}>
-                    <Typography variant="inherit">Reject</Typography>
-                  </MenuItem>
-                  <MenuItem dense disabled={!userCanEdit} onClick={HistoriciseProperty} sx={menuItemStyle(false)}>
-                    <Typography variant="inherit">Historicise</Typography>
-                  </MenuItem>
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit" color="error">
-                        Delete
-                      </Typography>
-                    </MenuItem>
-                  )}
-                </Menu>
-              ) : (
-                <Menu
-                  id="multi-property-actions-menu"
-                  elevation={2}
-                  anchorEl={anchorPropertyActionsEl}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  open={Boolean(anchorPropertyActionsEl)}
-                  onClose={handlePropertyActionsMenuClose}
-                  sx={menuStyle}
-                >
-                  <MenuItem dense disabled={!userCanEdit} onClick={handleSetApprovedClick} sx={menuItemStyle(false)}>
-                    <Typography variant="inherit">Set approved</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    dense
-                    divider
-                    disabled={!userCanEdit}
-                    onClick={handleSetHistoricClick}
-                    sx={menuItemStyle(true)}
-                  >
-                    <Typography variant="inherit">Set historic</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    dense
-                    disabled={!userCanEdit}
-                    onClick={handleEditClassificationClick}
-                    sx={menuItemStyle(false)}
-                  >
-                    <Typography variant="inherit">Edit classification</Typography>
-                  </MenuItem>
-                  <MenuItem dense disabled={!userCanEdit} onClick={handleEditRpcClick} sx={menuItemStyle(false)}>
-                    <Typography variant="inherit">Edit RPC</Typography>
-                  </MenuItem>
-                  <MenuItem dense disabled={!userCanEdit} onClick={handleEditLevelClick} sx={menuItemStyle(false)}>
-                    <Typography variant="inherit">Edit level</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    dense
-                    disabled={!userCanEdit}
-                    onClick={handleEditExcludeFromExportClick}
-                    sx={menuItemStyle(false)}
-                  >
-                    <Typography variant="inherit">Edit exclude from export</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    dense
-                    divider
-                    disabled={!userCanEdit}
-                    onClick={handleEditSiteVisitRequiredClick}
-                    sx={menuItemStyle(true)}
-                  >
-                    <Typography variant="inherit">Edit site visit required</Typography>
-                  </MenuItem>
-                  <MenuItem dense disabled={!userCanEdit} onClick={handleAddNoteClick} sx={menuItemStyle(false)}>
-                    <Typography variant="inherit">Add note</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    dense
-                    divider
-                    disabled={!userCanEdit}
-                    onClick={handleMoveBlpuClick}
-                    sx={menuItemStyle(true)}
-                  >
-                    <Typography variant="inherit">Move BLPU seed point</Typography>
-                  </MenuItem>
-                  <NestedMenuItem
-                    dense
-                    className="nestedMenuItem"
-                    disabled={!userCanEdit}
-                    rightIcon={<KeyboardArrowRightIcon />}
-                    label={<Typography variant="body2">Edit address</Typography>}
-                    parentMenuOpen={propertyActionsOpen}
+                  />
+                )}
+                <ADSSelectionButton
+                  variant="addList"
+                  selectionCount={selectionCount}
+                  onClick={handleAddStreetToActivityList}
+                />
+                <ADSSelectionButton
+                  variant="more"
+                  selectionCount={selectionCount}
+                  menuControlId="street-actions-menu"
+                  onClick={handleStreetActionsMenuClick}
+                />
+                {selectionCount === 1 ? (
+                  <Menu
+                    id="single-street-actions-menu"
+                    elevation={2}
+                    anchorEl={anchorStreetActionsEl}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    open={Boolean(anchorStreetActionsEl)}
+                    onClose={handleStreetActionsMenuClose}
+                    sx={menuStyle}
                   >
                     <MenuItem
                       dense
-                      disabled={!userCanEdit}
-                      onClick={handleEditAddressFieldsClick}
+                      disabled={!userCanEdit || (currentStreet && ![11, 12, 19].includes(currentStreet.logical_status))}
+                      onClick={HandleAddProperty}
                       sx={menuItemStyle(false)}
                     >
-                      <Typography variant="inherit">Edit address fields</Typography>
-                    </MenuItem>
-                    {process.env.NODE_ENV === "development" && (
-                      <MenuItem dense disabled onClick={handlePlotToAddressWizardClick} sx={menuItemStyle(false)}>
-                        <Typography variant="inherit">Plot to address wizard</Typography>
-                      </MenuItem>
-                    )}
-                  </NestedMenuItem>
-                  <NestedMenuItem
-                    dense
-                    divider={!settingsContext.isScottish}
-                    className={settingsContext.isScottish ? "nestedMenuItem" : "nestedMenuItemDivider"}
-                    disabled={!userCanEdit}
-                    rightIcon={<KeyboardArrowRightIcon />}
-                    label={<Typography variant="body2">Edit cross reference</Typography>}
-                    parentMenuOpen={propertyActionsOpen}
-                  >
-                    <MenuItem
-                      dense
-                      disabled={!userCanEdit}
-                      onClick={handleAddCrossReferenceClick}
-                      sx={menuItemStyle(false)}
-                    >
-                      <Typography variant="inherit">Add cross reference</Typography>
+                      <Typography variant="inherit">Add property</Typography>
                     </MenuItem>
                     <MenuItem
-                      dense
-                      disabled={!userCanEdit}
-                      onClick={handleRemoveCrossReferenceClick}
-                      sx={menuItemStyle(false)}
-                    >
-                      <Typography variant="inherit">Remove cross reference</Typography>
-                    </MenuItem>
-                  </NestedMenuItem>
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Add to list</Typography>
-                    </MenuItem>
-                  )}
-                  {process.env.NODE_ENV === "development" && (
-                    <NestedMenuItem
                       dense
                       divider
-                      className="nestedMenuItemDivider"
-                      disabled
-                      rightIcon={<KeyboardArrowRightIcon />}
-                      label={<Typography variant="body2">Export to...</Typography>}
-                      parentMenuOpen={propertyActionsOpen}
-                    ></NestedMenuItem>
-                  )}
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Move street</Typography>
+                      disabled={!userCanEdit || (currentStreet && ![11, 12, 19].includes(currentStreet.logical_status))}
+                      onClick={HandleAddRange}
+                      sx={menuItemStyle(true)}
+                    >
+                      <Typography variant="inherit">Add properties</Typography>
                     </MenuItem>
-                  )}
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Make child of...</Typography>
+                    <MenuItem dense onClick={(event) => itemCopy(event, currentUsrn, "USRN")} sx={menuItemStyle(false)}>
+                      <Typography variant="inherit">Copy USRN</Typography>
                     </MenuItem>
-                  )}
-                  {process.env.NODE_ENV === "development" && (
-                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Remove from parent</Typography>
+                    <MenuItem
+                      dense
+                      onClick={(event) => handleStreetViewClick(event, currentUsrn, "USRN")}
+                      sx={menuItemStyle(false)}
+                    >
+                      <Typography variant="inherit">Open in Street View</Typography>
                     </MenuItem>
-                  )}
-                </Menu>
-              )}
-            </Stack>
-          )}
-          {numberOfTypes === 1 && haveClassification && (
-            <Stack direction="row" justifyContent="flex-end" alignItems="center">
-              <IconButton
-                size="small"
-                disabled={!userCanEdit}
-                onClick={handleDeleteClassification}
-                title={`Delete classification record${selectionCount === 1 ? "" : "s"}`}
-              >
-                <DeleteIcon sx={ActionIconStyle()} />
-              </IconButton>
-            </Stack>
-          )}
-          {numberOfTypes === 1 && haveOrganisation && (
-            <Stack direction="row" justifyContent="flex-end" alignItems="center">
-              <IconButton
-                size="small"
-                disabled={!userCanEdit}
-                onClick={handleDeleteOrganisation}
-                title={`Delete organisation record${selectionCount === 1 ? "" : "s"}`}
-              >
-                <DeleteIcon sx={ActionIconStyle()} />
-              </IconButton>
-            </Stack>
-          )}
-          {numberOfTypes === 1 && haveSuccessorCrossRef && (
-            <Stack direction="row" justifyContent="flex-end" alignItems="center">
-              <IconButton
-                size="small"
-                disabled={!userCanEdit}
-                onClick={handleDeleteSuccessorCrossRef}
-                title={`Delete successor cross reference record${selectionCount === 1 ? "" : "s"}`}
-              >
-                <DeleteIcon sx={ActionIconStyle()} />
-              </IconButton>
-            </Stack>
-          )}
-          {numberOfTypes === 1 && haveProvenance && (
-            <Stack direction="row" justifyContent="flex-end" alignItems="center">
-              <IconButton
-                size="small"
-                disabled={!userCanEdit}
-                onClick={handleDeleteProvenance}
-                title={`Delete BLPU provenance record${selectionCount === 1 ? "" : "s"}`}
-              >
-                <DeleteIcon sx={ActionIconStyle()} />
-              </IconButton>
-            </Stack>
-          )}
-          {numberOfTypes === 1 && haveCrossReference && (
-            <Stack direction="row" justifyContent="flex-end" alignItems="center">
-              <IconButton
-                size="small"
-                disabled={!userCanEdit}
-                onClick={handleDeleteCrossReference}
-                title={`Delete cross reference record${selectionCount === 1 ? "" : "s"}`}
-              >
-                <DeleteIcon sx={ActionIconStyle()} />
-              </IconButton>
-            </Stack>
-          )}
-          {numberOfTypes === 1 && haveWizard && (
-            <Stack direction="row" justifyContent="flex-end" alignItems="center">
-              <IconButton
-                size="small"
-                onClick={handleAddNote}
-                title={`Add note record${selectionCount === 1 ? "" : "s"}`}
-              >
-                <NoteAddIcon sx={ActionIconStyle()} />
-              </IconButton>
-              <IconButton
-                size="small"
-                onClick={handleDeleteWizard}
-                title={`Delete address${selectionCount === 1 ? "" : "es"}`}
-              >
-                <DeleteIcon sx={ActionIconStyle()} />
-              </IconButton>
-              <IconButton
-                onClick={handleWizardActionsMenuClick}
-                aria-controls="wizard-actions-menu"
-                aria-haspopup="true"
-                size="small"
-                title="More actions"
-              >
-                <MoreVertIcon sx={ActionIconStyle()} />
-              </IconButton>
-              <Menu
-                id="wizard-actions-menu"
-                elevation={2}
-                anchorEl={anchorWizardActionsEl}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                open={Boolean(anchorWizardActionsEl)}
-                onClose={handleWizardActionsMenuClose}
-                sx={menuStyle}
-              >
-                <MenuItem dense onClick={handleEditClassification} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit">Edit classification</Typography>
-                </MenuItem>
-                <MenuItem dense onClick={handleEditLevel} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit">Edit level</Typography>
-                </MenuItem>
-                {settingsContext.isScottish && (
-                  <MenuItem dense onClick={handleEditSubLocality} sx={menuItemStyle(true)}>
-                    <Typography variant="inherit">Edit sub-locality</Typography>
-                  </MenuItem>
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Search nearby</Typography>
+                      </MenuItem>
+                    )}
+                    <MenuItem
+                      dense
+                      divider
+                      onClick={(event) => zoomToStreet(event, Number(currentUsrn))}
+                      sx={menuItemStyle(true)}
+                    >
+                      <Typography variant="inherit">Zoom to this</Typography>
+                    </MenuItem>
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Bookmark</Typography>
+                      </MenuItem>
+                    )}
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense divider disabled sx={menuItemStyle(true)}>
+                        <Typography variant="inherit">Add to list</Typography>
+                      </MenuItem>
+                    )}
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Close street</Typography>
+                      </MenuItem>
+                    )}
+                    {!settingsContext.isScottish && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit" color="error">
+                          Delete
+                        </Typography>
+                      </MenuItem>
+                    )}
+                  </Menu>
+                ) : (
+                  <Menu
+                    id="multiple-street-actions-menu"
+                    elevation={2}
+                    anchorEl={anchorStreetActionsEl}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    open={Boolean(anchorStreetActionsEl)}
+                    onClose={handleStreetActionsMenuClose}
+                    sx={menuStyle}
+                  >
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Search nearby</Typography>
+                      </MenuItem>
+                    )}
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Bookmark</Typography>
+                      </MenuItem>
+                    )}
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense divider disabled sx={menuItemStyle(true)}>
+                        <Typography variant="inherit">Add to list</Typography>
+                      </MenuItem>
+                    )}
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Close street</Typography>
+                      </MenuItem>
+                    )}
+                    {!settingsContext.isScottish && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit" color="error">
+                          Delete
+                        </Typography>
+                      </MenuItem>
+                    )}
+                  </Menu>
                 )}
-                <MenuItem dense onClick={handleEditPostTown} sx={menuItemStyle(true)}>
-                  <Typography variant="inherit">Edit post town</Typography>
-                </MenuItem>
-                <MenuItem dense divider onClick={handleEditPostcode} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit">Edit postcode</Typography>
-                </MenuItem>
-                <MenuItem dense divider onClick={handleAddNote} sx={menuItemStyle(true)}>
-                  <Typography variant="inherit">Add note</Typography>
-                </MenuItem>
-                <MenuItem dense onClick={handleDeleteWizard} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit" color="error">
-                    Delete
-                  </Typography>
-                </MenuItem>
-              </Menu>
-            </Stack>
-          )}
-          {numberOfTypes === 1 && haveMoveBlpu && (
-            <Stack direction="row" justifyContent="flex-end" alignItems="center">
-              <IconButton
-                size="small"
-                onClick={handleAddNote}
-                title={`Add note record${selectionCount === 1 ? "" : "s"}`}
-              >
-                <NoteAddIcon sx={ActionIconStyle()} />
-              </IconButton>
-              <IconButton
-                onClick={handleWizardActionsMenuClick}
-                aria-controls="wizard-actions-menu"
-                aria-haspopup="true"
-                size="small"
-                title="More actions"
-              >
-                <MoreVertIcon sx={ActionIconStyle()} />
-              </IconButton>
-              <Menu
-                id="move-blpu-actions-menu"
-                elevation={2}
-                anchorEl={anchorWizardActionsEl}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                open={Boolean(anchorWizardActionsEl)}
-                onClose={handleWizardActionsMenuClose}
-                sx={menuStyle}
-              >
-                <MenuItem dense divider onClick={handleEditRpc} sx={menuItemStyle(true)}>
-                  <Typography variant="inherit">Edit RPC</Typography>
-                </MenuItem>
-                <MenuItem dense onClick={handleAddNote} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit">Add note</Typography>
-                </MenuItem>
-              </Menu>
-            </Stack>
-          )}
+              </Fragment>
+            )}
+            {numberOfTypes === 1 && haveEsu && (
+              <Fragment>
+                {selectionCount === 1 ? (
+                  <ADSSelectionButton
+                    variant="divide"
+                    selectionCount={selectionCount}
+                    isDisabled={!userCanEdit}
+                    isSelected={informationOpen}
+                    onClick={handleDivideEsuClick}
+                  />
+                ) : selectionCount === 2 ? (
+                  <ADSSelectionButton
+                    variant="merge"
+                    selectionCount={selectionCount}
+                    isDisabled={!userCanEdit}
+                    onClick={handleMergeEsusClick}
+                  />
+                ) : null}
+                <ADSSelectionButton
+                  variant="unassign"
+                  selectionCount={selectionCount}
+                  onClick={handleUnassignEsuClick}
+                />
+                {process.env.NODE_ENV === "development" && (
+                  <ADSSelectionButton
+                    variant="createStreet"
+                    isDisabled={!userCanEdit}
+                    selectionCount={selectionCount}
+                    onClick={handleCreateStreetClick}
+                  />
+                )}
+              </Fragment>
+            )}
+            {numberOfTypes === 1 && haveMapEsu && (
+              <Fragment>
+                <ADSSelectionButton
+                  variant="assign"
+                  isDisabled={!userCanEdit}
+                  selectionCount={selectionCount}
+                  onClick={handleAssignEsuClick}
+                />
+                {process.env.NODE_ENV === "development" && (
+                  <ADSSelectionButton
+                    variant="createStreet"
+                    isDisabled={!userCanEdit}
+                    selectionCount={selectionCount}
+                    onClick={handleCreateStreetClick}
+                  />
+                )}
+              </Fragment>
+            )}
+            {numberOfTypes === 1 && haveAsd && (
+              <ADSSelectionButton
+                variant="deleteAsd"
+                isDisabled
+                selectionCount={selectionCount}
+                onClick={handleDeleteAsdClick}
+              />
+            )}
+            {numberOfTypes === 1 && haveProperty && (
+              <Fragment>
+                {selectionCount === 1 && (
+                  <ADSSelectionButton
+                    variant="zoom"
+                    selectionCount={selectionCount}
+                    onClick={(event) => zoomToProperty(event, currentUprn)}
+                  />
+                )}
+                <ADSSelectionButton
+                  variant="approved"
+                  selectionCount={selectionCount}
+                  onClick={handleSetApprovedButtonClicked}
+                />
+                {process.env.NODE_ENV === "development" && (
+                  <ADSSelectionButton
+                    variant="addList"
+                    isDisabled
+                    selectionCount={selectionCount}
+                    onClick={handleAddPropertyToActivityList}
+                  />
+                )}
+                <ADSSelectionButton
+                  variant="moveBlpu"
+                  selectionCount={selectionCount}
+                  onClick={handleMoveBlpuButtonClicked}
+                />
+                <ADSSelectionButton
+                  variant="more"
+                  selectionCount={selectionCount}
+                  menuControlId="property-actions-menu"
+                  onClick={handlePropertyActionsMenuClick}
+                />
+                {selectionCount === 1 ? (
+                  <Menu
+                    id="single-property-actions-menu"
+                    elevation={2}
+                    anchorEl={anchorPropertyActionsEl}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    open={Boolean(anchorPropertyActionsEl)}
+                    onClose={handlePropertyActionsMenuClose}
+                    sx={menuStyle}
+                  >
+                    <MenuItem
+                      dense
+                      disabled={!userCanEdit || (currentProperty && currentProperty.logical_status > 6)}
+                      onClick={HandleAddChild}
+                      sx={menuItemStyle(false)}
+                    >
+                      <Typography variant="inherit">Add child</Typography>
+                    </MenuItem>
+                    <MenuItem
+                      dense
+                      divider
+                      disabled={!userCanEdit || (currentProperty && currentProperty.logical_status > 6)}
+                      onClick={HandleAddChildren}
+                      sx={menuItemStyle(true)}
+                    >
+                      <Typography variant="inherit">Add children</Typography>
+                    </MenuItem>
+                    <MenuItem dense onClick={(event) => itemCopy(event, currentUprn, "UPRN")} sx={menuItemStyle(false)}>
+                      <Typography variant="inherit">Copy UPRN</Typography>
+                    </MenuItem>
+                    <MenuItem
+                      dense
+                      divider
+                      onClick={(event) => itemCopy(event, currentAddress, "Address")}
+                      sx={menuItemStyle(true)}
+                    >
+                      <Typography variant="inherit">Copy address</Typography>
+                    </MenuItem>
+                    <MenuItem
+                      dense
+                      onClick={(event) => handleStreetViewClick(event, currentUprn, "UPRN")}
+                      sx={menuItemStyle(false)}
+                    >
+                      <Typography variant="inherit">Open in Street View</Typography>
+                    </MenuItem>
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Search nearby</Typography>
+                      </MenuItem>
+                    )}
+                    <MenuItem
+                      dense
+                      divider
+                      onClick={(event) => zoomToProperty(event, currentUprn)}
+                      sx={menuItemStyle(true)}
+                    >
+                      <Typography variant="inherit">Zoom to this</Typography>
+                    </MenuItem>
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Bookmark</Typography>
+                      </MenuItem>
+                    )}
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Add to list</Typography>
+                      </MenuItem>
+                    )}
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense divider disabled sx={menuItemStyle(true)}>
+                        <Typography variant="inherit">Export to...</Typography>
+                      </MenuItem>
+                    )}
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Move street</Typography>
+                      </MenuItem>
+                    )}
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Make child of...</Typography>
+                      </MenuItem>
+                    )}
+                    <MenuItem
+                      dense
+                      divider
+                      onClick={handleMoveBlpuClick}
+                      disabled={!userCanEdit}
+                      sx={menuItemStyle(true)}
+                    >
+                      <Typography variant="inherit">Move seed point</Typography>
+                    </MenuItem>
+                    <MenuItem dense disabled={!userCanEdit} onClick={RejectProperty} sx={menuItemStyle(false)}>
+                      <Typography variant="inherit">Reject</Typography>
+                    </MenuItem>
+                    <MenuItem dense disabled={!userCanEdit} onClick={HistoriciseProperty} sx={menuItemStyle(false)}>
+                      <Typography variant="inherit">Historicise</Typography>
+                    </MenuItem>
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit" color="error">
+                          Delete
+                        </Typography>
+                      </MenuItem>
+                    )}
+                  </Menu>
+                ) : (
+                  <Menu
+                    id="multi-property-actions-menu"
+                    elevation={2}
+                    anchorEl={anchorPropertyActionsEl}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    open={Boolean(anchorPropertyActionsEl)}
+                    onClose={handlePropertyActionsMenuClose}
+                    sx={menuStyle}
+                  >
+                    <MenuItem dense disabled={!userCanEdit} onClick={handleSetApprovedClick} sx={menuItemStyle(false)}>
+                      <Typography variant="inherit">Set approved</Typography>
+                    </MenuItem>
+                    <MenuItem
+                      dense
+                      divider
+                      disabled={!userCanEdit}
+                      onClick={handleSetHistoricClick}
+                      sx={menuItemStyle(true)}
+                    >
+                      <Typography variant="inherit">Set historic</Typography>
+                    </MenuItem>
+                    <MenuItem
+                      dense
+                      disabled={!userCanEdit}
+                      onClick={handleEditClassificationClick}
+                      sx={menuItemStyle(false)}
+                    >
+                      <Typography variant="inherit">Edit classification</Typography>
+                    </MenuItem>
+                    <MenuItem dense disabled={!userCanEdit} onClick={handleEditRpcClick} sx={menuItemStyle(false)}>
+                      <Typography variant="inherit">Edit RPC</Typography>
+                    </MenuItem>
+                    <MenuItem dense disabled={!userCanEdit} onClick={handleEditLevelClick} sx={menuItemStyle(false)}>
+                      <Typography variant="inherit">Edit level</Typography>
+                    </MenuItem>
+                    <MenuItem
+                      dense
+                      disabled={!userCanEdit}
+                      onClick={handleEditExcludeFromExportClick}
+                      sx={menuItemStyle(false)}
+                    >
+                      <Typography variant="inherit">Edit exclude from export</Typography>
+                    </MenuItem>
+                    <MenuItem
+                      dense
+                      divider
+                      disabled={!userCanEdit}
+                      onClick={handleEditSiteVisitRequiredClick}
+                      sx={menuItemStyle(true)}
+                    >
+                      <Typography variant="inherit">Edit site visit required</Typography>
+                    </MenuItem>
+                    <MenuItem dense disabled={!userCanEdit} onClick={handleAddNoteClick} sx={menuItemStyle(false)}>
+                      <Typography variant="inherit">Add note</Typography>
+                    </MenuItem>
+                    <MenuItem
+                      dense
+                      divider
+                      disabled={!userCanEdit}
+                      onClick={handleMoveBlpuClick}
+                      sx={menuItemStyle(true)}
+                    >
+                      <Typography variant="inherit">Move BLPU seed point</Typography>
+                    </MenuItem>
+                    <NestedMenuItem
+                      dense
+                      className="nestedMenuItem"
+                      disabled={!userCanEdit}
+                      rightIcon={<KeyboardArrowRightIcon />}
+                      label={<Typography variant="body2">Edit address</Typography>}
+                      parentMenuOpen={propertyActionsOpen}
+                    >
+                      <MenuItem
+                        dense
+                        disabled={!userCanEdit}
+                        onClick={handleEditAddressFieldsClick}
+                        sx={menuItemStyle(false)}
+                      >
+                        <Typography variant="inherit">Edit address fields</Typography>
+                      </MenuItem>
+                      {process.env.NODE_ENV === "development" && (
+                        <MenuItem dense disabled onClick={handlePlotToAddressWizardClick} sx={menuItemStyle(false)}>
+                          <Typography variant="inherit">Plot to address wizard</Typography>
+                        </MenuItem>
+                      )}
+                    </NestedMenuItem>
+                    <NestedMenuItem
+                      dense
+                      divider={!settingsContext.isScottish}
+                      className={settingsContext.isScottish ? "nestedMenuItem" : "nestedMenuItemDivider"}
+                      disabled={!userCanEdit}
+                      rightIcon={<KeyboardArrowRightIcon />}
+                      label={<Typography variant="body2">Edit cross reference</Typography>}
+                      parentMenuOpen={propertyActionsOpen}
+                    >
+                      <MenuItem
+                        dense
+                        disabled={!userCanEdit}
+                        onClick={handleAddCrossReferenceClick}
+                        sx={menuItemStyle(false)}
+                      >
+                        <Typography variant="inherit">Add cross reference</Typography>
+                      </MenuItem>
+                      <MenuItem
+                        dense
+                        disabled={!userCanEdit}
+                        onClick={handleRemoveCrossReferenceClick}
+                        sx={menuItemStyle(false)}
+                      >
+                        <Typography variant="inherit">Remove cross reference</Typography>
+                      </MenuItem>
+                    </NestedMenuItem>
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Add to list</Typography>
+                      </MenuItem>
+                    )}
+                    {process.env.NODE_ENV === "development" && (
+                      <NestedMenuItem
+                        dense
+                        divider
+                        className="nestedMenuItemDivider"
+                        disabled
+                        rightIcon={<KeyboardArrowRightIcon />}
+                        label={<Typography variant="body2">Export to...</Typography>}
+                        parentMenuOpen={propertyActionsOpen}
+                      ></NestedMenuItem>
+                    )}
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Move street</Typography>
+                      </MenuItem>
+                    )}
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Make child of...</Typography>
+                      </MenuItem>
+                    )}
+                    {process.env.NODE_ENV === "development" && (
+                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Remove from parent</Typography>
+                      </MenuItem>
+                    )}
+                  </Menu>
+                )}
+              </Fragment>
+            )}
+            {numberOfTypes === 1 && haveClassification && (
+              <ADSSelectionButton
+                variant="deleteClassification"
+                selectionCount={selectionCount}
+                isDisabled={!userCanEdit}
+                onClick={handleDeleteClassification}
+              />
+            )}
+            {numberOfTypes === 1 && haveOrganisation && (
+              <ADSSelectionButton
+                variant="deleteOrganisation"
+                selectionCount={selectionCount}
+                isDisabled={!userCanEdit}
+                onClick={handleDeleteOrganisation}
+              />
+            )}
+            {numberOfTypes === 1 && haveSuccessorCrossRef && (
+              <ADSSelectionButton
+                variant="deleteSuccessorCrossRef"
+                selectionCount={selectionCount}
+                isDisabled={!userCanEdit}
+                onClick={handleDeleteSuccessorCrossRef}
+              />
+            )}
+            {numberOfTypes === 1 && haveProvenance && (
+              <ADSSelectionButton
+                variant="deleteProvenance"
+                selectionCount={selectionCount}
+                isDisabled={!userCanEdit}
+                onClick={handleDeleteProvenance}
+              />
+            )}
+            {numberOfTypes === 1 && haveCrossReference && (
+              <ADSSelectionButton
+                variant="deleteCrossReference"
+                selectionCount={selectionCount}
+                isDisabled={!userCanEdit}
+                onClick={handleDeleteCrossReference}
+              />
+            )}
+            {numberOfTypes === 1 && haveWizard && (
+              <Fragment>
+                <ADSSelectionButton
+                  variant="addNote"
+                  selectionCount={selectionCount}
+                  isDisabled={!userCanEdit}
+                  onClick={handleAddNote}
+                />
+                <ADSSelectionButton
+                  variant="deleteWizard"
+                  selectionCount={selectionCount}
+                  isDisabled={!userCanEdit}
+                  onClick={handleDeleteWizard}
+                />
+                <ADSSelectionButton
+                  variant="more"
+                  selectionCount={selectionCount}
+                  menuControlId="wizard-actions-menu"
+                  onClick={handleWizardActionsMenuClick}
+                />
+                <Menu
+                  id="wizard-actions-menu"
+                  elevation={2}
+                  anchorEl={anchorWizardActionsEl}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  open={Boolean(anchorWizardActionsEl)}
+                  onClose={handleWizardActionsMenuClose}
+                  sx={menuStyle}
+                >
+                  <MenuItem dense onClick={handleEditClassification} sx={menuItemStyle(false)}>
+                    <Typography variant="inherit">Edit classification</Typography>
+                  </MenuItem>
+                  <MenuItem dense onClick={handleEditLevel} sx={menuItemStyle(false)}>
+                    <Typography variant="inherit">Edit level</Typography>
+                  </MenuItem>
+                  {settingsContext.isScottish && (
+                    <MenuItem dense onClick={handleEditSubLocality} sx={menuItemStyle(true)}>
+                      <Typography variant="inherit">Edit sub-locality</Typography>
+                    </MenuItem>
+                  )}
+                  <MenuItem dense onClick={handleEditPostTown} sx={menuItemStyle(true)}>
+                    <Typography variant="inherit">Edit post town</Typography>
+                  </MenuItem>
+                  <MenuItem dense divider onClick={handleEditPostcode} sx={menuItemStyle(false)}>
+                    <Typography variant="inherit">Edit postcode</Typography>
+                  </MenuItem>
+                  <MenuItem dense divider onClick={handleAddNote} sx={menuItemStyle(true)}>
+                    <Typography variant="inherit">Add note</Typography>
+                  </MenuItem>
+                  <MenuItem dense onClick={handleDeleteWizard} sx={menuItemStyle(false)}>
+                    <Typography variant="inherit" color="error">
+                      Delete
+                    </Typography>
+                  </MenuItem>
+                </Menu>
+              </Fragment>
+            )}
+            {numberOfTypes === 1 && haveMoveBlpu && (
+              <Fragment>
+                <ADSSelectionButton
+                  variant="addNote"
+                  selectionCount={selectionCount}
+                  isDisabled={!userCanEdit}
+                  onClick={handleAddNote}
+                />
+                <ADSSelectionButton
+                  variant="rpc"
+                  selectionCount={selectionCount}
+                  isDisabled={!userCanEdit}
+                  onClick={handleEditRpc}
+                />
+              </Fragment>
+            )}
+          </Stack>
         </Stack>
       </Box>
       <AddPropertyWizardDialog
@@ -1839,6 +1856,9 @@ function ADSSelectionControl({
         isOpen={openMoveBlpu}
         onClose={handleMoveBlpuClose}
       />
+      <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
+        <ADSInformationControl variant={"divideESU"} hasCancel onCancel={handleInformationCancel} />
+      </Popper>
     </Fragment>
   );
 }

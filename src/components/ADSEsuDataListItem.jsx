@@ -20,6 +20,7 @@
 //    007   24.11.23 Sean Flook                 Removed unwanted code.
 //    008   05.01.24 Sean Flook                 use CSS shortcuts.
 //    009   17.01.24 Sean Flook                 Changes after Louise's review.
+//    010   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -27,10 +28,13 @@
 
 import React, { useContext, useState, Fragment, useEffect } from "react";
 import PropTypes from "prop-types";
+
 import MapContext from "../context/mapContext";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
 import StreetContext from "../context/streetContext";
+import InformationContext from "../context/informationContext";
+
 import {
   ListItemButton,
   IconButton,
@@ -46,17 +50,20 @@ import {
   Menu,
   MenuItem,
   Fade,
+  Popper,
 } from "@mui/material";
 import ADSActionButton from "./ADSActionButton";
+import ADSInformationControl from "../components/ADSInformationControl";
+
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
-import {
-  ExpandMore,
-  ChevronRight,
-  DirectionsBike,
-  SyncAlt as TwoWayIcon,
-  MoreVert as ActionsIcon,
-  AddCircleOutlineOutlined as AddCircleIcon,
-} from "@mui/icons-material";
+
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import DirectionsBikeIcon from "@mui/icons-material/DirectionsBike";
+import SyncAltIcon from "@mui/icons-material/SyncAlt";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import TimelineIcon from "@mui/icons-material/Timeline";
 import {
   IndentIcon,
   StartToEndIcon,
@@ -67,9 +74,12 @@ import {
   PlanningOrderIcon,
   VehiclesProhibitedIcon,
 } from "../utils/ADSIcons";
+
 import { copyTextToClipboard } from "../utils/HelperUtils";
+
 import OneWayExemptionType from "../data/OneWayExemptionType";
 import HighwayDedicationCode from "../data/HighwayDedicationCode";
+
 import { useTheme } from "@mui/styles";
 import { adsBlueA, adsMidGreyA, adsRed10, adsRed20, adsWhite, adsLightBlue, adsLightBlue10 } from "../utils/ADSColours";
 import { ActionIconStyle, menuStyle, menuItemStyle, tooltipStyle } from "../utils/ADSStyles";
@@ -120,6 +130,7 @@ function ADSEsuDataListItem({
   const userContext = useContext(UserContext);
   const settingsContext = useContext(SettingsContext);
   const streetContext = useContext(StreetContext);
+  const informationContext = useContext(InformationContext);
 
   const [open, setOpen] = useState(false);
 
@@ -134,10 +145,15 @@ function ADSEsuDataListItem({
 
   const canAddOneWayExemption = streetState && streetState < 4 && data && data.esu && data.esu.esuDirection > 1;
 
+  const [informationAnchorEl, setInformationAnchorEl] = useState(null);
+  const informationOpen = Boolean(informationAnchorEl);
+  const informationId = informationOpen ? "esu-information-popper" : undefined;
+
   /**
    * Event to handle when an ESU is clicked.
    */
   const handleEsuClick = () => {
+    informationContext.onClearInformation();
     if (onEsuClicked) onEsuClicked(data.esu.pkId, data.esu);
   };
 
@@ -148,6 +164,7 @@ function ADSEsuDataListItem({
    * @param {number} index The index of the data within the array.
    */
   function handleHighwayDedicationClick(hdData, index) {
+    informationContext.onClearInformation();
     if (onHighwayDedicationClicked) onHighwayDedicationClicked(hdData, index);
   }
 
@@ -157,6 +174,7 @@ function ADSEsuDataListItem({
    * @param {object} event The event object.
    */
   function handleAddHighwayDedication(event) {
+    informationContext.onClearInformation();
     event.stopPropagation();
     if (onHighwayDedicationAdd) onHighwayDedicationAdd(data.esu.esuId);
   }
@@ -168,6 +186,7 @@ function ADSEsuDataListItem({
    * @param {number} index The index of the data within the array.
    */
   function handleOneWayExemptionClick(oweData, index) {
+    informationContext.onClearInformation();
     if (onOneWayExceptionClicked) onOneWayExceptionClicked(oweData, index);
   }
 
@@ -177,6 +196,7 @@ function ADSEsuDataListItem({
    * @param {object} event The event object.
    */
   function handleAddOneWayExemption(event) {
+    informationContext.onClearInformation();
     event.stopPropagation();
     if (canAddOneWayExemption && onOneWayExceptionAdd) onOneWayExceptionAdd(data.esu.esuId);
   }
@@ -260,7 +280,7 @@ function ADSEsuDataListItem({
     switch (directionCode) {
       case 1:
         return (
-          <TwoWayIcon
+          <SyncAltIcon
             sx={{
               color: adsWhite,
               backgroundColor: adsLightBlue,
@@ -362,7 +382,17 @@ function ADSEsuDataListItem({
     handleActionsMenuClose(event);
     if (streetContext.esuDividedMerged) {
       if (onDivideError) onDivideError("streetAlreadyDividedMerged");
-    } else mapContext.onDivideEsu(data.esu.esuId);
+    } else {
+      informationContext.onDisplayInformation("divideESU", "ADSEsuDataListItem");
+      mapContext.onDivideEsu(data.esu.esuId);
+    }
+  };
+
+  /**
+   * Event to handle when the information cancel button is clicked.
+   */
+  const handleInformationCancel = () => {
+    informationContext.onClearInformation();
   };
 
   /**
@@ -587,6 +617,18 @@ function ADSEsuDataListItem({
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
   }, [userContext]);
 
+  useEffect(() => {
+    if (mapContext.currentDivideEsu) {
+      informationContext.onClearInformation();
+    }
+  }, [mapContext.currentDivideEsu, informationContext]);
+
+  useEffect(() => {
+    if (informationContext.informationSource && informationContext.informationSource === "ADSEsuDataListItem")
+      setInformationAnchorEl(document.getElementById("ads-esu-data-grid"));
+    else setInformationAnchorEl(null);
+  }, [informationContext.informationSource]);
+
   return (
     <Fragment>
       <ListItemButton
@@ -607,7 +649,7 @@ function ADSEsuDataListItem({
                 }}
                 edge="start"
                 checked={itemChecked}
-                color="default"
+                color="primary"
                 tabIndex={-1}
                 size="small"
                 onClick={handleToggle}
@@ -626,10 +668,18 @@ function ADSEsuDataListItem({
                 aria-controls="expand-collapse"
                 size="small"
               >
-                {open ? <ExpandMore /> : <ChevronRight />}
+                {open ? <ExpandMoreIcon /> : <ChevronRightIcon />}
               </IconButton>
             )}
             {!settingsContext.isScottish && showDirectionIcon(data.esu.esuDirection)}
+            {settingsContext.isScottish && (
+              <TimelineIcon
+                sx={{
+                  color: adsWhite,
+                  backgroundColor: adsLightBlue,
+                }}
+              />
+            )}
           </Fragment>
         </ListItemIcon>
         <ListItemText
@@ -649,7 +699,7 @@ function ADSEsuDataListItem({
             minWidth: 32,
           }}
         >
-          {itemSelected && (
+          {itemSelected && checked && checked.length < 2 && (
             <Fragment>
               <ADSActionButton
                 variant="copy"
@@ -665,7 +715,7 @@ function ADSEsuDataListItem({
                   aria_controls={`actions-menu-${data.esu.esuId}`}
                   size="small"
                 >
-                  <ActionsIcon />
+                  <MoreVertIcon />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -774,7 +824,7 @@ function ADSEsuDataListItem({
                       <PRoWIcon fontSize="small" sx={getHighwayDedicationIconStyle(d.hdProw)} />
                     </ListItemAvatar>
                     <ListItemAvatar sx={{ minWidth: 30 }}>
-                      <DirectionsBike fontSize="small" sx={getHighwayDedicationIconStyle(d.hdNcr)} />
+                      <DirectionsBikeIcon fontSize="small" sx={getHighwayDedicationIconStyle(d.hdNcr)} />
                     </ListItemAvatar>
                     <ListItemAvatar sx={{ minWidth: 30 }}>
                       <QuietRouteIcon fontSize="small" sx={getHighwayDedicationIconStyle(d.hdQuietRoute)} />
@@ -843,7 +893,7 @@ function ADSEsuDataListItem({
                   {selectedRecord && selectedRecord.toString() === "-1" && (
                     <Tooltip title="Add highway dedication" arrow placement="bottom" sx={tooltipStyle}>
                       <IconButton disabled={!userCanEdit} onClick={handleAddHighwayDedication} size="small">
-                        <AddCircleIcon sx={ActionIconStyle()} />
+                        <AddCircleOutlineIcon sx={ActionIconStyle()} />
                       </IconButton>
                     </Tooltip>
                   )}
@@ -953,7 +1003,7 @@ function ADSEsuDataListItem({
                   {canAddOneWayExemption && selectedRecord && selectedRecord.toString() === "-2" && (
                     <Tooltip title="Add one-way exemption" arrow placement="bottom" sx={tooltipStyle}>
                       <IconButton disabled={!userCanEdit} onClick={handleAddOneWayExemption} size="small">
-                        <AddCircleIcon sx={ActionIconStyle()} />
+                        <AddCircleOutlineIcon sx={ActionIconStyle()} />
                       </IconButton>
                     </Tooltip>
                   )}
@@ -970,6 +1020,9 @@ function ADSEsuDataListItem({
           onClose={handleCloseDeleteConfirmation}
         />
       </div>
+      <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
+        <ADSInformationControl variant={"divideESU"} hasCancel onCancel={handleInformationCancel} />
+      </Popper>
     </Fragment>
   );
 }

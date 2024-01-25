@@ -16,6 +16,7 @@
 //    003   07.09.23 Sean Flook                 Cleaned the code.
 //    004   06.10.23 Sean Flook                 Added lookupContext so it can be passed through to GetNewStreet.
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    006   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,7 +32,7 @@ import MapContext from "../context/mapContext";
 import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
 import { GetStreetByUSRNUrl } from "../configuration/ADSConfig";
-import { GetNewStreet } from "../utils/StreetUtils";
+import { GetNewStreet, GetMultipleEsusData } from "../utils/StreetUtils";
 import { Grid } from "@mui/material";
 import { EditConfirmationServiceProvider } from "./EditConfirmationPage";
 import StreetDataForm from "../forms/StreetDataForm";
@@ -51,6 +52,7 @@ function StreetPage() {
   const [data, setData] = useState();
   const dataUsrn = useRef(-1);
   const [loading, setLoading] = useState(true);
+  const loadingRef = useRef(true);
 
   useEffect(() => {
     async function SetUpStreetData() {
@@ -63,6 +65,7 @@ function StreetPage() {
           if (streetContext.currentStreet.usrn.toString() !== dataUsrn.current.toString()) {
             dataUsrn.current = streetContext.currentStreet.usrn;
             setLoading(true);
+            loadingRef.current = true;
             // console.log(
             //   "fetching Street data",
             //   dataUsrn.current,
@@ -86,69 +89,91 @@ function StreetPage() {
               )
               .then(() => {
                 setLoading(false);
+                loadingRef.current = false;
               });
           }
         }
       } else {
-        if (streetContext.currentStreet.newStreet && dataUsrn.current.toString() !== "0") {
+        if (streetContext.currentStreet.newStreet && dataUsrn.current.toString() !== "0" && !loadingRef.current) {
           setLoading(true);
-          const newStreet = GetNewStreet(
-            settingsContext.isScottish,
-            settingsContext.isWelsh,
-            settingsContext.authorityCode,
-            settingsContext.streetTemplate &&
-              settingsContext.streetTemplate.streetTemplate &&
-              settingsContext.streetTemplate.streetTemplate.recordType
-              ? settingsContext.streetTemplate.streetTemplate.recordType
-              : null,
-            !settingsContext.isScottish &&
-              settingsContext.streetTemplate &&
-              settingsContext.streetTemplate.streetTemplate &&
-              settingsContext.streetTemplate.streetTemplate.state
-              ? settingsContext.streetTemplate.streetTemplate.state
-              : null,
-            settingsContext.streetTemplate &&
-              settingsContext.streetTemplate.streetTemplate &&
-              settingsContext.streetTemplate.streetTemplate.localityRef
-              ? settingsContext.streetTemplate.streetTemplate.localityRef
-              : null,
-            settingsContext.streetTemplate &&
-              settingsContext.streetTemplate.streetTemplate &&
-              settingsContext.streetTemplate.streetTemplate.townRef
-              ? settingsContext.streetTemplate.streetTemplate.townRef
-              : null,
-            settingsContext.isScottish &&
-              settingsContext.streetTemplate &&
-              settingsContext.streetTemplate.streetTemplate &&
-              settingsContext.streetTemplate.streetTemplate.islandRef
-              ? settingsContext.streetTemplate.streetTemplate.islandRef
-              : null,
-            settingsContext.streetTemplate &&
-              settingsContext.streetTemplate.streetTemplate &&
-              settingsContext.streetTemplate.streetTemplate.adminAreaRef
-              ? settingsContext.streetTemplate.streetTemplate.adminAreaRef
-              : null,
-            !settingsContext.isScottish &&
-              settingsContext.streetTemplate &&
-              settingsContext.streetTemplate.streetTemplate &&
-              settingsContext.streetTemplate.streetTemplate.classification
-              ? settingsContext.streetTemplate.streetTemplate.classification
-              : null,
-            !settingsContext.isScottish &&
-              settingsContext.streetTemplate &&
-              settingsContext.streetTemplate.streetTemplate &&
-              settingsContext.streetTemplate.streetTemplate.streetSurface
-              ? settingsContext.streetTemplate.streetTemplate.streetSurface
-              : null,
-            lookupContext
-          );
-          setData(newStreet);
-          sandboxContext.onUpdateAndClear("sourceStreet", newStreet, "allStreet");
-          dataUsrn.current = 0;
-          setLoading(false);
+          loadingRef.current = true;
+          let newEsus = null;
+          if (streetContext.createEsus && Array.isArray(streetContext.createEsus) && streetContext.createEsus.length) {
+            newEsus = [];
+            GetMultipleEsusData(streetContext.createEsus, userContext.currentUser.token).then((result) => {
+              result.forEach((esu) => {
+                newEsus.push({ ...esu, assignUnassign: 1 });
+              });
+
+              streetContext.onCreateStreet(null);
+
+              generateNewStreet(newEsus);
+            });
+          } else {
+            generateNewStreet(newEsus);
+          }
         }
       }
     }
+
+    const generateNewStreet = (newEsus) => {
+      const newStreet = GetNewStreet(
+        settingsContext.isScottish,
+        settingsContext.isWelsh,
+        settingsContext.authorityCode,
+        settingsContext.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate.recordType
+          ? settingsContext.streetTemplate.streetTemplate.recordType
+          : null,
+        !settingsContext.isScottish &&
+          settingsContext.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate.state
+          ? settingsContext.streetTemplate.streetTemplate.state
+          : null,
+        settingsContext.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate.localityRef
+          ? settingsContext.streetTemplate.streetTemplate.localityRef
+          : null,
+        settingsContext.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate.townRef
+          ? settingsContext.streetTemplate.streetTemplate.townRef
+          : null,
+        settingsContext.isScottish &&
+          settingsContext.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate.islandRef
+          ? settingsContext.streetTemplate.streetTemplate.islandRef
+          : null,
+        settingsContext.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate.adminAreaRef
+          ? settingsContext.streetTemplate.streetTemplate.adminAreaRef
+          : null,
+        !settingsContext.isScottish &&
+          settingsContext.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate.classification
+          ? settingsContext.streetTemplate.streetTemplate.classification
+          : null,
+        !settingsContext.isScottish &&
+          settingsContext.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate.streetSurface
+          ? settingsContext.streetTemplate.streetTemplate.streetSurface
+          : null,
+        lookupContext,
+        newEsus
+      );
+      setData(newStreet);
+      sandboxContext.onUpdateAndClear("sourceStreet", newStreet, "allStreet");
+      dataUsrn.current = 0;
+      setLoading(false);
+      loadingRef.current = false;
+    };
 
     if (!apiUrl) {
       const streetUrl = GetStreetByUSRNUrl(userContext.currentUser.token, settingsContext.isScottish);

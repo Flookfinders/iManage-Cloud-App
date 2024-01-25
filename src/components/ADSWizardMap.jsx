@@ -20,6 +20,7 @@
 //    007   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
 //    008   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    009   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    010   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -394,6 +395,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
   const baseLayersFeature = useRef([]);
   const mapRef = useRef();
   const [view, setView] = useState(null);
+  const viewRef = useRef(null);
   const sketchRef = useRef(null);
   const layerListRef = useRef(null);
   const coordinateConversionRef = useRef(null);
@@ -505,6 +507,8 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
   }, [placeOnMapData]);
 
   useEffect(() => {
+    if (viewRef.current) return;
+
     async function GetBaseMapLayers() {
       const mapLayerUrl = GetMapLayersUrl("GET", userContext.current.currentUser.token);
 
@@ -779,25 +783,20 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
 
     mapRef.current = baseMap;
     setView(baseView);
+    viewRef.current = baseView;
     sketchRef.current = baseSketch;
     layerListRef.current = baseLayerList;
     coordinateConversionRef.current = baseCoordinateConversion;
 
     // destroy the map objects
     return () => {
-      mapRef.current = null;
-      setView(null);
-      sketchRef.current = null;
-      layerListRef.current = null;
-      coordinateConversionRef.current = null;
-
-      newBaseLayer && newBaseLayer.destroy();
-      baseMap && baseMap.destroy();
       scaleBar && scaleBar.destroy();
       baseCoordinateConversion && baseCoordinateConversion.destroy();
       baseSketch && baseSketch.destroy();
       baseLayerList && baseLayerList.destroy();
       baseView && baseView.destroy();
+      baseMap && baseMap.destroy();
+      newBaseLayer && newBaseLayer.destroy();
     };
   }, []);
 
@@ -1252,7 +1251,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
       <Box
         sx={{
           flexGrow: 0,
-          height: `${displayPlaceOnMap ? "77vh" : moveBlpu ? "82vh" : "78vh"}`,
+          height: `${displayPlaceOnMap ? "77vh" : moveBlpu ? "83vh" : "78vh"}`,
           width: "100%",
         }}
         ref={mapRef}

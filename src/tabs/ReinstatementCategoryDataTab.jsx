@@ -18,6 +18,7 @@
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    006   11.01.24 Sean Flook                 Fix warnings.
 //    007   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    008   23.01.24 Sean Flook       IMANN-246 Display information when selecting Part Road.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -29,9 +30,10 @@ import PropTypes from "prop-types";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
 import MapContext from "./../context/mapContext";
+import InformationContext from "../context/informationContext";
 
 import { ConvertDate } from "../utils/HelperUtils";
-import { Avatar, Typography } from "@mui/material";
+import { Avatar, Typography, Popper } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { GetLookupLabel, filteredLookup } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
@@ -43,6 +45,7 @@ import ADSWholeRoadControl from "../components/ADSWholeRoadControl";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ADSTextToggleControl from "../components/ADSTextToggleControl";
+import ADSInformationControl from "../components/ADSInformationControl";
 // import ADSSwitchControl from "../components/ADSSwitchControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 
@@ -81,6 +84,7 @@ function ReinstatementCategoryDataTab({
   const sandboxContext = useContext(SandboxContext);
   const userContext = useContext(UserContext);
   const mapContext = useContext(MapContext);
+  const informationContext = useContext(InformationContext);
 
   const [dataChanged, setDataChanged] = useState(false);
 
@@ -108,6 +112,10 @@ function ReinstatementCategoryDataTab({
   const [stateError, setStateError] = useState(null);
   const [wholeRoadError, setWholeRoadError] = useState(null);
   const [specifyLocationError, setSpecifyLocationError] = useState(null);
+
+  const [informationAnchorEl, setInformationAnchorEl] = useState(null);
+  const informationOpen = Boolean(informationAnchorEl);
+  const informationId = informationOpen ? "asd-information-popper" : undefined;
 
   /**
    * Method to return the current reinstatement category record.
@@ -253,8 +261,13 @@ function ReinstatementCategoryDataTab({
       if (onDataChanged && wholeRoad !== newValue) onDataChanged();
     }
     UpdateSandbox("wholeRoad", newValue);
-    if (newValue) mapContext.onEditMapObject(null, null);
-    else mapContext.onEditMapObject(52, data && data.reinstatementCategoryData && data.reinstatementCategoryData.pkId);
+    if (newValue) {
+      mapContext.onEditMapObject(null, null);
+      informationContext.onClearInformation();
+    } else {
+      mapContext.onEditMapObject(52, data && data.reinstatementCategoryData && data.reinstatementCategoryData.pkId);
+      informationContext.onDisplayInformation("partRoadASD", "ReinstatementCategoryDataTab");
+    }
   };
 
   /**
@@ -403,6 +416,15 @@ function ReinstatementCategoryDataTab({
   }, [userContext]);
 
   useEffect(() => {
+    if (
+      informationContext.informationSource &&
+      informationContext.informationSource === "ReinstatementCategoryDataTab"
+    ) {
+      setInformationAnchorEl(document.getElementById("reinstatement-category-data"));
+    } else setInformationAnchorEl(null);
+  }, [informationContext.informationSource]);
+
+  useEffect(() => {
     setReinstatementCategoryError(null);
     setCustodianError(null);
     setAuthorityError(null);
@@ -456,7 +478,7 @@ function ReinstatementCategoryDataTab({
 
   return (
     <Fragment>
-      <Box sx={toolbarStyle}>
+      <Box sx={toolbarStyle} id={"reinstatement-category-data"}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
             <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
@@ -656,6 +678,9 @@ function ReinstatementCategoryDataTab({
           onClose={handleCloseDeleteConfirmation}
         />
       </div>
+      <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
+        <ADSInformationControl variant={"partRoadASD"} />
+      </Popper>
     </Fragment>
   );
 }

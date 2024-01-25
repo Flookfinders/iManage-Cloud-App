@@ -21,6 +21,7 @@
 //    008   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    009   11.01.24 Sean Flook                 Fix warnings.
 //    010   17.01.24 Sean Flook                 Changes after Louise's review.
+//    011   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -33,6 +34,8 @@ import UserContext from "./../context/userContext";
 import StreetContext from "../context/streetContext";
 import SettingsContext from "../context/settingsContext";
 import MapContext from "../context/mapContext";
+import InformationContext from "../context/informationContext";
+
 import {
   Typography,
   Tooltip,
@@ -47,8 +50,10 @@ import {
   ListItemAvatar,
   Avatar,
   ListItemIcon,
+  Popper,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
+import ADSInformationControl from "../components/ADSInformationControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import {
   ExpandMore,
@@ -139,6 +144,7 @@ function EsuDataTab({
   const streetContext = useContext(StreetContext);
   const settingsContext = useContext(SettingsContext);
   const mapContext = useContext(MapContext);
+  const informationContext = useContext(InformationContext);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [hdSelectedRecord, setHDSelectedRecord] = useState(null);
@@ -170,6 +176,11 @@ function EsuDataTab({
   const [stateDateError, setStateDateError] = useState(null);
   const [classificationError, setClassificationError] = useState(null);
   const [classificationDateError, setClassificationDateError] = useState(null);
+
+  const [informationVariant, setInformationVariant] = useState(null);
+  const [informationAnchorEl, setInformationAnchorEl] = useState(null);
+  const informationOpen = Boolean(informationAnchorEl);
+  const informationId = informationOpen ? "esu-information-popper" : undefined;
 
   /**
    * Method to determine if a one-way exemption record can be added to the current ESU record.
@@ -313,6 +324,13 @@ function EsuDataTab({
   };
 
   /**
+   * Event to handle when the information cancel button is clicked.
+   */
+  const handleInformationCancel = () => {
+    informationContext.onClearInformation();
+  };
+
+  /**
    * Method used to copy the text to the clipboard.
    *
    * @param {string|null} text The text that needs to be copied to the clipboard.
@@ -453,6 +471,7 @@ function EsuDataTab({
    */
   const handleAddHighwayDedication = () => {
     setAnchorEl(null);
+    informationContext.onClearInformation();
 
     const sourceEsu =
       data.pkId > 0 && sandboxContext.currentSandbox.sourceStreet
@@ -472,6 +491,7 @@ function EsuDataTab({
    */
   const handleAddOneWayExemption = () => {
     setAnchorEl(null);
+    informationContext.onClearInformation();
 
     const sourceEsu =
       data.pkId > 0 && sandboxContext.currentSandbox.sourceStreet
@@ -495,7 +515,13 @@ function EsuDataTab({
     setAnchorEl(null);
     if (streetContext.esuDividedMerged) {
       if (onDivideError) onDivideError("streetAlreadyDividedMerged");
-    } else mapContext.onDivideEsu(data.esuData.esuId);
+    } else {
+      if (informationContext.informationType && informationContext.informationType !== "divideEsu") {
+        setInformationAnchorEl(null);
+      }
+      informationContext.onDisplayInformation("divideESU", "EsuDataTab");
+      mapContext.onDivideEsu(data.esuData.esuId);
+    }
   };
 
   /**
@@ -769,7 +795,7 @@ function EsuDataTab({
   };
 
   useEffect(() => {
-    if (!loading && data && data.esuData) {
+    if (!loading && data.esuData) {
       if (!settingsContext.isScottish) {
         setDirection(data.esuData.esuDirection);
         setTolerance(data.esuData.esuTolerance ? data.esuData.esuTolerance : 0);
@@ -784,7 +810,20 @@ function EsuDataTab({
         setEndDate(data.esuData.endDate);
       }
     }
-  }, [loading, data, settingsContext.isScottish]);
+  }, [loading, data.esuData, settingsContext.isScottish]);
+
+  useEffect(() => {
+    if (data.esuData && data.esuData.esuId < 0 && !informationContext.informationType) {
+      informationContext.onDisplayInformation("createESU", "EsuDataTab");
+    }
+  }, [data.esuData, informationContext]);
+
+  useEffect(() => {
+    setInformationVariant(informationContext.informationType);
+    if (informationContext.informationSource && informationContext.informationSource === "EsuDataTab")
+      setInformationAnchorEl(document.getElementById("ads-esu-data-form"));
+    else setInformationAnchorEl(null);
+  }, [informationContext]);
 
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
@@ -844,7 +883,7 @@ function EsuDataTab({
 
   return (
     <Fragment>
-      <Box sx={toolbarStyle}>
+      <Box sx={toolbarStyle} id="ads-esu-data-form">
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Stack direction="row" alignItems="center" justifyContent="flex-start">
             <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
@@ -872,6 +911,7 @@ function EsuDataTab({
               variant="copy"
               tooltipTitle="Copy ESU Id to clipboard"
               tooltipPlacement="right"
+              disabled={informationContext.informationType && informationContext.informationType === "createESU"}
               onClick={handleCopyEsuId}
             />
             <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
@@ -902,7 +942,16 @@ function EsuDataTab({
               TransitionComponent={Fade}
               sx={menuStyle}
             >
-              <MenuItem dense divider={settingsContext.isScottish} onClick={handleAddNewEsu} sx={menuItemStyle(false)}>
+              <MenuItem
+                dense
+                disabled={
+                  !userCanEdit ||
+                  (informationContext.informationType && informationContext.informationType === "createESU")
+                }
+                divider={settingsContext.isScottish}
+                onClick={handleAddNewEsu}
+                sx={menuItemStyle(false)}
+              >
                 <Typography variant="inherit">Add new ESU</Typography>
               </MenuItem>
               {!settingsContext.isScottish && (
@@ -921,23 +970,48 @@ function EsuDataTab({
                   <Typography variant="inherit">Add one-way exemption</Typography>
                 </MenuItem>
               )}
-              <MenuItem dense disabled={!userCanEdit} onClick={handleDivideEsu} sx={menuItemStyle(false)}>
+              <MenuItem
+                dense
+                disabled={
+                  !userCanEdit ||
+                  (informationContext.informationType && informationContext.informationType === "createESU")
+                }
+                onClick={handleDivideEsu}
+                sx={menuItemStyle(false)}
+              >
                 <Typography variant="inherit">Divide</Typography>
               </MenuItem>
               <MenuItem
                 dense
                 divider
-                disabled={!userCanEdit}
+                disabled={
+                  !userCanEdit ||
+                  (informationContext.informationType && informationContext.informationType === "createESU")
+                }
                 onClick={handleUnassignFromStreet}
                 sx={menuItemStyle(false)}
               >
                 <Typography variant="inherit">Unassign from street</Typography>
               </MenuItem>
-              <MenuItem dense divider={!settingsContext.isScottish} onClick={handleCopyEsuId} sx={menuItemStyle(false)}>
+              <MenuItem
+                dense
+                disabled={informationContext.informationType && informationContext.informationType === "createESU"}
+                divider={!settingsContext.isScottish}
+                onClick={handleCopyEsuId}
+                sx={menuItemStyle(false)}
+              >
                 <Typography variant="inherit">Copy ID</Typography>
               </MenuItem>
               {!settingsContext.isScottish && (
-                <MenuItem dense onClick={handleDeleteEsu} sx={menuItemStyle(false)}>
+                <MenuItem
+                  dense
+                  disabled={
+                    !userCanEdit ||
+                    (informationContext.informationType && informationContext.informationType === "createESU")
+                  }
+                  onClick={handleDeleteEsu}
+                  sx={menuItemStyle(false)}
+                >
                   <Typography variant="inherit" color="error">
                     Delete
                   </Typography>
@@ -1396,6 +1470,13 @@ function EsuDataTab({
           onClose={handleCloseDeleteConfirmation}
         />
       </div>
+      <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
+        <ADSInformationControl
+          variant={informationVariant}
+          hasCancel={informationVariant === "divideESU"}
+          onCancel={handleInformationCancel}
+        />
+      </Popper>
     </Fragment>
   );
 }

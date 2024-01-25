@@ -1,7 +1,7 @@
 /* #region header */
 /**************************************************************************************************
 //
-//  Description: ESU Data tab
+//  Description: Metadata settings tab
 //
 //  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
@@ -19,6 +19,9 @@
 //    006   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    007   10.01.24 Sean Flook                 Fix warnings.
 //    008   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    009   24.01.24 Joel Benford               Interim with API changes and partial save (GP LLPG).
+//    010   24.01.24 Joel Benford               Save placeholder gazDate (will need adding to GUI)
+//    011   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -54,13 +57,13 @@ import { DateString, getAuthorityText, getDisplayLanguage } from "../utils/Helpe
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
-import { adsBlueA } from "../utils/ADSColours";
 import {
   blueButtonStyle,
   ActionIconStyle,
   settingsCardStyle,
   settingsCardContentStyle,
   tooltipStyle,
+  getTitleStyle,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -92,19 +95,20 @@ function MetadataSettingsTab({ variant }) {
   const [editContent, setEditContent] = useState(false);
   const [dataValid, setDataValid] = useState(false);
 
-  const [name, setName] = useState(null);
-  const [scope, setScope] = useState(null);
-  const [territory, setTerritory] = useState(null);
-  const [metadataData, setMetadataData] = useState(null);
-  const [owner, setOwner] = useState(null);
-  const [frequency, setFrequency] = useState(null);
+  const [gazName, setGazName] = useState(null);
+  const [gazScope, setGazScope] = useState(null);
+  const [terOfUse, setTerOfUse] = useState(null);
+  const [linkedData, setLinkedData] = useState(null);
+  const [gazOwner, setGazOwner] = useState(null);
+  const [ngazFreq, setNgazFreq] = useState(null); // hidden in Scotland
 
   const [custodianName, setCustodianName] = useState(null);
-  const [custodianUprn, setCustodianUprn] = useState(null);
+  const [custodianUprn, setCustodianUprn] = useState(null); // hidden in Scotland
   const [custodianCode, setCustodianCode] = useState(null);
 
   const [classificationScheme, setClassificationScheme] = useState(null);
-  const [metadataDate, setMetadataDate] = useState(null);
+  const [stateCodeScheme, setStateCodeScheme] = useState(null); // Scotland only
+  const [metaDate, setMetaDate] = useState(null);
   const [language, setLanguage] = useState(null);
 
   const [motorwayTrunkRoads, setMotorwayTrunkRoads] = useState(null);
@@ -358,9 +362,9 @@ function MetadataSettingsTab({ variant }) {
   };
 
   /**
-   * Method to get the full text for the given frequency.
+   * Method to get the full text for the given ngazFreq.
    *
-   * @param {string} value The type of frequency.
+   * @param {string} value The type of ngazFreq.
    * @returns {string} The full text for the frequency.
    */
   const getFrequency = (value) => {
@@ -405,10 +409,9 @@ function MetadataSettingsTab({ variant }) {
     switch (variant) {
       case "street":
         const streetData = {
-          territory: type === "gazetteer" && updatedData ? updatedData.territory : streetGazetteerData.territory,
-          metadataData:
-            type === "gazetteer" && updatedData ? updatedData.metadataData : streetGazetteerData.metadataData,
-          frequency: type === "gazetteer" && updatedData ? updatedData.frequency : streetGazetteerData.frequency,
+          terOfUse: type === "gazetteer" && updatedData ? updatedData.terOfUse : streetGazetteerData.terOfUse,
+          linkedData: type === "gazetteer" && updatedData ? updatedData.linkedData : streetGazetteerData.linkedData,
+          ngazFreq: type === "gazetteer" && updatedData ? updatedData.ngazFreq : streetGazetteerData.ngazFreq,
           custodianName:
             type === "custodian" && updatedData ? updatedData.custodianName : streetCustodianData.custodianName,
           custodianUprn:
@@ -419,6 +422,10 @@ function MetadataSettingsTab({ variant }) {
             type === "miscellaneous" && updatedData
               ? updatedData.classificationScheme
               : streetMiscellaneousData.classificationScheme,
+          stateCodeScheme:
+            type === "miscellaneous" && updatedData
+              ? updatedData.stateCodeScheme
+              : streetMiscellaneousData.stateCodeScheme,
           metadataDate:
             type === "miscellaneous" && updatedData ? updatedData.metadataDate : streetMiscellaneousData.metadataDate,
           language: type === "miscellaneous" && updatedData ? updatedData.language : streetMiscellaneousData.language,
@@ -444,12 +451,13 @@ function MetadataSettingsTab({ variant }) {
         };
 
         dataValid =
-          !!streetData.territory &&
-          !!streetData.frequency &&
+          !!streetData.terOfUse &&
+          !!streetData.ngazFreq &&
           !!streetData.custodianName &&
           !!streetData.custodianUprn &&
           !!streetData.custodianCode &&
           !!streetData.classificationScheme &&
+          !!streetData.stateCodeScheme &&
           !!streetData.metadataDate &&
           !!streetData.language &&
           !!streetData.motorwayTrunkRoads &&
@@ -465,9 +473,9 @@ function MetadataSettingsTab({ variant }) {
 
       case "asd":
         const asdData = {
-          territory: type === "gazetteer" && updatedData ? updatedData.territory : asdGazetteerData.territory,
-          metadataData: type === "gazetteer" && updatedData ? updatedData.metadataData : asdGazetteerData.metadataData,
-          frequency: type === "gazetteer" && updatedData ? updatedData.frequency : asdGazetteerData.frequency,
+          terOfUse: type === "gazetteer" && updatedData ? updatedData.terOfUse : asdGazetteerData.terOfUse,
+          linkedData: type === "gazetteer" && updatedData ? updatedData.linkedData : asdGazetteerData.linkedData,
+          ngazFreq: type === "gazetteer" && updatedData ? updatedData.ngazFreq : asdGazetteerData.ngazFreq,
           custodianName:
             type === "custodian" && updatedData ? updatedData.custodianName : asdCustodianData.custodianName,
           custodianUprn:
@@ -478,6 +486,10 @@ function MetadataSettingsTab({ variant }) {
             type === "miscellaneous" && updatedData
               ? updatedData.classificationScheme
               : asdMiscellaneousData.classificationScheme,
+          stateCodeScheme:
+            type === "miscellaneous" && updatedData
+              ? updatedData.stateCodeScheme
+              : asdMiscellaneousData.stateCodeScheme,
           metadataDate:
             type === "miscellaneous" && updatedData ? updatedData.metadataDate : asdMiscellaneousData.metadataDate,
           language: type === "miscellaneous" && updatedData ? updatedData.language : asdMiscellaneousData.language,
@@ -543,12 +555,13 @@ function MetadataSettingsTab({ variant }) {
         };
 
         dataValid =
-          !!asdData.territory &&
-          !!asdData.frequency &&
+          !!asdData.terOfUse &&
+          !!asdData.ngazFreq &&
           !!asdData.custodianName &&
           !!asdData.custodianUprn &&
           !!asdData.custodianCode &&
           !!asdData.classificationScheme &&
+          !!asdData.stateCodeScheme &&
           !!asdData.metadataDate &&
           !!asdData.language &&
           !!asdData.protectedStreets &&
@@ -571,13 +584,12 @@ function MetadataSettingsTab({ variant }) {
 
       case "property":
         const propertyData = {
-          name: type === "gazetteer" && updatedData ? updatedData.name : propertyGazetteerData.name,
-          scope: type === "gazetteer" && updatedData ? updatedData.scope : propertyGazetteerData.scope,
-          territory: type === "gazetteer" && updatedData ? updatedData.territory : propertyGazetteerData.territory,
-          metadataData:
-            type === "gazetteer" && updatedData ? updatedData.metadataData : propertyGazetteerData.metadataData,
-          owner: type === "gazetteer" && updatedData ? updatedData.owner : propertyGazetteerData.owner,
-          frequency: type === "gazetteer" && updatedData ? updatedData.frequency : propertyGazetteerData.frequency,
+          gazName: type === "gazetteer" && updatedData ? updatedData.gazName : propertyGazetteerData.gazName,
+          gazScope: type === "gazetteer" && updatedData ? updatedData.gazScope : propertyGazetteerData.gazScope,
+          terOfUse: type === "gazetteer" && updatedData ? updatedData.terOfUse : propertyGazetteerData.terOfUse,
+          linkedData: type === "gazetteer" && updatedData ? updatedData.linkedData : propertyGazetteerData.linkedData,
+          gazOwner: type === "gazetteer" && updatedData ? updatedData.gazOwner : propertyGazetteerData.gazOwner,
+          ngazFreq: type === "gazetteer" && updatedData ? updatedData.ngazFreq : propertyGazetteerData.ngazFreq,
           custodianName:
             type === "custodian" && updatedData ? updatedData.custodianName : propertyCustodianData.custodianName,
           custodianUprn:
@@ -588,21 +600,26 @@ function MetadataSettingsTab({ variant }) {
             type === "miscellaneous" && updatedData
               ? updatedData.classificationScheme
               : propertyMiscellaneousData.classificationScheme,
+          stateCodeScheme:
+            type === "miscellaneous" && updatedData
+              ? updatedData.stateCodeScheme
+              : propertyMiscellaneousData.stateCodeScheme,
           metadataDate:
             type === "miscellaneous" && updatedData ? updatedData.metadataDate : propertyMiscellaneousData.metadataDate,
           language: type === "miscellaneous" && updatedData ? updatedData.language : propertyMiscellaneousData.language,
         };
 
         dataValid =
-          !!propertyData.name &&
-          !!propertyData.scope &&
-          !!propertyData.territory &&
-          !!propertyData.owner &&
-          !!propertyData.frequency &&
+          !!propertyData.gazName &&
+          !!propertyData.gazScope &&
+          !!propertyData.terOfUse &&
+          !!propertyData.gazOwner &&
+          !!propertyData.ngazFreq &&
           !!propertyData.custodianName &&
           !!propertyData.custodianUprn &&
           !!propertyData.custodianCode &&
           !!propertyData.classificationScheme &&
+          !!propertyData.stateCodeScheme &&
           !!propertyData.metadataDate &&
           !!propertyData.language;
         break;
@@ -612,6 +629,137 @@ function MetadataSettingsTab({ variant }) {
     }
 
     return dataValid;
+  };
+
+  /**
+   * Event to handle updating a set of metadata after it has been edited.
+   *
+   * @param {object} updatedData The updated template data.
+   */
+  const saveGazetteerMetadata = async (updatedData) => {
+    const saveUrl = GetLLPGMetadataUrl("PUT", userContext.currentUser.token, settingsContext.isScottish);
+
+    if (saveUrl) {
+      const saveData = settingsContext.isScottish
+        ? {
+            // Scotland
+            metaId: 29,
+            gazName: updatedData.gazName,
+            gazScope: updatedData.gazScope,
+            terOfUse: updatedData.terOfUse,
+            linkedData: updatedData.linkedData, //should not be on OS API but is, dummy for now
+            gazOwner: updatedData.gazOwner,
+            ngazFreq: updatedData.ngazFreq, //should not be on OS API but is, dummy for now
+            custodianName: custodianName,
+            custodianUprn: 0,
+            custodianCode: custodianCode,
+            coordSystem: "EPSG:27700",
+            coordUnit: "Meters",
+            metaDate: metaDate,
+            classificationScheme: classificationScheme,
+            gazDate: 0, //should not be on API but is, dummy for now
+            language: language,
+            characterSet: "UTF8",
+            lastUpdated: null, //should not be on API but is, dummy for now
+            stateCodeScheme: stateCodeScheme,
+          }
+        : {
+            //England
+            metaId: 29,
+            gazName: updatedData.gazName,
+            gazScope: updatedData.gazScope,
+            terOfUse: updatedData.terOfUse,
+            linkedData: updatedData.linkedData,
+            gazOwner: updatedData.gazOwner,
+            ngazFreq: updatedData.ngazFreq,
+            custodianName: custodianName,
+            custodianUprn: 0,
+            custodianCode: custodianCode,
+            coordSystem: "British National Grid",
+            coordUnit: "Metres",
+            metaDate: metaDate,
+            classificationScheme: classificationScheme,
+            gazDate: metaDate, //dummy for now
+            language: language,
+            characterSet: "UTF8",
+            lastUpdated: null, //should not be on API but is, dummy for now
+            //stateCodeScheme not used by GP
+          };
+
+      console.log("about to save", JSON.stringify(saveData));
+
+      await fetch(saveUrl.url, {
+        headers: saveUrl.headers,
+        crossDomain: true,
+        method: saveUrl.type,
+        body: JSON.stringify(saveData),
+      })
+        .then((res) => (res.ok ? res : Promise.reject(res)))
+        .then((res) => res.json())
+        .then((result) => {
+          console.log("result", result);
+          setPropertyGazetteerData({
+            gazName: result.gazName,
+            gazScope: result.gazScope,
+            terOfUse: result.terOfUse,
+            linkedData: result.linkedData,
+            gazOwner: result.gazOwner,
+            ngazFreq: result.ngazFreq || null, // not used in Scotland
+          });
+
+          setGazName(result.gazName);
+          setGazScope(result.gazScope);
+          setTerOfUse(result.terOfUse);
+          setLinkedData(result.linkedData);
+          setGazOwner(result.gazOwner);
+          setNgazFreq(result.ngazFreq || null); // not used in Scotland
+
+          setPropertyCustodianData({
+            custodianName: result.custodianName,
+            custodianUprn: result.custodianUprn, // not used in Scotland
+            custodianCode: result.custodianCode,
+          });
+
+          setCustodianName(result.custodianName);
+          setCustodianUprn(result.custodianUprn); // not used in Scotland
+          setCustodianCode(result.custodianCode);
+
+          setPropertyMiscellaneousData({
+            classificationScheme: result.classificationScheme,
+            stateCodeScheme: result.stateCodeScheme || null,
+            metadataDate: result.metaDate,
+            language: result.language,
+          });
+
+          setClassificationScheme(result.classificationScheme);
+          setStateCodeScheme(result.stateCodeScheme || null);
+          setMetaDate(result.metaDate);
+          setLanguage(result.language);
+        })
+        .catch((res) => {
+          switch (res.status) {
+            case 400:
+              res.json().then((body) => {
+                console.error("[400 ERROR] Updating property template", body.errors);
+              });
+              break;
+
+            case 401:
+              res.json().then((body) => {
+                console.error("[401 ERROR] Updating property template", body);
+              });
+              break;
+
+            case 500:
+              console.error("[500 ERROR] Updating property template", res);
+              break;
+
+            default:
+              console.error(`[${res.status} ERROR] handleUpdateData - Updating property template.`, res);
+              break;
+          }
+        });
+    }
   };
 
   /**
@@ -638,15 +786,17 @@ function MetadataSettingsTab({ variant }) {
           break;
       }
 
-      if (variant === "property") setName(updatedData.name);
-      if (variant === "property") setScope(updatedData.scope);
-      setTerritory(updatedData.territory);
-      setMetadataData(updatedData.metadataData);
-      if (variant === "property") setOwner(updatedData.owner);
-      setFrequency(updatedData.frequency);
+      if (variant === "property") setGazName(updatedData.gazName);
+      if (variant === "property") setGazScope(updatedData.gazScope);
+      setTerOfUse(updatedData.terOfUse);
+      setLinkedData(updatedData.linkedData);
+      if (variant === "property") setGazOwner(updatedData.gazOwner);
+      setNgazFreq(updatedData.ngazFreq);
 
       setDataValid(checkDataIsValid("gazetteer", updatedData));
     }
+    console.log("updatedData from popup", updatedData);
+    saveGazetteerMetadata(updatedData);
 
     setShowEditGazetteerDialog(false);
   };
@@ -724,7 +874,8 @@ function MetadataSettingsTab({ variant }) {
       }
 
       setClassificationScheme(updatedData.classificationScheme);
-      setMetadataDate(updatedData.metadataDate);
+      setStateCodeScheme(updatedData.stateCodeScheme);
+      setMetaDate(updatedData.metadataDate);
       setLanguage(updatedData.language);
 
       setDataValid(checkDataIsValid("miscellaneous", updatedData));
@@ -806,17 +957,6 @@ function MetadataSettingsTab({ variant }) {
     setShowEditContentDialog(false);
   };
 
-  /**
-   * Method to get the styling to use for the title.
-   *
-   * @param {boolean} highlighted True if the title is highlighted; otherwise false.
-   * @returns {object|null} The styling to use for the title.
-   */
-  const getTitleStyle = (highlighted) => {
-    if (highlighted) return { color: adsBlueA };
-    else return null;
-  };
-
   useEffect(() => {
     async function SetUpStreetData() {
       if (streetApiUrl) {
@@ -832,14 +972,14 @@ function MetadataSettingsTab({ variant }) {
           .then(
             (result) => {
               setStreetGazetteerData({
-                territory: result.terOfUse,
-                metadataData: result.linkedData,
-                frequency: result.ngazFreq,
+                terOfUse: result.terOfUse,
+                linkedData: result.linkedData,
+                ngazFreq: result.ngazFreq,
               });
 
-              setTerritory(result.terOfUse);
-              setMetadataData(result.linkedData);
-              setFrequency(result.ngazFreq);
+              setTerOfUse(result.terOfUse);
+              setLinkedData(result.linkedData);
+              setNgazFreq(result.ngazFreq);
 
               setStreetCustodianData({
                 custodianName: result.custodianName,
@@ -858,7 +998,7 @@ function MetadataSettingsTab({ variant }) {
               });
 
               setClassificationScheme(result.classificationScheme);
-              setMetadataDate(result.metaDate);
+              setMetaDate(result.metaDate);
               setLanguage(result.language);
 
               setStreetContentData({
@@ -907,14 +1047,14 @@ function MetadataSettingsTab({ variant }) {
           .then(
             (result) => {
               setAsdGazetteerData({
-                territory: result.terOfUse,
-                metadataData: result.linkedData,
-                frequency: result.ngazFreq,
+                terOfUse: result.terOfUse,
+                linkedData: result.linkedData,
+                ngazFreq: result.ngazFreq,
               });
 
-              setTerritory(result.terOfUse);
-              setMetadataData(result.linkedData);
-              setFrequency(result.ngazFreq);
+              setTerOfUse(result.terOfUse);
+              setLinkedData(result.linkedData);
+              setNgazFreq(result.ngazFreq);
 
               setAsdCustodianData({
                 custodianName: result.custodianName,
@@ -933,7 +1073,7 @@ function MetadataSettingsTab({ variant }) {
               });
 
               setClassificationScheme(result.classificationScheme);
-              setMetadataDate(result.metaDate);
+              setMetaDate(result.metaDate);
               setLanguage(result.language);
 
               setAsdContentData({
@@ -1011,40 +1151,43 @@ function MetadataSettingsTab({ variant }) {
           .then((res) => res.json())
           .then(
             (result) => {
+              console.log("Metadata Settings fetched", result);
               setPropertyGazetteerData({
-                name: result.gazName,
-                scope: result.gazScope,
-                territory: result.terOfUse,
-                data: result.linkedData,
-                owner: result.gazOwner,
-                frequency: result.ngazFreq,
+                gazName: result.gazName,
+                gazScope: result.gazScope,
+                terOfUse: result.terOfUse,
+                linkedData: result.linkedData,
+                gazOwner: result.gazOwner,
+                ngazFreq: result.ngazFreq || null, // not used in Scotland
               });
 
-              setName(result.gazName);
-              setScope(result.gazScope);
-              setTerritory(result.terOfUse);
-              setMetadataData(result.linkedData);
-              setOwner(result.gazOwner);
-              setFrequency(result.ngazFreq);
+              setGazName(result.gazName);
+              setGazScope(result.gazScope);
+              setTerOfUse(result.terOfUse);
+              setLinkedData(result.linkedData);
+              setGazOwner(result.gazOwner);
+              setNgazFreq(result.ngazFreq || null); // not used in Scotland
 
               setPropertyCustodianData({
                 custodianName: result.custodianName,
-                custodianUprn: result.uprn,
+                custodianUprn: result.custodianUprn, // not used in Scotland
                 custodianCode: result.custodianCode,
               });
 
               setCustodianName(result.custodianName);
-              setCustodianUprn(result.uprn);
+              setCustodianUprn(result.custodianUprn); // not used in Scotland
               setCustodianCode(result.custodianCode);
 
               setPropertyMiscellaneousData({
                 classificationScheme: result.classificationScheme,
+                stateCodeScheme: result.stateCodeScheme || null, // only used in Scotland
                 metadataDate: result.metaDate,
                 language: result.language,
               });
 
               setClassificationScheme(result.classificationScheme);
-              setMetadataDate(result.metaDate);
+              setStateCodeScheme(result.stateCodeScheme || null);
+              setMetaDate(result.metaDate);
               setLanguage(result.language);
             },
             (error) => {
@@ -1135,7 +1278,7 @@ function MetadataSettingsTab({ variant }) {
                   )
                 }
                 title="Gazetteer details"
-                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editGazetteer) }}
+                titleTypographyProps={{ sx: getTitleStyle(editGazetteer) }}
                 sx={{ height: "66px" }}
               />
               <CardActionArea onClick={doEditGazetteer}>
@@ -1154,7 +1297,7 @@ function MetadataSettingsTab({ variant }) {
                           <Skeleton variant="rectangular" height="20px" width="100%" />
                         ) : (
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {name}
+                            {gazName}
                           </Typography>
                         )}
                       </Grid>
@@ -1170,7 +1313,7 @@ function MetadataSettingsTab({ variant }) {
                           <Skeleton variant="rectangular" height="20px" width="100%" />
                         ) : (
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {scope}
+                            {gazScope}
                           </Typography>
                         )}
                       </Grid>
@@ -1183,7 +1326,7 @@ function MetadataSettingsTab({ variant }) {
                         <Skeleton variant="rectangular" height="20px" width="100%" />
                       ) : (
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {territory}
+                          {terOfUse}
                         </Typography>
                       )}
                     </Grid>
@@ -1195,7 +1338,7 @@ function MetadataSettingsTab({ variant }) {
                         <Skeleton variant="rectangular" height="20px" width="100%" />
                       ) : (
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {metadataData}
+                          {linkedData}
                         </Typography>
                       )}
                     </Grid>
@@ -1210,7 +1353,7 @@ function MetadataSettingsTab({ variant }) {
                           <Skeleton variant="rectangular" height="20px" width="100%" />
                         ) : (
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {owner}
+                            {gazOwner}
                           </Typography>
                         )}
                       </Grid>
@@ -1223,7 +1366,7 @@ function MetadataSettingsTab({ variant }) {
                         <Skeleton variant="rectangular" height="20px" width="100%" />
                       ) : (
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getFrequency(frequency)}
+                          {getFrequency(ngazFreq)}
                         </Typography>
                       )}
                     </Grid>
@@ -1251,7 +1394,7 @@ function MetadataSettingsTab({ variant }) {
                   )
                 }
                 title="Custodian details"
-                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editCustodian) }}
+                titleTypographyProps={{ sx: getTitleStyle(editCustodian) }}
                 sx={{ height: "66px" }}
               />
               <CardActionArea onClick={doEditCustodian}>
@@ -1319,7 +1462,7 @@ function MetadataSettingsTab({ variant }) {
                   )
                 }
                 title="Miscellaneous details"
-                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editMiscellaneous) }}
+                titleTypographyProps={{ sx: getTitleStyle(editMiscellaneous) }}
                 sx={{ height: "66px" }}
               />
               <CardActionArea onClick={doEditMiscellaneous}>
@@ -1339,6 +1482,22 @@ function MetadataSettingsTab({ variant }) {
                         </Typography>
                       )}
                     </Grid>
+                    {settingsContext.isScottish && (
+                      <>
+                        <Grid item xs={3}>
+                          <Typography variant="body2">State code scheme</Typography>
+                        </Grid>
+                        <Grid item xs={9}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {stateCodeScheme}
+                            </Typography>
+                          )}
+                        </Grid>
+                      </>
+                    )}
                     <Grid item xs={3}>
                       <Typography variant="body2">Metadata date</Typography>
                     </Grid>
@@ -1347,7 +1506,7 @@ function MetadataSettingsTab({ variant }) {
                         <Skeleton variant="rectangular" height="20px" width="100%" />
                       ) : (
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getMetadataDate(metadataDate)}
+                          {getMetadataDate(metaDate)}
                         </Typography>
                       )}
                     </Grid>
@@ -1388,7 +1547,7 @@ function MetadataSettingsTab({ variant }) {
                     )
                   }
                   title="Content details"
-                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editContent) }}
+                  titleTypographyProps={{ sx: getTitleStyle(editContent) }}
                   sx={{ height: "66px" }}
                 />
                 <CardActionArea onClick={doEditContent}>

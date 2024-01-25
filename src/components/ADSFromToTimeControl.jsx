@@ -18,6 +18,7 @@
 //    005   03.01.24 Sean Flook                 Fixed warning.
 //    006   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    007   16.01.24 Sean Flook       IMANN-237 Added a clear button.
+//    008   19.01.24 Sean Flook       IMANN-243 Correctly update the time.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -99,9 +100,9 @@ function ADSFromToTimeControl({
    * @param {Time} time The new time.
    */
   const handleFromChange = (time) => {
-    setSelectedFromTime(time);
-
-    if (onFromChange) onFromChange(time);
+    const timeString = time ? dateFormat(new Date(time), "HH:MM:ss") : "";
+    if (onFromChange) onFromChange(timeString);
+    else setSelectedFromTime(time);
   };
 
   /**
@@ -110,9 +111,9 @@ function ADSFromToTimeControl({
    * @param {Time} time The new time.
    */
   const handleToChange = (time) => {
-    setSelectedToTime(time);
-
-    if (onToChange) onToChange(time);
+    const timeString = time ? dateFormat(new Date(time), "HH:MM:ss") : "";
+    if (onToChange) onToChange(timeString);
+    else setSelectedToTime(time);
   };
 
   useEffect(() => {
@@ -184,7 +185,6 @@ function ADSFromToTimeControl({
                         <TimePicker
                           id={`${label.toLowerCase().replaceAll(" ", "-")}-from-time-picker`}
                           value={selectedFromTime}
-                          showTodayButton
                           required={isRequired}
                           disabled={!isEditable}
                           slotProps={{
@@ -212,7 +212,6 @@ function ADSFromToTimeControl({
                     <TimePicker
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-from-time-picker`}
                       value={selectedFromTime}
-                      showTodayButton
                       required={isRequired}
                       disabled={!isEditable}
                       slotProps={{
@@ -253,7 +252,6 @@ function ADSFromToTimeControl({
                         <TimePicker
                           id={`${label.toLowerCase().replaceAll(" ", "-")}-to-time-picker`}
                           value={selectedToTime}
-                          showTodayButton
                           required={isRequired}
                           disabled={!isEditable}
                           slotProps={{
@@ -281,7 +279,6 @@ function ADSFromToTimeControl({
                     <TimePicker
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-to-time-picker`}
                       value={selectedToTime}
-                      showTodayButton
                       required={isRequired}
                       disabled={!isEditable}
                       slotProps={{

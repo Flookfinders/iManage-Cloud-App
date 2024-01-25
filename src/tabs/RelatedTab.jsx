@@ -27,6 +27,7 @@
 //    012   10.01.24 Sean Flook                 Fix warnings.
 //    013   11.01.24 Sean Flook                 Fix warnings.
 //    014   12.01.24 Sean Flook       IMANN-163 Do not try and get the data if we do not have the USRN/UPRN.
+//    015   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -82,7 +83,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 import {
-  relatedToolbarStyle,
+  toolbarStyle,
   dataFormStyle,
   GetTabIconStyle,
   GetAlertStyle,
@@ -781,7 +782,10 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
               method: "GET",
             })
               .then((res) => (res.ok ? res : Promise.reject(res)))
-              .then((res) => res.json())
+              .then((res) => {
+                if (res.status && res.status === 204) return [];
+                else return res.json();
+              })
               .then(
                 (result) => {
                   if (relatedType === "property") setPropertyData(result);
@@ -852,8 +856,14 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
 
   return (
     <Fragment>
-      <Box sx={relatedToolbarStyle} id="ads-related-toolbar">
-        <Stack sx={{ pl: 1, pr: 1.5 }} direction="row" spacing={1} justifyContent="space-between" alignItems="center">
+      <Box sx={toolbarStyle} id="ads-related-toolbar">
+        <Stack
+          sx={{ pl: "8px", pr: "12px", pt: "4px" }}
+          direction="row"
+          spacing={1}
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <ToggleButtonGroup
             sx={{ height: "30px" }}
             color="primary"

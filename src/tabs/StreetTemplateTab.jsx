@@ -21,6 +21,7 @@
 //    008   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    009   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    010   10.01.24 Sean Flook                 Fix warnings.
+//    011   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -596,7 +597,7 @@ function StreetTemplateTab() {
                   )
                 }
                 title="Street defaults"
-                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editStreet) }}
+                titleTypographyProps={{ sx: getTitleStyle(editStreet) }}
                 sx={{ height: "66px" }}
               />
               <CardActionArea onClick={doEditStreet}>
@@ -706,7 +707,7 @@ function StreetTemplateTab() {
                   )
                 }
                 title="ESU defaults"
-                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editEsu) }}
+                titleTypographyProps={{ sx: getTitleStyle(editEsu) }}
                 sx={{ height: "66px" }}
               />
               <CardActionArea onClick={doEditEsu}>
@@ -773,7 +774,7 @@ function StreetTemplateTab() {
                     )
                   }
                   title="One-way exemption defaults"
-                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editOneWayExemption) }}
+                  titleTypographyProps={{ sx: getTitleStyle(editOneWayExemption) }}
                   sx={{ height: "66px" }}
                 />
                 <CardActionArea onClick={doEditOneWayExemption}>
@@ -821,7 +822,7 @@ function StreetTemplateTab() {
                     )
                   }
                   title="Highway dedication defaults"
-                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editHighwayDedication) }}
+                  titleTypographyProps={{ sx: getTitleStyle(editHighwayDedication) }}
                   sx={{ height: "66px" }}
                 />
                 <CardActionArea onClick={doEditHighwayDedication}>

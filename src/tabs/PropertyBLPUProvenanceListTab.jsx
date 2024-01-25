@@ -18,6 +18,7 @@
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
 //    006   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    008   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -148,7 +149,9 @@ function PropertyBLPUProvenanceListTab({
 
     return (
       selectedRow &&
-      params.id === selectedRow && (
+      params.id === selectedRow &&
+      selectionModel &&
+      selectionModel.length < 2 && (
         <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
           <ADSActionButton
             id={`delete-provenance-${params.id}`}
@@ -389,7 +392,7 @@ function PropertyBLPUProvenanceListTab({
             pagination
             sortModel={sortModel}
             rowSelectionModel={selectionModel}
-            componentsProps={{
+            slotProps={{
               row: {
                 onMouseEnter: handleRowMouseEnter,
                 onMouseLeave: handleRowMouseLeave,

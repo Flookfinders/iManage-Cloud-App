@@ -19,6 +19,7 @@
 //    006   20.12.23 Sean Flook       IMANN-201 Corrected controls and form layout.
 //    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    008   11.01.24 Sean Flook                 Fix warnings.
+//    009   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -337,9 +338,10 @@ function HighwayDedicationDataTab({
    * Event to handle when the home button is clicked.
    */
   const handleHomeClick = () => {
+    const contextStreet = sandboxContext.currentSandbox.currentStreet || sandboxContext.currentSandbox.sourceStreet;
     const sourceHighwayDedication =
-      data.pkId > 0 && sandboxContext.currentSandbox.sourceStreet
-        ? sandboxContext.currentSandbox.sourceStreet.esus
+      data.pkId > 0 && contextStreet
+        ? contextStreet.esus
             .find((esu) => esu.esuId === data.hdData.esuId)
             .highwayDedications.find((x) => x.pkId === data.pkId)
         : null;
@@ -590,10 +592,11 @@ function HighwayDedicationDataTab({
   }, [loading, data]);
 
   useEffect(() => {
-    if (sandboxContext.currentSandbox.sourceStreet && data && data.hdData) {
+    const contextStreet = sandboxContext.currentSandbox.currentStreet || sandboxContext.currentSandbox.sourceStreet;
+    if (contextStreet && data && data.hdData) {
       const sourceHighwayDedication =
-        data.pkId > 0 && sandboxContext.currentSandbox.sourceStreet
-          ? sandboxContext.currentSandbox.sourceStreet.esus
+        data.pkId > 0 && contextStreet
+          ? contextStreet.esus
               .find((esu) => esu.esuId === data.hdData.esuId)
               .highwayDedications.find((x) => x.pkId === data.pkId)
           : null;
@@ -609,7 +612,7 @@ function HighwayDedicationDataTab({
         );
       } else if (data.hdData.pkId < 0) setDataChanged(true);
     }
-  }, [sandboxContext.currentSandbox.sourceStreet, data]);
+  }, [sandboxContext.currentSandbox.currentStreet, sandboxContext.currentSandbox.sourceStreet, data]);
 
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);

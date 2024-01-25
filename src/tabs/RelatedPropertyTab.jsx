@@ -29,6 +29,7 @@
 //    015   10.01.24 Sean Flook                 Fix warnings.
 //    016   11.01.24 Sean Flook                 Fix warnings.
 //    017   12.01.24 Sean Flook                 Fixed duplicate key warning.
+//    018   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1001,39 +1002,42 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                               </Stack>
                             </Stack>
                           </Stack>
-                          {propertySelected && propertySelected === rec.uprn && (
-                            <Stack direction="row" justifyContent="flex-end" alignItems="center">
-                              <Tooltip title="Copy UPRN" arrow placement="bottom" sx={tooltipStyle}>
-                                <IconButton
-                                  onClick={(event) => itemCopy(event, rec.uprn.toString(), "UPRN")}
-                                  size="small"
-                                >
-                                  <CopyIcon sx={ActionIconStyle()} />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip title="Zoom to this" arrow placement="bottom" sx={tooltipStyle}>
-                                <IconButton onClick={() => zoomToProperty(rec.uprn)} size="small">
-                                  <MyLocationIcon sx={ActionIconStyle()} />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip title="More actions" arrow placement="bottom" sx={tooltipStyle}>
-                                <IconButton
-                                  onClick={handlePropertyActionsMenuClick}
-                                  aria-controls="property-actions-menu"
-                                  aria-haspopup="true"
-                                  size="small"
-                                >
-                                  <MoreVertIcon sx={ActionIconStyle()} />
-                                </IconButton>
-                              </Tooltip>
-                              {AddMenuItems(
-                                rec,
-                                "property-actions-menu",
-                                anchorPropertyActionsEl,
-                                handlePropertyActionsMenuClose
-                              )}
-                            </Stack>
-                          )}
+                          {propertySelected &&
+                            propertySelected === rec.uprn &&
+                            propertyChecked &&
+                            propertyChecked.length < 2 && (
+                              <Stack direction="row" justifyContent="flex-end" alignItems="center">
+                                <Tooltip title="Copy UPRN" arrow placement="bottom" sx={tooltipStyle}>
+                                  <IconButton
+                                    onClick={(event) => itemCopy(event, rec.uprn.toString(), "UPRN")}
+                                    size="small"
+                                  >
+                                    <CopyIcon sx={ActionIconStyle()} />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Zoom to this" arrow placement="bottom" sx={tooltipStyle}>
+                                  <IconButton onClick={() => zoomToProperty(rec.uprn)} size="small">
+                                    <MyLocationIcon sx={ActionIconStyle()} />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip title="More actions" arrow placement="bottom" sx={tooltipStyle}>
+                                  <IconButton
+                                    onClick={handlePropertyActionsMenuClick}
+                                    aria-controls="property-actions-menu"
+                                    aria-haspopup="true"
+                                    size="small"
+                                  >
+                                    <MoreVertIcon sx={ActionIconStyle()} />
+                                  </IconButton>
+                                </Tooltip>
+                                {AddMenuItems(
+                                  rec,
+                                  "property-actions-menu",
+                                  anchorPropertyActionsEl,
+                                  handlePropertyActionsMenuClose
+                                )}
+                              </Stack>
+                            )}
                         </Stack>
                       }
                       onMouseEnter={() => handleMouseEnterProperty(rec.uprn)}
@@ -1157,39 +1161,42 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                         </Stack>
                                       </Stack>
                                     </Stack>
-                                    {propertySelected && propertySelected === child1.uprn && (
-                                      <Stack direction="row" justifyContent="flex-end" alignItems="center">
-                                        <Tooltip title="Copy UPRN" arrow placement="bottom" sx={tooltipStyle}>
-                                          <IconButton
-                                            onClick={(event) => itemCopy(event, child1.uprn.toString(), "UPRN")}
-                                            size="small"
-                                          >
-                                            <CopyIcon sx={ActionIconStyle()} />
-                                          </IconButton>
-                                        </Tooltip>
-                                        <Tooltip title="Zoom to this" arrow placement="bottom" sx={tooltipStyle}>
-                                          <IconButton onClick={() => zoomToProperty(child1.uprn)} size="small">
-                                            <MyLocationIcon sx={ActionIconStyle()} />
-                                          </IconButton>
-                                        </Tooltip>
-                                        <Tooltip title="More actions" arrow placement="bottom" sx={tooltipStyle}>
-                                          <IconButton
-                                            onClick={handleChild1ActionsMenuClick}
-                                            aria-controls="child1-actions-menu"
-                                            aria-haspopup="true"
-                                            size="small"
-                                          >
-                                            <MoreVertIcon sx={ActionIconStyle()} />
-                                          </IconButton>
-                                        </Tooltip>
-                                        {AddMenuItems(
-                                          child1,
-                                          "child1-actions-menu",
-                                          anchorPropertyActionsEl2,
-                                          handleChild1ActionsMenuClose
-                                        )}
-                                      </Stack>
-                                    )}
+                                    {propertySelected &&
+                                      propertySelected === child1.uprn &&
+                                      propertyChecked &&
+                                      propertyChecked.length < 2 && (
+                                        <Stack direction="row" justifyContent="flex-end" alignItems="center">
+                                          <Tooltip title="Copy UPRN" arrow placement="bottom" sx={tooltipStyle}>
+                                            <IconButton
+                                              onClick={(event) => itemCopy(event, child1.uprn.toString(), "UPRN")}
+                                              size="small"
+                                            >
+                                              <CopyIcon sx={ActionIconStyle()} />
+                                            </IconButton>
+                                          </Tooltip>
+                                          <Tooltip title="Zoom to this" arrow placement="bottom" sx={tooltipStyle}>
+                                            <IconButton onClick={() => zoomToProperty(child1.uprn)} size="small">
+                                              <MyLocationIcon sx={ActionIconStyle()} />
+                                            </IconButton>
+                                          </Tooltip>
+                                          <Tooltip title="More actions" arrow placement="bottom" sx={tooltipStyle}>
+                                            <IconButton
+                                              onClick={handleChild1ActionsMenuClick}
+                                              aria-controls="child1-actions-menu"
+                                              aria-haspopup="true"
+                                              size="small"
+                                            >
+                                              <MoreVertIcon sx={ActionIconStyle()} />
+                                            </IconButton>
+                                          </Tooltip>
+                                          {AddMenuItems(
+                                            child1,
+                                            "child1-actions-menu",
+                                            anchorPropertyActionsEl2,
+                                            handleChild1ActionsMenuClose
+                                          )}
+                                        </Stack>
+                                      )}
                                   </Stack>
                                 }
                                 onMouseEnter={() => handleMouseEnterProperty(child1.uprn)}
@@ -1331,54 +1338,62 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                   </Stack>
                                                 </Stack>
                                               </Stack>
-                                              {propertySelected && propertySelected === child2.uprn && (
-                                                <Stack direction="row" justifyContent="flex-end" alignItems="center">
-                                                  <Tooltip title="Copy UPRN" arrow placement="bottom" sx={tooltipStyle}>
-                                                    <IconButton
-                                                      onClick={(event) =>
-                                                        itemCopy(event, child2.uprn.toString(), "UPRN")
-                                                      }
-                                                      size="small"
+                                              {propertySelected &&
+                                                propertySelected === child2.uprn &&
+                                                propertyChecked &&
+                                                propertyChecked.length < 2 && (
+                                                  <Stack direction="row" justifyContent="flex-end" alignItems="center">
+                                                    <Tooltip
+                                                      title="Copy UPRN"
+                                                      arrow
+                                                      placement="bottom"
+                                                      sx={tooltipStyle}
                                                     >
-                                                      <CopyIcon sx={ActionIconStyle()} />
-                                                    </IconButton>
-                                                  </Tooltip>
-                                                  <Tooltip
-                                                    title="Zoom to this"
-                                                    arrow
-                                                    placement="bottom"
-                                                    sx={tooltipStyle}
-                                                  >
-                                                    <IconButton
-                                                      onClick={() => zoomToProperty(child2.uprn)}
-                                                      size="small"
+                                                      <IconButton
+                                                        onClick={(event) =>
+                                                          itemCopy(event, child2.uprn.toString(), "UPRN")
+                                                        }
+                                                        size="small"
+                                                      >
+                                                        <CopyIcon sx={ActionIconStyle()} />
+                                                      </IconButton>
+                                                    </Tooltip>
+                                                    <Tooltip
+                                                      title="Zoom to this"
+                                                      arrow
+                                                      placement="bottom"
+                                                      sx={tooltipStyle}
                                                     >
-                                                      <MyLocationIcon sx={ActionIconStyle()} />
-                                                    </IconButton>
-                                                  </Tooltip>
-                                                  <Tooltip
-                                                    title="More actions"
-                                                    arrow
-                                                    placement="bottom"
-                                                    sx={tooltipStyle}
-                                                  >
-                                                    <IconButton
-                                                      onClick={handleChild2ActionsMenuClick}
-                                                      aria-controls="child2-actions-menu"
-                                                      aria-haspopup="true"
-                                                      size="small"
+                                                      <IconButton
+                                                        onClick={() => zoomToProperty(child2.uprn)}
+                                                        size="small"
+                                                      >
+                                                        <MyLocationIcon sx={ActionIconStyle()} />
+                                                      </IconButton>
+                                                    </Tooltip>
+                                                    <Tooltip
+                                                      title="More actions"
+                                                      arrow
+                                                      placement="bottom"
+                                                      sx={tooltipStyle}
                                                     >
-                                                      <MoreVertIcon sx={ActionIconStyle()} />
-                                                    </IconButton>
-                                                  </Tooltip>
-                                                  {AddMenuItems(
-                                                    child2,
-                                                    "child2-actions-menu",
-                                                    anchorPropertyActionsEl3,
-                                                    handleChild2ActionsMenuClose
-                                                  )}
-                                                </Stack>
-                                              )}
+                                                      <IconButton
+                                                        onClick={handleChild2ActionsMenuClick}
+                                                        aria-controls="child2-actions-menu"
+                                                        aria-haspopup="true"
+                                                        size="small"
+                                                      >
+                                                        <MoreVertIcon sx={ActionIconStyle()} />
+                                                      </IconButton>
+                                                    </Tooltip>
+                                                    {AddMenuItems(
+                                                      child2,
+                                                      "child2-actions-menu",
+                                                      anchorPropertyActionsEl3,
+                                                      handleChild2ActionsMenuClose
+                                                    )}
+                                                  </Stack>
+                                                )}
                                             </Stack>
                                           }
                                           onMouseEnter={() => handleMouseEnterProperty(child2.uprn)}
@@ -1534,63 +1549,66 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                             </Stack>
                                                           </Stack>
                                                         </Stack>
-                                                        {propertySelected && propertySelected === child3.uprn && (
-                                                          <Stack
-                                                            direction="row"
-                                                            justifyContent="flex-end"
-                                                            alignItems="center"
-                                                          >
-                                                            <Tooltip
-                                                              title="Copy UPRN"
-                                                              arrow
-                                                              placement="bottom"
-                                                              sx={tooltipStyle}
+                                                        {propertySelected &&
+                                                          propertySelected === child3.uprn &&
+                                                          propertyChecked &&
+                                                          propertyChecked.length < 2 && (
+                                                            <Stack
+                                                              direction="row"
+                                                              justifyContent="flex-end"
+                                                              alignItems="center"
                                                             >
-                                                              <IconButton
-                                                                onClick={(event) =>
-                                                                  itemCopy(event, child3.uprn.toString(), "UPRN")
-                                                                }
-                                                                size="small"
+                                                              <Tooltip
+                                                                title="Copy UPRN"
+                                                                arrow
+                                                                placement="bottom"
+                                                                sx={tooltipStyle}
                                                               >
-                                                                <CopyIcon sx={ActionIconStyle()} />
-                                                              </IconButton>
-                                                            </Tooltip>
-                                                            <Tooltip
-                                                              title="Zoom to this"
-                                                              arrow
-                                                              placement="bottom"
-                                                              sx={tooltipStyle}
-                                                            >
-                                                              <IconButton
-                                                                onClick={() => zoomToProperty(child3.uprn)}
-                                                                size="small"
+                                                                <IconButton
+                                                                  onClick={(event) =>
+                                                                    itemCopy(event, child3.uprn.toString(), "UPRN")
+                                                                  }
+                                                                  size="small"
+                                                                >
+                                                                  <CopyIcon sx={ActionIconStyle()} />
+                                                                </IconButton>
+                                                              </Tooltip>
+                                                              <Tooltip
+                                                                title="Zoom to this"
+                                                                arrow
+                                                                placement="bottom"
+                                                                sx={tooltipStyle}
                                                               >
-                                                                <MyLocationIcon sx={ActionIconStyle()} />
-                                                              </IconButton>
-                                                            </Tooltip>
-                                                            <Tooltip
-                                                              title="More actions"
-                                                              arrow
-                                                              placement="bottom"
-                                                              sx={tooltipStyle}
-                                                            >
-                                                              <IconButton
-                                                                onClick={handleChild3ActionsMenuClick}
-                                                                aria-controls="child3-actions-menu"
-                                                                aria-haspopup="true"
-                                                                size="small"
+                                                                <IconButton
+                                                                  onClick={() => zoomToProperty(child3.uprn)}
+                                                                  size="small"
+                                                                >
+                                                                  <MyLocationIcon sx={ActionIconStyle()} />
+                                                                </IconButton>
+                                                              </Tooltip>
+                                                              <Tooltip
+                                                                title="More actions"
+                                                                arrow
+                                                                placement="bottom"
+                                                                sx={tooltipStyle}
                                                               >
-                                                                <MoreVertIcon sx={ActionIconStyle()} />
-                                                              </IconButton>
-                                                            </Tooltip>
-                                                            {AddMenuItems(
-                                                              child3,
-                                                              "child3-actions-menu",
-                                                              anchorPropertyActionsEl4,
-                                                              handleChild3ActionsMenuClose
-                                                            )}
-                                                          </Stack>
-                                                        )}
+                                                                <IconButton
+                                                                  onClick={handleChild3ActionsMenuClick}
+                                                                  aria-controls="child3-actions-menu"
+                                                                  aria-haspopup="true"
+                                                                  size="small"
+                                                                >
+                                                                  <MoreVertIcon sx={ActionIconStyle()} />
+                                                                </IconButton>
+                                                              </Tooltip>
+                                                              {AddMenuItems(
+                                                                child3,
+                                                                "child3-actions-menu",
+                                                                anchorPropertyActionsEl4,
+                                                                handleChild3ActionsMenuClose
+                                                              )}
+                                                            </Stack>
+                                                          )}
                                                       </Stack>
                                                     }
                                                     onMouseEnter={() => handleMouseEnterProperty(child3.uprn)}

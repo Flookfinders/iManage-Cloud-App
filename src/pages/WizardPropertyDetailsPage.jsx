@@ -19,6 +19,7 @@
 //    006   01.12.23 Sean Flook                 Added missing fields.
 //    007   10.01.24 Sean Flook                 Fix warnings.
 //    008   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    009   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -49,8 +50,14 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 
-import { adsBlueA, adsRed } from "../utils/ADSColours";
-import { ActionIconStyle, settingsCardStyle, settingsCardContentStyle, tooltipStyle } from "../utils/ADSStyles";
+import { adsRed } from "../utils/ADSColours";
+import {
+  ActionIconStyle,
+  settingsCardStyle,
+  settingsCardContentStyle,
+  tooltipStyle,
+  getTitleStyle,
+} from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 WizardPropertyDetailsPage.propTypes = {
@@ -376,19 +383,6 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
   };
 
   /**
-   * Method to get the title styling.
-   *
-   * @param {boolean} highlighted True if the title is highlighted; otherwise false.
-   * @param {boolean} error True if there is an error; otherwise false.
-   * @returns {object|null} The styling for the title.
-   */
-  const getTitleStyle = (highlighted, error) => {
-    if (error) return { color: adsRed };
-    else if (highlighted) return { color: adsBlueA };
-    else return null;
-  };
-
-  /**
    * Method to get the value styling.
    *
    * @param {boolean} error True if there is an error; otherwise false.
@@ -646,7 +640,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                   )
                 }
                 title="BLPU"
-                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editBlpu, haveBlpuErrors) }}
+                titleTypographyProps={{ sx: getTitleStyle(editBlpu, haveBlpuErrors) }}
                 sx={{ height: "66px" }}
               />
               <CardActionArea onClick={doEditBlpu}>
@@ -761,7 +755,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                   )
                 }
                 title="LPI"
-                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editLpi, haveLpiErrors) }}
+                titleTypographyProps={{ sx: getTitleStyle(editLpi, haveLpiErrors) }}
                 sx={{ height: "66px" }}
               />
               <CardActionArea onClick={doEditLpi}>
@@ -852,7 +846,6 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                   }
                   title="Classification"
                   titleTypographyProps={{
-                    variant: "h6",
                     sx: getTitleStyle(editClassification, haveClassificationErrors),
                   }}
                   sx={{ height: "66px" }}
@@ -918,7 +911,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                   )
                 }
                 title="Other"
-                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editOther, haveOtherErrors) }}
+                titleTypographyProps={{ sx: getTitleStyle(editOther, haveOtherErrors) }}
                 sx={{ height: "66px" }}
               />
               <CardActionArea onClick={doEditOther}>

@@ -21,6 +21,7 @@
 //    008   08.01.24 Sean Flook                 Changes to try and fix warnings.
 //    009   10.01.24 Sean Flook                 Changes to try and fix warnings.
 //    010   12.01.24 Sean Flook                 Fixed duplicate key warning.
+//    011   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -459,7 +460,7 @@ function AsdDataListItem({
                           }}
                           edge="end"
                           checked={checked.indexOf(`${variant}_${d.pkId.toString()}`) !== -1}
-                          color="default"
+                          color="primary"
                           tabIndex={-1}
                           size="small"
                           onClick={(event) => handleToggle(event, d.pkId.toString())}

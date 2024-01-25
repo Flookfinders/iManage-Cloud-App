@@ -19,6 +19,7 @@
 //    006   03.01.24 Sean Flook                 Fixed warning.
 //    007   05.01.24 Sean Flook                 use CSS shortcuts.
 //    008   16.01.24 Sean Flook       IMANN-237 Added a clear button.
+//    009   19.01.24 Sean Flook       IMANN-243 Correctly update the time.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -120,9 +121,9 @@ function ADSDateTimeControl({
    * @param {Time} time The new time.
    */
   const handleTimeChange = (time) => {
-    setSelectedTime(time);
-
-    if (onTimeChange) onTimeChange(time);
+    const timeString = time ? dateFormat(new Date(time), "HH:MM:ss") : "";
+    if (onTimeChange) onTimeChange(timeString);
+    else setSelectedTime(time);
   };
 
   useEffect(() => {
@@ -275,7 +276,6 @@ function ADSDateTimeControl({
                         <TimePicker
                           id={`${label.toLowerCase().replaceAll(" ", "-")}-time-picker`}
                           value={selectedTime}
-                          showTodayButton
                           required={isRequired}
                           disabled={!isEditable}
                           slotProps={{
@@ -303,7 +303,6 @@ function ADSDateTimeControl({
                     <TimePicker
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-time-picker`}
                       value={selectedTime}
-                      showTodayButton
                       required={isRequired}
                       disabled={!isEditable}
                       slotProps={{

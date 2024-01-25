@@ -21,6 +21,7 @@
 //    008   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    009   10.01.24 Sean Flook                 Fix warnings.
 //    010   12.01.24 Sean Flook                 Added top border to toolbar style.
+//    011   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -187,6 +188,7 @@ export function FormInputStyle(hasError) {
       fontFamily: "Nunito sans",
       fontSize: "15px",
       color: adsDarkGrey,
+      backgroundColor: adsWhite,
       pl: "4px",
       "&$outlinedInputFocused": {
         borderColor: `${adsBlueA}  !important`,
@@ -201,6 +203,7 @@ export function FormInputStyle(hasError) {
       fontFamily: "Nunito sans",
       fontSize: "15px",
       color: adsDarkGrey,
+      backgroundColor: adsWhite,
       "&$outlinedInputFocused": {
         borderColor: `${adsBlueA}  !important`,
       },
@@ -223,6 +226,7 @@ export function FormDateInputStyle(hasError) {
       fontFamily: "Nunito sans",
       fontSize: "15px",
       color: adsDarkGrey,
+      backgroundColor: adsWhite,
       mt: "6px",
       "&$outlinedInputFocused": {
         borderColor: `${adsBlueA}  !important`,
@@ -237,6 +241,7 @@ export function FormDateInputStyle(hasError) {
       fontFamily: "Nunito sans",
       fontSize: "15px",
       color: adsDarkGrey,
+      backgroundColor: adsWhite,
       mt: "6px",
       "&$outlinedInputFocused": {
         borderColor: `${adsBlueA}  !important`,
@@ -260,6 +265,7 @@ export function FormSelectInputStyle(hasError) {
       fontFamily: "Nunito sans",
       fontSize: "15px",
       color: adsDarkGrey,
+      backgroundColor: adsWhite,
       display: "inline-flex",
       "&$outlinedInputFocused": {
         borderColor: `${adsBlueA}  !important`,
@@ -274,6 +280,7 @@ export function FormSelectInputStyle(hasError) {
       fontFamily: "Nunito sans",
       fontSize: "15px",
       color: adsDarkGrey,
+      backgroundColor: adsWhite,
       display: "inline-flex",
       "&$outlinedInputFocused": {
         borderColor: `${adsBlueA}  !important`,
@@ -452,22 +459,6 @@ export const errorIconStyle = {
 };
 
 /**
- * The styling used for the related toolbars.
- */
-export const relatedToolbarStyle = {
-  backgroundColor: adsWhite,
-  borderBottomWidth: "1px",
-  borderBottomStyle: "solid",
-  borderBottomColor: adsLightGreyB,
-  pl: "4px",
-  pr: "12px",
-  pt: "4px",
-  pb: "4px",
-  height: "37px",
-  width: "100%",
-};
-
-/**
  * Returns the styling used for tree items.
  *
  * @param {boolean} selected True if the item is selected; otherwise false.
@@ -546,22 +537,10 @@ export const settingsFormStyle = {
  * @return {object} The styling used for the settings cards.
  */
 export const settingsCardStyle = (highlighted, error = false) => {
-  if (error) return { borderColor: adsRed };
-  else if (highlighted) return { borderColor: adsBlueA };
-  else return null;
-};
-
-/**
- * Returns the styling used for settings card titles.
- *
- * @param {BookmarkIcon} highlighted True if the card is highlighted; otherwise false.
- * @param {boolean} [error=false] True if the data on the card has an error.
- * @return {object} The styling used for the settings card titles.
- */
-export const settingsCardTitleStyle = (highlighted, error = false) => {
-  if (error) return { color: adsRed };
-  else if (highlighted) return { color: adsBlueA };
-  else return null;
+  if (error) return { borderColor: adsRed, borderRadius: "8px", boxShadow: `10px 10px 5px ${adsLightGreyB}` };
+  else if (highlighted)
+    return { borderColor: adsBlueA, borderRadius: "8px", boxShadow: `10px 10px 5px ${adsPaleBlueB}` };
+  else return { borderRadius: "8px", boxShadow: `10px 10px 5px ${adsLightGreyB}` };
 };
 
 /**
@@ -721,7 +700,7 @@ export const wizardTabStyle = {
  * @return {object} The styling used for tab labels.
  */
 export const tabLabelStyle = (isActive) => {
-  return isActive ? { display: "inline-flex", fontWeight: 700 } : { display: "inline-flex" };
+  return isActive ? { display: "inline-flex", fontWeight: 700 } : { display: "inline-flex", color: adsMidGreyA };
 };
 
 /**
@@ -1028,11 +1007,13 @@ export function getASDListItemAvatarStyle(id, checked, variant, selectedRecord) 
  * Returns the style for a title.
  *
  * @param {boolean} highlighted True if the title is highlighted; otherwise false.
+ * @param {boolean} [error=false] True if there is an error; otherwise false.
  * @returns {object} The styling used for titles.
  */
-export const getTitleStyle = (highlighted) => {
-  if (highlighted) return { color: adsBlueA };
-  else return null;
+export const getTitleStyle = (highlighted, error = false) => {
+  if (error) return { color: adsRed, fontSize: "20px", fontWeight: 600 };
+  else if (highlighted) return { color: adsBlueA, fontSize: "20px", fontWeight: 600 };
+  else return { fontSize: "20px", fontWeight: 600 };
 };
 
 /**

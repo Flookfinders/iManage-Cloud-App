@@ -18,6 +18,7 @@
 //    005   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    007   11.01.24 Sean Flook                 Fix warnings.
+//    008   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -177,9 +178,10 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataCha
    * Event to handle when the home button is clicked.
    */
   const handleHomeClick = () => {
+    const contextStreet = sandboxContext.currentSandbox.currentStreet || sandboxContext.currentSandbox.sourceStreet;
     const sourceOneWayExemption =
-      data.pkId > 0 && sandboxContext.currentSandbox.sourceStreet
-        ? sandboxContext.currentSandbox.sourceStreet.esus
+      data.pkId > 0 && contextStreet
+        ? contextStreet.esus
             .find((esu) => esu.esuId === data.oweData.esuId)
             .oneWayExemptions.find((x) => x.pkId === data.pkId)
         : null;
@@ -292,10 +294,11 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataCha
   }, [loading, data]);
 
   useEffect(() => {
-    if (sandboxContext.currentSandbox.sourceStreet && data && data.oweData) {
+    const contextStreet = sandboxContext.currentSandbox.currentStreet || sandboxContext.currentSandbox.sourceStreet;
+    if (contextStreet && data && data.oweData) {
       const sourceOneWayExemption =
-        data.pkId > 0 && sandboxContext.currentSandbox.sourceStreet
-          ? sandboxContext.currentSandbox.sourceStreet.esus
+        data.pkId > 0 && contextStreet
+          ? contextStreet.esus
               .find((esu) => esu.esuId === data.oweData.esuId)
               .oneWayExemptions.find((x) => x.pkId === data.pkId)
           : null;
@@ -311,7 +314,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataCha
         );
       } else if (data.oweData.pkId < 0) setDataChanged(true);
     }
-  }, [sandboxContext.currentSandbox.sourceStreet, data]);
+  }, [sandboxContext.currentSandbox.currentStreet, sandboxContext.currentSandbox.sourceStreet, data]);
 
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);

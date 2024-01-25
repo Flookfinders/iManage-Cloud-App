@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    006   10.01.24 Sean Flook                 Fix warnings.
+//    007   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ import {
   adsMagenta,
   adsDarkBlue,
 } from "../utils/ADSColours";
-import { templateTabStyle, tabLabelStyle, settingsCardStyle, settingsCardTitleStyle } from "../utils/ADSStyles";
+import { templateTabStyle, tabLabelStyle, settingsCardStyle, getTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 function TabPanel(props) {
@@ -221,7 +222,7 @@ function WizardSelectTemplatePage({ variant, onTemplateSelected }) {
                 <Typography
                   variant="h6"
                   align="left"
-                  sx={settingsCardTitleStyle(selectedCard && selectedCard === rec.templatePkId)}
+                  sx={getTitleStyle(selectedCard && selectedCard === rec.templatePkId)}
                 >
                   {rec.templateName}
                 </Typography>

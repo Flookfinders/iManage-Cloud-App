@@ -18,6 +18,7 @@
 //    005   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    007   08.01.24 Sean Flook                 Pass the correct variant to the confirmDeleteDialog.
+//    008   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -141,7 +142,9 @@ function SuccessorListTab({
 
     return (
       selectedRow &&
-      params.id === selectedRow && (
+      params.id === selectedRow &&
+      selectionModel &&
+      selectionModel.length < 2 && (
         <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
           <ADSActionButton
             id={`delete-successor-${params.id}`}

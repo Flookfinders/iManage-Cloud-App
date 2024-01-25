@@ -22,6 +22,7 @@
 //    009   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    010   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    011   10.01.24 Sean Flook                 Fix warnings.
+//    012   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -886,7 +887,7 @@ function AsdTemplateTab() {
                     )
                   }
                   title="Maintenance responsibility defaults"
-                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editMaintenanceResponsibility) }}
+                  titleTypographyProps={{ sx: getTitleStyle(editMaintenanceResponsibility) }}
                   sx={{ height: "66px" }}
                 />
                 <CardActionArea onClick={doEditMaintenanceResponsibility}>
@@ -942,7 +943,7 @@ function AsdTemplateTab() {
                     )
                   }
                   title="Reinstatement category defaults"
-                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editReinstatementCategory) }}
+                  titleTypographyProps={{ sx: getTitleStyle(editReinstatementCategory) }}
                   sx={{ height: "66px" }}
                 />
                 <CardActionArea onClick={doEditReinstatementCategory}>
@@ -998,7 +999,7 @@ function AsdTemplateTab() {
                     )
                   }
                   title="Special designation defaults"
-                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editOsSpecialDesignation) }}
+                  titleTypographyProps={{ sx: getTitleStyle(editOsSpecialDesignation) }}
                   sx={{ height: "66px" }}
                 />
                 <CardActionArea onClick={doEditOsSpecialDesignation}>
@@ -1054,7 +1055,7 @@ function AsdTemplateTab() {
                     )
                   }
                   title="Interested organisation defaults"
-                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editInterest) }}
+                  titleTypographyProps={{ sx: getTitleStyle(editInterest) }}
                   sx={{ height: "66px" }}
                 />
                 <CardActionArea onClick={doEditInterest}>
@@ -1126,7 +1127,7 @@ function AsdTemplateTab() {
                     )
                   }
                   title="Construction defaults"
-                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editConstruction) }}
+                  titleTypographyProps={{ sx: getTitleStyle(editConstruction) }}
                   sx={{ height: "66px" }}
                 />
                 <CardActionArea onClick={doEditConstruction}>
@@ -1206,7 +1207,7 @@ function AsdTemplateTab() {
                     )
                   }
                   title="Special designation defaults"
-                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editSpecialDesignation) }}
+                  titleTypographyProps={{ sx: getTitleStyle(editSpecialDesignation) }}
                   sx={{ height: "66px" }}
                 />
                 <CardActionArea onClick={doEditSpecialDesignation}>
@@ -1274,7 +1275,7 @@ function AsdTemplateTab() {
                     )
                   }
                   title="Height, width & weight restriction defaults"
-                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editHww) }}
+                  titleTypographyProps={{ sx: getTitleStyle(editHww) }}
                   sx={{ height: "66px" }}
                 />
                 <CardActionArea onClick={doEditHww}>
@@ -1330,7 +1331,7 @@ function AsdTemplateTab() {
                     )
                   }
                   title="Public right of way defaults"
-                  titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editPRoW) }}
+                  titleTypographyProps={{ sx: getTitleStyle(editPRoW) }}
                   sx={{ height: "66px" }}
                 />
                 <CardActionArea onClick={doEditPRoW}>

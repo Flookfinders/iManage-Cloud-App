@@ -29,6 +29,7 @@
 //    016   08.01.24 Sean Flook                 Changes to fix warnings.
 //    017   12.01.24 Sean Flook       IMANN-233 Modified GetNewStreetData to update the street start and end coordinates if required.
 //    018   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    019   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -46,6 +47,7 @@ import {
   getStartEndCoordinates,
   filteredLookup,
 } from "./HelperUtils";
+import { StreetComparison } from "./ObjectComparison";
 import {
   GetStreetByUSRNUrl,
   GetDeleteStreetUrl,
@@ -54,6 +56,7 @@ import {
   HasProperties,
   HasASD,
   GetEsuByIdUrl,
+  GetMultipleEsusByIdUrl,
 } from "../configuration/ADSConfig";
 import StreetType from "../data/StreetType";
 import StreetState from "../data/StreetState";
@@ -290,6 +293,7 @@ export function streetDescriptorToTitleCase(str) {
  * @param {number|null} defaultClassification The default classification to use when creating the new street (GeoPlace only).
  * @param {number|null} defaultSurface The default surface to use when creating the new street (GeoPlace only).
  * @param {object} lookupContext The lookup context object.
+ * @param {Array|null} [newEsus=null] The array of ESUs to use when creating the new street.
  * @return {object} A new street object.
  */
 export function GetNewStreet(
@@ -304,11 +308,12 @@ export function GetNewStreet(
   defaultAdminArea,
   defaultClassification,
   defaultSurface,
-  lookupContext
+  lookupContext,
+  newEsus = null
 ) {
   const currentDate = GetCurrentDate();
 
-  const esuData = [];
+  const esuData = newEsus && newEsus.length ? newEsus : [];
   const successorCrossRefData = [];
   const noteData = [];
   const maintenanceResponsibilityData = [];
@@ -1748,132 +1753,146 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
       neverExport: streetData.neverExport,
       pkId: streetData.pkId,
       recordType: streetData.recordType,
-      successorCrossRefs: streetData.successorCrossRefs.map((s) => {
-        return {
-          pkId: s.pkId > 0 ? s.pkId : 0,
-          succKey: s.succKey,
-          changeType: s.changeType,
-          predecessor: s.predecessor,
-          successorType: s.successorType,
-          successor: s.successor,
-          startDate: s.startDate,
-          endDate: s.endDate,
-          neverExport: s.neverExport,
-        };
-      }),
-      maintenanceResponsibilities: streetData.maintenanceResponsibilities.map((mr) => {
-        return {
-          usrn: mr.usrn,
-          wholeRoad: mr.wholeRoad,
-          specificLocation: mr.specificLocation,
-          neverExport: mr.neverExport,
-          pkId: mr.pkId > 0 ? mr.pkId : 0,
-          seqNum: mr.seqNum,
-          changeType: mr.changeType,
-          custodianCode: mr.custodianCode,
-          maintainingAuthorityCode: mr.maintainingAuthorityCode,
-          streetStatus: mr.streetStatus,
-          state: mr.state,
-          startDate: mr.startDate,
-          endDate: mr.endDate,
-          wktGeometry: mr.wktGeometry,
-        };
-      }),
-      reinstatementCategories: streetData.reinstatementCategories.map((rc) => {
-        return {
-          usrn: rc.usrn,
-          wholeRoad: rc.wholeRoad,
-          specificLocation: rc.specificLocation,
-          neverExport: rc.neverExport,
-          pkId: rc.pkId > 0 ? rc.pkId : 0,
-          seqNum: rc.seqNum,
-          changeType: rc.changeType,
-          custodianCode: rc.custodianCode,
-          reinstatementAuthorityCode: rc.reinstatementAuthorityCode,
-          reinstatementCategoryCode: rc.reinstatementCategoryCode,
-          state: rc.state,
-          startDate: rc.startDate,
-          endDate: rc.endDate,
-          wktGeometry: rc.wktGeometry,
-        };
-      }),
-      specialDesignations: streetData.specialDesignations.map((sd) => {
-        return {
-          usrn: sd.usrn,
-          wholeRoad: sd.wholeRoad,
-          specificLocation: sd.specificLocation,
-          neverExport: sd.neverExport,
-          pkId: sd.pkId > 0 ? sd.pkId : 0,
-          seqNum: sd.seqNum,
-          changeType: sd.changeType,
-          custodianCode: sd.custodianCode,
-          authorityCode: sd.authorityCode,
-          specialDesig: sd.specialDesig,
-          wktGeometry: sd.wktGeometry,
-          description: sd.description,
-          state: sd.state,
-          startDate: sd.startDate,
-          endDate: sd.endDate,
-        };
-      }),
-      esus: streetData.esus.map((esu) => {
-        return {
-          esuId: esu.esuId > 0 ? esu.esuId : 0,
-          changeType: esu.changeType,
-          state: esu.state,
-          stateDate: esu.stateDate,
-          classification: esu.classification,
-          classificationDate: esu.classificationDate,
-          startDate: esu.startDate,
-          endDate: esu.endDate,
-          wktGeometry: esu.wktGeometry,
-          assignUnassign: esu.assignUnassign,
-          pkId: esu.pkId > 0 ? esu.pkId : 0,
-        };
-      }),
-      streetDescriptors: streetData.streetDescriptors.map((sd) => {
-        return {
-          changeType: sd.changeType,
-          usrn: sd.usrn,
-          streetDescriptor: sd.streetDescriptor,
-          locRef: sd.locRef
-            ? sd.locRef
-            : sd.language === "GAE"
-            ? unassignedGaeLocality.localityRef
-            : unassignedEngLocality.localityRef,
-          locality: sd.locRef ? sd.locality : "",
-          townRef: sd.townRef
-            ? sd.townRef
-            : sd.language === "GAE"
-            ? unassignedGaeTown.townRef
-            : unassignedEngTown.townRef,
-          town: sd.townRef ? sd.town : "",
-          adminAreaRef: sd.adminAreaRef
-            ? sd.adminAreaRef
-            : sd.language === "GAE"
-            ? unassignedGaeAdminArea.administrativeAreaRef
-            : unassignedEngAdminArea.administrativeAreaRef,
-          administrativeArea: sd.adminAreaRef ? sd.administrativeArea : "",
-          language: sd.language,
-          neverExport: sd.neverExport,
-          islandRef: sd.islandRef
-            ? sd.islandRef
-            : sd.language === "GAE"
-            ? unassignedGaeIsland.islandRef
-            : unassignedEngIsland.islandRef,
-          island: sd.islandRef ? sd.island : "",
-          pkId: sd.pkId > 0 ? sd.pkId : 0,
-        };
-      }),
-      streetNotes: streetData.streetNotes.map((sn) => {
-        return {
-          usrn: sn.usrn,
-          note: sn.note,
-          changeType: sn.changeType,
-          pkId: sn.pkId > 0 ? sn.pkId : 0,
-          seqNo: sn.seqNo,
-        };
-      }),
+      successorCrossRefs: streetData.successorCrossRefs
+        ? streetData.successorCrossRefs.map((s) => {
+            return {
+              pkId: s.pkId > 0 ? s.pkId : 0,
+              succKey: s.succKey,
+              changeType: s.changeType,
+              predecessor: s.predecessor,
+              successorType: s.successorType,
+              successor: s.successor,
+              startDate: s.startDate,
+              endDate: s.endDate,
+              neverExport: s.neverExport,
+            };
+          })
+        : [],
+      maintenanceResponsibilities: streetData.maintenanceResponsibilities
+        ? streetData.maintenanceResponsibilities.map((mr) => {
+            return {
+              usrn: mr.usrn,
+              wholeRoad: mr.wholeRoad,
+              specificLocation: mr.specificLocation,
+              neverExport: mr.neverExport,
+              pkId: mr.pkId > 0 ? mr.pkId : 0,
+              seqNum: mr.seqNum,
+              changeType: mr.changeType,
+              custodianCode: mr.custodianCode,
+              maintainingAuthorityCode: mr.maintainingAuthorityCode,
+              streetStatus: mr.streetStatus,
+              state: mr.state,
+              startDate: mr.startDate,
+              endDate: mr.endDate,
+              wktGeometry: mr.wktGeometry,
+            };
+          })
+        : [],
+      reinstatementCategories: streetData.reinstatementCategories
+        ? streetData.reinstatementCategories.map((rc) => {
+            return {
+              usrn: rc.usrn,
+              wholeRoad: rc.wholeRoad,
+              specificLocation: rc.specificLocation,
+              neverExport: rc.neverExport,
+              pkId: rc.pkId > 0 ? rc.pkId : 0,
+              seqNum: rc.seqNum,
+              changeType: rc.changeType,
+              custodianCode: rc.custodianCode,
+              reinstatementAuthorityCode: rc.reinstatementAuthorityCode,
+              reinstatementCategoryCode: rc.reinstatementCategoryCode,
+              state: rc.state,
+              startDate: rc.startDate,
+              endDate: rc.endDate,
+              wktGeometry: rc.wktGeometry,
+            };
+          })
+        : [],
+      specialDesignations: streetData.specialDesignations
+        ? streetData.specialDesignations.map((sd) => {
+            return {
+              usrn: sd.usrn,
+              wholeRoad: sd.wholeRoad,
+              specificLocation: sd.specificLocation,
+              neverExport: sd.neverExport,
+              pkId: sd.pkId > 0 ? sd.pkId : 0,
+              seqNum: sd.seqNum,
+              changeType: sd.changeType,
+              custodianCode: sd.custodianCode,
+              authorityCode: sd.authorityCode,
+              specialDesig: sd.specialDesig,
+              wktGeometry: sd.wktGeometry,
+              description: sd.description,
+              state: sd.state,
+              startDate: sd.startDate,
+              endDate: sd.endDate,
+            };
+          })
+        : [],
+      esus: streetData.esus
+        ? streetData.esus.map((esu) => {
+            return {
+              esuId: esu.esuId > 0 ? esu.esuId : 0,
+              changeType: esu.changeType,
+              state: esu.state,
+              stateDate: esu.stateDate,
+              classification: esu.classification,
+              classificationDate: esu.classificationDate,
+              startDate: esu.startDate,
+              endDate: esu.endDate,
+              wktGeometry: esu.wktGeometry,
+              assignUnassign: esu.assignUnassign,
+              pkId: esu.pkId > 0 ? esu.pkId : 0,
+            };
+          })
+        : [],
+      streetDescriptors: streetData.streetDescriptors
+        ? streetData.streetDescriptors.map((sd) => {
+            return {
+              changeType: sd.changeType,
+              usrn: sd.usrn,
+              streetDescriptor: sd.streetDescriptor,
+              locRef: sd.locRef
+                ? sd.locRef
+                : sd.language === "GAE"
+                ? unassignedGaeLocality.localityRef
+                : unassignedEngLocality.localityRef,
+              locality: sd.locRef ? sd.locality : "",
+              townRef: sd.townRef
+                ? sd.townRef
+                : sd.language === "GAE"
+                ? unassignedGaeTown.townRef
+                : unassignedEngTown.townRef,
+              town: sd.townRef ? sd.town : "",
+              adminAreaRef: sd.adminAreaRef
+                ? sd.adminAreaRef
+                : sd.language === "GAE"
+                ? unassignedGaeAdminArea.administrativeAreaRef
+                : unassignedEngAdminArea.administrativeAreaRef,
+              administrativeArea: sd.adminAreaRef ? sd.administrativeArea : "",
+              language: sd.language,
+              neverExport: sd.neverExport,
+              islandRef: sd.islandRef
+                ? sd.islandRef
+                : sd.language === "GAE"
+                ? unassignedGaeIsland.islandRef
+                : unassignedEngIsland.islandRef,
+              island: sd.islandRef ? sd.island : "",
+              pkId: sd.pkId > 0 ? sd.pkId : 0,
+            };
+          })
+        : [],
+      streetNotes: streetData.streetNotes
+        ? streetData.streetNotes.map((sn) => {
+            return {
+              usrn: sn.usrn,
+              note: sn.note,
+              changeType: sn.changeType,
+              pkId: sn.pkId > 0 ? sn.pkId : 0,
+              seqNo: sn.seqNo,
+            };
+          })
+        : [],
     };
   } else {
     const unassignedCymLocality = lookupContext.currentLookups.localities.find(
@@ -2556,6 +2575,43 @@ export async function GetEsuData(esuId, userToken) {
 }
 
 /**
+ * Return the ESU data for the given list of ids.
+ *
+ * @param {Array} esuIds List of ESU ids that we want the data for.
+ * @param {string} userToken The token for the user calling the end point.
+ * @returns {object|null} The ESU data for the list of ids.
+ */
+export async function GetMultipleEsusData(esuIds, userToken) {
+  if (!esuIds || !esuIds.length) return null;
+
+  const esuUrl = GetMultipleEsusByIdUrl(userToken);
+
+  if (esuUrl) {
+    const returnData = await fetch(`${esuUrl.url}/${esuIds.join()}`, {
+      headers: esuUrl.headers,
+      crossDomain: true,
+      method: "GET",
+    })
+      .then((res) => (res.ok ? res : Promise.reject(res)))
+      .then((res) => {
+        if (res && res.status === 204) return [];
+        else return res.json();
+      })
+      .then(
+        (result) => {
+          return result;
+        },
+        (error) => {
+          console.error("[ERROR] Get ESUs for assigning to street.", error);
+          return null;
+        }
+      );
+
+    return returnData;
+  } else return null;
+}
+
+/**
  * Check to see if the street is closed or not.
  *
  * @param {number} usrn The USRN of the street we are interested in.
@@ -3119,4 +3175,30 @@ export const updateMapStreetData = (
   ];
 
   mapContext.onSearchDataChange(currentSearchStreets, [], streetData.usrn, null);
+};
+
+/**
+ * Method used to determine if a street has been modified.
+ *
+ * @param {boolean} newStreet If true the street is being created.
+ * @param {object} currentSandbox The current state of the sandbox.
+ * @returns {boolean} True if the street has been changed; otherwise false.
+ */
+export const hasStreetChanged = (newStreet, currentSandbox) => {
+  return (
+    newStreet ||
+    currentSandbox.currentStreetRecords.descriptor ||
+    currentSandbox.currentStreetRecords.highwayDedication ||
+    currentSandbox.currentStreetRecords.oneWayExemption ||
+    currentSandbox.currentStreetRecords.maintenanceResponsibility ||
+    currentSandbox.currentStreetRecords.reinstatementCategory ||
+    currentSandbox.currentStreetRecords.osSpecialDesignation ||
+    currentSandbox.currentStreetRecords.interest ||
+    currentSandbox.currentStreetRecords.construction ||
+    currentSandbox.currentStreetRecords.specialDesignation ||
+    currentSandbox.currentStreetRecords.hww ||
+    currentSandbox.currentStreetRecords.prow ||
+    currentSandbox.currentStreetRecords.note ||
+    (currentSandbox.currentStreet && !StreetComparison(currentSandbox.sourceStreet, currentSandbox.currentStreet))
+  );
 };

@@ -19,6 +19,7 @@
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    007   11.01.24 Sean Flook                 Fix warnings.
 //    008   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    009   23.01.24 Sean Flook       IMANN-246 Display information when selecting Part Road.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,11 +31,12 @@ import PropTypes from "prop-types";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
 import MapContext from "./../context/mapContext";
+import InformationContext from "../context/informationContext";
 
 import { GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
 
-import { Avatar, Typography } from "@mui/material";
+import { Avatar, Typography, Popper } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -43,6 +45,7 @@ import ADSWholeRoadControl from "../components/ADSWholeRoadControl";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ADSTextToggleControl from "../components/ADSTextToggleControl";
+import ADSInformationControl from "../components/ADSInformationControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 
 import RoadStatusCode from "../data/RoadStatusCode";
@@ -80,6 +83,7 @@ function MaintenanceResponsibilityDataTab({
   const sandboxContext = useContext(SandboxContext);
   const userContext = useContext(UserContext);
   const mapContext = useContext(MapContext);
+  const informationContext = useContext(InformationContext);
 
   const [dataChanged, setDataChanged] = useState(false);
 
@@ -107,6 +111,10 @@ function MaintenanceResponsibilityDataTab({
   const [stateError, setStateError] = useState(null);
   const [wholeRoadError, setWholeRoadError] = useState(null);
   const [specifyLocationError, setSpecifyLocationError] = useState(null);
+
+  const [informationAnchorEl, setInformationAnchorEl] = useState(null);
+  const informationOpen = Boolean(informationAnchorEl);
+  const informationId = informationOpen ? "asd-information-popper" : undefined;
 
   /**
    * Method to return the current maintenance responsibility record.
@@ -252,12 +260,16 @@ function MaintenanceResponsibilityDataTab({
       if (onDataChanged && wholeRoad !== newValue) onDataChanged();
     }
     UpdateSandbox("wholeRoad", newValue);
-    if (newValue) mapContext.onEditMapObject(null, null);
-    else
+    if (newValue) {
+      mapContext.onEditMapObject(null, null);
+      informationContext.onClearInformation();
+    } else {
       mapContext.onEditMapObject(
         51,
         data && data.maintenanceResponsibilityData && data.maintenanceResponsibilityData.pkId
       );
+      informationContext.onDisplayInformation("partRoadASD", "MaintenanceResponsibilityDataTab");
+    }
   };
 
   /**
@@ -407,6 +419,15 @@ function MaintenanceResponsibilityDataTab({
   }, [userContext]);
 
   useEffect(() => {
+    if (
+      informationContext.informationSource &&
+      informationContext.informationSource === "MaintenanceResponsibilityDataTab"
+    ) {
+      setInformationAnchorEl(document.getElementById("maintenance-responsibility-data"));
+    } else setInformationAnchorEl(null);
+  }, [informationContext.informationSource]);
+
+  useEffect(() => {
     setStreetStatusError(null);
     setCustodianError(null);
     setAuthorityError(null);
@@ -460,7 +481,7 @@ function MaintenanceResponsibilityDataTab({
 
   return (
     <Fragment>
-      <Box sx={toolbarStyle}>
+      <Box sx={toolbarStyle} id={"maintenance-responsibility-data"}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
             <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
@@ -659,6 +680,9 @@ function MaintenanceResponsibilityDataTab({
           onClose={handleCloseDeleteConfirmation}
         />
       </div>
+      <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
+        <ADSInformationControl variant={"partRoadASD"} />
+      </Popper>
     </Fragment>
   );
 }

@@ -17,6 +17,7 @@
 //    004   03.11.23 Sean Flook       IMANN-175 Added GetMultiEditSearchUrl.
 //    005   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    006   05.01.24 Sean Flook                 Correctly call GetApiSite.
+//    007   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -234,6 +235,17 @@ export function GetStreetByUSRNUrl(userToken, isScottish) {
  */
 export function GetEsuByIdUrl(userToken) {
   const url = GetApiSite("main", "/api/MappableData/GetEsu");
+  return getUrl(url, "GET", "application/json", userToken);
+}
+
+/**
+ * Get the URL used to return the list of ESUs from a list of ESU ids.
+ *
+ * @param {string} userToken The token for the user who is calling the endpoint.
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function GetMultipleEsusByIdUrl(userToken) {
+  const url = GetApiSite("main", "/api/MappableData/GetMultipleEsusById");
   return getUrl(url, "GET", "application/json", userToken);
 }
 

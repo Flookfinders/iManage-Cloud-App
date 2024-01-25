@@ -22,6 +22,7 @@
 //    009   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    010   11.01.24 Sean Flook                 Fix warnings.
 //    011   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    012   23.01.24 Sean Flook       IMANN-246 Display information when selecting Part Road.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -34,6 +35,7 @@ import LookupContext from "../context/lookupContext";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
 import MapContext from "./../context/mapContext";
+import InformationContext from "../context/informationContext";
 
 import { GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
@@ -41,7 +43,7 @@ import ObjectComparison from "../utils/ObjectComparison";
 import SwaOrgRef from "../data/SwaOrgRef";
 import InterestType from "../data/InterestType";
 
-import { Avatar, Typography } from "@mui/material";
+import { Avatar, Typography, Popper } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -49,6 +51,7 @@ import ADSDateControl from "../components/ADSDateControl";
 import ADSWholeRoadControl from "../components/ADSWholeRoadControl";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
+import ADSInformationControl from "../components/ADSInformationControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 
 import RoadStatusCode from "../data/RoadStatusCode";
@@ -76,6 +79,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
   const sandboxContext = useContext(SandboxContext);
   const userContext = useContext(UserContext);
   const mapContext = useContext(MapContext);
+  const informationContext = useContext(InformationContext);
 
   const [dataChanged, setDataChanged] = useState(false);
 
@@ -109,6 +113,10 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
   const [endDateError, setEndDateError] = useState(null);
   const [wholeRoadError, setWholeRoadError] = useState(null);
   const [specifyLocationError, setSpecifyLocationError] = useState(null);
+
+  const [informationAnchorEl, setInformationAnchorEl] = useState(null);
+  const informationOpen = Boolean(informationAnchorEl);
+  const informationId = informationOpen ? "asd-information-popper" : undefined;
 
   /**
    * Method used to update the current sandbox record.
@@ -231,8 +239,13 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
       if (onDataChanged && wholeRoad !== newValue) onDataChanged();
     }
     UpdateSandbox("wholeRoad", newValue);
-    if (newValue) mapContext.onEditMapObject(null, null);
-    else mapContext.onEditMapObject(61, data && data.interestData && data.interestData.pkId);
+    if (newValue) {
+      mapContext.onEditMapObject(null, null);
+      informationContext.onClearInformation();
+    } else {
+      mapContext.onEditMapObject(61, data && data.interestData && data.interestData.pkId);
+      informationContext.onDisplayInformation("partRoadASD", "InterestDataTab");
+    }
   };
 
   /**
@@ -415,6 +428,12 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
   }, [userContext]);
 
   useEffect(() => {
+    if (informationContext.informationSource && informationContext.informationSource === "InterestDataTab") {
+      setInformationAnchorEl(document.getElementById("interest-data"));
+    } else setInformationAnchorEl(null);
+  }, [informationContext.informationSource]);
+
+  useEffect(() => {
     setStreetStatusError(null);
     setInterestedOrganisationError(null);
     setInterestedTypeError(null);
@@ -473,7 +492,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
 
   return (
     <Fragment>
-      <Box sx={toolbarStyle}>
+      <Box sx={toolbarStyle} id={"interest-data"}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
             <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
@@ -731,6 +750,9 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
           onClose={handleCloseDeleteConfirmation}
         />
       </div>
+      <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
+        <ADSInformationControl variant={"partRoadASD"} />
+      </Popper>
     </Fragment>
   );
 }

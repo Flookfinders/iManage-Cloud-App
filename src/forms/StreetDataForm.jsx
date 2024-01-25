@@ -39,6 +39,7 @@
 //    025   11.01.24 Sean Flook       IMANN-163 Close the add property wizard dialog when clicking on view properties.
 //    026   12.01.24 Sean Flook       IMANN-163 If viewing property create results do not reset everything.
 //    027   12.01.24 Sean Flook       IMANN-233 Use the new getStartEndCoordinates method.
+//    028   23.01.24 Sean Flook       IMANN-249 Do not display the ASD tab if street type 4 or 9.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -56,6 +57,7 @@ import UserContext from "./../context/userContext";
 import LookupContext from "./../context/lookupContext";
 import SearchContext from "../context/searchContext";
 import SettingsContext from "../context/settingsContext";
+import InformationContext from "../context/informationContext";
 
 import {
   FormatDateTime,
@@ -75,15 +77,13 @@ import {
   SaveStreet,
   GetStreetMapData,
   GetEsuData,
+  GetMultipleEsusData,
   GetWholeRoadGeometry,
   updateMapStreetData,
+  hasStreetChanged,
 } from "../utils/StreetUtils";
 import { UpdateRangeAfterSave, UpdateAfterSave, GetPropertyMapData } from "../utils/PropertyUtils";
-import ObjectComparison, {
-  MergeEsuComparison,
-  StreetComparison,
-  PropertyComparison,
-} from "./../utils/ObjectComparison";
+import ObjectComparison, { MergeEsuComparison } from "./../utils/ObjectComparison";
 import { HasASD } from "../configuration/ADSConfig";
 
 import { useEditConfirmation } from "../pages/EditConfirmationPage";
@@ -175,6 +175,7 @@ function StreetDataForm({ data, loading }) {
   const lookupContext = useContext(LookupContext);
   const searchContext = useContext(SearchContext);
   const settingsContext = useContext(SettingsContext);
+  const informationContext = useContext(InformationContext);
 
   const history = useHistory();
 
@@ -204,7 +205,6 @@ function StreetDataForm({ data, loading }) {
   const copyDataType = useRef(null);
   const saveResult = useRef(null);
   const failedValidation = useRef(null);
-  const associatedRecords = useRef([]);
   const esuChanged = useRef(false);
 
   const [streetErrors, setStreetErrors] = useState([]);
@@ -564,6 +564,9 @@ function StreetDataForm({ data, loading }) {
             totalRecords: hdFormData.totalRecords,
           });
         }
+        if (informationContext.informationType) {
+          informationContext.onClearInformation();
+        }
         break;
 
       case 2: // Successors / ASD
@@ -611,22 +614,7 @@ function StreetDataForm({ data, loading }) {
         break;
     }
 
-    const streetChanged =
-      streetContext.currentStreet.newStreet ||
-      sandboxContext.currentSandbox.currentStreetRecords.descriptor ||
-      sandboxContext.currentSandbox.currentStreetRecords.highwayDedication ||
-      sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption ||
-      sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility ||
-      sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory ||
-      sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation ||
-      sandboxContext.currentSandbox.currentStreetRecords.interest ||
-      sandboxContext.currentSandbox.currentStreetRecords.construction ||
-      sandboxContext.currentSandbox.currentStreetRecords.specialDesignation ||
-      sandboxContext.currentSandbox.currentStreetRecords.hww ||
-      sandboxContext.currentSandbox.currentStreetRecords.prow ||
-      sandboxContext.currentSandbox.currentStreetRecords.note ||
-      (sandboxContext.currentSandbox.currentStreet &&
-        !StreetComparison(sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreet));
+    const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
 
     if (!streetChanged || streetContext.validateData()) {
       failedValidation.current = false;
@@ -920,10 +908,7 @@ function StreetDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("streetDescriptor", newEngRec);
       streetContext.onRecordChange(15, newIdx, null, true);
     } else {
-      const streetChanged =
-        streetContext.currentStreet.newStreet ||
-        (sandboxContext.currentSandbox.currentStreet &&
-          !StreetComparison(sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreet));
+      const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
 
       if (!streetChanged || streetContext.validateData()) {
         failedValidation.current = false;
@@ -2904,46 +2889,22 @@ function StreetDataForm({ data, loading }) {
    * @param {boolean} isRange True if user wants to create a range of properties; otherwise false.
    */
   const handlePropertyAdd = (usrn, parent, isRange) => {
-    const streetChanged =
-      streetContext.currentStreet.newStreet ||
-      sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor ||
-      sandboxContext.currentSandbox.currentStreetRecords.esu ||
-      sandboxContext.currentSandbox.currentStreetRecords.highwayDedication ||
-      sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption ||
-      sandboxContext.currentSandbox.currentStreetRecords.interest ||
-      sandboxContext.currentSandbox.currentStreetRecords.construction ||
-      sandboxContext.currentSandbox.currentStreetRecords.specialDesignation ||
-      sandboxContext.currentSandbox.currentStreetRecords.hww ||
-      sandboxContext.currentSandbox.currentStreetRecords.prow ||
-      sandboxContext.currentSandbox.currentStreetRecords.note ||
-      (sandboxContext.currentSandbox.currentStreet &&
-        !StreetComparison(sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreet));
+    streetContext.onLeavingStreet("createProperty", { usrn: usrn, parent: parent, isRange: isRange });
+    // const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
 
-    const propertyChanged =
-      propertyContext.currentProperty.newProperty ||
-      sandboxContext.currentSandbox.currentPropertyRecords.lpi ||
-      sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef ||
-      sandboxContext.currentSandbox.currentPropertyRecords.provenance ||
-      sandboxContext.currentSandbox.currentPropertyRecords.note ||
-      (sandboxContext.currentSandbox.currentProperty &&
-        !PropertyComparison(
-          sandboxContext.currentSandbox.sourceProperty,
-          sandboxContext.currentSandbox.currentProperty
-        ));
-
-    if (streetChanged || propertyChanged) {
-      saveConfirmDialog(true)
-        .then((result) => {
-          if (result === "save") {
-            ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
-            handleAddProperty(usrn, parent, isRange);
-          }
-        })
-        .catch(() => {});
-    } else {
-      ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
-      handleAddProperty(usrn, parent, isRange);
-    }
+    // if (streetChanged) {
+    //   saveConfirmDialog(true)
+    //     .then((result) => {
+    //       if (result === "save") {
+    //         ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+    //         handleAddProperty(usrn, parent, isRange);
+    //       }
+    //     })
+    //     .catch(() => {});
+    // } else {
+    //   ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+    //   handleAddProperty(usrn, parent, isRange);
+    // }
   };
 
   /**
@@ -2953,27 +2914,27 @@ function StreetDataForm({ data, loading }) {
    * @param {object|null} parent If this is a child property this will hold the parent information; otherwise it is null.
    * @param {boolean} isRange True if user wants to create a range of properties; otherwise false.
    */
-  const handleAddProperty = async (usrn, parent, isRange) => {
-    await GetStreetMapData(usrn, userContext.currentUser.token, settingsContext.isScottish).then((result) => {
-      if (result && result.state !== 4) {
-        propertyContext.resetPropertyErrors();
-        propertyContext.onWizardDone(null, false, null, null);
-        mapContext.onWizardSetCoordinate(null);
-        propertyWizardType.current = isRange ? (!parent ? "range" : "rangeChildren") : !parent ? "property" : "child";
-        if (parent) propertyWizardParent.current = parent;
-        else {
-          const engDescriptor = result.streetDescriptors.filter((x) => x.language === "ENG");
-          if (engDescriptor) {
-            propertyWizardParent.current = { usrn: usrn, address: engDescriptor[0].streetDescriptor };
-          }
-        }
-        setOpenPropertyWizard(true);
-      } else {
-        alertType.current = isRange ? "invalidRangeState" : "invalidSingleState";
-        setAlertOpen(true);
-      }
-    });
-  };
+  // const handleAddProperty = async (usrn, parent, isRange) => {
+  //   await GetStreetMapData(usrn, userContext.currentUser.token, settingsContext.isScottish).then((result) => {
+  //     if (result && result.state !== 4) {
+  //       propertyContext.resetPropertyErrors();
+  //       propertyContext.onWizardDone(null, false, null, null);
+  //       mapContext.onWizardSetCoordinate(null);
+  //       propertyWizardType.current = isRange ? (!parent ? "range" : "rangeChildren") : !parent ? "property" : "child";
+  //       if (parent) propertyWizardParent.current = parent;
+  //       else {
+  //         const engDescriptor = result.streetDescriptors.filter((x) => x.language === "ENG");
+  //         if (engDescriptor) {
+  //           propertyWizardParent.current = { usrn: usrn, address: engDescriptor[0].streetDescriptor };
+  //         }
+  //       }
+  //       setOpenPropertyWizard(true);
+  //     } else {
+  //       alertType.current = isRange ? "invalidRangeState" : "invalidSingleState";
+  //       setAlertOpen(true);
+  //     }
+  //   });
+  // };
 
   /**
    * Event to handle adding a new ESU record.
@@ -4051,12 +4012,12 @@ function StreetDataForm({ data, loading }) {
    *
    */
   function handleSaveClicked() {
-    associatedRecords.current = GetChangedAssociatedRecords("street", sandboxContext, esuChanged.current);
+    const associatedRecords = GetChangedAssociatedRecords("street", sandboxContext, esuChanged.current);
 
     const currentStreet = sandboxContext.currentSandbox.currentStreet || sandboxContext.currentSandbox.sourceStreet;
 
-    if (associatedRecords.current.length > 0) {
-      saveConfirmDialog(associatedRecords.current)
+    if (associatedRecords.length > 0) {
+      saveConfirmDialog(associatedRecords)
         .then((result) => {
           if (result === "save") {
             if (streetContext.validateData()) {
@@ -4087,14 +4048,30 @@ function StreetDataForm({ data, loading }) {
             } else {
               updateMapStreetData(
                 streetData,
-                settingsContext.isScottish && streetData ? streetData.maintenanceResponsibilities : null,
-                settingsContext.isScottish && streetData ? streetData.reinstatementCategories : null,
-                settingsContext.isScottish && streetData ? streetData.specialDesignations : null,
-                !settingsContext.isScottish && HasASD() && streetData ? streetData.interests : null,
-                !settingsContext.isScottish && HasASD() && streetData ? streetData.constructions : null,
-                !settingsContext.isScottish && HasASD() && streetData ? streetData.specialDesignations : null,
-                !settingsContext.isScottish && HasASD() && streetData ? streetData.heightWidthWeights : null,
-                !settingsContext.isScottish && HasASD() && streetData ? streetData.publicRightOfWays : null,
+                settingsContext.isScottish && streetData && streetData.recordType < 4
+                  ? streetData.maintenanceResponsibilities
+                  : null,
+                settingsContext.isScottish && streetData && streetData.recordType < 4
+                  ? streetData.reinstatementCategories
+                  : null,
+                settingsContext.isScottish && streetData && streetData.recordType < 4
+                  ? streetData.specialDesignations
+                  : null,
+                !settingsContext.isScottish && HasASD() && streetData && streetData.recordType < 4
+                  ? streetData.interests
+                  : null,
+                !settingsContext.isScottish && HasASD() && streetData && streetData.recordType < 4
+                  ? streetData.constructions
+                  : null,
+                !settingsContext.isScottish && HasASD() && streetData && streetData.recordType < 4
+                  ? streetData.specialDesignations
+                  : null,
+                !settingsContext.isScottish && HasASD() && streetData && streetData.recordType < 4
+                  ? streetData.heightWidthWeights
+                  : null,
+                !settingsContext.isScottish && HasASD() && streetData && streetData.recordType < 4
+                  ? streetData.publicRightOfWays
+                  : null,
                 settingsContext.isScottish,
                 mapContext,
                 lookupContext.currentLookups
@@ -4342,6 +4319,8 @@ function StreetDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("esu", null);
       handleEsuSelected(-1, null, null);
     };
+
+    informationContext.onClearInformation();
 
     failedValidation.current = false;
 
@@ -5803,11 +5782,11 @@ function StreetDataForm({ data, loading }) {
           esus: newEsus,
           streetDescriptors: streetData.streetDescriptors,
           streetNotes: streetData.streetNotes,
-          interests: streetData.interests,
-          constructions: streetData.constructions,
-          specialDesignations: streetData.specialDesignations,
-          publicRightOfWays: streetData.publicRightOfWays,
-          heightWidthWeights: streetData.heightWidthWeights,
+          interests: streetData.recordType < 4 ? streetData.interests : null,
+          constructions: streetData.recordType < 4 ? streetData.constructions : null,
+          specialDesignations: streetData.recordType < 4 ? streetData.specialDesignations : null,
+          publicRightOfWays: streetData.recordType < 4 ? streetData.publicRightOfWays : null,
+          heightWidthWeights: streetData.recordType < 4 ? streetData.heightWidthWeights : null,
         };
 
     updateStreetDataAndClear(newStreetData, "highwayDedication");
@@ -5934,11 +5913,11 @@ function StreetDataForm({ data, loading }) {
           esus: newEsus,
           streetDescriptors: streetData.streetDescriptors,
           streetNotes: streetData.streetNotes,
-          interests: streetData.interests,
-          constructions: streetData.constructions,
-          specialDesignations: streetData.specialDesignations,
-          publicRightOfWays: streetData.publicRightOfWays,
-          heightWidthWeights: streetData.heightWidthWeights,
+          interests: streetData.recordType < 4 ? streetData.interests : null,
+          constructions: streetData.recordType < 4 ? streetData.constructions : null,
+          specialDesignations: streetData.recordType < 4 ? streetData.specialDesignations : null,
+          publicRightOfWays: streetData.recordType < 4 ? streetData.publicRightOfWays : null,
+          heightWidthWeights: streetData.recordType < 4 ? streetData.heightWidthWeights : null,
         };
 
     updateStreetDataAndClear(newStreetData, "oneWayExemption");
@@ -6278,9 +6257,9 @@ function StreetDataForm({ data, loading }) {
           successorCrossRefs: streetData.successorCrossRefs,
           streetDescriptors: streetData.streetDescriptors,
           streetNotes: streetData.streetNotes,
-          maintenanceResponsibilities: streetData.maintenanceResponsibilities,
-          reinstatementCategories: streetData.reinstatementCategories,
-          specialDesignations: streetData.specialDesignations,
+          maintenanceResponsibilities: streetData.recordType < 4 ? streetData.maintenanceResponsibilities : null,
+          reinstatementCategories: streetData.recordType < 4 ? streetData.reinstatementCategories : null,
+          specialDesignations: streetData.recordType < 4 ? streetData.specialDesignations : null,
         }
       : !HasASD()
       ? {
@@ -6340,11 +6319,11 @@ function StreetDataForm({ data, loading }) {
           esus: streetData.esus,
           streetDescriptors: streetData.streetDescriptors,
           streetNotes: streetData.streetNotes,
-          interests: streetData.interests,
-          constructions: streetData.constructions,
-          specialDesignations: streetData.specialDesignations,
-          publicRightOfWays: streetData.publicRightOfWays,
-          heightWidthWeights: streetData.heightWidthWeights,
+          interests: streetData.recordType < 4 ? streetData.interests : null,
+          constructions: streetData.recordType < 4 ? streetData.constructions : null,
+          specialDesignations: streetData.recordType < 4 ? streetData.specialDesignations : null,
+          publicRightOfWays: streetData.recordType < 4 ? streetData.publicRightOfWays : null,
+          heightWidthWeights: streetData.recordType < 4 ? streetData.heightWidthWeights : null,
         };
 
     updateStreetData(newStreetData);
@@ -6518,11 +6497,11 @@ function StreetDataForm({ data, loading }) {
               esus: streetData.esus,
               streetDescriptors: streetData.streetDescriptors,
               streetNotes: streetData.streetNotes,
-              interests: streetData.interests,
-              constructions: streetData.constructions,
-              specialDesignations: streetData.specialDesignations,
-              publicRightOfWays: streetData.publicRightOfWays,
-              heightWidthWeights: streetData.heightWidthWeights,
+              interests: streetData.recordType < 4 ? streetData.interests : null,
+              constructions: streetData.recordType < 4 ? streetData.constructions : null,
+              specialDesignations: streetData.recordType < 4 ? streetData.specialDesignations : null,
+              publicRightOfWays: streetData.recordType < 4 ? streetData.publicRightOfWays : null,
+              heightWidthWeights: streetData.recordType < 4 ? streetData.heightWidthWeights : null,
             }
           : {
               pkId: streetData.pkId,
@@ -6554,9 +6533,9 @@ function StreetDataForm({ data, loading }) {
               successorCrossRefs: streetData.successorCrossRefs,
               streetDescriptors: streetData.streetDescriptors,
               streetNotes: streetData.streetNotes,
-              maintenanceResponsibilities: streetData.maintenanceResponsibilities,
-              reinstatementCategories: streetData.reinstatementCategories,
-              specialDesignations: streetData.specialDesignations,
+              maintenanceResponsibilities: streetData.recordType < 4 ? streetData.maintenanceResponsibilities : null,
+              reinstatementCategories: streetData.recordType < 4 ? streetData.reinstatementCategories : null,
+              specialDesignations: streetData.recordType < 4 ? streetData.specialDesignations : null,
             };
 
       setStreetData(newStreetData);
@@ -6569,12 +6548,19 @@ function StreetDataForm({ data, loading }) {
   }, [streetContext, streetData, sandboxContext, mapContext, settingsContext.isScottish]);
 
   useEffect(() => {
+    if (streetContext.creatingStreet) {
+      setValue(0);
+      streetContext.onStreetCreated();
+    }
+  }, [streetContext]);
+
+  useEffect(() => {
     if (streetContext.currentStreet.openRelated) {
       failedValidation.current = false;
-      setValue(HasASD() ? 3 : 2);
+      setValue(HasASD() && streetData && streetData.recordType < 4 ? 3 : 2);
       mapContext.onEditMapObject(null, null);
     }
-  }, [streetContext, mapContext]);
+  }, [streetContext.currentStreet.openRelated, mapContext, streetData]);
 
   useEffect(() => {
     if (streetContext.currentErrors) {
@@ -6648,6 +6634,128 @@ function StreetDataForm({ data, loading }) {
       else setNoteErrors([]);
     }
   }, [streetContext.currentErrors]);
+
+  useEffect(() => {
+    const doAfterStep = async () => {
+      ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+      setSaveDisabled(true);
+      streetContext.onStreetModified(false);
+      saveResult.current = true;
+      switch (streetContext.leavingStreet.why) {
+        case "createStreet":
+          streetContext.onCreateStreet(streetContext.leavingStreet.information);
+          break;
+
+        case "createProperty":
+          await GetStreetMapData(
+            streetContext.leavingStreet.information.usrn,
+            userContext.currentUser.token,
+            settingsContext.isScottish
+          ).then((result) => {
+            if (result && result.state !== 4) {
+              propertyContext.resetPropertyErrors();
+              propertyContext.onWizardDone(null, false, null, null);
+              mapContext.onWizardSetCoordinate(null);
+              propertyWizardType.current = streetContext.leavingStreet.information.isRange
+                ? !streetContext.leavingStreet.information.parent
+                  ? "range"
+                  : "rangeChildren"
+                : !streetContext.leavingStreet.information.parent
+                ? "property"
+                : "child";
+              if (streetContext.leavingStreet.information.parent)
+                propertyWizardParent.current = streetContext.leavingStreet.information.parent;
+              else {
+                const engDescriptor = result.streetDescriptors.filter((x) => x.language === "ENG");
+                if (engDescriptor) {
+                  propertyWizardParent.current = {
+                    usrn: streetContext.leavingStreet.information.usrn,
+                    address: engDescriptor[0].streetDescriptor,
+                  };
+                }
+              }
+              setOpenPropertyWizard(true);
+            } else {
+              alertType.current = streetContext.leavingStreet.information.isRange
+                ? "invalidRangeState"
+                : "invalidSingleState";
+              setAlertOpen(true);
+            }
+          });
+          break;
+
+        default:
+          break;
+      }
+    };
+
+    if (streetContext.leavingStreet) {
+      const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
+
+      if (streetChanged) {
+        const associatedRecords = GetChangedAssociatedRecords("street", sandboxContext, esuChanged.current);
+
+        saveConfirmDialog(associatedRecords.length > 0 ? associatedRecords : true)
+          .then((result) => {
+            if (result === "save") {
+              if (streetContext.validateData()) {
+                failedValidation.current = false;
+                const currentStreetData = GetCurrentStreetData(
+                  streetData,
+                  sandboxContext,
+                  lookupContext,
+                  settingsContext.isWelsh,
+                  settingsContext.isScottish
+                );
+
+                SaveStreet(
+                  currentStreetData,
+                  streetContext,
+                  userContext,
+                  lookupContext,
+                  searchContext,
+                  mapContext,
+                  sandboxContext,
+                  settingsContext.isScottish,
+                  settingsContext.isWelsh
+                ).then((result) => {
+                  if (result) {
+                    doAfterStep();
+                    saveResult.current = true;
+                    setSaveOpen(true);
+                  } else {
+                    saveResult.current = false;
+                    setSaveOpen(true);
+                  }
+                });
+              } else {
+                failedValidation.current = true;
+                saveResult.current = false;
+                setSaveOpen(true);
+              }
+            } else if (result === "discard") {
+              doAfterStep();
+            }
+          })
+          .catch(() => {});
+      } else doAfterStep();
+
+      esuChanged.current = false;
+
+      streetContext.onLeavingStreet(null);
+    }
+  }, [
+    streetContext,
+    sandboxContext,
+    lookupContext,
+    mapContext,
+    propertyContext,
+    settingsContext,
+    searchContext,
+    userContext,
+    streetData,
+    saveConfirmDialog,
+  ]);
 
   useEffect(() => {
     if (streetContext.goToField) {
@@ -7119,11 +7227,11 @@ function StreetDataForm({ data, loading }) {
                     esus: newEsus,
                     streetDescriptors: contextStreet.streetDescriptors,
                     streetNotes: contextStreet.streetNotes,
-                    interests: contextStreet.interests,
-                    constructions: contextStreet.constructions,
-                    specialDesignations: contextStreet.specialDesignations,
-                    publicRightOfWays: contextStreet.publicRightOfWays,
-                    heightWidthWeights: contextStreet.heightWidthWeights,
+                    interests: contextStreet.recordType < 4 ? contextStreet.interests : null,
+                    constructions: contextStreet.recordType < 4 ? contextStreet.constructions : null,
+                    specialDesignations: contextStreet.recordType < 4 ? contextStreet.specialDesignations : null,
+                    publicRightOfWays: contextStreet.recordType < 4 ? contextStreet.publicRightOfWays : null,
+                    heightWidthWeights: contextStreet.recordType < 4 ? contextStreet.heightWidthWeights : null,
                   }
                 : {
                     pkId: contextStreet.pkId,
@@ -7163,9 +7271,11 @@ function StreetDataForm({ data, loading }) {
                     successorCrossRefs: contextStreet.successorCrossRefs,
                     streetDescriptors: contextStreet.streetDescriptors,
                     streetNotes: contextStreet.streetNotes,
-                    maintenanceResponsibilities: contextStreet.maintenanceResponsibilities,
-                    reinstatementCategories: contextStreet.reinstatementCategories,
-                    specialDesignations: contextStreet.specialDesignations,
+                    maintenanceResponsibilities:
+                      contextStreet.recordType < 4 ? contextStreet.maintenanceResponsibilities : null,
+                    reinstatementCategories:
+                      contextStreet.recordType < 4 ? contextStreet.reinstatementCategories : null,
+                    specialDesignations: contextStreet.recordType < 4 ? contextStreet.specialDesignations : null,
                   };
 
             setEsuFormData({
@@ -7808,14 +7918,30 @@ function StreetDataForm({ data, loading }) {
         mapContext.onSetLineGeometry(null);
         updateMapStreetData(
           newStreetData,
-          settingsContext.isScottish && newStreetData ? newStreetData.maintenanceResponsibilities : null,
-          settingsContext.isScottish && newStreetData ? newStreetData.reinstatementCategories : null,
-          settingsContext.isScottish && newStreetData ? newStreetData.specialDesignations : null,
-          !settingsContext.isScottish && HasASD() && newStreetData ? newStreetData.interests : null,
-          !settingsContext.isScottish && HasASD() && newStreetData ? newStreetData.constructions : null,
-          !settingsContext.isScottish && HasASD() && newStreetData ? newStreetData.specialDesignations : null,
-          !settingsContext.isScottish && HasASD() && newStreetData ? newStreetData.heightWidthWeights : null,
-          !settingsContext.isScottish && HasASD() && newStreetData ? newStreetData.publicRightOfWays : null,
+          settingsContext.isScottish && newStreetData && newStreetData.recordType < 4
+            ? newStreetData.maintenanceResponsibilities
+            : null,
+          settingsContext.isScottish && newStreetData && newStreetData.recordType < 4
+            ? newStreetData.reinstatementCategories
+            : null,
+          settingsContext.isScottish && newStreetData && newStreetData.recordType < 4
+            ? newStreetData.specialDesignations
+            : null,
+          !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+            ? newStreetData.interests
+            : null,
+          !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+            ? newStreetData.constructions
+            : null,
+          !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+            ? newStreetData.specialDesignations
+            : null,
+          !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+            ? newStreetData.heightWidthWeights
+            : null,
+          !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+            ? newStreetData.publicRightOfWays
+            : null,
           settingsContext.isScottish,
           mapContext,
           lookupContext.currentLookups
@@ -7974,11 +8100,11 @@ function StreetDataForm({ data, loading }) {
                 esus: esuData,
                 streetDescriptors: contextStreet.streetDescriptors,
                 streetNotes: contextStreet.streetNotes,
-                interests: contextStreet.interests,
-                constructions: contextStreet.constructions,
-                specialDesignations: contextStreet.specialDesignations,
-                publicRightOfWays: contextStreet.publicRightOfWays,
-                heightWidthWeights: contextStreet.heightWidthWeights,
+                interests: contextStreet.recordType < 4 ? contextStreet.interests : null,
+                constructions: contextStreet.recordType < 4 ? contextStreet.constructions : null,
+                specialDesignations: contextStreet.recordType < 4 ? contextStreet.specialDesignations : null,
+                publicRightOfWays: contextStreet.recordType < 4 ? contextStreet.publicRightOfWays : null,
+                heightWidthWeights: contextStreet.recordType < 4 ? contextStreet.heightWidthWeights : null,
               }
             : {
                 pkId: contextStreet.pkId,
@@ -8010,9 +8136,9 @@ function StreetDataForm({ data, loading }) {
                 successorCrossRefs: contextStreet.successorCrossRefs,
                 streetDescriptors: contextStreet.streetDescriptors,
                 streetNotes: contextStreet.streetNotes,
-                interests: contextStreet.interests,
-                constructions: contextStreet.constructions,
-                specialDesignations: contextStreet.specialDesignations,
+                interests: contextStreet.recordType < 4 ? contextStreet.interests : null,
+                constructions: contextStreet.recordType < 4 ? contextStreet.constructions : null,
+                specialDesignations: contextStreet.recordType < 4 ? contextStreet.specialDesignations : null,
               };
       }
     } else if (mapContext.currentStreetEnd) {
@@ -8105,11 +8231,11 @@ function StreetDataForm({ data, loading }) {
                 esus: esuData,
                 streetDescriptors: contextStreet.streetDescriptors,
                 streetNotes: contextStreet.streetNotes,
-                interests: contextStreet.interests,
-                constructions: contextStreet.constructions,
-                specialDesignations: contextStreet.specialDesignations,
-                publicRightOfWays: contextStreet.publicRightOfWays,
-                heightWidthWeights: contextStreet.heightWidthWeights,
+                interests: contextStreet.recordType < 4 ? contextStreet.interests : null,
+                constructions: contextStreet.recordType < 4 ? contextStreet.constructions : null,
+                specialDesignations: contextStreet.recordType < 4 ? contextStreet.specialDesignations : null,
+                publicRightOfWays: contextStreet.recordType < 4 ? contextStreet.publicRightOfWays : null,
+                heightWidthWeights: contextStreet.recordType < 4 ? contextStreet.heightWidthWeights : null,
               }
             : {
                 pkId: contextStreet.pkId,
@@ -8141,9 +8267,10 @@ function StreetDataForm({ data, loading }) {
                 successorCrossRefs: contextStreet.successorCrossRefs,
                 streetDescriptors: contextStreet.streetDescriptors,
                 streetNotes: contextStreet.streetNotes,
-                maintenanceResponsibility: contextStreet.maintenanceResponsibility,
-                reinstatementCategory: contextStreet.reinstatementCategory,
-                specialDesignations: contextStreet.specialDesignations,
+                maintenanceResponsibility:
+                  contextStreet.recordType < 4 ? contextStreet.maintenanceResponsibility : null,
+                reinstatementCategory: contextStreet.recordType < 4 ? contextStreet.reinstatementCategory : null,
+                specialDesignations: contextStreet.recordType < 4 ? contextStreet.specialDesignations : null,
               };
       }
     }
@@ -9008,6 +9135,109 @@ function StreetDataForm({ data, loading }) {
     streetData,
   ]);
 
+  // Assign ESUs
+  useEffect(() => {
+    if (streetContext.assignEsus && Array.isArray(streetContext.assignEsus) && streetContext.assignEsus.length) {
+      const currentStreet = sandboxContext.currentSandbox.currentStreet || sandboxContext.currentSandbox.sourceStreet;
+      const newEsus = currentStreet.esus ? currentStreet.esus.map((x) => x) : [];
+      const existingEsuIds = newEsus.map((x) => x.esuId);
+      const newEsuIds = streetContext.assignEsus.map((x) => x);
+      streetContext.onAssignEsus(null);
+
+      // Remove any ids that are already assigned to the current street
+      existingEsuIds.forEach((esuId) => {
+        if (newEsuIds.includes(esuId)) newEsuIds.splice(newEsuIds.indexOf(esuId), 1);
+      });
+
+      if (newEsuIds && newEsuIds.length) {
+        GetMultipleEsusData(newEsuIds, userContext.currentUser.token).then((result) => {
+          result.forEach((esu) => {
+            newEsus.push({ ...esu, assignUnassign: 1 });
+          });
+
+          const newEsuStreetData = GetNewEsuStreetData(
+            sandboxContext.currentSandbox,
+            newEsus,
+            streetData,
+            settingsContext.isScottish,
+            true
+          );
+
+          if (newEsuStreetData) {
+            mapContext.onSearchDataChange(newEsuStreetData.searchStreets, [], newEsuStreetData.streetData.usrn, null);
+            setStreetData(newEsuStreetData.streetData);
+            sandboxContext.onUpdateAndClear("currentStreet", newEsuStreetData.streetData, "esu");
+            setSaveDisabled(false);
+            streetContext.onStreetModified(true);
+            mapContext.onHighlightClear();
+
+            alertType.current = "assignEsus";
+            setAlertOpen(true);
+          }
+        });
+      }
+    }
+  }, [
+    streetContext.assignEsus,
+    userContext.currentUser,
+    mapContext,
+    settingsContext.isScottish,
+    sandboxContext,
+    streetContext,
+    streetData,
+  ]);
+
+  // Create new street from ESUs
+  // useEffect(() => {
+  //   if (streetContext.createEsus && Array.isArray(streetContext.createEsus) && streetContext.createEsus.length) {
+  //     streetContext.onStreetChange(0, "New Street", true);
+
+  //   const currentSearchStreets = mapContext.currentSearchData.streets;
+  //   currentSearchStreets.push({
+  //     usrn: 0,
+  //     description: "New Street",
+  //     language: "ENG",
+  //     locality:
+  //       settingsContext.streetTemplate &&
+  //       settingsContext.streetTemplate.streetTemplate &&
+  //       settingsContext.streetTemplate.streetTemplate.localityRef
+  //         ? settingsContext.streetTemplate.streetTemplate.localityRef
+  //         : null,
+  //     town:
+  //       settingsContext.streetTemplate &&
+  //       settingsContext.streetTemplate.streetTemplate &&
+  //       settingsContext.streetTemplate.streetTemplate.townRef
+  //         ? settingsContext.streetTemplate.streetTemplate.townRef
+  //         : null,
+  //     state:
+  //       settingsContext.streetTemplate &&
+  //       settingsContext.streetTemplate.streetTemplate &&
+  //       settingsContext.streetTemplate.streetTemplate.state
+  //         ? settingsContext.streetTemplate.streetTemplate.state
+  //         : undefined,
+  //     type:
+  //       settingsContext.streetTemplate &&
+  //       settingsContext.streetTemplate.streetTemplate &&
+  //       settingsContext.streetTemplate.streetTemplate.recordType
+  //         ? settingsContext.streetTemplate.streetTemplate.recordType
+  //         : undefined,
+  //     esus: [],
+  //     asdType51: [],
+  //     asdType52: [],
+  //     asdType53: [],
+  //     asdType61: [],
+  //     asdType62: [],
+  //     asdType63: [],
+  //     asdType64: [],
+  //     asdType66: [],
+  //   });
+
+  //   mapContext.onSearchDataChange(currentSearchStreets, [], "0", null);
+  //   mapContext.onEditMapObject(null, null);
+  // });
+  //   }
+  // }, [streetContext]);
+
   useEffect(() => {
     if (
       propertyContext.wizardData &&
@@ -9239,7 +9469,7 @@ function StreetDataForm({ data, loading }) {
               {...a11yProps(2)}
             />
           )}
-          {HasASD() && (
+          {HasASD() && streetData && streetData.recordType < 4 && (
             <Tab
               sx={tabStyle}
               label={
@@ -9322,7 +9552,10 @@ function StreetDataForm({ data, loading }) {
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography
                   variant="subtitle2"
-                  sx={tabLabelStyle(value === (settingsContext.isScottish ? 4 : HasASD ? 3 : 2))}
+                  sx={tabLabelStyle(
+                    value ===
+                      (settingsContext.isScottish ? 4 : HasASD() && streetData && streetData.recordType < 4 ? 3 : 2)
+                  )}
                 >
                   Related
                 </Typography>
@@ -9336,7 +9569,7 @@ function StreetDataForm({ data, loading }) {
                 </Avatar>
               </Stack>
             }
-            {...a11yProps(settingsContext.isScottish ? 4 : HasASD ? 3 : 2)}
+            {...a11yProps(settingsContext.isScottish ? 4 : HasASD() && streetData && streetData.recordType < 4 ? 3 : 2)}
           />
           <Tab
             sx={tabStyle}
@@ -9344,7 +9577,10 @@ function StreetDataForm({ data, loading }) {
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography
                   variant="subtitle2"
-                  sx={tabLabelStyle(value === (settingsContext.isScottish ? 5 : HasASD ? 4 : 3))}
+                  sx={tabLabelStyle(
+                    value ===
+                      (settingsContext.isScottish ? 5 : HasASD() && streetData && streetData.recordType < 4 ? 4 : 3)
+                  )}
                 >
                   Notes
                 </Typography>
@@ -9370,19 +9606,22 @@ function StreetDataForm({ data, loading }) {
                 )}
               </Stack>
             }
-            {...a11yProps(settingsContext.isScottish ? 5 : HasASD ? 4 : 3)}
+            {...a11yProps(settingsContext.isScottish ? 5 : HasASD() && streetData && streetData.recordType < 4 ? 4 : 3)}
           />
           <Tab
             sx={tabStyle}
             label={
               <Typography
                 variant="subtitle2"
-                sx={tabLabelStyle(value === (settingsContext.isScottish ? 6 : HasASD ? 5 : 4))}
+                sx={tabLabelStyle(
+                  value ===
+                    (settingsContext.isScottish ? 6 : HasASD() && streetData && streetData.recordType < 4 ? 5 : 4)
+                )}
               >
                 History
               </Typography>
             }
-            {...a11yProps(settingsContext.isScottish ? 6 : HasASD ? 5 : 4)}
+            {...a11yProps(settingsContext.isScottish ? 6 : HasASD() && streetData && streetData.recordType < 4 ? 5 : 4)}
           />
         </Tabs>
       </AppBar>
@@ -9545,7 +9784,7 @@ function StreetDataForm({ data, loading }) {
           )}
         </TabPanel>
       )}
-      {HasASD() ? (
+      {HasASD() && streetData && streetData.recordType < 4 ? (
         <Fragment>
           <TabPanel value={value} index={settingsContext.isScottish ? 3 : 2}>
             {maintenanceResponsibilityFormData ? (
@@ -9769,7 +10008,10 @@ function StreetDataForm({ data, loading }) {
               />
             )}
           </TabPanel>
-          <TabPanel value={value} index={settingsContext.isScottish ? 6 : HasASD ? 5 : 4}>
+          <TabPanel
+            value={value}
+            index={settingsContext.isScottish ? 6 : HasASD() && streetData && streetData.recordType < 4 ? 5 : 4}
+          >
             <EntityHistoryTab variant="street" />
           </TabPanel>
         </Fragment>
@@ -9868,11 +10110,15 @@ function StreetDataForm({ data, loading }) {
         onClose={handleAlertClose}
       >
         <Alert
-          sx={GetAlertStyle(["esuDivided", "mergedEsus", "unassignEsus", "assignEsu"].includes(alertType.current))}
-          icon={GetAlertIcon(["esuDivided", "mergedEsus", "unassignEsus", "assignEsu"].includes(alertType.current))}
+          sx={GetAlertStyle(
+            ["esuDivided", "mergedEsus", "unassignEsus", "assignEsu", "assignEsus"].includes(alertType.current)
+          )}
+          icon={GetAlertIcon(
+            ["esuDivided", "mergedEsus", "unassignEsus", "assignEsu", "assignEsus"].includes(alertType.current)
+          )}
           onClose={handleAlertClose}
           severity={GetAlertSeverity(
-            ["esuDivided", "mergedEsus", "unassignEsus", "assignEsu"].includes(alertType.current)
+            ["esuDivided", "mergedEsus", "unassignEsus", "assignEsu", "assignEsus"].includes(alertType.current)
           )}
           elevation={6}
           variant="filled"
@@ -9889,6 +10135,8 @@ function StreetDataForm({ data, loading }) {
             ? `The ESUs have been successfully unassigned from the street.`
             : alertType.current === "assignEsu"
             ? `The ESU has been successfully assigned to the street.`
+            : alertType.current === "assignEsus"
+            ? `The ESUs have been successfully assigned to the street.`
             : alertType.current === "streetAlreadyDividedMerged"
             ? "There has already been a divide or merge on this street, please save changes before retrying."
             : `Unknown error.`

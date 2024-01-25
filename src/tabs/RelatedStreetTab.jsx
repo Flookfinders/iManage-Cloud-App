@@ -23,6 +23,7 @@
 //    010   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
 //    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    012   10.01.24 Sean Flook                 Fix warnings.
+//    013   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -759,104 +760,107 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                               </Stack>
                             </Stack>
                           </Stack>
-                          {streetSelected && streetSelected === rec.usrn && (
-                            <Stack direction="row" spacing={1} justifyContent="flex-end" alignItems="center">
-                              <Tooltip title="Copy USRN" arrow placement="bottom" sx={tooltipStyle}>
-                                <IconButton
-                                  onClick={(event) => itemCopy(event, rec.usrn.toString(), "USRN")}
-                                  size="small"
+                          {streetSelected &&
+                            streetSelected === rec.usrn &&
+                            streetChecked &&
+                            streetChecked.length < 2 && (
+                              <Stack direction="row" spacing={1} justifyContent="flex-end" alignItems="center">
+                                <Tooltip title="Copy USRN" arrow placement="bottom" sx={tooltipStyle}>
+                                  <IconButton
+                                    onClick={(event) => itemCopy(event, rec.usrn.toString(), "USRN")}
+                                    size="small"
+                                  >
+                                    <CopyIcon sx={ActionIconStyle()} />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Zoom to this" arrow placement="bottom" sx={tooltipStyle}>
+                                  <IconButton onClick={() => zoomToStreet(rec.usrn)} size="small">
+                                    <MyLocation sx={ActionIconStyle()} />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip title="More actions" arrow placement="bottom" sx={tooltipStyle}>
+                                  <IconButton
+                                    onClick={handleStreetActionsMenuClick}
+                                    aria-controls="street-actions-menu"
+                                    aria-haspopup="true"
+                                    size="small"
+                                  >
+                                    <MoreVert sx={ActionIconStyle()} />
+                                  </IconButton>
+                                </Tooltip>
+                                <Menu
+                                  id="street-actions-menu"
+                                  elevation={2}
+                                  anchorEl={anchorStreetActionsEl}
+                                  anchorOrigin={{
+                                    vertical: "bottom",
+                                    horizontal: "right",
+                                  }}
+                                  transformOrigin={{
+                                    vertical: "top",
+                                    horizontal: "right",
+                                  }}
+                                  keepMounted
+                                  open={Boolean(anchorStreetActionsEl)}
+                                  onClose={handleStreetActionsMenuClose}
+                                  sx={menuStyle}
                                 >
-                                  <CopyIcon sx={ActionIconStyle()} />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip title="Zoom to this" arrow placement="bottom" sx={tooltipStyle}>
-                                <IconButton onClick={() => zoomToStreet(rec.usrn)} size="small">
-                                  <MyLocation sx={ActionIconStyle()} />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip title="More actions" arrow placement="bottom" sx={tooltipStyle}>
-                                <IconButton
-                                  onClick={handleStreetActionsMenuClick}
-                                  aria-controls="street-actions-menu"
-                                  aria-haspopup="true"
-                                  size="small"
-                                >
-                                  <MoreVert sx={ActionIconStyle()} />
-                                </IconButton>
-                              </Tooltip>
-                              <Menu
-                                id="street-actions-menu"
-                                elevation={2}
-                                anchorEl={anchorStreetActionsEl}
-                                anchorOrigin={{
-                                  vertical: "bottom",
-                                  horizontal: "right",
-                                }}
-                                transformOrigin={{
-                                  vertical: "top",
-                                  horizontal: "right",
-                                }}
-                                keepMounted
-                                open={Boolean(anchorStreetActionsEl)}
-                                onClose={handleStreetActionsMenuClose}
-                                sx={menuStyle}
-                              >
-                                {process.env.NODE_ENV === "development" && (
+                                  {process.env.NODE_ENV === "development" && (
+                                    <MenuItem
+                                      dense
+                                      disabled={!userCanEdit}
+                                      onClick={(event) => HandleAddProperty(event, rec.usrn)}
+                                      sx={menuItemStyle(true)}
+                                    >
+                                      <Typography variant="inherit">Add property on street</Typography>
+                                    </MenuItem>
+                                  )}
+                                  {process.env.NODE_ENV === "development" && (
+                                    <MenuItem
+                                      dense
+                                      divider
+                                      disabled={!userCanEdit}
+                                      onClick={(event) => handleAddRange(event, rec.usrn)}
+                                      sx={menuItemStyle(true)}
+                                    >
+                                      <Typography variant="inherit">Add properties</Typography>
+                                    </MenuItem>
+                                  )}
                                   <MenuItem
                                     dense
-                                    disabled={!userCanEdit}
-                                    onClick={(event) => HandleAddProperty(event, rec.usrn)}
-                                    sx={menuItemStyle(true)}
+                                    onClick={(event) => handleStreetViewClick(event, rec)}
+                                    sx={menuItemStyle(false)}
                                   >
-                                    <Typography variant="inherit">Add property on street</Typography>
+                                    <Typography variant="inherit">Open in Street View</Typography>
                                   </MenuItem>
-                                )}
-                                {process.env.NODE_ENV === "development" && (
+                                  <MenuItem
+                                    dense
+                                    onClick={(event) => zoomToStreet(event, rec.usrn)}
+                                    sx={menuItemStyle(false)}
+                                  >
+                                    <Typography variant="inherit">Zoom to this</Typography>
+                                  </MenuItem>
                                   <MenuItem
                                     dense
                                     divider
-                                    disabled={!userCanEdit}
-                                    onClick={(event) => handleAddRange(event, rec.usrn)}
+                                    onClick={(event) => itemCopy(event, rec.usrn.toString(), "USRN")}
                                     sx={menuItemStyle(true)}
                                   >
-                                    <Typography variant="inherit">Add properties</Typography>
+                                    <Typography variant="inherit">Copy USRN</Typography>
                                   </MenuItem>
-                                )}
-                                <MenuItem
-                                  dense
-                                  onClick={(event) => handleStreetViewClick(event, rec)}
-                                  sx={menuItemStyle(false)}
-                                >
-                                  <Typography variant="inherit">Open in Street View</Typography>
-                                </MenuItem>
-                                <MenuItem
-                                  dense
-                                  onClick={(event) => zoomToStreet(event, rec.usrn)}
-                                  sx={menuItemStyle(false)}
-                                >
-                                  <Typography variant="inherit">Zoom to this</Typography>
-                                </MenuItem>
-                                <MenuItem
-                                  dense
-                                  divider
-                                  onClick={(event) => itemCopy(event, rec.usrn.toString(), "USRN")}
-                                  sx={menuItemStyle(true)}
-                                >
-                                  <Typography variant="inherit">Copy USRN</Typography>
-                                </MenuItem>
-                                {process.env.NODE_ENV === "development" && (
-                                  <MenuItem dense disabled sx={menuItemStyle(false)}>
-                                    <Typography variant="inherit">Bookmark</Typography>
-                                  </MenuItem>
-                                )}
-                                {process.env.NODE_ENV === "development" && (
-                                  <MenuItem dense disabled sx={menuItemStyle(false)}>
-                                    <Typography variant="inherit">Add to list</Typography>
-                                  </MenuItem>
-                                )}
-                              </Menu>
-                            </Stack>
-                          )}
+                                  {process.env.NODE_ENV === "development" && (
+                                    <MenuItem dense disabled sx={menuItemStyle(false)}>
+                                      <Typography variant="inherit">Bookmark</Typography>
+                                    </MenuItem>
+                                  )}
+                                  {process.env.NODE_ENV === "development" && (
+                                    <MenuItem dense disabled sx={menuItemStyle(false)}>
+                                      <Typography variant="inherit">Add to list</Typography>
+                                    </MenuItem>
+                                  )}
+                                </Menu>
+                              </Stack>
+                            )}
                         </Stack>
                       }
                       onMouseEnter={() => handleMouseEnterStreet(rec.usrn)}

@@ -23,6 +23,7 @@
 //    010   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    011   12.01.24 Sean Flook                 Fixed duplicate key warning.
 //    012   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    013   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -52,6 +53,7 @@ import {
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "./ADSActionButton";
 import ADSSelectionControl from "./ADSSelectionControl";
+import ADSInformationControl from "../components/ADSInformationControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import WizardActionDialog from "../dialogs/WizardActionDialog";
 
@@ -1043,6 +1045,7 @@ function ADSWizardAddressList({
                 onClose={handleCloseSelection}
               />
             ))}
+          {haveMoveBlpu && <ADSInformationControl variant={"moveBLPU"} />}
         </Stack>
       </Box>
       <Box sx={wizardFinaliseFormStyle(haveMoveBlpu)}>

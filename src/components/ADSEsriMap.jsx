@@ -43,6 +43,7 @@
 //    029   05.01.24 Sean Flook                 use CSS shortcuts.
 //    030   10.01.24 Sean Flook       IMANN-215 Allow ESUs to be assigned to a street when creating a new street.
 //    031   11.01.24 Sean Flook       IMANN-163 Close the add property wizard dialog when clicking on view properties.
+//    032   25.01.24 Sean Flook                 Changes required after UX review and some fixes for bugs/warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -61,6 +62,7 @@ import UserContext from "../context/userContext";
 import LookupContext from "../context/lookupContext";
 import SearchContext from "../context/searchContext";
 import SettingsContext from "../context/settingsContext";
+import InformationContext from "../context/informationContext";
 
 import { StreetComparison, PropertyComparison } from "../utils/ObjectComparison";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
@@ -132,12 +134,12 @@ import {
   GetESUMapSymbol,
   GetASDMapSymbol,
 } from "../utils/ADSMapSymbols";
-import { CircularProgress, IconButton, Divider, Snackbar, Alert, Backdrop } from "@mui/material";
+import { CircularProgress, IconButton, Divider, Snackbar, Alert, Backdrop, Popper } from "@mui/material";
 import { Box, Stack } from "@mui/system";
+import ADSSelectionControl from "../components/ADSSelectionControl";
 import AddPropertyWizardDialog from "../dialogs/AddPropertyWizardDialog";
 import HistoricPropertyDialog from "../dialogs/HistoricPropertyDialog";
 import SelectPropertiesDialog from "../dialogs/SelectPropertiesDialog";
-import MessageDialog from "../dialogs/MessageDialog";
 import UploadShpFileDialog from "../dialogs/UploadShpFileDialog";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -259,7 +261,7 @@ const streetDivideAction = {
 };
 
 const streetAssignAction = {
-  title: "Assign ESU",
+  title: "Assign ESU to active street",
   id: "assign-esu",
   image:
     "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+Cjxzdmcgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDI0IDI0IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zOnNlcmlmPSJodHRwOi8vd3d3LnNlcmlmLmNvbS8iIHN0eWxlPSJmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtzdHJva2UtbGluZWpvaW46cm91bmQ7c3Ryb2tlLW1pdGVybGltaXQ6MjsiPgogICAgPHBhdGggZD0iTTEzLjMzOSwyMUwzLDIxTDcuNSwzTDE2LjUsM0wxOC42MDQsMTEuNDE4QzIwLjU5NywxMi4yNDQgMjIsMTQuMjEgMjIsMTYuNUMyMiwxOS41MzYgMTkuNTM2LDIyIDE2LjUsMjJDMTUuMzI0LDIyIDE0LjIzMywyMS42MyAxMy4zMzksMjFaTTEzLjIwMywyMC45MDJMMTMuMjAyLDIwLjkwMUwxMy4yMDMsMjAuOTAyWk0xMy4xNjgsMjAuODc1TDEzLjE3MiwyMC44NzhMMTMuMTY4LDIwLjg3NVpNMTMuMDcxLDIwLjc5OUwxMy4wNywyMC43OThMMTMuMDcxLDIwLjc5OVpNMTMuMDM3LDIwLjc3MkwxMy4wNDEsMjAuNzc1TDEzLjAzNywyMC43NzJaTTEyLjk0MSwyMC42OTJMMTIuOTQ0LDIwLjY5NEwxMi45NDEsMjAuNjkyWk0xMi45MSwyMC42NjVMMTIuOTEzLDIwLjY2OEwxMi45MSwyMC42NjVaTTEyLjgxNSwyMC41ODJMMTIuODE4LDIwLjU4NEwxMi44MTUsMjAuNTgyWk0xMi43ODYsMjAuNTU1TDEyLjc4NywyMC41NTZMMTIuNzg2LDIwLjU1NVpNMTIuNjkzLDIwLjQ2OEwxMi42OTYsMjAuNDcxTDEyLjY5MywyMC40NjhaTTEyLjU3NSwyMC4zNTFMMTIuNTc3LDIwLjM1NEwxMi41NzUsMjAuMzUxWk0xMi40NjEsMjAuMjMyTDEyLjQ2MiwyMC4yMzNMMTIuNDYxLDIwLjIzMlpNMTcuNDc2LDE1Ljg3NkwxOS4zNTIsMTRMMTQuMDI5LDE0LjAyOUwxNCwxOS4zNTJMMTUuODc2LDE3LjQ3NkwxOC4yLDE5LjhMMTkuOCwxOC4yTDE3LjQ3NiwxNS44NzZaTTExLjk2NiwxOS42MTJMMTEuOTY3LDE5LjYxM0wxMS45NjYsMTkuNjEyWk0xMS44OTUsMTkuNTA3TDExLjg5NiwxOS41MDlMMTEuODk1LDE5LjUwN1pNMTEuODczLDE5LjQ3M0wxMS44NzQsMTkuNDc0TDExLjg3MywxOS40NzNaTTExLjcxOSwxOS4yMTlMMTEuNzIyLDE5LjIyNEwxMS43MTksMTkuMjE5Wk0xMS42MzgsMTkuMDcyTDExLjY0MSwxOS4wNzhMMTEuNjM4LDE5LjA3MlpNMTEuNjIsMTkuMDM3TDExLjYyMSwxOS4wMzlMMTEuNjIsMTkuMDM3Wk0xMyw1TDEzLDdMMTEsN0wxMSw1TDksNUw2LDE5TDExLjYwMSwxOUMxMS4yMTcsMTguMjUgMTEsMTcuNCAxMSwxNi41QzExLDEzLjUzNiAxMy4zNSwxMS4xMTYgMTYuMjg3LDExLjAwNEwxNSw1TDEzLDVaTTEzLDlMMTEsOUwxMSwxMS41TDEzLDExLjVMMTMsOVpNMTguMjAyLDExLjI2OUwxOC4yMDQsMTEuMjY5TDE4LjIwMiwxMS4yNjlaTTE4LjEzOCwxMS4yNDhMMTguMTQ1LDExLjI1MUwxOC4xMzgsMTEuMjQ4Wk0xOC4xMDYsMTEuMjM4TDE4LjExNSwxMS4yNDFMMTguMTA2LDExLjIzOFpNMTguMDc0LDExLjIyOUwxOC4wODQsMTEuMjMyTDE4LjA3NCwxMS4yMjlaTTE4LjA0MSwxMS4yMTlMMTguMDUyLDExLjIyM0wxOC4wNDEsMTEuMjE5Wk0xOC4wMDksMTEuMjFMMTguMDIxLDExLjIxM0wxOC4wMDksMTEuMjFaTTE3LjkxMiwxMS4xODNMMTcuOTI1LDExLjE4N0wxNy45MTIsMTEuMTgzWk0xNy44NzksMTEuMTc1TDE3Ljg5MywxMS4xNzhMMTcuODc5LDExLjE3NVpNMTcuODQ2LDExLjE2NkwxNy44NiwxMS4xN0wxNy44NDYsMTEuMTY2Wk0xNy44MTMsMTEuMTU4TDE3LjgyOCwxMS4xNjJMMTcuODEzLDExLjE1OFpNMTcuNzgxLDExLjE1TDE3Ljc5NSwxMS4xNTRMMTcuNzgxLDExLjE1Wk0xNy43NDgsMTEuMTQyTDE3Ljc2MywxMS4xNDZMMTcuNzQ4LDExLjE0MlpNMTcuNjgxLDExLjEyN0wxNy42OTcsMTEuMTMxTDE3LjY4MSwxMS4xMjdaTTE3LjYxNSwxMS4xMTNMMTcuNjMxLDExLjExN0wxNy42MTUsMTEuMTEzWk0xNy41ODIsMTEuMTA3TDE3LjU5OCwxMS4xMUwxNy41ODIsMTEuMTA3Wk0xNy41MTUsMTEuMDk0TDE3LjUzMSwxMS4wOTdMMTcuNTE1LDExLjA5NFpNMTcuNDQ4LDExLjA4MkwxNy40NjQsMTEuMDg0TDE3LjQ0OCwxMS4wODJaTTE3LjQxNCwxMS4wNzZMMTcuNDMxLDExLjA3OUwxNy40MTQsMTEuMDc2Wk0xNy4zOCwxMS4wN0wxNy4zOTcsMTEuMDczTDE3LjM4LDExLjA3Wk0xNy4zNDcsMTEuMDY1TDE3LjM2MywxMS4wNjhMMTcuMzQ3LDExLjA2NVpNMTcuMjc5LDExLjA1NUwxNy4yOTYsMTEuMDU3TDE3LjI3OSwxMS4wNTVaTTE3LjI0NSwxMS4wNUwxNy4yNjIsMTEuMDUyTDE3LjI0NSwxMS4wNVpNMTcuMjExLDExLjA0NkwxNy4yMjgsMTEuMDQ4TDE3LjIxMSwxMS4wNDZaTTE3LjE0MiwxMS4wMzdMMTcuMTYsMTEuMDM5TDE3LjE0MiwxMS4wMzdaTTE3LjEwOCwxMS4wMzNMMTcuMTI2LDExLjAzNUwxNy4xMDgsMTEuMDMzWk0xNy4wMzksMTEuMDI2TDE3LjA1NywxMS4wMjhMMTcuMDM5LDExLjAyNlpNMTcuMDA1LDExLjAyM0wxNy4wMjMsMTEuMDI1TDE3LjAwNSwxMS4wMjNaTTE2Ljk3LDExLjAyTDE2Ljk4OCwxMS4wMjFMMTYuOTcsMTEuMDJaTTE2LjkzNiwxMS4wMTdMMTYuOTU0LDExLjAxOEwxNi45MzYsMTEuMDE3Wk0xNi44NjYsMTEuMDEyTDE2Ljg4NSwxMS4wMTNMMTYuODY2LDExLjAxMlpNMTYuODMyLDExLjAxTDE2Ljg1LDExLjAxMUwxNi44MzIsMTEuMDFaTTE2Ljc5NywxMS4wMDhMMTYuODE1LDExLjAwOUwxNi43OTcsMTEuMDA4Wk0xNi43NjIsMTEuMDA2TDE2Ljc4LDExLjAwN0wxNi43NjIsMTEuMDA2Wk0xNi43MjcsMTEuMDA1TDE2Ljc0NSwxMS4wMDVMMTYuNzI3LDExLjAwNVpNMTYuNjU2LDExLjAwMkwxNi42NzYsMTEuMDAzTDE2LjY1NiwxMS4wMDJaTTE2LjYyMSwxMS4wMDFMMTYuNjQxLDExLjAwMkwxNi42MjEsMTEuMDAxWk0xNi41NDcsMTFMMTYuNTcsMTFMMTYuNTQ3LDExWk0xNi40NTIsMTFMMTYuNDQxLDExTDE2LjQ1MiwxMVpNMTYuNSwxMUwxNi41MzUsMTFMMTYuNSwxMVoiIHN0eWxlPSJmaWxsOnJnYig4Myw4Myw4Myk7Ii8+Cjwvc3ZnPgo=",
@@ -916,6 +918,7 @@ function PropertyFeatureReduction(radius, minSize, maxSize, yOffset) {
 ADSEsriMap.propTypes = {
   startExtent: PropTypes.object,
 };
+
 function ADSEsriMap(startExtent) {
   const theme = useTheme();
 
@@ -935,8 +938,9 @@ function ADSEsriMap(startExtent) {
   const baseLayersFeature = useRef([]);
   const geoJSONFeatures = useRef([]);
   const featuresDownloaded = useRef(0);
-  const mapRef = useRef();
+  const mapRef = useRef(null);
   const [view, setView] = useState(null);
+  const viewRef = useRef(null);
   const sketchRef = useRef(null);
   const layerListRef = useRef(null);
   const measurementRef = useRef(null);
@@ -952,6 +956,7 @@ function ADSEsriMap(startExtent) {
   const lookupContext = useRef(useContext(LookupContext));
   const searchContext = useContext(SearchContext);
   const settingsContext = useContext(SettingsContext);
+  const informationContext = useContext(InformationContext);
 
   const recordAttributes = useRef(null);
   const sandbox = useRef(null);
@@ -978,9 +983,6 @@ function ADSEsriMap(startExtent) {
 
   const [openSelectProperties, setOpenSelectProperties] = useState(false);
   const [selectedProperties, setSelectedProperties] = useState([]);
-
-  const [openMessageDialog, setOpenMessageDialog] = useState(false);
-  const messageDialogVariant = useRef("editASDGeometry");
 
   const [openUploadShpFileDialog, setOpenUploadShpFileDialog] = useState(false);
 
@@ -1019,6 +1021,8 @@ function ADSEsriMap(startExtent) {
   const [zoomPropertyData, setZoomPropertyData] = useState(null);
   const highlightStreet = useRef(null);
   const highlightESU = useRef(null);
+  const highlightBackgroundESU = useRef(null);
+  const highlightUnassignedESU = useRef(null);
   const highlightASD51 = useRef(null);
   const highlightASD52 = useRef(null);
   const highlightASD53 = useRef(null);
@@ -1031,6 +1035,11 @@ function ADSEsriMap(startExtent) {
   const highlightExtent = useRef(null);
   const editingObject = useRef(null);
   const selectedLines = useRef([]);
+
+  const selectedEsus = useRef([]);
+  const [selectionAnchorEl, setSelectionAnchorEl] = useState(null);
+  const selectionOpen = Boolean(selectionAnchorEl);
+  const selectionId = selectionOpen ? "esu-selection-popper" : undefined;
 
   const zoomGraphicsLayer = useRef(
     new GraphicsLayer({
@@ -1616,13 +1625,6 @@ function ADSEsriMap(startExtent) {
   };
 
   /**
-   * Method to handle when the message dialog is closed.
-   */
-  const handleMessageDialogClose = () => {
-    setOpenMessageDialog(false);
-  };
-
-  /**
    * Method to handle when the upload shp file dialog is closed.
    */
   const handleUploadShpFileDialogClose = (shpFile) => {
@@ -1688,6 +1690,17 @@ function ADSEsriMap(startExtent) {
   };
 
   /**
+   * Event to handle the closing of the selection box.
+   */
+  const handleCloseSelection = () => {
+    selectedEsus.current = [];
+    setSelectionAnchorEl(null);
+    mapContext.onHighlightClear();
+    mapContext.onPointCapture(null);
+    informationContext.onClearInformation();
+  };
+
+  /**
    * Method to get the required alert text.
    *
    * @returns {string|null} the required alert text.
@@ -1748,6 +1761,8 @@ function ADSEsriMap(startExtent) {
   // Base mapping
 
   useEffect(() => {
+    if (viewRef.current) return;
+
     /**
      * Method to get the base map layers.
      */
@@ -2035,6 +2050,7 @@ function ADSEsriMap(startExtent) {
 
     mapRef.current = baseMap;
     setView(baseView);
+    viewRef.current = baseView;
     sketchRef.current = baseSketch;
     layerListRef.current = baseLayerList;
     measurementRef.current = baseMeasurement;
@@ -2042,7 +2058,13 @@ function ADSEsriMap(startExtent) {
 
     // destroy the map view
     return () => {
+      scaleBar && scaleBar.destroy();
+      baseCoordinateConversion && baseCoordinateConversion.destroy();
+      baseSketch && baseSketch.destroy();
+      baseLayerList && baseLayerList.destroy();
       baseView && baseView.destroy();
+      baseMap && baseMap.destroy();
+      newBaseLayer && newBaseLayer.destroy();
     };
   }, []);
 
@@ -2358,7 +2380,7 @@ function ADSEsriMap(startExtent) {
       outFields: ["*"],
       objectIdField: "ObjectID",
       popupTemplate: {
-        title: "{Description}",
+        title: "Unassigned ESU",
         lastEditInfoEnabled: false,
         content: [
           {
@@ -2367,17 +2389,6 @@ function ADSEsriMap(startExtent) {
               {
                 fieldName: "EsuId",
                 label: "ESU Id",
-              },
-              {
-                fieldName: "USRN",
-              },
-              {
-                fieldName: "StateLabel",
-                label: "Status",
-              },
-              {
-                fieldName: "TypeLabel",
-                label: "Type",
               },
             ],
           },
@@ -4633,11 +4644,27 @@ function ADSEsriMap(startExtent) {
         }
       } else {
         const streetLayer = mapRef.current && mapRef.current.findLayerById(streetLayerName);
-        const opts = { include: streetLayer };
+        let opts = { include: streetLayer };
 
         if (streetLayer) {
           view.hitTest(event, opts).then(function (response) {
-            if (
+            if (currentPointCaptureModeRef.current === "assignEsu" && response.results.length) {
+              const currentIndex = selectedEsus.current.indexOf(Number(response.results[0].graphic.attributes.EsuId));
+              const newList = [...selectedEsus.current];
+
+              if (currentIndex === -1) newList.push(Number(response.results[0].graphic.attributes.EsuId));
+              else newList.splice(currentIndex, 1);
+
+              selectedEsus.current = newList;
+
+              if (newList.length > 0) {
+                setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
+                mapContext.onHighlightListItem("esu", newList);
+              } else {
+                setSelectionAnchorEl(null);
+                mapContext.onHighlightClear();
+              }
+            } else if (
               response.results.length &&
               streetContext.currentStreet &&
               Number(response.results[0].graphic.attributes.USRN) === streetContext.currentStreet.usrn
@@ -4645,6 +4672,54 @@ function ADSEsriMap(startExtent) {
               streetContext.onEsuSelected(Number(response.results[0].graphic.attributes.EsuId));
             } else streetContext.onEsuSelected(null);
           });
+        }
+
+        if (currentPointCaptureModeRef.current === "assignEsu") {
+          if (backgroundStreetLayerRef.current) {
+            opts = { include: backgroundStreetLayerRef.current };
+            view.hitTest(event, opts).then(function (response) {
+              if (response.results.length) {
+                const currentIndex = selectedEsus.current.indexOf(Number(response.results[0].graphic.attributes.EsuId));
+                const newList = [...selectedEsus.current];
+
+                if (currentIndex === -1) newList.push(Number(response.results[0].graphic.attributes.EsuId));
+                else newList.splice(currentIndex, 1);
+
+                selectedEsus.current = newList;
+
+                if (newList.length > 0) {
+                  setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
+                  mapContext.onHighlightListItem("esu", newList);
+                } else {
+                  setSelectionAnchorEl(null);
+                  mapContext.onHighlightClear();
+                }
+              }
+            });
+          }
+
+          if (unassignedEsusLayerRef.current) {
+            opts = { include: unassignedEsusLayerRef.current };
+            view.hitTest(event, opts).then(function (response) {
+              if (response.results.length) {
+                const currentIndex = selectedEsus.current.indexOf(Number(response.results[0].graphic.attributes.EsuId));
+                const newList = [...selectedEsus.current];
+
+                if (currentIndex === -1) newList.push(Number(response.results[0].graphic.attributes.EsuId));
+                else newList.splice(currentIndex, 1);
+
+                selectedEsus.current = newList;
+
+                if (newList.length > 0) {
+                  setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
+                  mapContext.onHighlightListItem("esu", newList);
+                } else {
+                  setSelectionAnchorEl(null);
+                  mapContext.onHighlightClear();
+                }
+              }
+            });
+          }
         }
       }
     });
@@ -4856,22 +4931,6 @@ function ADSEsriMap(startExtent) {
         const f = coordinateConversionRef.current.formats.items.find((f) => f.name === "basemap");
         coordinateConversionRef.current.conversions.add(new Conversion({ format: f }));
       });
-
-    reactiveUtils.watch(
-      () => sketchRef.current.activeTool,
-      () => {
-        if (
-          sketchRef.current.activeTool === "polyline" &&
-          editingObject.current &&
-          editingObject.current.objectId > 0
-        ) {
-          if ([51, 52, 53, 61, 62, 63, 64, 66].includes(editingObject.current.objectType))
-            messageDialogVariant.current = "editASDGeometry";
-          else if (editingObject.current.objectType === 13) messageDialogVariant.current = "editESUGeometry";
-          setOpenMessageDialog(true);
-        }
-      }
-    );
 
     sketchRef.current.on("create", (event) => {
       if (event.state === "start") {
@@ -7135,6 +7194,8 @@ function ADSEsriMap(startExtent) {
     // console.log("[SF] Highlight map objects");
     const mapLayers = mapRef.current.layers.items;
     let streetLayer = null;
+    let backgroundStreetLayer = null;
+    let unassignedEsuLayer = null;
     let asd51Layer = null;
     let asd52Layer = null;
     let asd53Layer = null;
@@ -7148,6 +7209,9 @@ function ADSEsriMap(startExtent) {
 
     for (let index = 0; index < mapLayers.length; index++) {
       if (mapLayers[index] && mapLayers[index].id === streetLayerName) streetLayer = mapLayers[index];
+      if (mapLayers[index] && mapLayers[index].id === backgroundStreetLayerName)
+        backgroundStreetLayer = mapLayers[index];
+      if (mapLayers[index] && mapLayers[index].id === unassignedEsusLayerName) unassignedEsuLayer = mapLayers[index];
       if (mapLayers[index] && mapLayers[index].id === asd51LayerName) asd51Layer = mapLayers[index];
       if (mapLayers[index] && mapLayers[index].id === asd52LayerName) asd52Layer = mapLayers[index];
       if (mapLayers[index] && mapLayers[index].id === asd53LayerName) asd53Layer = mapLayers[index];
@@ -7181,6 +7245,28 @@ function ADSEsriMap(startExtent) {
         });
       });
     } else if (highlightESU.current) highlightESU.current.remove();
+
+    if (mapContext.currentHighlight.esu && backgroundStreetLayer) {
+      view.whenLayerView(backgroundStreetLayer).then(function (layerView) {
+        let backgroundEsuQuery = backgroundStreetLayer.createQuery();
+        backgroundEsuQuery.where = `esuId IN ('${mapContext.currentHighlight.esu.join("', '")}')`;
+        backgroundStreetLayer.queryFeatures(backgroundEsuQuery).then(function (result) {
+          if (highlightBackgroundESU.current) highlightBackgroundESU.current.remove();
+          highlightBackgroundESU.current = layerView.highlight(result.features);
+        });
+      });
+    } else if (highlightBackgroundESU.current) highlightBackgroundESU.current.remove();
+
+    if (mapContext.currentHighlight.esu && unassignedEsuLayer) {
+      view.whenLayerView(unassignedEsuLayer).then(function (layerView) {
+        let unassignedEsuQuery = unassignedEsuLayer.createQuery();
+        unassignedEsuQuery.where = `esuId IN ('${mapContext.currentHighlight.esu.join("', '")}')`;
+        unassignedEsuLayer.queryFeatures(unassignedEsuQuery).then(function (result) {
+          if (highlightUnassignedESU.current) highlightUnassignedESU.current.remove();
+          highlightUnassignedESU.current = layerView.highlight(result.features);
+        });
+      });
+    } else if (highlightUnassignedESU.current) highlightUnassignedESU.current.remove();
 
     if (mapContext.currentHighlight.asd51 && asd51Layer) {
       view.whenLayerView(asd51Layer).then(function (layerView) {
@@ -7313,14 +7399,52 @@ function ADSEsriMap(startExtent) {
 
   // Capture coordinates
   useEffect(() => {
+    const streetLayer = mapRef.current && mapRef.current.findLayerById(streetLayerName);
+    const asd51Layer = mapRef.current && mapRef.current.findLayerById(asd51LayerName);
+    const asd52Layer = mapRef.current && mapRef.current.findLayerById(asd52LayerName);
+    const asd53Layer = mapRef.current && mapRef.current.findLayerById(asd53LayerName);
+    const asd61Layer = mapRef.current && mapRef.current.findLayerById(asd61LayerName);
+    const asd62Layer = mapRef.current && mapRef.current.findLayerById(asd62LayerName);
+    const asd63Layer = mapRef.current && mapRef.current.findLayerById(asd63LayerName);
+    const asd64Layer = mapRef.current && mapRef.current.findLayerById(asd64LayerName);
+    const asd66Layer = mapRef.current && mapRef.current.findLayerById(asd66LayerName);
+
     if (
       coordinateConversionRef.current &&
       ["property", "streetStart", "streetEnd", "divideEsu"].includes(mapContext.currentPointCaptureMode)
     ) {
-      // console.log("[SF] Capture coordinates");
       coordinateConversionRef.current.mode = "capture";
       currentPointCaptureModeRef.current = mapContext.currentPointCaptureMode;
-    } else currentPointCaptureModeRef.current = null;
+    } else if (mapContext.currentPointCaptureMode === "assignEsu") {
+      currentPointCaptureModeRef.current = mapContext.currentPointCaptureMode;
+      if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.popupEnabled = false;
+      if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.popupEnabled = false;
+      if (streetLayer) streetLayer.popupEnabled = false;
+      if (asd51Layer) asd51Layer.popupEnabled = false;
+      if (asd52Layer) asd52Layer.popupEnabled = false;
+      if (asd53Layer) asd53Layer.popupEnabled = false;
+      if (asd61Layer) asd61Layer.popupEnabled = false;
+      if (asd62Layer) asd62Layer.popupEnabled = false;
+      if (asd63Layer) asd63Layer.popupEnabled = false;
+      if (asd64Layer) asd64Layer.popupEnabled = false;
+      if (asd66Layer) asd66Layer.popupEnabled = false;
+    } else {
+      coordinateConversionRef.current.mode = "live";
+      currentPointCaptureModeRef.current = null;
+      if (backgroundStreetLayerRef.current && !backgroundStreetLayerRef.current.popupEnabled)
+        backgroundStreetLayerRef.current.popupEnabled = true;
+      if (unassignedEsusLayerRef.current && !unassignedEsusLayerRef.current.popupEnabled)
+        unassignedEsusLayerRef.current.popupEnabled = true;
+      if (streetLayer && !streetLayer.popupEnabled) streetLayer.popupEnabled = true;
+      if (asd51Layer && !asd51Layer.popupEnabled) asd51Layer.popupEnabled = true;
+      if (asd52Layer && !asd52Layer.popupEnabled) asd52Layer.popupEnabled = true;
+      if (asd53Layer && !asd53Layer.popupEnabled) asd53Layer.popupEnabled = true;
+      if (asd61Layer && !asd61Layer.popupEnabled) asd61Layer.popupEnabled = true;
+      if (asd62Layer && !asd62Layer.popupEnabled) asd62Layer.popupEnabled = true;
+      if (asd63Layer && !asd63Layer.popupEnabled) asd63Layer.popupEnabled = true;
+      if (asd64Layer && !asd64Layer.popupEnabled) asd64Layer.popupEnabled = true;
+      if (asd66Layer && !asd66Layer.popupEnabled) asd66Layer.popupEnabled = true;
+    }
   }, [mapContext.currentPointCaptureMode]);
 
   // Property wizard finalise
@@ -7606,16 +7730,19 @@ function ADSEsriMap(startExtent) {
           propertyCount={selectedProperties.length}
           onClose={handleSelectPropertiesClose}
         />
-        <MessageDialog
-          isOpen={openMessageDialog}
-          variant={messageDialogVariant.current}
-          onClose={handleMessageDialogClose}
-        />
         <UploadShpFileDialog
           isOpen={openUploadShpFileDialog}
           currentIds={baseMappingLayerIds.current.concat(defaultMapLayerIds)}
           onClose={handleUploadShpFileDialogClose}
         />
+        <Popper id={selectionId} open={selectionOpen} anchorEl={selectionAnchorEl} placement="top-start">
+          <ADSSelectionControl
+            selectionCount={selectedEsus.current && selectedEsus.current.length > 0 ? selectedEsus.current.length : 0}
+            haveMapEsu={selectedEsus.current && selectedEsus.current.length > 0}
+            currentEsu={selectedEsus.current}
+            onClose={handleCloseSelection}
+          />
+        </Popper>
       </div>
       {loadingShp && (
         <Backdrop open={loadingShp}>

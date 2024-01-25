@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    007   25.01.24 Sean Flook                 Correctly handle status code 204.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -63,7 +64,10 @@ function ADSHomepageControl() {
         method: "GET",
       })
         .then((res) => (res.ok ? res : Promise.reject(res)))
-        .then((res) => res.json())
+        .then((res) => {
+          if (res.status && res.status === 204) return { pieCharts: [], latestStreetAndPropertyEdits: [] };
+          else return res.json();
+        })
         .then(
           (result) => {
             setApiData(result);

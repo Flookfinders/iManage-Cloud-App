@@ -15,6 +15,7 @@
 //    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system, renamed successor to successorCrossRef and simplified handleFinaliseClose.
 //    003   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    004   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    005   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -634,34 +635,48 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
           id="add-property-wizard-dialog"
           sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
         >
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="flex-start"
-            spacing={1}
-            divider={<Divider orientation="vertical" flexItem />}
-          >
-            <IconButton aria-label="close" onClick={handleCancelClick}>
-              <CloseIcon />
-            </IconButton>
-            <Typography
-              sx={{
-                flexGrow: 1,
-                display: "none",
-                pl: "8px",
-                pr: "8px",
-                [theme.breakpoints.up("sm")]: {
-                  display: "block",
-                },
-              }}
-              variant="subtitle1"
-              noWrap
-              align="left"
+          <Stack direction="row" alignItems="center" justifyContent="space-between">
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="flex-start"
+              spacing={1}
+              divider={<Divider orientation="vertical" flexItem />}
             >
-              {`Move BLPU seed point for ${propertyUprns ? propertyUprns.length : 0} ${
-                propertyUprns && propertyUprns.length === 1 ? "property" : "properties"
-              }`}
-            </Typography>
+              <IconButton aria-label="close" onClick={handleCancelClick}>
+                <CloseIcon />
+              </IconButton>
+              <Typography
+                sx={{
+                  flexGrow: 1,
+                  display: "none",
+                  pl: "8px",
+                  pr: "8px",
+                  [theme.breakpoints.up("sm")]: {
+                    display: "block",
+                  },
+                }}
+                variant="subtitle1"
+                noWrap
+                align="left"
+              >
+                {`Move BLPU seed point for ${propertyUprns ? propertyUprns.length : 0} ${
+                  propertyUprns && propertyUprns.length === 1 ? "property" : "properties"
+                }`}
+              </Typography>
+            </Stack>
+            <Button
+              onClick={handleFinish}
+              autoFocus
+              disabled={updating}
+              variant="contained"
+              sx={haveErrors ? redButtonStyle : blueButtonStyle}
+              startIcon={haveErrors ? <ErrorIcon /> : completed ? <CloseIcon /> : <ArrowForwardIcon />}
+            >
+              <Typography sx={{ fontSize: "20px", textTransform: "none" }}>{`${
+                completed && !haveErrors ? "Close" : "Finish & Save"
+              }`}</Typography>
+            </Button>
           </Stack>
         </DialogTitle>
         <DialogContent sx={{ backgroundColor: adsOffWhite }}>
@@ -699,7 +714,6 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
             borderTopStyle: "solid",
             borderTopColor: adsBlueA,
             justifyContent: "flex-start",
-            mb: theme.spacing(1),
           }}
         >
           <Box sx={{ width: "100%", height: "40px", ml: theme.spacing(2), mr: theme.spacing(2), mt: theme.spacing(1) }}>
@@ -712,7 +726,9 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
                 sx={haveErrors ? redButtonStyle : blueButtonStyle}
                 startIcon={haveErrors ? <ErrorIcon /> : completed ? <CloseIcon /> : <ArrowForwardIcon />}
               >
-                {`${completed && !haveErrors ? "Close" : "Finish"}`}
+                <Typography sx={{ fontSize: "20px", textTransform: "none" }}>{`${
+                  completed && !haveErrors ? "Close" : "Finish & Save"
+                }`}</Typography>
               </Button>
             </Stack>
           </Box>

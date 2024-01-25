@@ -22,6 +22,7 @@
 //    009   10.01.24 Sean Flook                 Fix warnings.
 //    010   16.01.23 Joel Benford               OS/GP level split
 //    011   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    012   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -699,7 +700,6 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
                 }
                 title="BLPU settings"
                 titleTypographyProps={{
-                  variant: "h6",
                   sx: getTitleStyle(editBlpu),
                 }}
                 sx={{ height: "66px" }}
@@ -781,7 +781,6 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
                 }
                 title="LPI settings"
                 titleTypographyProps={{
-                  variant: "h6",
                   sx: getTitleStyle(editLpi),
                 }}
                 sx={{ height: "66px" }}
@@ -874,7 +873,6 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
                   }
                   title="Classification settings"
                   titleTypographyProps={{
-                    variant: "h6",
                     sx: getTitleStyle(editClassification),
                   }}
                   sx={{ height: "66px" }}
@@ -925,7 +923,6 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
                 }
                 title="Other settings"
                 titleTypographyProps={{
-                  variant: "h6",
                   sx: getTitleStyle(editOther),
                 }}
                 sx={{ height: "66px" }}

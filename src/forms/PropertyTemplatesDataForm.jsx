@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    006   10.01.24 Sean Flook                 Fix warnings.
+//    007   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -63,7 +64,7 @@ import {
   ActionIconStyle,
   tooltipStyle,
   settingsCardStyle,
-  settingsCardTitleStyle,
+  getTitleStyle,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -148,39 +149,12 @@ function PropertyTemplatesDataForm({
    * @returns {object} The styling for the avatar.
    */
   const getAvatarStyle = (type, highlighted) => {
-    if (highlighted)
-      return {
-        backgroundColor: adsBlueA,
-        width: "24px",
-        height: "24px",
-        mt: "2px",
-      };
-    else
-      switch (type) {
-        case 2: // Library
-          return {
-            backgroundColor: adsLightBlue,
-            width: "24px",
-            height: "24px",
-            mt: "2px",
-          };
-
-        case 3: // User
-          return {
-            backgroundColor: adsDarkBlue,
-            width: "24px",
-            height: "24px",
-            mt: "2px",
-          };
-
-        default:
-          return {
-            backgroundColor: adsMagenta,
-            width: "24px",
-            height: "24px",
-            mt: "2px",
-          };
-      }
+    return {
+      backgroundColor: `${highlighted ? adsBlueA : type === 2 ? adsLightBlue : type === 3 ? adsDarkBlue : adsMagenta}`,
+      width: "24px",
+      height: "24px",
+      mt: "2px",
+    };
   };
 
   /**
@@ -250,11 +224,7 @@ function PropertyTemplatesDataForm({
                 >
                   {getAvatarIcon(rec.numberingSystem)}
                 </Avatar>
-                <Typography
-                  variant="h6"
-                  align="left"
-                  sx={settingsCardTitleStyle(selectedCard && selectedCard === rec.templatePkId)}
-                >
+                <Typography align="left" sx={getTitleStyle(selectedCard && selectedCard === rec.templatePkId)}>
                   {rec.templateName}
                 </Typography>
               </Stack>

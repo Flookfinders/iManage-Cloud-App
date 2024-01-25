@@ -17,6 +17,7 @@
 //    004   07.09.23 Sean Flook                 Remove unnecessary awaits.
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    007   25.01.24 Sean Flook                 Correctly handle status code 204.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -221,7 +222,10 @@ const HomePage = () => {
       crossDomain: true,
       method: "GET",
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (response && response.status === 204) return [];
+        else return response.json();
+      })
       .then((result) => {
         setData(lookup.id, result);
       })

@@ -24,6 +24,7 @@
 //    011   19.12.23 Sean Flook                 Various bug fixes.
 //    012   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    013   17.01.24 Sean Flook                 Changes after Louise's review.
+//    014   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,9 +32,12 @@
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
+
 import MapContext from "../context/mapContext";
 import StreetContext from "../context/streetContext";
 import SettingsContext from "../context/settingsContext";
+import InformationContext from "../context/informationContext";
+
 import {
   FormControlLabel,
   Checkbox,
@@ -52,13 +56,16 @@ import {
   Alert,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
+import ADSEsuDataListItem from "../components/ADSEsuDataListItem";
 import ADSSelectionControl from "../components/ADSSelectionControl";
+import ADSInformationControl from "../components/ADSInformationControl";
+
 import {
   AddCircleOutlineOutlined as AddCircleIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
   KeyboardArrowUp as KeyboardArrowUpIcon,
 } from "@mui/icons-material";
-import ADSEsuDataListItem from "../components/ADSEsuDataListItem";
+
 import { adsBlueA, adsLightBlue10 } from "../utils/ADSColours";
 import {
   toolbarStyle,
@@ -107,6 +114,7 @@ function EsuListTab({
   const mapContext = useContext(MapContext);
   const streetContext = useContext(StreetContext);
   const settingsContext = useContext(SettingsContext);
+  const informationContext = useContext(InformationContext);
 
   const [allChecked, setAllChecked] = useState(false);
   const [expandCollapseLabel, setExpandCollapseLabel] = useState("Expand all");
@@ -116,6 +124,10 @@ function EsuListTab({
   const [selectionAnchorEl, setSelectionAnchorEl] = useState(null);
   const selectionOpen = Boolean(selectionAnchorEl);
   const selectionId = selectionOpen ? "esu-selection-popper" : undefined;
+
+  const [informationAnchorEl, setInformationAnchorEl] = useState(null);
+  const informationOpen = Boolean(informationAnchorEl);
+  const informationId = informationOpen ? "esu-information-popper" : undefined;
 
   const selectedPkId = useRef(-1);
 
@@ -139,6 +151,7 @@ function EsuListTab({
       mapContext.onHighlightListItem("esu", newChecked);
     }
     setAllChecked(!allChecked);
+    informationContext.onClearInformation();
   };
 
   /**
@@ -167,6 +180,9 @@ function EsuListTab({
       setSelectionAnchorEl(null);
       mapContext.onHighlightClear();
     }
+
+    if (informationContext.informationType === "divideESU" && newChecked.length !== 1)
+      informationContext.onClearInformation();
   }
 
   /**
@@ -197,6 +213,7 @@ function EsuListTab({
    * @param {number} index The index of the ESU in the array of ESUs.
    */
   const handleESUClicked = (pkId, esuData, index) => {
+    informationContext.onClearInformation();
     streetContext.onEsuDataChange(streetContext.currentStreet.newStreet ? true : false);
     if (onEsuSelected) onEsuSelected(pkId, esuData, index);
   };
@@ -209,6 +226,7 @@ function EsuListTab({
   const handleAddESUClick = (event) => {
     setAnchorEl(event.nativeEvent.target);
     event.stopPropagation();
+    informationContext.onClearInformation();
   };
 
   /**
@@ -239,6 +257,13 @@ function EsuListTab({
    */
   const handleAssignEsu = (event) => {
     event.stopPropagation();
+    informationContext.onDisplayInformation("assignESUList", "ESUListTab");
+    setChecked([]);
+    setAllChecked(false);
+    setSelectionAnchorEl(null);
+    mapContext.onHighlightClear();
+    mapContext.onSelectEsus();
+    setAnchorEl(null);
   };
 
   /**
@@ -355,8 +380,15 @@ function EsuListTab({
       setChecked([]);
       setAllChecked(false);
       setSelectionAnchorEl(null);
+      informationContext.onClearInformation();
     }
-  }, [mapContext.currentDivideEsu]);
+  }, [mapContext.currentDivideEsu, informationContext]);
+
+  useEffect(() => {
+    if (informationContext.informationSource && informationContext.informationSource === "ESUListTab") {
+      setInformationAnchorEl(document.getElementById("ads-esu-data-grid"));
+    } else setInformationAnchorEl(null);
+  }, [informationContext.informationSource]);
 
   return (
     <Fragment>
@@ -364,7 +396,7 @@ function EsuListTab({
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <FormControlLabel
             control={
-              <Checkbox checked={allChecked} color="default" size="small" onChange={handleCheckAll} name="checkAll" />
+              <Checkbox checked={allChecked} color="primary" size="small" onChange={handleCheckAll} name="checkAll" />
             }
             label={<Typography variant="subtitle1">Elementary Street Units</Typography>}
             sx={{ pl: theme.spacing(1.5) }}
@@ -528,6 +560,9 @@ function EsuListTab({
           onError={handleSelectionError}
           onClose={handleCloseSelection}
         />
+      </Popper>
+      <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
+        <ADSInformationControl variant={"assignESUList"} />
       </Popper>
     </Fragment>
   );

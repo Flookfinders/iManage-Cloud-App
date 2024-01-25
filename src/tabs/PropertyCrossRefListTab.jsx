@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
 //    005   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    007   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -158,7 +159,9 @@ function PropertyCrossRefListTab({
 
     return (
       selectedRow &&
-      params.id === selectedRow && (
+      params.id === selectedRow &&
+      selectionModel &&
+      selectionModel.length < 2 && (
         <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
           <ADSActionButton
             id={`copy-cross-ref-${params.id}`}

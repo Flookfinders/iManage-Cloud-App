@@ -36,6 +36,7 @@
 //    023   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    024   10.01.24 Sean Flook       IMANN-163 Added previousStreet and previousProperty.
 //    025   12.01.24 Sean Flook       IMANN-163 Search results should be an array.
+//    026   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -56,6 +57,7 @@ import StreetContext from "./context/streetContext";
 import PropertyContext from "./context/propertyContext";
 import MapContext from "./context/mapContext";
 import SandboxContext from "./context/sandboxContext";
+import InformationContext from "./context/informationContext";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import {
   GetBackgroundStreetsUrl,
@@ -108,7 +110,7 @@ function App() {
 
   const currentMapExtent = useRef(null);
 
-  const guiVersion = "0.0.0.10 Alpha";
+  const guiVersion = "0.0.0.11 Alpha";
 
   const [lookups, setLookups] = useState({
     validationMessages: [],
@@ -255,7 +257,11 @@ function App() {
     note: [],
   });
 
+  const [creatingStreet, setCreatingStreet] = useState(false);
+
   const [streetHasErrors, setStreetHasErrors] = useState(false);
+
+  const [leavingStreet, setLeavingStreet] = useState(null);
 
   const [streetModified, setStreetModified] = useState(false);
 
@@ -271,6 +277,8 @@ function App() {
   const [mergedEsus, setMergedEsus] = useState(null);
   const [unassignEsus, setUnassignEsus] = useState(null);
   const [assignEsu, setAssignEsu] = useState(null);
+  const [assignEsus, setAssignEsus] = useState(null);
+  const [createEsus, setCreateEsus] = useState(null);
   const [esuDividedMerged, setEsuDividedMerged] = useState(false);
   const [expandedEsu, setExpandedEsu] = useState([]);
   const [expandedAsd, setExpandedAsd] = useState([]);
@@ -387,6 +395,9 @@ function App() {
   const [selectedPin, setSelectedPin] = useState(null);
   const pointCaptureModeRef = useRef(null);
   const editObjectRef = useRef(null);
+
+  const [informationType, setInformationType] = useState(null);
+  const [informationSource, setInformationSource] = useState(null);
 
   /**
    * Event to handle when the user changes.
@@ -967,7 +978,17 @@ function App() {
     });
 
     if (usrn && usrn > 0) history.push(`/street/${usrn}`);
-    else if (newStreet) history.push("/street/0");
+    else if (newStreet) {
+      setCreatingStreet(true);
+      history.push("/street/0");
+    }
+  }
+
+  /**
+   * Method to clear the street creating flag.
+   */
+  function HandleStreetCreated() {
+    setCreatingStreet(false);
   }
 
   /**
@@ -1065,6 +1086,17 @@ function App() {
         (publicRightOfWayErrors && publicRightOfWayErrors.length > 0) ||
         (noteErrors && noteErrors.length > 0)
     );
+  }
+
+  /**
+   * Method used to handle when we are leaving the current street to go to a new street or property.
+   *
+   * @param {string|null} why The reason why we are leaving the current street.
+   * @param {object|null} information The information required to use when leaving the street.
+   */
+  function HandleLeavingStreet(why, information) {
+    if (why && information) setLeavingStreet({ why: why, information: information });
+    else setLeavingStreet(null);
   }
 
   /**
@@ -1174,6 +1206,31 @@ function App() {
    */
   function HandleAssignEsu(esuId) {
     setAssignEsu(esuId);
+  }
+
+  /**
+   * Event to handle when ESUs are assigned to a street.
+   *
+   * @param {Array|null} esus The list of ESU Ids to be assigned to the street.
+   */
+  function HandleAssignEsus(esus) {
+    if (!esus) setAssignEsus(null);
+    else setAssignEsus(esus);
+    HandlePointCapture(null);
+  }
+
+  /**
+   * Event to handle when ESUs are used to create a street.
+   *
+   * @param {Array|null} esus The list of ESU Ids to be used to create the street.
+   */
+  function HandleCreateStreetFromEsus(esus) {
+    if (!esus) setCreateEsus(null);
+    else {
+      setCreateEsus(esus);
+      HandleStreetChange(0, "New Street", true);
+    }
+    HandlePointCapture(null);
   }
 
   /**
@@ -1970,16 +2027,36 @@ function App() {
         }
       )
         .then((res) => (res.ok ? res : Promise.reject(res)))
-        .then((res) => res.json())
-        .then(
-          (result) => {
-            return result;
-          },
-          (error) => {
-            console.error("[ERROR] getting background street data", error);
-            return null;
+        .then((res) => {
+          if (res.status && res.status === 204) return [];
+          else return res.json();
+        })
+        .then((result) => {
+          return result;
+        })
+        .catch((res) => {
+          switch (res.status) {
+            case 400:
+              res.json().then((body) => {
+                console.error(`[400 ERROR] Getting all Street data`, body.errors);
+              });
+              return null;
+
+            case 401:
+              res.json().then((body) => {
+                console.error(`[401 ERROR] Getting all Street data`, body);
+              });
+              return null;
+
+            case 500:
+              console.error(`[500 ERROR] Getting all Street data`, res);
+              return null;
+
+            default:
+              console.error(`[${res.status} ERROR] Getting all Street data`, res);
+              return null;
           }
-        );
+        });
 
       return returnValue;
     } else return null;
@@ -2006,16 +2083,36 @@ function App() {
         }
       )
         .then((res) => (res.ok ? res : Promise.reject(res)))
-        .then((res) => res.json())
-        .then(
-          (result) => {
-            return result;
-          },
-          (error) => {
-            console.error("[ERROR] getting unassigned ESU data", error);
-            return null;
+        .then((res) => {
+          if (res.status && res.status === 204) return [];
+          else return res.json();
+        })
+        .then((result) => {
+          return result;
+        })
+        .catch((res) => {
+          switch (res.status) {
+            case 400:
+              res.json().then((body) => {
+                console.error(`[400 ERROR] Getting all unassigned ESU data`, body.errors);
+              });
+              return null;
+
+            case 401:
+              res.json().then((body) => {
+                console.error(`[401 ERROR] Getting all unassigned ESU data`, body);
+              });
+              return null;
+
+            case 500:
+              console.error(`[500 ERROR] Getting all unassigned ESU data`, res);
+              return null;
+
+            default:
+              console.error(`[${res.status} ERROR] Getting all unassigned ESU data`, res);
+              return null;
           }
-        );
+        });
 
       return returnValue;
     } else return null;
@@ -2042,16 +2139,36 @@ function App() {
         }
       )
         .then((res) => (res.ok ? res : Promise.reject(res)))
-        .then((res) => res.json())
-        .then(
-          (result) => {
-            return result;
-          },
-          (error) => {
-            console.error("[ERROR] getting background property data", error);
-            return null;
+        .then((res) => {
+          if (res.status && res.status === 204) return [];
+          else return res.json();
+        })
+        .then((result) => {
+          return result;
+        })
+        .catch((res) => {
+          switch (res.status) {
+            case 400:
+              res.json().then((body) => {
+                console.error(`[400 ERROR] Getting all property data`, body.errors);
+              });
+              return null;
+
+            case 401:
+              res.json().then((body) => {
+                console.error(`[401 ERROR] Getting all property data`, body);
+              });
+              return null;
+
+            case 500:
+              console.error(`[500 ERROR] Getting all property data`, res);
+              return null;
+
+            default:
+              console.error(`[${res.status} ERROR] Getting all property data`, res);
+              return null;
           }
-        );
+        });
 
       return returnValue;
     } else return null;
@@ -2274,6 +2391,9 @@ function App() {
     if (esuId) {
       HandleEditMapObject(13, esuId);
       HandlePointCapture("divideEsu");
+    } else {
+      HandleEditMapObject(null, null);
+      HandlePointCapture(null);
     }
   }
 
@@ -2288,11 +2408,45 @@ function App() {
   }
 
   /**
+   * Method to handle selecting ESUs from the map.
+   */
+  function HandleSelectEsus() {
+    HandlePointCapture("assignEsu");
+  }
+
+  /**
    *
    * @param {Boolean} selecting If true user wants to select properties from the map; otherwise false.
    */
   function HandleSelectPropertiesChange(selecting) {
     setSelectingProperties(selecting);
+  }
+
+  /**
+   * Method to handle when the display information should be shown.
+   *
+   * @param {string} type The type of information being displayed.
+   * @param {string} source The source that is displaying the information.
+   */
+  function HandleDisplayInformation(type, source) {
+    setInformationType(type);
+    setInformationSource(source);
+  }
+
+  /**
+   * Method to clear the information control.
+   */
+  function HandleClearInformation() {
+    switch (informationType) {
+      case "divideESU":
+        HandleDivideEsu(null);
+        break;
+
+      default:
+        break;
+    }
+
+    HandleDisplayInformation(null, null);
   }
 
   return (
@@ -2355,10 +2509,12 @@ function App() {
                     <StreetContext.Provider
                       value={{
                         currentStreet: street,
+                        creatingStreet: creatingStreet,
                         streetClosing: streetClosing,
                         currentErrors: streetErrors,
                         currentStreetModified: streetModified,
                         currentStreetHasErrors: streetHasErrors,
+                        leavingStreet: leavingStreet,
                         goToField: streetGoToField,
                         currentRecord: streetRecord,
                         selectedMapEsuId: selectedMapEsuId,
@@ -2366,13 +2522,17 @@ function App() {
                         mergedEsus: mergedEsus,
                         unassignEsus: unassignEsus,
                         assignEsu: assignEsu,
+                        assignEsus: assignEsus,
+                        createEsus: createEsus,
                         esuDividedMerged: esuDividedMerged,
                         expandedEsu: expandedEsu,
                         expandedAsd: expandedAsd,
                         onStreetChange: HandleStreetChange,
+                        onStreetCreated: HandleStreetCreated,
                         onCloseStreet: HandleCloseStreet,
                         onStreetModified: HandleStreetModified,
                         onStreetErrors: HandleStreetErrors,
+                        onLeavingStreet: HandleLeavingStreet,
                         onGoToField: HandleStreetGoToField,
                         onRecordChange: HandleStreetRecordChange,
                         onEsuDataChange: HandleEsuDataChange,
@@ -2381,6 +2541,8 @@ function App() {
                         onMergedEsus: HandleMergedEsus,
                         onUnassignEsus: HandleUnassignEsus,
                         onAssignEsu: HandleAssignEsu,
+                        onAssignEsus: HandleAssignEsus,
+                        onCreateStreet: HandleCreateStreetFromEsus,
                         onEsuDividedMerged: HandleEsuDividedMerged,
                         onToggleEsuExpanded: HandleToggleEsuExpanded,
                         onToggleAsdExpanded: HandleToggleAsdExpanded,
@@ -2455,39 +2617,49 @@ function App() {
                             onPinSelected: HandlePinSelected,
                             onDivideEsu: HandleDivideEsu,
                             onEsuDivided: HandleEsuDivided,
+                            onSelectEsus: HandleSelectEsus,
                             onSelectPropertiesChange: HandleSelectPropertiesChange,
                           }}
                         >
-                          <SaveConfirmationServiceProvider>
-                            <StyledEngineProvider injectFirst>
-                              <ThemeProvider theme={theme}>
-                                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                  <Fragment>
-                                    <div style={{ display: "flex" }}>
-                                      <CssBaseline />
-                                      <ADSAppBar />
-                                      <ADSNavContent uprn={property.uprn} />
-                                      <main
-                                        style={{
-                                          flexGrow: 1,
-                                          pl: "0px",
-                                          pr: "0px",
-                                        }}
-                                      >
-                                        <div style={{ height: "64px" }} />
-                                        <PageRouting />
-                                      </main>
-                                    </div>
-                                    <LoginDialog
-                                      isOpen={loginOpen}
-                                      title="iManage Cloud Login"
-                                      message="Enter your credentials."
-                                    />
-                                  </Fragment>
-                                </LocalizationProvider>
-                              </ThemeProvider>
-                            </StyledEngineProvider>
-                          </SaveConfirmationServiceProvider>
+                          <InformationContext.Provider
+                            value={{
+                              informationType: informationType,
+                              informationSource: informationSource,
+                              onDisplayInformation: HandleDisplayInformation,
+                              onClearInformation: HandleClearInformation,
+                            }}
+                          >
+                            <SaveConfirmationServiceProvider>
+                              <StyledEngineProvider injectFirst>
+                                <ThemeProvider theme={theme}>
+                                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <Fragment>
+                                      <div style={{ display: "flex" }}>
+                                        <CssBaseline />
+                                        <ADSAppBar />
+                                        <ADSNavContent uprn={property.uprn} />
+                                        <main
+                                          style={{
+                                            flexGrow: 1,
+                                            pl: "0px",
+                                            pr: "0px",
+                                          }}
+                                        >
+                                          <div style={{ height: "64px" }} />
+                                          <PageRouting />
+                                        </main>
+                                      </div>
+                                      <LoginDialog
+                                        isOpen={loginOpen}
+                                        title="iManage Cloud Login"
+                                        message="Enter your credentials."
+                                      />
+                                    </Fragment>
+                                  </LocalizationProvider>
+                                </ThemeProvider>
+                              </StyledEngineProvider>
+                            </SaveConfirmationServiceProvider>
+                          </InformationContext.Provider>
                         </MapContext.Provider>
                       </PropertyContext.Provider>
                     </StreetContext.Provider>

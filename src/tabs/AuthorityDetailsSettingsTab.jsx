@@ -19,6 +19,7 @@
 //    006   03.01.24 Sean Flook                 For Scottish authorities force Create Street BLPU to true.
 //    007   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    008   10.01.24 Sean Flook                 Fix warnings.
+//    009   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -39,8 +40,14 @@ import { getAuthorityText, getDisplayLanguage } from "../utils/HelperUtils";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 
-import { adsBlueA, adsLightBlue } from "../utils/ADSColours";
-import { ActionIconStyle, settingsCardStyle, settingsCardContentStyle, tooltipStyle } from "../utils/ADSStyles";
+import { adsLightBlue } from "../utils/ADSColours";
+import {
+  ActionIconStyle,
+  settingsCardStyle,
+  settingsCardContentStyle,
+  tooltipStyle,
+  getTitleStyle,
+} from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 function AuthorityDetailsSettingsTab() {
@@ -179,17 +186,6 @@ function AuthorityDetailsSettingsTab() {
     setShowEditDialog(false);
   };
 
-  /**
-   * Method to get the title styling.
-   *
-   * @param {boolean} highlighted True if the title should be highlighted; otherwise false.
-   * @returns {object|null} The styling to be used for the title.
-   */
-  const getTitleStyle = (highlighted) => {
-    if (highlighted) return { color: adsBlueA };
-    else return null;
-  };
-
   useEffect(() => {
     if (settingsContext.authorityDetails) {
       setData(settingsContext.authorityDetails);
@@ -238,7 +234,7 @@ function AuthorityDetailsSettingsTab() {
                   )
                 }
                 title="Authority details"
-                titleTypographyProps={{ variant: "h6", sx: getTitleStyle(editAuthority) }}
+                titleTypographyProps={{ sx: getTitleStyle(editAuthority) }}
                 sx={{ height: "66px" }}
               />
               <CardActionArea onClick={doEditAuthority}>
