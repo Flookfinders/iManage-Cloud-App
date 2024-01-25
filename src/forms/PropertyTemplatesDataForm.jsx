@@ -18,6 +18,7 @@
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    006   10.01.24 Sean Flook                 Fix warnings.
 //    007   25.01.24 Sean Flook                 Changes required after UX review.
+//    008   25.01.24 Sean Flook                 Move description so it lines up with title in the cards.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -228,7 +229,7 @@ function PropertyTemplatesDataForm({
                   {rec.templateName}
                 </Typography>
               </Stack>
-              <Typography variant="body2" align="left" sx={{ mt: theme.spacing(1) }}>
+              <Typography variant="body2" align="left" sx={{ mt: theme.spacing(1), pl: "32px" }}>
                 {rec.templateDescription}
               </Typography>
             </CardContent>
