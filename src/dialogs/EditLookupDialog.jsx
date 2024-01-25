@@ -19,6 +19,7 @@
 //    006   24.11.23 Sean Flook                 Moved Stack to @mui/system.
 //    007   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    008   10.01.24 Sean Flook                 Fix warnings.
+//    009   25.01.24 Sean Flook       IMANN-253 Include historic when checking for changes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -567,7 +568,7 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
       case "postcode":
         const oldPostcodeRecord = lookupContext.currentLookups.postcodes.find((x) => x.postcodeRef === lookupId);
         if (oldPostcodeRecord) {
-          dataChanged = oldPostcodeRecord.postcode !== engValue;
+          dataChanged = oldPostcodeRecord.postcode !== engValue || oldPostcodeRecord.historic !== lookupHistoric;
         }
         break;
 
@@ -579,23 +580,39 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
               const oldCymPostTownRecord = lookupContext.currentLookups.postTowns.find(
                 (x) => x.postTownRef === oldPostTownRecord.linkedRef
               );
-              dataChanged = oldPostTownRecord.postTown !== engValue || oldCymPostTownRecord.postTown !== cymValue;
+              dataChanged =
+                oldPostTownRecord.postTown !== engValue ||
+                oldCymPostTownRecord.postTown !== cymValue ||
+                oldPostTownRecord.historic !== lookupHistoric ||
+                oldCymPostTownRecord.historic !== lookupHistoric;
             } else if (settingsContext.isScottish) {
               const oldGaePostTownRecord = lookupContext.currentLookups.postTowns.find(
                 (x) => x.postTownRef === oldPostTownRecord.linkedRef
               );
-              dataChanged = oldPostTownRecord.postTown !== engValue || oldGaePostTownRecord.postTown !== gaeValue;
+              dataChanged =
+                oldPostTownRecord.postTown !== engValue ||
+                oldGaePostTownRecord.postTown !== gaeValue ||
+                oldPostTownRecord.historic !== lookupHistoric ||
+                oldGaePostTownRecord.historic !== lookupHistoric;
             } else {
-              dataChanged = oldPostTownRecord.postTown !== engValue;
+              dataChanged = oldPostTownRecord.postTown !== engValue || oldPostTownRecord.historic !== lookupHistoric;
             }
           } else {
             const oldEngPostTownRecord = lookupContext.currentLookups.postTowns.find(
               (x) => x.postTownRef === oldPostTownRecord.linkedRef
             );
             if (settingsContext.isWelsh) {
-              dataChanged = oldEngPostTownRecord.postTown !== engValue || oldPostTownRecord.postTown !== cymValue;
+              dataChanged =
+                oldEngPostTownRecord.postTown !== engValue ||
+                oldPostTownRecord.postTown !== cymValue ||
+                oldPostTownRecord.historic !== lookupHistoric ||
+                oldEngPostTownRecord.historic !== lookupHistoric;
             } else {
-              dataChanged = oldEngPostTownRecord.postTown !== engValue || oldPostTownRecord.postTown !== gaeValue;
+              dataChanged =
+                oldEngPostTownRecord.postTown !== engValue ||
+                oldPostTownRecord.postTown !== gaeValue ||
+                oldPostTownRecord.historic !== lookupHistoric ||
+                oldEngPostTownRecord.historic !== lookupHistoric;
             }
           }
         }
@@ -611,13 +628,19 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
               (x) => x.subLocalityRef === oldSubLocalityRecord.linkedRef
             );
             dataChanged =
-              oldSubLocalityRecord.subLocality !== engValue || oldGaeSubLocalityRecord.subLocality !== gaeValue;
+              oldSubLocalityRecord.subLocality !== engValue ||
+              oldGaeSubLocalityRecord.subLocality !== gaeValue ||
+              oldSubLocalityRecord.historic !== lookupHistoric ||
+              oldGaeSubLocalityRecord !== lookupHistoric;
           } else {
             const oldEngSubLocalityRecord = lookupContext.currentLookups.subLocalities.find(
               (x) => x.subLocalityRef === oldSubLocalityRecord.linkedRef
             );
             dataChanged =
-              oldEngSubLocalityRecord.subLocality !== engValue || oldSubLocalityRecord.subLocality !== gaeValue;
+              oldEngSubLocalityRecord.subLocality !== engValue ||
+              oldSubLocalityRecord.subLocality !== gaeValue ||
+              oldSubLocalityRecord.historic !== lookupHistoric ||
+              oldEngSubLocalityRecord !== lookupHistoric;
           }
         }
         break;
@@ -640,25 +663,44 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
               const oldCymLocalityRecord = lookupContext.currentLookups.localities.find(
                 (x) => x.localityRef === oldLocalityRecord.linkedRef
               );
-              dataChanged = oldLocalityRecord.locality !== engValue || oldCymLocalityRecord.locality !== cymValue;
+              dataChanged =
+                oldLocalityRecord.locality !== engValue ||
+                oldCymLocalityRecord.locality !== cymValue ||
+                oldLocalityRecord.historic !== lookupHistoric ||
+                oldCymLocalityRecord !== lookupHistoric;
             } else if (settingsContext.isScottish) {
               const oldGaeLocalityRecord = lookupContext.currentLookups.localities.find(
                 (x) => x.localityRef === oldLocalityRecord.linkedRef
               );
-              dataChanged = oldLocalityRecord.locality !== engValue || oldGaeLocalityRecord.locality !== gaeValue;
+              dataChanged =
+                oldLocalityRecord.locality !== engValue ||
+                oldGaeLocalityRecord.locality !== gaeValue ||
+                oldLocalityRecord.historic !== lookupHistoric ||
+                oldGaeLocalityRecord !== lookupHistoric;
             } else {
-              dataChanged = oldLocalityRecord.locality !== engValue;
+              dataChanged = oldLocalityRecord.locality !== engValue || oldLocalityRecord.historic !== lookupHistoric;
             }
           } else {
             const oldEngLocalityRecord = lookupContext.currentLookups.localities.find(
               (x) => x.localityRef === oldLocalityRecord.linkedRef
             );
             if (settingsContext.isWelsh) {
-              dataChanged = oldEngLocalityRecord.locality !== engValue || oldLocalityRecord.locality !== cymValue;
+              dataChanged =
+                oldEngLocalityRecord.locality !== engValue ||
+                oldLocalityRecord.locality !== cymValue ||
+                oldLocalityRecord.historic !== lookupHistoric ||
+                oldEngLocalityRecord !== lookupHistoric;
             } else if (settingsContext.isScottish) {
-              dataChanged = oldEngLocalityRecord.locality !== engValue || oldLocalityRecord.locality !== gaeValue;
+              dataChanged =
+                oldEngLocalityRecord.locality !== engValue ||
+                oldLocalityRecord.locality !== gaeValue ||
+                oldLocalityRecord.historic !== lookupHistoric ||
+                oldEngLocalityRecord !== lookupHistoric;
             } else {
-              dataChanged = oldEngLocalityRecord.locality !== engValue;
+              dataChanged =
+                oldEngLocalityRecord.locality !== engValue ||
+                oldLocalityRecord.historic !== lookupHistoric ||
+                oldEngLocalityRecord !== lookupHistoric;
             }
           }
         }
@@ -672,25 +714,41 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
               const oldCymTownRecord = lookupContext.currentLookups.towns.find(
                 (x) => x.townRef === oldTownRecord.linkedRef
               );
-              dataChanged = oldTownRecord.town !== engValue || oldCymTownRecord.town !== cymValue;
+              dataChanged =
+                oldTownRecord.town !== engValue ||
+                oldCymTownRecord.town !== cymValue ||
+                oldTownRecord.historic !== lookupHistoric ||
+                oldCymTownRecord.historic !== lookupHistoric;
             } else if (settingsContext.isScottish) {
               const oldGaeTownRecord = lookupContext.currentLookups.towns.find(
                 (x) => x.townRef === oldTownRecord.linkedRef
               );
-              dataChanged = oldTownRecord.town !== engValue || oldGaeTownRecord.town !== gaeValue;
+              dataChanged =
+                oldTownRecord.town !== engValue ||
+                oldGaeTownRecord.town !== gaeValue ||
+                oldTownRecord.historic !== lookupHistoric ||
+                oldGaeTownRecord.historic !== lookupHistoric;
             } else {
-              dataChanged = oldTownRecord.town !== engValue;
+              dataChanged = oldTownRecord.town !== engValue || oldTownRecord.historic !== lookupHistoric;
             }
           } else {
             const oldEngTownRecord = lookupContext.currentLookups.towns.find(
               (x) => x.townRef === oldTownRecord.linkedRef
             );
             if (settingsContext.isWelsh) {
-              dataChanged = oldEngTownRecord.town !== engValue || oldTownRecord.town !== cymValue;
+              dataChanged =
+                oldEngTownRecord.town !== engValue ||
+                oldTownRecord.town !== cymValue ||
+                oldTownRecord.historic !== lookupHistoric ||
+                oldEngTownRecord.historic !== lookupHistoric;
             } else if (settingsContext.isScottish) {
-              dataChanged = oldEngTownRecord.town !== engValue || oldTownRecord.town !== gaeValue;
+              dataChanged =
+                oldEngTownRecord.town !== engValue ||
+                oldTownRecord.town !== gaeValue ||
+                oldTownRecord.historic !== lookupHistoric ||
+                oldEngTownRecord.historic !== lookupHistoric;
             } else {
-              dataChanged = oldEngTownRecord.town !== engValue;
+              dataChanged = oldEngTownRecord.town !== engValue || oldEngTownRecord.historic !== lookupHistoric;
             }
           }
         }
@@ -703,12 +761,20 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
             const oldGaeIslandRecord = lookupContext.currentLookups.islands.find(
               (x) => x.islandRef === oldIslandRecord.linkedRef
             );
-            dataChanged = oldIslandRecord.island !== engValue || oldGaeIslandRecord.island !== gaeValue;
+            dataChanged =
+              oldIslandRecord.island !== engValue ||
+              oldGaeIslandRecord.island !== gaeValue ||
+              oldIslandRecord.historic !== lookupHistoric ||
+              oldGaeIslandRecord.historic !== lookupHistoric;
           } else {
             const oldEngIslandRecord = lookupContext.currentLookups.islands.find(
               (x) => x.islandRef === oldIslandRecord.linkedRef
             );
-            dataChanged = oldEngIslandRecord.island !== engValue || oldIslandRecord.island !== gaeValue;
+            dataChanged =
+              oldEngIslandRecord.island !== engValue ||
+              oldIslandRecord.island !== gaeValue ||
+              oldIslandRecord.historic !== lookupHistoric ||
+              oldEngIslandRecord.historic !== lookupHistoric;
           }
         }
         break;
@@ -725,15 +791,22 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
               );
               dataChanged =
                 oldAdministrativeAreaRecord.administrativeArea !== engValue ||
-                oldCymAdministrativeAreaRecord.administrativeArea !== cymValue;
+                oldCymAdministrativeAreaRecord.administrativeArea !== cymValue ||
+                oldAdministrativeAreaRecord.historic !== lookupHistoric ||
+                oldCymAdministrativeAreaRecord.historic !== lookupHistoric;
             } else if (settingsContext.isScottish) {
               const oldGaeAdministrativeAreaRecord = lookupContext.currentLookups.adminAuthorities.find(
                 (x) => x.administrativeAreaRef === oldAdministrativeAreaRecord.linkedRef
               );
               dataChanged =
                 oldAdministrativeAreaRecord.administrativeArea !== engValue ||
-                oldGaeAdministrativeAreaRecord.administrativeArea !== gaeValue;
+                oldGaeAdministrativeAreaRecord.administrativeArea !== gaeValue ||
+                oldAdministrativeAreaRecord.historic !== lookupHistoric ||
+                oldGaeAdministrativeAreaRecord.historic !== lookupHistoric;
             } else {
+              dataChanged =
+                oldAdministrativeAreaRecord.administrativeArea !== engValue ||
+                oldAdministrativeAreaRecord.historic !== lookupHistoric;
             }
           } else {
             const oldEngAdministrativeAreaRecord = lookupContext.currentLookups.adminAuthorities.find(
@@ -742,11 +815,15 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
             if (settingsContext.isWelsh) {
               dataChanged =
                 oldEngAdministrativeAreaRecord.administrativeArea !== engValue ||
-                oldAdministrativeAreaRecord.administrativeArea !== cymValue;
+                oldAdministrativeAreaRecord.administrativeArea !== cymValue ||
+                oldAdministrativeAreaRecord.historic !== lookupHistoric ||
+                oldEngAdministrativeAreaRecord.historic !== lookupHistoric;
             } else {
               dataChanged =
                 oldEngAdministrativeAreaRecord.administrativeArea !== engValue ||
-                oldAdministrativeAreaRecord.administrativeArea !== gaeValue;
+                oldAdministrativeAreaRecord.administrativeArea !== gaeValue ||
+                oldAdministrativeAreaRecord.historic !== lookupHistoric ||
+                oldEngAdministrativeAreaRecord.historic !== lookupHistoric;
             }
           }
         }
@@ -754,12 +831,18 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
 
       case "ward":
         const oldWardRecord = lookupContext.currentLookups.wards.find((x) => x.pkId === lookupId);
-        dataChanged = oldWardRecord.ward !== wardName || oldWardRecord.wardCode !== wardCode;
+        dataChanged =
+          oldWardRecord.ward !== wardName ||
+          oldWardRecord.wardCode !== wardCode ||
+          oldWardRecord.historic !== lookupHistoric;
         break;
 
       case "parish":
         const oldParishRecord = lookupContext.currentLookups.parishes.find((x) => x.pkId === lookupId);
-        dataChanged = oldParishRecord.parish !== parishName || oldParishRecord.parishCode !== parishCode;
+        dataChanged =
+          oldParishRecord.parish !== parishName ||
+          oldParishRecord.parishCode !== parishCode ||
+          oldParishRecord !== lookupHistoric;
         break;
 
       default:

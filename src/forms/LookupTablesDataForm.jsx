@@ -19,6 +19,7 @@
 //    006   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    007   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    008   10.01.24 Sean Flook                 Fix warnings.
+//    009   25.01.24 Sean Flook       IMANN-253 Include historic when checking for changes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3133,7 +3134,7 @@ function LookupTablesDataForm({ nodeId }) {
     }
 
     setEditOpen(editResult.current);
-    setShowEditDialog(editResult.current);
+    setShowEditDialog(!editResult.current);
   };
 
   const handleCloseEditLookup = () => {
@@ -3154,7 +3155,10 @@ function LookupTablesDataForm({ nodeId }) {
         method: lookupUrl.type,
       })
         .then((res) => (res.ok ? res : Promise.reject(res)))
-        .then((res) => res.json())
+        .then((res) => {
+          if (res.status === 204) return null;
+          else return res.json();
+        })
         .then((result) => {
           console.log(`Successfully deleted the ${currentVariant.current} record.`);
           lookupDeleted = true;
@@ -3190,7 +3194,7 @@ function LookupTablesDataForm({ nodeId }) {
           }
         });
 
-      if (lookupDeleted && linkedRef) {
+      if (lookupDeleted && linkedRef && linkedRef !== -1) {
         lookupDeleted = false;
         await fetch(`${lookupUrl.url}/${linkedRef}`, {
           headers: lookupUrl.headers,
@@ -3198,7 +3202,10 @@ function LookupTablesDataForm({ nodeId }) {
           method: lookupUrl.type,
         })
           .then((res) => (res.ok ? res : Promise.reject(res)))
-          .then((res) => res.json())
+          .then((res) => {
+            if (res.status === 204) return null;
+            else return res.json();
+          })
           .then((result) => {
             console.log(`Successfully deleted the ${currentVariant.current} record.`);
             lookupDeleted = true;

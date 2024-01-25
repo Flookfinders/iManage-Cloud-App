@@ -22,6 +22,7 @@
 //    009   10.01.24 Sean Flook                 Fix warnings.
 //    010   12.01.24 Sean Flook                 Added top border to toolbar style.
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
+//    012   25.01.24 Sean Flook                 Further changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -37,6 +38,7 @@ import { grey } from "@mui/material/colors";
 import {
   adsWhite,
   adsOffWhite,
+  adsLightGreyA,
   adsLightGreyB,
   adsLightGreyA50,
   adsMidGreyA,
@@ -537,10 +539,9 @@ export const settingsFormStyle = {
  * @return {object} The styling used for the settings cards.
  */
 export const settingsCardStyle = (highlighted, error = false) => {
-  if (error) return { borderColor: adsRed, borderRadius: "8px", boxShadow: `10px 10px 5px ${adsLightGreyB}` };
-  else if (highlighted)
-    return { borderColor: adsBlueA, borderRadius: "8px", boxShadow: `10px 10px 5px ${adsPaleBlueB}` };
-  else return { borderRadius: "8px", boxShadow: `10px 10px 5px ${adsLightGreyB}` };
+  if (error) return { borderColor: adsRed, borderRadius: "8px", boxShadow: `8px 8px 5px ${adsLightGreyA}` };
+  else if (highlighted) return { borderColor: adsBlueA, borderRadius: "8px", boxShadow: `8px 8px 5px ${adsPaleBlueB}` };
+  else return { borderRadius: "8px", boxShadow: `8px 8px 5px ${adsLightGreyA}` };
 };
 
 /**
