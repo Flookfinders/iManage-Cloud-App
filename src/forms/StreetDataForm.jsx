@@ -40,6 +40,7 @@
 //    026   12.01.24 Sean Flook       IMANN-163 If viewing property create results do not reset everything.
 //    027   12.01.24 Sean Flook       IMANN-233 Use the new getStartEndCoordinates method.
 //    028   23.01.24 Sean Flook       IMANN-249 Do not display the ASD tab if street type 4 or 9.
+//    029   25.01.24 Sean Flook                 Changes required after UX review.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2890,51 +2891,7 @@ function StreetDataForm({ data, loading }) {
    */
   const handlePropertyAdd = (usrn, parent, isRange) => {
     streetContext.onLeavingStreet("createProperty", { usrn: usrn, parent: parent, isRange: isRange });
-    // const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
-
-    // if (streetChanged) {
-    //   saveConfirmDialog(true)
-    //     .then((result) => {
-    //       if (result === "save") {
-    //         ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
-    //         handleAddProperty(usrn, parent, isRange);
-    //       }
-    //     })
-    //     .catch(() => {});
-    // } else {
-    //   ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
-    //   handleAddProperty(usrn, parent, isRange);
-    // }
   };
-
-  /**
-   * Event to handle adding a new property.
-   *
-   * @param {number} usrn The USRN of the street that the property is being created on.
-   * @param {object|null} parent If this is a child property this will hold the parent information; otherwise it is null.
-   * @param {boolean} isRange True if user wants to create a range of properties; otherwise false.
-   */
-  // const handleAddProperty = async (usrn, parent, isRange) => {
-  //   await GetStreetMapData(usrn, userContext.currentUser.token, settingsContext.isScottish).then((result) => {
-  //     if (result && result.state !== 4) {
-  //       propertyContext.resetPropertyErrors();
-  //       propertyContext.onWizardDone(null, false, null, null);
-  //       mapContext.onWizardSetCoordinate(null);
-  //       propertyWizardType.current = isRange ? (!parent ? "range" : "rangeChildren") : !parent ? "property" : "child";
-  //       if (parent) propertyWizardParent.current = parent;
-  //       else {
-  //         const engDescriptor = result.streetDescriptors.filter((x) => x.language === "ENG");
-  //         if (engDescriptor) {
-  //           propertyWizardParent.current = { usrn: usrn, address: engDescriptor[0].streetDescriptor };
-  //         }
-  //       }
-  //       setOpenPropertyWizard(true);
-  //     } else {
-  //       alertType.current = isRange ? "invalidRangeState" : "invalidSingleState";
-  //       setAlertOpen(true);
-  //     }
-  //   });
-  // };
 
   /**
    * Event to handle adding a new ESU record.
@@ -6742,7 +6699,7 @@ function StreetDataForm({ data, loading }) {
 
       esuChanged.current = false;
 
-      streetContext.onLeavingStreet(null);
+      streetContext.onLeavingStreet(null, null);
     }
   }, [
     streetContext,
