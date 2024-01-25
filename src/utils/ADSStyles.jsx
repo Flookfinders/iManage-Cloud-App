@@ -23,6 +23,7 @@
 //    010   12.01.24 Sean Flook                 Added top border to toolbar style.
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
 //    012   25.01.24 Sean Flook                 Further changes required after UX review.
+//    013   25.01.24 Joel Benford               Update RecordCountStyle
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -364,7 +365,8 @@ export function RecordCountStyle(isHover) {
     return {
       width: "16px",
       height: "16px",
-      backgroundColor: grey[300],
+      backgroundColor: adsLightGreyB,
+      color: adsMidGreyA,
     };
 }
 
