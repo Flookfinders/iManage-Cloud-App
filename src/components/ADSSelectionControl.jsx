@@ -26,6 +26,7 @@
 //    013   10.01.24 Sean Flook                 Hide Create street from selected ESUs button until code has been written (IMANN-216).
 //    014   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    015   25.01.24 Sean Flook                 Changes required after UX review.
+//    016   25.01.24 Sean Flook                 Make the create street button visible.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1349,14 +1350,12 @@ function ADSSelectionControl({
                   selectionCount={selectionCount}
                   onClick={handleUnassignEsuClick}
                 />
-                {process.env.NODE_ENV === "development" && (
-                  <ADSSelectionButton
-                    variant="createStreet"
-                    isDisabled={!userCanEdit}
-                    selectionCount={selectionCount}
-                    onClick={handleCreateStreetClick}
-                  />
-                )}
+                <ADSSelectionButton
+                  variant="createStreet"
+                  isDisabled={!userCanEdit}
+                  selectionCount={selectionCount}
+                  onClick={handleCreateStreetClick}
+                />
               </Fragment>
             )}
             {numberOfTypes === 1 && haveMapEsu && (
@@ -1367,14 +1366,12 @@ function ADSSelectionControl({
                   selectionCount={selectionCount}
                   onClick={handleAssignEsuClick}
                 />
-                {process.env.NODE_ENV === "development" && (
-                  <ADSSelectionButton
-                    variant="createStreet"
-                    isDisabled={!userCanEdit}
-                    selectionCount={selectionCount}
-                    onClick={handleCreateStreetClick}
-                  />
-                )}
+                <ADSSelectionButton
+                  variant="createStreet"
+                  isDisabled={!userCanEdit}
+                  selectionCount={selectionCount}
+                  onClick={handleCreateStreetClick}
+                />
               </Fragment>
             )}
             {numberOfTypes === 1 && haveAsd && (
