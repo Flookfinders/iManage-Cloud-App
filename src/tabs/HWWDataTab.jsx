@@ -21,6 +21,7 @@
 //    008   11.01.24 Sean Flook                 Fix warnings.
 //    009   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    010   23.01.24 Sean Flook       IMANN-246 Display information when selecting Part Road.
+//    011   25.01.24 Sean Flook       IMANN-250 No need to default wholeRoad.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -331,7 +332,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
         setDistrict(data.hwwData.districtRefConsultant);
         setStartDate(data.hwwData.recordStartDate);
         setEndDate(data.hwwData.recordEndDate);
-        setWholeRoad(data.hwwData.wholeRoad ? data.hwwData.wholeRoad : true);
+        setWholeRoad(data.hwwData.wholeRoad);
         setSpecificLocation(data.hwwData.specificLocation ? data.hwwData.specificLocation : "");
         setHwwStartX(data.hwwData.hwwStartX ? data.hwwData.hwwStartX : 0);
         setHwwStartY(data.hwwData.hwwStartY ? data.hwwData.hwwStartY : 0);
@@ -423,7 +424,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
       setDistrict(data.hwwData.districtRefConsultant);
       setStartDate(data.hwwData.recordStartDate);
       setEndDate(data.hwwData.recordEndDate);
-      setWholeRoad(data.hwwData.wholeRoad ? data.hwwData.wholeRoad : true);
+      setWholeRoad(data.hwwData.wholeRoad);
       setSpecificLocation(data.hwwData.specificLocation ? data.hwwData.specificLocation : "");
       setHwwStartX(data.hwwData.hwwStartX ? data.hwwData.hwwStartX : 0);
       setHwwStartY(data.hwwData.hwwStartY ? data.hwwData.hwwStartY : 0);

@@ -21,6 +21,7 @@
 //    008   11.01.24 Sean Flook                 Fix warnings.
 //    009   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    010   23.01.24 Sean Flook       IMANN-246 Display information when selecting Part Road.
+//    011   25.01.24 Sean Flook       IMANN-250 No need to default wholeRoad.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -376,7 +377,7 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
         setDistrict(data.constructionData.districtRefConsultant);
         setStartDate(data.constructionData.recordStartDate);
         setEndDate(data.constructionData.recordEndDate);
-        setWholeRoad(data.constructionData.wholeRoad ? data.constructionData.wholeRoad : true);
+        setWholeRoad(data.constructionData.wholeRoad);
         setSpecifyLocation(data.constructionData.specificLocation ? data.constructionData.specificLocation : "");
         setConstructionStartX(data.constructionData.constructionStartX ? data.constructionData.constructionStartX : 0);
         setConstructionStartY(data.constructionData.constructionStartY ? data.constructionData.constructionStartY : 0);
@@ -477,7 +478,7 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
       setDistrict(data.constructionData.districtRefConsultant);
       setStartDate(data.constructionData.recordStartDate);
       setEndDate(data.constructionData.recordEndDate);
-      setWholeRoad(data.constructionData.wholeRoad ? data.constructionData.wholeRoad : true);
+      setWholeRoad(data.constructionData.wholeRoad);
       setSpecifyLocation(data.constructionData.specificLocation ? data.constructionData.specificLocation : "");
       setConstructionStartX(data.constructionData.constructionStartX ? data.constructionData.constructionStartX : 0);
       setConstructionStartY(data.constructionData.constructionStartY ? data.constructionData.constructionStartY : 0);

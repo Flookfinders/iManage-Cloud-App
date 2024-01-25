@@ -22,6 +22,7 @@
 //    009   11.01.24 Sean Flook                 Fix warnings.
 //    010   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    011   23.01.24 Sean Flook       IMANN-246 Display information when selecting Part Road.
+//    012   25.01.24 Sean Flook       IMANN-250 No need to default wholeRoad.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -406,7 +407,7 @@ function SpecialDesignationDataTab({
         setSource(
           data.specialDesignationData.specialDesigSourceText ? data.specialDesignationData.specialDesigSourceText : ""
         );
-        setWholeRoad(data.specialDesignationData.wholeRoad ? data.specialDesignationData.wholeRoad : true);
+        setWholeRoad(data.specialDesignationData.wholeRoad);
         setSpecificLocation(
           data.specialDesignationData.specificLocation ? data.specialDesignationData.specificLocation : ""
         );
@@ -542,7 +543,7 @@ function SpecialDesignationDataTab({
       setSource(
         data.specialDesignationData.specialDesigSourceText ? data.specialDesignationData.specialDesigSourceText : ""
       );
-      setWholeRoad(data.specialDesignationData.wholeRoad ? data.specialDesignationData.wholeRoad : true);
+      setWholeRoad(data.specialDesignationData.wholeRoad);
       setSpecificLocation(
         data.specialDesignationData.specificLocation ? data.specialDesignationData.specificLocation : ""
       );

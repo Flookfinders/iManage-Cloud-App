@@ -23,6 +23,7 @@
 //    010   11.01.24 Sean Flook                 Fix warnings.
 //    011   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    012   23.01.24 Sean Flook       IMANN-246 Display information when selecting Part Road.
+//    013   25.01.24 Sean Flook       IMANN-250 No need to default wholeRoad.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -302,7 +303,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
         setMaintainingOrganisation(data.interestData.swaOrgRefAuthMaintaining);
         setStartDate(data.interestData.recordStartDate);
         setEndDate(data.interestData.recordEndDate);
-        setWholeRoad(data.interestData.wholeRoad ? data.interestData.wholeRoad : true);
+        setWholeRoad(data.interestData.wholeRoad);
         setSpecificLocation(data.interestData.specificLocation ? data.interestData.specificLocation : "");
         setStartX(data.interestData.startX ? data.interestData.startX : 0);
         setStartY(data.interestData.startY ? data.interestData.startY : 0);
@@ -391,7 +392,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
       setMaintainingOrganisation(data.interestData.swaOrgRefAuthMaintaining);
       setStartDate(data.interestData.recordStartDate);
       setEndDate(data.interestData.recordEndDate);
-      setWholeRoad(data.interestData.wholeRoad ? data.interestData.wholeRoad : true);
+      setWholeRoad(data.interestData.wholeRoad);
       setSpecificLocation(data.interestData.specificLocation ? data.interestData.specificLocation : "");
       setStartX(data.interestData.startX ? data.interestData.startX : 0);
       setStartY(data.interestData.startY ? data.interestData.startY : 0);
