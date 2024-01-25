@@ -23,6 +23,7 @@
 //    010   20.12.23 Sean Flook                 Hide the Delete button until code has been written.
 //    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    012   11.01.24 Sean Flook                 Fix warnings.
+//    013   25.01.24 Joel Benford               Stop overriding descriptor background.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -977,7 +978,6 @@ function StreetDataTab({
                 <List
                   sx={{
                     width: "100%",
-                    backgroundColor: theme.palette.background.paper,
                     pt: theme.spacing(0),
                   }}
                   component="nav"
@@ -1034,7 +1034,6 @@ function StreetDataTab({
               <List
                 sx={{
                   width: "100%",
-                  backgroundColor: theme.palette.background.paper,
                   pt: theme.spacing(0),
                 }}
                 component="nav"
