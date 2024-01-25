@@ -17,6 +17,7 @@
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   10.01.24 Sean Flook                 Fix warnings.
 //    006   11.01.24 Sean Flook                 Fix warnings.
+//    007   24.01.24 Joel Benford               Update names
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -50,12 +51,12 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
 
   const [showDialog, setShowDialog] = useState(false);
 
-  const [name, setName] = useState(null);
-  const [scope, setScope] = useState(null);
-  const [territory, setTerritory] = useState(null);
-  const [metadataData, setMetadataData] = useState(null);
-  const [owner, setOwner] = useState(null);
-  const [frequency, setFrequency] = useState(null);
+  const [gazName, setGazName] = useState(null);
+  const [gazScope, setGazScope] = useState(null);
+  const [terOfUse, setTerOfUse] = useState(null);
+  const [linkedData, setLinkedData] = useState(null);
+  const [gazOwner, setGazOwner] = useState(null);
+  const [ngazFreq, setNgazFrequency] = useState(null);
 
   const frequencyData = [
     { id: "D", text: "Daily" },
@@ -72,18 +73,18 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
   const getUpdatedData = () => {
     if (variant === "property") {
       return {
-        name: name,
-        scope: scope,
-        territory: territory,
-        metadataData: metadataData,
-        owner: owner,
-        frequency: frequency,
+        gazName: gazName,
+        gazScope: gazScope,
+        terOfUse: terOfUse,
+        linkedData: linkedData,
+        gazOwner: gazOwner,
+        ngazFreq: ngazFreq,
       };
     } else {
       return {
-        territory: territory,
-        metadataData: metadataData,
-        frequency: frequency,
+        terOfUse: terOfUse,
+        linkedData: linkedData,
+        ngazFreq: ngazFreq,
       };
     }
   };
@@ -115,21 +116,21 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
   };
 
   /**
-   * Event to handle when the name changes.
+   * Event to handle when the gazetteer name changes.
    *
    * @param {string} newValue The new name.
    */
-  const handleNameChangeEvent = (newValue) => {
-    setName(newValue);
+  const handleGazNameChangeEvent = (newValue) => {
+    setGazName(newValue);
   };
 
   /**
-   * Event to handle when the scope changes.
+   * Event to handle when the gazScope changes.
    *
    * @param {string} newValue The new scope.
    */
-  const handleScopeChangeEvent = (newValue) => {
-    setScope(newValue);
+  const handleGazScopeChangeEvent = (newValue) => {
+    setGazScope(newValue);
   };
 
   /**
@@ -137,8 +138,8 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
    *
    * @param {string} newValue The new territory.
    */
-  const handleTerritoryChangeEvent = (newValue) => {
-    setTerritory(newValue);
+  const handleTerOfUseChangeEvent = (newValue) => {
+    setTerOfUse(newValue);
   };
 
   /**
@@ -146,26 +147,26 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
    *
    * @param {string} newValue The new data.
    */
-  const handleDataChangeEvent = (newValue) => {
-    setMetadataData(newValue);
+  const handleLinkedDataChangeEvent = (newValue) => {
+    setLinkedData(newValue);
   };
 
   /**
-   * Event to handle when the owner changes.
+   * Event to handle when the gazOwner changes.
    *
-   * @param {string} newValue The new owner.
+   * @param {string} newValue The new gazOwner.
    */
-  const handleOwnerChangeEvent = (newValue) => {
-    setOwner(newValue);
+  const handleGazOwnerChangeEvent = (newValue) => {
+    setGazOwner(newValue);
   };
 
   /**
-   * Event to handle when the frequency changes.
+   * Event to handle when the ngazFreq changes.
    *
-   * @param {string} newValue The new frequency.
+   * @param {string} newValue The new ngazFreq.
    */
   const handleFrequencyChangeEvent = (newValue) => {
-    setFrequency(newValue);
+    setNgazFrequency(newValue);
   };
 
   /**
@@ -247,19 +248,19 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
   useEffect(() => {
     if (data) {
       if (variant === "property") {
-        setName(data.name);
-        setScope(data.scope);
-        setTerritory(data.territory);
-        setMetadataData(data.metadataData);
-        setOwner(data.owner);
-        setFrequency(data.frequency);
+        setGazName(data.gazName);
+        setGazScope(data.gazScope);
+        setTerOfUse(data.terOfUse);
+        setLinkedData(data.linkedData);
+        setGazOwner(data.gazOwner);
+        setNgazFrequency(data.ngazFreq);
       } else {
-        setName(null);
-        setScope(null);
-        setTerritory(data.territory);
-        setMetadataData(data.metadataData);
-        setOwner(null);
-        setFrequency(data.frequency);
+        setGazName(null);
+        setGazScope(null);
+        setTerOfUse(data.terOfUse);
+        setLinkedData(data.linkedData);
+        setGazOwner(null);
+        setNgazFrequency(data.ngazFreq);
       }
     }
 
@@ -299,10 +300,10 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
                       isEditable
                       maxLength={60}
                       isRequired
-                      value={name}
+                      value={gazName}
                       id="metadata_name"
                       helperText={getHelperText("name")}
-                      onChange={handleNameChangeEvent}
+                      onChange={handleGazNameChangeEvent}
                     />
                   )}
                   {variant === "property" && (
@@ -311,10 +312,10 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
                       isEditable
                       maxLength={60}
                       isRequired
-                      value={scope}
+                      value={gazScope}
                       id="metadata_scope"
                       helperText={getHelperText("scope")}
-                      onChange={handleScopeChangeEvent}
+                      onChange={handleGazScopeChangeEvent}
                     />
                   )}
                   <ADSTextControl
@@ -322,19 +323,19 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
                     isEditable
                     maxLength={60}
                     isRequired
-                    value={territory}
+                    value={terOfUse}
                     id="metadata_territory"
                     helperText={getHelperText("territory")}
-                    onChange={handleTerritoryChangeEvent}
+                    onChange={handleTerOfUseChangeEvent}
                   />
                   <ADSTextControl
                     label="Data"
                     isEditable
                     maxLength={100}
-                    value={metadataData}
+                    value={linkedData}
                     id="metadata_data"
                     helperText={getHelperText("data")}
-                    onChange={handleDataChangeEvent}
+                    onChange={handleLinkedDataChangeEvent}
                   />
                   {variant === "property" && (
                     <ADSTextControl
@@ -342,10 +343,10 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
                       isEditable
                       maxLength={60}
                       isRequired
-                      value={owner}
+                      value={gazOwner}
                       id="metadata_owner"
                       helperText={getHelperText("owner")}
-                      onChange={handleOwnerChangeEvent}
+                      onChange={handleGazOwnerChangeEvent}
                     />
                   )}
                   <ADSSelectControl
@@ -356,7 +357,7 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
                     lookupData={frequencyData}
                     lookupId="id"
                     lookupLabel="text"
-                    value={frequency}
+                    value={ngazFreq}
                     helperText={getHelperText("frequency")}
                     onChange={handleFrequencyChangeEvent}
                   />

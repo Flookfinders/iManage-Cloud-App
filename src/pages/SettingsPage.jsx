@@ -16,6 +16,7 @@
 //    003   03.11.23 Sean Flook                 Updated TreeView and TreeItem.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   30.11.23 Sean Flook                 Hide items that have not been developed yet.
+//    006   24.01.24 Joel Benford               Add scottish metadata to tree.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -124,7 +125,7 @@ function SettingsPage() {
                       }
                       sx={TreeItemStyle(selectedNode === "1.1")}
                     />
-                    {HasProperties() && (
+                    {!settingsContext.isScottish && HasProperties() && (
                       <TreeItem
                         nodeId="1.2"
                         label={
@@ -135,16 +136,18 @@ function SettingsPage() {
                         sx={TreeItemStyle(selectedNode === "1.2")}
                       />
                     )}
-                    <TreeItem
-                      nodeId="1.3"
-                      label={
-                        <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
-                          Street metadata
-                        </Typography>
-                      }
-                      sx={TreeItemStyle(selectedNode === "1.3")}
-                    />
-                    {HasASD() && (
+                    {!settingsContext.isScottish && (
+                      <TreeItem
+                        nodeId="1.3"
+                        label={
+                          <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
+                            Street metadata
+                          </Typography>
+                        }
+                        sx={TreeItemStyle(selectedNode === "1.3")}
+                      />
+                    )}
+                    {!settingsContext.isScottish && HasASD() && (
                       <TreeItem
                         nodeId="1.4"
                         label={
@@ -153,6 +156,17 @@ function SettingsPage() {
                           </Typography>
                         }
                         sx={TreeItemStyle(selectedNode === "1.4")}
+                      />
+                    )}
+                    {settingsContext.isScottish && (
+                      <TreeItem
+                        nodeId="1.5"
+                        label={
+                          <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
+                            Gazetteer metadata
+                          </Typography>
+                        }
+                        sx={TreeItemStyle(selectedNode === "1.5")}
                       />
                     )}
                   </TreeItem>

@@ -15,6 +15,7 @@
 //    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    003   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    004   10.01.24 Sean Flook                 Fix warnings.
+//    005   24.01.24 Joel Benford               Add scottish metadata to tree.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -76,6 +77,10 @@ function SettingsDataForm({ nodeId }) {
         setCurrentTab(14);
         break;
 
+      case "1.5": // OS gazetteer metadata
+        setCurrentTab(15);
+        break;
+
       case "2.1": // Property templates
         setCurrentTab(21);
         break;
@@ -123,6 +128,9 @@ function SettingsDataForm({ nodeId }) {
       </TabPanel>
       <TabPanel value={currentTab} index={14}>
         <MetadataSettingsTab variant="asd" />
+      </TabPanel>
+      <TabPanel value={currentTab} index={15}>
+        <MetadataSettingsTab variant="property" />
       </TabPanel>
       <TabPanel value={currentTab} index={21}>
         <PropertyTemplatesTab />
