@@ -30,6 +30,7 @@
 //    017   12.01.24 Sean Flook       IMANN-233 Modified GetNewStreetData to update the street start and end coordinates if required.
 //    018   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    019   25.01.24 Sean Flook                 Changes required after UX review.
+//    020   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -804,7 +805,7 @@ export function GetCurrentSearchStreets(streetData, isScottish) {
           .map((asdRec) => ({
             type: 66,
             pkId: asdRec.pkId,
-            usrn: asdRec.usrn,
+            prowUsrn: asdRec.prowUsrn,
             prowRights: asdRec.prowRights,
             prowStatus: asdRec.prowStatus,
             prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
@@ -858,6 +859,7 @@ export function GetNewEsuStreetData(currentSandbox, newEsus, streetData, isScott
   let updatedConstructions = !isScottish ? [...streetData.constructions] : null;
   let updatedSpecialDesignations = !isScottish ? [...streetData.specialDesignations] : null;
   let updatedHeightWidthWeights = !isScottish ? [...streetData.heightWidthWeights] : null;
+  let updatedPublicRightOfWays = !isScottish ? [...streetData.publicRightOfWays] : null;
 
   if (updateWholeRoad) {
     const newWholeRoadWkt = GetWholeRoadGeometry(newEsus);
@@ -941,6 +943,18 @@ export function GetNewEsuStreetData(currentSandbox, newEsus, streetData, isScott
         (x) => wholeRoadASD.find((rec) => rec.pkId === x.pkId) || x
       );
     }
+
+    if (!isScottish && streetData.publicRightOfWays && streetData.publicRightOfWays.length > 0) {
+      const wholeRoadASD = streetData.publicRightOfWays
+        .filter((x) => x.wholeRoad)
+        .map((rec) => {
+          return { ...rec, wktGeometry: newWholeRoadWkt, changeType: "U" };
+        });
+
+      updatedPublicRightOfWays = streetData.publicRightOfWays.map(
+        (x) => wholeRoadASD.find((rec) => rec.pkId === x.pkId) || x
+      );
+    }
   }
 
   const newStreetData = GetNewStreetData(
@@ -955,7 +969,7 @@ export function GetNewEsuStreetData(currentSandbox, newEsus, streetData, isScott
     updatedInterests,
     updatedConstructions,
     updatedSpecialDesignations,
-    streetData.publicRightOfWays,
+    updatedPublicRightOfWays,
     updatedHeightWidthWeights,
     isScottish,
     updateWholeRoad
@@ -3161,7 +3175,7 @@ export const updateMapStreetData = (
           ? asdType66.map((asdRec) => ({
               type: 66,
               pkId: asdRec.pkId,
-              usrn: asdRec.usrn,
+              prowUsrn: asdRec.prowUsrn,
               prowRights: asdRec.prowRights,
               prowStatus: asdRec.prowStatus,
               prowOrgRefConsultant: asdRec.prowOrgRefConsultant,

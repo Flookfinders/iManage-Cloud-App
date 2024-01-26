@@ -28,6 +28,7 @@
 //    013   11.01.24 Sean Flook                 Fix warnings.
 //    014   12.01.24 Sean Flook       IMANN-163 Do not try and get the data if we do not have the USRN/UPRN.
 //    015   25.01.24 Sean Flook                 Changes required after UX review.
+//    016   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -362,7 +363,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
           ? streetData.publicRightOfWays.map((asdRec) => ({
               type: 66,
               pkId: asdRec.pkId,
-              usrn: asdRec.usrn,
+              prowUsrn: asdRec.prowUsrn,
               prowRights: asdRec.prowRights,
               prowStatus: asdRec.prowStatus,
               prowOrgRefConsultant: asdRec.prowOrgRefConsultant,

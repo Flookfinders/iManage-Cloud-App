@@ -37,6 +37,7 @@
 //    023   11.01.24 Sean Flook       IMANN-163 Close the add property wizard dialog when clicking on view properties.
 //    024   12.01.24 Sean Flook                 Fixed duplicate key warning.
 //    025   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    026   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -604,7 +605,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
             ? streetData.publicRightOfWays.map((asdRec) => ({
                 type: 66,
                 pkId: asdRec.pkId,
-                usrn: asdRec.usrn,
+                prowUsrn: asdRec.prowUsrn,
                 prowRights: asdRec.prowRights,
                 prowStatus: asdRec.prowStatus,
                 prowOrgRefConsultant: asdRec.prowOrgRefConsultant,

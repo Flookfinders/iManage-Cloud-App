@@ -41,6 +41,7 @@
 //    027   12.01.24 Sean Flook       IMANN-233 Use the new getStartEndCoordinates method.
 //    028   23.01.24 Sean Flook       IMANN-249 Do not display the ASD tab if street type 4 or 9.
 //    029   25.01.24 Sean Flook                 Changes required after UX review.
+//    030   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2739,7 +2740,7 @@ function StreetDataForm({ data, loading }) {
         pkId: newPkId,
         entryDate: currentDate,
         lastUpdateDate: currentDate,
-        // wktGeometry: streetData && streetData.esus ? GetWholeRoadGeometry(streetData.esus) : "",
+        wktGeometry: streetData && streetData.esus ? GetWholeRoadGeometry(streetData.esus) : "",
       };
 
       const newPublicRightOfWays = streetData.publicRightOfWays ? streetData.publicRightOfWays : [];
@@ -8354,7 +8355,7 @@ function StreetDataForm({ data, loading }) {
               newStreetData.publicRightOfWays.map((asdRec) => ({
                 type: 66,
                 pkId: asdRec.pkId,
-                usrn: asdRec.usrn,
+                prowUsrn: asdRec.prowUsrn,
                 prowRights: asdRec.prowRights,
                 prowStatus: asdRec.prowStatus,
                 prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
@@ -9143,57 +9144,6 @@ function StreetDataForm({ data, loading }) {
     streetContext,
     streetData,
   ]);
-
-  // Create new street from ESUs
-  // useEffect(() => {
-  //   if (streetContext.createEsus && Array.isArray(streetContext.createEsus) && streetContext.createEsus.length) {
-  //     streetContext.onStreetChange(0, "New Street", true);
-
-  //   const currentSearchStreets = mapContext.currentSearchData.streets;
-  //   currentSearchStreets.push({
-  //     usrn: 0,
-  //     description: "New Street",
-  //     language: "ENG",
-  //     locality:
-  //       settingsContext.streetTemplate &&
-  //       settingsContext.streetTemplate.streetTemplate &&
-  //       settingsContext.streetTemplate.streetTemplate.localityRef
-  //         ? settingsContext.streetTemplate.streetTemplate.localityRef
-  //         : null,
-  //     town:
-  //       settingsContext.streetTemplate &&
-  //       settingsContext.streetTemplate.streetTemplate &&
-  //       settingsContext.streetTemplate.streetTemplate.townRef
-  //         ? settingsContext.streetTemplate.streetTemplate.townRef
-  //         : null,
-  //     state:
-  //       settingsContext.streetTemplate &&
-  //       settingsContext.streetTemplate.streetTemplate &&
-  //       settingsContext.streetTemplate.streetTemplate.state
-  //         ? settingsContext.streetTemplate.streetTemplate.state
-  //         : undefined,
-  //     type:
-  //       settingsContext.streetTemplate &&
-  //       settingsContext.streetTemplate.streetTemplate &&
-  //       settingsContext.streetTemplate.streetTemplate.recordType
-  //         ? settingsContext.streetTemplate.streetTemplate.recordType
-  //         : undefined,
-  //     esus: [],
-  //     asdType51: [],
-  //     asdType52: [],
-  //     asdType53: [],
-  //     asdType61: [],
-  //     asdType62: [],
-  //     asdType63: [],
-  //     asdType64: [],
-  //     asdType66: [],
-  //   });
-
-  //   mapContext.onSearchDataChange(currentSearchStreets, [], "0", null);
-  //   mapContext.onEditMapObject(null, null);
-  // });
-  //   }
-  // }, [streetContext]);
 
   useEffect(() => {
     if (

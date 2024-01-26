@@ -28,6 +28,7 @@
 //    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    016   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    017   25.01.24 Sean Flook                 Correctly handle status code 204.
+//    018   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -354,7 +355,7 @@ function ADSSearch({ placeholder, onSearchClick }) {
                     ? streetData.publicRightOfWays.map((asdRec) => ({
                         type: 66,
                         pkId: asdRec.pkId,
-                        usrn: asdRec.usrn,
+                        prowUsrn: asdRec.prowUsrn,
                         prowRights: asdRec.prowRights,
                         prowStatus: asdRec.prowStatus,
                         prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
@@ -843,7 +844,7 @@ function ADSSearch({ placeholder, onSearchClick }) {
             ? streetData.publicRightOfWays.map((asdRec) => ({
                 type: 66,
                 pkId: asdRec.pkId,
-                usrn: asdRec.usrn,
+                prowUsrn: asdRec.prowUsrn,
                 prowRights: asdRec.prowRights,
                 prowStatus: asdRec.prowStatus,
                 prowOrgRefConsultant: asdRec.prowOrgRefConsultant,

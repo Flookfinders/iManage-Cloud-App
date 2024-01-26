@@ -27,6 +27,7 @@
 //    014   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    015   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    016   12.01.24 Sean Flook       IMANN-163 Search results should be an array.
+//    017   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -629,7 +630,7 @@ function ADSAppBar(props) {
           foundStreet.publicRightOfWays.map((asdRec) => ({
             type: 66,
             pkId: asdRec.pkId,
-            usrn: asdRec.usrn,
+            prowUsrn: asdRec.prowUsrn,
             prowRights: asdRec.prowRights,
             prowStatus: asdRec.prowStatus,
             prowOrgRefConsultant: asdRec.prowOrgRefConsultant,

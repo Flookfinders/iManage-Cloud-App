@@ -21,6 +21,7 @@
 //    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and removed a couple of warnings.
 //    009   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    010   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    011   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -312,7 +313,7 @@ function ADSHomepageLatestEditsControl({ data }) {
           ? streetData.publicRightOfWays.map((asdRec) => ({
               type: 66,
               pkId: asdRec.pkId,
-              usrn: asdRec.usrn,
+              prowUsrn: asdRec.prowUsrn,
               prowRights: asdRec.prowRights,
               prowStatus: asdRec.prowStatus,
               prowOrgRefConsultant: asdRec.prowOrgRefConsultant,

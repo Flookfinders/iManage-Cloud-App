@@ -17,6 +17,7 @@
 //    004   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and removed some warnings.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    007   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -332,7 +333,7 @@ function SearchDataForm() {
                     ? streetData.publicRightOfWays.map((asdRec) => ({
                         type: 66,
                         pkId: asdRec.pkId,
-                        usrn: asdRec.usrn,
+                        prowUsrn: asdRec.prowUsrn,
                         prowRights: asdRec.prowRights,
                         prowStatus: asdRec.prowStatus,
                         prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
@@ -506,7 +507,7 @@ function SearchDataForm() {
                     ? streetData.publicRightOfWays.map((asdRec) => ({
                         type: 66,
                         pkId: asdRec.pkId,
-                        usrn: asdRec.usrn,
+                        prowUsrn: asdRec.prowUsrn,
                         prowRights: asdRec.prowRights,
                         prowStatus: asdRec.prowStatus,
                         prowOrgRefConsultant: asdRec.prowOrgRefConsultant,

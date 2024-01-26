@@ -29,6 +29,7 @@
 //    016   10.01.24 Sean Flook                 Fix warnings.
 //    017   12.01.24 Sean Flook       IMANN-233 Added getStartEndCoordinates.
 //    018   16.01.24 Sean Flook                 Added filteredLookups.
+//    019   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1408,7 +1409,7 @@ export async function doOpenRecord(
           ? streetData.publicRightOfWays.map((asdRec) => ({
               type: 66,
               pkId: asdRec.pkId,
-              usrn: asdRec.usrn,
+              prowUsrn: asdRec.prowUsrn,
               prowRights: asdRec.prowRights,
               prowStatus: asdRec.prowStatus,
               prowOrgRefConsultant: asdRec.prowOrgRefConsultant,

@@ -44,6 +44,7 @@
 //    030   10.01.24 Sean Flook       IMANN-215 Allow ESUs to be assigned to a street when creating a new street.
 //    031   11.01.24 Sean Flook       IMANN-163 Close the add property wizard dialog when clicking on view properties.
 //    032   25.01.24 Sean Flook                 Changes required after UX review and some fixes for bugs/warnings.
+//    033   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2819,7 +2820,7 @@ function ADSEsriMap(startExtent) {
               street.asdType66.map((asd) => {
                 return {
                   pkId: asd.pkId,
-                  usrn: asd.usrn,
+                  prowUsrn: asd.prowUsrn,
                   prowRights: asd.prowRights,
                   prowOrgRefConsultant: asd.prowOrgRefConsultant,
                   prowDistrictRefConsultant: asd.prowDistrictRefConsultant,
@@ -3135,7 +3136,7 @@ function ADSEsriMap(startExtent) {
         attributes: {
           ObjectID: index,
           PkId: rec.pkId.toString(),
-          USRN: rec.usrn.toString(),
+          USRN: rec.prowUsrn.toString(),
           Description: `Public right of way - ${GetAsdPrimaryCodeText(
             "66",
             rec.prowRights,
