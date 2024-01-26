@@ -31,6 +31,7 @@
 //    018   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    019   25.01.24 Sean Flook                 Changes required after UX review.
 //    020   26.01.24 Sean Flook       IMANN-260 Corrected field name.
+//    021   26.01.24 Sean Flook       IMANN-251 Added missing record type to hasStreetChanged.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3204,6 +3205,7 @@ export const hasStreetChanged = (newStreet, currentSandbox) => {
     currentSandbox.currentStreetRecords.descriptor ||
     currentSandbox.currentStreetRecords.highwayDedication ||
     currentSandbox.currentStreetRecords.oneWayExemption ||
+    currentSandbox.currentStreetRecords.successorCrossRef ||
     currentSandbox.currentStreetRecords.maintenanceResponsibility ||
     currentSandbox.currentStreetRecords.reinstatementCategory ||
     currentSandbox.currentStreetRecords.osSpecialDesignation ||

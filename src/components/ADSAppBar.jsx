@@ -28,6 +28,7 @@
 //    015   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    016   12.01.24 Sean Flook       IMANN-163 Search results should be an array.
 //    017   26.01.24 Sean Flook       IMANN-260 Corrected field name.
+//    018   26.01.24 Sean Flook       IMANN-251 Fix HandleChangeCheck and only do the postCheckAction after the record is saved.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -266,8 +267,10 @@ function ADSAppBar(props) {
    * Event to handle saving a street.
    *
    * @param {object} currentStreet The data for the current street.
+   * @param {string} action The action that needs to be performed.
+   * @param {boolean} discardChanges If true the changes are discarded; otherwise they are saved.
    */
-  function HandleSaveStreet(currentStreet) {
+  function HandleSaveStreet(currentStreet, action, discardChanges) {
     SaveStreet(
       currentStreet,
       streetContext,
@@ -283,6 +286,8 @@ function ADSAppBar(props) {
         saveResult.current = true;
         saveType.current = "street";
         setSaveOpen(true);
+        ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+        PerformReturnAction(action, discardChanges);
       } else {
         saveResult.current = false;
         saveType.current = "street";
@@ -295,8 +300,10 @@ function ADSAppBar(props) {
    * Event to handle saving a property.
    *
    * @param {object} currentProperty The data for the current property.
+   * @param {string} action The action that needs to be performed.
+   * @param {boolean} discardChanges If true the changes are discarded; otherwise they are saved.
    */
-  function HandleSaveProperty(currentProperty) {
+  function HandleSaveProperty(currentProperty, action, discardChanges) {
     SavePropertyAndUpdate(
       currentProperty,
       propertyContext.currentProperty.newProperty,
@@ -313,6 +320,8 @@ function ADSAppBar(props) {
         saveResult.current = true;
         saveType.current = "property";
         setSaveOpen(true);
+        ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+        PerformReturnAction(action, discardChanges);
       } else {
         saveResult.current = false;
         saveType.current = "property";
@@ -364,6 +373,10 @@ function ADSAppBar(props) {
         sandboxContext.currentSandbox.currentStreetRecords.esu ||
         sandboxContext.currentSandbox.currentStreetRecords.highwayDedication ||
         sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption ||
+        sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef ||
+        sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility ||
+        sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory ||
+        sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation ||
         sandboxContext.currentSandbox.currentStreetRecords.interest ||
         sandboxContext.currentSandbox.currentStreetRecords.construction ||
         sandboxContext.currentSandbox.currentStreetRecords.specialDesignation ||
@@ -380,41 +393,32 @@ function ADSAppBar(props) {
           ? sandboxContext.currentSandbox.currentStreet
           : sandboxContext.currentSandbox.sourceStreet;
 
-        if (associatedRecords.current.length > 0) {
-          saveConfirmDialog(associatedRecords.current)
-            .then((result) => {
-              if (result === "save") {
-                if (streetContext.validateData()) {
-                  failedValidation.current = false;
-                  const currentStreetData = GetCurrentStreetData(
-                    streetData,
-                    sandboxContext,
-                    lookupContext,
-                    settingsContext.isWelsh,
-                    settingsContext.isScottish
-                  );
-                  HandleSaveStreet(currentStreetData);
-                } else {
-                  failedValidation.current = true;
-                  saveResult.current = false;
-                  setSaveOpen(true);
-                }
+        saveConfirmDialog(associatedRecords.current.length > 0 ? associatedRecords.current : true)
+          .then((result) => {
+            if (result === "save") {
+              if (streetContext.validateData()) {
+                failedValidation.current = false;
+                const currentStreetData = GetCurrentStreetData(
+                  streetData,
+                  sandboxContext,
+                  lookupContext,
+                  settingsContext.isWelsh,
+                  settingsContext.isScottish
+                );
+                HandleSaveStreet(currentStreetData, postCheckAction, result === "discard");
+              } else {
+                failedValidation.current = true;
+                saveResult.current = false;
+                setSaveOpen(true);
+                ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+                PerformReturnAction(postCheckAction, result === "discard");
               }
+            } else {
               ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
               PerformReturnAction(postCheckAction, result === "discard");
-            })
-            .catch(() => {});
-        } else {
-          saveConfirmDialog(true)
-            .then((result) => {
-              if (result === "save") {
-                HandleSaveStreet(sandboxContext.currentSandbox.currentStreet);
-              }
-              ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
-              PerformReturnAction(postCheckAction, result === "discard");
-            })
-            .catch(() => {});
-        }
+            }
+          })
+          .catch(() => {});
       } else {
         ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
         PerformReturnAction(postCheckAction, false);
@@ -425,6 +429,10 @@ function ADSAppBar(props) {
         sandboxContext.currentSandbox.currentPropertyRecords.lpi ||
         sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef ||
         sandboxContext.currentSandbox.currentPropertyRecords.provenance ||
+        sandboxContext.currentSandbox.currentPropertyRecords.provenance ||
+        sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef ||
+        sandboxContext.currentSandbox.currentPropertyRecords.organisation ||
+        sandboxContext.currentSandbox.currentPropertyRecords.classification ||
         sandboxContext.currentSandbox.currentPropertyRecords.note ||
         (sandboxContext.currentSandbox.currentProperty &&
           !PropertyComparison(
@@ -439,41 +447,32 @@ function ADSAppBar(props) {
           ? sandboxContext.currentSandbox.currentProperty
           : sandboxContext.currentSandbox.sourceProperty;
 
-        if (associatedRecords.current.length > 0) {
-          saveConfirmDialog(associatedRecords.current)
-            .then((result) => {
-              if (result === "save") {
-                if (propertyContext.validateData()) {
-                  failedValidation.current = false;
-                  const currentPropertyData = GetCurrentPropertyData(
-                    propertyData,
-                    sandboxContext,
-                    lookupContext,
-                    settingsContext.isWelsh,
-                    settingsContext.isScottish
-                  );
-                  HandleSaveProperty(currentPropertyData);
-                } else {
-                  failedValidation.current = true;
-                  saveResult.current = false;
-                  setSaveOpen(true);
-                }
+        saveConfirmDialog(associatedRecords.current.length > 0 ? associatedRecords.current : true)
+          .then((result) => {
+            if (result === "save") {
+              if (propertyContext.validateData()) {
+                failedValidation.current = false;
+                const currentPropertyData = GetCurrentPropertyData(
+                  propertyData,
+                  sandboxContext,
+                  lookupContext,
+                  settingsContext.isWelsh,
+                  settingsContext.isScottish
+                );
+                HandleSaveProperty(currentPropertyData, postCheckAction, result === "discard");
+              } else {
+                failedValidation.current = true;
+                saveResult.current = false;
+                setSaveOpen(true);
+                ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+                PerformReturnAction(postCheckAction, result === "discard");
               }
+            } else {
               ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
               PerformReturnAction(postCheckAction, result === "discard");
-            })
-            .catch(() => {});
-        } else {
-          saveConfirmDialog(true)
-            .then((result) => {
-              if (result === "save") {
-                HandleSaveProperty(sandboxContext.currentSandbox.currentProperty);
-              }
-              ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
-              PerformReturnAction(postCheckAction, result === "discard");
-            })
-            .catch(() => {});
-        }
+            }
+          })
+          .catch(() => {});
       } else {
         ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
         PerformReturnAction(postCheckAction, false);

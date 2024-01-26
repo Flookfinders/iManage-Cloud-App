@@ -37,6 +37,7 @@
 //    024   10.01.24 Sean Flook       IMANN-163 Added previousStreet and previousProperty.
 //    025   12.01.24 Sean Flook       IMANN-163 Search results should be an array.
 //    026   25.01.24 Sean Flook                 Changes required after UX review.
+//    027   26.01.24 Sean Flook       IMANN-251 Only check why in HandleLeavingStreet.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1095,7 +1096,7 @@ function App() {
    * @param {object|null} information The information required to use when leaving the street.
    */
   function HandleLeavingStreet(why, information) {
-    if (why && information) setLeavingStreet({ why: why, information: information });
+    if (why) setLeavingStreet({ why: why, information: information });
     else setLeavingStreet(null);
   }
 

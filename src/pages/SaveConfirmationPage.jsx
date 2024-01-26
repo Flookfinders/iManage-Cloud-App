@@ -1,3 +1,23 @@
+/* #region header */
+/**************************************************************************************************
+//
+//  Description: Application Bar component
+//
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//
+//--------------------------------------------------------------------------------------------------
+//
+//  Modification History:
+//
+//  Version Date     Modifier            Issue# Description
+//#region Version 1.0.0.0 changes
+//    001            Sean Flook                 Initial Revision.
+//    002   26.01.24 Sean Flook       IMANN-251 Reset associatedRecords when option is true.
+//#endregion Version 1.0.0.0 changes
+//
+//--------------------------------------------------------------------------------------------------
+/* #endregion header */
+
 /* #region imports */
 import React, { useState, useRef, useContext, createContext, Fragment } from "react";
 import ConfirmEditLossDialog from "./../dialogs/ConfirmEditLossDialog";
@@ -23,7 +43,10 @@ export const SaveConfirmationServiceProvider = ({ children }) => {
     if (options.constructor === Array) {
       setAssociatedRecords(options);
       setSaveConfirmationState(true);
-    } else setSaveConfirmationState(options);
+    } else {
+      setAssociatedRecords([]);
+      setSaveConfirmationState(options);
+    }
 
     return new Promise((resolve, reject) => {
       awaitingSavePromiseRef.current = { resolve, reject };
