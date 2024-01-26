@@ -19,6 +19,7 @@
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    007   11.01.24 Sean Flook                 Fix warnings.
 //    008   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    009   26.01.24 Sean Flook       IMANN-257 Fix handleCloseDeleteConfirmation.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -137,9 +138,19 @@ function NotesDataTab({ data, errors, loading, focusedField, onDataChanged, onDe
     setOpenDeleteConfirmation(false);
     const id = data && data.pkId ? data.pkId : -1;
 
-    if (deleteConfirmed && id && id > 0) {
-      const currentData = GetCurrentData("changeType", "D");
-      if (onHomeClick) onHomeClick("save", null, currentData);
+    if (deleteConfirmed && id && id !== 0) {
+      if (id > 0) {
+        const currentData = GetCurrentData("changeType", "D");
+        if (onHomeClick) onHomeClick("save", null, currentData);
+      } else {
+        if (dataChanged) {
+          if (data && data.noteData) {
+            setNote(data.noteData.note);
+          }
+        }
+        setDataChanged(false);
+        if (onHomeClick) onHomeClick("discard", data.noteData, null);
+      }
       if (onDelete) onDelete(id);
     }
   };

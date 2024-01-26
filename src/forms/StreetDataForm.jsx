@@ -43,6 +43,7 @@
 //    029   25.01.24 Sean Flook                 Changes required after UX review.
 //    030   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    031   26.01.24 Sean Flook       IMANN-232 Do not remove record when creating a new street.
+//    032   26.01.24 Sean Flook       IMANN-257 Bug fix handleNoteSelected.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2861,7 +2862,7 @@ function StreetDataForm({ data, loading }) {
       );
 
       setNotesFormData({
-        pkId: 0,
+        pkId: newPkId,
         noteData: newRec,
         index: newIdx,
         totalRecords: streetData.streetNotes ? streetData.streetNotes.filter((x) => x.changeType !== "D").length : 1,
@@ -2870,7 +2871,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("streetNote", newRec);
       streetContext.onRecordChange(72, newIdx, null, true);
-    } else if (pkId > 0) {
+    } else if (pkId !== -1) {
       setNotesFormData({
         pkId: pkId,
         noteData: noteData,
