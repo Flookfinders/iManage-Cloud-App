@@ -42,7 +42,7 @@
 //    028   23.01.24 Sean Flook       IMANN-249 Do not display the ASD tab if street type 4 or 9.
 //    029   25.01.24 Sean Flook                 Changes required after UX review.
 //    030   26.01.24 Sean Flook       IMANN-260 Corrected field name.
-//    031   26.01.24 Sean Flook       IMANN-260 Do not remove record when creating a new street.
+//    031   26.01.24 Sean Flook       IMANN-232 Do not remove record when creating a new street.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------

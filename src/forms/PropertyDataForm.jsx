@@ -37,7 +37,7 @@
 //    024   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    025   10.01.24 Sean Flook                 Fix errors.
 //    026   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    027   26.01.24 Sean Flook       IMANN-260 Do not remove record when creating a new property.
+//    027   26.01.24 Sean Flook       IMANN-232 Do not remove record when creating a new property.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
