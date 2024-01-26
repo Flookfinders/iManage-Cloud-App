@@ -17,6 +17,7 @@
 //    004   06.10.23 Sean Flook                 Added lookupContext so it can be passed through to GetNewStreet.
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    006   25.01.24 Sean Flook                 Changes required after UX review.
+//    007   26.01.24 Sean Flook       IMANN-232 Correctly initialise loadingRef.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ function StreetPage() {
   const [data, setData] = useState();
   const dataUsrn = useRef(-1);
   const [loading, setLoading] = useState(true);
-  const loadingRef = useRef(true);
+  const loadingRef = useRef(false);
 
   useEffect(() => {
     async function SetUpStreetData() {

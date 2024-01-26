@@ -37,6 +37,7 @@
 //    024   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    025   10.01.24 Sean Flook                 Fix errors.
 //    026   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    027   26.01.24 Sean Flook       IMANN-260 Do not remove record when creating a new property.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2556,8 +2557,8 @@ function PropertyDataForm({ data, loading }) {
    */
   const handleLPIHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkData) => {
-      if (checkData && checkData.pkId < 0) {
-        // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
+      if (checkData && checkData.pkId < 0 && !propertyContext.currentProperty.newProperty) {
+        // If user has added a new record and then clicked Discard/Cancel remove the record from the array if not a new property.
         let restoredLpis = propertyData.lpis.filter((x) => x.pkId !== checkData.pkId);
 
         if (checkData.dualLanguageLink > 0)
