@@ -21,7 +21,7 @@
 //  Construction:               6200051
 //  Special Designation:        6300037
 //  Height Width Weight:        6400048
-//  Public Right of Way:        6600052
+//  Public Right of Way:        6600058
 //  Note:                       7200012
 //
 //--------------------------------------------------------------------------------------------------
@@ -38,6 +38,7 @@
 //    006   15.12.23 Sean Flook                 Added new checks and comments.
 //    007   19.12.23 Sean Flook                 Various bug fixes.
 //    008   29.01.24 Sean Flook                 Added new checks.
+//    009   29.01.24 Sean Flook                 Added more new checks.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3296,6 +3297,10 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
   let appealRefErrors = [];
   let consultRefErrors = [];
   let consultDetailsErrors = [];
+  let consultStartDateErrors = [];
+  let consultEndDateErrors = [];
+  let appealDateErrors = [];
+  let divRelatedUsrnErrors = [];
 
   if (data) {
     // Mandatory PROW Rights is missing.
@@ -3455,10 +3460,15 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
       prowOrgRefConsultantErrors.push(GetErrorMessage(currentCheck, false));
     }
 
-    // Mandatory PROW Org Ref Consultant is missing.
+    // "PROW Org Ref Consultant and PROW District Ref Consultant must either both be blank or both have a value.
     currentCheck = GetCheck(6600043, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, true) && !data.prowOrgRefConsultant) {
+    if (
+      includeCheck(currentCheck, true) &&
+      ((data.prowOrgRefConsultant && !data.prowDistrictRefConsultant) ||
+        (!data.prowOrgRefConsultant && data.prowDistrictRefConsultant))
+    ) {
       prowOrgRefConsultantErrors.push(GetErrorMessage(currentCheck, false));
+      prowDistrictRefConsultantErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // PROW District Ref Consultant is invalid.
@@ -3511,6 +3521,65 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
     currentCheck = GetCheck(6600052, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, true) && !data.prowDistrictRefConsultant) {
       prowDistrictRefConsultantErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // For PROW Status of C the Consult Start Date, Consult End Date, Consult Ref and Consult Details must be present.
+    currentCheck = GetCheck(6600053, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.prowStatus && data.prowStatus === "C" && !data.consultStartDate) {
+      consultStartDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    if (includeCheck(currentCheck, true) && data.prowStatus && data.prowStatus === "C" && !data.consultEndDate) {
+      consultEndDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    if (includeCheck(currentCheck, true) && data.prowStatus && data.prowStatus === "C" && !data.consultRef) {
+      consultRefErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    if (includeCheck(currentCheck, true) && data.prowStatus && data.prowStatus === "C" && !data.consultDetails) {
+      consultDetailsErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Consult End Date must be the same as or after the Consult Start Date.
+    currentCheck = GetCheck(6600054, currentLookups, methodName, false, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.consultStartDate &&
+      data.consultEndDate &&
+      isEndBeforeStart(data.consultStartDate, data.consultEndDate)
+    ) {
+      consultEndDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // For PROW Status of A the Appeal Date, Appeal Ref and Appeal Details must be present.
+    currentCheck = GetCheck(6600055, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.prowStatus && data.prowStatus === "A" && !data.appealDate) {
+      appealDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    if (includeCheck(currentCheck, true) && data.prowStatus && data.prowStatus === "A" && !data.appealRef) {
+      appealRefErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    if (includeCheck(currentCheck, true) && data.prowStatus && data.prowStatus === "A" && !data.appealDetails) {
+      appealDetailsErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // For PROW Status of D the Div Related USRN must be present.
+    currentCheck = GetCheck(6600056, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.prowStatus && data.prowStatus === "D" && !data.divRelatedUsrn) {
+      divRelatedUsrnErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // PROW Org Ref Authority value does not exist in the SWA Org Ref table.
+    currentCheck = GetCheck(6600058, currentLookups, methodName, false, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.prowOrgRefConsultant &&
+      !filteredLookup(SwaOrgRef, false).find((x) => x.id === data.prowOrgRefConsultant)
+    ) {
+      prowOrgRefConsultantErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     if (showDebugMessages) console.log("[DEBUG] ValidatePublicRightOfWayData - Finished checks");
@@ -3625,6 +3694,34 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
         index: index,
         field: "ConsultDetails",
         errors: consultDetailsErrors,
+      });
+
+    if (consultStartDateErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "ConsultStartDate",
+        errors: consultStartDateErrors,
+      });
+
+    if (consultEndDateErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "ConsultEndDate",
+        errors: consultEndDateErrors,
+      });
+
+    if (appealDateErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "AppealDate",
+        errors: appealDateErrors,
+      });
+
+    if (divRelatedUsrnErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "DivRelatedUsrn",
+        errors: divRelatedUsrnErrors,
       });
   }
 
