@@ -22,6 +22,7 @@
 //    009   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    010   23.01.24 Sean Flook       IMANN-246 Display information when selecting Part Road.
 //    011   25.01.24 Sean Flook       IMANN-250 No need to default wholeRoad.
+//    012   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -505,7 +506,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
             break;
 
           case "districtrefconsultant":
-            setOrganisationError(error.errors);
+            setDistrictError(error.errors);
             break;
 
           case "recordstartdate":
@@ -642,6 +643,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
           minLines={3}
           maxLines={5}
           id="hww-tro-text"
+          characterSet="GeoPlaceStreet1"
           errorText={troTextError}
           helperText="Official TRO reference followed by a summary of wording of the restriction if it is the result of a TRO. This should include the imperial value of the restriction if specified in the TRO."
           onChange={handleTroTextChangeEvent}
@@ -656,6 +658,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
           minLines={3}
           maxLines={5}
           id="hww-description"
+          characterSet="GeoPlaceStreet1"
           errorText={featureDescriptionError}
           helperText="Description providing additional information."
           onChange={handleFeatureDescriptionChangeEvent}
@@ -670,6 +673,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
           minLines={3}
           maxLines={5}
           id="hww-source"
+          characterSet="GeoPlaceStreet1"
           errorText={sourceError}
           helperText="A brief textual summary of the department/function and/or organisation that is the source of this data."
           onChange={handleSourceChangeEvent}
@@ -751,6 +755,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
             minLines={3}
             maxLines={5}
             id="construction-specify-location"
+            characterSet="GeoPlaceStreet1"
             errorText={specifyLocationError}
             helperText="Description of the location of the HWW Restriction within the Street."
             onChange={handleSpecifyLocationChangeEvent}

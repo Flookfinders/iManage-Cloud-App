@@ -22,6 +22,7 @@
 //    009   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    010   23.01.24 Sean Flook       IMANN-246 Display information when selecting Part Road.
 //    011   25.01.24 Sean Flook       IMANN-250 No need to default wholeRoad.
+//    012   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -771,6 +772,7 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
           minLines={3}
           maxLines={5}
           id="construction-description"
+          characterSet="GeoPlaceStreet1"
           errorText={constructionDescriptionError}
           helperText="Description providing additional Construction information for certain definitions."
           onChange={handleConstructionDescriptionChangeEvent}
@@ -850,6 +852,7 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
             minLines={3}
             maxLines={5}
             id="construction-specify-location"
+            characterSet="GeoPlaceStreet1"
             errorText={specifyLocationError}
             helperText="Description of location of the part or parts of the Street for which this Construction type is applicable."
             onChange={handleSpecifyLocationChangeEvent}

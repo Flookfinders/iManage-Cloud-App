@@ -3,25 +3,25 @@
 //
 //  Description: Street validation
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //  Maximum validation numbers
 //  =================================
 //  Metadata:                   1000017
 //  Street:                     1100051
-//  ESU:                        1300009 - 1300028
-//  Descriptor:                 1500035
-//  One Way Exemption:          1600021
-//  Highway Dedication:         1700021
-//  Successor Cross Reference:  3000016 - 3000017
-//  Maintenance Responsibility: 5100024 - 5100026
-//  Reinstatement Category:     5200023 - 5200025
-//  OS Special Designation:     5300025 - 5300027
-//  Interest:                   6100024
-//  Construction:               6200034
-//  Special Designation:        6300034
-//  Height Width Weight:        6400016 - 6400017
-//  Public Right of Way:        6600016 - 6600052
+//  ESU:                        1300039
+//  Descriptor:                 1500040
+//  One Way Exemption:          1600023
+//  Highway Dedication:         1700022
+//  Successor Cross Reference:  3000017
+//  Maintenance Responsibility: 5100029
+//  Reinstatement Category:     5200026
+//  OS Special Designation:     5300028
+//  Interest:                   6100050
+//  Construction:               6200051
+//  Special Designation:        6300037
+//  Height Width Weight:        6400048
+//  Public Right of Way:        6600052
 //  Note:                       7200012
 //
 //--------------------------------------------------------------------------------------------------
@@ -37,6 +37,7 @@
 //    005   24.11.23 Sean Flook                 Renamed successor to successorCrossRef.
 //    006   15.12.23 Sean Flook                 Added new checks and comments.
 //    007   19.12.23 Sean Flook                 Various bug fixes.
+//    008   29.01.24 Sean Flook                 Added new checks.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -50,6 +51,7 @@ import {
   includeCheck,
   GetErrorMessage,
   GetCheck,
+  filteredLookup,
 } from "./HelperUtils";
 
 import StreetState from "../data/StreetState";
@@ -57,11 +59,15 @@ import StreetSurface from "../data/StreetSurface";
 import DETRCodes from "../data/DETRCodes";
 import StreetType from "../data/StreetType";
 import StreetClassification from "../data/StreetClassification";
+import EsuClassification from "./../data/ESUClassification";
+import ESUDirectionCode from "../data/ESUDirectionCode";
 import OneWayExemptionType from "../data/OneWayExemptionType";
 import OneWayExemptionPeriodicity from "../data/OneWayExemptionPeriodicity";
 import HighwayDedicationCode from "./../data/HighwayDedicationCode";
 import HWWDesignationCode from "./../data/HWWDesignationCode";
+import SwaOrgRef from "../data/SwaOrgRef";
 import RoadStatusCode from "../data/RoadStatusCode";
+import InterestType from "../data/InterestType";
 import SpecialDesignationCode from "../data/SpecialDesignationCode";
 import SpecialDesignationPeriodicity from "../data/SpecialDesignationPeriodicity";
 import ReinstatementType from "../data/ReinstatementType";
@@ -546,6 +552,12 @@ export function ValidateDescriptorData(data, index, currentLookups, isScottish, 
       islandRefErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Mandatory Town is missing when Locality present.
+    currentCheck = GetCheck(1500038, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && data.locRef && !data.townRef) {
+      townRefErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateDescriptorData - Finished checks");
 
     if (descriptorErrors.length > 0)
@@ -604,26 +616,163 @@ export function ValidateDescriptorData(data, index, currentLookups, isScottish, 
  * @return {array|null} Array of validation errors found, if any.
  */
 export function ValidateEsuData(data, index, currentLookups, isScottish) {
-  // const methodName = "ValidateEsuData";
+  const methodName = "ValidateEsuData";
+  let startDateErrors = [];
+  let endDateErrors = [];
+  let classificationErrors = [];
+  let classificationDateErrors = [];
+  let stateErrors = [];
+  let toleranceErrors = [];
+  let directionErrors = [];
   let validationErrors = [];
-  // let currentCheck;
-  // let wktGeometryErrors = [];
+  let currentCheck;
 
   if (data) {
-    //   currentCheck = currentLookups.validationMessages.find(
-    //     (x) => x.messageId === 1300002
-    //   );
-    //   if (includeCheck(currentCheck, isScottish) && !data.wktGeometry) {
-    //     wktGeometryErrors.push(GetErrorMessage(currentCheck, isScottish));
-    //   }
+    // Mandatory Start Date is missing.
+    currentCheck = GetCheck(1300017, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && !data.esuStartDate) {
+      startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Start Date cannot be in the future.
+    currentCheck = GetCheck(1300020, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && data.esuStartDate && isFutureDate(data.esuStartDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // End Date cannot be in the future.
+    currentCheck = GetCheck(1300021, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && data.esuEndDate && isFutureDate(data.esuEndDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // End Date cannot be before the Start Date.
+    currentCheck = GetCheck(1300022, currentLookups, methodName, isScottish, showDebugMessages);
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.esuStartDate &&
+      data.esuEndDate &&
+      isEndBeforeStart(data.esuStartDate, data.esuEndDate)
+    ) {
+      endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Mandatory Classification is missing.
+    currentCheck = GetCheck(1300023, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && !data.classification) {
+      classificationErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Classification is invalid.
+    currentCheck = GetCheck(1300024, currentLookups, methodName, isScottish, showDebugMessages);
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.classification &&
+      !EsuClassification.find((x) => x.id === data.classification)
+    ) {
+      classificationErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Mandatory Classification Date is missing.
+    currentCheck = GetCheck(1300025, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && !data.classificationDate) {
+      classificationDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Classification Date cannot be before the Start Date.
+    currentCheck = GetCheck(1300026, currentLookups, methodName, isScottish, showDebugMessages);
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.esuStartDate &&
+      data.classificationDate &&
+      isEndBeforeStart(data.esuStartDate, data.classificationDate)
+    ) {
+      classificationDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // ESU End Date is set but State is not 4.
+    currentCheck = GetCheck(1300028, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && data.esuEndDate && data.state !== 4) {
+      stateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Mandatory ESU Tolerance is missing.
+    currentCheck = GetCheck(1300030, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && !data.esuTolerance) {
+      toleranceErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // ESU Tolerance is invalid.
+    currentCheck = GetCheck(1300031, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && data.esuTolerance && [1, 5, 10, 50].includes(data.esuTolerance)) {
+      toleranceErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Mandatory ESU Direction is missing.
+    currentCheck = GetCheck(1300036, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && !data.esuDirection) {
+      directionErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // ESU Direction is invalid.
+    currentCheck = GetCheck(1300037, currentLookups, methodName, isScottish, showDebugMessages);
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.esuDirection &&
+      !ESUDirectionCode.find((x) => x.id === data.esuDirection)
+    ) {
+      directionErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
   }
 
-  // if (wktGeometryErrors.length > 0)
-  //   validationErrors.push({
-  //     index: index,
-  //     field: "WktGeometry",
-  //     errors: wktGeometryErrors,
-  //   });
+  if (startDateErrors.length > 0)
+    validationErrors.push({
+      index: index,
+      field: "EsuStartDate",
+      errors: startDateErrors,
+    });
+
+  if (endDateErrors.length > 0)
+    validationErrors.push({
+      index: index,
+      field: "EsuEndDate",
+      errors: endDateErrors,
+    });
+
+  if (classificationErrors.length > 0)
+    validationErrors.push({
+      index: index,
+      field: "EsuClassification",
+      errors: classificationErrors,
+    });
+
+  if (classificationDateErrors.length > 0)
+    validationErrors.push({
+      index: index,
+      field: "EsuClassificationDate",
+      errors: classificationDateErrors,
+    });
+
+  if (stateErrors.length > 0)
+    validationErrors.push({
+      index: index,
+      field: "State",
+      errors: stateErrors,
+    });
+
+  if (toleranceErrors.length > 0)
+    validationErrors.push({
+      index: index,
+      field: "EsuTolerance",
+      errors: toleranceErrors,
+    });
+
+  if (directionErrors.length > 0)
+    validationErrors.push({
+      index: index,
+      field: "EsuDirection",
+      errors: directionErrors,
+    });
 
   return validationErrors;
 }
@@ -1147,6 +1296,24 @@ export function ValidateMaintenanceResponsibilityData(data, index, currentLookup
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // Mandatory Start Date is missing.
+    currentCheck = GetCheck(5100026, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && !data.startDate) {
+      startDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Specific Location contains invalid characters.
+    currentCheck = GetCheck(5100029, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.specificLocation &&
+      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
+        data.specificLocation
+      )
+    ) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateMaintenanceResponsibilityData - Finished checks");
 
     if (specificLocationErrors.length > 0)
@@ -1331,6 +1498,24 @@ export function ValidateReinstatementCategoryData(data, index, currentLookups) {
     // Whole Road is false but Specific Location is not set.
     currentCheck = GetCheck(5200022, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, true) && !data.wholeRoad && !data.specificLocation) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Mandatory Start Date is missing.
+    currentCheck = GetCheck(5200025, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && !data.startDate) {
+      startDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Specific Location contains invalid characters.
+    currentCheck = GetCheck(5200026, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.specificLocation &&
+      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
+        data.specificLocation
+      )
+    ) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -1531,6 +1716,24 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // Mandatory Start Date is missing.
+    currentCheck = GetCheck(5300027, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && !data.startDate) {
+      startDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Specific Location contains invalid characters.
+    currentCheck = GetCheck(5300028, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.specificLocation &&
+      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
+        data.specificLocation
+      )
+    ) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateOSSpecialDesignationData - Finished checks");
 
     if (custodianErrors.length > 0)
@@ -1620,6 +1823,11 @@ export function ValidateInterestData(data, index, currentLookups) {
   let districtRefAuthorityErrors = [];
   let specificLocationErrors = [];
   let wholeRoadErrors = [];
+  let streetStatusErrors = [];
+  let interestTypeErrors = [];
+  let startDateErrors = [];
+  let endDateErrors = [];
+  let wktGeometryErrors = [];
 
   if (data) {
     // Start X value is invalid.
@@ -1696,6 +1904,176 @@ export function ValidateInterestData(data, index, currentLookups) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // Specific Location contains invalid characters.
+    currentCheck = GetCheck(6100027, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.specificLocation &&
+      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
+        data.specificLocation
+      )
+    ) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Street Status is invalid.
+    currentCheck = GetCheck(6100029, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.streetStatus &&
+      !filteredLookup(RoadStatusCode, false).find((x) => x.id === data.streetStatus)
+    ) {
+      streetStatusErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Mandatory Interest Type is missing.
+    currentCheck = GetCheck(6100030, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && !data.interestType) {
+      interestTypeErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Interest Type is invalid.
+    currentCheck = GetCheck(6100031, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.interestType &&
+      !InterestType.find((x) => x.id === data.interestType)
+    ) {
+      interestTypeErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Interest Type of 8 or 9 must not have Street Status of 1, 2, 3 or 5.
+    currentCheck = GetCheck(6100035, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.interestType &&
+      data.streetStatus &&
+      [8, 9].includes(data.interestType) &&
+      [1, 2, 3, 5].includes(data.streetStatus)
+    ) {
+      interestTypeErrors.push(GetErrorMessage(currentCheck, true));
+      streetStatusErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // SWA Org Ref Maintaining is invalid.
+    currentCheck = GetCheck(6100036, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.swaOrgRefAuthority &&
+      !filteredLookup(SwaOrgRef, false).find((x) => x.id === data.swaOrgRefAuthority)
+    ) {
+      swaOrgRefAuthorityErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // SWA Org Ref Authority value of 0011, 0012, 013, 0014, 0016, 0020 or 7093 must not be used.
+    currentCheck = GetCheck(6100037, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.swaOrgRefAuthority &&
+      [11, 12, 13, 14, 16, 20, 7093].includes(data.swaOrgRefAuthority)
+    ) {
+      swaOrgRefAuthorityErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Street Status of 4 must have an Interest Type of 8 or 9.
+    currentCheck = GetCheck(6100038, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.interestType &&
+      data.streetStatus &&
+      data.streetStatus === 4 &&
+      ![8, 9].includes(data.interestType)
+    ) {
+      interestTypeErrors.push(GetErrorMessage(currentCheck, true));
+      streetStatusErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Record Start Date cannot be in the future.
+    currentCheck = GetCheck(6100040, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.recordStartDate && isFutureDate(data.recordStartDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Record End Date cannot be in the future.
+    currentCheck = GetCheck(6100041, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.recordEndDate && isFutureDate(data.recordEndDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // End Date cannot be before the Record Start Date.
+    currentCheck = GetCheck(6100042, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.recordStartDate &&
+      data.recordEndDate &&
+      isEndBeforeStart(data.recordStartDate, data.recordEndDate)
+    ) {
+      endDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Record Start Date prior to 1990 are not allowed.
+    currentCheck = GetCheck(6100043, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.recordStartDate && isPriorTo1990(data.recordStartDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Mandatory WktGeometry is missing.
+    currentCheck = GetCheck(6100044, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && !data.wktGeometry) {
+      wktGeometryErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Specific Location contains invalid characters.
+    currentCheck = GetCheck(6100045, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.specificLocation &&
+      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
+        data.specificLocation
+      )
+    ) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // SWA Org Ref Authority value does not exist in the SWA Org Ref table.
+    currentCheck = GetCheck(6100046, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.swaOrgRefAuthority &&
+      !filteredLookup(SwaOrgRef, false).find((x) => x.id === data.swaOrgRefAuthority)
+    ) {
+      swaOrgRefAuthorityErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // District Ref value does not exist in the Operational District Table.
+    currentCheck = GetCheck(6100047, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, false) &&
+      data.districtRefAuthority &&
+      !currentLookups.operationalDistricts.find((x) => x.districtId === data.districtRefAuthority)
+    ) {
+      districtRefAuthorityErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Mandatory Record Start Date is missing.
+    currentCheck = GetCheck(6100049, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, false) && !data.recordStartDate) {
+      startDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Interest Type of 1 must have a Street Status of 1, 2, 3 or 5.
+    currentCheck = GetCheck(6100050, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.interestType &&
+      data.streetStatus &&
+      data.interestType === 1 &&
+      ![1, 2, 3, 5].includes(data.streetStatus)
+    ) {
+      interestTypeErrors.push(GetErrorMessage(currentCheck, true));
+      streetStatusErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateInterestData - Finished checks");
 
     if (swaOrgRefAuthorityErrors.length > 0)
@@ -1752,6 +2130,41 @@ export function ValidateInterestData(data, index, currentLookups) {
         index: index,
         field: "WholeRoad",
         errors: wholeRoadErrors,
+      });
+
+    if (streetStatusErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "StreetStatus",
+        errors: streetStatusErrors,
+      });
+
+    if (interestTypeErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "InterestType",
+        errors: interestTypeErrors,
+      });
+
+    if (startDateErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "RecordStartDate",
+        errors: startDateErrors,
+      });
+
+    if (endDateErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "RecordEndDate",
+        errors: endDateErrors,
+      });
+
+    if (wktGeometryErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "WholeRoad",
+        errors: wktGeometryErrors,
       });
   }
 
@@ -1965,6 +2378,67 @@ export function ValidateConstructionData(data, index, currentLookups) {
       data.constructionDescription
     ) {
       constructionDescriptionErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // SWA Org Ref Consultant and District Ref Consultant must either both be blank or both have a value.
+    currentCheck = GetCheck(6200038, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      ((data.swaOrgRefConsultant && !data.districtRefConsultant) ||
+        (!data.swaOrgRefConsultant && data.districtRefConsultant))
+    ) {
+      swaOrgRefConsultantErrors.push(GetErrorMessage(currentCheck, true));
+      districtRefConsultantErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Construction Description contains an invalid character.
+    currentCheck = GetCheck(6200046, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.constructionDescription &&
+      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
+        data.constructionDescription
+      )
+    ) {
+      constructionDescriptionErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Construction Description is too long.
+    currentCheck = GetCheck(6200047, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.constructionDescription && data.constructionDescription.length > 250) {
+      constructionDescriptionErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Specific Location contains invalid characters.
+    currentCheck = GetCheck(6200048, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.specificLocation &&
+      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
+        data.specificLocation
+      )
+    ) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // SWA Org Ref Consultant value of 0011, 0012, 013, 0014, 0016, 0020 or 7093 must not be used.
+    currentCheck = GetCheck(6200050, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.swaOrgRefConsultant &&
+      [11, 12, 13, 14, 16, 20, 7093].includes(data.swaOrgRefConsultant)
+    ) {
+      swaOrgRefConsultantErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // District Ref Consultant value does not exist in the Operational District Table.
+    currentCheck = GetCheck(6200051, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.districtRefConsultant &&
+      !currentLookups.operationalDistricts.find((x) => x.districtId === data.districtRefConsultant)
+    ) {
+      swaOrgRefConsultantErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     if (showDebugMessages) console.log("[DEBUG] ValidateConstructionData - Finished checks");
@@ -2283,6 +2757,18 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // Specific Location contains invalid characters.
+    currentCheck = GetCheck(6300037, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.specificLocation &&
+      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
+        data.specificLocation
+      )
+    ) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateSpecialDesignationData - Finished checks");
 
     if (streetSpecialDesigCodeErrors.length > 0)
@@ -2412,6 +2898,15 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
   let endXErrors = [];
   let endYErrors = [];
   let specificLocationErrors = [];
+  let recordEndDateErrors = [];
+  let recordStartDateErrors = [];
+  let wholeRoadErrors = [];
+  let troTextErrors = [];
+  let featureDescriptionErrors = [];
+  let swaOrgRefConsultantErrors = [];
+  let districtRefConsultantErrors = [];
+  let sourceTextErrors = [];
+  let valueMetricErrors = [];
 
   if (data) {
     // Restriction Code is invalid.
@@ -2480,6 +2975,188 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // Record End Date cannot be before the Record Start Date.
+    currentCheck = GetCheck(6400018, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.recordStartDate &&
+      data.recordEndDate &&
+      isEndBeforeStart(data.recordStartDate, data.recordEndDate)
+    ) {
+      recordEndDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Record End Date cannot be in the future.
+    currentCheck = GetCheck(6400019, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.recordEndDate && isFutureDate(data.recordEndDate)) {
+      recordEndDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Whole Road is true Specific Location and Coordinates must not be set.
+    currentCheck = GetCheck(6400021, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.wholeRoad &&
+      (data.specificLocation || data.hwwStartX || data.hwwStartY || data.hwwEndX || data.hwwEndY)
+    ) {
+      wholeRoadErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Whole Road is false Specific Location and Coordinates must be set.
+    currentCheck = GetCheck(6400022, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      !data.wholeRoad &&
+      (!data.specificLocation || !data.hwwStartX || !data.hwwStartY || !data.hwwEndX || !data.hwwEndY)
+    ) {
+      wholeRoadErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Specific Location contains Invalid characters.
+    currentCheck = GetCheck(6400023, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.specificLocation &&
+      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
+        data.specificLocation
+      )
+    ) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Invalid Value Metric.
+    currentCheck = GetCheck(6400025, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.valueMetric && (data.valueMetric < 0.0 || data.valueMetric > 99.9)) {
+      valueMetricErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Tro Text is too long.
+    currentCheck = GetCheck(6400026, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.troText && data.troText.length > 250) {
+      troTextErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Tro Text contains invalid characters.
+    currentCheck = GetCheck(6400027, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.troText &&
+      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(data.troText)
+    ) {
+      troTextErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Feature Description is too long.
+    currentCheck = GetCheck(6400028, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.featureDescription && data.featureDescription.length > 250) {
+      featureDescriptionErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Feature Description contains invalid characters.
+    currentCheck = GetCheck(6400029, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.featureDescription &&
+      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
+        data.featureDescription
+      )
+    ) {
+      featureDescriptionErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // SWA Org Ref Consultant value of 0011, 0012, 013, 0014, 0016, 0020 or 7093 must not be used.
+    currentCheck = GetCheck(6400030, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.swaOrgRefConsultant &&
+      [11, 12, 13, 14, 16, 20, 7093].includes(data.swaOrgRefConsultant)
+    ) {
+      swaOrgRefConsultantErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // SWA Org Ref Consultant and District Ref Consultant must either both be blank or both have a value.
+    currentCheck = GetCheck(6400031, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      ((data.swaOrgRefConsultant && !data.districtRefConsultant) ||
+        (!data.swaOrgRefConsultant && data.districtRefConsultant))
+    ) {
+      swaOrgRefConsultantErrors.push(GetErrorMessage(currentCheck, true));
+      districtRefConsultantErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // District Ref Consultant is invalid.
+    currentCheck = GetCheck(6400032, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.districtRefConsultant &&
+      !currentLookups.operationalDistricts.find((x) => x.districtId === data.districtRefConsultant)
+    ) {
+      districtRefConsultantErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Source Text is too long.
+    currentCheck = GetCheck(6400039, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.sourceText && data.sourceText.length > 120) {
+      sourceTextErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Source Text contains invalid characters.
+    currentCheck = GetCheck(6400040, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.sourceText &&
+      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
+        data.sourceText
+      )
+    ) {
+      sourceTextErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Mandatory Record Start Date is missing.
+    currentCheck = GetCheck(6400043, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && !data.recordStartDate) {
+      recordStartDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Record Start Date cannot be in the future.
+    currentCheck = GetCheck(6400044, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.recordStartDate && isFutureDate(data.recordStartDate)) {
+      recordStartDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Record Start Date prior to 1990 are not allowed.
+    currentCheck = GetCheck(6400045, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.recordStartDate && isPriorTo1990(data.recordStartDate)) {
+      recordStartDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Mandatory Value Metric is missing.
+    currentCheck = GetCheck(6400046, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && !data.valueMetric) {
+      valueMetricErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // SWA Org Ref Consultant value does not exist in the SWA Org Ref table.
+    currentCheck = GetCheck(6400047, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.swaOrgRefConsultant &&
+      !filteredLookup(SwaOrgRef, false).find((x) => x.id === data.swaOrgRefConsultant)
+    ) {
+      swaOrgRefConsultantErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // District Ref Consultant value does not exist in the Operational District Table.
+    currentCheck = GetCheck(6400048, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.districtRefConsultant &&
+      !currentLookups.operationalDistricts.find((x) => x.districtId === data.districtRefConsultant)
+    ) {
+      districtRefConsultantErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateHeightWidthWeightData - Finished checks");
 
     if (restrictionCodeErrors.length > 0)
@@ -2523,6 +3200,69 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
         field: "SpecificLocation",
         errors: specificLocationErrors,
       });
+
+    if (recordEndDateErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "RecordEndDate",
+        errors: recordEndDateErrors,
+      });
+
+    if (recordStartDateErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "RecordStartDate",
+        errors: recordStartDateErrors,
+      });
+
+    if (wholeRoadErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "WholeRoad",
+        errors: wholeRoadErrors,
+      });
+
+    if (troTextErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "TroText",
+        errors: troTextErrors,
+      });
+
+    if (featureDescriptionErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "FeatureDescription",
+        errors: featureDescriptionErrors,
+      });
+
+    if (swaOrgRefConsultantErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "SwaOrgRefConsultant",
+        errors: swaOrgRefConsultantErrors,
+      });
+
+    if (districtRefConsultantErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "DistrictRefConsultant",
+        errors: districtRefConsultantErrors,
+      });
+
+    if (sourceTextErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "SourceText",
+        errors: sourceTextErrors,
+      });
+
+    if (valueMetricErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "ValueMetric",
+        errors: valueMetricErrors,
+      });
   }
 
   return validationErrors;
@@ -2542,6 +3282,20 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
   let currentCheck;
   let prowRightsErrors = [];
   let prowStatusErrors = [];
+  let prowLengthErrors = [];
+  let defMapGeometryTypeErrors = [];
+  let recordStartDateErrors = [];
+  let relevantStartDateErrors = [];
+  let recordEndDateErrors = [];
+  let prowLocationErrors = [];
+  let prowDetailsErrors = [];
+  let sourceTextErrors = [];
+  let prowOrgRefConsultantErrors = [];
+  let prowDistrictRefConsultantErrors = [];
+  let appealDetailsErrors = [];
+  let appealRefErrors = [];
+  let consultRefErrors = [];
+  let consultDetailsErrors = [];
 
   if (data) {
     // Mandatory PROW Rights is missing.
@@ -2572,6 +3326,193 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
       prowStatusErrors.push(GetErrorMessage(currentCheck, false));
     }
 
+    // PROW Length is invalid.
+    currentCheck = GetCheck(6600017, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, false) && (data.prowLength < 0 || data.prowLength > 99999)) {
+      prowLengthErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Mandatory Def Map Geometry Type is missing.
+    currentCheck = GetCheck(6600018, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, false) && !data.defMapGeometryType) {
+      defMapGeometryTypeErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Mandatory PROW Length is missing.
+    currentCheck = GetCheck(6600019, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, false) && !data.prowLength) {
+      prowLengthErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Mandatory Record Start Date is missing.
+    currentCheck = GetCheck(6600027, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, false) && !data.recordStartDate) {
+      recordStartDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Record Start Date cannot be in the future.
+    currentCheck = GetCheck(6600028, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, false) && data.recordStartDate && isFutureDate(data.recordStartDate)) {
+      recordStartDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Record Start Date prior to 1990 are not allowed.
+    currentCheck = GetCheck(6600029, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, false) && data.recordStartDate && isPriorTo1990(data.recordStartDate)) {
+      recordStartDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Relevant Start Date prior to 1990 are not allowed.
+    currentCheck = GetCheck(6600030, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, false) && data.relevantStartDate && isPriorTo1990(data.relevantStartDate)) {
+      relevantStartDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Record End Date must be the same as or after the Record Entry Date.
+    currentCheck = GetCheck(6600031, currentLookups, methodName, false, showDebugMessages);
+    if (
+      includeCheck(currentCheck, false) &&
+      data.recordStartDate &&
+      data.recordEndDate &&
+      isEndBeforeStart(data.recordStartDate, data.recordEndDate)
+    ) {
+      recordEndDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Record End Date prior to 1990 are not allowed.
+    currentCheck = GetCheck(6600032, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, false) && data.recordEndDate && isPriorTo1990(data.recordEndDate)) {
+      recordEndDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Record End Date cannot be in the future.
+    currentCheck = GetCheck(6600033, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, false) && data.recordEndDate && isFutureDate(data.recordEndDate)) {
+      recordEndDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // PROW Location is too long.
+    currentCheck = GetCheck(6600034, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, false) && data.prowLocation && data.prowLocation.length > 500) {
+      prowLocationErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // PROW Location contains an invalid character.
+    currentCheck = GetCheck(6600035, currentLookups, methodName, false, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.prowLocation &&
+      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
+        data.prowLocation
+      )
+    ) {
+      prowLocationErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // PROW Details is too long.
+    currentCheck = GetCheck(6600036, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.prowDetails && data.prowDetails.length > 500) {
+      prowDetailsErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // PROW Details contains an invalid character.
+    currentCheck = GetCheck(6600037, currentLookups, methodName, false, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.prowDetails &&
+      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
+        data.prowDetails
+      )
+    ) {
+      prowDetailsErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Source Text is too long.
+    currentCheck = GetCheck(6600040, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.sourceText && data.sourceText.length > 120) {
+      sourceTextErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Source Text contains an invalid character.
+    currentCheck = GetCheck(6600041, currentLookups, methodName, false, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.sourceText &&
+      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
+        data.sourceText
+      )
+    ) {
+      sourceTextErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // PROW Org Ref Consultant is invalid.
+    currentCheck = GetCheck(6600042, currentLookups, methodName, false, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.prowOrgRefConsultant &&
+      !filteredLookup(SwaOrgRef, false).find((x) => x.id === data.prowOrgRefConsultant)
+    ) {
+      prowOrgRefConsultantErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Mandatory PROW Org Ref Consultant is missing.
+    currentCheck = GetCheck(6600043, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, true) && !data.prowOrgRefConsultant) {
+      prowOrgRefConsultantErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // PROW District Ref Consultant is invalid.
+    currentCheck = GetCheck(6600044, currentLookups, methodName, false, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.prowDistrictRefConsultant &&
+      !currentLookups.operationalDistricts.find((x) => x.districtId === data.prowDistrictRefConsultant)
+    ) {
+      prowDistrictRefConsultantErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Mandatory PROW Location is missing.
+    currentCheck = GetCheck(6600046, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, true) && !data.prowLocation) {
+      prowLocationErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Mandatory PROW Details is missing.
+    currentCheck = GetCheck(6600047, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, true) && !data.prowDetails) {
+      prowDetailsErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Appeal Details is too long.
+    currentCheck = GetCheck(6600048, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.appealDetails && data.appealDetails.length > 30) {
+      appealDetailsErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Appeal Ref is too long.
+    currentCheck = GetCheck(6600049, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.appealRef && data.appealRef.length > 16) {
+      appealRefErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Consult Ref is too long.
+    currentCheck = GetCheck(6600050, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.consultRef && data.consultRef.length > 16) {
+      consultRefErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Consult Details is too long.
+    currentCheck = GetCheck(6600051, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.consultDetails && data.consultDetails.length > 30) {
+      consultDetailsErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
+    // Mandatory PROW District Ref Consultant is missing.
+    currentCheck = GetCheck(6600052, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, true) && !data.prowDistrictRefConsultant) {
+      prowDistrictRefConsultantErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidatePublicRightOfWayData - Finished checks");
 
     if (prowRightsErrors.length > 0)
@@ -2586,6 +3527,104 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
         index: index,
         field: "ProwStatus",
         errors: prowStatusErrors,
+      });
+
+    if (prowLengthErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "ProwLength",
+        errors: prowLengthErrors,
+      });
+
+    if (defMapGeometryTypeErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "defMapGeometryType",
+        errors: defMapGeometryTypeErrors,
+      });
+
+    if (recordStartDateErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "RecordStartDate",
+        errors: recordStartDateErrors,
+      });
+
+    if (relevantStartDateErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "RelevantStartDate",
+        errors: relevantStartDateErrors,
+      });
+
+    if (recordEndDateErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "RecordEndDate",
+        errors: recordEndDateErrors,
+      });
+
+    if (prowLocationErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "ProwLocation",
+        errors: prowLocationErrors,
+      });
+
+    if (prowDetailsErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "ProwDetails",
+        errors: prowDetailsErrors,
+      });
+
+    if (sourceTextErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "SourceText",
+        errors: sourceTextErrors,
+      });
+
+    if (prowOrgRefConsultantErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "ProwOrgRefConsultant",
+        errors: prowOrgRefConsultantErrors,
+      });
+
+    if (prowDistrictRefConsultantErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "ProwDistrictRefConsultant",
+        errors: prowDistrictRefConsultantErrors,
+      });
+
+    if (appealDetailsErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "AppealDetails",
+        errors: appealDetailsErrors,
+      });
+
+    if (appealRefErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "AppealRef",
+        errors: appealRefErrors,
+      });
+
+    if (consultRefErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "ConsultRef",
+        errors: consultRefErrors,
+      });
+
+    if (consultDetailsErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "ConsultDetails",
+        errors: consultDetailsErrors,
       });
   }
 

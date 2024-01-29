@@ -20,6 +20,8 @@
 //    007   10.11.23 Sean Flook                 Modified call to StringAvatar.
 //    008   24.11.23 Sean Flook                 Moved Stack to @mui/system and pass the correct parameter to StringAvatar.
 //    009   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    010   29.01.24 Sean Flook       IMANN-262 Changed from a Popper control to a Popover control, so we can handle closing when clicking away.
+//    011   29.01.24 Sean Flook       IMANN-262 Do not display the users settings card if no user is logged in.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -49,9 +51,7 @@ import {
   IconButton,
   Snackbar,
   Alert,
-  Popper,
-  Fade,
-  Paper,
+  Popover,
   Typography,
   Card,
   CardActions,
@@ -68,7 +68,6 @@ import InsertChartIcon from "@mui/icons-material/InsertChart";
 import ADSWhatsNewAvatar from "./ADSWhatsNewAvatar";
 import ADSNotificationsAvatar from "./ADSNotificationsAvatar";
 import ADSUserAvatar from "./ADSUserAvatar";
-// import LoginDialog from "../dialogs/LoginDialog";
 
 import {
   HomeRoute,
@@ -90,7 +89,6 @@ const ADSNavContent = (props) => {
   const theme = useTheme();
 
   const history = useHistory();
-  // const navigate = useNavigate();
   const location = useLocation();
 
   const streetContext = useContext(StreetContext);
@@ -117,9 +115,9 @@ const ADSNavContent = (props) => {
   const failedValidation = useRef(null);
   const associatedRecords = useRef([]);
 
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  // const [loginOpen, setLoginOpen] = useState(false);
+  const settingsOpen = Boolean(anchorEl);
+  const settingsPopoverId = settingsOpen ? "ads-settings-popover" : undefined;
 
   const saveConfirmDialog = useSaveConfirmation();
 
@@ -129,10 +127,13 @@ const ADSNavContent = (props) => {
   const handleUserClick = () => {
     if (userContext.currentUser && userContext.currentUser.active) {
       setAnchorEl(document.getElementById("imanage-user-settings"));
-      setSettingsOpen((prev) => !prev);
     } else {
       userContext.onDisplayLogin();
     }
+  };
+
+  const handleSettingsClose = () => {
+    setAnchorEl(null);
   };
 
   /**
@@ -143,29 +144,33 @@ const ADSNavContent = (props) => {
   function GetSettingCards() {
     return (
       <Stack direction="row" spacing={0.5}>
-        <Card variant="outlined">
-          <CardContent>
-            <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
-              <Avatar {...StringAvatar(userContext.currentUser.auditName, false)} />
-              {userContext.currentUser && (
-                <Typography sx={{ fontWeight: "bold" }}>{`${stringToSentenceCase(
-                  userContext.currentUser.firstName
-                )} ${stringToSentenceCase(userContext.currentUser.lastName)}`}</Typography>
-              )}
-            </Stack>
-          </CardContent>
-          <CardActions>
-            <Stack
-              sx={{ ml: theme.spacing(2), mr: theme.spacing(2), mb: theme.spacing(2) }}
-              direction="column"
-              spacing={1}
-              alignItems="flex-start"
-            >
-              <ADSActionButton variant="user" buttonLabel="My profile" onClick={handleMyProfileClick} />
-              <ADSActionButton variant="logout" buttonLabel="Log out" onClick={handleLogout} />
-            </Stack>
-          </CardActions>
-        </Card>
+        {userContext.currentUser && (
+          <Card variant="outlined">
+            <CardContent>
+              <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
+                <Avatar {...StringAvatar(userContext.currentUser.auditName, false)} />
+                {userContext.currentUser && (
+                  <Typography sx={{ fontWeight: "bold" }}>{`${stringToSentenceCase(
+                    userContext.currentUser.firstName
+                  )} ${stringToSentenceCase(userContext.currentUser.lastName)}`}</Typography>
+                )}
+              </Stack>
+            </CardContent>
+            <CardActions>
+              <Stack
+                sx={{ ml: theme.spacing(2), mr: theme.spacing(2), mb: theme.spacing(2) }}
+                direction="column"
+                spacing={1}
+                alignItems="flex-start"
+              >
+                {process.env.NODE_ENV === "development" && (
+                  <ADSActionButton variant="user" buttonLabel="My profile" onClick={handleMyProfileClick} />
+                )}
+                <ADSActionButton variant="logout" buttonLabel="Log out" onClick={handleLogout} />
+              </Stack>
+            </CardActions>
+          </Card>
+        )}
         {userContext.currentUser && userContext.currentUser.isAdministrator && (
           <Card variant="outlined">
             <CardContent>
@@ -510,7 +515,7 @@ const ADSNavContent = (props) => {
    * Event to handle logging out of the system.
    */
   const handleLogout = () => {
-    setSettingsOpen(false);
+    setAnchorEl(null);
     handleHomeClick();
     userContext.onUserChange(null);
     window.location.reload();
@@ -522,7 +527,7 @@ const ADSNavContent = (props) => {
    * @param {number} initialNodeId The initial node to be displayed.
    */
   const displayAdminSettingsPage = (initialNodeId) => {
-    setSettingsOpen(false);
+    setAnchorEl(null);
     settingsContext.onNodeChange(initialNodeId);
     history.push(AdminSettingsRoute);
     // navigate(AdminSettingsRoute);
@@ -568,12 +573,6 @@ const ADSNavContent = (props) => {
     setActiveButton();
   });
 
-  // useEffect(() => {
-  //   if (!userContext.currentUser && loginOpen) {
-  //     setLoginOpen(false);
-  //   }
-  // }, [userContext.currentUser, loginOpen]);
-
   return (
     <Fragment>
       <Drawer
@@ -600,7 +599,6 @@ const ADSNavContent = (props) => {
           <Grid item>
             <Grid container direction="column" alignItems="center" justifyContent="flex-start">
               <Grid item xs>
-                {/* <img sx={{ ml: theme.spacing(2) }} src="/images/IdoxCube.svg" alt="Idox" width="32" /> */}
                 <img sx={{ ml: theme.spacing(2) }} src="/images/iManage-Cloud-2.svg" alt="Idox" width="32" />
               </Grid>
               <Grid item xs>
@@ -686,15 +684,17 @@ const ADSNavContent = (props) => {
               : `Failed to save the ${saveType.current}.`
           }`}</Alert>
         </Snackbar>
-        <Popper open={settingsOpen} anchorEl={anchorEl} placement={"right-end"} transition>
-          {({ TransitionProps }) => (
-            <Fade {...TransitionProps} timeout={350}>
-              <Paper sx={{ ml: theme.spacing(3) }}>{GetSettingCards()}</Paper>
-            </Fade>
-          )}
-        </Popper>
+        <Popover
+          id={settingsPopoverId}
+          open={settingsOpen}
+          anchorEl={anchorEl}
+          onClose={handleSettingsClose}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          transformOrigin={{ vertical: "bottom", horizontal: "left" }}
+        >
+          {GetSettingCards()}
+        </Popover>
       </div>
-      {/* <LoginDialog isOpen={loginOpen} title="iManage Cloud Login" message="Enter your credentials." /> */}
     </Fragment>
   );
 };

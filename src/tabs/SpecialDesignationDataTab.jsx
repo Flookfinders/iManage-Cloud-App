@@ -23,6 +23,7 @@
 //    010   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    011   23.01.24 Sean Flook       IMANN-246 Display information when selecting Part Road.
 //    012   25.01.24 Sean Flook       IMANN-250 No need to default wholeRoad.
+//    013   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -928,55 +929,12 @@ function SpecialDesignationDataTab({
             minLines={3}
             maxLines={5}
             id="special_designation_specify_location"
+            characterSet="GeoPlaceStreet1"
             errorText={specificLocationError}
             helperText="Description of the location of the Special Designation within the Street."
             onChange={handleSpecificLocationChangeEvent}
           />
         )}
-        {/* {!wholeRoad && (
-          <ADSCoordinateControl
-            label="Start grid reference"
-            isEditable={userCanEdit}
-            isRequired
-            isEastFocused={focusedField ? focusedField === "specialDesigStartX" : false}
-            isNorthFocused={focusedField ? focusedField === "specialDesigStartY" : false}
-            // displayButton
-            loading={loading}
-            eastErrorText={startXError}
-            northErrorText={startYError}
-            helperText="The coordinates for the start of the street."
-            eastValue={specialDesigStartX}
-            northValue={specialDesigStartY}
-            eastLabel="Easting:"
-            northLabel="Northing:"
-            buttonLabel="Select start"
-            onEastChange={handleSpecialDesigStartXChangeEvent}
-            onNorthChange={handleSpecialDesigStartYChangeEvent}
-            onButtonClick={handleSelectStartClickEvent}
-          />
-        )}
-        {!wholeRoad && (
-          <ADSCoordinateControl
-            label="End grid reference"
-            isEditable={userCanEdit}
-            isRequired
-            isEastFocused={focusedField ? focusedField === "specialDesigEndX" : false}
-            isNorthFocused={focusedField ? focusedField === "specialDesigEndY" : false}
-            // displayButton
-            loading={loading}
-            eastErrorText={endXError}
-            northErrorText={endYError}
-            helperText="The coordinates for the end of the street."
-            eastValue={specialDesigEndX}
-            northValue={specialDesigEndY}
-            eastLabel="Easting:"
-            northLabel="Northing:"
-            buttonLabel="Select end"
-            onEastChange={handleSpecialDesigEndXChangeEvent}
-            onNorthChange={handleSpecialDesigEndYChangeEvent}
-            onButtonClick={handleSelectEndClickEvent}
-          />
-        )} */}
         <ADSOkCancelControl
           okDisabled={!dataChanged}
           onOkClicked={handleOkClicked}

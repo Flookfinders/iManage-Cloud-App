@@ -3,18 +3,18 @@
 //
 //  Description: Property Data Form
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //  Maximum validation numbers
 //  =================================
 //  Metadata:                         1000017
-//  BLPU:                             2100062 - 2100063
+//  BLPU:                             2100064
 //  BLPU Provenance:                  2200020
 //  BLPU Application Cross Reference: 2300033
-//  LPI:                              2400082
-//  Successor Cross Reference:        3000016 - 3000017
+//  LPI:                              2400085
+//  Successor Cross Reference:        3000017
 //  Organisation:                     3100016
-//  Classification:                   3200014 - 3200015
+//  Classification:                   3200015
 //  Note:                             7100014
 //
 //--------------------------------------------------------------------------------------------------
@@ -37,6 +37,7 @@
 //    012   24.11.23 Sean Flook                 Renamed successor to successorCrossRef.
 //    013   15.12.23 Sean Flook                 Added new checks and comments.
 //    014   19.12.23 Sean Flook                 Various bug fixes.
+//    015   29.01.24 Sean Flook                 Added new checks.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -89,6 +90,7 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
   let startDateErrors = [];
   let endDateErrors = [];
   let localCustodianCodeErrors = [];
+  let levelErrors = [];
 
   if (data) {
     // Mandatory Logical Status is missing.
@@ -420,6 +422,12 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
       rpcErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Blpu Level is invalid.
+    currentCheck = GetCheck(2100063, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && data.level && (data.level < 0.0 || data.level > 99.9)) {
+      levelErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateBlpuData - Finished checks");
 
     if (logicalStatusErrors.length > 0)
@@ -501,6 +509,12 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
         field: "LocalCustodianCode",
         errors: localCustodianCodeErrors,
       });
+
+    if (levelErrors.length > 0)
+      validationErrors.push({
+        field: "Level",
+        errors: levelErrors,
+      });
   }
 
   return validationErrors;
@@ -539,6 +553,8 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
   let postcodeRefErrors = [];
   let postTownRefErrors = [];
   let logicalStatusErrors = [];
+  let subLocalityRefErrors = [];
+  let levelErrors = [];
 
   const postTownData = currentLookups.postTowns.find((x) => x.postTownRef === data.postTownRef);
   const postcodeData = currentLookups.postcodes.find((x) => x.postcodeRef === data.postcodeRef);
@@ -966,6 +982,33 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Sub Locality does not exist in the Lookup Table.
+    currentCheck = GetCheck(2400083, currentLookups, methodName, isScottish, showDebugMessages);
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.subLocalityRef &&
+      !currentLookups.subLocalities.find((x) => x.subLocalityRef === data.subLocalityRef)
+    ) {
+      subLocalityRefErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // A Logical Status of 8 or 9 requires an End Date.
+    currentCheck = GetCheck(2400084, currentLookups, methodName, isScottish, showDebugMessages);
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      !data.endDate &&
+      data.logicalStatus &&
+      [8, 9].includes(data.logicalStatus)
+    ) {
+      endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Level is too long.
+    currentCheck = GetCheck(2400085, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && data.level && data.level.length > 30) {
+      levelErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateLpiData - Finished checks");
 
     if (startDateErrors.length > 0)
@@ -1098,6 +1141,18 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       validationErrors.push({
         field: "LogicalStatus",
         errors: logicalStatusErrors,
+      });
+
+    if (subLocalityRefErrors.length > 0)
+      validationErrors.push({
+        field: "SubLocalityRef",
+        errors: subLocalityRefErrors,
+      });
+
+    if (levelErrors.length > 0)
+      validationErrors.push({
+        field: "Level",
+        errors: levelErrors,
       });
   }
 
@@ -1452,6 +1507,7 @@ export function ValidateClassificationData(data, index, currentLookups) {
   let blpuClassErrors = [];
   let startDateErrors = [];
   let endDateErrors = [];
+  let classificationSchemeErrors = [];
 
   if (data) {
     // Mandatory Classification Code is missing.
@@ -1483,6 +1539,12 @@ export function ValidateClassificationData(data, index, currentLookups) {
       endDateErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // Scheme is too long.
+    currentCheck = GetCheck(3200015, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.classificationScheme && data.classificationScheme.length > 40) {
+      classificationSchemeErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateOrganisationData - Finished checks");
 
     if (blpuClassErrors.length > 0)
@@ -1504,6 +1566,13 @@ export function ValidateClassificationData(data, index, currentLookups) {
         index: index,
         field: "EndDate",
         errors: endDateErrors,
+      });
+
+    if (classificationSchemeErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "ClassificationScheme",
+        errors: classificationSchemeErrors,
       });
   }
 

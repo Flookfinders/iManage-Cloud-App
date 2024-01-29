@@ -18,6 +18,7 @@
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    006   11.01.24 Sean Flook                 Fix warnings.
 //    007   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    008   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -978,6 +979,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
           minLines={3}
           maxLines={5}
           id="prow_location"
+          characterSet="GeoPlaceStreet1"
           errorText={locationError}
           helperText="Descriptive location of the PRoW as defined in the PRoW Definitive Statement."
           onChange={handleLocationChangeEvent}
@@ -993,6 +995,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
           minLines={3}
           maxLines={5}
           id="prow_details"
+          characterSet="GeoPlaceStreet1"
           errorText={detailsError}
           helperText="Official Reference of the PROW designation, followed by descriptive details of the PRoW as defined in the PRoW Definitive Statement."
           onChange={handleDetailsChangeEvent}
@@ -1042,6 +1045,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
           minLines={1}
           maxLines={3}
           id="prow_source"
+          characterSet="GeoPlaceStreet1"
           errorText={sourceTextError}
           helperText="A brief textual summary of the department/function and/or organisation that is the source of this data."
           onChange={handleSourceTextChangeEvent}
@@ -1288,6 +1292,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
               value={consultationDetails}
               maxLength={30}
               id="prow_consult_details"
+              characterSet="GeoPlaceStreet1"
               errorText={consultationDetailsError}
               helperText="Brief summary of the consultation."
               onChange={handleConsultationDetailsChangeEvent}
@@ -1415,6 +1420,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
               value={appealDetails}
               maxLength={30}
               id="prow_appeal_details"
+              characterSet="GeoPlaceStreet1"
               errorText={appealDetailsError}
               helperText="Brief summary of the appeal."
               onChange={handleAppealDetailsChangeEvent}

@@ -24,6 +24,7 @@
 //    011   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    012   23.01.24 Sean Flook       IMANN-246 Display information when selecting Part Road.
 //    013   25.01.24 Sean Flook       IMANN-250 No need to default wholeRoad.
+//    014   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -41,9 +42,6 @@ import InformationContext from "../context/informationContext";
 import { GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
 
-import SwaOrgRef from "../data/SwaOrgRef";
-import InterestType from "../data/InterestType";
-
 import { Avatar, Typography, Popper } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
@@ -55,6 +53,8 @@ import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ADSInformationControl from "../components/ADSInformationControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 
+import SwaOrgRef from "../data/SwaOrgRef";
+import InterestType from "../data/InterestType";
 import RoadStatusCode from "../data/RoadStatusCode";
 
 import { People } from "@mui/icons-material";
@@ -689,55 +689,12 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
             minLines={3}
             maxLines={5}
             id="interest-specify-location"
+            characterSet="GeoPlaceStreet1"
             errorText={specifyLocationError}
             helperText="Description of the location of the parts of the Street to which this additional Street Record applies."
             onChange={handleSpecificLocationChangeEvent}
           />
         )}
-        {/* {!wholeRoad && (
-          <ADSCoordinateControl
-            label="Start grid reference"
-            isEditable={userCanEdit}
-            isRequired
-            // displayButton
-            isEastFocused={focusedField ? focusedField === "StartX" : false}
-            isNorthFocused={focusedField ? focusedField === "StartY" : false}
-            loading={loading}
-            eastErrorText={startXError}
-            northErrorText={startYError}
-            helperText="The coordinates for the start of the street."
-            eastValue={startX}
-            northValue={startY}
-            eastLabel="Easting:"
-            northLabel="Northing:"
-            buttonLabel="Select start"
-            onEastChange={handleStartXChangeEvent}
-            onNorthChange={handleStartYChangeEvent}
-            onButtonClick={handleSelectStartClickEvent}
-          />
-        )} */}
-        {/* {!wholeRoad && (
-          <ADSCoordinateControl
-            label="End grid reference"
-            isEditable={userCanEdit}
-            isRequired
-            // displayButton
-            isEastFocused={focusedField ? focusedField === "EndX" : false}
-            isNorthFocused={focusedField ? focusedField === "EndY" : false}
-            loading={loading}
-            eastErrorText={endXError}
-            northErrorText={endYError}
-            helperText="The coordinates for the end of the street."
-            eastValue={endX}
-            northValue={endY}
-            eastLabel="Easting:"
-            northLabel="Northing:"
-            buttonLabel="Select end"
-            onEastChange={handleEndXChangeEvent}
-            onNorthChange={handleEndYChangeEvent}
-            onButtonClick={handleSelectEndClickEvent}
-          />
-        )} */}
         <ADSOkCancelControl
           okDisabled={!dataChanged}
           onOkClicked={handleOkClicked}

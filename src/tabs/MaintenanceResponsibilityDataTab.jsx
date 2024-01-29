@@ -21,6 +21,7 @@
 //    008   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    009   23.01.24 Sean Flook       IMANN-246 Display information when selecting Part Road.
 //    010   25.01.24 Sean Flook       IMANN-250 No need to default wholeRoad.
+//    011   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -661,6 +662,7 @@ function MaintenanceResponsibilityDataTab({
             minLines={3}
             maxLines={5}
             id="maintenance_responsibility_specify_location"
+            characterSet="GeoPlaceStreet1"
             errorText={specifyLocationError}
             helperText="Description of the location of the parts of the Street to which this additional Street Record applies."
             onChange={handleSpecificLocationChangeEvent}
