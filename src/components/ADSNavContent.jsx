@@ -22,6 +22,7 @@
 //    009   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    010   29.01.24 Sean Flook       IMANN-262 Changed from a Popper control to a Popover control, so we can handle closing when clicking away.
 //    011   29.01.24 Sean Flook       IMANN-262 Do not display the users settings card if no user is logged in.
+//    012   30.01.24 Sean Flook                 Updated to use new Idox logo.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -587,7 +588,7 @@ const ADSNavContent = (props) => {
       >
         <Grid
           sx={{
-            pt: theme.spacing(2),
+            pt: theme.spacing(0.5),
             width: navBarWidth,
             height: "98vh",
           }}
@@ -598,8 +599,8 @@ const ADSNavContent = (props) => {
         >
           <Grid item>
             <Grid container direction="column" alignItems="center" justifyContent="flex-start">
-              <Grid item xs>
-                <img sx={{ ml: theme.spacing(2) }} src="/images/iManage-Cloud-2.svg" alt="Idox" width="32" />
+              <Grid item xs sx={{ mb: theme.spacing(2) }}>
+                <img sx={{ ml: theme.spacing(2) }} src="/images/Idox_Logo.svg" alt="Idox" width="36" />
               </Grid>
               <Grid item xs>
                 <Tooltip title="Home" arrow placement="right" sx={tooltipStyle}>

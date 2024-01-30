@@ -32,6 +32,7 @@
 //    019   25.01.24 Sean Flook                 Changes required after UX review.
 //    020   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    021   26.01.24 Sean Flook       IMANN-251 Added missing record type to hasStreetChanged.
+//    022   30.01.24 Sean Flook                 Updated GetStreetCreateData and GetStreetUpdateData to reflect the current models used in the relevant API endpoints.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1208,17 +1209,17 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
       usrn: 0,
       swaOrgRefNaming: streetData.swaOrgRefNaming,
       streetStartDate: streetData.streetStartDate,
-      streetEndDate: streetData.streetEndDate,
       neverExport: streetData.neverExport,
       recordType: streetData.recordType,
+      streetEndDate: streetData.streetEndDate,
       successorCrossRefs: streetData.successorCrossRefs.map((x) => {
         return {
           changeType: "I",
           predecessor: x.predecessor,
-          successorType: x.successorType,
-          successor: x.successor,
           startDate: x.startDate,
           endDate: x.endDate,
+          successorType: x.successorType,
+          successor: x.successor,
           neverExport: x.neverExport,
         };
       }),
@@ -1226,10 +1227,10 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
         ? streetData.maintenanceResponsibilities.map((mr) => {
             return {
               usrn: 0,
-              seqNum: mr.seqNum,
               wholeRoad: mr.wholeRoad,
               specificLocation: mr.specificLocation,
               neverExport: mr.neverExport,
+              seqNum: mr.seqNum,
               changeType: "I",
               custodianCode: mr.custodianCode,
               maintainingAuthorityCode: mr.maintainingAuthorityCode,
@@ -1245,10 +1246,10 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
         ? streetData.reinstatementCategories.map((rc) => {
             return {
               usrn: 0,
-              seqNum: rc.seqNum,
               wholeRoad: rc.wholeRoad,
               specificLocation: rc.specificLocation,
               neverExport: rc.neverExport,
+              seqNum: rc.seqNum,
               changeType: "I",
               custodianCode: rc.custodianCode,
               reinstatementAuthorityCode: rc.reinstatementAuthorityCode,
@@ -1264,10 +1265,10 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
         ? streetData.specialDesignations.map((sd) => {
             return {
               usrn: 0,
-              seqNum: sd.seqNum,
               wholeRoad: sd.wholeRoad,
               specificLocation: sd.specificLocation,
               neverExport: sd.neverExport,
+              seqNum: sd.seqNum,
               changeType: "I",
               custodianCode: sd.custodianCode,
               authorityCode: sd.authorityCode,
@@ -1283,6 +1284,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
       esus: streetData.esus
         ? streetData.esus.map((esu) => {
             return {
+              esuId: 0,
               changeType: esu.changeType,
               state: esu.state,
               stateDate: esu.stateDate,
@@ -1353,18 +1355,13 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
 
     if (!HasASD()) {
       return {
-        changeType: "I",
-        usrn: 0,
-        swaOrgRefNaming: streetData.swaOrgRefNaming,
-        streetSurface: streetData.streetSurface,
-        streetStartDate: streetData.streetStartDate,
-        streetEndDate: streetData.streetEndDate,
-        neverExport: streetData.neverExport,
         version: 1,
         recordType: streetData.recordType,
         state: streetData.state,
         stateDate: streetData.stateDate,
+        streetEndDate: streetData.streetEndDate,
         streetClassification: streetData.streetClassification,
+        streetSurface: streetData.streetSurface,
         streetTolerance: streetData.streetTolerance,
         streetStartX: streetData.streetStartX ? streetData.streetStartX : 0,
         streetStartY: streetData.streetStartY ? streetData.streetStartY : 0,
@@ -1373,9 +1370,9 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
         esus: streetData.esus
           ? streetData.esus.map((esu) => {
               return {
+                esuId: 0,
                 changeType: esu.changeType,
                 esuVersionNumber: esu.esuVersionNumber,
-                numCoordCount: esu.numCoordCount,
                 esuTolerance: esu.esuTolerance,
                 esuStartDate: esu.esuStartDate,
                 esuEndDate: esu.esuEndDate,
@@ -1386,6 +1383,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
                   ? esu.highwayDedications.map((hd) => {
                       return {
                         changeType: hd.changeType,
+                        seqNum: hd.seqNum,
                         highwayDedicationCode: hd.highwayDedicationCode,
                         recordEndDate: hd.recordEndDate,
                         hdStartDate: hd.hdStartDate,
@@ -1458,21 +1456,21 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
               };
             })
           : [],
-      };
-    } else {
-      return {
         changeType: "I",
         usrn: 0,
         swaOrgRefNaming: streetData.swaOrgRefNaming,
-        streetSurface: streetData.streetSurface,
         streetStartDate: streetData.streetStartDate,
-        streetEndDate: streetData.streetEndDate,
         neverExport: streetData.neverExport,
+      };
+    } else {
+      return {
         version: 1,
         recordType: streetData.recordType,
         state: streetData.state,
         stateDate: streetData.stateDate,
+        streetEndDate: streetData.streetEndDate,
         streetClassification: streetData.streetClassification,
+        streetSurface: streetData.streetSurface,
         streetTolerance: streetData.streetTolerance,
         streetStartX: streetData.streetStartX ? streetData.streetStartX : 0,
         streetStartY: streetData.streetStartY ? streetData.streetStartY : 0,
@@ -1481,9 +1479,9 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
         esus: streetData.esus
           ? streetData.esus.map((esu) => {
               return {
+                esuId: 0,
                 changeType: esu.changeType,
                 esuVersionNumber: esu.esuVersionNumber,
-                numCoordCount: esu.numCoordCount,
                 esuTolerance: esu.esuTolerance,
                 esuStartDate: esu.esuStartDate,
                 esuEndDate: esu.esuEndDate,
@@ -1494,6 +1492,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
                   ? esu.highwayDedications.map((hd) => {
                       return {
                         changeType: hd.changeType,
+                        seqNum: hd.seqNum,
                         highwayDedicationCode: hd.highwayDedicationCode,
                         recordEndDate: hd.recordEndDate,
                         hdStartDate: hd.hdStartDate,
@@ -1570,25 +1569,19 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
           ? streetData.interests.map((i) => {
               return {
                 changeType: "I",
-                usrn: 0,
                 seqNum: i.seqNum,
-                wholeRoad: i.wholeRoad,
-                specificLocation: i.specificLocation,
-                neverExport: i.neverExport,
                 swaOrgRefAuthority: i.swaOrgRefAuthority,
                 districtRefAuthority: i.districtRefAuthority,
                 recordStartDate: i.recordStartDate,
                 recordEndDate: i.recordEndDate,
-                asdCoordinate: i.asdCoordinate,
-                asdCoordinateCount: i.asdCoordinateCount,
                 swaOrgRefAuthMaintaining: i.swaOrgRefAuthMaintaining,
                 streetStatus: i.streetStatus,
                 interestType: i.interestType,
-                startX: i.startX && !i.wholeRoad ? i.startX : 0,
-                startY: i.startY && !i.wholeRoad ? i.startY : 0,
-                endX: i.endX && !i.wholeRoad ? i.endX : 0,
-                endY: i.endY && !i.wholeRoad ? i.endY : 0,
                 wktGeometry: i.wktGeometry,
+                usrn: 0,
+                wholeRoad: i.wholeRoad,
+                specificLocation: i.specificLocation,
+                neverExport: i.neverExport,
               };
             })
           : [],
@@ -1625,20 +1618,11 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
         specialDesignations: streetData.specialDesignations
           ? streetData.specialDesignations.map((sd) => {
               return {
-                changeType: "I",
-                usrn: 0,
                 seqNum: sd.seqNum,
-                wholeRoad: sd.wholeRoad,
-                specificLocation: sd.specificLocation,
-                neverExport: sd.neverExport,
+                changeType: "I",
                 streetSpecialDesigCode: sd.streetSpecialDesigCode,
-                asdCoordinate: sd.asdCoordinate,
-                asdCoordinateCount: sd.asdCoordinateCount,
                 specialDesigPeriodicityCode: sd.specialDesigPeriodicityCode,
                 specialDesigStartX: sd.specialDesigStartX && !sd.wholeRoad ? sd.specialDesigStartX : 0,
-                specialDesigStartY: sd.specialDesigStartY && !sd.wholeRoad ? sd.specialDesigStartY : 0,
-                specialDesigEndX: sd.specialDesigEndX && !sd.wholeRoad ? sd.specialDesigEndX : 0,
-                specialDesigEndY: sd.specialDesigEndY && !sd.wholeRoad ? sd.specialDesigEndY : 0,
                 recordStartDate: sd.recordStartDate,
                 recordEndDate: sd.recordEndDate,
                 specialDesigStartDate: sd.specialDesigStartDate,
@@ -1650,6 +1634,10 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
                 districtRefConsultant: sd.districtRefConsultant,
                 specialDesigSourceText: sd.specialDesigSourceText,
                 wktGeometry: sd.wktGeometry,
+                usrn: 0,
+                wholeRoad: sd.wholeRoad,
+                specificLocation: sd.specificLocation,
+                neverExport: sd.neverExport,
               };
             })
           : [],
@@ -1694,20 +1682,10 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
           ? streetData.heightWidthWeights.map((hww) => {
               return {
                 changeType: "I",
-                usrn: 0,
                 seqNum: hww.seqNum,
-                wholeRoad: hww.wholeRoad,
-                specificLocation: hww.specificLocation,
-                neverExport: hww.neverExport,
                 hwwRestrictionCode: hww.hwwRestrictionCode,
                 recordStartDate: hww.recordStartDate,
                 recordEndDate: hww.recordEndDate,
-                asdCoordinate: hww.asdCoordinate,
-                asdCoordinateCount: hww.asdCoordinateCount,
-                hwwStartX: hww.hwwStartX && !hww.wholeRoad ? hww.hwwStartX : 0,
-                hwwStartY: hww.hwwStartY && !hww.wholeRoad ? hww.hwwStartY : 0,
-                hwwEndX: hww.hwwEndX && !hww.wholeRoad ? hww.hwwEndX : 0,
-                hwwEndY: hww.hwwEndY && !hww.wholeRoad ? hww.hwwStartY : 0,
                 valueMetric: hww.valueMetric,
                 troText: hww.troText,
                 featureDescription: hww.featureDescription,
@@ -1715,9 +1693,18 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
                 swaOrgRefConsultant: hww.swaOrgRefConsultant,
                 districtRefConsultant: hww.districtRefConsultant,
                 wktGeometry: hww.wktGeometry,
+                usrn: 0,
+                wholeRoad: hww.wholeRoad,
+                specificLocation: hww.specificLocation,
+                neverExport: hww.neverExport,
               };
             })
           : [],
+        changeType: "I",
+        usrn: 0,
+        swaOrgRefNaming: streetData.swaOrgRefNaming,
+        streetStartDate: streetData.streetStartDate,
+        neverExport: streetData.neverExport,
       };
     }
   }
@@ -1764,21 +1751,21 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
       usrn: streetData.usrn,
       swaOrgRefNaming: streetData.swaOrgRefNaming,
       streetStartDate: streetData.streetStartDate,
-      streetEndDate: streetData.streetEndDate,
       neverExport: streetData.neverExport,
       pkId: streetData.pkId,
       recordType: streetData.recordType,
+      streetEndDate: streetData.streetEndDate,
       successorCrossRefs: streetData.successorCrossRefs
         ? streetData.successorCrossRefs.map((s) => {
             return {
               pkId: s.pkId > 0 ? s.pkId : 0,
-              succKey: s.succKey,
               changeType: s.changeType,
               predecessor: s.predecessor,
-              successorType: s.successorType,
-              successor: s.successor,
+              succKey: s.succKey,
               startDate: s.startDate,
               endDate: s.endDate,
+              successorType: s.successorType,
+              successor: s.successor,
               neverExport: s.neverExport,
             };
           })
@@ -1847,6 +1834,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
       esus: streetData.esus
         ? streetData.esus.map((esu) => {
             return {
+              pkId: esu.pkId > 0 ? esu.pkId : 0,
               esuId: esu.esuId > 0 ? esu.esuId : 0,
               changeType: esu.changeType,
               state: esu.state,
@@ -1857,7 +1845,6 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
               endDate: esu.endDate,
               wktGeometry: esu.wktGeometry,
               assignUnassign: esu.assignUnassign,
-              pkId: esu.pkId > 0 ? esu.pkId : 0,
             };
           })
         : [],
@@ -1900,11 +1887,11 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
       streetNotes: streetData.streetNotes
         ? streetData.streetNotes.map((sn) => {
             return {
+              pkId: sn.pkId > 0 ? sn.pkId : 0,
+              seqNo: sn.seqNo,
               usrn: sn.usrn,
               note: sn.note,
               changeType: sn.changeType,
-              pkId: sn.pkId > 0 ? sn.pkId : 0,
-              seqNo: sn.seqNo,
             };
           })
         : [],
@@ -1922,38 +1909,32 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
 
     if (!HasASD()) {
       return {
-        changeType: streetData.changeType,
-        usrn: streetData.usrn,
-        swaOrgRefNaming: streetData.swaOrgRefNaming,
-        streetSurface: streetData.streetSurface,
-        streetStartDate: streetData.streetStartDate,
-        streetEndDate: streetData.streetEndDate,
-        neverExport: streetData.neverExport,
+        pkId: streetData.pkId,
         version: streetData.version,
         recordType: streetData.recordType,
         state: streetData.state,
         stateDate: streetData.stateDate,
+        streetEndDate: streetData.streetEndDate,
         streetClassification: streetData.streetClassification,
+        streetSurface: streetData.streetSurface,
         streetTolerance: streetData.streetTolerance,
         streetStartX: streetData.streetStartX ? streetData.streetStartX : 0,
         streetStartY: streetData.streetStartY ? streetData.streetStartY : 0,
         streetEndX: streetData.streetEndX ? streetData.streetEndX : 0,
         streetEndY: streetData.streetEndY ? streetData.streetEndY : 0,
-        pkId: streetData.pkId,
         esus: streetData.esus
           ? streetData.esus.map((esu) => {
               return {
+                pkId: esu.pkId > 0 ? esu.pkId : 0,
+                esuId: esu.esuId > 0 ? esu.esuId : 0,
                 changeType: esu.changeType,
                 esuVersionNumber: esu.esuVersionNumber,
-                numCoordCount: esu.numCoordCount,
                 esuTolerance: esu.esuTolerance,
                 esuStartDate: esu.esuStartDate,
                 esuEndDate: esu.esuEndDate,
                 esuDirection: esu.esuDirection,
                 wktGeometry: esu.wktGeometry,
                 assignUnassign: esu.assignUnassign,
-                pkId: esu.pkId > 0 ? esu.pkId : 0,
-                esuId: esu.esuId > 0 ? esu.esuId : 0,
                 highwayDedications: esu.highwayDedications.map((hd) => {
                   return {
                     pkId: hd.pkId > 0 ? hd.pkId : 0,
@@ -1997,6 +1978,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
         streetDescriptors: streetData.streetDescriptors
           ? streetData.streetDescriptors.map((sd) => {
               return {
+                pkId: sd.pkId > 0 ? sd.pkId : 0,
                 changeType: sd.changeType,
                 usrn: sd.usrn,
                 streetDescriptor: sd.streetDescriptor,
@@ -2020,63 +2002,59 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                 administrativeArea: sd.adminAreaRef ? sd.administrativeArea : "",
                 language: sd.language,
                 neverExport: sd.neverExport,
-                pkId: sd.pkId > 0 ? sd.pkId : 0,
               };
             })
           : [],
         streetNotes: streetData.streetNotes
           ? streetData.streetNotes.map((sn) => {
               return {
+                pkId: sn.pkId > 0 ? sn.pkId : 0,
+                seqNo: sn.seqNo,
                 usrn: sn.usrn,
                 note: sn.note,
                 changeType: sn.changeType,
-                pkId: sn.pkId > 0 ? sn.pkId : 0,
-                // seqNo: sn.pkId > 0 ? sn.seqNo : 0,
-                seqNo: sn.seqNo,
               };
             })
           : [],
-      };
-    } else {
-      return {
         changeType: streetData.changeType,
         usrn: streetData.usrn,
         swaOrgRefNaming: streetData.swaOrgRefNaming,
-        streetSurface: streetData.streetSurface,
         streetStartDate: streetData.streetStartDate,
-        streetEndDate: streetData.streetEndDate,
         neverExport: streetData.neverExport,
+      };
+    } else {
+      return {
+        pkId: streetData.pkId,
         version: streetData.version,
         recordType: streetData.recordType,
         state: streetData.state,
         stateDate: streetData.stateDate,
+        streetEndDate: streetData.streetEndDate,
         streetClassification: streetData.streetClassification,
+        streetSurface: streetData.streetSurface,
         streetTolerance: streetData.streetTolerance,
         streetStartX: streetData.streetStartX ? streetData.streetStartX : 0,
         streetStartY: streetData.streetStartY ? streetData.streetStartY : 0,
         streetEndX: streetData.streetEndX ? streetData.streetEndX : 0,
         streetEndY: streetData.streetEndY ? streetData.streetEndY : 0,
-        pkId: streetData.pkId,
         esus: streetData.esus
           ? streetData.esus.map((esu) => {
               return {
+                pkId: esu.pkId > 0 ? esu.pkId : 0,
+                esuId: esu.esuId > 0 ? esu.esuId : 0,
                 changeType: esu.changeType,
                 esuVersionNumber: esu.esuVersionNumber,
-                numCoordCount: esu.numCoordCount,
                 esuTolerance: esu.esuTolerance,
                 esuStartDate: esu.esuStartDate,
                 esuEndDate: esu.esuEndDate,
                 esuDirection: esu.esuDirection,
                 wktGeometry: esu.wktGeometry,
                 assignUnassign: esu.assignUnassign,
-                pkId: esu.pkId > 0 ? esu.pkId : 0,
-                esuId: esu.esuId > 0 ? esu.esuId : 0,
                 highwayDedications: esu.highwayDedications
                   ? esu.highwayDedications.map((hd) => {
                       return {
                         pkId: hd.pkId > 0 ? hd.pkId : 0,
                         esuId: hd.esuId > 0 ? hd.esuId : 0,
-                        // seqNum: hd.pkId > 0 ? hd.seqNum : 0,
                         seqNum: hd.seqNum,
                         changeType: esu.changeType === "D" && hd.changeType !== "D" ? "D" : hd.changeType,
                         highwayDedicationCode: hd.highwayDedicationCode,
@@ -2101,7 +2079,6 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                       return {
                         pkId: owe.pkId > 0 ? owe.pkId : 0,
                         esuId: owe.esuId > 0 ? owe.esuId : 0,
-                        // sequenceNumber: owe.pkId > 0 ? owe.sequenceNumber : 0,
                         sequenceNumber: owe.sequenceNumber,
                         changeType: esu.changeType === "D" && owe.changeType !== "D" ? "D" : owe.changeType,
                         oneWayExemptionTypeCode: owe.oneWayExemptionTypeCode,
@@ -2121,6 +2098,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
         streetDescriptors: streetData.streetDescriptors
           ? streetData.streetDescriptors.map((sd) => {
               return {
+                pkId: sd.pkId > 0 ? sd.pkId : 0,
                 changeType: sd.changeType,
                 usrn: sd.usrn,
                 streetDescriptor: sd.streetDescriptor,
@@ -2144,47 +2122,38 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                 administrativeArea: sd.adminAreaRef ? sd.administrativeArea : "",
                 language: sd.language,
                 neverExport: sd.neverExport,
-                pkId: sd.pkId > 0 ? sd.pkId : 0,
               };
             })
           : [],
         streetNotes: streetData.streetNotes
           ? streetData.streetNotes.map((sn) => {
               return {
+                pkId: sn.pkId > 0 ? sn.pkId : 0,
+                seqNo: sn.seqNo,
                 usrn: sn.usrn,
                 note: sn.note,
                 changeType: sn.changeType,
-                pkId: sn.pkId > 0 ? sn.pkId : 0,
-                // seqNo: sn.pkId > 0 ? sn.seqNo : 0,
-                seqNo: sn.seqNo,
               };
             })
           : [],
         interests: streetData.interests
           ? streetData.interests.map((i) => {
               return {
-                changeType: i.changeType,
-                usrn: i.usrn,
-                // seqNum: i.pkId > 0 ? i.seqNum : 0,
+                pkId: i.pkId > 0 ? i.pkId : 0,
                 seqNum: i.seqNum,
-                wholeRoad: i.wholeRoad,
-                specificLocation: i.specificLocation,
-                neverExport: i.neverExport,
+                changeType: i.changeType,
                 swaOrgRefAuthority: i.swaOrgRefAuthority,
                 districtRefAuthority: i.districtRefAuthority,
                 recordStartDate: i.recordStartDate,
                 recordEndDate: i.recordEndDate,
-                asdCoordinate: i.asdCoordinate,
-                asdCoordinateCount: i.asdCoordinateCount,
                 swaOrgRefAuthMaintaining: i.swaOrgRefAuthMaintaining,
                 streetStatus: i.streetStatus,
                 interestType: i.interestType,
-                startX: i.startX && !i.wholeRoad ? i.startX : 0,
-                startY: i.startY && !i.wholeRoad ? i.startY : 0,
-                endX: i.endX && !i.wholeRoad ? i.endX : 0,
-                endY: i.endY && !i.wholeRoad ? i.endY : 0,
                 wktGeometry: i.wktGeometry,
-                pkId: i.pkId > 0 ? i.pkId : 0,
+                usrn: i.usrn,
+                wholeRoad: i.wholeRoad,
+                specificLocation: i.specificLocation,
+                neverExport: i.neverExport,
               };
             })
           : [],
@@ -2193,7 +2162,6 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
               return {
                 changeType: c.changeType,
                 usrn: c.usrn,
-                // seqNum: c.pkId > 0 ? c.seqNum : 0,
                 seqNum: c.seqNum,
                 wholeRoad: c.wholeRoad,
                 specificLocation: c.specificLocation,
@@ -2223,13 +2191,9 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
         specialDesignations: streetData.specialDesignations
           ? streetData.specialDesignations.map((sd) => {
               return {
-                changeType: sd.changeType,
-                usrn: sd.usrn,
-                // seqNum: sd.pkId > 0 ? sd.seqNum : 0,
+                pkId: sd.pkId > 0 ? sd.pkId : 0,
                 seqNum: sd.seqNum,
-                wholeRoad: sd.wholeRoad,
-                specificLocation: sd.specificLocation,
-                neverExport: sd.neverExport,
+                changeType: sd.changeType,
                 streetSpecialDesigCode: sd.streetSpecialDesigCode,
                 asdCoordinate: sd.asdCoordinate,
                 asdCoordinateCount: sd.asdCoordinateCount,
@@ -2249,7 +2213,10 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                 districtRefConsultant: sd.districtRefConsultant,
                 specialDesigSourceText: sd.specialDesigSourceText,
                 wktGeometry: sd.wktGeometry,
-                pkId: sd.pkId > 0 ? sd.pkId : 0,
+                usrn: sd.usrn,
+                wholeRoad: sd.wholeRoad,
+                specificLocation: sd.specificLocation,
+                neverExport: sd.neverExport,
               };
             })
           : [],
@@ -2294,22 +2261,12 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
         heightWidthWeights: streetData.heightWidthWeights
           ? streetData.heightWidthWeights.map((hww) => {
               return {
+                pkId: hww.pkId > 0 ? hww.pkId : 0,
                 changeType: hww.changeType,
-                usrn: hww.usrn,
-                // seqNum: hww.pkId > 0 ? hww.seqNum : 0,
                 seqNum: hww.seqNum,
-                wholeRoad: hww.wholeRoad,
-                specificLocation: hww.specificLocation,
-                neverExport: hww.neverExport,
                 hwwRestrictionCode: hww.hwwRestrictionCode,
                 recordStartDate: hww.recordStartDate,
                 recordEndDate: hww.recordEndDate,
-                asdCoordinate: hww.asdCoordinate,
-                asdCoordinateCount: hww.asdCoordinateCount,
-                hwwStartX: hww.hwwStartX && !hww.wholeRoad ? hww.hwwStartX : 0,
-                hwwStartY: hww.hwwStartY && !hww.wholeRoad ? hww.hwwStartY : 0,
-                hwwEndX: hww.hwwEndX && !hww.wholeRoad ? hww.hwwEndX : 0,
-                hwwEndY: hww.hwwEndY && !hww.wholeRoad ? hww.hwwStartY : 0,
                 valueMetric: hww.valueMetric,
                 troText: hww.troText,
                 featureDescription: hww.featureDescription,
@@ -2317,10 +2274,18 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                 swaOrgRefConsultant: hww.swaOrgRefConsultant,
                 districtRefConsultant: hww.districtRefConsultant,
                 wktGeometry: hww.wktGeometry,
-                pkId: hww.pkId > 0 ? hww.pkId : 0,
+                usrn: hww.usrn,
+                wholeRoad: hww.wholeRoad,
+                specificLocation: hww.specificLocation,
+                neverExport: hww.neverExport,
               };
             })
           : [],
+        changeType: streetData.changeType,
+        usrn: streetData.usrn,
+        swaOrgRefNaming: streetData.swaOrgRefNaming,
+        streetStartDate: streetData.streetStartDate,
+        neverExport: streetData.neverExport,
       };
     }
   }
