@@ -29,6 +29,7 @@
 //    016   11.01.24 Sean Flook                 Fix warnings.
 //    017   16.01.23 Joel Benford               OS/GP level split
 //    018   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    019   30.01.24 Sean Flook                 Added ESU tolerance for GeoPlace.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -79,6 +80,7 @@ import StreetSurface from "../data/StreetSurface";
 import RoadStatusCode from "../data/RoadStatusCode";
 import SwaOrgRef from "../data/SwaOrgRef";
 import ESUDirectionCode from "../data/ESUDirectionCode";
+import ESUTolerance from "../data/ESUTolerance";
 import ESUState from "../data/ESUState";
 import ESUClassification from "../data/ESUClassification";
 import OneWayExemptionType from "../data/OneWayExemptionType";
@@ -180,6 +182,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [streetClassification, setStreetClassification] = useState(null);
   const [streetSurface, setStreetSurface] = useState(null);
   const [esuDirection, setEsuDirection] = useState(null);
+  const [esuTolerance, setEsuTolerance] = useState(null);
   const [esuState, setEsuState] = useState(null);
   const [esuClassification, setEsuClassification] = useState(null);
   const [oweType, setOweType] = useState(null);
@@ -326,6 +329,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
       case "esu":
         return {
           esuDirection: esuDirection,
+          esuTolerance: esuTolerance,
           esuState: esuState,
           esuClassification: esuClassification,
         };
@@ -834,6 +838,15 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleDirectionChangeEvent = (newValue) => {
     setEsuDirection(newValue);
+  };
+
+  /**
+   * Event to handle when the tolerance is changed (GeoPlace only).
+   *
+   * @param {number} newValue The new tolerance.
+   */
+  const handleToleranceChangeEvent = (newValue) => {
+    setEsuTolerance(newValue);
   };
 
   /**
@@ -1814,6 +1827,20 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 value={esuDirection}
                 onChange={handleDirectionChangeEvent}
                 helperText="Indicates whether traffic flow is restricted in a particular direction."
+              />
+            )}
+            {!settingsContext.isScottish && (
+              <ADSSelectControl
+                label="Tolerance"
+                isEditable
+                doNotSetTitleCase
+                useRounded
+                lookupData={ESUTolerance}
+                lookupId="id"
+                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                value={esuTolerance}
+                helperText="The tolerance of all coordinate points."
+                onChange={handleToleranceChangeEvent}
               />
             )}
             {settingsContext.isScottish && (
@@ -2890,6 +2917,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         case "esu":
           setTemplateType("ESU");
           setEsuDirection(data.esuDirection);
+          setEsuTolerance(data.esuTolerance);
           setEsuState(data.esuState);
           setEsuClassification(data.esuClassification);
           break;

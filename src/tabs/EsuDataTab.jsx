@@ -22,6 +22,7 @@
 //    009   11.01.24 Sean Flook                 Fix warnings.
 //    010   17.01.24 Sean Flook                 Changes after Louise's review.
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
+//    012   30.01.24 Sean Flook                 Changed tolerance to a select control so we can limit the options to valid items.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -73,13 +74,13 @@ import {
 } from "../utils/ADSIcons";
 import { copyTextToClipboard, GetLookupLabel, ConvertDate, GetCurrentDate } from "../utils/HelperUtils";
 import ESUDirectionCode from "../data/ESUDirectionCode";
+import ESUTolerance from "../data/ESUTolerance";
 import HighwayDedicationCode from "../data/HighwayDedicationCode";
 import OneWayExemptionType from "./../data/OneWayExemptionType";
 import EsuState from "./../data/ESUState";
 import EsuClassification from "./../data/ESUClassification";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
-import ADSNumberControl from "../components/ADSNumberControl";
 import ADSDateControl from "../components/ADSDateControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
 
@@ -1043,12 +1044,17 @@ function EsuDataTab({
           />
         )}
         {!settingsContext.isScottish && (
-          <ADSNumberControl
-            label="Tolerance (meters)"
+          <ADSSelectControl
+            label="Tolerance"
             isEditable={userCanEdit}
             isRequired
-            isFocused={focusedField ? focusedField === "EsuTolerance" : false}
+            doNotSetTitleCase
             loading={loading}
+            isFocused={focusedField ? focusedField === "EsuTolerance" : false}
+            useRounded
+            lookupData={ESUTolerance}
+            lookupId="id"
+            lookupLabel={GetLookupLabel(settingsContext.isScottish)}
             value={tolerance}
             errorText={toleranceError}
             helperText="The tolerance of all coordinate points."

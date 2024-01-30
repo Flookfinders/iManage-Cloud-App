@@ -22,6 +22,7 @@
 //    009   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    010   10.01.24 Sean Flook                 Fix warnings.
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
+//    012   30.01.24 Sean Flook                 Added ESU tolerance for GeoPlace.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -44,6 +45,7 @@ import StreetState from "../data/StreetState";
 import StreetClassification from "../data/StreetClassification";
 import StreetSurface from "../data/StreetSurface";
 import ESUDirectionCode from "../data/ESUDirectionCode";
+import ESUTolerance from "../data/ESUTolerance";
 import ESUState from "../data/ESUState";
 import ESUClassification from "../data/ESUClassification";
 import OneWayExemptionType from "../data/OneWayExemptionType";
@@ -88,6 +90,7 @@ function StreetTemplateTab() {
   const [classification, setClassification] = useState(null);
   const [surface, setSurface] = useState(null);
   const [esuDirection, setEsuDirection] = useState(null);
+  const [esuTolerance, setEsuTolerance] = useState(null);
   const [esuState, setEsuState] = useState(null);
   const [esuClassification, setEsuClassification] = useState(null);
   const [oweType, setOweType] = useState(null);
@@ -287,6 +290,19 @@ function StreetTemplateTab() {
   };
 
   /**
+   * Method to get the tolerance for the ESU.
+   *
+   * @param {number} value The tolerance.
+   * @returns {string|null} The tolerance to display.
+   */
+  const getTolerance = (value) => {
+    const rec = ESUTolerance.find((x) => x.id === value);
+
+    if (rec) return rec.gpText;
+    else return null;
+  };
+
+  /**
    * Method to get the one-way exemption type for the one-way exemption type code.
    *
    * @param {number} value The one-way exemption type code.
@@ -350,6 +366,7 @@ function StreetTemplateTab() {
     setEditVariant("esu");
     setEditData({
       esuDirection: data.esuTemplate.esuDirection,
+      esuTolerance: data.esuTemplate.esuTolerance,
       esuState: data.scoEsuTemplate.state,
       esuClassification: data.scoEsuTemplate.classification,
     });
@@ -411,6 +428,10 @@ function StreetTemplateTab() {
                   editVariant === "esu" && !settingsContext.isScottish
                     ? updatedData.esuDirection
                     : data.esuTemplate.esuDirection,
+                esuTolerance:
+                  editVariant === "esu" && !settingsContext.isScottish
+                    ? updatedData.esuTolerance
+                    : data.esuTemplate.esuTolerance,
                 oneWayExemptionType:
                   editVariant === "owe" && !settingsContext.isScottish
                     ? updatedData.oweType
@@ -556,6 +577,7 @@ function StreetTemplateTab() {
       setClassification(data.streetTemplate.classification);
       setSurface(data.streetTemplate.streetSurface);
       setEsuDirection(data.esuTemplate.esuDirection);
+      setEsuTolerance(data.esuTemplate.esuTolerance);
       setEsuState(data.scoEsuTemplate.state);
       setEsuClassification(data.scoEsuTemplate.classification);
       setOweType(data.esuTemplate.oneWayExemptionType);
@@ -722,6 +744,18 @@ function StreetTemplateTab() {
                       <Grid item xs={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getDirection(esuDirection)}
+                        </Typography>
+                      </Grid>
+                    )}
+                    {!settingsContext.isScottish && (
+                      <Grid item xs={3}>
+                        <Typography variant="body2">Tolerance</Typography>
+                      </Grid>
+                    )}
+                    {!settingsContext.isScottish && (
+                      <Grid item xs={9}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getTolerance(esuTolerance)}
                         </Typography>
                       </Grid>
                     )}
