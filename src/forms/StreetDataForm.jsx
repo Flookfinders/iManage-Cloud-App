@@ -44,6 +44,7 @@
 //    030   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    031   26.01.24 Sean Flook       IMANN-232 Do not remove record when creating a new street.
 //    032   26.01.24 Sean Flook       IMANN-257 Bug fix handleNoteSelected.
+//    033   02.02.24 Sean Flook       IMANN-271 Reset the errors when opening a new street.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -6386,6 +6387,7 @@ function StreetDataForm({ data, loading }) {
         data.usrn.toString() !== streetUsrn.current.toString())
     ) {
       streetUsrn.current = data.usrn;
+      streetContext.resetStreetErrors();
       setStreetData(data);
       if (data && data.usrn.toString() === "0" && saveDisabled) {
         setSaveDisabled(false);
