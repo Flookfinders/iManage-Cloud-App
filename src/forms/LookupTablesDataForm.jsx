@@ -20,12 +20,13 @@
 //    007   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    008   10.01.24 Sean Flook                 Fix warnings.
 //    009   25.01.24 Sean Flook       IMANN-253 Include historic when checking for changes.
+//    010   01.02.24 Sean Flook                 Initial changes required for operational districts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
 
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState, useRef, Fragment } from "react";
 import PropTypes from "prop-types";
 import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
@@ -43,6 +44,7 @@ import {
   GetAdministrativeAreaUrl,
   GetWardsForAuthorityUrl,
   GetParishesForAuthorityUrl,
+  GetOperationalDistrictUrl,
 } from "../configuration/ADSConfig";
 
 import LookupTableGridTab from "../tabs/LookupTableGridTab";
@@ -76,7 +78,12 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired,
 };
 
-function LookupTablesDataForm({ nodeId }) {
+LookupTablesDataForm.propTypes = {
+  nodeId: PropTypes.number.isRequired,
+  onViewOperationalDistrict: PropTypes.func.isRequired,
+};
+
+function LookupTablesDataForm({ nodeId, onViewOperationalDistrict }) {
   const lookupContext = useContext(LookupContext);
   const userContext = useContext(UserContext);
   const settingsContext = useContext(SettingsContext);
@@ -665,6 +672,71 @@ function LookupTablesDataForm({ nodeId }) {
     else return [];
   };
 
+  const getOperationalDistrictsData = () => {
+    if (
+      lookupContext.currentLookups &&
+      lookupContext.currentLookups.operationalDistricts &&
+      lookupContext.currentLookups.operationalDistricts.length > 0
+    )
+      return lookupContext.currentLookups.operationalDistricts.map(function (x, index) {
+        return {
+          id: x.operationalDistrictId,
+          organisationId: x.organisationId,
+          districtName: x.districtName,
+          lastUpdateDate: x.lastUpdateDate,
+          districtId: x.districtId,
+          districtFunction: x.districtFunction,
+          districtClosed: x.districtClosed,
+          districtFtpServerName: x.districtFtpServerName,
+          districtServerIpAddress: x.districtServerIpAddress,
+          districtFtpDirectory: x.districtFtpDirectory,
+          districtNotificationsUrl: x.districtNotificationsUrl,
+          attachmentUrlPrefix: x.attachmentUrlPrefix,
+          districtFaxNo: x.districtFaxNo,
+          districtPostcode: x.districtPostcode,
+          districtTelNo: x.districtTelNo,
+          outOfHoursArrangements: x.outOfHoursArrangements,
+          fpnDeliveryUrl: x.fpnDeliveryUrl,
+          fpnFaxNumber: x.fpnFaxNumber,
+          fpnDeliveryPostcode: x.fpnDeliveryPostcode,
+          fpnPaymentUrl: x.fpnPaymentUrl,
+          fpnPaymentTelNo: x.fpnPaymentTelNo,
+          fpnPaymentBankName: x.fpnPaymentBankName,
+          fpnPaymentSortCode: x.fpnPaymentSortCode,
+          fpnPaymentAccountNo: x.fpnPaymentAccountNo,
+          fpnPaymentAccountName: x.fpnPaymentAccountName,
+          fpnPaymentPostcode: x.fpnPaymentPostcode,
+          fpnContactName: x.fpnContactName,
+          fpnContactPostcode: x.fpnContactPostcode,
+          fpnContactTelNo: x.fpnContactTelNo,
+          districtPostalAddress1: x.districtPostalAddress1,
+          districtPostalAddress2: x.districtPostalAddress2,
+          districtPostalAddress3: x.districtPostalAddress3,
+          districtPostalAddress4: x.districtPostalAddress4,
+          districtPostalAddress5: x.districtPostalAddress5,
+          fpnDeliveryAddress1: x.fpnDeliveryAddress1,
+          fpnDeliveryAddress2: x.fpnDeliveryAddress2,
+          fpnDeliveryAddress3: x.fpnDeliveryAddress3,
+          fpnDeliveryAddress4: x.fpnDeliveryAddress4,
+          fpnDeliveryAddress5: x.fpnDeliveryAddress5,
+          fpnContactAddress1: x.fpnContactAddress1,
+          fpnContactAddress2: x.fpnContactAddress2,
+          fpnContactAddress3: x.fpnContactAddress3,
+          fpnContactAddress4: x.fpnContactAddress4,
+          fpnContactAddress5: x.fpnContactAddress5,
+          fpnPaymentAddress1: x.fpnPaymentAddress1,
+          fpnPaymentAddress2: x.fpnPaymentAddress2,
+          fpnPaymentAddress3: x.fpnPaymentAddress3,
+          fpnPaymentAddress4: x.fpnPaymentAddress4,
+          fpnPaymentAddress5: x.fpnPaymentAddress5,
+          fpnDeliveryEmailAddress: x.fpnDeliveryEmailAddress,
+          districtPermitSchemeId: x.districtPermitSchemeId,
+          historic: x.historic,
+        };
+      });
+    else return [];
+  };
+
   const isLookupInUse = async (variant, id) => {
     const lookupUrl = GetLookupUrl(variant, "GET");
 
@@ -901,6 +973,25 @@ function LookupTablesDataForm({ nodeId }) {
     setShowDeleteDialog(true);
   };
 
+  const handleAddOperationalDistrict = () => {
+    setLookupType("operationalDistrict");
+    setShowAddDialog(true);
+  };
+
+  const handleEditOperationalDistrict = (id) => {
+    setLookupId(id);
+    setLookupType("operationalDistrict");
+    isLookupInUse("operationalDistrict", id);
+    if (onViewOperationalDistrict) onViewOperationalDistrict(id);
+  };
+
+  const handleDeleteOperationalDistrict = (id) => {
+    setLookupId(id);
+    setLookupType("operationalDistrict");
+    isLookupInUse("operationalDistrict", id);
+    setShowDeleteDialog(true);
+  };
+
   function GetLookupUrl(variant, endPointType) {
     switch (variant) {
       case "postcode":
@@ -933,6 +1024,9 @@ function LookupTablesDataForm({ nodeId }) {
       case "parish":
         return GetParishesForAuthorityUrl(endPointType, userContext.currentUser.token, settingsContext.authorityCode);
 
+      case "operationalDistrict":
+        return GetOperationalDistrictUrl(endPointType, userContext.currentUser.token);
+
       default:
         return null;
     }
@@ -951,6 +1045,9 @@ function LookupTablesDataForm({ nodeId }) {
 
       case "administrativeArea":
         return "administrative area";
+
+      case "operationalDistrict":
+        return "operational district";
 
       default:
         return variant;
@@ -988,6 +1085,9 @@ function LookupTablesDataForm({ nodeId }) {
 
       case "parish":
         return JSON.parse(JSON.stringify(lookupContext.currentLookups.parishes));
+
+      case "operationalDistrict":
+        return JSON.parse(JSON.stringify(lookupContext.currentLookups.operationalDistricts));
 
       default:
         return null;
@@ -1126,6 +1226,61 @@ function LookupTablesDataForm({ nodeId }) {
               parishCode: data.lookupData.parishCode,
               parish: data.lookupData.parish,
               detrCode: settingsContext ? settingsContext.authorityCode : null,
+              historic: data.lookupData.historic,
+            };
+
+          case "operationalDistrict":
+            return {
+              organisationId: data.lookupData.organisationId,
+              districtName: data.lookupData.districtName,
+              lastUpdateDate: data.lookupData.lastUpdateDate,
+              districtId: data.lookupData.districtId,
+              districtFunction: data.lookupData.districtFunction,
+              districtClosed: data.lookupData.districtClosed,
+              districtFtpServerName: data.lookupData.districtFtpServerName,
+              districtServerIpAddress: data.lookupData.districtServerIpAddress,
+              districtFtpDirectory: data.lookupData.districtFtpDirectory,
+              districtNotificationsUrl: data.lookupData.districtNotificationsUrl,
+              attachmentUrlPrefix: data.lookupData.attachmentUrlPrefix,
+              districtFaxNo: data.lookupData.districtFaxNo,
+              districtPostcode: data.lookupData.districtPostcode,
+              districtTelNo: data.lookupData.districtTelNo,
+              outOfHoursArrangements: data.lookupData.outOfHoursArrangements,
+              fpnDeliveryUrl: data.lookupData.fpnDeliveryUrl,
+              fpnFaxNumber: data.lookupData.fpnFaxNumber,
+              fpnDeliveryPostcode: data.lookupData.fpnDeliveryPostcode,
+              fpnPaymentUrl: data.lookupData.fpnPaymentUrl,
+              fpnPaymentTelNo: data.lookupData.fpnPaymentTelNo,
+              fpnPaymentBankName: data.lookupData.fpnPaymentBankName,
+              fpnPaymentSortCode: data.lookupData.fpnPaymentSortCode,
+              fpnPaymentAccountNo: data.lookupData.fpnPaymentAccountNo,
+              fpnPaymentAccountName: data.lookupData.fpnPaymentAccountName,
+              fpnPaymentPostcode: data.lookupData.fpnPaymentPostcode,
+              fpnContactName: data.lookupData.fpnContactName,
+              fpnContactPostcode: data.lookupData.fpnContactPostcode,
+              fpnContactTelNo: data.lookupData.fpnContactTelNo,
+              districtPostalAddress1: data.lookupData.districtPostalAddress1,
+              districtPostalAddress2: data.lookupData.districtPostalAddress2,
+              districtPostalAddress3: data.lookupData.districtPostalAddress3,
+              districtPostalAddress4: data.lookupData.districtPostalAddress4,
+              districtPostalAddress5: data.lookupData.districtPostalAddress5,
+              fpnDeliveryAddress1: data.lookupData.fpnDeliveryAddress1,
+              fpnDeliveryAddress2: data.lookupData.fpnDeliveryAddress2,
+              fpnDeliveryAddress3: data.lookupData.fpnDeliveryAddress3,
+              fpnDeliveryAddress4: data.lookupData.fpnDeliveryAddress4,
+              fpnDeliveryAddress5: data.lookupData.fpnDeliveryAddress5,
+              fpnContactAddress1: data.lookupData.fpnContactAddress1,
+              fpnContactAddress2: data.lookupData.fpnContactAddress2,
+              fpnContactAddress3: data.lookupData.fpnContactAddress3,
+              fpnContactAddress4: data.lookupData.fpnContactAddress4,
+              fpnContactAddress5: data.lookupData.fpnContactAddress5,
+              fpnPaymentAddress1: data.lookupData.fpnPaymentAddress1,
+              fpnPaymentAddress2: data.lookupData.fpnPaymentAddress2,
+              fpnPaymentAddress3: data.lookupData.fpnPaymentAddress3,
+              fpnPaymentAddress4: data.lookupData.fpnPaymentAddress4,
+              fpnPaymentAddress5: data.lookupData.fpnPaymentAddress5,
+              fpnDeliveryEmailAddress: data.lookupData.fpnDeliveryEmailAddress,
+              districtPermitSchemeId: data.lookupData.districtPermitSchemeId,
               historic: data.lookupData.historic,
             };
 
@@ -1623,6 +1778,11 @@ function LookupTablesDataForm({ nodeId }) {
         case "parish":
           return lookupContext.currentLookups.parishes.map(
             (x) => [updatedLookup].find((rec) => rec.pkId === x.pkId) || x
+          );
+
+        case "operationalDistrict":
+          return lookupContext.currentLookups.operationalDistricts.map(
+            (x) => [updatedLookup].find((rec) => rec.operationalDistrictId === x.operationalDistrictId) || x
           );
 
         default:
@@ -2693,6 +2853,67 @@ function LookupTablesDataForm({ nodeId }) {
               };
             } else return null;
 
+          case "operationalDistrict":
+            const operationalDistrictRecord = lookupContext.currentLookups.operationalDistricts.find(
+              (x) => x.operationalDistrictId === data.lookupData.lookupId
+            );
+            if (operationalDistrictRecord) {
+              return {
+                operationalDistrictId: data.lookupData.lookupId,
+                organisationId: data.lookupData.organisationId,
+                districtName: data.lookupData.districtName,
+                lastUpdateDate: data.lookupData.lastUpdateDate,
+                districtId: data.lookupData.districtId,
+                districtFunction: data.lookupData.districtFunction,
+                districtClosed: data.lookupData.districtClosed,
+                districtFtpServerName: data.lookupData.districtFtpServerName,
+                districtServerIpAddress: data.lookupData.districtServerIpAddress,
+                districtFtpDirectory: data.lookupData.districtFtpDirectory,
+                districtNotificationsUrl: data.lookupData.districtNotificationsUrl,
+                attachmentUrlPrefix: data.lookupData.attachmentUrlPrefix,
+                districtFaxNo: data.lookupData.districtFaxNo,
+                districtPostcode: data.lookupData.districtPostcode,
+                districtTelNo: data.lookupData.districtTelNo,
+                outOfHoursArrangements: data.lookupData.outOfHoursArrangements,
+                fpnDeliveryUrl: data.lookupData.fpnDeliveryUrl,
+                fpnFaxNumber: data.lookupData.fpnFaxNumber,
+                fpnDeliveryPostcode: data.lookupData.fpnDeliveryPostcode,
+                fpnPaymentUrl: data.lookupData.fpnPaymentUrl,
+                fpnPaymentTelNo: data.lookupData.fpnPaymentTelNo,
+                fpnPaymentBankName: data.lookupData.fpnPaymentBankName,
+                fpnPaymentSortCode: data.lookupData.fpnPaymentSortCode,
+                fpnPaymentAccountNo: data.lookupData.fpnPaymentAccountNo,
+                fpnPaymentAccountName: data.lookupData.fpnPaymentAccountName,
+                fpnPaymentPostcode: data.lookupData.fpnPaymentPostcode,
+                fpnContactName: data.lookupData.fpnContactName,
+                fpnContactPostcode: data.lookupData.fpnContactPostcode,
+                fpnContactTelNo: data.lookupData.fpnContactTelNo,
+                districtPostalAddress1: data.lookupData.districtPostalAddress1,
+                districtPostalAddress2: data.lookupData.districtPostalAddress2,
+                districtPostalAddress3: data.lookupData.districtPostalAddress3,
+                districtPostalAddress4: data.lookupData.districtPostalAddress4,
+                districtPostalAddress5: data.lookupData.districtPostalAddress5,
+                fpnDeliveryAddress1: data.lookupData.fpnDeliveryAddress1,
+                fpnDeliveryAddress2: data.lookupData.fpnDeliveryAddress2,
+                fpnDeliveryAddress3: data.lookupData.fpnDeliveryAddress3,
+                fpnDeliveryAddress4: data.lookupData.fpnDeliveryAddress4,
+                fpnDeliveryAddress5: data.lookupData.fpnDeliveryAddress5,
+                fpnContactAddress1: data.lookupData.fpnContactAddress1,
+                fpnContactAddress2: data.lookupData.fpnContactAddress2,
+                fpnContactAddress3: data.lookupData.fpnContactAddress3,
+                fpnContactAddress4: data.lookupData.fpnContactAddress4,
+                fpnContactAddress5: data.lookupData.fpnContactAddress5,
+                fpnPaymentAddress1: data.lookupData.fpnPaymentAddress1,
+                fpnPaymentAddress2: data.lookupData.fpnPaymentAddress2,
+                fpnPaymentAddress3: data.lookupData.fpnPaymentAddress3,
+                fpnPaymentAddress4: data.lookupData.fpnPaymentAddress4,
+                fpnPaymentAddress5: data.lookupData.fpnPaymentAddress5,
+                fpnDeliveryEmailAddress: data.lookupData.fpnDeliveryEmailAddress,
+                districtPermitSchemeId: data.lookupData.districtPermitSchemeId,
+                historic: data.lookupData.historic,
+              };
+            } else return null;
+
           default:
             return null;
         }
@@ -3323,6 +3544,10 @@ function LookupTablesDataForm({ nodeId }) {
                 updatedLookups = oldLookups.filter((x) => x.pkId !== lookupId);
                 break;
 
+              case "operationalDistrict":
+                updatedLookups = oldLookups.filter((x) => x.operationalDistrictId !== lookupId);
+                break;
+
               default:
                 updatedLookups = oldLookups;
                 break;
@@ -3555,6 +3780,67 @@ function LookupTablesDataForm({ nodeId }) {
               parishCode: parishRecord.parishCode,
               parish: parishRecord.parish,
               detrCode: parishRecord.detrCode,
+              historic: true,
+            };
+          } else return null;
+
+        case "operationalDistrict":
+          const operationalDistrictRecord = lookupContext.currentLookups.operationalDistricts.find(
+            (x) => x.operationalDistrictId === lookupId
+          );
+          if (operationalDistrictRecord) {
+            return {
+              operationalDistrictId: lookupId,
+              organisationId: operationalDistrictRecord.organisationId,
+              districtName: operationalDistrictRecord.districtName,
+              lastUpdateDate: operationalDistrictRecord.lastUpdateDate,
+              districtId: operationalDistrictRecord.districtId,
+              districtFunction: operationalDistrictRecord.districtFunction,
+              districtClosed: operationalDistrictRecord.districtClosed,
+              districtFtpServerName: operationalDistrictRecord.districtFtpServerName,
+              districtServerIpAddress: operationalDistrictRecord.districtServerIpAddress,
+              districtFtpDirectory: operationalDistrictRecord.districtFtpDirectory,
+              districtNotificationsUrl: operationalDistrictRecord.districtNotificationsUrl,
+              attachmentUrlPrefix: operationalDistrictRecord.attachmentUrlPrefix,
+              districtFaxNo: operationalDistrictRecord.districtFaxNo,
+              districtPostcode: operationalDistrictRecord.districtPostcode,
+              districtTelNo: operationalDistrictRecord.districtTelNo,
+              outOfHoursArrangements: operationalDistrictRecord.outOfHoursArrangements,
+              fpnDeliveryUrl: operationalDistrictRecord.fpnDeliveryUrl,
+              fpnFaxNumber: operationalDistrictRecord.fpnFaxNumber,
+              fpnDeliveryPostcode: operationalDistrictRecord.fpnDeliveryPostcode,
+              fpnPaymentUrl: operationalDistrictRecord.fpnPaymentUrl,
+              fpnPaymentTelNo: operationalDistrictRecord.fpnPaymentTelNo,
+              fpnPaymentBankName: operationalDistrictRecord.fpnPaymentBankName,
+              fpnPaymentSortCode: operationalDistrictRecord.fpnPaymentSortCode,
+              fpnPaymentAccountNo: operationalDistrictRecord.fpnPaymentAccountNo,
+              fpnPaymentAccountName: operationalDistrictRecord.fpnPaymentAccountName,
+              fpnPaymentPostcode: operationalDistrictRecord.fpnPaymentPostcode,
+              fpnContactName: operationalDistrictRecord.fpnContactName,
+              fpnContactPostcode: operationalDistrictRecord.fpnContactPostcode,
+              fpnContactTelNo: operationalDistrictRecord.fpnContactTelNo,
+              districtPostalAddress1: operationalDistrictRecord.districtPostalAddress1,
+              districtPostalAddress2: operationalDistrictRecord.districtPostalAddress2,
+              districtPostalAddress3: operationalDistrictRecord.districtPostalAddress3,
+              districtPostalAddress4: operationalDistrictRecord.districtPostalAddress4,
+              districtPostalAddress5: operationalDistrictRecord.districtPostalAddress5,
+              fpnDeliveryAddress1: operationalDistrictRecord.fpnDeliveryAddress1,
+              fpnDeliveryAddress2: operationalDistrictRecord.fpnDeliveryAddress2,
+              fpnDeliveryAddress3: operationalDistrictRecord.fpnDeliveryAddress3,
+              fpnDeliveryAddress4: operationalDistrictRecord.fpnDeliveryAddress4,
+              fpnDeliveryAddress5: operationalDistrictRecord.fpnDeliveryAddress5,
+              fpnContactAddress1: operationalDistrictRecord.fpnContactAddress1,
+              fpnContactAddress2: operationalDistrictRecord.fpnContactAddress2,
+              fpnContactAddress3: operationalDistrictRecord.fpnContactAddress3,
+              fpnContactAddress4: operationalDistrictRecord.fpnContactAddress4,
+              fpnContactAddress5: operationalDistrictRecord.fpnContactAddress5,
+              fpnPaymentAddress1: operationalDistrictRecord.fpnPaymentAddress1,
+              fpnPaymentAddress2: operationalDistrictRecord.fpnPaymentAddress2,
+              fpnPaymentAddress3: operationalDistrictRecord.fpnPaymentAddress3,
+              fpnPaymentAddress4: operationalDistrictRecord.fpnPaymentAddress4,
+              fpnPaymentAddress5: operationalDistrictRecord.fpnPaymentAddress5,
+              fpnDeliveryEmailAddress: operationalDistrictRecord.fpnDeliveryEmailAddress,
+              districtPermitSchemeId: operationalDistrictRecord.districtPermitSchemeId,
               historic: true,
             };
           } else return null;
@@ -4100,6 +4386,10 @@ function LookupTablesDataForm({ nodeId }) {
         setCurrentTab(11);
         break;
 
+      case "OPERATIONAL_DISTRICTS":
+        setCurrentTab(12);
+        break;
+
       default:
         setCurrentTab(0);
         break;
@@ -4108,99 +4398,110 @@ function LookupTablesDataForm({ nodeId }) {
 
   return (
     <div id="lookup-tables-data-form">
-      <TabPanel value={currentTab} index={1}>
-        <LookupTableGridTab
-          variant="postcode"
-          data={getPostcodeData()}
-          onAddLookup={handleAddPostcode}
-          onEditLookup={(id) => handleEditPostcode(id)}
-          onDeleteLookup={(id) => handleDeletePostcode(id)}
-        />
-      </TabPanel>
-      <TabPanel value={currentTab} index={2}>
-        <LookupTableGridTab
-          variant="postTown"
-          data={getPostTownData()}
-          onAddLookup={handleAddPostTown}
-          onEditLookup={(id) => handleEditPostTown(id)}
-          onDeleteLookup={(id) => handleDeletePostTown(id)}
-        />
-      </TabPanel>
-      <TabPanel value={currentTab} index={3}>
-        <LookupTableGridTab
-          variant="subLocality"
-          data={getSubLocalitiesData()}
-          onAddLookup={handleAddSubLocality}
-          onEditLookup={(id) => handleEditSubLocality(id)}
-          onDeleteLookup={(id) => handleDeleteSubLocality(id)}
-        />
-      </TabPanel>
-      <TabPanel value={currentTab} index={4}>
-        <LookupTableGridTab
-          variant="crossReference"
-          data={getCrossReferencesData()}
-          onAddLookup={handleAddCrossReference}
-          onEditLookup={(id) => handleEditCrossReference(id)}
-          onDeleteLookup={(id) => handleDeleteCrossReference(id)}
-        />
-      </TabPanel>
-      <TabPanel value={currentTab} index={5}>
-        <LookupTableGridTab
-          variant="locality"
-          data={getLocalitiesData()}
-          onAddLookup={handleAddLocality}
-          onEditLookup={(id) => handleEditLocality(id)}
-          onDeleteLookup={(id) => handleDeleteLocality(id)}
-        />
-      </TabPanel>
-      <TabPanel value={currentTab} index={6}>
-        <LookupTableGridTab
-          variant="town"
-          data={getTownsData()}
-          onAddLookup={handleAddTown}
-          onEditLookup={(id) => handleEditTown(id)}
-          onDeleteLookup={(id) => handleDeleteTown(id)}
-        />
-      </TabPanel>
-      <TabPanel value={currentTab} index={7}>
-        <LookupTableGridTab
-          variant="island"
-          data={getIslandsData()}
-          onAddLookup={handleAddIsland}
-          onEditLookup={(id) => handleEditIsland(id)}
-          onDeleteLookup={(id) => handleDeleteIsland(id)}
-        />
-      </TabPanel>
-      <TabPanel value={currentTab} index={8}>
-        <LookupTableGridTab
-          variant="administrativeArea"
-          data={getAdministrativeAreasData()}
-          onAddLookup={handleAddAdministrativeArea}
-          onEditLookup={(id) => handleEditAdministrativeArea(id)}
-          onDeleteLookup={(id) => handleDeleteAdministrativeArea(id)}
-        />
-      </TabPanel>
-      <TabPanel value={currentTab} index={9}>
-        <AuthorityLookupTableTab data={getAuthoritiesData()} />
-      </TabPanel>
-      <TabPanel value={currentTab} index={10}>
-        <LookupTableGridTab
-          variant="ward"
-          data={getWardsData()}
-          onAddLookup={handleAddWard}
-          onEditLookup={(id) => handleEditWard(id)}
-          onDeleteLookup={(id) => handleDeleteWard(id)}
-        />
-      </TabPanel>
-      <TabPanel value={currentTab} index={11}>
-        <LookupTableGridTab
-          variant="parish"
-          data={getParishesData()}
-          onAddLookup={handleAddParish}
-          onEditLookup={(id) => handleEditParish(id)}
-          onDeleteLookup={(id) => handleDeleteParish(id)}
-        />
-      </TabPanel>
+      <Fragment>
+        <TabPanel value={currentTab} index={1}>
+          <LookupTableGridTab
+            variant="postcode"
+            data={getPostcodeData()}
+            onAddLookup={handleAddPostcode}
+            onEditLookup={(id) => handleEditPostcode(id)}
+            onDeleteLookup={(id) => handleDeletePostcode(id)}
+          />
+        </TabPanel>
+        <TabPanel value={currentTab} index={2}>
+          <LookupTableGridTab
+            variant="postTown"
+            data={getPostTownData()}
+            onAddLookup={handleAddPostTown}
+            onEditLookup={(id) => handleEditPostTown(id)}
+            onDeleteLookup={(id) => handleDeletePostTown(id)}
+          />
+        </TabPanel>
+        <TabPanel value={currentTab} index={3}>
+          <LookupTableGridTab
+            variant="subLocality"
+            data={getSubLocalitiesData()}
+            onAddLookup={handleAddSubLocality}
+            onEditLookup={(id) => handleEditSubLocality(id)}
+            onDeleteLookup={(id) => handleDeleteSubLocality(id)}
+          />
+        </TabPanel>
+        <TabPanel value={currentTab} index={4}>
+          <LookupTableGridTab
+            variant="crossReference"
+            data={getCrossReferencesData()}
+            onAddLookup={handleAddCrossReference}
+            onEditLookup={(id) => handleEditCrossReference(id)}
+            onDeleteLookup={(id) => handleDeleteCrossReference(id)}
+          />
+        </TabPanel>
+        <TabPanel value={currentTab} index={5}>
+          <LookupTableGridTab
+            variant="locality"
+            data={getLocalitiesData()}
+            onAddLookup={handleAddLocality}
+            onEditLookup={(id) => handleEditLocality(id)}
+            onDeleteLookup={(id) => handleDeleteLocality(id)}
+          />
+        </TabPanel>
+        <TabPanel value={currentTab} index={6}>
+          <LookupTableGridTab
+            variant="town"
+            data={getTownsData()}
+            onAddLookup={handleAddTown}
+            onEditLookup={(id) => handleEditTown(id)}
+            onDeleteLookup={(id) => handleDeleteTown(id)}
+          />
+        </TabPanel>
+        <TabPanel value={currentTab} index={7}>
+          <LookupTableGridTab
+            variant="island"
+            data={getIslandsData()}
+            onAddLookup={handleAddIsland}
+            onEditLookup={(id) => handleEditIsland(id)}
+            onDeleteLookup={(id) => handleDeleteIsland(id)}
+          />
+        </TabPanel>
+        <TabPanel value={currentTab} index={8}>
+          <LookupTableGridTab
+            variant="administrativeArea"
+            data={getAdministrativeAreasData()}
+            onAddLookup={handleAddAdministrativeArea}
+            onEditLookup={(id) => handleEditAdministrativeArea(id)}
+            onDeleteLookup={(id) => handleDeleteAdministrativeArea(id)}
+          />
+        </TabPanel>
+        <TabPanel value={currentTab} index={9}>
+          <AuthorityLookupTableTab data={getAuthoritiesData()} />
+        </TabPanel>
+        <TabPanel value={currentTab} index={10}>
+          <LookupTableGridTab
+            variant="ward"
+            data={getWardsData()}
+            onAddLookup={handleAddWard}
+            onEditLookup={(id) => handleEditWard(id)}
+            onDeleteLookup={(id) => handleDeleteWard(id)}
+          />
+        </TabPanel>
+        <TabPanel value={currentTab} index={11}>
+          <LookupTableGridTab
+            variant="parish"
+            data={getParishesData()}
+            onAddLookup={handleAddParish}
+            onEditLookup={(id) => handleEditParish(id)}
+            onDeleteLookup={(id) => handleDeleteParish(id)}
+          />
+        </TabPanel>
+        <TabPanel value={currentTab} index={12}>
+          <LookupTableGridTab
+            variant="operationalDistrict"
+            data={getOperationalDistrictsData()}
+            onAddLookup={handleAddOperationalDistrict}
+            onEditLookup={(id) => handleEditOperationalDistrict(id)}
+            onDeleteLookup={(id) => handleDeleteOperationalDistrict(id)}
+          />
+        </TabPanel>
+      </Fragment>
       <AddLookupDialog
         isOpen={showAddDialog}
         variant={lookupType}

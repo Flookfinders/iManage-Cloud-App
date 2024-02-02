@@ -17,6 +17,7 @@
 //    004   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    006   10.01.24 Sean Flook                 Fix warnings.
+//    007   01.02.24 Sean Flook                 Initial changes required for operational districts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -44,6 +45,9 @@ import { DataGrid } from "@mui/x-data-grid";
 import ADSActionButton from "../components/ADSActionButton";
 
 import { lookupToTitleCase, GeoPlaceCrossRefSources, stringToSentenceCase } from "../utils/HelperUtils";
+
+import OperationalDistrictFunction from "../data/OperationalDistrictFunction";
+import SwaOrgRef from "../data/SwaOrgRef";
 
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
@@ -102,6 +106,7 @@ LookupTableGridTab.propTypes = {
     "authority",
     "ward",
     "parish",
+    "operationalDistrict",
   ]).isRequired,
   data: PropTypes.array.isRequired,
   onAddLookup: PropTypes.func.isRequired,
@@ -601,6 +606,66 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
   }
 
   /**
+   * Method to get the operational district name.
+   *
+   * @param {object} params The parameters passed into the method from the grid.
+   * @returns {JSX.Element} The display of the operational district name.
+   */
+  function GetOperationalDistrictName(params) {
+    if (params) {
+      if (params.row.historic)
+        return (
+          <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
+            {lookupToTitleCase(params.value, false)}
+          </Typography>
+        );
+      else return <Typography variant="body2">{lookupToTitleCase(params.value, false)}</Typography>;
+    }
+  }
+
+  /**
+   * Method to get the operational district organisation name.
+   *
+   * @param {object} params The parameters passed into the method from the grid.
+   * @returns {JSX.Element} The display of the operational district organisation name.
+   */
+  function GetOperationalDistrictOrganisation(params) {
+    if (params) {
+      const organisationRecord = SwaOrgRef.find((x) => x.id === params.value);
+      if (organisationRecord) {
+        if (params.row.historic)
+          return (
+            <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
+              {organisationRecord.gpText}
+            </Typography>
+          );
+        else return <Typography variant="body2">{organisationRecord.gpText}</Typography>;
+      }
+    }
+  }
+
+  /**
+   * Method to get the operational district function.
+   *
+   * @param {object} params The parameters passed into the method from the grid.
+   * @returns {JSX.Element} The display of the operational district function.
+   */
+  function GetOperationalDistrictFunction(params) {
+    if (params) {
+      const functionRecord = OperationalDistrictFunction.find((x) => x.id === params.value);
+      if (functionRecord) {
+        if (params.row.historic)
+          return (
+            <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
+              {functionRecord.gpText}
+            </Typography>
+          );
+        else return <Typography variant="body2">{functionRecord.gpText}</Typography>;
+      }
+    }
+  }
+
+  /**
    * Method to get the historic flag.
    *
    * @param {object} params The parameters passed into the method from the grid.
@@ -768,6 +833,21 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
           );
           break;
 
+        case "operationalDistrict":
+          const functionData = OperationalDistrictFunction.find((x) =>
+            x.gpText.toUpperCase().includes(event.target.value.toUpperCase())
+          );
+          const organisationData = SwaOrgRef.find((x) =>
+            x.gpText.toUpperCase().includes(event.target.value.toUpperCase())
+          );
+          filteredData = data.filter(
+            (x) =>
+              x.districtName.toUpperCase().includes(event.target.value.toUpperCase()) ||
+              (organisationData && x.organisationId === organisationData.id) ||
+              (functionData && x.districtFunction === functionData.id)
+          );
+          break;
+
         default:
           break;
       }
@@ -812,6 +892,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
    */
   const stackStyle = () => {
     if (variant === "postcode") return { ml: theme.spacing(2), mt: theme.spacing(1), width: 500 };
+    else if (variant === "operationalDistrict") return { ml: theme.spacing(2), mt: theme.spacing(1), width: 900 };
     else return { ml: theme.spacing(2), mt: theme.spacing(1), width: 750 };
   };
 
@@ -1592,6 +1673,190 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
           },
         ];
 
+      case "operationalDistrict":
+        return [
+          {
+            field: "id",
+          },
+          {
+            field: "districtName",
+            headerName: "Name",
+            headerClassName: "idox-lookup-data-grid-header",
+            flex: 20,
+            renderCell: GetOperationalDistrictName,
+          },
+          {
+            field: "organisationId",
+            headerName: "Organisation",
+            headerClassName: "idox-lookup-data-grid-header",
+            flex: 20,
+            renderCell: GetOperationalDistrictOrganisation,
+          },
+          {
+            field: "districtFunction",
+            headerName: "Function",
+            headerClassName: "idox-lookup-data-grid-header",
+            flex: 20,
+            renderCell: GetOperationalDistrictFunction,
+          },
+          {
+            field: "historic",
+            headerName: "Status",
+            headerClassName: "idox-lookup-data-grid-header",
+            flex: 15,
+            renderCell: GetHistoric,
+          },
+          {
+            field: "actions",
+            type: "actions",
+            headerClassName: "idox-lookup-data-grid-header",
+            sortable: false,
+            filterable: false,
+            renderCell: displayActionButtons,
+          },
+          {
+            field: "lastUpdateDate",
+          },
+          {
+            field: "districtId",
+          },
+          {
+            field: "districtClosed",
+          },
+          {
+            field: "districtFtpServerName",
+          },
+          {
+            field: "districtServerIpAddress",
+          },
+          {
+            field: "districtFtpDirectory",
+          },
+          {
+            field: "districtNotificationsUrl",
+          },
+          {
+            field: "attachmentUrlPrefix",
+          },
+          {
+            field: "districtFaxNo",
+          },
+          {
+            field: "districtPostcode",
+          },
+          {
+            field: "districtTelNo",
+          },
+          {
+            field: "outOfHoursArrangements",
+          },
+          {
+            field: "fpnDeliveryUrl",
+          },
+          {
+            field: "fpnFaxNumber",
+          },
+          {
+            field: "fpnDeliveryPostcode",
+          },
+          {
+            field: "fpnPaymentUrl",
+          },
+          {
+            field: "fpnPaymentTelNo",
+          },
+          {
+            field: "fpnPaymentBankName",
+          },
+          {
+            field: "fpnPaymentSortCode",
+          },
+          {
+            field: "fpnPaymentAccountNo",
+          },
+          {
+            field: "fpnPaymentAccountName",
+          },
+          {
+            field: "fpnPaymentPostcode",
+          },
+          {
+            field: "fpnContactName",
+          },
+          {
+            field: "fpnContactPostcode",
+          },
+          {
+            field: "fpnContactTelNo",
+          },
+          {
+            field: "districtPostalAddress1",
+          },
+          {
+            field: "districtPostalAddress2",
+          },
+          {
+            field: "districtPostalAddress3",
+          },
+          {
+            field: "districtPostalAddress4",
+          },
+          {
+            field: "districtPostalAddress5",
+          },
+          {
+            field: "fpnDeliveryAddress1",
+          },
+          {
+            field: "fpnDeliveryAddress2",
+          },
+          {
+            field: "fpnDeliveryAddress3",
+          },
+          {
+            field: "fpnDeliveryAddress4",
+          },
+          {
+            field: "fpnDeliveryAddress5",
+          },
+          {
+            field: "fpnContactAddress1",
+          },
+          {
+            field: "fpnContactAddress2",
+          },
+          {
+            field: "fpnContactAddress3",
+          },
+          {
+            field: "fpnContactAddress4",
+          },
+          {
+            field: "fpnContactAddress5",
+          },
+          {
+            field: "fpnPaymentAddress1",
+          },
+          {
+            field: "fpnPaymentAddress2",
+          },
+          {
+            field: "fpnPaymentAddress3",
+          },
+          {
+            field: "fpnPaymentAddress4",
+          },
+          {
+            field: "fpnPaymentAddress5",
+          },
+          {
+            field: "fpnDeliveryEmailAddress",
+          },
+          {
+            field: "districtPermitSchemeId",
+          },
+        ];
+
       default:
         return [];
     }
@@ -1615,6 +1880,62 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
             columnVisibilityModel: {
               id: false,
               linkedRef: false,
+            },
+          },
+        };
+
+      case "operationalDistrict":
+        return {
+          columns: {
+            columnVisibilityModel: {
+              id: false,
+              lastUpdateDate: false,
+              districtId: false,
+              districtClosed: false,
+              districtFtpServerName: false,
+              districtServerIpAddress: false,
+              districtFtpDirectory: false,
+              districtNotificationsUrl: false,
+              attachmentUrlPrefix: false,
+              districtFaxNo: false,
+              districtPostcode: false,
+              districtTelNo: false,
+              outOfHoursArrangements: false,
+              fpnDeliveryUrl: false,
+              fpnFaxNumber: false,
+              fpnDeliveryPostcode: false,
+              fpnPaymentUrl: false,
+              fpnPaymentTelNo: false,
+              fpnPaymentBankName: false,
+              fpnPaymentSortCode: false,
+              fpnPaymentAccountNo: false,
+              fpnPaymentAccountName: false,
+              fpnPaymentPostcode: false,
+              fpnContactName: false,
+              fpnContactPostcode: false,
+              fpnContactTelNo: false,
+              districtPostalAddress1: false,
+              districtPostalAddress2: false,
+              districtPostalAddress3: false,
+              districtPostalAddress4: false,
+              districtPostalAddress5: false,
+              fpnDeliveryAddress1: false,
+              fpnDeliveryAddress2: false,
+              fpnDeliveryAddress3: false,
+              fpnDeliveryAddress4: false,
+              fpnDeliveryAddress5: false,
+              fpnContactAddress1: false,
+              fpnContactAddress2: false,
+              fpnContactAddress3: false,
+              fpnContactAddress4: false,
+              fpnContactAddress5: false,
+              fpnPaymentAddress1: false,
+              fpnPaymentAddress2: false,
+              fpnPaymentAddress3: false,
+              fpnPaymentAddress4: false,
+              fpnPaymentAddress5: false,
+              fpnDeliveryEmailAddress: false,
+              districtPermitSchemeId: false,
             },
           },
         };
@@ -1690,6 +2011,12 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
         setLookupType("parish");
         setLookupTypeId("parish");
         setSortModel([{ field: "parish", sort: "asc" }]);
+        break;
+
+      case "operationalDistrict":
+        setLookupType("district");
+        setLookupTypeId("operational-district");
+        setSortModel([{ field: "districtName", sort: "asc" }]);
         break;
 
       default:

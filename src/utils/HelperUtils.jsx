@@ -30,6 +30,7 @@
 //    017   12.01.24 Sean Flook       IMANN-233 Added getStartEndCoordinates.
 //    018   16.01.24 Sean Flook                 Added filteredLookups.
 //    019   26.01.24 Sean Flook       IMANN-260 Corrected field name.
+//    020   01.02.24 Sean Flook                 Correctly handle BS7666 in lookupToTitleCase.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -601,6 +602,7 @@ export function lookupToTitleCase(option, doNotSetTitleCase) {
         return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
       })
       .replace("Nlpg", "NLPG")
+      .replace("Bs7666", "BS7666")
       .replace("Crm", "CRM")
       .replace("Sn And N", "SN and N")
       .replace("Lpi", "LPI")
@@ -617,6 +619,7 @@ export function lookupToTitleCase(option, doNotSetTitleCase) {
         return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
       })
       .replace("Nlpg", "NLPG")
+      .replace("Bs7666", "BS7666")
       .replace("Crm", "CRM")
       .replace("Sn And N", "SN and N")
       .replace("Lpi", "LPI")

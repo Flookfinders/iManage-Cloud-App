@@ -39,6 +39,7 @@
 //    007   19.12.23 Sean Flook                 Various bug fixes.
 //    008   29.01.24 Sean Flook                 Added new checks.
 //    009   29.01.24 Sean Flook                 Added more new checks.
+//    010   01.02.24 Sean Flook                 Changes required for differences in field names between GeoPlace and OneScotland.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -631,31 +632,60 @@ export function ValidateEsuData(data, index, currentLookups, isScottish) {
   if (data) {
     // Mandatory Start Date is missing.
     currentCheck = GetCheck(1300017, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && !data.esuStartDate) {
-      startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    if (isScottish) {
+      if (includeCheck(currentCheck, isScottish) && !data.startDate) {
+        startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+    } else {
+      if (includeCheck(currentCheck, isScottish) && !data.esuStartDate) {
+        startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
     }
 
     // Start Date cannot be in the future.
     currentCheck = GetCheck(1300020, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && data.esuStartDate && isFutureDate(data.esuStartDate)) {
-      startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    if (isScottish) {
+      if (includeCheck(currentCheck, isScottish) && data.startDate && isFutureDate(data.startDate)) {
+        startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+    } else {
+      if (includeCheck(currentCheck, isScottish) && data.esuStartDate && isFutureDate(data.esuStartDate)) {
+        startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
     }
 
     // End Date cannot be in the future.
     currentCheck = GetCheck(1300021, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && data.esuEndDate && isFutureDate(data.esuEndDate)) {
-      endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    if (isScottish) {
+      if (includeCheck(currentCheck, isScottish) && data.endDate && isFutureDate(data.endDate)) {
+        endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+    } else {
+      if (includeCheck(currentCheck, isScottish) && data.esuEndDate && isFutureDate(data.esuEndDate)) {
+        endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
     }
 
     // End Date cannot be before the Start Date.
     currentCheck = GetCheck(1300022, currentLookups, methodName, isScottish, showDebugMessages);
-    if (
-      includeCheck(currentCheck, isScottish) &&
-      data.esuStartDate &&
-      data.esuEndDate &&
-      isEndBeforeStart(data.esuStartDate, data.esuEndDate)
-    ) {
-      endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    if (isScottish) {
+      if (
+        includeCheck(currentCheck, isScottish) &&
+        data.startDate &&
+        data.endDate &&
+        isEndBeforeStart(data.startDate, data.endDate)
+      ) {
+        endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+    } else {
+      if (
+        includeCheck(currentCheck, isScottish) &&
+        data.esuStartDate &&
+        data.esuEndDate &&
+        isEndBeforeStart(data.esuStartDate, data.esuEndDate)
+      ) {
+        endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
     }
 
     // Mandatory Classification is missing.
@@ -684,16 +714,16 @@ export function ValidateEsuData(data, index, currentLookups, isScottish) {
     currentCheck = GetCheck(1300026, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
-      data.esuStartDate &&
+      data.startDate &&
       data.classificationDate &&
-      isEndBeforeStart(data.esuStartDate, data.classificationDate)
+      isEndBeforeStart(data.startDate, data.classificationDate)
     ) {
       classificationDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // ESU End Date is set but State is not 4.
     currentCheck = GetCheck(1300028, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && data.esuEndDate && data.state !== 4) {
+    if (includeCheck(currentCheck, isScottish) && data.endDate && data.state !== 4) {
       stateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
@@ -705,7 +735,7 @@ export function ValidateEsuData(data, index, currentLookups, isScottish) {
 
     // ESU Tolerance is invalid.
     currentCheck = GetCheck(1300031, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && data.esuTolerance && [1, 5, 10, 50].includes(data.esuTolerance)) {
+    if (includeCheck(currentCheck, isScottish) && data.esuTolerance && ![1, 5, 10, 50].includes(data.esuTolerance)) {
       toleranceErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 

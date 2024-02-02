@@ -25,6 +25,7 @@
 //    013   06.10.23 Sean Flook                 Use colour variables.
 //    014   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    015   29.01.24 Sean Flook                 Updated comment.
+//    016   01.02.24 Sean Flook                 Correctly handle when no label is supplied.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -276,7 +277,7 @@ function ADSTextControl({
         alignItems={multiline.current ? "flex-start" : "center"}
         sx={FormRowStyle(hasError.current)}
       >
-        {label && (
+        {label ? (
           <Grid item xs={3}>
             <Typography
               id={`ads-text-label-${label.toLowerCase().replaceAll(" ", "-")}`}
@@ -287,6 +288,8 @@ function ADSTextControl({
               {`${label}${isRequired ? "*" : ""}`}
             </Typography>
           </Grid>
+        ) : (
+          <Grid item xs={3}></Grid>
         )}
         <Grid item xs={GetControlRowSize()}>
           {loading ? (
