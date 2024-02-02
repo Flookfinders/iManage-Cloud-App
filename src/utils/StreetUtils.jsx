@@ -33,6 +33,7 @@
 //    020   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    021   26.01.24 Sean Flook       IMANN-251 Added missing record type to hasStreetChanged.
 //    022   30.01.24 Sean Flook                 Updated GetStreetCreateData and GetStreetUpdateData to reflect the current models used in the relevant API endpoints.
+//    023   02.02.24 Sean Flook       IMANN-264 Include Scottish record types when handling errors from API.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2304,6 +2305,9 @@ export function GetStreetValidationErrors(body, newStreet) {
   let errorEsu = [];
   let errorHighwayDedication = [];
   let errorOneWayException = [];
+  let errorSuccessorCrossReference = [];
+  let errorMaintenanceResponsibility = [];
+  let errorReinstatementCategory = [];
   let errorInterest = [];
   let errorConstruction = [];
   let errorSpecialDesignation = [];
@@ -2344,6 +2348,24 @@ export function GetStreetValidationErrors(body, newStreet) {
             errors: value,
           });
         }
+      } else if (key.toLowerCase().includes("successorcrossreferences[")) {
+        errorSuccessorCrossReference.push({
+          index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
+          field: key.substring(key.indexOf(".") + 1),
+          errors: value,
+        });
+      } else if (key.toLowerCase().includes("maintenanceresponsibilities[")) {
+        errorMaintenanceResponsibility.push({
+          index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
+          field: key.substring(key.indexOf(".") + 1),
+          errors: value,
+        });
+      } else if (key.toLowerCase().includes("reinstatementcatogories[")) {
+        errorReinstatementCategory.push({
+          index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
+          field: key.substring(key.indexOf(".") + 1),
+          errors: value,
+        });
       } else if (key.toLowerCase().includes("interests[")) {
         errorInterest.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
@@ -2410,6 +2432,21 @@ export function GetStreetValidationErrors(body, newStreet) {
       errorOneWayException
     );
   }
+  if (errorSuccessorCrossReference.length > 0) {
+    // if (process.env.NODE_ENV === "development")
+    console.error(
+      `[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Successor Cross Reference`,
+      errorInterest
+    );
+  }
+  if (errorMaintenanceResponsibility.length > 0) {
+    // if (process.env.NODE_ENV === "development")
+    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Maintenance Responsibility`, errorInterest);
+  }
+  if (errorReinstatementCategory.length > 0) {
+    // if (process.env.NODE_ENV === "development")
+    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Reinstatement Category`, errorInterest);
+  }
   if (errorInterest.length > 0) {
     // if (process.env.NODE_ENV === "development")
     console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Interest`, errorInterest);
@@ -2444,6 +2481,9 @@ export function GetStreetValidationErrors(body, newStreet) {
     esu: errorEsu,
     highwayDedication: errorHighwayDedication,
     oneWayExemption: errorOneWayException,
+    successorCrossRef: errorSuccessorCrossReference,
+    maintenanceResponsibility: errorMaintenanceResponsibility,
+    reinstatementCategory: errorReinstatementCategory,
     interest: errorInterest,
     construction: errorConstruction,
     specialDesignation: errorSpecialDesignation,
@@ -2782,7 +2822,7 @@ export async function SaveStreet(
           case 400:
             res.json().then((body) => {
               console.error(
-                `[400 ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} Street object`,
+                `[400 ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} street`,
                 body.errors
               );
               const streetErrors = GetStreetValidationErrors(body, streetContext.currentStreet.newStreet);
@@ -2791,11 +2831,15 @@ export async function SaveStreet(
                 streetErrors.street,
                 streetErrors.descriptor,
                 streetErrors.esu,
+                streetErrors.successorCrossRef,
                 streetErrors.highwayDedication,
                 streetErrors.oneWayException,
+                streetErrors.maintenanceResponsibility,
+                streetErrors.reinstatementCategory,
+                isScottish ? streetErrors.specialDesignation : null,
                 streetErrors.interest,
                 streetErrors.construction,
-                streetErrors.specialDesignation,
+                !isScottish ? streetErrors.specialDesignation : null,
                 streetErrors.hww,
                 streetErrors.prow,
                 streetErrors.note
@@ -2806,23 +2850,109 @@ export async function SaveStreet(
           case 401:
             res.json().then((body) => {
               console.error(
-                `[401 ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} Street`,
+                `[401 ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} street`,
                 body
               );
             });
             break;
 
           case 500:
-            console.error(`[500 ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} Street`, res);
+            console.error(`[500 ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} street`, res);
             break;
 
           default:
-            console.error(
-              `[${res.status} ERROR] HandleSaveStreet - ${
-                streetContext.currentStreet.newStreet ? "Creating" : "Updating"
-              } street.`,
-              res
-            );
+            const contentType = res.headers.get("content-type");
+            console.error("[SF] SaveStreet - Failed", {
+              res: res,
+              contentType: contentType,
+            });
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+              res.json().then((body) => {
+                console.error(
+                  `[${res.status} ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} street.`,
+                  body
+                );
+
+                streetContext.onStreetErrors(
+                  [
+                    {
+                      field: "USRN",
+                      errors: [
+                        `[${res.status} ERROR] ${body[0].errorTitle}: ${body[0].errorDescription}. Please report this error to support.`,
+                      ],
+                    },
+                  ],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  []
+                );
+              });
+            } else if (contentType && contentType.indexOf("text")) {
+              res.text().then((response) => {
+                console.error(
+                  `[${res.status} ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} street.`,
+                  response,
+                  res
+                );
+
+                const responseData = response.replace("[{", "").replace("}]", "").split(',"');
+
+                let errorTitle = "";
+                let errorDescription = "";
+
+                for (const errorData of responseData) {
+                  if (errorData.includes("errorTitle")) errorTitle = errorData.substr(13).replace('"', "");
+                  else if (errorData.includes("errorDescription"))
+                    errorDescription = errorData.substr(19).replace('"', "");
+
+                  if (errorTitle && errorTitle.length > 0 && errorDescription && errorDescription.length > 0) break;
+                }
+
+                // if (process.env.NODE_ENV === "development")
+                streetContext.onStreetErrors(
+                  [
+                    {
+                      field: "USRN",
+                      errors: [
+                        `[${res.status} ERROR] ${errorTitle}: ${errorDescription}. Please report this error to support.`,
+                      ],
+                    },
+                  ],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  []
+                );
+              });
+            } else {
+              console.error(
+                `[${res.status} ERROR] ${
+                  streetContext.currentStreet.newStreet ? "Creating" : "Updating"
+                } street (other)`,
+                res
+              );
+            }
             break;
         }
 

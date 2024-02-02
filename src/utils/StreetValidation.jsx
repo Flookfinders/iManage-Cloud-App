@@ -41,6 +41,7 @@
 //    009   29.01.24 Sean Flook                 Added more new checks.
 //    010   01.02.24 Sean Flook                 Changes required for differences in field names between GeoPlace and OneScotland.
 //    011   02.02.24 Sean Flook       IMANN-269 Use isIso885914 to determine if the various texts are compliant to the ISO 8859-14 (Celtic-8) character set.
+//    012   02.02.24 Sean Flook       IMANN-264 Correctly call includeCheck for GeoPlace ASD records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1903,32 +1904,32 @@ export function ValidateInterestData(data, index, currentLookups) {
 
     // Specific Location is too long.
     currentCheck = GetCheck(6100021, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.specificLocation && data.specificLocation.length > 250) {
+    if (includeCheck(currentCheck, false) && data.specificLocation && data.specificLocation.length > 250) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Whole Road is true but Specific Location is set.
     currentCheck = GetCheck(6100022, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.specificLocation && data.wholeRoad) {
+    if (includeCheck(currentCheck, false) && data.specificLocation && data.wholeRoad) {
       wholeRoadErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Whole Road is false but Specific Location is not set.
     currentCheck = GetCheck(6100023, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && !data.specificLocation && !data.wholeRoad) {
+    if (includeCheck(currentCheck, false) && !data.specificLocation && !data.wholeRoad) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Specific Location contains invalid characters.
     currentCheck = GetCheck(6100027, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.specificLocation && !isIso885914(data.specificLocation)) {
+    if (includeCheck(currentCheck, false) && data.specificLocation && !isIso885914(data.specificLocation)) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Street Status is invalid.
     currentCheck = GetCheck(6100029, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.streetStatus &&
       !filteredLookup(RoadStatusCode, false).find((x) => x.id === data.streetStatus)
     ) {
@@ -1937,14 +1938,14 @@ export function ValidateInterestData(data, index, currentLookups) {
 
     // Mandatory Interest Type is missing.
     currentCheck = GetCheck(6100030, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && !data.interestType) {
+    if (includeCheck(currentCheck, false) && !data.interestType) {
       interestTypeErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Interest Type is invalid.
     currentCheck = GetCheck(6100031, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.interestType &&
       !InterestType.find((x) => x.id === data.interestType)
     ) {
@@ -1954,7 +1955,7 @@ export function ValidateInterestData(data, index, currentLookups) {
     // Interest Type of 8 or 9 must not have Street Status of 1, 2, 3 or 5.
     currentCheck = GetCheck(6100035, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.interestType &&
       data.streetStatus &&
       [8, 9].includes(data.interestType) &&
@@ -1967,7 +1968,7 @@ export function ValidateInterestData(data, index, currentLookups) {
     // SWA Org Ref Maintaining is invalid.
     currentCheck = GetCheck(6100036, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.swaOrgRefAuthority &&
       !filteredLookup(SwaOrgRef, false).find((x) => x.id === data.swaOrgRefAuthority)
     ) {
@@ -1977,7 +1978,7 @@ export function ValidateInterestData(data, index, currentLookups) {
     // SWA Org Ref Authority value of 0011, 0012, 013, 0014, 0016, 0020 or 7093 must not be used.
     currentCheck = GetCheck(6100037, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.swaOrgRefAuthority &&
       [11, 12, 13, 14, 16, 20, 7093].includes(data.swaOrgRefAuthority)
     ) {
@@ -1987,7 +1988,7 @@ export function ValidateInterestData(data, index, currentLookups) {
     // Street Status of 4 must have an Interest Type of 8 or 9.
     currentCheck = GetCheck(6100038, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.interestType &&
       data.streetStatus &&
       data.streetStatus === 4 &&
@@ -1999,20 +2000,20 @@ export function ValidateInterestData(data, index, currentLookups) {
 
     // Record Start Date cannot be in the future.
     currentCheck = GetCheck(6100040, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.recordStartDate && isFutureDate(data.recordStartDate)) {
+    if (includeCheck(currentCheck, false) && data.recordStartDate && isFutureDate(data.recordStartDate)) {
       startDateErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Record End Date cannot be in the future.
     currentCheck = GetCheck(6100041, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.recordEndDate && isFutureDate(data.recordEndDate)) {
+    if (includeCheck(currentCheck, false) && data.recordEndDate && isFutureDate(data.recordEndDate)) {
       endDateErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // End Date cannot be before the Record Start Date.
     currentCheck = GetCheck(6100042, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.recordStartDate &&
       data.recordEndDate &&
       isEndBeforeStart(data.recordStartDate, data.recordEndDate)
@@ -2022,26 +2023,26 @@ export function ValidateInterestData(data, index, currentLookups) {
 
     // Record Start Date prior to 1990 are not allowed.
     currentCheck = GetCheck(6100043, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.recordStartDate && isPriorTo1990(data.recordStartDate)) {
+    if (includeCheck(currentCheck, false) && data.recordStartDate && isPriorTo1990(data.recordStartDate)) {
       startDateErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Mandatory WktGeometry is missing.
     currentCheck = GetCheck(6100044, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && !data.wktGeometry) {
+    if (includeCheck(currentCheck, false) && !data.wktGeometry) {
       wktGeometryErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Specific Location contains invalid characters.
     currentCheck = GetCheck(6100045, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.specificLocation && !isIso885914(data.specificLocation)) {
+    if (includeCheck(currentCheck, false) && data.specificLocation && !isIso885914(data.specificLocation)) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // SWA Org Ref Authority value does not exist in the SWA Org Ref table.
     currentCheck = GetCheck(6100046, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.swaOrgRefAuthority &&
       !filteredLookup(SwaOrgRef, false).find((x) => x.id === data.swaOrgRefAuthority)
     ) {
@@ -2067,7 +2068,7 @@ export function ValidateInterestData(data, index, currentLookups) {
     // Interest Type of 1 must have a Street Status of 1, 2, 3 or 5.
     currentCheck = GetCheck(6100050, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.interestType &&
       data.streetStatus &&
       data.interestType === 1 &&
@@ -2321,26 +2322,26 @@ export function ValidateConstructionData(data, index, currentLookups) {
 
     // Specific Location is too long.
     currentCheck = GetCheck(6200023, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.specificLocation && data.specificLocation.length > 250) {
+    if (includeCheck(currentCheck, false) && data.specificLocation && data.specificLocation.length > 250) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Start Date cannot be in the future.
     currentCheck = GetCheck(6200024, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.recordStartDate && isFutureDate(data.recordStartDate)) {
+    if (includeCheck(currentCheck, false) && data.recordStartDate && isFutureDate(data.recordStartDate)) {
       recordStartDateErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // End Date cannot be in the future.
     currentCheck = GetCheck(6200025, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.recordEndDate && isFutureDate(data.recordEndDate)) {
+    if (includeCheck(currentCheck, false) && data.recordEndDate && isFutureDate(data.recordEndDate)) {
       recordEndDateErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // End Date cannot be before the Start Date.
     currentCheck = GetCheck(6200026, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.recordStartDate &&
       data.recordEndDate &&
       isEndBeforeStart(data.recordStartDate, data.recordEndDate)
@@ -2350,32 +2351,32 @@ export function ValidateConstructionData(data, index, currentLookups) {
 
     // Whole Road is true but Specific Location is set.
     currentCheck = GetCheck(6200027, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.wholeRoad && data.specificLocation) {
+    if (includeCheck(currentCheck, false) && data.wholeRoad && data.specificLocation) {
       wholeRoadErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Whole Road is false but Specific Location is not set.
     currentCheck = GetCheck(6200028, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && !data.wholeRoad && !data.specificLocation) {
+    if (includeCheck(currentCheck, false) && !data.wholeRoad && !data.specificLocation) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Mandatory Start Date is missing.
     currentCheck = GetCheck(6200030, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && !data.recordStartDate) {
+    if (includeCheck(currentCheck, false) && !data.recordStartDate) {
       recordStartDateErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Mandatory Start Date is missing.
     currentCheck = GetCheck(6200030, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && !data.recordStartDate) {
+    if (includeCheck(currentCheck, false) && !data.recordStartDate) {
       recordStartDateErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Construction Type is 1 but Construction Description is set.
     currentCheck = GetCheck(6200033, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.constructionType &&
       data.constructionType === 1 &&
       data.constructionDescription
@@ -2386,7 +2387,7 @@ export function ValidateConstructionData(data, index, currentLookups) {
     // SWA Org Ref Consultant and District Ref Consultant must either both be blank or both have a value.
     currentCheck = GetCheck(6200038, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       ((data.swaOrgRefConsultant && !data.districtRefConsultant) ||
         (!data.swaOrgRefConsultant && data.districtRefConsultant))
     ) {
@@ -2397,7 +2398,7 @@ export function ValidateConstructionData(data, index, currentLookups) {
     // Construction Description contains an invalid character.
     currentCheck = GetCheck(6200046, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.constructionDescription &&
       !isIso885914(data.constructionDescription)
     ) {
@@ -2406,20 +2407,24 @@ export function ValidateConstructionData(data, index, currentLookups) {
 
     // Construction Description is too long.
     currentCheck = GetCheck(6200047, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.constructionDescription && data.constructionDescription.length > 250) {
+    if (
+      includeCheck(currentCheck, false) &&
+      data.constructionDescription &&
+      data.constructionDescription.length > 250
+    ) {
       constructionDescriptionErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Specific Location contains invalid characters.
     currentCheck = GetCheck(6200048, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.specificLocation && !isIso885914(data.specificLocation)) {
+    if (includeCheck(currentCheck, false) && data.specificLocation && !isIso885914(data.specificLocation)) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // SWA Org Ref Consultant value of 0011, 0012, 013, 0014, 0016, 0020 or 7093 must not be used.
     currentCheck = GetCheck(6200050, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.swaOrgRefConsultant &&
       [11, 12, 13, 14, 16, 20, 7093].includes(data.swaOrgRefConsultant)
     ) {
@@ -2429,7 +2434,7 @@ export function ValidateConstructionData(data, index, currentLookups) {
     // District Ref Consultant value does not exist in the Operational District Table.
     currentCheck = GetCheck(6200051, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.districtRefConsultant &&
       !currentLookups.operationalDistricts.find((x) => x.districtId === data.districtRefConsultant)
     ) {
@@ -2736,25 +2741,25 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
 
     // Specific Location is too long.
     currentCheck = GetCheck(6300031, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.specificLocation && data.specificLocation.length > 250) {
+    if (includeCheck(currentCheck, false) && data.specificLocation && data.specificLocation.length > 250) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Whole Road is true but Specific Location is set.
     currentCheck = GetCheck(6300032, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.wholeRoad && data.specificLocation) {
+    if (includeCheck(currentCheck, false) && data.wholeRoad && data.specificLocation) {
       wholeRoadErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Whole Road is false but Specific Location is not set.
     currentCheck = GetCheck(6300033, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && !data.wholeRoad && !data.specificLocation) {
+    if (includeCheck(currentCheck, false) && !data.wholeRoad && !data.specificLocation) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Specific Location contains invalid characters.
     currentCheck = GetCheck(6300037, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.specificLocation && !isIso885914(data.specificLocation)) {
+    if (includeCheck(currentCheck, false) && data.specificLocation && !isIso885914(data.specificLocation)) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -2960,14 +2965,14 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
 
     // Specific Location is too long.
     currentCheck = GetCheck(6400016, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.specificLocation && data.specificLocation.length > 250) {
+    if (includeCheck(currentCheck, false) && data.specificLocation && data.specificLocation.length > 250) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Record End Date cannot be before the Record Start Date.
     currentCheck = GetCheck(6400018, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.recordStartDate &&
       data.recordEndDate &&
       isEndBeforeStart(data.recordStartDate, data.recordEndDate)
@@ -2977,14 +2982,14 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
 
     // Record End Date cannot be in the future.
     currentCheck = GetCheck(6400019, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.recordEndDate && isFutureDate(data.recordEndDate)) {
+    if (includeCheck(currentCheck, false) && data.recordEndDate && isFutureDate(data.recordEndDate)) {
       recordEndDateErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Whole Road is true Specific Location and Coordinates must not be set.
     currentCheck = GetCheck(6400021, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.wholeRoad &&
       (data.specificLocation || data.hwwStartX || data.hwwStartY || data.hwwEndX || data.hwwEndY)
     ) {
@@ -2994,7 +2999,7 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
     // Whole Road is false Specific Location and Coordinates must be set.
     currentCheck = GetCheck(6400022, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       !data.wholeRoad &&
       (!data.specificLocation || !data.hwwStartX || !data.hwwStartY || !data.hwwEndX || !data.hwwEndY)
     ) {
@@ -3003,44 +3008,44 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
 
     // Specific Location contains Invalid characters.
     currentCheck = GetCheck(6400023, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.specificLocation && !isIso885914(data.specificLocation)) {
+    if (includeCheck(currentCheck, false) && data.specificLocation && !isIso885914(data.specificLocation)) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Invalid Value Metric.
     currentCheck = GetCheck(6400025, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.valueMetric && (data.valueMetric < 0.0 || data.valueMetric > 99.9)) {
+    if (includeCheck(currentCheck, false) && data.valueMetric && (data.valueMetric < 0.0 || data.valueMetric > 99.9)) {
       valueMetricErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Tro Text is too long.
     currentCheck = GetCheck(6400026, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.troText && data.troText.length > 250) {
+    if (includeCheck(currentCheck, false) && data.troText && data.troText.length > 250) {
       troTextErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Tro Text contains invalid characters.
     currentCheck = GetCheck(6400027, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.troText && !isIso885914(data.troText)) {
+    if (includeCheck(currentCheck, false) && data.troText && !isIso885914(data.troText)) {
       troTextErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Feature Description is too long.
     currentCheck = GetCheck(6400028, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.featureDescription && data.featureDescription.length > 250) {
+    if (includeCheck(currentCheck, false) && data.featureDescription && data.featureDescription.length > 250) {
       featureDescriptionErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Feature Description contains invalid characters.
     currentCheck = GetCheck(6400029, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.featureDescription && !isIso885914(data.featureDescription)) {
+    if (includeCheck(currentCheck, false) && data.featureDescription && !isIso885914(data.featureDescription)) {
       featureDescriptionErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // SWA Org Ref Consultant value of 0011, 0012, 013, 0014, 0016, 0020 or 7093 must not be used.
     currentCheck = GetCheck(6400030, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.swaOrgRefConsultant &&
       [11, 12, 13, 14, 16, 20, 7093].includes(data.swaOrgRefConsultant)
     ) {
@@ -3050,7 +3055,7 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
     // SWA Org Ref Consultant and District Ref Consultant must either both be blank or both have a value.
     currentCheck = GetCheck(6400031, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       ((data.swaOrgRefConsultant && !data.districtRefConsultant) ||
         (!data.swaOrgRefConsultant && data.districtRefConsultant))
     ) {
@@ -3061,7 +3066,7 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
     // District Ref Consultant is invalid.
     currentCheck = GetCheck(6400032, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.districtRefConsultant &&
       !currentLookups.operationalDistricts.find((x) => x.districtId === data.districtRefConsultant)
     ) {
@@ -3070,44 +3075,44 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
 
     // Source Text is too long.
     currentCheck = GetCheck(6400039, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.sourceText && data.sourceText.length > 120) {
+    if (includeCheck(currentCheck, false) && data.sourceText && data.sourceText.length > 120) {
       sourceTextErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Source Text contains invalid characters.
     currentCheck = GetCheck(6400040, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.sourceText && !isIso885914(data.sourceText)) {
+    if (includeCheck(currentCheck, false) && data.sourceText && !isIso885914(data.sourceText)) {
       sourceTextErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Mandatory Record Start Date is missing.
     currentCheck = GetCheck(6400043, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && !data.recordStartDate) {
+    if (includeCheck(currentCheck, false) && !data.recordStartDate) {
       recordStartDateErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Record Start Date cannot be in the future.
     currentCheck = GetCheck(6400044, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.recordStartDate && isFutureDate(data.recordStartDate)) {
+    if (includeCheck(currentCheck, false) && data.recordStartDate && isFutureDate(data.recordStartDate)) {
       recordStartDateErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Record Start Date prior to 1990 are not allowed.
     currentCheck = GetCheck(6400045, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.recordStartDate && isPriorTo1990(data.recordStartDate)) {
+    if (includeCheck(currentCheck, false) && data.recordStartDate && isPriorTo1990(data.recordStartDate)) {
       recordStartDateErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Mandatory Value Metric is missing.
     currentCheck = GetCheck(6400046, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && !data.valueMetric) {
+    if (includeCheck(currentCheck, false) && !data.valueMetric) {
       valueMetricErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // SWA Org Ref Consultant value does not exist in the SWA Org Ref table.
     currentCheck = GetCheck(6400047, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.swaOrgRefConsultant &&
       !filteredLookup(SwaOrgRef, false).find((x) => x.id === data.swaOrgRefConsultant)
     ) {
@@ -3117,7 +3122,7 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
     // District Ref Consultant value does not exist in the Operational District Table.
     currentCheck = GetCheck(6400048, currentLookups, methodName, true, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.districtRefConsultant &&
       !currentLookups.operationalDistricts.find((x) => x.districtId === data.districtRefConsultant)
     ) {
@@ -3370,38 +3375,38 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
 
     // PROW Location contains an invalid character.
     currentCheck = GetCheck(6600035, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.prowLocation && !isIso885914(data.prowLocation)) {
+    if (includeCheck(currentCheck, false) && data.prowLocation && !isIso885914(data.prowLocation)) {
       prowLocationErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // PROW Details is too long.
     currentCheck = GetCheck(6600036, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.prowDetails && data.prowDetails.length > 500) {
+    if (includeCheck(currentCheck, false) && data.prowDetails && data.prowDetails.length > 500) {
       prowDetailsErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // PROW Details contains an invalid character.
     currentCheck = GetCheck(6600037, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.prowDetails && !isIso885914(data.prowDetails)) {
+    if (includeCheck(currentCheck, false) && data.prowDetails && !isIso885914(data.prowDetails)) {
       prowDetailsErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // Source Text is too long.
     currentCheck = GetCheck(6600040, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.sourceText && data.sourceText.length > 120) {
+    if (includeCheck(currentCheck, false) && data.sourceText && data.sourceText.length > 120) {
       sourceTextErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // Source Text contains an invalid character.
     currentCheck = GetCheck(6600041, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.sourceText && !isIso885914(data.sourceText)) {
+    if (includeCheck(currentCheck, false) && data.sourceText && !isIso885914(data.sourceText)) {
       sourceTextErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // PROW Org Ref Consultant is invalid.
     currentCheck = GetCheck(6600042, currentLookups, methodName, false, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.prowOrgRefConsultant &&
       !filteredLookup(SwaOrgRef, false).find((x) => x.id === data.prowOrgRefConsultant)
     ) {
@@ -3411,7 +3416,7 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
     // "PROW Org Ref Consultant and PROW District Ref Consultant must either both be blank or both have a value.
     currentCheck = GetCheck(6600043, currentLookups, methodName, false, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       ((data.prowOrgRefConsultant && !data.prowDistrictRefConsultant) ||
         (!data.prowOrgRefConsultant && data.prowDistrictRefConsultant))
     ) {
@@ -3422,7 +3427,7 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
     // PROW District Ref Consultant is invalid.
     currentCheck = GetCheck(6600044, currentLookups, methodName, false, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.prowDistrictRefConsultant &&
       !currentLookups.operationalDistricts.find((x) => x.districtId === data.prowDistrictRefConsultant)
     ) {
@@ -3431,68 +3436,68 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
 
     // Mandatory PROW Location is missing.
     currentCheck = GetCheck(6600046, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, true) && !data.prowLocation) {
+    if (includeCheck(currentCheck, false) && !data.prowLocation) {
       prowLocationErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // Mandatory PROW Details is missing.
     currentCheck = GetCheck(6600047, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, true) && !data.prowDetails) {
+    if (includeCheck(currentCheck, false) && !data.prowDetails) {
       prowDetailsErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // Appeal Details is too long.
     currentCheck = GetCheck(6600048, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.appealDetails && data.appealDetails.length > 30) {
+    if (includeCheck(currentCheck, false) && data.appealDetails && data.appealDetails.length > 30) {
       appealDetailsErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // Appeal Ref is too long.
     currentCheck = GetCheck(6600049, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.appealRef && data.appealRef.length > 16) {
+    if (includeCheck(currentCheck, false) && data.appealRef && data.appealRef.length > 16) {
       appealRefErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // Consult Ref is too long.
     currentCheck = GetCheck(6600050, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.consultRef && data.consultRef.length > 16) {
+    if (includeCheck(currentCheck, false) && data.consultRef && data.consultRef.length > 16) {
       consultRefErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // Consult Details is too long.
     currentCheck = GetCheck(6600051, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.consultDetails && data.consultDetails.length > 30) {
+    if (includeCheck(currentCheck, false) && data.consultDetails && data.consultDetails.length > 30) {
       consultDetailsErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // Mandatory PROW District Ref Consultant is missing.
     currentCheck = GetCheck(6600052, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, true) && !data.prowDistrictRefConsultant) {
+    if (includeCheck(currentCheck, false) && !data.prowDistrictRefConsultant) {
       prowDistrictRefConsultantErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // For PROW Status of C the Consult Start Date, Consult End Date, Consult Ref and Consult Details must be present.
     currentCheck = GetCheck(6600053, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.prowStatus && data.prowStatus === "C" && !data.consultStartDate) {
+    if (includeCheck(currentCheck, false) && data.prowStatus && data.prowStatus === "C" && !data.consultStartDate) {
       consultStartDateErrors.push(GetErrorMessage(currentCheck, false));
     }
 
-    if (includeCheck(currentCheck, true) && data.prowStatus && data.prowStatus === "C" && !data.consultEndDate) {
+    if (includeCheck(currentCheck, false) && data.prowStatus && data.prowStatus === "C" && !data.consultEndDate) {
       consultEndDateErrors.push(GetErrorMessage(currentCheck, false));
     }
 
-    if (includeCheck(currentCheck, true) && data.prowStatus && data.prowStatus === "C" && !data.consultRef) {
+    if (includeCheck(currentCheck, false) && data.prowStatus && data.prowStatus === "C" && !data.consultRef) {
       consultRefErrors.push(GetErrorMessage(currentCheck, false));
     }
 
-    if (includeCheck(currentCheck, true) && data.prowStatus && data.prowStatus === "C" && !data.consultDetails) {
+    if (includeCheck(currentCheck, false) && data.prowStatus && data.prowStatus === "C" && !data.consultDetails) {
       consultDetailsErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // Consult End Date must be the same as or after the Consult Start Date.
     currentCheck = GetCheck(6600054, currentLookups, methodName, false, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.consultStartDate &&
       data.consultEndDate &&
       isEndBeforeStart(data.consultStartDate, data.consultEndDate)
@@ -3502,28 +3507,28 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
 
     // For PROW Status of A the Appeal Date, Appeal Ref and Appeal Details must be present.
     currentCheck = GetCheck(6600055, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.prowStatus && data.prowStatus === "A" && !data.appealDate) {
+    if (includeCheck(currentCheck, false) && data.prowStatus && data.prowStatus === "A" && !data.appealDate) {
       appealDateErrors.push(GetErrorMessage(currentCheck, false));
     }
 
-    if (includeCheck(currentCheck, true) && data.prowStatus && data.prowStatus === "A" && !data.appealRef) {
+    if (includeCheck(currentCheck, false) && data.prowStatus && data.prowStatus === "A" && !data.appealRef) {
       appealRefErrors.push(GetErrorMessage(currentCheck, false));
     }
 
-    if (includeCheck(currentCheck, true) && data.prowStatus && data.prowStatus === "A" && !data.appealDetails) {
+    if (includeCheck(currentCheck, false) && data.prowStatus && data.prowStatus === "A" && !data.appealDetails) {
       appealDetailsErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // For PROW Status of D the Div Related USRN must be present.
     currentCheck = GetCheck(6600056, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.prowStatus && data.prowStatus === "D" && !data.divRelatedUsrn) {
+    if (includeCheck(currentCheck, false) && data.prowStatus && data.prowStatus === "D" && !data.divRelatedUsrn) {
       divRelatedUsrnErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // PROW Org Ref Authority value does not exist in the SWA Org Ref table.
     currentCheck = GetCheck(6600058, currentLookups, methodName, false, showDebugMessages);
     if (
-      includeCheck(currentCheck, true) &&
+      includeCheck(currentCheck, false) &&
       data.prowOrgRefConsultant &&
       !filteredLookup(SwaOrgRef, false).find((x) => x.id === data.prowOrgRefConsultant)
     ) {
