@@ -16,6 +16,7 @@
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   10.01.24 Sean Flook                 Fix warnings.
+//    006   31.01.24 Joel Benford               Changes to as save and support OS
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -48,40 +49,40 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
 
   const [showDialog, setShowDialog] = useState(false);
 
-  const [motorwayTrunkRoads, setMotorwayTrunkRoads] = useState(null);
-  const [privateStreets, setPrivateStreets] = useState(null);
-  const [primaryRouteNetwork, setPrimaryRouteNetwork] = useState(null);
-  const [classifiedRoads, setClassifiedRoads] = useState(null);
-  const [prowFootpaths, setProwFootpaths] = useState(null);
-  const [prowBridleways, setProwBridleways] = useState(null);
-  const [prowRestrictedByways, setProwRestrictedByways] = useState(null);
-  const [prowBoat, setProwBoat] = useState(null);
-  const [nationalCycleRoutes, setNationalCycleRoutes] = useState(null);
+  const [contentMotorwayTrunkRoad, setContentMotorwayTrunkRoad] = useState(null);
+  const [contentPrivateStreet, setContentPrivateStreet] = useState(null);
+  const [contentPrn, setContentPrn] = useState(null);
+  const [contentClassifiedRoad, setContentClassifiedRoad] = useState(null);
+  const [contentProwFootpath, setContentProwFootpath] = useState(null);
+  const [contentProwBridleway, setContentProwBridleway] = useState(null);
+  const [contentProwRestrictedByway, setContentProwRestrictedByway] = useState(null);
+  const [contentProwBoat, setContentProwBoat] = useState(null);
+  const [contentNationalCycleRoute, setContentNationalCycleRoute] = useState(null);
 
-  const [protectedStreets, setProtectedStreets] = useState(null);
-  const [trafficSensitiveStreets, setTrafficSensitiveStreets] = useState(null);
-  const [specialEngineeringDifficulties, setSpecialEngineeringDifficulties] = useState(null);
-  const [proposedSEDs, setProposedSEDs] = useState(null);
-  const [levelCrossing, setLevelCrossing] = useState(null);
-  const [environmentallySensitiveAreas, setEnvironmentallySensitiveAreas] = useState(null);
-  const [structuresNotSEDs, setStructuresNotSEDs] = useState(null);
-  const [pipelinesAndSpecialistCables, setPipelinesAndSpecialistCables] = useState(null);
-  const [priorityLanes, setPriorityLanes] = useState(null);
-  const [laneRental, setLaneRental] = useState(null);
-  const [EarlyNotificationStreets, setEarlyNotificationStreets] = useState(null);
-  const [specialEvents, setSpecialEvents] = useState(null);
-  const [parking, setParking] = useState(null);
-  const [pedestrianCrossings, setPedestrianCrossings] = useState(null);
-  const [speedLimits, setSpeedLimits] = useState(null);
-  const [transportAuthorityCriticalApparatus, setTransportAuthorityCriticalApparatus] = useState(null);
-  const [strategicRoute, setStrategicRoute] = useState(null);
-  const [streetLighting, setStreetLighting] = useState(null);
-  const [drainageAndFlood, setDrainageAndFlood] = useState(null);
-  const [unusualTrafficLayouts, setUnusualTrafficLayouts] = useState(null);
-  const [localConsiderations, setLocalConsiderations] = useState(null);
-  const [winterMaintenanceRoutes, setWinterMaintenanceRoutes] = useState(null);
-  const [hgvApprovedRoutes, setHgvApprovedRoutes] = useState(null);
-  const [emergencyServicesRoutes, setEmergencyServicesRoutes] = useState(null);
+  const [mdProtectedStreet, setMdProtectedStreet] = useState(null);
+  const [mdTrafficSensitive, setMdTrafficSensitive] = useState(null);
+  const [mdSed, setMdSed] = useState(null);
+  const [mdProposedSed, setMdProposedSed] = useState(null);
+  const [mdLevelCrossing, setMdLevelCrossing] = useState(null);
+  const [mdEnvSensitiveArea, setMdEnvSensitiveArea] = useState(null);
+  const [mdStructuresNotSed, setMdStructuresNotSed] = useState(null);
+  const [mdPipelinesAndCables, setMdPipelinesAndCables] = useState(null);
+  const [mdPriorityLanes, setMdPriorityLanes] = useState(null);
+  const [mdLaneRental, setMdLaneRental] = useState(null);
+  const [mdEarlyNotification, setMdEarlyNotification] = useState(null);
+  const [mdSpecialEvents, setMdSpecialEvents] = useState(null);
+  const [mdParking, setMdParking] = useState(null);
+  const [mdPedCrossAndSignals, setMdPedCrossAndSignals] = useState(null);
+  const [mdSpeedLimit, setMdSpeedLimit] = useState(null);
+  const [mdTransAuthApp, setMdTransAuthApp] = useState(null);
+  const [mdStrategicRoute, setMdStrategicRoute] = useState(null);
+  const [mdStreetLight, stMdStreetLight] = useState(null);
+  const [mdDrainageAndFlood, setMdDrainageAndFlood] = useState(null);
+  const [mdUnusualLayout, setMdUnusualLayout] = useState(null);
+  const [mdLocalConsider, setMdLocalConsider] = useState(null);
+  const [mdWinterMainRoute, setMdWinterMainRoute] = useState(null);
+  const [mdHgvRoute, setMdHgvRoute] = useState(null);
+  const [mdEmergencyRoute, setMdEmergencyRoute] = useState(null);
 
   /**
    * Event to handle when the done button is clicked.
@@ -117,42 +118,42 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
   const getUpdatedData = () => {
     if (variant === "street")
       return {
-        motorwayTrunkRoads: motorwayTrunkRoads,
-        privateStreets: privateStreets,
-        primaryRouteNetwork: primaryRouteNetwork,
-        classifiedRoads: classifiedRoads,
-        prowFootpaths: prowFootpaths,
-        prowBridleways: prowBridleways,
-        prowRestrictedByways: prowRestrictedByways,
-        prowBoat: prowBoat,
-        nationalCycleRoutes: nationalCycleRoutes,
+        contentMotorwayTrunkRoad,
+        contentPrivateStreet,
+        contentPrn,
+        contentClassifiedRoad,
+        contentProwFootpath,
+        contentProwBridleway,
+        contentProwRestrictedByway,
+        contentProwBoat,
+        contentNationalCycleRoute,
       };
     else
       return {
-        protectedStreets: protectedStreets,
-        trafficSensitiveStreets: trafficSensitiveStreets,
-        specialEngineeringDifficulties: specialEngineeringDifficulties,
-        proposedSEDs: proposedSEDs,
-        levelCrossing: levelCrossing,
-        environmentallySensitiveAreas: environmentallySensitiveAreas,
-        structuresNotSEDs: structuresNotSEDs,
-        pipelinesAndSpecialistCables: pipelinesAndSpecialistCables,
-        priorityLanes: priorityLanes,
-        laneRental: laneRental,
-        earlyNotificationStreets: EarlyNotificationStreets,
-        specialEvents: specialEvents,
-        parking: parking,
-        pedestrianCrossings: pedestrianCrossings,
-        speedLimits: speedLimits,
-        transportAuthorityCriticalApparatus: transportAuthorityCriticalApparatus,
-        strategicRoute: strategicRoute,
-        streetLighting: streetLighting,
-        drainageAndFlood: drainageAndFlood,
-        unusualTrafficLayouts: unusualTrafficLayouts,
-        localConsiderations: localConsiderations,
-        winterMaintenanceRoutes: winterMaintenanceRoutes,
-        hgvApprovedRoutes: hgvApprovedRoutes,
-        emergencyServicesRoutes: emergencyServicesRoutes,
+        mdProtectedStreet,
+        mdTrafficSensitive,
+        mdSed,
+        mdProposedSed,
+        mdLevelCrossing,
+        mdEnvSensitiveArea,
+        mdStructuresNotSed,
+        mdPipelinesAndCables,
+        mdPriorityLanes,
+        mdLaneRental,
+        mdEarlyNotification,
+        mdSpecialEvents,
+        mdParking,
+        mdPedCrossAndSignals,
+        mdSpeedLimit,
+        mdTransAuthApp,
+        mdStrategicRoute,
+        mdStreetLight,
+        mdDrainageAndFlood,
+        mdUnusualLayout,
+        mdLocalConsider,
+        mdWinterMainRoute,
+        mdHgvRoute,
+        mdEmergencyRoute,
       };
   };
 
@@ -161,8 +162,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new motorway and trunk roads.
    */
-  const handleMotorwayTrunkRoadsChangeEvent = (newValue) => {
-    setMotorwayTrunkRoads(newValue);
+  const handleContentMotorwayTrunkRoadChangeEvent = (newValue) => {
+    setContentMotorwayTrunkRoad(newValue);
   };
 
   /**
@@ -170,8 +171,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new private streets.
    */
-  const handlePrivateStreetsChangeEvent = (newValue) => {
-    setPrivateStreets(newValue);
+  const handleContentPrivateStreetChangeEvent = (newValue) => {
+    setContentPrivateStreet(newValue);
   };
 
   /**
@@ -179,8 +180,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new primary route network.
    */
-  const handlePrimaryRouteNetworkChangeEvent = (newValue) => {
-    setPrimaryRouteNetwork(newValue);
+  const handleContentPrnChangeEvent = (newValue) => {
+    setContentPrn(newValue);
   };
 
   /**
@@ -188,8 +189,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new classified roads.
    */
-  const handleClassifiedRoadsChangeEvent = (newValue) => {
-    setClassifiedRoads(newValue);
+  const handleContentClassifiedRoadChangeEvent = (newValue) => {
+    setContentClassifiedRoad(newValue);
   };
 
   /**
@@ -197,8 +198,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new PRoW footpaths.
    */
-  const handleProwFootpathsChangeEvent = (newValue) => {
-    setProwFootpaths(newValue);
+  const handleContentProwFootpathChangeEvent = (newValue) => {
+    setContentProwFootpath(newValue);
   };
 
   /**
@@ -206,8 +207,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new PRoW bridleways.
    */
-  const handleProwBridlewaysChangeEvent = (newValue) => {
-    setProwBridleways(newValue);
+  const handleContentProwBridlewayChangeEvent = (newValue) => {
+    setContentProwBridleway(newValue);
   };
 
   /**
@@ -215,8 +216,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new PRoW restricted byways.
    */
-  const handleProwRestrictedBywaysChangeEvent = (newValue) => {
-    setProwRestrictedByways(newValue);
+  const handleContentProwRestrictedBywayChangeEvent = (newValue) => {
+    setContentProwRestrictedByway(newValue);
   };
 
   /**
@@ -224,8 +225,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new PRoW BOAT.
    */
-  const handleProwBoatChangeEvent = (newValue) => {
-    setProwBoat(newValue);
+  const handleContentProwBoatChangeEvent = (newValue) => {
+    setContentProwBoat(newValue);
   };
 
   /**
@@ -233,8 +234,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new national cycle routes.
    */
-  const handleNationalCycleRoutesChangeEvent = (newValue) => {
-    setNationalCycleRoutes(newValue);
+  const handleContentNationalCycleRouteChangeEvent = (newValue) => {
+    setContentNationalCycleRoute(newValue);
   };
 
   /**
@@ -242,8 +243,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new protected streets.
    */
-  const handleProtectedStreetsChangeEvent = (newValue) => {
-    setProtectedStreets(newValue);
+  const handleMdProtectedStreetChangeEvent = (newValue) => {
+    setMdProtectedStreet(newValue);
   };
 
   /**
@@ -251,8 +252,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new sensitive streets.
    */
-  const handleTrafficSensitiveStreetsChangeEvent = (newValue) => {
-    setTrafficSensitiveStreets(newValue);
+  const handleMdTrafficSensitiveStreetChangeEvent = (newValue) => {
+    setMdTrafficSensitive(newValue);
   };
 
   /**
@@ -260,8 +261,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new special engineering difficulties.
    */
-  const handleSpecialEngineeringDifficultiesChangeEvent = (newValue) => {
-    setSpecialEngineeringDifficulties(newValue);
+  const handleMdSedChangeEvent = (newValue) => {
+    setMdSed(newValue);
   };
 
   /**
@@ -269,8 +270,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new proposed SEDs.
    */
-  const handleProposedSEDsChangeEvent = (newValue) => {
-    setProposedSEDs(newValue);
+  const handleMdProposedSedChangeEvent = (newValue) => {
+    setMdProposedSed(newValue);
   };
 
   /**
@@ -278,8 +279,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new level crossing.
    */
-  const handleLevelCrossingChangeEvent = (newValue) => {
-    setLevelCrossing(newValue);
+  const handleMdLevelCrossingChangeEvent = (newValue) => {
+    setMdLevelCrossing(newValue);
   };
 
   /**
@@ -287,8 +288,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new environmentally sensitive.
    */
-  const handleEnvironmentallySensitiveAreasChangeEvent = (newValue) => {
-    setEnvironmentallySensitiveAreas(newValue);
+  const handleMdEnvSensitiveAreaChangeEvent = (newValue) => {
+    setMdEnvSensitiveArea(newValue);
   };
 
   /**
@@ -296,8 +297,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new structures not SEDs.
    */
-  const handleStructuresNotSEDsChangeEvent = (newValue) => {
-    setStructuresNotSEDs(newValue);
+  const handleMdStructuresNotSedChangeEvent = (newValue) => {
+    setMdStructuresNotSed(newValue);
   };
 
   /**
@@ -305,8 +306,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new pipelines and specialist cables.
    */
-  const handlePipelinesAndSpecialistCablesChangeEvent = (newValue) => {
-    setPipelinesAndSpecialistCables(newValue);
+  const handleMdPipelinesAndCablesChangeEvent = (newValue) => {
+    setMdPipelinesAndCables(newValue);
   };
 
   /**
@@ -314,8 +315,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new priority lanes.
    */
-  const handlePriorityLanesChangeEvent = (newValue) => {
-    setPriorityLanes(newValue);
+  const handleMdPriorityLanesChangeEvent = (newValue) => {
+    setMdPriorityLanes(newValue);
   };
 
   /**
@@ -323,8 +324,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new lane rental.
    */
-  const handleLaneRentalChangeEvent = (newValue) => {
-    setLaneRental(newValue);
+  const handleMdLaneRentalChangeEvent = (newValue) => {
+    setMdLaneRental(newValue);
   };
 
   /**
@@ -332,8 +333,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new early notification streets.
    */
-  const handleEarlyNotificationStreetsChangeEvent = (newValue) => {
-    setEarlyNotificationStreets(newValue);
+  const handleMdEarlyNotificationChangeEvent = (newValue) => {
+    setMdEarlyNotification(newValue);
   };
 
   /**
@@ -341,8 +342,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new special events.
    */
-  const handleSpecialEventsChangeEvent = (newValue) => {
-    setSpecialEvents(newValue);
+  const handleMdSpecialEventsChangeEvent = (newValue) => {
+    setMdSpecialEvents(newValue);
   };
 
   /**
@@ -350,8 +351,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new parking charges.
    */
-  const handleParkingChangeEvent = (newValue) => {
-    setParking(newValue);
+  const handleMdParkingChangeEvent = (newValue) => {
+    setMdParking(newValue);
   };
 
   /**
@@ -359,8 +360,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new pedestrian crossings.
    */
-  const handlePedestrianCrossingsChangeEvent = (newValue) => {
-    setPedestrianCrossings(newValue);
+  const handleMdPedCrossAndSignalsChangeEvent = (newValue) => {
+    setMdPedCrossAndSignals(newValue);
   };
 
   /**
@@ -368,8 +369,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new speed limits.
    */
-  const handleSpeedLimitsChangeEvent = (newValue) => {
-    setSpeedLimits(newValue);
+  const handleMdSpeedLimitChangeEvent = (newValue) => {
+    setMdSpeedLimit(newValue);
   };
 
   /**
@@ -377,8 +378,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new transport authority critical apparatus.
    */
-  const handleTransportAuthorityCriticalApparatusChangeEvent = (newValue) => {
-    setTransportAuthorityCriticalApparatus(newValue);
+  const handleMdTransAuthAppChangeEvent = (newValue) => {
+    setMdTransAuthApp(newValue);
   };
 
   /**
@@ -386,8 +387,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new strategic routes.
    */
-  const handleStrategicRouteChangeEvent = (newValue) => {
-    setStrategicRoute(newValue);
+  const handleMdStrategicRouteChangeEvent = (newValue) => {
+    setMdStrategicRoute(newValue);
   };
 
   /**
@@ -395,8 +396,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new street lighting.
    */
-  const handleStreetLightingChangeEvent = (newValue) => {
-    setStreetLighting(newValue);
+  const handleMdStreetLightingChangeEvent = (newValue) => {
+    stMdStreetLight(newValue);
   };
 
   /**
@@ -404,8 +405,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new drainage and flood.
    */
-  const handleDrainageAndFloodChangeEvent = (newValue) => {
-    setDrainageAndFlood(newValue);
+  const handleMdDrainageAndFloodChangeEvent = (newValue) => {
+    setMdDrainageAndFlood(newValue);
   };
 
   /**
@@ -413,8 +414,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new unusual traffic layouts.
    */
-  const handleUnusualTrafficLayoutsChangeEvent = (newValue) => {
-    setUnusualTrafficLayouts(newValue);
+  const handleMdUnusualLayoutChangeEvent = (newValue) => {
+    setMdUnusualLayout(newValue);
   };
 
   /**
@@ -422,8 +423,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new local considerations.
    */
-  const handleLocalConsiderationsChangeEvent = (newValue) => {
-    setLocalConsiderations(newValue);
+  const handleMdLocalConsiderChangeEvent = (newValue) => {
+    setMdLocalConsider(newValue);
   };
 
   /**
@@ -431,8 +432,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new winter maintenance routes.
    */
-  const handleWinterMaintenanceRoutesChangeEvent = (newValue) => {
-    setWinterMaintenanceRoutes(newValue);
+  const handleMdWinterMainRouteChangeEvent = (newValue) => {
+    setMdWinterMainRoute(newValue);
   };
 
   /**
@@ -440,8 +441,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new HGV approved routes.
    */
-  const handleHgvApprovedRoutesChangeEvent = (newValue) => {
-    setHgvApprovedRoutes(newValue);
+  const handleMdHgvRouteChangeEvent = (newValue) => {
+    setMdHgvRoute(newValue);
   };
 
   /**
@@ -449,8 +450,8 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
    *
    * @param {number} newValue The new emergency services routes.
    */
-  const handleEmergencyServicesRoutesChangeEvent = (newValue) => {
-    setEmergencyServicesRoutes(newValue);
+  const handleMdEmergencyRouteChangeEvent = (newValue) => {
+    setMdEmergencyRoute(newValue);
   };
 
   /**
@@ -474,40 +475,40 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
   useEffect(() => {
     if (data) {
       if (variant === "street") {
-        setMotorwayTrunkRoads(data.motorwayTrunkRoads);
-        setPrivateStreets(data.privateStreets);
-        setPrimaryRouteNetwork(data.primaryRouteNetwork);
-        setClassifiedRoads(data.classifiedRoads);
-        setProwFootpaths(data.prowFootpaths);
-        setProwBridleways(data.prowBridleways);
-        setProwRestrictedByways(data.prowRestrictedByways);
-        setProwBoat(data.prowBoat);
-        setNationalCycleRoutes(data.nationalCycleRoutes);
+        setContentMotorwayTrunkRoad(data.contentMotorwayTrunkRoad);
+        setContentPrivateStreet(data.contentPrivateStreet);
+        setContentPrn(data.contentPrn);
+        setContentClassifiedRoad(data.contentClassifiedRoad);
+        setContentProwFootpath(data.contentProwFootpath);
+        setContentProwBridleway(data.contentProwBridleway);
+        setContentProwRestrictedByway(data.contentProwRestrictedByway);
+        setContentProwBoat(data.contentProwBoat);
+        setContentNationalCycleRoute(data.contentNationalCycleRoute);
       } else {
-        setProtectedStreets(data.protectedStreets);
-        setTrafficSensitiveStreets(data.trafficSensitiveStreets);
-        setSpecialEngineeringDifficulties(data.specialEngineeringDifficulties);
-        setProposedSEDs(data.proposedSEDs);
-        setLevelCrossing(data.levelCrossing);
-        setEnvironmentallySensitiveAreas(data.environmentallySensitiveAreas);
-        setStructuresNotSEDs(data.structuresNotSEDs);
-        setPipelinesAndSpecialistCables(data.pipelinesAndSpecialistCables);
-        setPriorityLanes(data.priorityLanes);
-        setLaneRental(data.laneRental);
-        setEarlyNotificationStreets(data.earlyNotificationStreets);
-        setSpecialEvents(data.specialEvents);
-        setParking(data.parking);
-        setPedestrianCrossings(data.pedestrianCrossings);
-        setSpeedLimits(data.speedLimits);
-        setTransportAuthorityCriticalApparatus(data.transportAuthorityCriticalApparatus);
-        setStrategicRoute(data.strategicRoute);
-        setStreetLighting(data.streetLighting);
-        setDrainageAndFlood(data.drainageAndFlood);
-        setUnusualTrafficLayouts(data.unusualTrafficLayouts);
-        setLocalConsiderations(data.localConsiderations);
-        setWinterMaintenanceRoutes(data.winterMaintenanceRoutes);
-        setHgvApprovedRoutes(data.hgvApprovedRoutes);
-        setEmergencyServicesRoutes(data.emergencyServicesRoutes);
+        setMdProtectedStreet(data.mdProtectedStreet);
+        setMdTrafficSensitive(data.mdTrafficSensitive);
+        setMdSed(data.mdSed);
+        setMdProposedSed(data.mdProposedSed);
+        setMdLevelCrossing(data.mdLevelCrossing);
+        setMdEnvSensitiveArea(data.mdEnvSensitiveArea);
+        setMdStructuresNotSed(data.mdStructuresNotSed);
+        setMdPipelinesAndCables(data.mdPipelinesAndCables);
+        setMdPriorityLanes(data.mdPriorityLanes);
+        setMdLaneRental(data.mdLaneRental);
+        setMdEarlyNotification(data.mdEarlyNotification);
+        setMdSpecialEvents(data.mdSpecialEvents);
+        setMdParking(data.mdParking);
+        setMdPedCrossAndSignals(data.mdPedCrossAndSignals);
+        setMdSpeedLimit(data.mdSpeedLimit);
+        setMdTransAuthApp(data.mdTransAuthApp);
+        setMdStrategicRoute(data.mdStrategicRoute);
+        stMdStreetLight(data.mdStreetLight);
+        setMdDrainageAndFlood(data.mdDrainageAndFlood);
+        setMdUnusualLayout(data.mdUnusualLayout);
+        setMdLocalConsider(data.mdLocalConsider);
+        setMdWinterMainRoute(data.mdWinterMainRoute);
+        setMdHgvRoute(data.mdHgvRoute);
+        setMdEmergencyRoute(data.mdEmergencyRoute);
       }
     }
 
@@ -548,9 +549,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of Motorway / Trunk roads that are present in GeoPlace."
-                      value={motorwayTrunkRoads}
+                      value={contentMotorwayTrunkRoad}
                       valueSuffix="%"
-                      onChange={handleMotorwayTrunkRoadsChangeEvent}
+                      onChange={handleContentMotorwayTrunkRoadChangeEvent}
                     />
                   )}
                   {variant === "street" && (
@@ -560,9 +561,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of private Streets that are present in GeoPlace."
-                      value={privateStreets}
+                      value={contentPrivateStreet}
                       valueSuffix="%"
-                      onChange={handlePrivateStreetsChangeEvent}
+                      onChange={handleContentPrivateStreetChangeEvent}
                     />
                   )}
                   {variant === "street" && (
@@ -572,9 +573,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of the Primary Route Network that is present in GeoPlace."
-                      value={primaryRouteNetwork}
+                      value={contentPrn}
                       valueSuffix="%"
-                      onChange={handlePrimaryRouteNetworkChangeEvent}
+                      onChange={handleContentPrnChangeEvent}
                     />
                   )}
                   {variant === "street" && (
@@ -584,9 +585,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of Classified Roads that are present in GeoPlace."
-                      value={classifiedRoads}
+                      value={contentClassifiedRoad}
                       valueSuffix="%"
-                      onChange={handleClassifiedRoadsChangeEvent}
+                      onChange={handleContentClassifiedRoadChangeEvent}
                     />
                   )}
                   {variant === "street" && (
@@ -596,9 +597,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of PRoW defined Footpaths that are present in GeoPlace."
-                      value={prowFootpaths}
+                      value={contentProwFootpath}
                       valueSuffix="%"
-                      onChange={handleProwFootpathsChangeEvent}
+                      onChange={handleContentProwFootpathChangeEvent}
                     />
                   )}
                   {variant === "street" && (
@@ -608,9 +609,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of PRoW defined Bridleways that are present in GeoPlace."
-                      value={prowBridleways}
+                      value={contentProwBridleway}
                       valueSuffix="%"
-                      onChange={handleProwBridlewaysChangeEvent}
+                      onChange={handleContentProwBridlewayChangeEvent}
                     />
                   )}
                   {variant === "street" && (
@@ -620,9 +621,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of PRoW defined Restricted Byways that are present in GeoPlace."
-                      value={prowRestrictedByways}
+                      value={contentProwRestrictedByway}
                       valueSuffix="%"
-                      onChange={handleProwRestrictedBywaysChangeEvent}
+                      onChange={handleContentProwRestrictedBywayChangeEvent}
                     />
                   )}
                   {variant === "street" && (
@@ -632,9 +633,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of PRoW defined Byways Open to All Traffic that are present in GeoPlace."
-                      value={prowBoat}
+                      value={contentProwBoat}
                       valueSuffix="%"
-                      onChange={handleProwBoatChangeEvent}
+                      onChange={handleContentProwBoatChangeEvent}
                     />
                   )}
                   {variant === "street" && (
@@ -644,9 +645,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of National Cycle Routes that are present in GeoPlace."
-                      value={nationalCycleRoutes}
+                      value={contentNationalCycleRoute}
                       valueSuffix="%"
-                      onChange={handleNationalCycleRoutesChangeEvent}
+                      onChange={handleContentNationalCycleRouteChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -656,9 +657,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of Protected Streets that are present in GeoPlace."
-                      value={protectedStreets}
+                      value={mdProtectedStreet}
                       valueSuffix="%"
-                      onChange={handleProtectedStreetsChangeEvent}
+                      onChange={handleMdProtectedStreetChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -668,9 +669,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage Traffic Sensitive Streets that are present in GeoPlace."
-                      value={trafficSensitiveStreets}
+                      value={mdTrafficSensitive}
                       valueSuffix="%"
-                      onChange={handleTrafficSensitiveStreetsChangeEvent}
+                      onChange={handleMdTrafficSensitiveStreetChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -680,9 +681,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of Special Engineering Difficulties (SEDs) that are present in GeoPlace."
-                      value={specialEngineeringDifficulties}
+                      value={mdSed}
                       valueSuffix="%"
-                      onChange={handleSpecialEngineeringDifficultiesChangeEvent}
+                      onChange={handleMdSedChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -692,9 +693,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of proposed Special Engineering Difficulties that are present in GeoPlace."
-                      value={proposedSEDs}
+                      value={mdProposedSed}
                       valueSuffix="%"
-                      onChange={handleProposedSEDsChangeEvent}
+                      onChange={handleMdProposedSedChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -703,9 +704,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isEditable
                       includeLabel
                       helperText="Percentage of Level Crossing Safety Zone that are present in GeoPlace."
-                      value={levelCrossing}
+                      value={mdLevelCrossing}
                       valueSuffix="%"
-                      onChange={handleLevelCrossingChangeEvent}
+                      onChange={handleMdLevelCrossingChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -715,9 +716,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of Environmentally Sensitive Areas that are present in GeoPlace."
-                      value={environmentallySensitiveAreas}
+                      value={mdEnvSensitiveArea}
                       valueSuffix="%"
-                      onChange={handleEnvironmentallySensitiveAreasChangeEvent}
+                      onChange={handleMdEnvSensitiveAreaChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -727,9 +728,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of Structures that are not designated SEDs that are present in GeoPlace."
-                      value={structuresNotSEDs}
+                      value={mdStructuresNotSed}
                       valueSuffix="%"
-                      onChange={handleStructuresNotSEDsChangeEvent}
+                      onChange={handleMdStructuresNotSedChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -738,9 +739,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isEditable
                       includeLabel
                       helperText="Percentage of Pipelines and Specialist Cables that are present in GeoPlace."
-                      value={pipelinesAndSpecialistCables}
+                      value={mdPipelinesAndCables}
                       valueSuffix="%"
-                      onChange={handlePipelinesAndSpecialistCablesChangeEvent}
+                      onChange={handleMdPipelinesAndCablesChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -750,9 +751,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of Priority Lanes that are present in GeoPlace."
-                      value={priorityLanes}
+                      value={mdPriorityLanes}
                       valueSuffix="%"
-                      onChange={handlePriorityLanesChangeEvent}
+                      onChange={handleMdPriorityLanesChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -762,9 +763,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of Lane Rental data that is present in GeoPlace."
-                      value={laneRental}
+                      value={mdLaneRental}
                       valueSuffix="%"
-                      onChange={handleLaneRentalChangeEvent}
+                      onChange={handleMdLaneRentalChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -773,9 +774,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isEditable
                       includeLabel
                       helperText="Percentage of Street subject to early notification of immediate activities that are present in GeoPlace."
-                      value={EarlyNotificationStreets}
+                      value={mdEarlyNotification}
                       valueSuffix="%"
-                      onChange={handleEarlyNotificationStreetsChangeEvent}
+                      onChange={handleMdEarlyNotificationChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -785,9 +786,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of Special Events that are present in GeoPlace."
-                      value={specialEvents}
+                      value={mdSpecialEvents}
                       valueSuffix="%"
-                      onChange={handleSpecialEventsChangeEvent}
+                      onChange={handleMdSpecialEventsChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -797,9 +798,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of this Parking Bays and restrictions that are present in GeoPlace."
-                      value={parking}
+                      value={mdParking}
                       valueSuffix="%"
-                      onChange={handleParkingChangeEvent}
+                      onChange={handleMdParkingChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -809,9 +810,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of Pedestrian Crossings, Traffic Signals and Traffic Sensors that are present in GeoPlace."
-                      value={pedestrianCrossings}
+                      value={mdPedCrossAndSignals}
                       valueSuffix="%"
-                      onChange={handlePedestrianCrossingsChangeEvent}
+                      onChange={handleMdPedCrossAndSignalsChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -821,9 +822,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of Speed Limits that are present in GeoPlace."
-                      value={speedLimits}
+                      value={mdSpeedLimit}
                       valueSuffix="%"
-                      onChange={handleSpeedLimitsChangeEvent}
+                      onChange={handleMdSpeedLimitChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -832,9 +833,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isEditable
                       includeLabel
                       helperText="Percentage of Transport Authority Critical Apparatus that are present in GeoPlace."
-                      value={transportAuthorityCriticalApparatus}
+                      value={mdTransAuthApp}
                       valueSuffix="%"
-                      onChange={handleTransportAuthorityCriticalApparatusChangeEvent}
+                      onChange={handleMdTransAuthAppChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -844,9 +845,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of Strategic Routes that are present in GeoPlace."
-                      value={strategicRoute}
+                      value={mdStrategicRoute}
                       valueSuffix="%"
-                      onChange={handleStrategicRouteChangeEvent}
+                      onChange={handleMdStrategicRouteChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -855,9 +856,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isEditable
                       includeLabel
                       helperText="Percentage of Street Lighting that is present in GeoPlace."
-                      value={streetLighting}
+                      value={mdStreetLight}
                       valueSuffix="%"
-                      onChange={handleStreetLightingChangeEvent}
+                      onChange={handleMdStreetLightingChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -866,9 +867,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isEditable
                       includeLabel
                       helperText="Percentage of Drainage and Flood Risk areas that are present in GeoPlace."
-                      value={drainageAndFlood}
+                      value={mdDrainageAndFlood}
                       valueSuffix="%"
-                      onChange={handleDrainageAndFloodChangeEvent}
+                      onChange={handleMdDrainageAndFloodChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -877,9 +878,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isEditable
                       includeLabel
                       helperText="Percentage of Streets that have an Unusual Traffic Layout that are present in GeoPlace."
-                      value={unusualTrafficLayouts}
+                      value={mdUnusualLayout}
                       valueSuffix="%"
-                      onChange={handleUnusualTrafficLayoutsChangeEvent}
+                      onChange={handleMdUnusualLayoutChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -888,9 +889,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isEditable
                       includeLabel
                       helperText="Percentage of Streets with Local Considerations that are present in GeoPlace."
-                      value={localConsiderations}
+                      value={mdLocalConsider}
                       valueSuffix="%"
-                      onChange={handleLocalConsiderationsChangeEvent}
+                      onChange={handleMdLocalConsiderChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -900,9 +901,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of Streets with Winter Maintenance Routes that are present in GeoPlace."
-                      value={winterMaintenanceRoutes}
+                      value={mdWinterMainRoute}
                       valueSuffix="%"
-                      onChange={handleWinterMaintenanceRoutesChangeEvent}
+                      onChange={handleMdWinterMainRouteChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -912,9 +913,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of HGV Approved Routes that are present in GeoPlace."
-                      value={hgvApprovedRoutes}
+                      value={mdHgvRoute}
                       valueSuffix="%"
-                      onChange={handleHgvApprovedRoutesChangeEvent}
+                      onChange={handleMdHgvRouteChangeEvent}
                     />
                   )}
                   {variant === "asd" && (
@@ -924,9 +925,9 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
                       isRequired
                       includeLabel
                       helperText="Percentage of Emergency Services Routes that are present in GeoPlace."
-                      value={emergencyServicesRoutes}
+                      value={mdEmergencyRoute}
                       valueSuffix="%"
-                      onChange={handleEmergencyServicesRoutesChangeEvent}
+                      onChange={handleMdEmergencyRouteChangeEvent}
                     />
                   )}
                 </Box>

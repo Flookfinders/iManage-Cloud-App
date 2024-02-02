@@ -17,16 +17,18 @@
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   10.01.24 Sean Flook                 Fix warnings.
 //    006   11.01.24 Sean Flook                 Fix warnings.
+//    007   31.01.24 Joel Benford               Changes to as save and support OS
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 
 import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Grid, Typography, Button } from "@mui/material";
 import { Box, Stack } from "@mui/system";
+import SettingsContext from "../context/settingsContext";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSNumberControl from "../components/ADSNumberControl";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -51,11 +53,12 @@ EditMetadataCustodianDialog.propTypes = {
 function EditMetadataCustodianDialog({ isOpen, data, variant, onDone, onClose }) {
   const theme = useTheme();
 
+  const settingsContext = useContext(SettingsContext);
   const [showDialog, setShowDialog] = useState(false);
 
-  const [name, setName] = useState(null);
-  const [uprn, setUprn] = useState(null);
-  const [code, setCode] = useState(null);
+  const [custodianName, setCustodianName] = useState(null);
+  const [custodianUprn, setCustodianUprn] = useState(null);
+  const [custodianCode, setCustodianCode] = useState(null);
 
   const custodianCodes = DETRCodes.map(function (x) {
     return { id: x.id, text: `${x.id} - ${x.text}` };
@@ -94,9 +97,9 @@ function EditMetadataCustodianDialog({ isOpen, data, variant, onDone, onClose })
    */
   const getUpdatedData = () => {
     return {
-      custodianName: name,
-      custodianUprn: uprn,
-      custodianCode: code,
+      custodianName,
+      custodianUprn: settingsContext.isScottish ? undefined : custodianUprn,
+      custodianCode,
     };
   };
 
@@ -105,8 +108,8 @@ function EditMetadataCustodianDialog({ isOpen, data, variant, onDone, onClose })
    *
    * @param {string} newValue The new name.
    */
-  const handleNameChangeEvent = (newValue) => {
-    setName(newValue);
+  const handleCustodianNameChangeEvent = (newValue) => {
+    setCustodianName(newValue);
   };
 
   /**
@@ -114,8 +117,8 @@ function EditMetadataCustodianDialog({ isOpen, data, variant, onDone, onClose })
    *
    * @param {number} newValue The new UPRN.
    */
-  const handleUprnChangeEvent = (newValue) => {
-    setUprn(newValue);
+  const handleCustodianUprnChangeEvent = (newValue) => {
+    setCustodianUprn(newValue);
   };
 
   /**
@@ -123,8 +126,8 @@ function EditMetadataCustodianDialog({ isOpen, data, variant, onDone, onClose })
    *
    * @param {number} newValue The new code.
    */
-  const handleCodeChangeEvent = (newValue) => {
-    setCode(newValue);
+  const handleCustodianCodeChangeEvent = (newValue) => {
+    setCustodianCode(newValue);
   };
 
   /**
@@ -141,7 +144,7 @@ function EditMetadataCustodianDialog({ isOpen, data, variant, onDone, onClose })
         return "Edit ASD custodian metadata";
 
       case "property":
-        return "Edit property custodian metadata";
+        return settingsContext.isScottish ? "Edit gazetteer custodian metadata" : "Edit property custodian metadata";
 
       default:
         return "";
@@ -208,9 +211,9 @@ function EditMetadataCustodianDialog({ isOpen, data, variant, onDone, onClose })
 
   useEffect(() => {
     if (data) {
-      setName(data.custodianName);
-      setUprn(data.custodianUprn);
-      setCode(data.custodianCode);
+      setCustodianName(data.custodianName);
+      setCustodianUprn(data.custodianUprn);
+      setCustodianCode(data.custodianCode);
     }
 
     setShowDialog(isOpen);
@@ -248,20 +251,22 @@ function EditMetadataCustodianDialog({ isOpen, data, variant, onDone, onClose })
                     isEditable
                     maxLength={40}
                     isRequired
-                    value={name}
+                    value={custodianName}
                     id="metadata_name"
                     helperText={getHelperText("name")}
-                    onChange={handleNameChangeEvent}
+                    onChange={handleCustodianNameChangeEvent}
                   />
-                  <ADSNumberControl
-                    label="UPRN"
-                    isEditable
-                    isRequired
-                    maximum={999999999999}
-                    value={uprn}
-                    helperText={getHelperText("uprn")}
-                    onChange={handleUprnChangeEvent}
-                  />
+                  {!settingsContext.isScottish && (
+                    <ADSNumberControl
+                      label="UPRN"
+                      isEditable
+                      isRequired
+                      maximum={999999999999}
+                      value={custodianUprn}
+                      helperText={getHelperText("uprn")}
+                      onChange={handleCustodianUprnChangeEvent}
+                    />
+                  )}
                   <ADSSelectControl
                     label="Code"
                     isEditable
@@ -270,9 +275,9 @@ function EditMetadataCustodianDialog({ isOpen, data, variant, onDone, onClose })
                     lookupData={custodianCodes}
                     lookupId="id"
                     lookupLabel="text"
-                    value={code}
+                    value={custodianCode}
                     helperText={getHelperText("code")}
-                    onChange={handleCodeChangeEvent}
+                    onChange={handleCustodianCodeChangeEvent}
                   />
                 </Box>
               </Stack>

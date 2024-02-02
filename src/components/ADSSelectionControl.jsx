@@ -27,6 +27,7 @@
 //    014   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    015   25.01.24 Sean Flook                 Changes required after UX review.
 //    016   25.01.24 Sean Flook                 Make the create street button visible.
+//    017   31.01.24 Joel Benford               Show addList only in dev
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1186,11 +1187,13 @@ function ADSSelectionControl({
                     onClick={(event) => zoomToStreet(event, Number(currentUsrn))}
                   />
                 )}
-                <ADSSelectionButton
-                  variant="addList"
-                  selectionCount={selectionCount}
-                  onClick={handleAddStreetToActivityList}
-                />
+                {process.env.NODE_ENV === "development" && (
+                  <ADSSelectionButton
+                    variant="addList"
+                    selectionCount={selectionCount}
+                    onClick={handleAddStreetToActivityList}
+                  />
+                )}
                 <ADSSelectionButton
                   variant="more"
                   selectionCount={selectionCount}

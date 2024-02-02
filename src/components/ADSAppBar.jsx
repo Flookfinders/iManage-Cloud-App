@@ -723,6 +723,7 @@ function ADSAppBar(props) {
       display: "none",
       pl: "8px",
       pr: "8px",
+      //mt: "4px",
       [theme.breakpoints.up("sm")]: {
         display: "block",
       },
@@ -809,165 +810,155 @@ function ADSAppBar(props) {
         }}
       >
         <Stack sx={{ ml: "12px", mr: "24px" }} direction="row" justifyContent="space-between" alignItems="center">
-          <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={2}>
-            {haveStreet ? (
-              <Stack
-                direction="row"
-                justifyContent="flex-start"
-                alignItems="center"
-                divider={<Divider orientation="vertical" flexItem />}
-              >
-                {haveSearch ? (
-                  <ADSActionButton
-                    variant="home"
-                    tooltipTitle="Back to list"
-                    tooltipPlacement="bottom"
-                    onClick={() => HandleChangeCheck("back")}
-                  />
-                ) : (
-                  <ADSActionButton
-                    variant="home"
-                    tooltipTitle="Home"
-                    tooltipPlacement="bottom"
-                    onClick={() => HandleChangeCheck("home")}
-                  />
-                )}
-                <Tooltip title="USRN - Street" arrow placement="bottom-start" sx={tooltipStyle}>
-                  <Typography sx={titleStyle()} variant="subtitle1" noWrap align="left">
-                    <strong>{streetContext.currentStreet.usrn}</strong>
-                    {streetToTitleCase(` - ${streetContext.currentStreet.descriptor}`)}
-                  </Typography>
-                </Tooltip>
-                {streetContext.currentStreetModified && !haveStreetError && (
-                  <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={1}>
-                    <WarningIcon sx={{ color: adsMagenta }} />
-                    <Typography sx={{ color: adsMagenta }} variant="body2" noWrap align="left">
-                      Edits in progress
-                    </Typography>
-                  </Stack>
-                )}
-                {streetContext.currentStreetModified && haveStreetError && (
-                  <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={1}>
-                    <ErrorIcon sx={{ color: adsRed }} />
-                    <Typography sx={{ color: adsRed, fontWeight: 600 }} variant="body2" noWrap align="left">
-                      Edits in progress
-                    </Typography>
-                    <Link
-                      sx={{ color: adsRed, fontWeight: 600 }}
-                      color={adsRed}
-                      variant="body2"
-                      noWrap
-                      align="left"
-                      component="button"
-                      onClick={handleViewIssueClick}
-                    >
-                      View issue(s)
-                    </Link>
-                  </Stack>
-                )}
-              </Stack>
-            ) : haveProperty ? (
-              <Stack
-                direction="row"
-                justifyContent="flex-start"
-                alignItems="center"
-                divider={<Divider orientation="vertical" flexItem />}
-              >
-                {haveSearch ? (
-                  <ADSActionButton
-                    variant="home"
-                    tooltipTitle="Back to list"
-                    tooltipPlacement="bottom"
-                    onClick={() => HandleChangeCheck("back")}
-                  />
-                ) : (
-                  <ADSActionButton
-                    variant="home"
-                    tooltipTitle="Home"
-                    tooltipPlacement="bottom"
-                    onClick={() => HandleChangeCheck("home")}
-                  />
-                )}
-                <Tooltip title="UPRN - Address" arrow placement="bottom-start" sx={tooltipStyle}>
-                  <Typography sx={titleStyle()} variant="subtitle1" noWrap align="left">
-                    <strong>{propertyContext.currentProperty.uprn}</strong>
-                    {propertyContext.currentProperty.newProperty
-                      ? " - New Property"
-                      : addressToTitleCase(
-                          ` - ${propertyContext.currentProperty.address}`,
-                          propertyContext.currentProperty.postcode
-                        )}
-                  </Typography>
-                </Tooltip>
-                {propertyContext.currentPropertyModified && !havePropertyError && (
-                  <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={1} sx={{ pl: "8px" }}>
-                    <WarningIcon sx={{ color: adsMagenta }} />
-                    <Typography sx={{ color: adsMagenta }} variant="body2" noWrap align="left">
-                      Edits in progress
-                    </Typography>
-                  </Stack>
-                )}
-                {propertyContext.currentPropertyModified && havePropertyError && (
-                  <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={1} sx={{ pl: "8px" }}>
-                    <ErrorIcon sx={{ color: adsRed }} />
-                    <Typography sx={{ color: adsRed, fontWeight: 600 }} variant="body2" noWrap align="left">
-                      Edits in progress
-                    </Typography>
-                    <Link
-                      sx={{ color: adsRed, fontWeight: 600 }}
-                      color={adsRed}
-                      variant="body2"
-                      noWrap
-                      align="left"
-                      component="button"
-                      onClick={handleViewIssueClick}
-                    >
-                      View issue(s)
-                    </Link>
-                  </Stack>
-                )}
-              </Stack>
-            ) : haveSearch ? (
-              <Stack
-                direction="row"
-                justifyContent="flex-start"
-                alignItems="center"
-                divider={<Divider orientation="vertical" flexItem />}
-              >
-                <ADSActionButton
-                  variant="close"
-                  tooltipTitle="Home"
-                  tooltipPlacement="bottom"
-                  onClick={() => HandleChangeCheck("home")}
-                />
-                <Typography sx={titleStyle()} variant="subtitle1" noWrap align="left">
-                  {` ${searchContext.currentSearchData.results.length} results ${
-                    searchContext.currentSearchData.searchString === mapSelectSearchString
-                      ? "from selecting properties from the map"
-                      : "for"
-                  } `}
-                  {searchContext.currentSearchData.searchString !== mapSelectSearchString && (
-                    <strong>{searchContext.currentSearchData.searchString}</strong>
-                  )}
-                </Typography>
-              </Stack>
-            ) : haveAdminSettings ? (
-              <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
-                <Avatar
-                  variant="rounded"
-                  {...StringAvatar(settingsContext ? settingsContext.authorityName : null, false)}
-                />
-                <Typography sx={titleStyle()} variant="subtitle1" noWrap align="left">
-                  {`${settingsContext ? settingsContext.authorityName : null} settings`}
-                </Typography>
-              </Stack>
+          <Stack
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="center"
+            divider={<Divider orientation="vertical" flexItem />}
+          >
+            {haveSearch && (haveStreet || haveProperty) ? (
+              <ADSActionButton
+                variant="home"
+                tooltipTitle="Back to list"
+                tooltipPlacement="bottom"
+                onClick={() => HandleChangeCheck("back")}
+              />
+            ) : haveStreet || haveProperty ? (
+              <ADSActionButton
+                variant="home"
+                tooltipTitle="Home"
+                tooltipPlacement="bottom"
+                onClick={() => HandleChangeCheck("home")}
+              />
             ) : (
-              <Typography sx={titleStyle()} variant="subtitle1" noWrap align="left">
-                iManage Cloud
-              </Typography>
+              <ADSActionButton
+                variant="close"
+                tooltipTitle="Home"
+                tooltipPlacement="bottom"
+                onClick={() => HandleChangeCheck("home")}
+              />
             )}
+            <Stack direction="row" justifyContent="flex-start" alignItems="center" sx={{ mt: "4px" }}>
+              {haveStreet ? (
+                <>
+                  <Tooltip title="USRN - Street" arrow placement="bottom-start" sx={tooltipStyle}>
+                    <Typography sx={titleStyle()} variant="subtitle1" noWrap align="left">
+                      <strong>{streetContext.currentStreet.usrn}</strong>
+                      {streetToTitleCase(` - ${streetContext.currentStreet.descriptor}`)}
+                    </Typography>
+                  </Tooltip>
+                  {streetContext.currentStreetModified && !haveStreetError && (
+                    <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={1}>
+                      <WarningIcon sx={{ color: adsMagenta }} />
+                      <Typography sx={{ color: adsMagenta }} variant="body2" noWrap align="left">
+                        Edits in progress
+                      </Typography>
+                    </Stack>
+                  )}
+                  {streetContext.currentStreetModified && haveStreetError && (
+                    <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={1}>
+                      <ErrorIcon sx={{ color: adsRed }} />
+                      <Typography sx={{ color: adsRed, fontWeight: 600 }} variant="body2" noWrap align="left">
+                        Edits in progress
+                      </Typography>
+                      <Link
+                        sx={{ color: adsRed, fontWeight: 600 }}
+                        color={adsRed}
+                        variant="body2"
+                        noWrap
+                        align="left"
+                        component="button"
+                        onClick={handleViewIssueClick}
+                      >
+                        View issue(s)
+                      </Link>
+                    </Stack>
+                  )}
+                </>
+              ) : haveProperty ? (
+                <>
+                  <Tooltip title="UPRN - Address" arrow placement="bottom-start" sx={tooltipStyle}>
+                    <Typography sx={titleStyle()} variant="subtitle1" noWrap align="left">
+                      <strong>{propertyContext.currentProperty.uprn}</strong>
+                      {propertyContext.currentProperty.newProperty
+                        ? " - New Property"
+                        : addressToTitleCase(
+                            ` - ${propertyContext.currentProperty.address}`,
+                            propertyContext.currentProperty.postcode
+                          )}
+                    </Typography>
+                  </Tooltip>
+                  {propertyContext.currentPropertyModified && !havePropertyError && (
+                    <Stack
+                      direction="row"
+                      justifyContent="flex-start"
+                      alignItems="center"
+                      spacing={1}
+                      sx={{ pl: "8px" }}
+                    >
+                      <WarningIcon sx={{ color: adsMagenta }} />
+                      <Typography sx={{ color: adsMagenta }} variant="body2" noWrap align="left">
+                        Edits in progress
+                      </Typography>
+                    </Stack>
+                  )}
+                  {propertyContext.currentPropertyModified && havePropertyError && (
+                    <Stack
+                      direction="row"
+                      justifyContent="flex-start"
+                      alignItems="center"
+                      spacing={1}
+                      sx={{ pl: "8px" }}
+                    >
+                      <ErrorIcon sx={{ color: adsRed }} />
+                      <Typography sx={{ color: adsRed, fontWeight: 600 }} variant="body2" noWrap align="left">
+                        Edits in progress
+                      </Typography>
+                      <Link
+                        sx={{ color: adsRed, fontWeight: 600 }}
+                        color={adsRed}
+                        variant="body2"
+                        noWrap
+                        align="left"
+                        component="button"
+                        onClick={handleViewIssueClick}
+                      >
+                        View issue(s)
+                      </Link>
+                    </Stack>
+                  )}
+                </>
+              ) : haveSearch ? (
+                <>
+                  <Typography sx={titleStyle()} variant="subtitle1" noWrap align="left">
+                    {` ${searchContext.currentSearchData.results.length} results ${
+                      searchContext.currentSearchData.searchString === mapSelectSearchString
+                        ? "from selecting properties from the map"
+                        : "for"
+                    } `}
+                    {searchContext.currentSearchData.searchString !== mapSelectSearchString && (
+                      <strong>{searchContext.currentSearchData.searchString}</strong>
+                    )}
+                  </Typography>
+                </>
+              ) : haveAdminSettings ? (
+                <>
+                  <Avatar
+                    variant="rounded"
+                    {...StringAvatar(settingsContext ? settingsContext.authorityName : null, false)}
+                  />
+                  <Typography sx={titleStyle()} variant="subtitle1" noWrap align="left">
+                    {`${settingsContext ? settingsContext.authorityName : null} settings`}
+                  </Typography>
+                </>
+              ) : (
+                <Typography sx={titleStyle()} variant="subtitle1" noWrap align="left">
+                  iManage Cloud
+                </Typography>
+              )}
+            </Stack>
           </Stack>
-          <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={1}>
+          <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={1} sx={{ mt: "4px" }}>
             <ADSSearch placeholder="Search…" onSearchClick={handleSearchClick} />
             {userCanEdit && (haveSearch || haveStreet || haveProperty) ? (
               <Tooltip title="Add street" arrow placement="bottom-end" sx={tooltipStyle}>

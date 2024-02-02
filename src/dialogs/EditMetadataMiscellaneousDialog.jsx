@@ -18,6 +18,7 @@
 //    005   10.01.24 Sean Flook                 Fix warnings.
 //    006   11.01.24 Sean Flook                 Fix warnings.
 //    007   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    008   31.01.24 Joel Benford               Changes to as save and support OS
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -32,6 +33,7 @@ import { Box, Stack } from "@mui/system";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSDateControl from "../components/ADSDateControl";
 import ADSSelectControl from "../components/ADSSelectControl";
+import { ConvertDate } from "../utils/HelperUtils";
 
 import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
@@ -56,8 +58,11 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
   const [showDialog, setShowDialog] = useState(false);
 
   const [classificationScheme, setClassificationScheme] = useState(null);
-  const [metadataDate, setMetadataDate] = useState(null);
+  const [stateCodeScheme, setStateCodeScheme] = useState(null);
+  const [metaDate, setMetaDate] = useState(null);
+  const [gazDate, setGazDate] = useState(null);
   const [language, setLanguage] = useState(null);
+  const [characterSet, setCharacterSet] = useState(null);
 
   const languageData =
     variant === "property"
@@ -70,7 +75,6 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
       : settingsContext.isWelsh
       ? [
           { id: "BIL", text: "Bilingual" },
-          { id: "CYM", text: "Welsh" },
           { id: "ENG", text: "English" },
         ]
       : [{ id: "ENG", text: "English" }];
@@ -108,14 +112,17 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
    */
   const getUpdatedData = () => {
     return {
-      classificationScheme: classificationScheme,
-      metadataDate: metadataDate,
-      language: language,
+      classificationScheme,
+      metaDate: ConvertDate(metaDate),
+      language,
+      gazDate: ConvertDate(gazDate),
+      stateCodeScheme: settingsContext.isScottish ? stateCodeScheme : undefined,
+      characterSet: settingsContext.isScottish ? undefined : characterSet,
     };
   };
 
   /**
-   * Event to handle when the scheme changes.
+   * Event to handle when the classification scheme changes.
    *
    * @param {string} newValue The new scheme.
    */
@@ -124,12 +131,39 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
   };
 
   /**
-   * Event to handle when the date changes.
+   * Event to handle when the state code scheme changes.
+   *
+   * @param {string} newValue The new scheme.
+   */
+  const handleStateCodeSchemeChangeEvent = (newValue) => {
+    setStateCodeScheme(newValue);
+  };
+
+  /**
+   * Event to handle when the character set changes.
+   *
+   * @param {string} newValue The new scheme.
+   */
+  const handleCharacterSetChangeEvent = (newValue) => {
+    setCharacterSet(newValue);
+  };
+
+  /**
+   * Event to handle when the metadata date changes.
    *
    * @param {Date} newValue The new date.
    */
-  const handleDateChangeEvent = (newValue) => {
-    setMetadataDate(newValue);
+  const handleMetaDateChangeEvent = (newValue) => {
+    setMetaDate(newValue);
+  };
+
+  /**
+   * Event to handle when the gaz date changes.
+   *
+   * @param {Date} newValue The new date.
+   */
+  const handleGazDateChangeEvent = (newValue) => {
+    setGazDate(newValue);
   };
 
   /**
@@ -170,7 +204,7 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
    */
   const getHelperText = (control) => {
     switch (control) {
-      case "scheme":
+      case "classificationScheme":
         switch (variant) {
           case "street":
             return "Classification scheme used for all multiple value specified Fields for example DEC-NSG v8.1.";
@@ -185,7 +219,46 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
             return "";
         }
 
-      case "date":
+      case "stateCodeScheme":
+        switch (variant) {
+          case "property":
+            return "Classification scheme used for the BLPU State Code field, e.g. Scottish Gazetteer Conventions v4";
+
+          default:
+            return "";
+        }
+
+      case "characterSet":
+        switch (variant) {
+          case "street":
+            return "Textual description of character set used for the data present in the Full Supply transfer file.";
+
+          case "asd":
+            return "Textual description of character set used for the data present in the Full Supply transfer file.";
+
+          case "property":
+            return "Textual description of character set used for the data present in the file.";
+
+          default:
+            return "";
+        }
+
+      case "metaDate":
+        switch (variant) {
+          case "street":
+            return "Date metadata was last updated.";
+
+          case "asd":
+            return "Date metadata was last updated.";
+
+          case "property":
+            return "Date metadata was last updated.";
+
+          default:
+            return "";
+        }
+
+      case "gazDate":
         switch (variant) {
           case "street":
             return "Date at which the gazetteer can be considered to be current.";
@@ -194,7 +267,7 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
             return "Date at which the gazetteer can be considered to be current.";
 
           case "property":
-            return "Date metadata was last updated.";
+            return "Date at which the gazetteer can be considered to be current.";
 
           default:
             return "";
@@ -223,8 +296,11 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
   useEffect(() => {
     if (data) {
       setClassificationScheme(data.classificationScheme);
-      setMetadataDate(data.metadataDate);
+      setMetaDate(data.metaDate);
       setLanguage(data.language);
+      setGazDate(data.gazDate);
+      setStateCodeScheme(data.stateCodeScheme);
+      setCharacterSet(data.characterSet);
     }
 
     setShowDialog(isOpen);
@@ -264,16 +340,36 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
                     isRequired
                     value={classificationScheme}
                     id="classification_scheme"
-                    helperText={getHelperText("scheme")}
+                    helperText={getHelperText("classificationScheme")}
                     onChange={handleClassificationSchemeChangeEvent}
                   />
+                  {settingsContext.isScottish && (
+                    <ADSTextControl
+                      label="State Code scheme"
+                      isEditable
+                      maxLength={40}
+                      isRequired
+                      value={stateCodeScheme}
+                      id="state_code_scheme"
+                      helperText={getHelperText("stateCodeScheme")}
+                      onChange={handleStateCodeSchemeChangeEvent}
+                    />
+                  )}
                   <ADSDateControl
                     label="Metadata date"
                     isEditable
                     isRequired
-                    value={metadataDate}
-                    helperText={getHelperText("date")}
-                    onChange={handleDateChangeEvent}
+                    value={metaDate}
+                    helperText={getHelperText("metaDate")}
+                    onChange={handleMetaDateChangeEvent}
+                  />
+                  <ADSDateControl
+                    label="Gazetteer date"
+                    isEditable
+                    isRequired
+                    value={gazDate}
+                    helperText={getHelperText("gazDate")}
+                    onChange={handleGazDateChangeEvent}
                   />
                   <ADSSelectControl
                     label="Language"
@@ -287,6 +383,18 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
                     helperText={getHelperText("language")}
                     onChange={handleLanguageChangeEvent}
                   />
+                  {!settingsContext.isScottish && (
+                    <ADSTextControl
+                      label="Character set"
+                      isEditable
+                      maxLength={30}
+                      isRequired
+                      value={characterSet}
+                      id="character_set"
+                      helperText={getHelperText("characterSet")}
+                      onChange={handleCharacterSetChangeEvent}
+                    />
+                  )}
                 </Box>
               </Stack>
             </Grid>

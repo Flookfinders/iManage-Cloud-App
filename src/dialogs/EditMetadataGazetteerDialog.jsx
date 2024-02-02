@@ -18,13 +18,16 @@
 //    005   10.01.24 Sean Flook                 Fix warnings.
 //    006   11.01.24 Sean Flook                 Fix warnings.
 //    007   24.01.24 Joel Benford               Update names
+//    008   31.01.24 Joel Benford               Changes to as save and support OS
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
+
+import SettingsContext from "../context/settingsContext";
 
 import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Grid, Typography, Button } from "@mui/material";
 import { Box, Stack } from "@mui/system";
@@ -48,6 +51,8 @@ EditMetadataGazetteerDialog.propTypes = {
 
 function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose }) {
   const theme = useTheme();
+
+  const settingsContext = useContext(SettingsContext);
 
   const [showDialog, setShowDialog] = useState(false);
 
@@ -73,18 +78,18 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
   const getUpdatedData = () => {
     if (variant === "property") {
       return {
-        gazName: gazName,
-        gazScope: gazScope,
-        terOfUse: terOfUse,
-        linkedData: linkedData,
-        gazOwner: gazOwner,
-        ngazFreq: ngazFreq,
+        gazName,
+        gazScope,
+        terOfUse,
+        linkedData,
+        gazOwner,
+        ngazFreq,
       };
     } else {
       return {
-        terOfUse: terOfUse,
-        linkedData: linkedData,
-        ngazFreq: ngazFreq,
+        terOfUse,
+        linkedData,
+        ngazFreq,
       };
     }
   };
@@ -183,7 +188,7 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
         return "Edit ASD gazetteer metadata";
 
       case "property":
-        return "Edit property gazetteer metadata";
+        return settingsContext.isScottish ? "Edit gazetteer metadata" : "Edit property gazetteer metadata";
 
       default:
         return "";
@@ -328,15 +333,19 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
                     helperText={getHelperText("territory")}
                     onChange={handleTerOfUseChangeEvent}
                   />
-                  <ADSTextControl
-                    label="Data"
-                    isEditable
-                    maxLength={100}
-                    value={linkedData}
-                    id="metadata_data"
-                    helperText={getHelperText("data")}
-                    onChange={handleLinkedDataChangeEvent}
-                  />
+                  {!settingsContext.isScottish && (
+                    <>
+                      <ADSTextControl
+                        label="Data"
+                        isEditable
+                        maxLength={100}
+                        value={linkedData}
+                        id="metadata_data"
+                        helperText={getHelperText("data")}
+                        onChange={handleLinkedDataChangeEvent}
+                      />
+                    </>
+                  )}
                   {variant === "property" && (
                     <ADSTextControl
                       label="Owner"
@@ -349,18 +358,22 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
                       onChange={handleGazOwnerChangeEvent}
                     />
                   )}
-                  <ADSSelectControl
-                    label="Frequency"
-                    isEditable
-                    isRequired
-                    useRounded
-                    lookupData={frequencyData}
-                    lookupId="id"
-                    lookupLabel="text"
-                    value={ngazFreq}
-                    helperText={getHelperText("frequency")}
-                    onChange={handleFrequencyChangeEvent}
-                  />
+                  {!settingsContext.isScottish && (
+                    <>
+                      <ADSSelectControl
+                        label="Frequency"
+                        isEditable
+                        isRequired
+                        useRounded
+                        lookupData={frequencyData}
+                        lookupId="id"
+                        lookupLabel="text"
+                        value={ngazFreq}
+                        helperText={getHelperText("frequency")}
+                        onChange={handleFrequencyChangeEvent}
+                      />
+                    </>
+                  )}
                 </Box>
               </Stack>
             </Grid>

@@ -22,6 +22,7 @@
 //    009   24.01.24 Joel Benford               Interim with API changes and partial save (GP LLPG).
 //    010   24.01.24 Joel Benford               Save placeholder gazDate (will need adding to GUI)
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
+//    012   31.01.24 Joel Benford               Changes to as save and support OS
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -77,6 +78,11 @@ function MetadataSettingsTab({ variant }) {
   const [asdApiUrl, setAsdApiUrl] = useState(null);
   const [propertyApiUrl, setPropertyApiUrl] = useState(null);
 
+  //pkIds used in the DB/API, needed for PUTS, in some cases these are *currently* fixed values
+  const [metaId, setMetaId] = useState(null); // GP LLPG and OS Gaz
+  const [lsgMetaDataId, setLsgMetaDataId] = useState(null);
+  const [asdMetaDataId, setAsdMetaDataId] = useState(null);
+
   const [streetGazetteerData, setStreetGazetteerData] = useState(null);
   const [streetCustodianData, setStreetCustodianData] = useState(null);
   const [streetMiscellaneousData, setStreetMiscellaneousData] = useState(null);
@@ -93,58 +99,60 @@ function MetadataSettingsTab({ variant }) {
   const [editCustodian, setEditCustodian] = useState(false);
   const [editMiscellaneous, setEditMiscellaneous] = useState(false);
   const [editContent, setEditContent] = useState(false);
-  const [dataValid, setDataValid] = useState(false);
+  // const [dataValid, setDataValid] = useState(false);
 
   const [gazName, setGazName] = useState(null);
   const [gazScope, setGazScope] = useState(null);
   const [terOfUse, setTerOfUse] = useState(null);
   const [linkedData, setLinkedData] = useState(null);
   const [gazOwner, setGazOwner] = useState(null);
-  const [ngazFreq, setNgazFreq] = useState(null); // hidden in Scotland
+  const [ngazFreq, setNgazFreq] = useState(null);
 
   const [custodianName, setCustodianName] = useState(null);
-  const [custodianUprn, setCustodianUprn] = useState(null); // hidden in Scotland
+  const [custodianUprn, setCustodianUprn] = useState(null);
   const [custodianCode, setCustodianCode] = useState(null);
 
   const [classificationScheme, setClassificationScheme] = useState(null);
-  const [stateCodeScheme, setStateCodeScheme] = useState(null); // Scotland only
+  const [stateCodeScheme, setStateCodeScheme] = useState(null);
   const [metaDate, setMetaDate] = useState(null);
+  const [gazDate, setGazDate] = useState(null);
   const [language, setLanguage] = useState(null);
+  const [characterSet, setCharacterSet] = useState(null);
 
-  const [motorwayTrunkRoads, setMotorwayTrunkRoads] = useState(null);
-  const [privateStreets, setPrivateStreets] = useState(null);
-  const [primaryRouteNetwork, setPrimaryRouteNetwork] = useState(null);
-  const [classifiedRoads, setClassifiedRoads] = useState(null);
-  const [prowFootpaths, setProwFootpaths] = useState(null);
-  const [prowBridleways, setProwBridleways] = useState(null);
-  const [prowRestrictedByways, setProwRestrictedByways] = useState(null);
-  const [prowBoat, setProwBoat] = useState(null);
-  const [nationalCycleRoutes, setNationalCycleRoutes] = useState(null);
+  const [contentMotorwayTrunkRoad, setContentMotorwayTrunkRoad] = useState(null);
+  const [contentPrivateStreet, setContentPrivateStreet] = useState(null);
+  const [contentPrn, setContentPrn] = useState(null);
+  const [contentClassifiedRoad, setContentClassifiedRoad] = useState(null);
+  const [contentProwFootpath, setContentProwFootpath] = useState(null);
+  const [contentProwBridleway, setContentProwBridleway] = useState(null);
+  const [contentProwRestrictedByway, setContentProwRestrictedByway] = useState(null);
+  const [contentProwBoat, setContentProwBoat] = useState(null);
+  const [contentNationalCycleRoute, setContentNationalCycleRoute] = useState(null);
 
-  const [protectedStreets, setProtectedStreets] = useState(null);
-  const [trafficSensitiveStreets, setTrafficSensitiveStreets] = useState(null);
-  const [specialEngineeringDifficulties, setSpecialEngineeringDifficulties] = useState(null);
-  const [proposedSEDs, setProposedSEDs] = useState(null);
-  const [levelCrossing, setLevelCrossing] = useState(null);
-  const [environmentallySensitiveAreas, setEnvironmentallySensitiveAreas] = useState(null);
-  const [structuresNotSEDs, setStructuresNotSEDs] = useState(null);
-  const [pipelinesAndSpecialistCables, setPipelinesAndSpecialistCables] = useState(null);
-  const [priorityLanes, setPriorityLanes] = useState(null);
-  const [laneRental, setLaneRental] = useState(null);
-  const [earlyNotificationStreets, setEarlyNotificationStreets] = useState(null);
-  const [specialEvents, setSpecialEvents] = useState(null);
-  const [parking, setParking] = useState(null);
-  const [pedestrianCrossings, setPedestrianCrossings] = useState(null);
-  const [speedLimits, setSpeedLimits] = useState(null);
-  const [transportAuthorityCriticalApparatus, setTransportAuthorityCriticalApparatus] = useState(null);
-  const [strategicRoute, setStrategicRoute] = useState(null);
-  const [streetLighting, setStreetLighting] = useState(null);
-  const [drainageAndFlood, setDrainageAndFlood] = useState(null);
-  const [unusualTrafficLayouts, setUnusualTrafficLayouts] = useState(null);
-  const [localConsiderations, setLocalConsiderations] = useState(null);
-  const [winterMaintenanceRoutes, setWinterMaintenanceRoutes] = useState(null);
-  const [hgvApprovedRoutes, setHgvApprovedRoutes] = useState(null);
-  const [emergencyServicesRoutes, setEmergencyServicesRoutes] = useState(null);
+  const [mdProtectedStreet, setMdProtectedStreet] = useState(null);
+  const [mdTrafficSensitive, mdSetTrafficSensitive] = useState(null);
+  const [mdSed, setMdSet] = useState(null);
+  const [mdProposedSed, setMdProposedSed] = useState(null);
+  const [mdLevelCrossing, setMdLevelCrossing] = useState(null);
+  const [mdEnvSensitiveArea, setMdEnvSensitiveArea] = useState(null);
+  const [mdStructuresNotSed, setMdStructuresNotSed] = useState(null);
+  const [mdPipelinesAndCables, setMdPipelinesAndCables] = useState(null);
+  const [mdPriorityLanes, setMdPriorityLanes] = useState(null);
+  const [mdLaneRental, setMdLaneRental] = useState(null);
+  const [mdEarlyNotification, setMdEarlyNotification] = useState(null);
+  const [mdSpecialEvents, setMdSpecialEvents] = useState(null);
+  const [mdParking, setMdParking] = useState(null);
+  const [mdPedCrossAndSignals, setMdPedCrossAndSignal] = useState(null);
+  const [mdSpeedLimit, setMdSpeedLimit] = useState(null);
+  const [mdTransAuthApp, setMdTransAuthApp] = useState(null);
+  const [mdStrategicRoute, setMdStrategicRoute] = useState(null);
+  const [mdStreetLight, setMdStreetLight] = useState(null);
+  const [mdDrainageAndFlood, setMdDrainageAndFlood] = useState(null);
+  const [mdUnusualLayout, setMdUnusualLayout] = useState(null);
+  const [mdLocalConsider, setMdLocalConsider] = useState(null);
+  const [mdWinterMainRoute, setMdWinterMainRoute] = useState(null);
+  const [mdHgvRoute, setMdHgvRoute] = useState(null);
+  const [mdEmergencyRoute, setMdEmergencyRoute] = useState(null);
 
   const [editData, setEditData] = useState({});
   const [showEditGazetteerDialog, setShowEditGazetteerDialog] = useState(false);
@@ -172,7 +180,7 @@ function MetadataSettingsTab({ variant }) {
         break;
     }
 
-    setDataValid(false);
+    //    setDataValid(false);
   };
 
   /**
@@ -392,301 +400,348 @@ function MetadataSettingsTab({ variant }) {
    * @param {Date} value The metadata date.
    * @returns {string} The formatted date.
    */
-  const getMetadataDate = (value) => {
+  const getDisplayDate = (value) => {
     return DateString(value);
   };
 
   /**
-   * Method to check that the data is valid.
+   * Gets the original (pre-edit) values for fields in LLPG/OS API PUT
    *
-   * @param {string} type The type of data that has been updated.
-   * @param {object} updatedData The data that has been updated.
-   * @returns {boolean} True if the data is valid; otherwise false.
+   * @param {boolean} oneScotland The gazetteer is Scottish.
    */
-  const checkDataIsValid = (type, updatedData) => {
-    let dataValid = true;
+  const getOriginalPropertyApiData = (oneScotland) => {
+    return {
+      metaId,
+      gazName,
+      gazScope,
+      terOfUse,
+      linkedData,
+      gazOwner,
+      ngazFreq,
+      custodianName,
+      custodianUprn: oneScotland ? undefined : custodianUprn,
+      custodianCode,
+      metaDate,
+      classificationScheme,
+      gazDate,
+      language,
+      characterSet: oneScotland ? undefined : characterSet,
+      stateCodeScheme: oneScotland ? stateCodeScheme : undefined,
+    };
+  };
 
+  /**
+   * Gets the original (pre-edit) values for fields in LLPG/OS API PUT
+   *
+   * @param {boolean} oneScotland The gazetteer is Scottish.
+   */
+  const getOriginalStreetApiData = () => {
+    return {
+      lsgMetaDataId,
+      terOfUse,
+      linkedData,
+      ngazFreq,
+      custodianName,
+      custodianUprn,
+      custodianCode,
+      metaDate,
+      classificationScheme,
+      gazDate,
+      language,
+      characterSet,
+      contentMotorwayTrunkRoad,
+      contentPrivateStreet,
+      contentPrn,
+      contentClassifiedRoad,
+      contentProwFootpath,
+      contentProwBridleway,
+      contentProwRestrictedByway,
+      contentProwBoat,
+      contentNationalCycleRoute,
+    };
+  };
+
+  /**
+   * Gets the original (pre-edit) values for fields in LLPG/OS API PUT
+   *
+   * @param {boolean} oneScotland The gazetteer is Scottish.
+   */
+  const getOriginalAsdApiData = () => {
+    return {
+      asdMetaDataId,
+      terOfUse,
+      linkedData,
+      ngazFreq,
+      custodianName,
+      custodianUprn,
+      custodianCode,
+      metaDate,
+      classificationScheme,
+      gazDate,
+      language,
+      characterSet,
+      mdProtectedStreet,
+      mdTrafficSensitive,
+      mdSed,
+      mdProposedSed,
+      mdLevelCrossing,
+      mdEnvSensitiveArea,
+      mdStructuresNotSed,
+      mdPipelinesAndCables,
+      mdPriorityLanes,
+      mdLaneRental,
+      mdEarlyNotification,
+      mdSpecialEvents,
+      mdParking,
+      mdPedCrossAndSignals,
+      mdSpeedLimit,
+      mdTransAuthApp,
+      mdStrategicRoute,
+      mdStreetLight,
+      mdDrainageAndFlood,
+      mdUnusualLayout,
+      mdLocalConsider,
+      mdWinterMainRoute,
+      mdHgvRoute,
+      mdEmergencyRoute,
+    };
+  };
+
+  /**
+   * Sets the various form state from an API PUT result
+   *
+   * @param {boolean} oneScotland The gazetteer is Scottish.
+   */
+  const setTabDataFromApiResult = (result) => {
     switch (variant) {
-      case "street":
-        const streetData = {
-          terOfUse: type === "gazetteer" && updatedData ? updatedData.terOfUse : streetGazetteerData.terOfUse,
-          linkedData: type === "gazetteer" && updatedData ? updatedData.linkedData : streetGazetteerData.linkedData,
-          ngazFreq: type === "gazetteer" && updatedData ? updatedData.ngazFreq : streetGazetteerData.ngazFreq,
-          custodianName:
-            type === "custodian" && updatedData ? updatedData.custodianName : streetCustodianData.custodianName,
-          custodianUprn:
-            type === "custodian" && updatedData ? updatedData.custodianUprn : streetCustodianData.custodianUprn,
-          custodianCode:
-            type === "custodian" && updatedData ? updatedData.custodianCode : streetCustodianData.custodianCode,
-          classificationScheme:
-            type === "miscellaneous" && updatedData
-              ? updatedData.classificationScheme
-              : streetMiscellaneousData.classificationScheme,
-          stateCodeScheme:
-            type === "miscellaneous" && updatedData
-              ? updatedData.stateCodeScheme
-              : streetMiscellaneousData.stateCodeScheme,
-          metadataDate:
-            type === "miscellaneous" && updatedData ? updatedData.metadataDate : streetMiscellaneousData.metadataDate,
-          language: type === "miscellaneous" && updatedData ? updatedData.language : streetMiscellaneousData.language,
-          motorwayTrunkRoads:
-            type === "content" && updatedData ? updatedData.motorwayTrunkRoads : streetContentData.motorwayTrunkRoads,
-          privateStreets:
-            type === "content" && updatedData ? updatedData.privateStreets : streetContentData.privateStreets,
-          primaryRouteNetwork:
-            type === "content" && updatedData ? updatedData.primaryRouteNetwork : streetContentData.primaryRouteNetwork,
-          classifiedRoads:
-            type === "content" && updatedData ? updatedData.classifiedRoads : streetContentData.classifiedRoads,
-          prowFootpaths:
-            type === "content" && updatedData ? updatedData.prowFootpaths : streetContentData.prowFootpaths,
-          prowBridleways:
-            type === "content" && updatedData ? updatedData.prowBridleways : streetContentData.prowBridleways,
-          prowRestrictedByways:
-            type === "content" && updatedData
-              ? updatedData.prowRestrictedByways
-              : streetContentData.prowRestrictedByways,
-          prowBoat: type === "content" && updatedData ? updatedData.prowBoat : streetContentData.prowBoat,
-          nationalCycleRoutes:
-            type === "content" && updatedData ? updatedData.nationalCycleRoutes : streetContentData.nationalCycleRoutes,
-        };
-
-        dataValid =
-          !!streetData.terOfUse &&
-          !!streetData.ngazFreq &&
-          !!streetData.custodianName &&
-          !!streetData.custodianUprn &&
-          !!streetData.custodianCode &&
-          !!streetData.classificationScheme &&
-          !!streetData.stateCodeScheme &&
-          !!streetData.metadataDate &&
-          !!streetData.language &&
-          !!streetData.motorwayTrunkRoads &&
-          !!streetData.privateStreets &&
-          !!streetData.primaryRouteNetwork &&
-          !!streetData.classifiedRoads &&
-          !!streetData.prowFootpaths &&
-          !!streetData.prowBridleways &&
-          !!streetData.prowRestrictedByways &&
-          !!streetData.prowBoat &&
-          !!streetData.nationalCycleRoutes;
-        break;
-
-      case "asd":
-        const asdData = {
-          terOfUse: type === "gazetteer" && updatedData ? updatedData.terOfUse : asdGazetteerData.terOfUse,
-          linkedData: type === "gazetteer" && updatedData ? updatedData.linkedData : asdGazetteerData.linkedData,
-          ngazFreq: type === "gazetteer" && updatedData ? updatedData.ngazFreq : asdGazetteerData.ngazFreq,
-          custodianName:
-            type === "custodian" && updatedData ? updatedData.custodianName : asdCustodianData.custodianName,
-          custodianUprn:
-            type === "custodian" && updatedData ? updatedData.custodianUprn : asdCustodianData.custodianUprn,
-          custodianCode:
-            type === "custodian" && updatedData ? updatedData.custodianCode : asdCustodianData.custodianCode,
-          classificationScheme:
-            type === "miscellaneous" && updatedData
-              ? updatedData.classificationScheme
-              : asdMiscellaneousData.classificationScheme,
-          stateCodeScheme:
-            type === "miscellaneous" && updatedData
-              ? updatedData.stateCodeScheme
-              : asdMiscellaneousData.stateCodeScheme,
-          metadataDate:
-            type === "miscellaneous" && updatedData ? updatedData.metadataDate : asdMiscellaneousData.metadataDate,
-          language: type === "miscellaneous" && updatedData ? updatedData.language : asdMiscellaneousData.language,
-          protectedStreets:
-            type === "content" && updatedData ? updatedData.protectedStreets : asdContentData.protectedStreets,
-          trafficSensitiveStreets:
-            type === "content" && updatedData
-              ? updatedData.trafficSensitiveStreets
-              : asdContentData.trafficSensitiveStreets,
-          specialEngineeringDifficulties:
-            type === "content" && updatedData
-              ? updatedData.specialEngineeringDifficulties
-              : asdContentData.specialEngineeringDifficulties,
-          proposedSEDs: type === "content" && updatedData ? updatedData.proposedSEDs : asdContentData.proposedSEDs,
-          levelCrossing: type === "content" && updatedData ? updatedData.levelCrossing : asdContentData.levelCrossing,
-          environmentallySensitiveAreas:
-            type === "content" && updatedData
-              ? updatedData.environmentallySensitiveAreas
-              : asdContentData.environmentallySensitiveAreas,
-          structuresNotSEDs:
-            type === "content" && updatedData ? updatedData.structuresNotSEDs : asdContentData.structuresNotSEDs,
-          pipelinesAndSpecialistCables:
-            type === "content" && updatedData
-              ? updatedData.pipelinesAndSpecialistCables
-              : asdContentData.pipelinesAndSpecialistCables,
-          priorityLanes: type === "content" && updatedData ? updatedData.priorityLanes : asdContentData.priorityLanes,
-          laneRental: type === "content" && updatedData ? updatedData.laneRental : asdContentData.laneRental,
-          earlyNotificationStreets:
-            type === "content" && updatedData
-              ? updatedData.earlyNotificationStreets
-              : asdContentData.earlyNotificationStreets,
-          specialEvents: type === "content" && updatedData ? updatedData.specialEvents : asdContentData.specialEvents,
-          parking: type === "content" && updatedData ? updatedData.parking : asdContentData.parking,
-          pedestrianCrossings:
-            type === "content" && updatedData ? updatedData.pedestrianCrossings : asdContentData.pedestrianCrossings,
-          speedLimits: type === "content" && updatedData ? updatedData.speedLimits : asdContentData.speedLimits,
-          transportAuthorityCriticalApparatus:
-            type === "content" && updatedData
-              ? updatedData.transportAuthorityCriticalApparatus
-              : asdContentData.transportAuthorityCriticalApparatus,
-          strategicRoute:
-            type === "content" && updatedData ? updatedData.strategicRoute : asdContentData.strategicRoute,
-          streetLighting:
-            type === "content" && updatedData ? updatedData.streetLighting : asdContentData.streetLighting,
-          drainageAndFlood:
-            type === "content" && updatedData ? updatedData.drainageAndFlood : asdContentData.drainageAndFlood,
-          unusualTrafficLayouts:
-            type === "content" && updatedData
-              ? updatedData.unusualTrafficLayouts
-              : asdContentData.unusualTrafficLayouts,
-          localConsiderations:
-            type === "content" && updatedData ? updatedData.localConsiderations : asdContentData.localConsiderations,
-          winterMaintenanceRoutes:
-            type === "content" && updatedData
-              ? updatedData.winterMaintenanceRoutes
-              : asdContentData.winterMaintenanceRoutes,
-          hgvApprovedRoutes:
-            type === "content" && updatedData ? updatedData.hgvApprovedRoutes : asdContentData.hgvApprovedRoutes,
-          emergencyServicesRoutes:
-            type === "content" && updatedData
-              ? updatedData.emergencyServicesRoutes
-              : asdContentData.emergencyServicesRoutes,
-        };
-
-        dataValid =
-          !!asdData.terOfUse &&
-          !!asdData.ngazFreq &&
-          !!asdData.custodianName &&
-          !!asdData.custodianUprn &&
-          !!asdData.custodianCode &&
-          !!asdData.classificationScheme &&
-          !!asdData.stateCodeScheme &&
-          !!asdData.metadataDate &&
-          !!asdData.language &&
-          !!asdData.protectedStreets &&
-          !!asdData.trafficSensitiveStreets &&
-          !!asdData.specialEngineeringDifficulties &&
-          !!asdData.proposedSEDs &&
-          !!asdData.environmentallySensitiveAreas &&
-          !!asdData.structuresNotSEDs &&
-          !!asdData.priorityLanes &&
-          !!asdData.laneRental &&
-          !!asdData.specialEvents &&
-          !!asdData.parking &&
-          !!asdData.pedestrianCrossings &&
-          !!asdData.speedLimits &&
-          !!asdData.strategicRoute &&
-          !!asdData.winterMaintenanceRoutes &&
-          !!asdData.hgvApprovedRoutes &&
-          !!asdData.emergencyServicesRoutes;
-        break;
-
       case "property":
-        const propertyData = {
-          gazName: type === "gazetteer" && updatedData ? updatedData.gazName : propertyGazetteerData.gazName,
-          gazScope: type === "gazetteer" && updatedData ? updatedData.gazScope : propertyGazetteerData.gazScope,
-          terOfUse: type === "gazetteer" && updatedData ? updatedData.terOfUse : propertyGazetteerData.terOfUse,
-          linkedData: type === "gazetteer" && updatedData ? updatedData.linkedData : propertyGazetteerData.linkedData,
-          gazOwner: type === "gazetteer" && updatedData ? updatedData.gazOwner : propertyGazetteerData.gazOwner,
-          ngazFreq: type === "gazetteer" && updatedData ? updatedData.ngazFreq : propertyGazetteerData.ngazFreq,
-          custodianName:
-            type === "custodian" && updatedData ? updatedData.custodianName : propertyCustodianData.custodianName,
-          custodianUprn:
-            type === "custodian" && updatedData ? updatedData.custodianUprn : propertyCustodianData.custodianUprn,
-          custodianCode:
-            type === "custodian" && updatedData ? updatedData.custodianCode : propertyCustodianData.custodianCode,
-          classificationScheme:
-            type === "miscellaneous" && updatedData
-              ? updatedData.classificationScheme
-              : propertyMiscellaneousData.classificationScheme,
-          stateCodeScheme:
-            type === "miscellaneous" && updatedData
-              ? updatedData.stateCodeScheme
-              : propertyMiscellaneousData.stateCodeScheme,
-          metadataDate:
-            type === "miscellaneous" && updatedData ? updatedData.metadataDate : propertyMiscellaneousData.metadataDate,
-          language: type === "miscellaneous" && updatedData ? updatedData.language : propertyMiscellaneousData.language,
-        };
+        setMetaId(result.metaId);
 
-        dataValid =
-          !!propertyData.gazName &&
-          !!propertyData.gazScope &&
-          !!propertyData.terOfUse &&
-          !!propertyData.gazOwner &&
-          !!propertyData.ngazFreq &&
-          !!propertyData.custodianName &&
-          !!propertyData.custodianUprn &&
-          !!propertyData.custodianCode &&
-          !!propertyData.classificationScheme &&
-          !!propertyData.stateCodeScheme &&
-          !!propertyData.metadataDate &&
-          !!propertyData.language;
+        setPropertyGazetteerData({
+          gazName: result.gazName,
+          gazScope: result.gazScope,
+          terOfUse: result.terOfUse,
+          linkedData: result.linkedData,
+          gazOwner: result.gazOwner,
+          ngazFreq: result.ngazFreq,
+        });
+
+        setGazName(result.gazName);
+        setGazScope(result.gazScope);
+        setTerOfUse(result.terOfUse);
+        setLinkedData(result.linkedData);
+        setGazOwner(result.gazOwner);
+        setNgazFreq(result.ngazFreq);
+
+        setPropertyCustodianData({
+          custodianName: result.custodianName,
+          custodianUprn: result.custodianUprn,
+          custodianCode: result.custodianCode,
+        });
+
+        setCustodianName(result.custodianName);
+        setCustodianUprn(result.custodianUprn);
+        setCustodianCode(result.custodianCode);
+
+        setPropertyMiscellaneousData({
+          classificationScheme: result.classificationScheme,
+          stateCodeScheme: result.stateCodeScheme,
+          metaDate: result.metaDate,
+          gazDate: result.gazDate,
+          language: result.language,
+          characterSet: result.characterSet,
+        });
+
+        setClassificationScheme(result.classificationScheme);
+        setStateCodeScheme(result.stateCodeScheme);
+        setMetaDate(result.metaDate);
+        setGazDate(result.gazDate);
+        setLanguage(result.language);
+        setCharacterSet(result.characterSet);
         break;
 
+      case "street":
+        setLsgMetaDataId(result.lsgMetaDataId);
+
+        setStreetGazetteerData({
+          terOfUse: result.terOfUse,
+          linkedData: result.linkedData,
+          ngazFreq: result.ngazFreq,
+        });
+
+        setTerOfUse(result.terOfUse);
+        setLinkedData(result.linkedData);
+        setNgazFreq(result.ngazFreq);
+
+        setStreetCustodianData({
+          custodianName: result.custodianName,
+          custodianUprn: result.custodianUprn,
+          custodianCode: result.custodianCode,
+        });
+
+        setCustodianName(result.custodianName);
+        setCustodianUprn(result.custodianUprn);
+        setCustodianCode(result.custodianCode);
+
+        setStreetMiscellaneousData({
+          classificationScheme: result.classificationScheme,
+          metaDate: result.metaDate,
+          gazDate: result.gazDate,
+          language: result.language,
+          characterSet: result.characterSet,
+        });
+
+        setClassificationScheme(result.classificationScheme);
+        setMetaDate(result.metaDate);
+        setGazDate(result.gazDate);
+        setLanguage(result.language);
+        setCharacterSet(result.characterSet);
+
+        setStreetContentData({
+          contentMotorwayTrunkRoad: result.contentMotorwayTrunkRoad,
+          contentPrivateStreet: result.contentPrivateStreet,
+          contentPrimaryRouteNetwork: result.contentPrn,
+          contentClassifiedRoad: result.contentClassifiedRoad,
+          contentProwFootpath: result.contentProwFootpath,
+          contentProwBridleway: result.contentProwBridleway,
+          contentProwRestrictedByway: result.contentProwRestrictedByway,
+          contentProwBoat: result.contentProwBoat,
+          contentNationalCycleRoute: result.contentNationalCycleRoute,
+        });
+
+        setContentMotorwayTrunkRoad(result.contentMotorwayTrunkRoad);
+        setContentPrivateStreet(result.contentPrivateStreet);
+        setContentPrn(result.contentPrn);
+        setContentClassifiedRoad(result.contentClassifiedRoad);
+        setContentProwFootpath(result.contentProwFootpath);
+        setContentProwBridleway(result.contentProwBridleway);
+        setContentProwRestrictedByway(result.contentProwRestrictedByway);
+        setContentProwBoat(result.contentProwBoat);
+        setContentNationalCycleRoute(result.contentNationalCycleRoute);
+        break;
+      case "asd":
+        setAsdMetaDataId(result.asdMetaDataId);
+
+        setAsdGazetteerData({
+          terOfUse: result.terOfUse,
+          linkedData: result.linkedData,
+          ngazFreq: result.ngazFreq,
+        });
+
+        setTerOfUse(result.terOfUse);
+        setLinkedData(result.linkedData);
+        setNgazFreq(result.ngazFreq);
+
+        setAsdCustodianData({
+          custodianName: result.custodianName,
+          custodianUprn: result.custodianUprn,
+          custodianCode: result.custodianCode,
+        });
+
+        setCustodianName(result.custodianName);
+        setCustodianUprn(result.custodianUprn);
+        setCustodianCode(result.custodianCode);
+
+        setAsdMiscellaneousData({
+          classificationScheme: result.classificationScheme,
+          metaDate: result.metaDate,
+          gazDate: result.gazDate,
+          language: result.language,
+          characterSet: result.characterSet,
+        });
+
+        setClassificationScheme(result.classificationScheme);
+        setMetaDate(result.metaDate);
+        setGazDate(result.gazDate);
+        setLanguage(result.language);
+        setCharacterSet(result.characterSet);
+
+        setAsdContentData({
+          mdProtectedStreet: result.mdProtectedStreet,
+          mdTrafficSensitive: result.mdTrafficSensitive,
+          mdSed: result.mdSed,
+          mdProposedSed: result.mdProposedSed,
+          mdLevelCrossing: result.mdLevelCrossing,
+          mdEnvSensitiveArea: result.mdEnvSensitiveArea,
+          mdStructuresNotSed: result.mdStructuresNotSed,
+          mdPipelinesAndCables: result.mdPipelinesAndCables,
+          mdPriorityLanes: result.mdPriorityLanes,
+          mdLaneRental: result.mdLaneRental,
+          mdEarlyNotification: result.mdEarlyNotification,
+          mdSpecialEvents: result.mdSpecialEvents,
+          mdParking: result.mdParking,
+          mdPedCrossAndSignals: result.mdPedCrossAndSignals,
+          mdSpeedLimit: result.mdSpeedLimit,
+          mdTransAuthApp: result.mdTransAuthApp,
+          mdStrategicRoute: result.mdStrategicRoute,
+          mdStreetLight: result.mdStreetLight,
+          mdDrainageAndFlood: result.mdDrainageAndFlood,
+          mdUnusualLayout: result.mdUnusualLayout,
+          mdLocalConsider: result.mdLocalConsider,
+          mdWinterMainRoute: result.mdWinterMainRoute,
+          mdHgvRoute: result.mdHgvRoute,
+          mdEmergencyRoute: result.mdEmergencyRoute,
+        });
+
+        setMdProtectedStreet(result.mdProtectedStreet);
+        mdSetTrafficSensitive(result.mdTrafficSensitive);
+        setMdSet(result.mdSed);
+        setMdProposedSed(result.mdProposedSed);
+        setMdLevelCrossing(result.mdLevelCrossing);
+        setMdEnvSensitiveArea(result.mdEnvSensitiveArea);
+        setMdStructuresNotSed(result.mdStructuresNotSed);
+        setMdPipelinesAndCables(result.mdPipelinesAndCables);
+        setMdPriorityLanes(result.mdPriorityLanes);
+        setMdLaneRental(result.mdLaneRental);
+        setMdEarlyNotification(result.mdEarlyNotification);
+        setMdSpecialEvents(result.mdSpecialEvents);
+        setMdParking(result.mdParking);
+        setMdPedCrossAndSignal(result.mdPedCrossAndSignals);
+        setMdSpeedLimit(result.mdSpeedLimit);
+        setMdTransAuthApp(result.mdTransAuthApp);
+        setMdStrategicRoute(result.mdStrategicRoute);
+        setMdStreetLight(result.mdStreetLight);
+        setMdDrainageAndFlood(result.mdDrainageAndFlood);
+        setMdUnusualLayout(result.mdUnusualLayout);
+        setMdLocalConsider(result.mdLocalConsider);
+        setMdWinterMainRoute(result.mdWinterMainRoute);
+        setMdHgvRoute(result.mdHgvRoute);
+        setMdEmergencyRoute(result.mdEmergencyRoute);
+        break;
       default:
-        break;
     }
-
-    return dataValid;
   };
 
   /**
    * Event to handle updating a set of metadata after it has been edited.
+   * Will choose endpoint to match variant in state.
    *
-   * @param {object} updatedData The updated template data.
+   * @param {object} updatedData The updated data.
    */
-  const saveGazetteerMetadata = async (updatedData) => {
-    const saveUrl = GetLLPGMetadataUrl("PUT", userContext.currentUser.token, settingsContext.isScottish);
+  const updateMetadata = async (updatedData) => {
+    let saveUrl, originalData, errorType;
+    switch (variant) {
+      case "property":
+        errorType = settingsContext.isScottish ? "gazetteer" : "property";
+        saveUrl = GetLLPGMetadataUrl("PUT", userContext.currentUser.token, settingsContext.isScottish);
+        originalData = getOriginalPropertyApiData(settingsContext.isScottish);
+        break;
+      case "street":
+        errorType = "street";
+        saveUrl = GetLSGMetadataUrl("PUT", userContext.currentUser.token, settingsContext.isScottish);
+        originalData = getOriginalStreetApiData();
+        break;
+      case "asd":
+        errorType = "ASD";
+        saveUrl = GetASDMetadataUrl("PUT", userContext.currentUser.token, settingsContext.isScottish);
+        originalData = getOriginalAsdApiData();
+        break;
+      default:
+    }
 
     if (saveUrl) {
-      const saveData = settingsContext.isScottish
-        ? {
-            // Scotland
-            metaId: 29,
-            gazName: updatedData.gazName,
-            gazScope: updatedData.gazScope,
-            terOfUse: updatedData.terOfUse,
-            linkedData: updatedData.linkedData, //should not be on OS API but is, dummy for now
-            gazOwner: updatedData.gazOwner,
-            ngazFreq: updatedData.ngazFreq, //should not be on OS API but is, dummy for now
-            custodianName: custodianName,
-            custodianUprn: 0,
-            custodianCode: custodianCode,
-            coordSystem: "EPSG:27700",
-            coordUnit: "Meters",
-            metaDate: metaDate,
-            classificationScheme: classificationScheme,
-            gazDate: 0, //should not be on API but is, dummy for now
-            language: language,
-            characterSet: "UTF8",
-            lastUpdated: null, //should not be on API but is, dummy for now
-            stateCodeScheme: stateCodeScheme,
-          }
-        : {
-            //England
-            metaId: 29,
-            gazName: updatedData.gazName,
-            gazScope: updatedData.gazScope,
-            terOfUse: updatedData.terOfUse,
-            linkedData: updatedData.linkedData,
-            gazOwner: updatedData.gazOwner,
-            ngazFreq: updatedData.ngazFreq,
-            custodianName: custodianName,
-            custodianUprn: 0,
-            custodianCode: custodianCode,
-            coordSystem: "British National Grid",
-            coordUnit: "Metres",
-            metaDate: metaDate,
-            classificationScheme: classificationScheme,
-            gazDate: metaDate, //dummy for now
-            language: language,
-            characterSet: "UTF8",
-            lastUpdated: null, //should not be on API but is, dummy for now
-            //stateCodeScheme not used by GP
-          };
-
-      console.log("about to save", JSON.stringify(saveData));
+      const saveData = { ...originalData, ...updatedData };
+      //console.log("MetadataSettingsTab saveMetadata() will PUT", JSON.stringify(saveData));
 
       await fetch(saveUrl.url, {
         headers: saveUrl.headers,
@@ -696,66 +751,24 @@ function MetadataSettingsTab({ variant }) {
       })
         .then((res) => (res.ok ? res : Promise.reject(res)))
         .then((res) => res.json())
-        .then((result) => {
-          console.log("result", result);
-          setPropertyGazetteerData({
-            gazName: result.gazName,
-            gazScope: result.gazScope,
-            terOfUse: result.terOfUse,
-            linkedData: result.linkedData,
-            gazOwner: result.gazOwner,
-            ngazFreq: result.ngazFreq || null, // not used in Scotland
-          });
-
-          setGazName(result.gazName);
-          setGazScope(result.gazScope);
-          setTerOfUse(result.terOfUse);
-          setLinkedData(result.linkedData);
-          setGazOwner(result.gazOwner);
-          setNgazFreq(result.ngazFreq || null); // not used in Scotland
-
-          setPropertyCustodianData({
-            custodianName: result.custodianName,
-            custodianUprn: result.custodianUprn, // not used in Scotland
-            custodianCode: result.custodianCode,
-          });
-
-          setCustodianName(result.custodianName);
-          setCustodianUprn(result.custodianUprn); // not used in Scotland
-          setCustodianCode(result.custodianCode);
-
-          setPropertyMiscellaneousData({
-            classificationScheme: result.classificationScheme,
-            stateCodeScheme: result.stateCodeScheme || null,
-            metadataDate: result.metaDate,
-            language: result.language,
-          });
-
-          setClassificationScheme(result.classificationScheme);
-          setStateCodeScheme(result.stateCodeScheme || null);
-          setMetaDate(result.metaDate);
-          setLanguage(result.language);
-        })
+        .then((result) => setTabDataFromApiResult(result))
         .catch((res) => {
           switch (res.status) {
             case 400:
               res.json().then((body) => {
-                console.error("[400 ERROR] Updating property template", body.errors);
+                console.error(`[400 ERROR] Updating ${errorType} metadata.`, body.errors);
               });
               break;
-
             case 401:
               res.json().then((body) => {
-                console.error("[401 ERROR] Updating property template", body);
+                console.error(`[401 ERROR] Updating ${errorType} metadata.`, body);
               });
               break;
-
             case 500:
-              console.error("[500 ERROR] Updating property template", res);
+              console.error(`[500 ERROR] Updating ${errorType} metadata.`, res);
               break;
-
             default:
-              console.error(`[${res.status} ERROR] handleUpdateData - Updating property template.`, res);
+              console.error(`[${res.status} ERROR] in saveGazetteerMetadata - updating ${errorType} metadata.`, res);
               break;
           }
         });
@@ -792,11 +805,9 @@ function MetadataSettingsTab({ variant }) {
       setLinkedData(updatedData.linkedData);
       if (variant === "property") setGazOwner(updatedData.gazOwner);
       setNgazFreq(updatedData.ngazFreq);
-
-      setDataValid(checkDataIsValid("gazetteer", updatedData));
     }
-    console.log("updatedData from popup", updatedData);
-    saveGazetteerMetadata(updatedData);
+
+    updateMetadata(updatedData);
 
     setShowEditGazetteerDialog(false);
   };
@@ -835,9 +846,9 @@ function MetadataSettingsTab({ variant }) {
       setCustodianName(updatedData.custodianName);
       setCustodianUprn(updatedData.custodianUprn);
       setCustodianCode(updatedData.custodianCode);
-
-      setDataValid(checkDataIsValid("custodian", updatedData));
     }
+
+    updateMetadata(updatedData);
 
     setShowEditCustodianDialog(false);
   };
@@ -875,11 +886,13 @@ function MetadataSettingsTab({ variant }) {
 
       setClassificationScheme(updatedData.classificationScheme);
       setStateCodeScheme(updatedData.stateCodeScheme);
-      setMetaDate(updatedData.metadataDate);
+      setMetaDate(updatedData.metaDate);
+      setGazDate(updatedData.gazDate);
       setLanguage(updatedData.language);
-
-      setDataValid(checkDataIsValid("miscellaneous", updatedData));
+      setCharacterSet(updatedData.characterSet);
     }
+
+    updateMetadata(updatedData);
 
     setShowEditMiscellaneousDialog(false);
   };
@@ -901,50 +914,50 @@ function MetadataSettingsTab({ variant }) {
       switch (variant) {
         case "street":
           setStreetContentData(updatedData);
-          setMotorwayTrunkRoads(updatedData.motorwayTrunkRoads);
-          setPrivateStreets(updatedData.privateStreets);
-          setPrimaryRouteNetwork(updatedData.primaryRouteNetwork);
-          setClassifiedRoads(updatedData.classifiedRoads);
-          setProwFootpaths(updatedData.prowFootpaths);
-          setProwBridleways(updatedData.prowBridleways);
-          setProwRestrictedByways(updatedData.prowRestrictedByways);
-          setProwBoat(updatedData.prowBoat);
-          setNationalCycleRoutes(updatedData.nationalCycleRoutes);
+          setContentMotorwayTrunkRoad(updatedData.contentMotorwayTrunkRoad);
+          setContentPrivateStreet(updatedData.contentPrivateStreet);
+          setContentPrn(updatedData.contentPrimaryRouteNetwork);
+          setContentClassifiedRoad(updatedData.contentClassifiedRoad);
+          setContentProwFootpath(updatedData.contentProwFootpath);
+          setContentProwBridleway(updatedData.contentProwBridleway);
+          setContentProwRestrictedByway(updatedData.contentProwRestrictedByway);
+          setContentProwBoat(updatedData.contentProwBoat);
+          setContentNationalCycleRoute(updatedData.contentNationalCycleRoute);
           break;
 
         case "asd":
           setAsdContentData(updatedData);
-          setProtectedStreets(updatedData.protectedStreets);
-          setTrafficSensitiveStreets(updatedData.trafficSensitiveStreets);
-          setSpecialEngineeringDifficulties(updatedData.specialEngineeringDifficulties);
-          setProposedSEDs(updatedData.proposedSEDs);
-          setLevelCrossing(updatedData.levelCrossing);
-          setEnvironmentallySensitiveAreas(updatedData.environmentallySensitiveAreas);
-          setStructuresNotSEDs(updatedData.structuresNotSEDs);
-          setPipelinesAndSpecialistCables(updatedData.pipelinesAndSpecialistCables);
-          setPriorityLanes(updatedData.priorityLanes);
-          setLaneRental(updatedData.laneRental);
-          setEarlyNotificationStreets(updatedData.earlyNotificationStreets);
-          setSpecialEvents(updatedData.specialEvents);
-          setParking(updatedData.parking);
-          setPedestrianCrossings(updatedData.pedestrianCrossings);
-          setSpeedLimits(updatedData.speedLimits);
-          setTransportAuthorityCriticalApparatus(updatedData.transportAuthorityCriticalApparatus);
-          setStrategicRoute(updatedData.strategicRoute);
-          setStreetLighting(updatedData.streetLighting);
-          setDrainageAndFlood(updatedData.drainageAndFlood);
-          setUnusualTrafficLayouts(updatedData.unusualTrafficLayouts);
-          setLocalConsiderations(updatedData.localConsiderations);
-          setWinterMaintenanceRoutes(updatedData.winterMaintenanceRoutes);
-          setHgvApprovedRoutes(updatedData.hgvApprovedRoutes);
-          setEmergencyServicesRoutes(updatedData.emergencyServicesRoutes);
+          setMdProtectedStreet(updatedData.mdProtectedStreet);
+          mdSetTrafficSensitive(updatedData.mdTrafficSensitive);
+          setMdSet(updatedData.mdSed);
+          setMdProposedSed(updatedData.mdProposedSed);
+          setMdLevelCrossing(updatedData.mdLevelCrossing);
+          setMdEnvSensitiveArea(updatedData.mdEnvSensitiveArea);
+          setMdStructuresNotSed(updatedData.mdStructuresNotSed);
+          setMdPipelinesAndCables(updatedData.mdPipelinesAndCables);
+          setMdPriorityLanes(updatedData.mdPriorityLanes);
+          setMdLaneRental(updatedData.mdLaneRental);
+          setMdEarlyNotification(updatedData.mdEarlyNotification);
+          setMdSpecialEvents(updatedData.mdSpecialEvents);
+          setMdParking(updatedData.mdParking);
+          setMdPedCrossAndSignal(updatedData.mdPedCrossAndSignals);
+          setMdSpeedLimit(updatedData.mdSpeedLimit);
+          setMdTransAuthApp(updatedData.mdTransAuthApp);
+          setMdStrategicRoute(updatedData.mdStrategicRoute);
+          setMdStreetLight(updatedData.mdStreetLight);
+          setMdDrainageAndFlood(updatedData.mdDrainageAndFlood);
+          setMdUnusualLayout(updatedData.mdUnusualLayout);
+          setMdLocalConsider(updatedData.mdLocalConsider);
+          setMdWinterMainRoute(updatedData.mdWinterMainRoute);
+          setMdHgvRoute(updatedData.mdHgvRoute);
+          setMdEmergencyRoute(updatedData.mdEmergencyRoute);
           break;
 
         default:
           break;
       }
 
-      setDataValid(checkDataIsValid("content", updatedData));
+      updateMetadata(updatedData);
     }
 
     setShowEditContentDialog(false);
@@ -971,6 +984,8 @@ function MetadataSettingsTab({ variant }) {
           .then((res) => res.json())
           .then(
             (result) => {
+              setLsgMetaDataId(result.lsgMetaDataId);
+
               setStreetGazetteerData({
                 terOfUse: result.terOfUse,
                 linkedData: result.linkedData,
@@ -984,44 +999,48 @@ function MetadataSettingsTab({ variant }) {
               setStreetCustodianData({
                 custodianName: result.custodianName,
                 custodianUprn: result.custodianUprn,
-                custodianCode: result.authCode,
+                custodianCode: result.custodianCode,
               });
 
               setCustodianName(result.custodianName);
               setCustodianUprn(result.custodianUprn);
-              setCustodianCode(result.authCode);
+              setCustodianCode(result.custodianCode);
 
               setStreetMiscellaneousData({
                 classificationScheme: result.classificationScheme,
-                metadataDate: result.metaDate,
+                metaDate: result.metaDate,
+                gazDate: result.gazDate,
                 language: result.language,
+                characterSet: result.characterSet,
               });
 
               setClassificationScheme(result.classificationScheme);
               setMetaDate(result.metaDate);
+              setGazDate(result.gazDate);
               setLanguage(result.language);
+              setCharacterSet(result.characterSet);
 
               setStreetContentData({
-                motorwayTrunkRoads: result.contentMotorwayTrunkRoad,
-                privateStreets: result.contentPrivateStreet,
-                primaryRouteNetwork: result.contentPrn,
-                classifiedRoads: result.contentClassifiedRoad,
-                prowFootpaths: result.contentProwFootpath,
-                prowBridleways: result.contentProwBridleway,
-                prowRestrictedByways: result.contentProwRestrictedByway,
-                prowBoat: result.contentProwBoat,
-                nationalCycleRoutes: result.contentNationalCycleRoute,
+                contentMotorwayTrunkRoad: result.contentMotorwayTrunkRoad,
+                contentPrivateStreet: result.contentPrivateStreet,
+                contentPrimaryRouteNetwork: result.contentPrn,
+                contentClassifiedRoad: result.contentClassifiedRoad,
+                contentProwFootpath: result.contentProwFootpath,
+                contentProwBridleway: result.contentProwBridleway,
+                contentProwRestrictedByway: result.contentProwRestrictedByway,
+                contentProwBoat: result.contentProwBoat,
+                contentNationalCycleRoute: result.contentNationalCycleRoute,
               });
 
-              setMotorwayTrunkRoads(result.contentMotorwayTrunkRoad);
-              setPrivateStreets(result.contentPrivateStreet);
-              setPrimaryRouteNetwork(result.contentPrn);
-              setClassifiedRoads(result.contentClassifiedRoad);
-              setProwFootpaths(result.contentProwFootpath);
-              setProwBridleways(result.contentProwBridleway);
-              setProwRestrictedByways(result.contentProwRestrictedByway);
-              setProwBoat(result.contentProwBoat);
-              setNationalCycleRoutes(result.contentNationalCycleRoute);
+              setContentMotorwayTrunkRoad(result.contentMotorwayTrunkRoad);
+              setContentPrivateStreet(result.contentPrivateStreet);
+              setContentPrn(result.contentPrn);
+              setContentClassifiedRoad(result.contentClassifiedRoad);
+              setContentProwFootpath(result.contentProwFootpath);
+              setContentProwBridleway(result.contentProwBridleway);
+              setContentProwRestrictedByway(result.contentProwRestrictedByway);
+              setContentProwBoat(result.contentProwBoat);
+              setContentNationalCycleRoute(result.contentNationalCycleRoute);
             },
             (error) => {
               console.error("[ERROR] Getting street metadata", error);
@@ -1046,6 +1065,8 @@ function MetadataSettingsTab({ variant }) {
           .then((res) => res.json())
           .then(
             (result) => {
+              setAsdMetaDataId(result.asdMetaDataId);
+
               setAsdGazetteerData({
                 terOfUse: result.terOfUse,
                 linkedData: result.linkedData,
@@ -1059,74 +1080,78 @@ function MetadataSettingsTab({ variant }) {
               setAsdCustodianData({
                 custodianName: result.custodianName,
                 custodianUprn: result.custodianUprn,
-                custodianCode: result.authCode,
+                custodianCode: result.custodianCode,
               });
 
               setCustodianName(result.custodianName);
               setCustodianUprn(result.custodianUprn);
-              setCustodianCode(result.authCode);
+              setCustodianCode(result.custodianCode);
 
               setAsdMiscellaneousData({
                 classificationScheme: result.classificationScheme,
-                metadataDate: result.metaDate,
+                metaDate: result.metaDate,
+                gazDate: result.gazDate,
                 language: result.language,
+                characterSet: result.characterSet,
               });
 
               setClassificationScheme(result.classificationScheme);
               setMetaDate(result.metaDate);
+              setGazDate(result.gazDate);
               setLanguage(result.language);
+              setCharacterSet(result.characterSet);
 
               setAsdContentData({
-                protectedStreets: result.mdProtectedStreet,
-                trafficSensitiveStreets: result.mdTrafficSensitive,
-                specialEngineeringDifficulties: result.mdSed,
-                proposedSEDs: result.mdProposedSed,
-                levelCrossing: result.mdLevelCrossing,
-                environmentallySensitiveAreas: result.mdEnvSensitiveArea,
-                structuresNotSEDs: result.mdStructuresNotSed,
-                pipelinesAndSpecialistCables: result.mdPipelinesAndCables,
-                priorityLanes: result.mdPriorityLanes,
-                laneRental: result.mdLaneRental,
-                earlyNotificationStreets: result.mdEarlyNotification,
-                specialEvents: result.mdSpecialEvents,
-                parking: result.mdParking,
-                pedestrianCrossings: result.mdPedCrossAndSignals,
-                speedLimits: result.mdSpeedLimit,
-                transportAuthorityCriticalApparatus: result.mdTransAuthApp,
-                strategicRoute: result.mdStrategicRoute,
-                streetLighting: result.mdStreetLight,
-                drainageAndFlood: result.mdDrainageAndFlood,
-                unusualTrafficLayouts: result.mdUnusualLayout,
-                localConsiderations: result.mdLocalConsider,
-                winterMaintenanceRoutes: result.mdWinterMainRoute,
-                hgvApprovedRoutes: result.mdHgvRoute,
-                emergencyServicesRoutes: result.mdEmergencyRoute,
+                mdProtectedStreet: result.mdProtectedStreet,
+                mdTrafficSensitive: result.mdTrafficSensitive,
+                mdSed: result.mdSed,
+                mdProposedSed: result.mdProposedSed,
+                mdLevelCrossing: result.mdLevelCrossing,
+                mdEnvSensitiveArea: result.mdEnvSensitiveArea,
+                mdStructuresNotSed: result.mdStructuresNotSed,
+                mdPipelinesAndCables: result.mdPipelinesAndCables,
+                mdPriorityLanes: result.mdPriorityLanes,
+                mdLaneRental: result.mdLaneRental,
+                mdEarlyNotification: result.mdEarlyNotification,
+                mdSpecialEvents: result.mdSpecialEvents,
+                mdParking: result.mdParking,
+                mdPedCrossAndSignals: result.mdPedCrossAndSignals,
+                mdSpeedLimit: result.mdSpeedLimit,
+                mdTransAuthApp: result.mdTransAuthApp,
+                mdStrategicRoute: result.mdStrategicRoute,
+                mdStreetLight: result.mdStreetLight,
+                mdDrainageAndFlood: result.mdDrainageAndFlood,
+                mdUnusualLayout: result.mdUnusualLayout,
+                mdLocalConsider: result.mdLocalConsider,
+                mdWinterMainRoute: result.mdWinterMainRoute,
+                mdHgvRoute: result.mdHgvRoute,
+                mdEmergencyRoute: result.mdEmergencyRoute,
               });
 
-              setProtectedStreets(result.mdProtectedStreet);
-              setTrafficSensitiveStreets(result.mdTrafficSensitive);
-              setSpecialEngineeringDifficulties(result.mdSed);
-              setProposedSEDs(result.mdProposedSed);
-              setLevelCrossing(result.mdLevelCrossing);
-              setEnvironmentallySensitiveAreas(result.mdEnvSensitiveArea);
-              setStructuresNotSEDs(result.mdStructuresNotSed);
-              setPipelinesAndSpecialistCables(result.mdPipelinesAndCables);
-              setPriorityLanes(result.mdPriorityLanes);
-              setLaneRental(result.mdLaneRental);
-              setEarlyNotificationStreets(result.mdEarlyNotification);
-              setSpecialEvents(result.mdSpecialEvents);
-              setParking(result.mdParking);
-              setPedestrianCrossings(result.mdPedCrossAndSignals);
-              setSpeedLimits(result.mdSpeedLimit);
-              setTransportAuthorityCriticalApparatus(result.mdTransAuthApp);
-              setStrategicRoute(result.mdStrategicRoute);
-              setStreetLighting(result.mdStreetLight);
-              setDrainageAndFlood(result.mdDrainageAndFlood);
-              setUnusualTrafficLayouts(result.mdUnusualLayout);
-              setLocalConsiderations(result.mdLocalConsider);
-              setWinterMaintenanceRoutes(result.mdWinterMainRoute);
-              setHgvApprovedRoutes(result.mdHgvRoute);
-              setEmergencyServicesRoutes(result.mdEmergencyRoute);
+              setMdProtectedStreet(result.mdProtectedStreet);
+              mdSetTrafficSensitive(result.mdTrafficSensitive);
+              setMdSet(result.mdSed);
+              setMdProposedSed(result.mdProposedSed);
+              setMdLevelCrossing(result.mdLevelCrossing);
+              setMdEnvSensitiveArea(result.mdEnvSensitiveArea);
+              setMdStructuresNotSed(result.mdStructuresNotSed);
+              setMdPipelinesAndCables(result.mdPipelinesAndCables);
+              setMdPriorityLanes(result.mdPriorityLanes);
+              setMdLaneRental(result.mdLaneRental);
+              setMdEarlyNotification(result.mdEarlyNotification);
+              setMdSpecialEvents(result.mdSpecialEvents);
+              setMdParking(result.mdParking);
+              setMdPedCrossAndSignal(result.mdPedCrossAndSignals);
+              setMdSpeedLimit(result.mdSpeedLimit);
+              setMdTransAuthApp(result.mdTransAuthApp);
+              setMdStrategicRoute(result.mdStrategicRoute);
+              setMdStreetLight(result.mdStreetLight);
+              setMdDrainageAndFlood(result.mdDrainageAndFlood);
+              setMdUnusualLayout(result.mdUnusualLayout);
+              setMdLocalConsider(result.mdLocalConsider);
+              setMdWinterMainRoute(result.mdWinterMainRoute);
+              setMdHgvRoute(result.mdHgvRoute);
+              setMdEmergencyRoute(result.mdEmergencyRoute);
             },
             (error) => {
               console.error("[ERROR] Getting ASD metadata", error);
@@ -1151,14 +1176,15 @@ function MetadataSettingsTab({ variant }) {
           .then((res) => res.json())
           .then(
             (result) => {
-              console.log("Metadata Settings fetched", result);
+              setMetaId(result.metaId);
+
               setPropertyGazetteerData({
                 gazName: result.gazName,
                 gazScope: result.gazScope,
                 terOfUse: result.terOfUse,
                 linkedData: result.linkedData,
                 gazOwner: result.gazOwner,
-                ngazFreq: result.ngazFreq || null, // not used in Scotland
+                ngazFreq: result.ngazFreq, // not used in Scotland
               });
 
               setGazName(result.gazName);
@@ -1166,7 +1192,7 @@ function MetadataSettingsTab({ variant }) {
               setTerOfUse(result.terOfUse);
               setLinkedData(result.linkedData);
               setGazOwner(result.gazOwner);
-              setNgazFreq(result.ngazFreq || null); // not used in Scotland
+              setNgazFreq(result.ngazFreq); // not used in Scotland
 
               setPropertyCustodianData({
                 custodianName: result.custodianName,
@@ -1180,15 +1206,19 @@ function MetadataSettingsTab({ variant }) {
 
               setPropertyMiscellaneousData({
                 classificationScheme: result.classificationScheme,
-                stateCodeScheme: result.stateCodeScheme || null, // only used in Scotland
-                metadataDate: result.metaDate,
+                stateCodeScheme: result.stateCodeScheme, // only used in Scotland
+                metaDate: result.metaDate,
+                gazDate: result.gazDate,
                 language: result.language,
+                characterSet: result.characterSet,
               });
 
               setClassificationScheme(result.classificationScheme);
-              setStateCodeScheme(result.stateCodeScheme || null);
+              setStateCodeScheme(result.stateCodeScheme);
               setMetaDate(result.metaDate);
+              setGazDate(result.gazDate);
               setLanguage(result.language);
+              setCharacterSet(result.characterSet);
             },
             (error) => {
               console.error("[ERROR] Getting property metadata", error);
@@ -1206,8 +1236,8 @@ function MetadataSettingsTab({ variant }) {
           const streetUrl = GetLSGMetadataUrl("GET", userContext.currentUser.token);
           setStreetApiUrl(streetUrl);
         }
-
         SetUpStreetData();
+
         break;
 
       case "asd":
@@ -1232,9 +1262,9 @@ function MetadataSettingsTab({ variant }) {
         break;
     }
 
-    setDataValid(false);
+    // setDataValid(false);
   }, [
-    settingsContext.streetMetadata,
+    //settingsContext.streetMetadata,
     settingsContext.isScottish,
     streetApiUrl,
     asdApiUrl,
@@ -1250,7 +1280,7 @@ function MetadataSettingsTab({ variant }) {
           <Typography sx={{ fontSize: 24, flexGrow: 1, pl: theme.spacing(3) }}>{getTitle()}</Typography>
           <Button
             variant="contained"
-            disabled={!dataValid}
+            disabled={true} // TODO show when there was a 204 on fetch and the data on screen is valid
             sx={blueButtonStyle}
             startIcon={<DoneIcon />}
             onClick={doDoneMetadata}
@@ -1330,18 +1360,22 @@ function MetadataSettingsTab({ variant }) {
                         </Typography>
                       )}
                     </Grid>
-                    <Grid item xs={3}>
-                      <Typography variant="body2">Data</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
-                      {loading ? (
-                        <Skeleton variant="rectangular" height="20px" width="100%" />
-                      ) : (
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {linkedData}
-                        </Typography>
-                      )}
-                    </Grid>
+                    {!settingsContext.isScottish && (
+                      <>
+                        <Grid item xs={3}>
+                          <Typography variant="body2">Linked data</Typography>
+                        </Grid>
+                        <Grid item xs={9}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {linkedData}
+                            </Typography>
+                          )}
+                        </Grid>
+                      </>
+                    )}
                     {variant === "property" && (
                       <Grid item xs={3}>
                         <Typography variant="body2">Owner</Typography>
@@ -1358,18 +1392,22 @@ function MetadataSettingsTab({ variant }) {
                         )}
                       </Grid>
                     )}
-                    <Grid item xs={3}>
-                      <Typography variant="body2">Frequency</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
-                      {loading ? (
-                        <Skeleton variant="rectangular" height="20px" width="100%" />
-                      ) : (
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getFrequency(ngazFreq)}
-                        </Typography>
-                      )}
-                    </Grid>
+                    {!settingsContext.isScottish && (
+                      <>
+                        <Grid item xs={3}>
+                          <Typography variant="body2">Frequency</Typography>
+                        </Grid>
+                        <Grid item xs={9}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {getFrequency(ngazFreq)}
+                            </Typography>
+                          )}
+                        </Grid>
+                      </>
+                    )}
                   </Grid>
                 </CardContent>
               </CardActionArea>
@@ -1414,18 +1452,22 @@ function MetadataSettingsTab({ variant }) {
                         </Typography>
                       )}
                     </Grid>
-                    <Grid item xs={3}>
-                      <Typography variant="body2">UPRN</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
-                      {loading ? (
-                        <Skeleton variant="rectangular" height="20px" width="100%" />
-                      ) : (
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {custodianUprn}
-                        </Typography>
-                      )}
-                    </Grid>
+                    {!settingsContext.isScottish && (
+                      <>
+                        <Grid item xs={3}>
+                          <Typography variant="body2">UPRN</Typography>
+                        </Grid>
+                        <Grid item xs={9}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {custodianUprn}
+                            </Typography>
+                          )}
+                        </Grid>
+                      </>
+                    )}
                     <Grid item xs={3}>
                       <Typography variant="body2">Code</Typography>
                     </Grid>
@@ -1506,7 +1548,19 @@ function MetadataSettingsTab({ variant }) {
                         <Skeleton variant="rectangular" height="20px" width="100%" />
                       ) : (
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getMetadataDate(metaDate)}
+                          {getDisplayDate(metaDate)}
+                        </Typography>
+                      )}
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Gazetteer date</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      {loading ? (
+                        <Skeleton variant="rectangular" height="20px" width="100%" />
+                      ) : (
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {getDisplayDate(gazDate)}
                         </Typography>
                       )}
                     </Grid>
@@ -1522,6 +1576,22 @@ function MetadataSettingsTab({ variant }) {
                         </Typography>
                       )}
                     </Grid>
+                    {!settingsContext.isScottish && (
+                      <>
+                        <Grid item xs={3}>
+                          <Typography variant="body2">Character set</Typography>
+                        </Grid>
+                        <Grid item xs={9}>
+                          {loading ? (
+                            <Skeleton variant="rectangular" height="20px" width="100%" />
+                          ) : (
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {characterSet}
+                            </Typography>
+                          )}
+                        </Grid>
+                      </>
+                    )}
                   </Grid>
                 </CardContent>
               </CardActionArea>
@@ -1566,7 +1636,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${motorwayTrunkRoads ? motorwayTrunkRoads : 0}%`}
+                              {`${contentMotorwayTrunkRoad ? contentMotorwayTrunkRoad : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1582,7 +1652,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${privateStreets ? privateStreets : 0}%`}
+                              {`${contentPrivateStreet ? contentPrivateStreet : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1598,7 +1668,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${primaryRouteNetwork ? primaryRouteNetwork : 0}%`}
+                              {`${contentPrn ? contentPrn : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1614,7 +1684,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${classifiedRoads ? classifiedRoads : 0}%`}
+                              {`${contentClassifiedRoad ? contentClassifiedRoad : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1630,7 +1700,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${prowFootpaths ? prowFootpaths : 0}%`}
+                              {`${contentProwFootpath ? contentProwFootpath : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1646,7 +1716,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${prowBridleways ? prowBridleways : 0}%`}
+                              {`${contentProwBridleway ? contentProwBridleway : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1662,7 +1732,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${prowRestrictedByways ? prowRestrictedByways : 0}%`}
+                              {`${contentProwRestrictedByway ? contentProwRestrictedByway : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1678,7 +1748,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${prowBoat ? prowBoat : 0}%`}
+                              {`${contentProwBoat ? contentProwBoat : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1694,7 +1764,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${nationalCycleRoutes ? nationalCycleRoutes : 0}%`}
+                              {`${contentNationalCycleRoute ? contentNationalCycleRoute : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1710,7 +1780,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${protectedStreets ? protectedStreets : 0}%`}
+                              {`${mdProtectedStreet ? mdProtectedStreet : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1726,7 +1796,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${trafficSensitiveStreets ? trafficSensitiveStreets : 0}%`}
+                              {`${mdTrafficSensitive ? mdTrafficSensitive : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1742,7 +1812,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${specialEngineeringDifficulties ? specialEngineeringDifficulties : 0}%`}
+                              {`${mdSed ? mdSed : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1758,7 +1828,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${proposedSEDs ? proposedSEDs : 0}%`}
+                              {`${mdProposedSed ? mdProposedSed : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1774,7 +1844,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${levelCrossing ? levelCrossing : 0}%`}
+                              {`${mdLevelCrossing ? mdLevelCrossing : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1790,7 +1860,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${environmentallySensitiveAreas ? environmentallySensitiveAreas : 0}%`}
+                              {`${mdEnvSensitiveArea ? mdEnvSensitiveArea : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1806,7 +1876,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${structuresNotSEDs ? structuresNotSEDs : 0}%`}
+                              {`${mdStructuresNotSed ? mdStructuresNotSed : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1822,7 +1892,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${pipelinesAndSpecialistCables ? pipelinesAndSpecialistCables : 0}%`}
+                              {`${mdPipelinesAndCables ? mdPipelinesAndCables : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1838,7 +1908,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${priorityLanes ? priorityLanes : 0}%`}
+                              {`${mdPriorityLanes ? mdPriorityLanes : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1854,7 +1924,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${laneRental ? laneRental : 0}%`}
+                              {`${mdLaneRental ? mdLaneRental : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1870,7 +1940,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${earlyNotificationStreets ? earlyNotificationStreets : 0}%`}
+                              {`${mdEarlyNotification ? mdEarlyNotification : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1886,7 +1956,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${specialEvents ? specialEvents : 0}%`}
+                              {`${mdSpecialEvents ? mdSpecialEvents : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1902,7 +1972,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${parking ? parking : 0}%`}
+                              {`${mdParking ? mdParking : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1918,7 +1988,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${pedestrianCrossings ? pedestrianCrossings : 0}%`}
+                              {`${mdPedCrossAndSignals ? mdPedCrossAndSignals : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1934,7 +2004,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${speedLimits ? speedLimits : 0}%`}
+                              {`${mdSpeedLimit ? mdSpeedLimit : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1950,7 +2020,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${transportAuthorityCriticalApparatus ? transportAuthorityCriticalApparatus : 0}%`}
+                              {`${mdTransAuthApp ? mdTransAuthApp : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1966,7 +2036,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${strategicRoute ? strategicRoute : 0}%`}
+                              {`${mdStrategicRoute ? mdStrategicRoute : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1982,7 +2052,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${streetLighting ? streetLighting : 0}%`}
+                              {`${mdStreetLight ? mdStreetLight : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -1998,7 +2068,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${drainageAndFlood ? drainageAndFlood : 0}%`}
+                              {`${mdDrainageAndFlood ? mdDrainageAndFlood : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -2014,7 +2084,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${unusualTrafficLayouts ? unusualTrafficLayouts : 0}%`}
+                              {`${mdUnusualLayout ? mdUnusualLayout : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -2030,7 +2100,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${localConsiderations ? localConsiderations : 0}%`}
+                              {`${mdLocalConsider ? mdLocalConsider : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -2046,7 +2116,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${winterMaintenanceRoutes ? winterMaintenanceRoutes : 0}%`}
+                              {`${mdWinterMainRoute ? mdWinterMainRoute : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -2062,7 +2132,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${hgvApprovedRoutes ? hgvApprovedRoutes : 0}%`}
+                              {`${mdHgvRoute ? mdHgvRoute : 0}%`}
                             </Typography>
                           )}
                         </Grid>
@@ -2078,7 +2148,7 @@ function MetadataSettingsTab({ variant }) {
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {`${emergencyServicesRoutes ? emergencyServicesRoutes : 0}%`}
+                              {`${mdEmergencyRoute ? mdEmergencyRoute : 0}%`}
                             </Typography>
                           )}
                         </Grid>

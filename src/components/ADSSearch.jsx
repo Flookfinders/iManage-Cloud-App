@@ -29,6 +29,7 @@
 //    016   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    017   25.01.24 Sean Flook                 Correctly handle status code 204.
 //    018   26.01.24 Sean Flook       IMANN-260 Corrected field name.
+//    019   01.02.24 Joel Benford     GLB9      Adjust placement/sizing
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1277,8 +1278,8 @@ function ADSSearch({ placeholder, onSearchClick }) {
               borderStyle: "solid",
               borderWidth: "1px",
               borderRadius: "18px",
-              mt: theme.spacing(1),
-              height: "36px",
+              mt: "6px",
+              height: "32px",
               transition: theme.transitions.create("width"),
               [theme.breakpoints.up("sm")]: {
                 width: "176px",
