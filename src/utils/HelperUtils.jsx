@@ -31,6 +31,7 @@
 //    018   16.01.24 Sean Flook                 Added filteredLookups.
 //    019   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    020   01.02.24 Sean Flook                 Correctly handle BS7666 in lookupToTitleCase.
+//    021   02.02.24 Sean Flook       IMANN-269 Added isIso885914.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -40,6 +41,7 @@ import { useContext } from "react";
 import LookupContext from "../context/lookupContext";
 import proj4 from "proj4";
 import Wkt from "wicket";
+import { encode } from "iso-8859-14";
 import { GetWhoAmIUrl, HasASD } from "../configuration/ADSConfig";
 import ObjectComparison from "../utils/ObjectComparison";
 import { GetStreetMapData } from "../utils/StreetUtils";
@@ -1530,4 +1532,23 @@ export const filteredLookup = (rawLookup, isScottish) => {
   } else {
     return rawLookup.filter((x) => x.gpText);
   }
+};
+
+/**
+ * Method to see if the text conforms to ISO 8859-14.
+ *
+ * @param {string} text The string to check that it conforms to ISO 8859-14.
+ * @returns {boolean} True if the text conforms to ISO 8859-14; otherwise false.
+ */
+export const isIso885914 = (text) => {
+  let result = true;
+  if (text) {
+    try {
+      const encodedData = encode(text, { mode: "fatal" });
+      result = !!encodedData;
+    } catch (error) {
+      result = false;
+    }
+  }
+  return result;
 };

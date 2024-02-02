@@ -40,6 +40,7 @@
 //    008   29.01.24 Sean Flook                 Added new checks.
 //    009   29.01.24 Sean Flook                 Added more new checks.
 //    010   01.02.24 Sean Flook                 Changes required for differences in field names between GeoPlace and OneScotland.
+//    011   02.02.24 Sean Flook       IMANN-269 Use isIso885914 to determine if the various texts are compliant to the ISO 8859-14 (Celtic-8) character set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -54,6 +55,7 @@ import {
   GetErrorMessage,
   GetCheck,
   filteredLookup,
+  isIso885914,
 } from "./HelperUtils";
 
 import StreetState from "../data/StreetState";
@@ -1335,13 +1337,7 @@ export function ValidateMaintenanceResponsibilityData(data, index, currentLookup
 
     // Specific Location contains invalid characters.
     currentCheck = GetCheck(5100029, currentLookups, methodName, true, showDebugMessages);
-    if (
-      includeCheck(currentCheck, true) &&
-      data.specificLocation &&
-      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
-        data.specificLocation
-      )
-    ) {
+    if (includeCheck(currentCheck, true) && data.specificLocation && !isIso885914(data.specificLocation)) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -1540,13 +1536,7 @@ export function ValidateReinstatementCategoryData(data, index, currentLookups) {
 
     // Specific Location contains invalid characters.
     currentCheck = GetCheck(5200026, currentLookups, methodName, true, showDebugMessages);
-    if (
-      includeCheck(currentCheck, true) &&
-      data.specificLocation &&
-      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
-        data.specificLocation
-      )
-    ) {
+    if (includeCheck(currentCheck, true) && data.specificLocation && !isIso885914(data.specificLocation)) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -1755,13 +1745,7 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
 
     // Specific Location contains invalid characters.
     currentCheck = GetCheck(5300028, currentLookups, methodName, true, showDebugMessages);
-    if (
-      includeCheck(currentCheck, true) &&
-      data.specificLocation &&
-      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
-        data.specificLocation
-      )
-    ) {
+    if (includeCheck(currentCheck, true) && data.specificLocation && !isIso885914(data.specificLocation)) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -1937,13 +1921,7 @@ export function ValidateInterestData(data, index, currentLookups) {
 
     // Specific Location contains invalid characters.
     currentCheck = GetCheck(6100027, currentLookups, methodName, true, showDebugMessages);
-    if (
-      includeCheck(currentCheck, true) &&
-      data.specificLocation &&
-      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
-        data.specificLocation
-      )
-    ) {
+    if (includeCheck(currentCheck, true) && data.specificLocation && !isIso885914(data.specificLocation)) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -2056,13 +2034,7 @@ export function ValidateInterestData(data, index, currentLookups) {
 
     // Specific Location contains invalid characters.
     currentCheck = GetCheck(6100045, currentLookups, methodName, true, showDebugMessages);
-    if (
-      includeCheck(currentCheck, true) &&
-      data.specificLocation &&
-      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
-        data.specificLocation
-      )
-    ) {
+    if (includeCheck(currentCheck, true) && data.specificLocation && !isIso885914(data.specificLocation)) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -2427,9 +2399,7 @@ export function ValidateConstructionData(data, index, currentLookups) {
     if (
       includeCheck(currentCheck, true) &&
       data.constructionDescription &&
-      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
-        data.constructionDescription
-      )
+      !isIso885914(data.constructionDescription)
     ) {
       constructionDescriptionErrors.push(GetErrorMessage(currentCheck, true));
     }
@@ -2442,13 +2412,7 @@ export function ValidateConstructionData(data, index, currentLookups) {
 
     // Specific Location contains invalid characters.
     currentCheck = GetCheck(6200048, currentLookups, methodName, true, showDebugMessages);
-    if (
-      includeCheck(currentCheck, true) &&
-      data.specificLocation &&
-      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
-        data.specificLocation
-      )
-    ) {
+    if (includeCheck(currentCheck, true) && data.specificLocation && !isIso885914(data.specificLocation)) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -2790,13 +2754,7 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
 
     // Specific Location contains invalid characters.
     currentCheck = GetCheck(6300037, currentLookups, methodName, true, showDebugMessages);
-    if (
-      includeCheck(currentCheck, true) &&
-      data.specificLocation &&
-      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
-        data.specificLocation
-      )
-    ) {
+    if (includeCheck(currentCheck, true) && data.specificLocation && !isIso885914(data.specificLocation)) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -3045,13 +3003,7 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
 
     // Specific Location contains Invalid characters.
     currentCheck = GetCheck(6400023, currentLookups, methodName, true, showDebugMessages);
-    if (
-      includeCheck(currentCheck, true) &&
-      data.specificLocation &&
-      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
-        data.specificLocation
-      )
-    ) {
+    if (includeCheck(currentCheck, true) && data.specificLocation && !isIso885914(data.specificLocation)) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -3069,11 +3021,7 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
 
     // Tro Text contains invalid characters.
     currentCheck = GetCheck(6400027, currentLookups, methodName, true, showDebugMessages);
-    if (
-      includeCheck(currentCheck, true) &&
-      data.troText &&
-      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(data.troText)
-    ) {
+    if (includeCheck(currentCheck, true) && data.troText && !isIso885914(data.troText)) {
       troTextErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -3085,13 +3033,7 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
 
     // Feature Description contains invalid characters.
     currentCheck = GetCheck(6400029, currentLookups, methodName, true, showDebugMessages);
-    if (
-      includeCheck(currentCheck, true) &&
-      data.featureDescription &&
-      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
-        data.featureDescription
-      )
-    ) {
+    if (includeCheck(currentCheck, true) && data.featureDescription && !isIso885914(data.featureDescription)) {
       featureDescriptionErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -3134,13 +3076,7 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
 
     // Source Text contains invalid characters.
     currentCheck = GetCheck(6400040, currentLookups, methodName, true, showDebugMessages);
-    if (
-      includeCheck(currentCheck, true) &&
-      data.sourceText &&
-      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
-        data.sourceText
-      )
-    ) {
+    if (includeCheck(currentCheck, true) && data.sourceText && !isIso885914(data.sourceText)) {
       sourceTextErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -3434,13 +3370,7 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
 
     // PROW Location contains an invalid character.
     currentCheck = GetCheck(6600035, currentLookups, methodName, false, showDebugMessages);
-    if (
-      includeCheck(currentCheck, true) &&
-      data.prowLocation &&
-      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
-        data.prowLocation
-      )
-    ) {
+    if (includeCheck(currentCheck, true) && data.prowLocation && !isIso885914(data.prowLocation)) {
       prowLocationErrors.push(GetErrorMessage(currentCheck, false));
     }
 
@@ -3452,13 +3382,7 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
 
     // PROW Details contains an invalid character.
     currentCheck = GetCheck(6600037, currentLookups, methodName, false, showDebugMessages);
-    if (
-      includeCheck(currentCheck, true) &&
-      data.prowDetails &&
-      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
-        data.prowDetails
-      )
-    ) {
+    if (includeCheck(currentCheck, true) && data.prowDetails && !isIso885914(data.prowDetails)) {
       prowDetailsErrors.push(GetErrorMessage(currentCheck, false));
     }
 
@@ -3470,13 +3394,7 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
 
     // Source Text contains an invalid character.
     currentCheck = GetCheck(6600041, currentLookups, methodName, false, showDebugMessages);
-    if (
-      includeCheck(currentCheck, true) &&
-      data.sourceText &&
-      !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
-        data.sourceText
-      )
-    ) {
+    if (includeCheck(currentCheck, true) && data.sourceText && !isIso885914(data.sourceText)) {
       sourceTextErrors.push(GetErrorMessage(currentCheck, false));
     }
 
