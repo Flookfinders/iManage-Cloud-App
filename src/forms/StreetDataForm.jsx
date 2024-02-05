@@ -45,6 +45,7 @@
 //    031   26.01.24 Sean Flook       IMANN-232 Do not remove record when creating a new street.
 //    032   26.01.24 Sean Flook       IMANN-257 Bug fix handleNoteSelected.
 //    033   02.02.24 Sean Flook       IMANN-271 Reset the errors when opening a new street.
+//    034   05.02.24 Sean Flook       IMANN-276 Do not worry about ASD records when setting coordinates if the record type is 4 or 9.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -8298,6 +8299,7 @@ function StreetDataForm({ data, loading }) {
             asdType61:
               !settingsContext.isScottish &&
               HasASD() &&
+              newStreetData.recordType < 4 &&
               newStreetData.interests.map((asdRec) => ({
                 type: 61,
                 pkId: asdRec.pkId,
@@ -8313,6 +8315,7 @@ function StreetDataForm({ data, loading }) {
             asdType62:
               !settingsContext.isScottish &&
               HasASD() &&
+              newStreetData.recordType < 4 &&
               newStreetData.constructions.map((asdRec) => ({
                 type: 62,
                 pkId: asdRec.pkId,
@@ -8328,6 +8331,7 @@ function StreetDataForm({ data, loading }) {
             asdType63:
               !settingsContext.isScottish &&
               HasASD() &&
+              newStreetData.recordType < 4 &&
               newStreetData.specialDesignations.map((asdRec) => ({
                 type: 63,
                 pkId: asdRec.pkId,
@@ -8342,6 +8346,7 @@ function StreetDataForm({ data, loading }) {
             asdType64:
               !settingsContext.isScottish &&
               HasASD() &&
+              newStreetData.recordType < 4 &&
               newStreetData.heightWidthWeights.map((asdRec) => ({
                 type: 64,
                 pkId: asdRec.pkId,
@@ -8356,6 +8361,7 @@ function StreetDataForm({ data, loading }) {
             asdType66:
               !settingsContext.isScottish &&
               HasASD() &&
+              newStreetData.recordType < 4 &&
               newStreetData.publicRightOfWays.map((asdRec) => ({
                 type: 66,
                 pkId: asdRec.pkId,
