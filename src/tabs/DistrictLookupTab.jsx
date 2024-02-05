@@ -20,6 +20,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import SettingsContext from "../context/settingsContext";
+import LookupContext from "../context/lookupContext";
 
 import { FormatDate } from "../utils/HelperUtils";
 
@@ -62,10 +63,15 @@ DistrictLookupTab.propTypes = {
   onUpdateData: PropTypes.func.isRequired,
 };
 
+DistrictLookupTab.defaultProps = {
+  dataUpdated: false,
+};
+
 function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
   const theme = useTheme();
 
   const settingsContext = useContext(SettingsContext);
+  const lookupContext = useContext(LookupContext);
 
   const [editDistrict, setEditDistrict] = useState(false);
   const [editFtp, setEditFtp] = useState(false);
@@ -318,63 +324,61 @@ function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
         id: data.id,
         organisationId: editVariant === "district" ? updatedData.organisationId : organisationId,
         districtName: editVariant === "district" ? updatedData.districtName : districtName,
-        setDistrictId: editVariant === "district" ? updatedData.districtId : districtId,
-        setDistrictFunction: editVariant === "district" ? updatedData.districtFunction : districtFunction,
-        setDistrictClosed: editVariant === "district" ? updatedData.districtClosed : districtClosed,
-        setDistrictFtpServerName: editVariant === "ftp" ? updatedData.districtFtpServerName : districtFtpServerName,
-        setDistrictServerIpAddress:
-          editVariant === "ftp" ? updatedData.districtServerIpAddress : districtServerIpAddress,
-        setDistrictFtpDirectory: editVariant === "ftp" ? updatedData.districtFtpDirectory : districtFtpDirectory,
-        setDistrictNotificationsUrl:
+        districtId: editVariant === "district" ? updatedData.districtId : districtId,
+        districtFunction: editVariant === "district" ? updatedData.districtFunction : districtFunction,
+        districtClosed: editVariant === "district" ? updatedData.districtClosed : districtClosed,
+        districtFtpServerName: editVariant === "ftp" ? updatedData.districtFtpServerName : districtFtpServerName,
+        districtServerIpAddress: editVariant === "ftp" ? updatedData.districtServerIpAddress : districtServerIpAddress,
+        districtFtpDirectory: editVariant === "ftp" ? updatedData.districtFtpDirectory : districtFtpDirectory,
+        districtNotificationsUrl:
           editVariant === "ftp" ? updatedData.districtNotificationsUrl : districtNotificationsUrl,
-        setAttachmentUrlPrefix: editVariant === "ftp" ? updatedData.attachmentUrlPrefix : attachmentUrlPrefix,
-        setDistrictFaxNo: editVariant === "district" ? updatedData.districtFaxNo : districtFaxNo,
-        setDistrictPostcode: editVariant === "district" ? updatedData.districtPostcode : districtPostcode,
-        setDistrictTelNo: editVariant === "district" ? updatedData.districtTelNo : districtTelNo,
-        setOutOfHoursArrangements:
+        attachmentUrlPrefix: editVariant === "ftp" ? updatedData.attachmentUrlPrefix : attachmentUrlPrefix,
+        districtFaxNo: editVariant === "district" ? updatedData.districtFaxNo : districtFaxNo,
+        districtPostcode: editVariant === "district" ? updatedData.districtPostcode : districtPostcode,
+        districtTelNo: editVariant === "district" ? updatedData.districtTelNo : districtTelNo,
+        outOfHoursArrangements:
           editVariant === "fpnContact" ? updatedData.outOfHoursArrangements : outOfHoursArrangements,
-        setFpnDeliveryUrl: editVariant === "fpnDelivery" ? updatedData.fpnDeliveryUrl : fpnDeliveryUrl,
-        setFpnFaxNumber: editVariant === "fpnDelivery" ? updatedData.fpnFaxNumber : fpnFaxNumber,
-        setFpnDeliveryPostcode: editVariant === "fpnDelivery" ? updatedData.fpnDeliveryPostcode : fpnDeliveryPostcode,
-        setFpnPaymentUrl: editVariant === "fpnPayment" ? updatedData.fpnPaymentUrl : fpnPaymentUrl,
-        setFpnPaymentTelNo: editVariant === "fpnPayment" ? updatedData.fpnPaymentTelNo : fpnPaymentTelNo,
-        setFpnPaymentBankName: editVariant === "fpnPayment" ? updatedData.fpnPaymentBankName : fpnPaymentBankName,
-        setFpnPaymentSortCode: editVariant === "fpnPayment" ? updatedData.fpnPaymentSortCode : fpnPaymentSortCode,
-        setFpnPaymentAccountNo: editVariant === "fpnPayment" ? updatedData.fpnPaymentAccountNo : fpnPaymentAccountNo,
-        setFpnPaymentAccountName:
-          editVariant === "fpnPayment" ? updatedData.fpnPaymentAccountName : fpnPaymentAccountName,
-        setFpnPaymentPostcode: editVariant === "fpnPayment" ? updatedData.fpnPaymentPostcode : fpnPaymentPostcode,
-        setFpnContactName: editVariant === "fpnContact" ? updatedData.fpnContactName : fpnContactName,
-        setFpnContactPostcode: editVariant === "fpnContact" ? updatedData.fpnContactPostcode : fpnContactPostcode,
-        setFpnContactTelNo: editVariant === "fpnContact" ? updatedData.fpnContactTelNo : fpnContactTelNo,
-        setDistrictPostalAddress1:
+        fpnDeliveryUrl: editVariant === "fpnDelivery" ? updatedData.fpnDeliveryUrl : fpnDeliveryUrl,
+        fpnFaxNumber: editVariant === "fpnDelivery" ? updatedData.fpnFaxNumber : fpnFaxNumber,
+        fpnDeliveryPostcode: editVariant === "fpnDelivery" ? updatedData.fpnDeliveryPostcode : fpnDeliveryPostcode,
+        fpnPaymentUrl: editVariant === "fpnPayment" ? updatedData.fpnPaymentUrl : fpnPaymentUrl,
+        fpnPaymentTelNo: editVariant === "fpnPayment" ? updatedData.fpnPaymentTelNo : fpnPaymentTelNo,
+        fpnPaymentBankName: editVariant === "fpnPayment" ? updatedData.fpnPaymentBankName : fpnPaymentBankName,
+        fpnPaymentSortCode: editVariant === "fpnPayment" ? updatedData.fpnPaymentSortCode : fpnPaymentSortCode,
+        fpnPaymentAccountNo: editVariant === "fpnPayment" ? updatedData.fpnPaymentAccountNo : fpnPaymentAccountNo,
+        fpnPaymentAccountName: editVariant === "fpnPayment" ? updatedData.fpnPaymentAccountName : fpnPaymentAccountName,
+        fpnPaymentPostcode: editVariant === "fpnPayment" ? updatedData.fpnPaymentPostcode : fpnPaymentPostcode,
+        fpnContactName: editVariant === "fpnContact" ? updatedData.fpnContactName : fpnContactName,
+        fpnContactPostcode: editVariant === "fpnContact" ? updatedData.fpnContactPostcode : fpnContactPostcode,
+        fpnContactTelNo: editVariant === "fpnContact" ? updatedData.fpnContactTelNo : fpnContactTelNo,
+        districtPostalAddress1:
           editVariant === "district" ? updatedData.districtPostalAddress1 : districtPostalAddress1,
-        setDistrictPostalAddress2:
+        districtPostalAddress2:
           editVariant === "district" ? updatedData.districtPostalAddress2 : districtPostalAddress2,
-        setDistrictPostalAddress3:
+        districtPostalAddress3:
           editVariant === "district" ? updatedData.districtPostalAddress3 : districtPostalAddress3,
-        setDistrictPostalAddress4:
+        districtPostalAddress4:
           editVariant === "district" ? updatedData.districtPostalAddress4 : districtPostalAddress4,
-        setDistrictPostalAddress5:
+        districtPostalAddress5:
           editVariant === "district" ? updatedData.districtPostalAddress5 : districtPostalAddress5,
-        setFpnDeliveryAddress1: editVariant === "fpnDelivery" ? updatedData.fpnDeliveryAddress1 : fpnDeliveryAddress1,
-        setFpnDeliveryAddress2: editVariant === "fpnDelivery" ? updatedData.fpnDeliveryAddress2 : fpnDeliveryAddress2,
-        setFpnDeliveryAddress3: editVariant === "fpnDelivery" ? updatedData.fpnDeliveryAddress3 : fpnDeliveryAddress3,
-        setFpnDeliveryAddress4: editVariant === "fpnDelivery" ? updatedData.fpnDeliveryAddress4 : fpnDeliveryAddress4,
-        setFpnDeliveryAddress5: editVariant === "fpnDelivery" ? updatedData.fpnDeliveryAddress5 : fpnDeliveryAddress5,
-        setFpnContactAddress1: editVariant === "fpnContact" ? updatedData.fpnContactAddress1 : fpnContactAddress1,
-        setFpnContactAddress2: editVariant === "fpnContact" ? updatedData.fpnContactAddress2 : fpnContactAddress2,
-        setFpnContactAddress3: editVariant === "fpnContact" ? updatedData.fpnContactAddress3 : fpnContactAddress3,
-        setFpnContactAddress4: editVariant === "fpnContact" ? updatedData.fpnContactAddress4 : fpnContactAddress4,
-        setFpnContactAddress5: editVariant === "fpnContact" ? updatedData.fpnContactAddress5 : fpnContactAddress5,
-        setFpnPaymentAddress1: editVariant === "fpnPayment" ? updatedData.fpnPaymentAddress1 : fpnPaymentAddress1,
-        setFpnPaymentAddress2: editVariant === "fpnPayment" ? updatedData.fpnPaymentAddress2 : fpnPaymentAddress2,
-        setFpnPaymentAddress3: editVariant === "fpnPayment" ? updatedData.fpnPaymentAddress3 : fpnPaymentAddress3,
-        setFpnPaymentAddress4: editVariant === "fpnPayment" ? updatedData.fpnPaymentAddress4 : fpnPaymentAddress4,
-        setFpnPaymentAddress5: editVariant === "fpnPayment" ? updatedData.fpnPaymentAddress5 : fpnPaymentAddress5,
-        setFpnDeliveryEmailAddress:
+        fpnDeliveryAddress1: editVariant === "fpnDelivery" ? updatedData.fpnDeliveryAddress1 : fpnDeliveryAddress1,
+        fpnDeliveryAddress2: editVariant === "fpnDelivery" ? updatedData.fpnDeliveryAddress2 : fpnDeliveryAddress2,
+        fpnDeliveryAddress3: editVariant === "fpnDelivery" ? updatedData.fpnDeliveryAddress3 : fpnDeliveryAddress3,
+        fpnDeliveryAddress4: editVariant === "fpnDelivery" ? updatedData.fpnDeliveryAddress4 : fpnDeliveryAddress4,
+        fpnDeliveryAddress5: editVariant === "fpnDelivery" ? updatedData.fpnDeliveryAddress5 : fpnDeliveryAddress5,
+        fpnContactAddress1: editVariant === "fpnContact" ? updatedData.fpnContactAddress1 : fpnContactAddress1,
+        fpnContactAddress2: editVariant === "fpnContact" ? updatedData.fpnContactAddress2 : fpnContactAddress2,
+        fpnContactAddress3: editVariant === "fpnContact" ? updatedData.fpnContactAddress3 : fpnContactAddress3,
+        fpnContactAddress4: editVariant === "fpnContact" ? updatedData.fpnContactAddress4 : fpnContactAddress4,
+        fpnContactAddress5: editVariant === "fpnContact" ? updatedData.fpnContactAddress5 : fpnContactAddress5,
+        fpnPaymentAddress1: editVariant === "fpnPayment" ? updatedData.fpnPaymentAddress1 : fpnPaymentAddress1,
+        fpnPaymentAddress2: editVariant === "fpnPayment" ? updatedData.fpnPaymentAddress2 : fpnPaymentAddress2,
+        fpnPaymentAddress3: editVariant === "fpnPayment" ? updatedData.fpnPaymentAddress3 : fpnPaymentAddress3,
+        fpnPaymentAddress4: editVariant === "fpnPayment" ? updatedData.fpnPaymentAddress4 : fpnPaymentAddress4,
+        fpnPaymentAddress5: editVariant === "fpnPayment" ? updatedData.fpnPaymentAddress5 : fpnPaymentAddress5,
+        fpnDeliveryEmailAddress:
           editVariant === "fpnDelivery" ? updatedData.fpnDeliveryEmailAddress : fpnDeliveryEmailAddress,
-        setDistrictPermitSchemeId:
+        districtPermitSchemeId:
           editVariant === "fpnContact" ? updatedData.districtPermitSchemeId : districtPermitSchemeId,
       };
 
@@ -489,6 +493,13 @@ function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
       setDistrictPermitSchemeId(data.districtPermitSchemeId);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (lookupContext.districtUpdated) {
+      setShowEditDialog(false);
+      lookupContext.onDistrictUpdated(false);
+    }
+  }, [lookupContext]);
 
   return (
     <Box

@@ -30,6 +30,7 @@
 //    017   16.01.23 Joel Benford               OS/GP level split
 //    018   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    019   30.01.24 Sean Flook                 Added ESU tolerance for GeoPlace.
+//    020   05.02.24 Sean Flook                 Further filter for maintaining organisation.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2240,7 +2241,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={filteredLookup(SwaOrgRef, false)}
+              lookupData={filteredLookup(SwaOrgRef, false).filter((x) => x.maintainingAuthority)}
               lookupId="id"
               lookupLabel={GetLookupLabel(false)}
               lookupColour="colour"

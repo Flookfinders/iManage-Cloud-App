@@ -17,6 +17,7 @@
 //    004   30.11.23 Sean Flook                 Hide items if not required.
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    006   01.02.24 Sean Flook                 Initial changes required for operational districts.
+//    007   05.02.24 Sean Flook                 Further changes required for operational districts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -33,6 +34,7 @@ import { TreeView, TreeItem } from "@mui/x-tree-view";
 
 import LookupTablesDataForm from "../forms/LookupTablesDataForm";
 import DistrictLookupTab from "../tabs/DistrictLookupTab";
+import EditDistrictLookupDialog from "../dialogs/EditDistrictLookupDialog";
 
 import { HasProperties, GetOperationalDistrictUrl } from "../configuration/ADSConfig";
 
@@ -41,6 +43,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 import { useTheme } from "@mui/styles";
 import { TreeItemStyle } from "../utils/ADSStyles";
+import { GetCurrentDate } from "../utils/HelperUtils";
 
 function LookupTablesTab() {
   const theme = useTheme();
@@ -50,8 +53,26 @@ function LookupTablesTab() {
   const lookupContext = useContext(LookupContext);
 
   const [districtFormData, setDistrictFormData] = useState(null);
+  const [showEditDistrictDialog, setShowEditDistrictDialog] = useState(false);
 
   const [selectedNode, setSelectedNode] = useState(null);
+
+  const newDistrictData = {
+    id: 0,
+    organisationId: null,
+    districtName: "",
+    districtId: null,
+    districtFunction: null,
+    districtClosed: null,
+    districtFaxNo: "",
+    districtPostcode: "",
+    districtTelNo: "",
+    districtPostalAddress1: "",
+    districtPostalAddress2: "",
+    districtPostalAddress3: "",
+    districtPostalAddress4: "",
+    districtPostalAddress5: "",
+  };
 
   /**
    * Event to handle when a node is selected.
@@ -82,7 +103,7 @@ function LookupTablesTab() {
 
       if (saveUrl) {
         const saveData = {
-          operationalDistrictId: updatedData.operationalDistrictId,
+          operationalDistrictId: updatedData.id,
           organisationId: updatedData.organisationId,
           districtName: updatedData.districtName,
           lastUpdateDate: updatedData.lastUpdateDate,
@@ -147,7 +168,66 @@ function LookupTablesTab() {
           .then((res) => (res.ok ? res : Promise.reject(res)))
           .then((res) => res.json())
           .then((result) => {
-            setDistrictFormData(result);
+            setDistrictFormData({
+              id: result.operationalDistrictId,
+              organisationId: result.organisationId,
+              districtName: result.districtName,
+              lastUpdateDate: result.lastUpdateDate,
+              districtId: result.districtId,
+              districtFunction: result.districtFunction,
+              districtClosed: result.districtClosed,
+              districtFtpServerName: result.districtFtpServerName,
+              districtServerIpAddress: result.districtServerIpAddress,
+              districtFtpDirectory: result.districtFtpDirectory,
+              districtNotificationsUrl: result.districtNotificationsUrl,
+              attachmentUrlPrefix: result.attachmentUrlPrefix,
+              districtFaxNo: result.districtFaxNo,
+              districtPostcode: result.districtPostcode,
+              districtTelNo: result.districtTelNo,
+              outOfHoursArrangements: result.outOfHoursArrangements,
+              fpnDeliveryUrl: result.fpnDeliveryUrl,
+              fpnFaxNumber: result.fpnFaxNumber,
+              fpnDeliveryPostcode: result.fpnDeliveryPostcode,
+              fpnPaymentUrl: result.fpnPaymentUrl,
+              fpnPaymentTelNo: result.fpnPaymentTelNo,
+              fpnPaymentBankName: result.fpnPaymentBankName,
+              fpnPaymentSortCode: result.fpnPaymentSortCode,
+              fpnPaymentAccountNo: result.fpnPaymentAccountNo,
+              fpnPaymentAccountName: result.fpnPaymentAccountName,
+              fpnPaymentPostcode: result.fpnPaymentPostcode,
+              fpnContactName: result.fpnContactName,
+              fpnContactPostcode: result.fpnContactPostcode,
+              fpnContactTelNo: result.fpnContactTelNo,
+              districtPostalAddress1: result.districtPostalAddress1,
+              districtPostalAddress2: result.districtPostalAddress2,
+              districtPostalAddress3: result.districtPostalAddress3,
+              districtPostalAddress4: result.districtPostalAddress4,
+              districtPostalAddress5: result.districtPostalAddress5,
+              fpnDeliveryAddress1: result.fpnDeliveryAddress1,
+              fpnDeliveryAddress2: result.fpnDeliveryAddress2,
+              fpnDeliveryAddress3: result.fpnDeliveryAddress3,
+              fpnDeliveryAddress4: result.fpnDeliveryAddress4,
+              fpnDeliveryAddress5: result.fpnDeliveryAddress5,
+              fpnContactAddress1: result.fpnContactAddress1,
+              fpnContactAddress2: result.fpnContactAddress2,
+              fpnContactAddress3: result.fpnContactAddress3,
+              fpnContactAddress4: result.fpnContactAddress4,
+              fpnContactAddress5: result.fpnContactAddress5,
+              fpnPaymentAddress1: result.fpnPaymentAddress1,
+              fpnPaymentAddress2: result.fpnPaymentAddress2,
+              fpnPaymentAddress3: result.fpnPaymentAddress3,
+              fpnPaymentAddress4: result.fpnPaymentAddress4,
+              fpnPaymentAddress5: result.fpnPaymentAddress5,
+              fpnDeliveryEmailAddress: result.fpnDeliveryEmailAddress,
+              districtPermitSchemeId: result.districtPermitSchemeId,
+            });
+            const updatedOperationalDistricts = lookupContext.currentLookups.operationalDistricts.map(
+              (x) => [result].find((rec) => rec.operationalDistrictId === x.operationalDistrictId) || x
+            );
+            if (updatedOperationalDistricts) {
+              lookupContext.onUpdateLookup("operationalDistrict", updatedOperationalDistricts);
+            }
+            lookupContext.onDistrictUpdated(true);
           })
           .catch((res) => {
             switch (res.status) {
@@ -240,6 +320,176 @@ function LookupTablesTab() {
         districtPermitSchemeId: operationalDistrictRecord.districtPermitSchemeId,
         historic: operationalDistrictRecord.historic,
       });
+  };
+
+  const handleAddOperationalDistrict = () => {
+    setShowEditDistrictDialog(true);
+  };
+
+  const handleDoneEditDistrict = async (updatedData) => {
+    setShowEditDistrictDialog(false);
+
+    if (updatedData) {
+      const saveUrl = GetOperationalDistrictUrl("POST", userContext.currentUser.token);
+
+      if (saveUrl) {
+        const saveData = {
+          id: 0,
+          organisationId: updatedData.organisationId,
+          districtName: updatedData.districtName,
+          lastUpdateDate: GetCurrentDate(),
+          districtId: updatedData.districtId,
+          districtFunction: updatedData.districtFunction,
+          districtClosed: updatedData.districtClosed,
+          districtFtpServerName: "",
+          districtServerIpAddress: "",
+          districtFtpDirectory: "",
+          districtNotificationsUrl: "",
+          attachmentUrlPrefix: "",
+          districtFaxNo: updatedData.districtFaxNo,
+          districtPostcode: updatedData.districtPostcode,
+          districtTelNo: updatedData.districtTelNo,
+          outOfHoursArrangements: false,
+          fpnDeliveryUrl: "",
+          fpnFaxNumber: "",
+          fpnDeliveryPostcode: "",
+          fpnPaymentUrl: "",
+          fpnPaymentTelNo: "",
+          fpnPaymentBankName: "",
+          fpnPaymentSortCode: "",
+          fpnPaymentAccountNo: "",
+          fpnPaymentAccountName: "",
+          fpnPaymentPostcode: "",
+          fpnContactName: "",
+          fpnContactPostcode: "",
+          fpnContactTelNo: "",
+          districtPostalAddress1: updatedData.districtPostalAddress1,
+          districtPostalAddress2: updatedData.districtPostalAddress2,
+          districtPostalAddress3: updatedData.districtPostalAddress3,
+          districtPostalAddress4: updatedData.districtPostalAddress4,
+          districtPostalAddress5: updatedData.districtPostalAddress5,
+          fpnDeliveryAddress1: "",
+          fpnDeliveryAddress2: "",
+          fpnDeliveryAddress3: "",
+          fpnDeliveryAddress4: "",
+          fpnDeliveryAddress5: "",
+          fpnContactAddress1: "",
+          fpnContactAddress2: "",
+          fpnContactAddress3: "",
+          fpnContactAddress4: "",
+          fpnContactAddress5: "",
+          fpnPaymentAddress1: "",
+          fpnPaymentAddress2: "",
+          fpnPaymentAddress3: "",
+          fpnPaymentAddress4: "",
+          fpnPaymentAddress5: "",
+          fpnDeliveryEmailAddress: "",
+          districtPermitSchemeId: "",
+        };
+
+        // if (process.env.NODE_ENV === "development")
+        console.log("[DEBUG] handleDoneEditDistrict", updatedData, saveData, saveUrl, JSON.stringify(saveData));
+
+        await fetch(saveUrl.url, {
+          headers: saveUrl.headers,
+          crossDomain: true,
+          method: saveUrl.type,
+          body: JSON.stringify(saveData),
+        })
+          .then((res) => (res.ok ? res : Promise.reject(res)))
+          .then((res) => res.json())
+          .then((result) => {
+            setDistrictFormData({
+              id: result.operationalDistrictId,
+              organisationId: result.organisationId,
+              districtName: result.districtName,
+              lastUpdateDate: result.lastUpdateDate,
+              districtId: result.districtId,
+              districtFunction: result.districtFunction,
+              districtClosed: result.districtClosed,
+              districtFtpServerName: result.districtFtpServerName,
+              districtServerIpAddress: result.districtServerIpAddress,
+              districtFtpDirectory: result.districtFtpDirectory,
+              districtNotificationsUrl: result.districtNotificationsUrl,
+              attachmentUrlPrefix: result.attachmentUrlPrefix,
+              districtFaxNo: result.districtFaxNo,
+              districtPostcode: result.districtPostcode,
+              districtTelNo: result.districtTelNo,
+              outOfHoursArrangements: result.outOfHoursArrangements,
+              fpnDeliveryUrl: result.fpnDeliveryUrl,
+              fpnFaxNumber: result.fpnFaxNumber,
+              fpnDeliveryPostcode: result.fpnDeliveryPostcode,
+              fpnPaymentUrl: result.fpnPaymentUrl,
+              fpnPaymentTelNo: result.fpnPaymentTelNo,
+              fpnPaymentBankName: result.fpnPaymentBankName,
+              fpnPaymentSortCode: result.fpnPaymentSortCode,
+              fpnPaymentAccountNo: result.fpnPaymentAccountNo,
+              fpnPaymentAccountName: result.fpnPaymentAccountName,
+              fpnPaymentPostcode: result.fpnPaymentPostcode,
+              fpnContactName: result.fpnContactName,
+              fpnContactPostcode: result.fpnContactPostcode,
+              fpnContactTelNo: result.fpnContactTelNo,
+              districtPostalAddress1: result.districtPostalAddress1,
+              districtPostalAddress2: result.districtPostalAddress2,
+              districtPostalAddress3: result.districtPostalAddress3,
+              districtPostalAddress4: result.districtPostalAddress4,
+              districtPostalAddress5: result.districtPostalAddress5,
+              fpnDeliveryAddress1: result.fpnDeliveryAddress1,
+              fpnDeliveryAddress2: result.fpnDeliveryAddress2,
+              fpnDeliveryAddress3: result.fpnDeliveryAddress3,
+              fpnDeliveryAddress4: result.fpnDeliveryAddress4,
+              fpnDeliveryAddress5: result.fpnDeliveryAddress5,
+              fpnContactAddress1: result.fpnContactAddress1,
+              fpnContactAddress2: result.fpnContactAddress2,
+              fpnContactAddress3: result.fpnContactAddress3,
+              fpnContactAddress4: result.fpnContactAddress4,
+              fpnContactAddress5: result.fpnContactAddress5,
+              fpnPaymentAddress1: result.fpnPaymentAddress1,
+              fpnPaymentAddress2: result.fpnPaymentAddress2,
+              fpnPaymentAddress3: result.fpnPaymentAddress3,
+              fpnPaymentAddress4: result.fpnPaymentAddress4,
+              fpnPaymentAddress5: result.fpnPaymentAddress5,
+              fpnDeliveryEmailAddress: result.fpnDeliveryEmailAddress,
+              districtPermitSchemeId: result.districtPermitSchemeId,
+            });
+            const updatedOperationalDistricts = lookupContext.currentLookups.operationalDistricts.map((x) => x);
+            updatedOperationalDistricts.push(result);
+
+            if (updatedOperationalDistricts) {
+              lookupContext.onUpdateLookup("operationalDistrict", updatedOperationalDistricts);
+            }
+            // lookupContext.onDistrictUpdated(true);
+            setShowEditDistrictDialog(false);
+          })
+          .catch((res) => {
+            switch (res.status) {
+              case 400:
+                res.json().then((body) => {
+                  console.error("[400 ERROR] Creating operational district", body.errors);
+                });
+                break;
+
+              case 401:
+                res.json().then((body) => {
+                  console.error("[401 ERROR] Creating operational district", body);
+                });
+                break;
+
+              case 500:
+                console.error("[500 ERROR] Creating operational district", res);
+                break;
+
+              default:
+                console.error(`[${res.status} ERROR] handleUpdateData - Creating operational district.`, res);
+                break;
+            }
+          });
+      }
+    }
+  };
+
+  const handleCloseEditDistrict = () => {
+    setShowEditDistrictDialog(false);
   };
 
   useEffect(() => {
@@ -400,12 +650,23 @@ function LookupTablesTab() {
                 </Stack>
               </Grid>
               <Grid item xs={12} sm={10}>
-                <LookupTablesDataForm nodeId={selectedNode} onViewOperationalDistrict={handleViewOperationalDistrict} />
+                <LookupTablesDataForm
+                  nodeId={selectedNode}
+                  onViewOperationalDistrict={handleViewOperationalDistrict}
+                  onAddOperationalDistrict={handleAddOperationalDistrict}
+                />
               </Grid>
             </Grid>
           </Grid>
         </Grid>
       )}
+      <EditDistrictLookupDialog
+        isOpen={showEditDistrictDialog}
+        variant={"district"}
+        data={newDistrictData}
+        onDone={(data) => handleDoneEditDistrict(data)}
+        onClose={handleCloseEditDistrict}
+      />
     </div>
   );
 }

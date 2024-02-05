@@ -21,6 +21,7 @@
 //    008   10.01.24 Sean Flook                 Fix warnings.
 //    009   25.01.24 Sean Flook       IMANN-253 Include historic when checking for changes.
 //    010   01.02.24 Sean Flook                 Initial changes required for operational districts.
+//    011   05.02.24 Sean Flook                 Further changes required for operational districts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,8 +32,7 @@ import PropTypes from "prop-types";
 import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
-import { Snackbar, Alert } from "@mui/material";
-import { Box } from "@mui/system";
+
 import {
   GetPostcodeUrl,
   GetPostTownUrl,
@@ -46,6 +46,10 @@ import {
   GetParishesForAuthorityUrl,
   GetOperationalDistrictUrl,
 } from "../configuration/ADSConfig";
+import { GetCurrentDate } from "../utils/HelperUtils";
+
+import { Snackbar, Alert } from "@mui/material";
+import { Box } from "@mui/system";
 
 import LookupTableGridTab from "../tabs/LookupTableGridTab";
 import AuthorityLookupTableTab from "../tabs/AuthorityLookupTableTab";
@@ -81,9 +85,10 @@ TabPanel.propTypes = {
 LookupTablesDataForm.propTypes = {
   nodeId: PropTypes.number.isRequired,
   onViewOperationalDistrict: PropTypes.func.isRequired,
+  onAddOperationalDistrict: PropTypes.func.isRequired,
 };
 
-function LookupTablesDataForm({ nodeId, onViewOperationalDistrict }) {
+function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperationalDistrict }) {
   const lookupContext = useContext(LookupContext);
   const userContext = useContext(UserContext);
   const settingsContext = useContext(SettingsContext);
@@ -678,7 +683,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict }) {
       lookupContext.currentLookups.operationalDistricts &&
       lookupContext.currentLookups.operationalDistricts.length > 0
     )
-      return lookupContext.currentLookups.operationalDistricts.map(function (x, index) {
+      return lookupContext.currentLookups.operationalDistricts.map(function (x) {
         return {
           id: x.operationalDistrictId,
           organisationId: x.organisationId,
@@ -975,7 +980,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict }) {
 
   const handleAddOperationalDistrict = () => {
     setLookupType("operationalDistrict");
-    setShowAddDialog(true);
+    if (onAddOperationalDistrict) onAddOperationalDistrict();
   };
 
   const handleEditOperationalDistrict = (id) => {
@@ -3796,7 +3801,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict }) {
               lastUpdateDate: operationalDistrictRecord.lastUpdateDate,
               districtId: operationalDistrictRecord.districtId,
               districtFunction: operationalDistrictRecord.districtFunction,
-              districtClosed: operationalDistrictRecord.districtClosed,
+              districtClosed: GetCurrentDate(),
               districtFtpServerName: operationalDistrictRecord.districtFtpServerName,
               districtServerIpAddress: operationalDistrictRecord.districtServerIpAddress,
               districtFtpDirectory: operationalDistrictRecord.districtFtpDirectory,

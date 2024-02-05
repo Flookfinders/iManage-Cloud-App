@@ -23,6 +23,7 @@
 //    010   23.01.24 Sean Flook       IMANN-246 Display information when selecting Part Road.
 //    011   25.01.24 Sean Flook       IMANN-250 No need to default wholeRoad.
 //    012   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
+//    013   05.02.24 Sean Flook                 Filter available districts by the organisation.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -38,6 +39,7 @@ import MapContext from "./../context/mapContext";
 import InformationContext from "../context/informationContext";
 
 import { GetLookupLabel, filteredLookup } from "../utils/HelperUtils";
+import { filteredOperationalDistricts } from "../utils/StreetUtils";
 import ObjectComparison from "../utils/ObjectComparison";
 
 import { ConvertDate } from "../utils/HelperUtils";
@@ -800,7 +802,7 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
           loading={loading}
           useRounded
           includeHistoric
-          lookupData={lookupContext.currentLookups.operationalDistricts}
+          lookupData={filteredOperationalDistricts(lookupContext.currentLookups.operationalDistricts, organisation)}
           lookupId="districtId"
           lookupLabel="districtName"
           value={district}

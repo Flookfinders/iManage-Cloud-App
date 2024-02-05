@@ -34,6 +34,7 @@
 //    021   26.01.24 Sean Flook       IMANN-251 Added missing record type to hasStreetChanged.
 //    022   30.01.24 Sean Flook                 Updated GetStreetCreateData and GetStreetUpdateData to reflect the current models used in the relevant API endpoints.
 //    023   02.02.24 Sean Flook       IMANN-264 Include Scottish record types when handling errors from API.
+//    024   05.02.24 Sean Flook                 Added filteredOperationalDistricts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -86,6 +87,21 @@ export const FilteredStreetType = (isScottish) => {
     return StreetType.filter((x) => x.osText && x.id !== 0);
   } else {
     return StreetType.filter((x) => x.gpText && x.id !== 0 && (HasProperties() || x.id !== 9));
+  }
+};
+
+/**
+ * Returns a list of operational districts depending on the organisation id.
+ *
+ * @param {array} operationalDistricts The complete list of operational districts.
+ * @param {number} organisationId The id of the organisation that we need th operational districts for.
+ * @returns {array} The filtered operational districts.
+ */
+export const filteredOperationalDistricts = (operationalDistricts, organisationId) => {
+  if (organisationId) {
+    return operationalDistricts.filter((x) => x.organisationId === organisationId);
+  } else {
+    return operationalDistricts;
   }
 };
 

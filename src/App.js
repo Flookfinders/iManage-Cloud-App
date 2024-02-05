@@ -38,6 +38,7 @@
 //    025   12.01.24 Sean Flook       IMANN-163 Search results should be an array.
 //    026   25.01.24 Sean Flook                 Changes required after UX review.
 //    027   26.01.24 Sean Flook       IMANN-251 Only check why in HandleLeavingStreet.
+//    028   05.02.24 Sean Flook                 Further changes required for operational districts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -130,6 +131,8 @@ function App() {
   });
 
   const [metadata, setMetadata] = useState(null);
+
+  const [districtUpdated, setDistrictUpdated] = useState(false);
 
   const [sandbox, setSandbox] = useState({
     sourceStreet: null,
@@ -537,6 +540,15 @@ function App() {
       indexBuiltOn: iManageIndexMeta ? iManageIndexMeta.builton : "unknown",
       indexElasticVersion: iManageIndexMeta ? iManageIndexMeta.elasticnugetversion : "unknown",
     });
+  }
+
+  /**
+   * Event to handle when an operational district record has been updated.
+   *
+   * @param {boolean} updated If true the operational district record has been updated.
+   */
+  function HandleDistrictUpdated(updated) {
+    setDistrictUpdated(updated);
   }
 
   /**
@@ -2460,9 +2472,11 @@ function App() {
             value={{
               currentLookups: lookups,
               metadata: metadata,
+              districtUpdated: districtUpdated,
               onLookupChange: HandleLookupChange,
               onUpdateLookup: HandleUpdateLookup,
               onMetadataChange: HandleMetadataChange,
+              onDistrictUpdated: HandleDistrictUpdated,
             }}
           >
             <SandboxContext.Provider

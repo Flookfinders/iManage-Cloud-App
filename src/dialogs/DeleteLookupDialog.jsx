@@ -16,6 +16,7 @@
 //    003   24.11.23 Sean Flook                 Moved Stack to @mui/system.
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   10.01.24 Sean Flook                 Fix warnings.
+//    006   05.02.24 Sean Flook                 Include operational districts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -52,6 +53,7 @@ DeleteLookupDialog.propTypes = {
     "authority",
     "ward",
     "parish",
+    "operationalDistrict",
     "unknown",
   ]).isRequired,
   isOpen: PropTypes.bool.isRequired,
@@ -248,6 +250,14 @@ function DeleteLookupDialog({
         setLookupType("parish");
         const parishRecord = lookupContext.currentLookups.parishes.find((x) => x.pkId === lookupId);
         if (parishRecord) setLookupText(stringToSentenceCase(parishRecord.parish));
+        break;
+
+      case "operationalDistrict":
+        setLookupType("operational district");
+        const operationalDistrictRecord = lookupContext.currentLookups.operationalDistricts.find(
+          (x) => x.pkId === lookupId
+        );
+        if (operationalDistrictRecord) setLookupText(stringToSentenceCase(operationalDistrictRecord.districtName));
         break;
 
       default:
