@@ -23,6 +23,7 @@
 //    010   29.01.24 Sean Flook       IMANN-262 Changed from a Popper control to a Popover control, so we can handle closing when clicking away.
 //    011   29.01.24 Sean Flook       IMANN-262 Do not display the users settings card if no user is logged in.
 //    012   30.01.24 Sean Flook                 Updated to use new Idox logo.
+//    013   05.02.24 Sean Flook                 Tweaked position of logo.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -588,7 +589,7 @@ const ADSNavContent = (props) => {
       >
         <Grid
           sx={{
-            pt: theme.spacing(0.5),
+            pt: theme.spacing(0.3),
             width: navBarWidth,
             height: "98vh",
           }}
