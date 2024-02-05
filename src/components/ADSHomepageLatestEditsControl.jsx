@@ -22,6 +22,7 @@
 //    009   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    010   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    011   26.01.24 Sean Flook       IMANN-260 Corrected field name.
+//    012   02.02.24 Joel Benford               Styling changes on tabs/grid
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -80,14 +81,15 @@ function a11yProps(index) {
   };
 }
 
+const defaultTheme = createTheme();
+const useStyles = makeStyles(
+  (theme) => {
+    return gridRowStyle;
+  },
+  { defaultTheme }
+);
+
 function ADSHomepageLatestEditsControl({ data }) {
-  const defaultTheme = createTheme();
-  const useStyles = makeStyles(
-    (theme) => {
-      return gridRowStyle;
-    },
-    { defaultTheme }
-  );
   const classes = useStyles();
 
   const userContext = useContext(UserContext);
@@ -535,9 +537,10 @@ function ADSHomepageLatestEditsControl({ data }) {
             height: "41.1vh",
             mb: "20px",
           }}
-          className={classes.root}
         >
           <DataGrid
+            className={classes.root}
+            getRowClassName={(params) => "valid-row"}
             getRowId={(row) => row.uprn + "_" + row.usrn}
             sx={{ backgroundColor: adsWhite }}
             rows={data}

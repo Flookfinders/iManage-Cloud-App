@@ -24,6 +24,7 @@
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
 //    012   25.01.24 Sean Flook                 Further changes required after UX review.
 //    013   25.01.24 Joel Benford               Update RecordCountStyle
+//    014   02.02.24 Joel Benford               Update tabLabelStyle and gridRowStyle
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -703,7 +704,9 @@ export const wizardTabStyle = {
  * @return {object} The styling used for tab labels.
  */
 export const tabLabelStyle = (isActive) => {
-  return isActive ? { display: "inline-flex", fontWeight: 700 } : { display: "inline-flex", color: adsMidGreyA };
+  return isActive
+    ? { display: "inline-flex", color: adsBlueA, fontWeight: 700, fontSize: "17px" }
+    : { display: "inline-flex", color: adsMidGreyA, fontSize: "17px" };
 };
 
 /**
@@ -839,6 +842,9 @@ export function RelatedLanguageChipStyle(chipColour) {
  */
 export const gridRowStyle = {
   root: {
+    fontFamily: "Nunito sans",
+    fontSize: "15px",
+    color: adsDarkGrey,
     "& .valid-row": {
       "&:hover": {
         backgroundColor: adsPaleBlueB,

@@ -21,6 +21,7 @@
 //    008   05.01.24 Sean Flook                 use CSS shortcuts.
 //    009   17.01.24 Sean Flook                 Changes after Louise's review.
 //    010   25.01.24 Sean Flook                 Changes required after UX review.
+//    011   02.02.24 Joel Benford               ESU direction icon color
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -81,7 +82,16 @@ import OneWayExemptionType from "../data/OneWayExemptionType";
 import HighwayDedicationCode from "../data/HighwayDedicationCode";
 
 import { useTheme } from "@mui/styles";
-import { adsBlueA, adsMidGreyA, adsRed10, adsRed20, adsWhite, adsLightBlue, adsLightBlue10 } from "../utils/ADSColours";
+import {
+  adsBlueA,
+  adsMidGreyA,
+  adsRed10,
+  adsRed20,
+  adsWhite,
+  adsLightBlue,
+  adsLightBlue10,
+  adsPurple,
+} from "../utils/ADSColours";
 import { ActionIconStyle, menuStyle, menuItemStyle, tooltipStyle } from "../utils/ADSStyles";
 import { grey } from "@mui/material/colors";
 
@@ -283,7 +293,7 @@ function ADSEsuDataListItem({
           <SyncAltIcon
             sx={{
               color: adsWhite,
-              backgroundColor: adsLightBlue,
+              backgroundColor: adsPurple,
             }}
           />
         );
@@ -676,7 +686,7 @@ function ADSEsuDataListItem({
               <TimelineIcon
                 sx={{
                   color: adsWhite,
-                  backgroundColor: adsLightBlue,
+                  backgroundColor: adsPurple,
                 }}
               />
             )}
