@@ -22,6 +22,7 @@
 //    009   12.12.23 Sean Flook                 Changes required for React 18. Set the colours according to the street state colour and BLPU logical status colour.
 //    010   04.01.24 Sean Flook                 Fix colours for street type and correctly set the hover colour in the tooltip.
 //    011   10.01.24 Sean Flook                 Removed street state as no longer required.
+//    012   05.02.24 Sean Flook                 Ignore case when looking at labels when getting the required colours.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -169,7 +170,11 @@ function ADSDoughnutChart({ chartData, title, label, value }) {
       if (chartTitle.current.substring(0, 6).toUpperCase() === "STREET") {
         const streetBackgroundColours = [];
         labels.current.forEach((item) => {
-          const typeRec = StreetType.find((x) => x.gpText === item || x.osText === item);
+          const typeRec = StreetType.find(
+            (x) =>
+              (x.gpText && x.gpText.toLowerCase() === item.toLowerCase()) ||
+              (x.osText && x.osText.toLowerCase() === item.toLowerCase())
+          );
           if (typeRec) streetBackgroundColours.push(typeRec.chartColour);
         });
         if (streetBackgroundColours.length > 0) return streetBackgroundColours;
@@ -177,7 +182,11 @@ function ADSDoughnutChart({ chartData, title, label, value }) {
       } else if (chartTitle.current.substring(0, 7).toUpperCase() === "PROPERT") {
         const propertyBackgroundColors = [];
         labels.current.forEach((item) => {
-          const logicalStatusRec = BLPULogicalStatus.find((x) => x.gpText === item || x.osText === item);
+          const logicalStatusRec = BLPULogicalStatus.find(
+            (x) =>
+              (x.gpText && x.gpText.toLowerCase() === item.toLowerCase()) ||
+              (x.osText && x.osText.toLowerCase() === item.toLowerCase())
+          );
           if (logicalStatusRec) propertyBackgroundColors.push(logicalStatusRec.colour);
         });
         if (propertyBackgroundColors.length > 0) return propertyBackgroundColors;
@@ -189,7 +198,11 @@ function ADSDoughnutChart({ chartData, title, label, value }) {
       if (chartTitle.current.substring(0, 6).toUpperCase() === "STREET") {
         const streetBorderColours = [];
         labels.current.forEach((item) => {
-          const typeRec = StreetType.find((x) => x.gpText === item || x.osText === item);
+          const typeRec = StreetType.find(
+            (x) =>
+              (x.gpText && x.gpText.toLowerCase() === item.toLowerCase()) ||
+              (x.osText && x.osText.toLowerCase() === item.toLowerCase())
+          );
           if (typeRec) streetBorderColours.push(typeRec.chartColour);
         });
         if (streetBorderColours.length > 0) return streetBorderColours;
@@ -197,7 +210,11 @@ function ADSDoughnutChart({ chartData, title, label, value }) {
       } else if (chartTitle.current.substring(0, 7).toUpperCase() === "PROPERT") {
         const propertyBorderColors = [];
         labels.current.forEach((item) => {
-          const logicalStatusRec = BLPULogicalStatus.find((x) => x.gpText === item || x.osText === item);
+          const logicalStatusRec = BLPULogicalStatus.find(
+            (x) =>
+              (x.gpText && x.gpText.toLowerCase() === item.toLowerCase()) ||
+              (x.osText && x.osText.toLowerCase() === item.toLowerCase())
+          );
           if (logicalStatusRec) {
             propertyBorderColors.push(logicalStatusRec.colour);
           }
