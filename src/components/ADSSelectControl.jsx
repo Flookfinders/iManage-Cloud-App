@@ -24,9 +24,10 @@
 //    011   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
 //    012   27.06.23 Sean Flook         WI40234 Handle the doNotSetTitleCase flag when control is read only.
 //    013   06.10.23 Sean Flook                 Use colour variables.
-//    014   27.10.23 Sean Flook      IMANN-175 Added a placeholder to display 'No change' if required.
+//    014   27.10.23 Sean Flook       IMANN-175 Added a placeholder to display 'No change' if required.
 //    015   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    016   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    017   06.02.23 Sean Flook       IMANN-264 If we have no lookup data ensure the options are cleared.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -413,7 +414,7 @@ function ADSSelectControl({
           if (filteredData.length !== options.length) setOptions(filteredData);
         }
       }
-    }
+    } else if (options.length) setOptions([]);
   }, [errorText, includeHistoric, includeHiddenCode, lookupData, lookupLabel, lookupId, lookupHistoric, options]);
 
   useEffect(() => {

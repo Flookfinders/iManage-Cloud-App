@@ -35,6 +35,7 @@
 //    022   30.01.24 Sean Flook                 Updated GetStreetCreateData and GetStreetUpdateData to reflect the current models used in the relevant API endpoints.
 //    023   02.02.24 Sean Flook       IMANN-264 Include Scottish record types when handling errors from API.
 //    024   05.02.24 Sean Flook                 Added filteredOperationalDistricts.
+//    025   06.02.23 Sean Flook       IMANN-264 In filteredOperationalDistricts if we do not have an organisation return an empty array.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -101,7 +102,7 @@ export const filteredOperationalDistricts = (operationalDistricts, organisationI
   if (organisationId) {
     return operationalDistricts.filter((x) => x.organisationId === organisationId);
   } else {
-    return operationalDistricts;
+    return [];
   }
 };
 
