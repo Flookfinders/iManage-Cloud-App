@@ -23,6 +23,7 @@
 //    010   12.01.24 Sean Flook                 Fixed duplicate key warning.
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
 //    012   25.01.24 Joel Benford               Record counts to bold
+//    013   06.02.24 Sean Flook                 Set the partRoadColour on the wholeRoadIcon.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -378,7 +379,7 @@ function AsdDataListSubItem({
                       />
                     )}
                     <IndentIcon />
-                    <WholeRoadIcon wholeRoad={subD.wholeRoad} />
+                    <WholeRoadIcon wholeRoad={subD.wholeRoad} partRoadColour={adsMidGreyA} />
                     <Avatar
                       variant={variantAvatar}
                       sx={getAsdAvatarStyle(avatarClipPath, iconBorderColour, iconColour, iconBackgroundColour)}
