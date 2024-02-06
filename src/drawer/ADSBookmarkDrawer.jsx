@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    005   06.02.24 Sean Flook                 Updated street view icon.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -27,6 +28,7 @@ import PropTypes from "prop-types";
 import { Drawer, Grid, Typography, List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { Box } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
+import StreetviewIcon from "@mui/icons-material/Streetview";
 import StarIcon from "@mui/icons-material/Star";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import WatchLaterIcon from "@mui/icons-material/WatchLater";
@@ -241,19 +243,19 @@ function ADSBookmarkDrawer(props) {
             <List dense>
               <ListItemButton onClick={() => handleStreetViewClick(0)}>
                 <ListItemIcon>
-                  <StarIcon />
+                  <StreetviewIcon />
                 </ListItemIcon>
                 <ListItemText primary="Closed" />
               </ListItemButton>
               <ListItemButton onClick={() => handleStreetViewClick(1)}>
                 <ListItemIcon>
-                  <StarIcon />
+                  <StreetviewIcon />
                 </ListItemIcon>
                 <ListItemText primary="Under construction" />
               </ListItemButton>
               <ListItemButton onClick={() => handleStreetViewClick(2)}>
                 <ListItemIcon>
-                  <StarIcon />
+                  <StreetviewIcon />
                 </ListItemIcon>
                 <ListItemText primary="PRoW" />
               </ListItemButton>
