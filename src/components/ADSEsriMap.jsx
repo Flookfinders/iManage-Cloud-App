@@ -46,6 +46,7 @@
 //    032   25.01.24 Sean Flook                 Changes required after UX review and some fixes for bugs/warnings.
 //    033   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    034   06.02.24 Sean Flook                 Updated street view icon.
+//    035   07.02.24 Sean Flook                 Changes required to support viaEuropa mapping for OneScotland.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1829,6 +1830,10 @@ function ADSEsriMap(startExtent) {
                   featureLayer.push({ layer: baseLayer, startIndex: 0 });
                   break;
 
+                case "viaEuropa":
+                  alert("Code to handle viaEuropa WFS layers has not been written yet.");
+                  break;
+
                 default: // OS
                   // Create an empty GraphicsLayer as a placeholder for when the user actually gets the features
                   newBaseLayer = new GraphicsLayer({
@@ -1877,6 +1882,10 @@ function ADSEsriMap(startExtent) {
                   });
                   break;
 
+                case "viaEuropa":
+                  alert("Code to handle viaEuropa WMS layers has not been written yet.");
+                  break;
+
                 default: // OS
                   alert("Code to handle OS WMS layers has not been written yet.");
                   break;
@@ -1887,6 +1896,23 @@ function ADSEsriMap(startExtent) {
               switch (baseLayer.serviceProvider) {
                 case "thinkWare":
                   alert("Code to handle thinkWare WMTS layers has not been written yet.");
+                  break;
+
+                case "viaEuropa":
+                  newBaseLayer = new WMTSLayer({
+                    url: `${baseLayer.url}/${baseLayer.layerKey}/${baseLayer.activeLayerId}/wmts`,
+                    id: baseLayer.layerId,
+                    copyright:
+                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                        : baseLayer.copyright,
+                    title: baseLayer.title,
+                    listMode: baseLayer.displayInList ? "show" : "hide",
+                    maxScale: baseLayer.maxScale,
+                    minScale: baseLayer.minScale,
+                    opacity: baseLayer.opacity,
+                    visible: baseLayer.visible,
+                  });
                   break;
 
                 default: // OS

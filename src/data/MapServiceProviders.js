@@ -1,11 +1,18 @@
 const MapServiceProviders = [
   {
     id: "OS",
-    text: "Ordnance Survey",
+    gpText: "Ordnance Survey",
+    osText: "Ordnance Survey",
+  },
+  {
+    id: "viaEuropa",
+    gpText: undefined,
+    osText: "viaEuropa",
   },
   {
     id: "thinkWare",
-    text: "thinkWhere",
+    gpText: "thinkWhere",
+    osText: "thinkWhere",
   },
 ];
 

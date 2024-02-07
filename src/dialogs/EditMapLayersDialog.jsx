@@ -19,6 +19,7 @@
 //    006   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    007   10.01.24 Sean Flook                 Fix warnings.
 //    008   11.01.24 Sean Flook                 Fix warnings.
+//    009   07.02.24 Sean Flook                 Changes required for viaEuropa.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -44,7 +45,7 @@ import MinMaxDialog from "../dialogs/MinMaxDialog";
 import MapLayerTypes from "../data/MapLayerTypes";
 import MapServiceProviders from "../data/MapServiceProviders";
 
-import { defaultMapLayerIds } from "../utils/HelperUtils";
+import { defaultMapLayerIds, GetLookupLabel, filteredLookup } from "../utils/HelperUtils";
 import { ValidateMapLayer } from "../utils/SettingsValidation";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -244,7 +245,12 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
   const handleLayerTypeChangeEvent = (newValue) => {
     setLayerType(newValue);
     if (newValue !== data.layerType && onDataChanged) onDataChanged(getUpdatedData("layerType", newValue));
-    if (errors && onErrorsChanged) onErrorsChanged(errors.filter((x) => x.field.toLowerCase() !== "layertype"));
+    if (serviceProvider === "viaEuropa") {
+      if (newValue === 1) setServiceProviderError("viaEuropa does not support v2.0.0 WFS");
+      else if (errors && onErrorsChanged)
+        onErrorsChanged(errors.filter((x) => x.field.toLowerCase() !== "serviceprovider"));
+      else if (serviceProviderError) setServiceProviderError(null);
+    } else if (errors && onErrorsChanged) onErrorsChanged(errors.filter((x) => x.field.toLowerCase() !== "layertype"));
   };
 
   /**
@@ -367,11 +373,16 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
     // Add the default OS copyright if required
     if (
       !copyright &&
-      (newValue === "OS" || (newValue === "thinkWare" && activeLayerId.toLowerCase().startsWith("osmm")))
+      (newValue === "OS" ||
+        newValue === "viaEuropa" ||
+        (newValue === "thinkWare" && activeLayerId.toLowerCase().startsWith("osmm")))
     )
       handleCopyrightInformationChangeEvent("Contains OS data © Crown copyright and database rights <<year>>");
     if (newValue !== data.serviceProvider && onDataChanged) onDataChanged(getUpdatedData("serviceProvider", newValue));
-    if (errors && onErrorsChanged) onErrorsChanged(errors.filter((x) => x.field.toLowerCase() !== "serviceprovider"));
+    if (newValue === "viaEuropa" && data.layerType === 1)
+      setServiceProviderError("viaEuropa does not support v2.0.0 WFS");
+    else if (errors && onErrorsChanged)
+      onErrorsChanged(errors.filter((x) => x.field.toLowerCase() !== "serviceprovider"));
   };
 
   /**
@@ -694,9 +705,9 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                     isRequired
                     useRounded
                     doNotSetTitleCase
-                    lookupData={MapServiceProviders}
+                    lookupData={filteredLookup(MapServiceProviders, settingsContext.isScottish)}
                     lookupId="id"
-                    lookupLabel="text"
+                    lookupLabel={GetLookupLabel(settingsContext.isScottish)}
                     value={serviceProvider}
                     helperText="Select the service provider for this layer."
                     errorText={serviceProviderError}
@@ -738,7 +749,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                     errorText={activeLayerIdError}
                     onChange={handleActiveLayerIdChangeEvent}
                   />
-                  {serviceProvider === "OS" && (
+                  {(serviceProvider === "OS" || serviceProvider === "viaEuropa") && (
                     <ADSTextControl
                       label="Key"
                       isEditable
@@ -752,7 +763,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                       onChange={handleLayerKeyChangeEvent}
                     />
                   )}
-                  {layerType === 3 && (
+                  {layerType === 3 && serviceProvider !== "viaEuropa" && (
                     <ADSTextControl
                       label="Mode"
                       isEditable
@@ -806,6 +817,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                     isEditable
                     isRequired={
                       serviceProvider === "OS" ||
+                      serviceProvider === "viaEuropa" ||
                       (serviceProvider === "thinkWare" &&
                         activeLayerId &&
                         activeLayerId.toLowerCase().startsWith("osmm"))
