@@ -30,6 +30,7 @@
 //    016   11.01.24 Sean Flook                 Fix warnings.
 //    017   12.01.24 Sean Flook                 Fixed duplicate key warning.
 //    018   25.01.24 Sean Flook                 Changes required after UX review.
+//    019   06.02.24 Joel Benford               Change flavour of light blue
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -71,7 +72,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
 
-import { adsBlueA, adsWhite, adsLightGreyB, adsLightBlue10, adsLightGreyD } from "../utils/ADSColours";
+import { adsBlueA, adsWhite, adsLightGreyB, adsPaleBlueA, adsLightGreyD } from "../utils/ADSColours";
 import {
   dataFormStyle,
   ActionIconStyle,
@@ -742,7 +743,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
         borderLeft: `solid ${adsLightGreyD} 3px`,
         backgroundColor: adsWhite,
         "&:hover": {
-          backgroundColor: adsLightBlue10,
+          backgroundColor: adsPaleBlueA,
           color: adsBlueA,
         },
       };
@@ -754,7 +755,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
         borderLeftWidth: "3px",
         "&:hover": {
           borderLeft: `solid ${adsLightGreyD} 3px`,
-          backgroundColor: adsLightBlue10,
+          backgroundColor: adsPaleBlueA,
           color: adsBlueA,
         },
       };

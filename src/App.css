@@ -108,6 +108,10 @@
   color: #2a6ebb;
 }
 
+.MuiTreeItem-content:hover {
+  background-color: #e6f3f9;
+}
+
 .esri-view .esri-view-surface:focus::after {
   outline-color: #2a6ebb;
 }

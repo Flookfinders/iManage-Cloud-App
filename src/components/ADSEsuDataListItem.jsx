@@ -303,7 +303,7 @@ function ADSEsuDataListItem({
           <StartToEndIcon
             sx={{
               color: adsWhite,
-              backgroundColor: adsLightBlue,
+              backgroundColor: adsPurple,
             }}
           />
         );
@@ -313,7 +313,7 @@ function ADSEsuDataListItem({
           <EndToStartIcon
             sx={{
               color: adsWhite,
-              backgroundColor: adsLightBlue,
+              backgroundColor: adsPurple,
             }}
           />
         );
