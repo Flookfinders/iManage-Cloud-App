@@ -20,6 +20,7 @@
 //    007   10.01.24 Sean Flook                 Fix warnings.
 //    008   11.01.24 Sean Flook                 Fix warnings.
 //    009   07.02.24 Sean Flook                 Changes required for viaEuropa.
+//    010   07.02.24 Sean Flook                 Changes required to support WFS from viaEuropa mapping for OneScotland.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -245,12 +246,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
   const handleLayerTypeChangeEvent = (newValue) => {
     setLayerType(newValue);
     if (newValue !== data.layerType && onDataChanged) onDataChanged(getUpdatedData("layerType", newValue));
-    if (serviceProvider === "viaEuropa") {
-      if (newValue === 1) setServiceProviderError("viaEuropa does not support v2.0.0 WFS");
-      else if (errors && onErrorsChanged)
-        onErrorsChanged(errors.filter((x) => x.field.toLowerCase() !== "serviceprovider"));
-      else if (serviceProviderError) setServiceProviderError(null);
-    } else if (errors && onErrorsChanged) onErrorsChanged(errors.filter((x) => x.field.toLowerCase() !== "layertype"));
+    if (errors && onErrorsChanged) onErrorsChanged(errors.filter((x) => x.field.toLowerCase() !== "layertype"));
   };
 
   /**
@@ -379,10 +375,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
     )
       handleCopyrightInformationChangeEvent("Contains OS data © Crown copyright and database rights <<year>>");
     if (newValue !== data.serviceProvider && onDataChanged) onDataChanged(getUpdatedData("serviceProvider", newValue));
-    if (newValue === "viaEuropa" && data.layerType === 1)
-      setServiceProviderError("viaEuropa does not support v2.0.0 WFS");
-    else if (errors && onErrorsChanged)
-      onErrorsChanged(errors.filter((x) => x.field.toLowerCase() !== "serviceprovider"));
+    if (errors && onErrorsChanged) onErrorsChanged(errors.filter((x) => x.field.toLowerCase() !== "serviceprovider"));
   };
 
   /**

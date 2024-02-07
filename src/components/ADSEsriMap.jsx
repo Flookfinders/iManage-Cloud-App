@@ -47,6 +47,7 @@
 //    033   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    034   06.02.24 Sean Flook                 Updated street view icon.
 //    035   07.02.24 Sean Flook                 Changes required to support viaEuropa mapping for OneScotland.
+//    036   07.02.24 Sean Flook                 Changes required to support WFS from viaEuropa mapping for OneScotland.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1811,47 +1812,21 @@ function ADSEsriMap(startExtent) {
 
           switch (baseLayer.layerType) {
             case 1: // WFS
-              switch (baseLayer.serviceProvider) {
-                case "thinkWare":
-                  // Create an empty GraphicsLayer as a placeholder for when the user actually gets the features
-                  newBaseLayer = new GraphicsLayer({
-                    id: baseLayer.layerId,
-                    copyright:
-                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
-                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                        : baseLayer.copyright,
-                    title: baseLayer.title,
-                    listMode: baseLayer.displayInList ? "show" : "hide",
-                    maxScale: baseLayer.maxScale,
-                    minScale: baseLayer.minScale,
-                    opacity: baseLayer.opacity,
-                    visible: baseLayer.visible,
-                  });
-                  featureLayer.push({ layer: baseLayer, startIndex: 0 });
-                  break;
-
-                case "viaEuropa":
-                  alert("Code to handle viaEuropa WFS layers has not been written yet.");
-                  break;
-
-                default: // OS
-                  // Create an empty GraphicsLayer as a placeholder for when the user actually gets the features
-                  newBaseLayer = new GraphicsLayer({
-                    id: baseLayer.layerId,
-                    copyright:
-                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
-                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                        : baseLayer.copyright,
-                    title: baseLayer.title,
-                    listMode: baseLayer.displayInList ? "show" : "hide",
-                    maxScale: baseLayer.maxScale,
-                    minScale: baseLayer.minScale,
-                    opacity: baseLayer.opacity,
-                    visible: baseLayer.visible,
-                  });
-                  featureLayer.push({ layer: baseLayer, startIndex: 0 });
-                  break;
-              }
+              // Create an empty GraphicsLayer as a placeholder for when the user actually gets the features
+              newBaseLayer = new GraphicsLayer({
+                id: baseLayer.layerId,
+                copyright:
+                  baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                    ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                    : baseLayer.copyright,
+                title: baseLayer.title,
+                listMode: baseLayer.displayInList ? "show" : "hide",
+                maxScale: baseLayer.maxScale,
+                minScale: baseLayer.minScale,
+                opacity: baseLayer.opacity,
+                visible: baseLayer.visible,
+              });
+              featureLayer.push({ layer: baseLayer, startIndex: 0 });
               break;
 
             case 2: // WMS
@@ -4758,6 +4733,10 @@ function ADSEsriMap(startExtent) {
           const osFeature = await GetOSFeatureAtCoord(coord, layer);
           return osFeature;
 
+        case "viaEuropa":
+          const viaEuropaFeature = await GetViaEuropaFeatureAtCoord(coord, layer);
+          return viaEuropaFeature;
+
         case "thinkWare":
           const thinkWareFeature = await GetThinkWareFeatureAtCoord(coord, layer);
           return thinkWareFeature;
@@ -4791,6 +4770,39 @@ function ADSEsriMap(startExtent) {
         .join("&");
 
       const url = layer.url + "?" + encodedParameters;
+
+      return esriRequest(url, options)
+        .then(function (response) {
+          return response;
+        })
+        .catch((error) => {
+          console.error("[ERROR] getting function", { error: error });
+        });
+    }
+
+    function GetViaEuropaFeatureAtCoord(coord, layer) {
+      const wfsParams = {
+        key: layer.layerKey,
+        service: "WFS",
+        request: "GetFeature",
+        version: "2.0.0",
+        typeNames: layer.activeLayerId,
+        propertyName: layer.propertyName,
+        outputFormat: "JSON",
+        srsName: "urn:ogc:def:crs:EPSG::27700",
+        filter: `<ogc:Filter><ogc:Contains><ogc:PropertyName>geom</ogc:PropertyName><gml:Point srsName="urn:ogc:def:crs:EPSG::27700"><gml:coordinates>${coord}</gml:coordinates></gml:Point></ogc:Contains></ogc:Filter>`,
+        count: 1,
+      };
+
+      const options = {
+        responseType: "json",
+      };
+
+      const encodedParameters = Object.keys(wfsParams)
+        .map((paramName) => paramName + "=" + encodeURI(wfsParams[paramName]))
+        .join("&");
+
+      const url = `${layer.url}/${layer.layerKey}/wfs?${encodedParameters}`;
 
       return esriRequest(url, options)
         .then(function (response) {
