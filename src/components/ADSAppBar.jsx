@@ -29,7 +29,7 @@
 //    016   12.01.24 Sean Flook       IMANN-163 Search results should be an array.
 //    017   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    018   26.01.24 Sean Flook       IMANN-251 Fix HandleChangeCheck and only do the postCheckAction after the record is saved.
-//    0199  05.02.24 Joel Benford               Hide close button on homepage, add spacing before auth avatar
+//    019   05.02.24 Joel Benford               Hide close button on homepage, add spacing before auth avatar
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -64,19 +64,7 @@ import {
 } from "../utils/PropertyUtils";
 import { HasASD } from "../configuration/ADSConfig";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
-import {
-  AppBar,
-  IconButton,
-  Typography,
-  Tooltip,
-  Snackbar,
-  Alert,
-  Divider,
-  Link,
-  Popper,
-  Avatar,
-  Box,
-} from "@mui/material";
+import { AppBar, IconButton, Typography, Tooltip, Snackbar, Alert, Divider, Link, Popper, Avatar } from "@mui/material";
 import { Stack } from "@mui/system";
 import { EditConfirmationServiceProvider } from "../pages/EditConfirmationPage";
 import ADSErrorList from "./ADSErrorList";
@@ -133,7 +121,6 @@ function ADSAppBar(props) {
   const [haveMapProperties, setHaveMapProperties] = useState(false);
   const [havePropertyError, setHavePropertyError] = useState(false);
   const [haveAdminSettings, setHaveAdminSettings] = useState(false);
-  const [haveHomepage, setHaveHomepage] = useState(false);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
   const [selectingProperties, setSelectingProperties] = useState(false);
@@ -782,8 +769,6 @@ function ADSAppBar(props) {
     setHavePropertyError(propertyContext && propertyContext.currentPropertyHasErrors);
 
     setHaveAdminSettings(location.pathname === AdminSettingsRoute);
-
-    setHaveHomepage(location.pathname === HomeRoute);
   }, [searchContext.currentSearchData, streetContext, propertyContext, mapContext.currentBackgroundData, location]);
 
   useEffect(() => {
@@ -847,7 +832,7 @@ function ADSAppBar(props) {
                 onClick={() => HandleChangeCheck("home")}
               />
             ) : (
-              !haveHomepage && (
+              location.pathname !== HomeRoute && (
                 <ADSActionButton
                   variant="close"
                   tooltipTitle="Home"
@@ -960,16 +945,15 @@ function ADSAppBar(props) {
                   </Typography>
                 </>
               ) : haveAdminSettings ? (
-                <Box sx={{ display: "flex", ml: theme.spacing(1) }}>
+                <Stack direction="row" justifyContent="flex-start" alignItems="center" sx={{ pl: "12px" }}>
                   <Avatar
                     variant="rounded"
-                    sx={{ bl: "8px" }}
                     {...StringAvatar(settingsContext ? settingsContext.authorityName : null, false)}
                   />
                   <Typography sx={titleStyle()} variant="subtitle1" noWrap align="left">
                     {`${settingsContext ? settingsContext.authorityName : null} settings`}
                   </Typography>
-                </Box>
+                </Stack>
               ) : (
                 <Typography sx={titleStyle()} variant="subtitle1" noWrap align="left">
                   iManage Cloud
