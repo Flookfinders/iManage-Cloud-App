@@ -22,6 +22,7 @@
 //    009   25.01.24 Sean Flook       IMANN-250 No need to default wholeRoad.
 //    010   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
 //    011   07.02.24 Sean Flook       IMANN-289 Corrected error field name.
+//    012   07.02.24 Sean Flook                 Display a warning dialog when changing from Part Road to Whole Road.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -51,6 +52,7 @@ import ADSTextToggleControl from "../components/ADSTextToggleControl";
 import ADSInformationControl from "../components/ADSInformationControl";
 // import ADSSwitchControl from "../components/ADSSwitchControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+import MessageDialog from "../dialogs/MessageDialog";
 
 import SwaOrgRef from "../data/SwaOrgRef";
 import ReinstatementType from "../data/ReinstatementType";
@@ -106,6 +108,7 @@ function ReinstatementCategoryDataTab({
   const [userCanEdit, setUserCanEdit] = useState(false);
 
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
+  const [showWholeRoadWarning, setShowWholeRoadWarning] = useState(false);
 
   const [reinstatementCategoryError, setReinstatementCategoryError] = useState(null);
   const [custodianError, setCustodianError] = useState(null);
@@ -258,18 +261,22 @@ function ReinstatementCategoryDataTab({
    * @param {boolean} newValue The new whole road flag.
    */
   const handleWholeRoadChangeEvent = (newValue) => {
-    setWholeRoad(newValue);
-    if (!dataChanged) {
-      setDataChanged(wholeRoad !== newValue);
-      if (onDataChanged && wholeRoad !== newValue) onDataChanged();
-    }
-    UpdateSandbox("wholeRoad", newValue);
-    if (newValue) {
-      mapContext.onEditMapObject(null, null);
-      informationContext.onClearInformation();
+    if (newValue && !wholeRoad) {
+      setShowWholeRoadWarning(true);
     } else {
-      mapContext.onEditMapObject(52, data && data.reinstatementCategoryData && data.reinstatementCategoryData.pkId);
-      informationContext.onDisplayInformation("partRoadASD", "ReinstatementCategoryDataTab");
+      setWholeRoad(newValue);
+      if (!dataChanged) {
+        setDataChanged(wholeRoad !== newValue);
+        if (onDataChanged && wholeRoad !== newValue) onDataChanged();
+      }
+      UpdateSandbox("wholeRoad", newValue);
+      if (newValue) {
+        mapContext.onEditMapObject(null, null);
+        informationContext.onClearInformation();
+      } else {
+        mapContext.onEditMapObject(52, data && data.reinstatementCategoryData && data.reinstatementCategoryData.pkId);
+        informationContext.onDisplayInformation("partRoadASD", "ReinstatementCategoryDataTab");
+      }
     }
   };
 
@@ -373,6 +380,27 @@ function ReinstatementCategoryDataTab({
     }
   };
 
+  /**
+   * Event to handle when the message dialog is closed.
+   *
+   * @param {string} action The action taken from the message dialog.
+   */
+  const handleCloseMessageDialog = (action) => {
+    if (action === "continue") {
+      setWholeRoad(true);
+      if (!dataChanged) {
+        setDataChanged(!wholeRoad);
+        if (onDataChanged && !wholeRoad) onDataChanged();
+      }
+      UpdateSandbox("wholeRoad", true);
+
+      mapContext.onEditMapObject(null, null);
+      informationContext.onClearInformation();
+    }
+
+    setShowWholeRoadWarning(false);
+  };
+
   useEffect(() => {
     if (!loading && data && data.reinstatementCategoryData) {
       setReinstatementCategory(data.reinstatementCategoryData.reinstatementCategoryCode);
@@ -390,6 +418,12 @@ function ReinstatementCategoryDataTab({
       setReinstatementTypeLookup(filteredLookup(ReinstatementType, true));
     }
   }, [loading, data]);
+
+  useEffect(() => {
+    if (!wholeRoad && !informationContext.informationSource) {
+      informationContext.onDisplayInformation("partRoadASD", "ReinstatementCategoryDataTab");
+    }
+  }, [wholeRoad, informationContext]);
 
   useEffect(() => {
     if (sandboxContext.currentSandbox.sourceStreet && data && data.reinstatementCategoryData) {
@@ -681,6 +715,7 @@ function ReinstatementCategoryDataTab({
           open={openDeleteConfirmation}
           onClose={handleCloseDeleteConfirmation}
         />
+        <MessageDialog isOpen={showWholeRoadWarning} variant="cancelASDPartRoad" onClose={handleCloseMessageDialog} />
       </div>
       <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
         <ADSInformationControl variant={"partRoadASD"} />

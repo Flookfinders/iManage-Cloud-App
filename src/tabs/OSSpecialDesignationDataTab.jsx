@@ -23,6 +23,7 @@
 //    010   23.01.24 Sean Flook       IMANN-246 Display information when selecting Part Road.
 //    011   25.01.24 Sean Flook       IMANN-250 No need to default wholeRoad.
 //    012   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
+//    013   07.02.24 Sean Flook                 Display a warning dialog when changing from Part Road to Whole Road.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -54,6 +55,7 @@ import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ADSTextToggleControl from "../components/ADSTextToggleControl";
 import ADSInformationControl from "../components/ADSInformationControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+import MessageDialog from "../dialogs/MessageDialog";
 
 import { useTheme } from "@mui/styles";
 import { adsBlack, adsYellow } from "../utils/ADSColours";
@@ -107,6 +109,7 @@ function OSSpecialDesignationDataTab({
   const [userCanEdit, setUserCanEdit] = useState(false);
 
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
+  const [showWholeRoadWarning, setShowWholeRoadWarning] = useState(false);
 
   const [designationCategoryError, setDesignationCategoryError] = useState(null);
   const [descriptionError, setDescriptionError] = useState(null);
@@ -275,18 +278,22 @@ function OSSpecialDesignationDataTab({
    * @param {boolean} newValue The new whole road flag.
    */
   const handleWholeRoadChangeEvent = (newValue) => {
-    setWholeRoad(newValue);
-    if (!dataChanged) {
-      setDataChanged(wholeRoad !== newValue);
-      if (onDataChanged && wholeRoad !== newValue) onDataChanged();
-    }
-    UpdateSandbox("wholeRoad", newValue);
-    if (newValue) {
-      mapContext.onEditMapObject(null, null);
-      informationContext.onClearInformation();
+    if (newValue && !wholeRoad) {
+      setShowWholeRoadWarning(true);
     } else {
-      mapContext.onEditMapObject(53, data && data.osSpecialDesignationData && data.osSpecialDesignationData.pkId);
-      informationContext.onDisplayInformation("partRoadASD", "OSSpecialDesignationDataTab");
+      setWholeRoad(newValue);
+      if (!dataChanged) {
+        setDataChanged(wholeRoad !== newValue);
+        if (onDataChanged && wholeRoad !== newValue) onDataChanged();
+      }
+      UpdateSandbox("wholeRoad", newValue);
+      if (newValue) {
+        mapContext.onEditMapObject(null, null);
+        informationContext.onClearInformation();
+      } else {
+        mapContext.onEditMapObject(53, data && data.osSpecialDesignationData && data.osSpecialDesignationData.pkId);
+        informationContext.onDisplayInformation("partRoadASD", "OSSpecialDesignationDataTab");
+      }
     }
   };
 
@@ -392,6 +399,27 @@ function OSSpecialDesignationDataTab({
   };
 
   /**
+   * Event to handle when the message dialog is closed.
+   *
+   * @param {string} action The action taken from the message dialog.
+   */
+  const handleCloseMessageDialog = (action) => {
+    if (action === "continue") {
+      setWholeRoad(true);
+      if (!dataChanged) {
+        setDataChanged(!wholeRoad);
+        if (onDataChanged && !wholeRoad) onDataChanged();
+      }
+      UpdateSandbox("wholeRoad", true);
+
+      mapContext.onEditMapObject(null, null);
+      informationContext.onClearInformation();
+    }
+
+    setShowWholeRoadWarning(false);
+  };
+
+  /**
    * Method to get the text for the supplied designation type code.
    *
    * @param {number} designationType The designation type code that we need the text for.
@@ -422,6 +450,12 @@ function OSSpecialDesignationDataTab({
       setSwaOrgRefLookup(filteredLookup(SwaOrgRef, true));
     }
   }, [loading, data]);
+
+  useEffect(() => {
+    if (!wholeRoad && !informationContext.informationSource) {
+      informationContext.onDisplayInformation("partRoadASD", "OSSpecialDesignationDataTab");
+    }
+  }, [wholeRoad, informationContext]);
 
   useEffect(() => {
     if (sandboxContext.currentSandbox.sourceStreet && data && data.osSpecialDesignationData) {
@@ -734,6 +768,7 @@ function OSSpecialDesignationDataTab({
           open={openDeleteConfirmation}
           onClose={handleCloseDeleteConfirmation}
         />
+        <MessageDialog isOpen={showWholeRoadWarning} variant="cancelASDPartRoad" onClose={handleCloseMessageDialog} />
       </div>
       <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
         <ADSInformationControl variant={"partRoadASD"} />

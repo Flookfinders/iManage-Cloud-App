@@ -26,6 +26,7 @@
 //    013   25.01.24 Sean Flook       IMANN-250 No need to default wholeRoad.
 //    014   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
 //    015   05.02.24 Sean Flook                 Filter available districts by the organisation.
+//    016   07.02.24 Sean Flook                 Display a warning dialog when changing from Part Road to Whole Road.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -54,6 +55,7 @@ import ADSTextControl from "../components/ADSTextControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ADSInformationControl from "../components/ADSInformationControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+import MessageDialog from "../dialogs/MessageDialog";
 
 import SwaOrgRef from "../data/SwaOrgRef";
 import InterestType from "../data/InterestType";
@@ -106,6 +108,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
   const [userCanEdit, setUserCanEdit] = useState(false);
 
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
+  const [showWholeRoadWarning, setShowWholeRoadWarning] = useState(false);
 
   const [streetStatusError, setStreetStatusError] = useState(null);
   const [interestedOrganisationError, setInterestedOrganisationError] = useState(null);
@@ -236,18 +239,22 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
    * @param {boolean} newValue The new whole road flag.
    */
   const handleWholeRoadChangeEvent = (newValue) => {
-    setWholeRoad(newValue);
-    if (!dataChanged) {
-      setDataChanged(wholeRoad !== newValue);
-      if (onDataChanged && wholeRoad !== newValue) onDataChanged();
-    }
-    UpdateSandbox("wholeRoad", newValue);
-    if (newValue) {
-      mapContext.onEditMapObject(null, null);
-      informationContext.onClearInformation();
+    if (newValue && !wholeRoad) {
+      setShowWholeRoadWarning(true);
     } else {
-      mapContext.onEditMapObject(61, data && data.interestData && data.interestData.pkId);
-      informationContext.onDisplayInformation("partRoadASD", "InterestDataTab");
+      setWholeRoad(newValue);
+      if (!dataChanged) {
+        setDataChanged(wholeRoad !== newValue);
+        if (onDataChanged && wholeRoad !== newValue) onDataChanged();
+      }
+      UpdateSandbox("wholeRoad", newValue);
+      if (newValue) {
+        mapContext.onEditMapObject(null, null);
+        informationContext.onClearInformation();
+      } else {
+        mapContext.onEditMapObject(61, data && data.interestData && data.interestData.pkId);
+        informationContext.onDisplayInformation("partRoadASD", "InterestDataTab");
+      }
     }
   };
 
@@ -385,6 +392,27 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
     }
   };
 
+  /**
+   * Event to handle when the message dialog is closed.
+   *
+   * @param {string} action The action taken from the message dialog.
+   */
+  const handleCloseMessageDialog = (action) => {
+    if (action === "continue") {
+      setWholeRoad(true);
+      if (!dataChanged) {
+        setDataChanged(!wholeRoad);
+        if (onDataChanged && !wholeRoad) onDataChanged();
+      }
+      UpdateSandbox("wholeRoad", true);
+
+      mapContext.onEditMapObject(null, null);
+      informationContext.onClearInformation();
+    }
+
+    setShowWholeRoadWarning(false);
+  };
+
   useEffect(() => {
     if (!loading && data && data.interestData) {
       setStreetStatus(data.interestData.streetStatus);
@@ -405,6 +433,12 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
       setSwaOrgRefLookup(filteredLookup(SwaOrgRef, false));
     }
   }, [loading, data]);
+
+  useEffect(() => {
+    if (!wholeRoad && !informationContext.informationSource) {
+      informationContext.onDisplayInformation("partRoadASD", "InterestDataTab");
+    }
+  }, [wholeRoad, informationContext]);
 
   useEffect(() => {
     if (sandboxContext.currentSandbox.sourceStreet && data && data.interestData) {
@@ -712,6 +746,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
           open={openDeleteConfirmation}
           onClose={handleCloseDeleteConfirmation}
         />
+        <MessageDialog isOpen={showWholeRoadWarning} variant="cancelASDPartRoad" onClose={handleCloseMessageDialog} />
       </div>
       <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
         <ADSInformationControl variant={"partRoadASD"} />

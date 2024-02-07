@@ -16,6 +16,7 @@
 //    003   20.12.23 Sean Flook       IMANN-152 Added Edit ASD Geometry and Edit ESU Geometry.
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    006   07.02.24 Sean Flook                 Added cancelASDPartRoad and removed editASDGeometry and editESUGeometry.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -25,6 +26,7 @@ import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 
 import { IconButton, Button, Typography, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Stack } from "@mui/system";
 
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
@@ -35,7 +37,7 @@ import { useTheme } from "@mui/styles";
 
 MessageDialog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
-  variant: PropTypes.oneOf(["cancelWizard", "cancelMoveBlpu", "editASDGeometry", "editESUGeometry"]).isRequired,
+  variant: PropTypes.oneOf(["cancelWizard", "cancelMoveBlpu", "cancelASDPartRoad"]).isRequired,
   onClose: PropTypes.func.isRequired,
 };
 
@@ -69,11 +71,8 @@ function MessageDialog({ isOpen, variant, onClose }) {
       case "cancelMoveBlpu":
         return "Cancel move BLPU seed point";
 
-      case "editASDGeometry":
-        return "Edit ASD geometry";
-
-      case "editESUGeometry":
-        return "Edit ESU geometry";
+      case "cancelASDPartRoad":
+        return "Whole road";
 
       default:
         return `Unknown variant: ${variant}`;
@@ -101,13 +100,12 @@ function MessageDialog({ isOpen, variant, onClose }) {
           </Typography>
         );
 
-      case "editASDGeometry":
-      case "editESUGeometry":
+      case "cancelASDPartRoad":
         return (
-          <Typography variant="body2">
-            This will delete the existing geometry, if you just want to edit the existing geometry then select the
-            existing geometry on the map first using the selection tool.
-          </Typography>
+          <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={1}>
+            <Typography variant="body2">Toggling back to 'Whole Road' will reset the geometry.</Typography>
+            <Typography variant="body2">Are you sure you want to continue?</Typography>
+          </Stack>
         );
 
       default:
@@ -142,6 +140,29 @@ function MessageDialog({ isOpen, variant, onClose }) {
               startIcon={<ArrowRightIcon />}
             >
               Continue
+            </Button>
+          </Fragment>
+        );
+
+      case "cancelASDPartRoad":
+        return (
+          <Fragment>
+            <Button
+              variant="contained"
+              onClick={handleContinueClick}
+              sx={blueButtonStyle}
+              startIcon={<ArrowRightIcon />}
+            >
+              Continue
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleCloseClick}
+              autoFocus
+              sx={whiteButtonStyle}
+              startIcon={<CloseIcon />}
+            >
+              Cancel
             </Button>
           </Fragment>
         );

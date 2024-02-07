@@ -24,6 +24,7 @@
 //    011   25.01.24 Sean Flook       IMANN-250 No need to default wholeRoad.
 //    012   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
 //    013   05.02.24 Sean Flook                 Filter available districts by the organisation.
+//    014   07.02.24 Sean Flook                 Display a warning dialog when changing from Part Road to Whole Road.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -57,6 +58,7 @@ import ADSNumberControl from "../components/ADSNumberControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ADSInformationControl from "../components/ADSInformationControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+import MessageDialog from "../dialogs/MessageDialog";
 
 import { adsWhite, adsBlack, adsMidRed } from "../utils/ADSColours";
 import { toolbarStyle, dataFormStyle } from "../utils/ADSStyles";
@@ -105,6 +107,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
   const [userCanEdit, setUserCanEdit] = useState(false);
 
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
+  const [showWholeRoadWarning, setShowWholeRoadWarning] = useState(false);
 
   const [restrictionCodeError, setRestrictionCodeError] = useState(null);
   const [valueMetricError, setValueMetricError] = useState(null);
@@ -265,18 +268,22 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
    * @param {boolean} newValue The new whole road flag.
    */
   const handleWholeRoadChangeEvent = (newValue) => {
-    setWholeRoad(newValue);
-    if (!dataChanged) {
-      setDataChanged(wholeRoad !== newValue);
-      if (onDataChanged && wholeRoad !== newValue) onDataChanged();
-    }
-    UpdateSandbox("wholeRoad", newValue);
-    if (newValue) {
-      mapContext.onEditMapObject(null, null);
-      informationContext.onClearInformation();
+    if (newValue && !wholeRoad) {
+      setShowWholeRoadWarning(true);
     } else {
-      mapContext.onEditMapObject(64, data && data.hwwData && data.hwwData.pkId);
-      informationContext.onDisplayInformation("partRoadASD", "HWWDataTab");
+      setWholeRoad(newValue);
+      if (!dataChanged) {
+        setDataChanged(wholeRoad !== newValue);
+        if (onDataChanged && wholeRoad !== newValue) onDataChanged();
+      }
+      UpdateSandbox("wholeRoad", newValue);
+      if (newValue) {
+        mapContext.onEditMapObject(null, null);
+        informationContext.onClearInformation();
+      } else {
+        mapContext.onEditMapObject(64, data && data.hwwData && data.hwwData.pkId);
+        informationContext.onDisplayInformation("partRoadASD", "HWWDataTab");
+      }
     }
   };
 
@@ -416,6 +423,27 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
     }
   };
 
+  /**
+   * Event to handle when the message dialog is closed.
+   *
+   * @param {string} action The action taken from the message dialog.
+   */
+  const handleCloseMessageDialog = (action) => {
+    if (action === "continue") {
+      setWholeRoad(true);
+      if (!dataChanged) {
+        setDataChanged(!wholeRoad);
+        if (onDataChanged && !wholeRoad) onDataChanged();
+      }
+      UpdateSandbox("wholeRoad", true);
+
+      mapContext.onEditMapObject(null, null);
+      informationContext.onClearInformation();
+    }
+
+    setShowWholeRoadWarning(false);
+  };
+
   useEffect(() => {
     if (!loading && data && data.hwwData) {
       setRestrictionCode(data.hwwData.hwwRestrictionCode);
@@ -437,6 +465,12 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
       setSwaOrgRefLookup(filteredLookup(SwaOrgRef, false));
     }
   }, [loading, data]);
+
+  useEffect(() => {
+    if (!wholeRoad && !informationContext.informationSource) {
+      informationContext.onDisplayInformation("partRoadASD", "HWWDataTab");
+    }
+  }, [wholeRoad, informationContext]);
 
   useEffect(() => {
     if (sandboxContext.currentSandbox.sourceStreet && data && data.hwwData) {
@@ -771,6 +805,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
       </Box>
       <div>
         <ConfirmDeleteDialog variant="hww" open={openDeleteConfirmation} onClose={handleCloseDeleteConfirmation} />
+        <MessageDialog isOpen={showWholeRoadWarning} variant="cancelASDPartRoad" onClose={handleCloseMessageDialog} />
       </div>
       <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
         <ADSInformationControl variant={"partRoadASD"} />
