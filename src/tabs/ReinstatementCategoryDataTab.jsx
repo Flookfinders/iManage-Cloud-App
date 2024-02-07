@@ -21,6 +21,7 @@
 //    008   23.01.24 Sean Flook       IMANN-246 Display information when selecting Part Road.
 //    009   25.01.24 Sean Flook       IMANN-250 No need to default wholeRoad.
 //    010   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
+//    011   07.02.24 Sean Flook       IMANN-289 Corrected error field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -447,7 +448,7 @@ function ReinstatementCategoryDataTab({
             setCustodianError(error.errors);
             break;
 
-          case "authority":
+          case "reinstatementauthority":
             setAuthorityError(error.errors);
             break;
 

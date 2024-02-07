@@ -23,6 +23,7 @@
 //    010   17.01.24 Sean Flook                 Changes after Louise's review.
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
 //    012   30.01.24 Sean Flook                 Changed tolerance to a select control so we can limit the options to valid items.
+//    013   07.02.24 Sean Flook       IMANN-284 Corrected error field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -859,19 +860,19 @@ function EsuDataTab({
             setEndDateError(error.errors);
             break;
 
-          case "State":
+          case "state":
             setStateError(error.errors);
             break;
 
-          case "StateDate":
+          case "statedate":
             setStateDateError(error.errors);
             break;
 
-          case "EsuClassification":
+          case "esuclassification":
             setClassificationError(error.errors);
             break;
 
-          case "EsuClassificationDate":
+          case "esuclassificationdate":
             setClassificationDateError(error.errors);
             break;
 
@@ -1097,6 +1098,7 @@ function EsuDataTab({
           <ADSSelectControl
             label="Classification"
             isEditable={userCanEdit}
+            isRequired
             doNotSetTitleCase
             loading={loading}
             isFocused={focusedField ? focusedField === "EsuClassification" : false}

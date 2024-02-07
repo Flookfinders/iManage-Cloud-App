@@ -42,6 +42,7 @@
 //    010   01.02.24 Sean Flook                 Changes required for differences in field names between GeoPlace and OneScotland.
 //    011   02.02.24 Sean Flook       IMANN-269 Use isIso885914 to determine if the various texts are compliant to the ISO 8859-14 (Celtic-8) character set.
 //    012   02.02.24 Sean Flook       IMANN-264 Correctly call includeCheck for GeoPlace ASD records.
+//    013   07.02.24 Sean Flook       IMANN-284 Added missing OneScotland ESU checks.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -66,6 +67,7 @@ import StreetType from "../data/StreetType";
 import StreetClassification from "../data/StreetClassification";
 import EsuClassification from "./../data/ESUClassification";
 import ESUDirectionCode from "../data/ESUDirectionCode";
+import ESUState from "../data/ESUState";
 import OneWayExemptionType from "../data/OneWayExemptionType";
 import OneWayExemptionPeriodicity from "../data/OneWayExemptionPeriodicity";
 import HighwayDedicationCode from "./../data/HighwayDedicationCode";
@@ -627,12 +629,55 @@ export function ValidateEsuData(data, index, currentLookups, isScottish) {
   let classificationErrors = [];
   let classificationDateErrors = [];
   let stateErrors = [];
+  let stateDateErrors = [];
   let toleranceErrors = [];
   let directionErrors = [];
   let validationErrors = [];
   let currentCheck;
 
   if (data) {
+    // Mandatory State is missing.
+    currentCheck = GetCheck(1300011, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && !data.state) {
+      stateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Mandatory State Date is missing.
+    currentCheck = GetCheck(1300012, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && !data.stateDate) {
+      stateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // State Date cannot be in the future.
+    currentCheck = GetCheck(1300013, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && data.stateDate && isFutureDate(data.stateDate)) {
+      stateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // State is invalid.
+    currentCheck = GetCheck(1300014, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && data.state && !ESUState.find((x) => x.id === data.state)) {
+      stateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // State Date cannot be before the Start Date.
+    currentCheck = GetCheck(1300015, currentLookups, methodName, isScottish, showDebugMessages);
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.state &&
+      data.startDate &&
+      isEndBeforeStart(data.startDate, data.stateDate)
+    ) {
+      stateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // State is 4 but Esu End Date is not set.
+    currentCheck = GetCheck(1300016, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && data.state && data.state === 4 && !data.endDate) {
+      stateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     // Mandatory Start Date is missing.
     currentCheck = GetCheck(1300017, currentLookups, methodName, isScottish, showDebugMessages);
     if (isScottish) {
@@ -728,6 +773,7 @@ export function ValidateEsuData(data, index, currentLookups, isScottish) {
     currentCheck = GetCheck(1300028, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && data.endDate && data.state !== 4) {
       stateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // Mandatory ESU Tolerance is missing.
@@ -758,6 +804,8 @@ export function ValidateEsuData(data, index, currentLookups, isScottish) {
       directionErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
   }
+
+  if (showDebugMessages) console.log("[DEBUG] ValidateEsuData - Finished checks");
 
   if (startDateErrors.length > 0)
     validationErrors.push({
@@ -792,6 +840,13 @@ export function ValidateEsuData(data, index, currentLookups, isScottish) {
       index: index,
       field: "State",
       errors: stateErrors,
+    });
+
+  if (stateDateErrors.length > 0)
+    validationErrors.push({
+      index: index,
+      field: "StateDate",
+      errors: stateDateErrors,
     });
 
   if (toleranceErrors.length > 0)
