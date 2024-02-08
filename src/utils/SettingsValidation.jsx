@@ -18,6 +18,7 @@
 //    001   25.04.23 Sean Flook                 Initial Revision.
 //    002   07.09.23 Sean Flook                 Removed unnecessary console logs.
 //    003   15.12.23 Sean Flook                 Added comments.
+//    004   08.02.24 Sean Flook                 Changes required for viaEuropa.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -142,6 +143,7 @@ export function ValidateMapLayer(data, currentLookups, isScottish) {
       currentCheck &&
       !currentCheck.ignoreCheck &&
       (data.serviceProvider === "OS" ||
+        data.serviceProvider === "viaEuropa" ||
         (data.serviceProvider === "thinkWare" &&
           data.activeLayerId &&
           data.activeLayerId.toLowerCase().startsWith("osmm"))) &&
@@ -149,9 +151,15 @@ export function ValidateMapLayer(data, currentLookups, isScottish) {
     )
       copyrightErrors.push(GetErrorMessage(currentCheck, isScottish));
 
-    // Mandatory service mode is missing.
+    // Mandatory OS service mode is missing.
     currentCheck = GetCheck(8700023, currentLookups, methodName, isScottish, showDebugMessages);
-    if (currentCheck && !currentCheck.ignoreCheck && data.layerType === 3 && !data.serviceMode)
+    if (
+      currentCheck &&
+      !currentCheck.ignoreCheck &&
+      data.serviceProvider === "OS" &&
+      data.layerType === 3 &&
+      !data.serviceMode
+    )
       serviceModeErrors.push(GetErrorMessage(currentCheck, isScottish));
 
     // Mandatory property name is missing.

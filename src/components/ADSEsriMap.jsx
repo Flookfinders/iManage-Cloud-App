@@ -48,6 +48,7 @@
 //    034   06.02.24 Sean Flook                 Updated street view icon.
 //    035   07.02.24 Sean Flook                 Changes required to support viaEuropa mapping for OneScotland.
 //    036   07.02.24 Sean Flook                 Changes required to support WFS from viaEuropa mapping for OneScotland.
+//    037   08.02.24 Sean Flook                 Added a fix for using viaEuropa mapping with ArcGIS.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1875,7 +1876,7 @@ function ADSEsriMap(startExtent) {
 
                 case "viaEuropa":
                   newBaseLayer = new WMTSLayer({
-                    url: `${baseLayer.url}/${baseLayer.layerKey}/${baseLayer.activeLayerId}/wmts`,
+                    url: `${baseLayer.url}/${baseLayer.layerKey}/${baseLayer.activeLayerId}/wmts?client=arcgis`,
                     id: baseLayer.layerId,
                     copyright:
                       baseLayer.copyright && baseLayer.copyright.includes("<<year>>")

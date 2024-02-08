@@ -21,6 +21,7 @@
 //    008   11.01.24 Sean Flook                 Fix warnings.
 //    009   07.02.24 Sean Flook                 Changes required for viaEuropa.
 //    010   07.02.24 Sean Flook                 Changes required to support WFS from viaEuropa mapping for OneScotland.
+//    011   08.02.24 Sean Flook                 Correctly set additional fields.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -171,7 +172,22 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
       layerPosition: field && field === "layerPosition" ? newValue : data.layerPosition,
       url: field && field === "url" ? newValue : url,
       title: field && field === "title" ? newValue : title,
-      copyright: field && field === "copyright" ? newValue : copyright,
+      copyright:
+        field && field === "copyright"
+          ? newValue
+          : (field &&
+              field === "serviceProvider" &&
+              !copyright &&
+              (newValue === "OS" ||
+                newValue === "viaEuropa" ||
+                (newValue === "thinkWare" && activeLayerId.toLowerCase().startsWith("osmm")))) ||
+            (field &&
+              field === "activeLayerId" &&
+              !copyright &&
+              serviceProvider === "thinkWare" &&
+              newValue.toLowerCase().startsWith("osmm"))
+          ? "Contains OS data © Crown copyright and database rights <<year>>"
+          : copyright,
       displayInList: field && field === "displayInList" ? newValue : displayInList,
       visible: field && field === "visible" ? newValue : visible,
       minScale: field && field === "minScale" ? newValue : minScale,
@@ -187,7 +203,12 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
       layerUsername: field && field === "layerUsername" ? newValue : layerUsername,
       layerPassword: field && field === "layerPassword" ? newValue : layerPassword,
       activeLayerId: field && field === "activeLayerId" ? newValue : activeLayerId,
-      serviceMode: field && field === "serviceMode" ? newValue : serviceMode,
+      serviceMode:
+        field && field === "serviceMode"
+          ? newValue
+          : field && field === "serviceProvider" && !serviceMode
+          ? "KVP"
+          : serviceMode,
       propertyName: field && field === "propertyName" ? newValue : propertyName,
       usePaging: field && field === "usePaging" ? newValue : usePaging,
       maxBatchSize: field && field === "maxBatchSize" ? newValue : maxBatchSize,
@@ -366,14 +387,6 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
    */
   const handleServiceProviderChangeEvent = (newValue) => {
     setServiceProvider(newValue);
-    // Add the default OS copyright if required
-    if (
-      !copyright &&
-      (newValue === "OS" ||
-        newValue === "viaEuropa" ||
-        (newValue === "thinkWare" && activeLayerId.toLowerCase().startsWith("osmm")))
-    )
-      handleCopyrightInformationChangeEvent("Contains OS data © Crown copyright and database rights <<year>>");
     if (newValue !== data.serviceProvider && onDataChanged) onDataChanged(getUpdatedData("serviceProvider", newValue));
     if (errors && onErrorsChanged) onErrorsChanged(errors.filter((x) => x.field.toLowerCase() !== "serviceprovider"));
   };
@@ -407,9 +420,6 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
    */
   const handleActiveLayerIdChangeEvent = (newValue) => {
     setActiveLayerId(newValue);
-    // Add the default OS copyright if required
-    if (!copyright && serviceProvider === "thinkWare" && newValue.toLowerCase().startsWith("osmm"))
-      handleCopyrightInformationChangeEvent("Contains OS data © Crown copyright and database rights <<year>>");
     if (newValue !== data.activeLayerId && onDataChanged) onDataChanged(getUpdatedData("activeLayerId", newValue));
     if (errors && onErrorsChanged) onErrorsChanged(errors.filter((x) => x.field.toLowerCase() !== "activelayerid"));
   };
