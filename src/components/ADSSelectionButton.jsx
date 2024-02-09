@@ -12,6 +12,7 @@
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   18.01.24 Sean Flook                 Initial Revision.
+//    002   09.02.24 Sean Flook                 Added mergeExtent.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -28,6 +29,8 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CallSplitIcon from "@mui/icons-material/CallSplit";
 import CallMergeIcon from "@mui/icons-material/CallMerge";
 import DeleteIcon from "@mui/icons-material/DeleteOutline";
+import StraightIcon from "@mui/icons-material/Straight";
+import MergeIcon from "@mui/icons-material/Merge";
 import CheckIcon from "@mui/icons-material/Check";
 import NoteAddIcon from "@mui/icons-material/NoteAddOutlined";
 import InsightsIcon from "@mui/icons-material/Insights";
@@ -55,6 +58,7 @@ ADSSelectionButton.propTypes = {
     "deleteProvenance",
     "deleteCrossReference",
     "deleteWizard",
+    "mergeExtent",
     "approved",
     "moveBlpu",
     "addNote",
@@ -122,6 +126,10 @@ function ADSSelectionButton({ variant, selectionCount, menuControlId, isDisabled
       case "deleteWizard":
         return <DeleteIcon />;
 
+      case "mergeExtent":
+        if (selectionCount === 1) return <StraightIcon />;
+        else return <MergeIcon />;
+
       case "approved":
         return <CheckIcon />;
 
@@ -188,6 +196,10 @@ function ADSSelectionButton({ variant, selectionCount, menuControlId, isDisabled
       case "deleteProvenance":
         return `Delete BLPU provenance record${selectionCount === 1 ? "" : "s"}`;
 
+      case "mergeExtent":
+        if (selectionCount === 1) return "Use selected feature for extent";
+        else return "Merge selected features and use for extent";
+
       case "deleteCrossReference":
         return `Delete cross reference record${selectionCount === 1 ? "" : "s"}`;
 
@@ -250,6 +262,10 @@ function ADSSelectionButton({ variant, selectionCount, menuControlId, isDisabled
       case "deleteCrossReference":
       case "deleteWizard":
         return "Delete";
+
+      case "mergeExtent":
+        if (selectionCount === 1) return "Use";
+        else return "Merge & use";
 
       case "approved":
         return "Set approved";

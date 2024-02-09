@@ -28,6 +28,7 @@
 //    015   25.01.24 Sean Flook                 Changes required after UX review.
 //    016   25.01.24 Sean Flook                 Make the create street button visible.
 //    017   31.01.24 Joel Benford               Show addList only in dev
+//    018   09.02.24 Sean Flook                 Added extents.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -86,6 +87,7 @@ ADSSelectionControl.propTypes = {
   haveOrganisation: PropTypes.bool,
   haveSuccessorCrossRef: PropTypes.bool,
   haveProvenance: PropTypes.bool,
+  haveMapExtent: PropTypes.bool,
   haveCrossReference: PropTypes.bool,
   haveWizard: PropTypes.bool,
   haveMoveBlpu: PropTypes.bool,
@@ -97,6 +99,7 @@ ADSSelectionControl.propTypes = {
   currentOrganisation: PropTypes.array,
   currentSuccessorCrossRef: PropTypes.array,
   currentProvenance: PropTypes.array,
+  currentExtent: PropTypes.array,
   currentCrossReference: PropTypes.array,
   propertyUprns: PropTypes.array,
   onSetCopyOpen: PropTypes.func,
@@ -107,6 +110,7 @@ ADSSelectionControl.propTypes = {
   onDeleteOrganisation: PropTypes.func,
   onDeleteSuccessorCrossRef: PropTypes.func,
   onDeleteProvenance: PropTypes.func,
+  onMergeExtent: PropTypes.func,
   onDeleteCrossReference: PropTypes.func,
   onDeleteWizard: PropTypes.func,
   onClose: PropTypes.func.isRequired,
@@ -122,6 +126,7 @@ ADSSelectionControl.defaultProps = {
   haveOrganisation: false,
   haveSuccessorCrossRef: false,
   haveProvenance: false,
+  haveMapExtent: false,
   haveCrossReference: false,
   haveWizard: false,
   haveMoveBlpu: false,
@@ -138,6 +143,7 @@ function ADSSelectionControl({
   haveOrganisation,
   haveSuccessorCrossRef,
   haveProvenance,
+  haveMapExtent,
   haveCrossReference,
   haveWizard,
   haveMoveBlpu,
@@ -149,6 +155,7 @@ function ADSSelectionControl({
   currentOrganisation,
   currentSuccessorCrossRef,
   currentProvenance,
+  currentExtent,
   currentCrossReference,
   propertyUprns,
   onSetCopyOpen,
@@ -159,6 +166,7 @@ function ADSSelectionControl({
   onDeleteOrganisation,
   onDeleteSuccessorCrossRef,
   onDeleteProvenance,
+  onMergeExtent,
   onDeleteCrossReference,
   onDeleteWizard,
   onClose,
@@ -918,6 +926,13 @@ function ADSSelectionControl({
   };
 
   /**
+   * Event to handle merging extents
+   */
+  const handleMergeExtent = () => {
+    if (currentExtent && currentExtent.length > 0 && onMergeExtent) onMergeExtent();
+  };
+
+  /**
    * Event to handle deleting a cross reference
    */
   const handleDeleteCrossReference = () => {
@@ -1115,6 +1130,7 @@ function ADSSelectionControl({
     if (haveOrganisation) numTypes++;
     if (haveSuccessorCrossRef) numTypes++;
     if (haveProvenance) numTypes++;
+    if (haveMapExtent) numTypes++;
     if (haveCrossReference) numTypes++;
     if (haveWizard) numTypes++;
     if (haveMoveBlpu) numTypes++;
@@ -1130,6 +1146,7 @@ function ADSSelectionControl({
     haveOrganisation,
     haveSuccessorCrossRef,
     haveProvenance,
+    haveMapExtent,
     haveCrossReference,
     haveWizard,
     haveMoveBlpu,
@@ -1718,6 +1735,14 @@ function ADSSelectionControl({
                 selectionCount={selectionCount}
                 isDisabled={!userCanEdit}
                 onClick={handleDeleteProvenance}
+              />
+            )}
+            {numberOfTypes === 1 && haveMapExtent && (
+              <ADSSelectionButton
+                variant="mergeExtent"
+                selectionCount={selectionCount}
+                isDisabled={!userCanEdit}
+                onClick={handleMergeExtent}
               />
             )}
             {numberOfTypes === 1 && haveCrossReference && (

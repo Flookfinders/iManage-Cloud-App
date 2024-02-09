@@ -966,6 +966,8 @@ function ADSEsriMap(startExtent) {
   const recordAttributes = useRef(null);
   const sandbox = useRef(null);
   const baseMapLayers = useRef(settingsContext.mapLayers);
+  const isScottish = useRef(settingsContext.isScottish);
+  const isWelsh = useRef(settingsContext.isWelsh);
 
   const history = useHistory();
 
@@ -1042,9 +1044,10 @@ function ADSEsriMap(startExtent) {
   const selectedLines = useRef([]);
 
   const selectedEsus = useRef([]);
+  const [selectedExtents, setSelectedExtents] = useState([]);
   const [selectionAnchorEl, setSelectionAnchorEl] = useState(null);
   const selectionOpen = Boolean(selectionAnchorEl);
-  const selectionId = selectionOpen ? "esu-selection-popper" : undefined;
+  const selectionId = selectionOpen ? "esu-extent-selection-popper" : undefined;
 
   const zoomGraphicsLayer = useRef(
     new GraphicsLayer({
@@ -1219,6 +1222,7 @@ function ADSEsriMap(startExtent) {
           mapContext.onSetPolygonGeometry(GetPolygonAsWKT(newExtent));
 
           setDisplayExtentMergeTool(false);
+          handleCloseSelection();
           break;
 
         default:
@@ -1520,7 +1524,7 @@ function ADSEsriMap(startExtent) {
           mapContext,
           propertyContext,
           sandboxContext,
-          settingsContext.isWelsh,
+          isWelsh.current,
           searchContext
         );
       } else {
@@ -1530,7 +1534,7 @@ function ADSEsriMap(startExtent) {
           mapContext,
           propertyContext,
           sandboxContext,
-          settingsContext.isWelsh,
+          isWelsh.current,
           searchContext
         );
       }
@@ -1587,7 +1591,7 @@ function ADSEsriMap(startExtent) {
         streetContext,
         propertyContext,
         userContext.current.currentUser.token,
-        settingsContext.isScottish
+        isScottish.current
       );
     }
   };
@@ -1699,6 +1703,7 @@ function ADSEsriMap(startExtent) {
    */
   const handleCloseSelection = () => {
     selectedEsus.current = [];
+    setSelectedExtents([]);
     setSelectionAnchorEl(null);
     mapContext.onHighlightClear();
     mapContext.onPointCapture(null);
@@ -1946,11 +1951,19 @@ function ADSEsriMap(startExtent) {
       map: baseMap,
       extent: backgroundExtent.current
         ? backgroundExtent.current
+        : isScottish.current
+        ? {
+            xmin: -83982.94519240677,
+            ymin: 530758.235875156,
+            xmax: 674272.3753963439,
+            ymax: 1078658.8546231566,
+            spatialReference: { wkid: 27700 },
+          }
         : {
-            xmin: 0.0,
-            ymin: 0.0,
-            xmax: 660000.0,
-            ymax: 1300000.0,
+            xmin: 29143.856669624627,
+            ymin: 72747.56239049905,
+            xmax: 787399.1772583753,
+            ymax: 620648.1811384995,
             spatialReference: { wkid: 27700 },
           },
       constraints: {
@@ -2160,7 +2173,7 @@ function ADSEsriMap(startExtent) {
           State: rec.state,
           Type: rec.type ? rec.type : 1,
           StateLabel: GetStreetStateLabel(rec.state),
-          TypeLabel: GetStreetTypeLabel(rec.type ? rec.type : 1, settingsContext.isScottish),
+          TypeLabel: GetStreetTypeLabel(rec.type ? rec.type : 1, isScottish.current),
           SymbolCode: `${rec.type ? rec.type.toString() : "1"}, ${rec.state.toString()}`,
         },
       }));
@@ -2270,7 +2283,7 @@ function ADSEsriMap(startExtent) {
       mapRef.current.add(backgroundStreetLayer);
 
     backgroundStreetLayerRef.current = backgroundStreetLayer;
-  }, [mapContext.currentBackgroundData, streetData, zoomStreetData, settingsContext]);
+  }, [mapContext.currentBackgroundData, streetData, zoomStreetData]);
 
   // Unassigned ESUs layer
   useEffect(() => {
@@ -2320,7 +2333,7 @@ function ADSEsriMap(startExtent) {
           State: rec.state ? rec.state : 0,
           Type: 0,
           StateLabel: GetStreetStateLabel(rec.state ? rec.state : 0),
-          TypeLabel: GetStreetTypeLabel(0, settingsContext.isScottish),
+          TypeLabel: GetStreetTypeLabel(0, isScottish.current),
           SymbolCode: `0, ${rec.state ? rec.state.toString() : "0"}`,
         },
       }));
@@ -2412,7 +2425,7 @@ function ADSEsriMap(startExtent) {
       mapRef.current.add(unassignedEsusLayer);
 
     unassignedEsusLayerRef.current = unassignedEsusLayer;
-  }, [mapContext.currentBackgroundData, settingsContext]);
+  }, [mapContext.currentBackgroundData]);
 
   // Background property layer
   useEffect(() => {
@@ -2477,9 +2490,9 @@ function ADSEsriMap(startExtent) {
           Easting: rec.easting,
           Northing: rec.northing,
           LogicalStatus: rec.logicalStatus,
-          LogicalStatusLabel: GetLPILogicalStatusLabel(rec.logicalStatus, settingsContext.isScottish),
+          LogicalStatusLabel: GetLPILogicalStatusLabel(rec.logicalStatus, isScottish.current),
           Classification: rec.blpuClass,
-          ClassificationLabel: GetClassificationLabel(rec.blpuClass, settingsContext.isScottish),
+          ClassificationLabel: GetClassificationLabel(rec.blpuClass, isScottish.current),
         },
       }));
 
@@ -2585,7 +2598,7 @@ function ADSEsriMap(startExtent) {
       mapRef.current.add(backgroundPropertyLayer);
 
     backgroundPropertyLayerRef.current = backgroundPropertyLayer;
-  }, [mapContext.currentBackgroundData, propertyData, zoomPropertyData, settingsContext]);
+  }, [mapContext.currentBackgroundData, propertyData, zoomPropertyData]);
 
   // Edit, street & property layers
   useEffect(() => {
@@ -2697,7 +2710,7 @@ function ADSEsriMap(startExtent) {
                 locality: street.locality,
                 town: street.town,
                 type: street.type,
-                state: settingsContext.isScottish ? esu.state : street.state,
+                state: isScottish.current ? esu.state : street.state,
                 esuId: esu.esuId,
                 geometry: esu.geometry,
               };
@@ -2947,7 +2960,7 @@ function ADSEsriMap(startExtent) {
               : rec.type
               ? rec.type
               : 1,
-            settingsContext.isScottish
+            isScottish.current
           ),
           SymbolCode: `${
             mapContext.currentStreet &&
@@ -2984,10 +2997,10 @@ function ADSEsriMap(startExtent) {
           Description: `Maintenance responsibility - ${GetAsdPrimaryCodeText(
             "51",
             rec.streetStatus,
-            settingsContext.isScottish
+            isScottish.current
           )}`,
-          Authority: GetAuthorityLabel(rec.maintainingAuthorityCode, settingsContext.isScottish),
-          Custodian: GetAuthorityLabel(rec.custodianCode, settingsContext.isScottish),
+          Authority: GetAuthorityLabel(rec.maintainingAuthorityCode, isScottish.current),
+          Custodian: GetAuthorityLabel(rec.custodianCode, isScottish.current),
           WholeRoad: GetWholeRoadLabel(rec.wholeRoad),
         },
       }));
@@ -3007,10 +3020,10 @@ function ADSEsriMap(startExtent) {
           Description: `Reinstatement category - ${GetAsdPrimaryCodeText(
             "52",
             rec.reinstatementCategoryCode,
-            settingsContext.isScottish
+            isScottish.current
           )}`,
-          Authority: GetAuthorityLabel(rec.reinstatementAuthorityCode, settingsContext.isScottish),
-          Custodian: GetAuthorityLabel(rec.custodianCode, settingsContext.isScottish),
+          Authority: GetAuthorityLabel(rec.reinstatementAuthorityCode, isScottish.current),
+          Custodian: GetAuthorityLabel(rec.custodianCode, isScottish.current),
           WholeRoad: GetWholeRoadLabel(rec.wholeRoad),
         },
       }));
@@ -3027,13 +3040,9 @@ function ADSEsriMap(startExtent) {
           ObjectID: index,
           PkId: rec.pkId.toString(),
           USRN: rec.usrn.toString(),
-          Description: `Special designation - ${GetAsdPrimaryCodeText(
-            "53",
-            rec.specialDesig,
-            settingsContext.isScottish
-          )}`,
-          Authority: GetAuthorityLabel(rec.authorityCode, settingsContext.isScottish),
-          Custodian: GetAuthorityLabel(rec.custodianCode, settingsContext.isScottish),
+          Description: `Special designation - ${GetAsdPrimaryCodeText("53", rec.specialDesig, isScottish.current)}`,
+          Authority: GetAuthorityLabel(rec.authorityCode, isScottish.current),
+          Custodian: GetAuthorityLabel(rec.custodianCode, isScottish.current),
           WholeRoad: GetWholeRoadLabel(rec.wholeRoad),
         },
       }));
@@ -3050,9 +3059,9 @@ function ADSEsriMap(startExtent) {
           ObjectID: index,
           PkId: rec.pkId.toString(),
           USRN: rec.usrn.toString(),
-          Description: `Interest - ${GetAsdPrimaryCodeText("61", rec.streetStatus, settingsContext.isScottish)}`,
+          Description: `Interest - ${GetAsdPrimaryCodeText("61", rec.streetStatus, isScottish.current)}`,
           Interest: GetInterestLabel(rec.interestType),
-          Organisation: GetAuthorityLabel(rec.swaOrgRefAuthority, settingsContext.isScottish),
+          Organisation: GetAuthorityLabel(rec.swaOrgRefAuthority, isScottish.current),
           District: GetDistrictLabel(rec.districtRefAuthority, lookupContext.current),
           WholeRoad: GetWholeRoadLabel(rec.wholeRoad),
         },
@@ -3070,13 +3079,9 @@ function ADSEsriMap(startExtent) {
           ObjectID: index,
           PkId: rec.pkId.toString(),
           USRN: rec.usrn.toString(),
-          Description: `Construction - ${GetAsdPrimaryCodeText(
-            "62",
-            rec.constructionType,
-            settingsContext.isScottish
-          )}`,
-          Reinstatement: GetReinstatementLabel(rec.reinstatementTypeCode, settingsContext.isScottish),
-          Organisation: GetAuthorityLabel(rec.swaOrgRefConsultant, settingsContext.isScottish),
+          Description: `Construction - ${GetAsdPrimaryCodeText("62", rec.constructionType, isScottish.current)}`,
+          Reinstatement: GetReinstatementLabel(rec.reinstatementTypeCode, isScottish.current),
+          Organisation: GetAuthorityLabel(rec.swaOrgRefConsultant, isScottish.current),
           District: GetDistrictLabel(rec.districtRefConsultant, lookupContext.current),
           WholeRoad: GetWholeRoadLabel(rec.wholeRoad),
         },
@@ -3097,9 +3102,9 @@ function ADSEsriMap(startExtent) {
           Description: `Special designation - ${GetAsdPrimaryCodeText(
             "63",
             rec.streetSpecialDesigCode,
-            settingsContext.isScottish
+            isScottish.current
           )}`,
-          Organisation: GetAuthorityLabel(rec.swaOrgRefConsultant, settingsContext.isScottish),
+          Organisation: GetAuthorityLabel(rec.swaOrgRefConsultant, isScottish.current),
           District: GetDistrictLabel(rec.districtRefConsultant, lookupContext.current),
           WholeRoad: GetWholeRoadLabel(rec.wholeRoad),
         },
@@ -3120,9 +3125,9 @@ function ADSEsriMap(startExtent) {
           Description: `Height, width and weight designation - ${GetAsdPrimaryCodeText(
             "64",
             rec.hwwRestrictionCode,
-            settingsContext.isScottish
+            isScottish.current
           )}`,
-          Organisation: GetAuthorityLabel(rec.swaOrgRefConsultant, settingsContext.isScottish),
+          Organisation: GetAuthorityLabel(rec.swaOrgRefConsultant, isScottish.current),
           District: GetDistrictLabel(rec.districtRefConsultant, lookupContext.current),
           WholeRoad: GetWholeRoadLabel(rec.wholeRoad),
         },
@@ -3140,13 +3145,9 @@ function ADSEsriMap(startExtent) {
           ObjectID: index,
           PkId: rec.pkId.toString(),
           USRN: rec.prowUsrn.toString(),
-          Description: `Public right of way - ${GetAsdPrimaryCodeText(
-            "66",
-            rec.prowRights,
-            settingsContext.isScottish
-          )}`,
+          Description: `Public right of way - ${GetAsdPrimaryCodeText("66", rec.prowRights, isScottish.current)}`,
           ProwStatus: GetProwStatusLabel(rec.prowStatus),
-          Organisation: GetAuthorityLabel(rec.prowOrgRefConsultant, settingsContext.isScottish),
+          Organisation: GetAuthorityLabel(rec.prowOrgRefConsultant, isScottish.current),
           District: GetDistrictLabel(rec.prowDistrictRefConsultant, lookupContext.current),
           DefMapGeometryType: GetWholeRoadLabel(rec.defMapGeometryType),
         },
@@ -3203,7 +3204,7 @@ function ADSEsriMap(startExtent) {
               mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
               ? mapContext.currentProperty.logicalStatus
               : rec.logicalStatus,
-            settingsContext.isScottish
+            isScottish.current
           ),
           Classification:
             mapContext.currentProperty &&
@@ -3217,7 +3218,7 @@ function ADSEsriMap(startExtent) {
               mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
               ? mapContext.currentProperty.blpuClass
               : rec.classificationCode,
-            settingsContext.isScottish
+            isScottish.current
           ),
           SymbolCode: `${
             mapContext.currentProperty &&
@@ -3254,7 +3255,7 @@ function ADSEsriMap(startExtent) {
           PkId: rec.pkId,
           UPRN: rec.uprn,
           Code: rec.code,
-          CodeLabel: GetProvenanceLabel(rec.code, settingsContext.isScottish),
+          CodeLabel: GetProvenanceLabel(rec.code, isScottish.current),
         },
       }));
 
@@ -4555,87 +4556,115 @@ function ADSEsriMap(startExtent) {
                     visible: currentLayer.visible,
                   });
 
+                  const newSelected = [...new Set(newGraphics.map((x) => x.attributes.TOID))];
+                  setSelectedExtents(newSelected);
+                  console.log("[SF] selectedExtents", {
+                    selectedExtents: newSelected,
+                    graphics: graphics,
+                  });
+                  if (newSelected.length > 0) {
+                    setSelectionAnchorEl(document.getElementById("ads-provenance-data-tab"));
+                    setDisplayExtentMergeTool(true);
+                  } else {
+                    setSelectionAnchorEl(null);
+                    setDisplayExtentMergeTool(false);
+                  }
+
                   mapRef.current.remove(currentLayer);
                   mapRef.current.add(updatedLayer, layerIndex);
                 } else {
                   GetFeatureAtCoord(coord, featureLayer.layer).then(function (json) {
-                    geoJson.featureCollection.features.push.apply(
-                      geoJson.featureCollection.features,
-                      json.data.features
-                    );
+                    if (json) {
+                      geoJson.featureCollection.features.push.apply(
+                        geoJson.featureCollection.features,
+                        json.data.features
+                      );
 
-                    if (!foundExistingGeoJson) geoJSONFeatures.current.push(geoJson);
+                      if (!foundExistingGeoJson) geoJSONFeatures.current.push(geoJson);
 
-                    if (geoJson.featureCollection.features.length > 0) {
-                      graphics = geoJson.featureCollection.features.map(function (f) {
-                        switch (featureLayer.layer.geometryType) {
-                          case "line":
-                            const polyline = {
-                              type: "polyline",
-                              paths: f.geometry.coordinates[0],
-                              spatialReference: { wkid: 27700 },
-                            };
+                      if (geoJson.featureCollection.features.length > 0) {
+                        graphics = geoJson.featureCollection.features.map(function (f) {
+                          switch (featureLayer.layer.geometryType) {
+                            case "line":
+                              const polyline = {
+                                type: "polyline",
+                                paths: f.geometry.coordinates[0],
+                                spatialReference: { wkid: 27700 },
+                              };
 
-                            const lineSymbol = {
-                              type: "simple-line",
-                              color: [51, 136, 255, 0.5],
-                              width: 1,
-                            };
+                              const lineSymbol = {
+                                type: "simple-line",
+                                color: [51, 136, 255, 0.5],
+                                width: 1,
+                              };
 
-                            return new Graphic({
-                              geometry: polyline,
-                              attributes: f.properties,
-                              symbol: lineSymbol,
-                            });
+                              return new Graphic({
+                                geometry: polyline,
+                                attributes: f.properties,
+                                symbol: lineSymbol,
+                              });
 
-                          case "polygon":
-                            const polygon = {
-                              type: "polygon",
-                              rings: f.geometry.coordinates[0],
-                              spatialReference: { wkid: 27700 },
-                            };
+                            case "polygon":
+                              const polygon = {
+                                type: "polygon",
+                                rings: f.geometry.coordinates[0],
+                                spatialReference: { wkid: 27700 },
+                              };
 
-                            const fillSymbol = {
-                              type: "simple-fill",
-                              color: [51, 136, 255, 0.5],
-                              outline: {
-                                color: [51, 136, 255],
-                                width: 0,
-                              },
-                            };
+                              const fillSymbol = {
+                                type: "simple-fill",
+                                color: [51, 136, 255, 0.5],
+                                outline: {
+                                  color: [51, 136, 255],
+                                  width: 0,
+                                },
+                              };
 
-                            return new Graphic({
-                              geometry: polygon,
-                              attributes: f.properties,
-                              symbol: fillSymbol,
-                            });
+                              return new Graphic({
+                                geometry: polygon,
+                                attributes: f.properties,
+                                symbol: fillSymbol,
+                              });
 
-                          default:
-                            return null;
+                            default:
+                              return null;
+                          }
+                        });
+
+                        const layerIndex = mapRef.current.layers.indexOf(currentLayer);
+
+                        const updatedFeatureLayer = new GraphicsLayer({
+                          id: featureLayer.layer.layerId,
+                          graphics: graphics,
+                          copyright:
+                            featureLayer.layer.copyright && featureLayer.layer.copyright.includes("<<year>>")
+                              ? featureLayer.layer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                              : featureLayer.layer.copyright,
+                          title: featureLayer.layer.title,
+                          listMode: featureLayer.layer.displayInList ? "show" : "hide",
+                          maxScale: featureLayer.layer.maxScale,
+                          minScale: featureLayer.layer.minScale,
+                          opacity: featureLayer.layer.opacity,
+                          visible: currentLayer.visible,
+                        });
+
+                        mapRef.current.remove(currentLayer);
+                        mapRef.current.add(updatedFeatureLayer, layerIndex);
+
+                        const newSelected = [...new Set(graphics.map((x) => x.attributes.TOID))];
+                        setSelectedExtents(newSelected);
+                        console.log("[SF] selectedExtents", {
+                          selectedExtents: newSelected,
+                          graphics: graphics,
+                        });
+                        if (newSelected.length > 0) {
+                          setSelectionAnchorEl(document.getElementById("ads-provenance-data-tab"));
+                          setDisplayExtentMergeTool(true);
+                        } else {
+                          setSelectionAnchorEl(null);
+                          setDisplayExtentMergeTool(false);
                         }
-                      });
-
-                      const layerIndex = mapRef.current.layers.indexOf(currentLayer);
-
-                      const updatedFeatureLayer = new GraphicsLayer({
-                        id: featureLayer.layer.layerId,
-                        graphics: graphics,
-                        copyright:
-                          featureLayer.layer.copyright && featureLayer.layer.copyright.includes("<<year>>")
-                            ? featureLayer.layer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                            : featureLayer.layer.copyright,
-                        title: featureLayer.layer.title,
-                        listMode: featureLayer.layer.displayInList ? "show" : "hide",
-                        maxScale: featureLayer.layer.maxScale,
-                        minScale: featureLayer.layer.minScale,
-                        opacity: featureLayer.layer.opacity,
-                        visible: currentLayer.visible,
-                      });
-
-                      mapRef.current.remove(currentLayer);
-                      mapRef.current.add(updatedFeatureLayer, layerIndex);
-
-                      setDisplayExtentMergeTool(true);
+                      }
                     }
                   });
                 }
@@ -4782,6 +4811,7 @@ function ADSEsriMap(startExtent) {
     }
 
     function GetViaEuropaFeatureAtCoord(coord, layer) {
+      // const coordPoint = coord.split(",");
       const wfsParams = {
         key: layer.layerKey,
         service: "WFS",
@@ -4791,7 +4821,11 @@ function ADSEsriMap(startExtent) {
         propertyName: layer.propertyName,
         outputFormat: "JSON",
         srsName: "urn:ogc:def:crs:EPSG::27700",
-        filter: `<ogc:Filter><ogc:Contains><ogc:PropertyName>geom</ogc:PropertyName><gml:Point srsName="urn:ogc:def:crs:EPSG::27700"><gml:coordinates>${coord}</gml:coordinates></gml:Point></ogc:Contains></ogc:Filter>`,
+        // filter: `<ogc:Filter><ogc:Contains><ogc:PropertyName>geom</ogc:PropertyName><gml:Point srsName="urn:ogc:def:crs:EPSG::27700"><gml:coordinates>${coord}</gml:coordinates></gml:Point></ogc:Contains></ogc:Filter>`,
+        // filter: `<ogc:Filter><ogc:Contains><ogc:PropertyName>geom</ogc:PropertyName><gml:Point srsName="urn:ogc:def:crs:EPSG::27700" x="${coordPoint[0]}" y="${coordPoint[1]}" /></ogc:Contains></ogc:Filter>`,
+        // filter: `<ogc:Filter><ogc:Contains><ogc:PropertyName>geom</ogc:PropertyName><gml:Point srsName="urn:ogc:def:crs:EPSG::27700"><gml:coordinates x="${coordPoint[0]}" y="${coordPoint[1]}" /></gml:Point></ogc:Contains></ogc:Filter>`,
+        // filter: `<ogc:Filter><ogc:Contains><ogc:PropertyName>geom</ogc:PropertyName><gml:Point srsName="urn:ogc:def:crs:EPSG::27700"><gml:pos>${coord}</gml:pos></gml:Point></ogc:Contains></ogc:Filter>`,
+        filter: `<ogc:Filter><ogc:Contains><ogc:PropertyName>geom</ogc:PropertyName><gml:Point srsName="urn:ogc:def:crs:EPSG::27700"><gml:pos>${coord}</gml:pos></gml:Point></ogc:Contains></ogc:Filter>`,
         count: 1,
       };
 
@@ -5770,7 +5804,6 @@ function ADSEsriMap(startExtent) {
     loading,
     streetContext.currentStreet,
     streetContext,
-    settingsContext,
   ]);
 
   // Fix the order of the layers
@@ -6539,8 +6572,8 @@ function ADSEsriMap(startExtent) {
         searchContext,
         mapContext,
         sandboxContext,
-        settingsContext.isScottish,
-        settingsContext.isWelsh
+        isScottish.current,
+        isWelsh.current
       ).then((result) => {
         if (result) {
           saveResult.current = true;
@@ -6569,8 +6602,8 @@ function ADSEsriMap(startExtent) {
         searchContext,
         mapContext,
         sandboxContext,
-        settingsContext.isScottish,
-        settingsContext.isWelsh
+        isScottish.current,
+        isWelsh.current
       ).then((result) => {
         if (result) {
           saveResult.current = true;
@@ -6627,8 +6660,8 @@ function ADSEsriMap(startExtent) {
                       streetDataRef,
                       sandboxContext,
                       lookupContext,
-                      settingsContext.isWelsh,
-                      settingsContext.isScottish
+                      isWelsh.current,
+                      isScottish.current
                     );
                     HandleSaveStreet(currentStreetData);
                   } else {
@@ -6689,8 +6722,8 @@ function ADSEsriMap(startExtent) {
                       propertyDataRef,
                       sandboxContext,
                       lookupContext,
-                      settingsContext.isWelsh,
-                      settingsContext.isScottish
+                      isWelsh.current,
+                      isScottish.current
                     );
                     HandleSaveProperty(currentPropertyData);
                     mapContext.onSetCoordinate(null);
@@ -6992,7 +7025,7 @@ function ADSEsriMap(startExtent) {
         DisplayStreetInStreetView(
           Number(recordAttributes.current.USRN),
           userContext.current.currentUser.token,
-          settingsContext.isScottish
+          isScottish.current
         );
       }
     }
@@ -7198,16 +7231,7 @@ function ADSEsriMap(startExtent) {
         }
       );
     }
-  }, [
-    view,
-    sandboxContext,
-    streetContext,
-    propertyContext,
-    mapContext,
-    searchContext,
-    settingsContext,
-    saveConfirmDialog,
-  ]);
+  }, [view, sandboxContext, streetContext, propertyContext, mapContext, searchContext, saveConfirmDialog]);
 
   // Highlight map objects
   useEffect(() => {
@@ -7525,7 +7549,7 @@ function ADSEsriMap(startExtent) {
                     streetContext,
                     propertyContext,
                     userContext.current.currentUser.token,
-                    settingsContext.isScottish
+                    isScottish.current
                   );
                   break;
 
@@ -7559,7 +7583,7 @@ function ADSEsriMap(startExtent) {
                       streetContext,
                       propertyContext,
                       userContext.current.currentUser.token,
-                      settingsContext.isScottish
+                      isScottish.current
                     );
                   break;
 
@@ -7589,7 +7613,7 @@ function ADSEsriMap(startExtent) {
                       streetContext,
                       propertyContext,
                       userContext.current.currentUser.token,
-                      settingsContext.isScottish
+                      isScottish.current
                     );
                   break;
               }
@@ -7629,7 +7653,6 @@ function ADSEsriMap(startExtent) {
     streetContext,
     userContext.current.currentUser.token,
     searchContext.currentSearchData.results,
-    settingsContext.isScottish,
   ]);
 
   // Selecting properties
@@ -7729,11 +7752,11 @@ function ADSEsriMap(startExtent) {
                 <MergeIcon sx={ActionIconStyle()} />
               </IconButton>
             )}
-            {displayExtentMergeTool && (
+            {/* {displayExtentMergeTool && (
               <IconButton onClick={handleMergeFeatures} size="small" title="Use selected features for extent">
                 <MergeIcon sx={ActionIconStyle()} />
               </IconButton>
-            )}
+            )} */}
             <IconButton onClick={handleDisplayMeasurement} size="small" title="Measure distance/area">
               <StraightenIcon sx={ActionIconStyle()} />
             </IconButton>
@@ -7778,9 +7801,20 @@ function ADSEsriMap(startExtent) {
         />
         <Popper id={selectionId} open={selectionOpen} anchorEl={selectionAnchorEl} placement="top-start">
           <ADSSelectionControl
-            selectionCount={selectedEsus.current && selectedEsus.current.length > 0 ? selectedEsus.current.length : 0}
+            selectionCount={
+              displayExtentMergeTool
+                ? selectedExtents && selectedExtents.length > 0
+                  ? selectedExtents.length
+                  : 0
+                : selectedEsus.current && selectedEsus.current.length > 0
+                ? selectedEsus.current.length
+                : 0
+            }
             haveMapEsu={selectedEsus.current && selectedEsus.current.length > 0}
             currentEsu={selectedEsus.current}
+            haveMapExtent={selectedExtents && selectedExtents.length > 0}
+            currentExtent={selectedExtents}
+            onMergeExtent={handleMergeFeatures}
             onClose={handleCloseSelection}
           />
         </Popper>

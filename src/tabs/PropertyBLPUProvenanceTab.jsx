@@ -22,6 +22,7 @@
 //    009   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    010   11.01.24 Sean Flook                 Fix warnings.
 //    011   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    012   09.02.24 Sean Flook                 Added id to box so that ADSSelectionControl can use it.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -319,7 +320,7 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
 
   return (
     <Fragment>
-      <Box sx={toolbarStyle}>
+      <Box sx={toolbarStyle} id="ads-provenance-data-tab">
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Stack direction="row" spacing={0.5} justifyContent="flex-start" alignItems="center">
             <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />

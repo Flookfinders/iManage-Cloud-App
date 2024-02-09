@@ -30,6 +30,7 @@
 //    017   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    018   26.01.24 Sean Flook       IMANN-251 Fix HandleChangeCheck and only do the postCheckAction after the record is saved.
 //    019   05.02.24 Joel Benford               Hide close button on homepage, add spacing before auth avatar
+//    020   08.02.24 Sean Flook                 Display the Add street and Select properties button when in the gazetteer page.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -852,20 +853,20 @@ function ADSAppBar(props) {
                   </Tooltip>
                   {streetContext.currentStreetModified && !haveStreetError && (
                     <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={1}>
-                      <WarningIcon sx={{ color: adsMagenta }} />
-                      <Typography sx={{ color: adsMagenta }} variant="body2" noWrap align="left">
+                      <WarningIcon sx={{ color: adsMagenta, paddingLeft: 1 }} />
+                      <Typography sx={{ color: adsMagenta, paddingRight: 1 }} variant="body2" noWrap align="left">
                         Edits in progress
                       </Typography>
                     </Stack>
                   )}
                   {streetContext.currentStreetModified && haveStreetError && (
                     <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={1}>
-                      <ErrorIcon sx={{ color: adsRed }} />
+                      <ErrorIcon sx={{ color: adsRed, paddingLeft: 1 }} />
                       <Typography sx={{ color: adsRed, fontWeight: 600 }} variant="body2" noWrap align="left">
                         Edits in progress
                       </Typography>
                       <Link
-                        sx={{ color: adsRed, fontWeight: 600 }}
+                        sx={{ color: adsRed, fontWeight: 600, paddingRight: 1 }}
                         color={adsRed}
                         variant="body2"
                         noWrap
@@ -963,7 +964,7 @@ function ADSAppBar(props) {
           </Stack>
           <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={1} sx={{ mt: "4px" }}>
             <ADSSearch placeholder="Search…" onSearchClick={handleSearchClick} />
-            {userCanEdit && (haveSearch || haveStreet || haveProperty) ? (
+            {userCanEdit && (haveSearch || haveStreet || haveProperty || location.pathname === GazetteerRoute) ? (
               <Tooltip title="Add street" arrow placement="bottom-end" sx={tooltipStyle}>
                 <IconButton aria-label="add street" onClick={() => HandleChangeCheck("street")} size="large">
                   <AddStreetIcon sx={ActionIconStyle()} />
@@ -972,23 +973,26 @@ function ADSAppBar(props) {
             ) : (
               ""
             )}
-            {userCanEdit && haveMapProperties && !haveStreet && !haveProperty && (
-              <Tooltip
-                title={selectingProperties ? "Stop selecting properties" : "Select properties"}
-                arrow
-                placement="bottom-end"
-                sx={tooltipStyle}
-              >
-                <IconButton
-                  aria-label={selectingProperties ? "stop selecting properties" : "select properties"}
-                  onClick={() => HandleChangeCheck("properties")}
-                  size="large"
-                  sx={SelectPropertiesIconStyle(selectingProperties)}
+            {userCanEdit &&
+              (haveMapProperties || haveSearch || location.pathname === GazetteerRoute) &&
+              !haveStreet &&
+              !haveProperty && (
+                <Tooltip
+                  title={selectingProperties ? "Stop selecting properties" : "Select properties"}
+                  arrow
+                  placement="bottom-end"
+                  sx={tooltipStyle}
                 >
-                  <SelectPropertiesIcon />
-                </IconButton>
-              </Tooltip>
-            )}
+                  <IconButton
+                    aria-label={selectingProperties ? "stop selecting properties" : "select properties"}
+                    onClick={() => HandleChangeCheck("properties")}
+                    size="large"
+                    sx={SelectPropertiesIconStyle(selectingProperties)}
+                  >
+                    <SelectPropertiesIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
             {process.env.NODE_ENV === "development" && (
               <Tooltip title="Bookmarks and Views" arrow placement="bottom-end" sx={tooltipStyle}>
                 <span>
