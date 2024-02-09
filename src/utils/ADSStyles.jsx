@@ -25,6 +25,7 @@
 //    012   25.01.24 Sean Flook                 Further changes required after UX review.
 //    013   25.01.24 Joel Benford               Update RecordCountStyle
 //    014   02.02.24 Joel Benford               Update tabLabelStyle and gridRowStyle
+//    015   07.02.24 Joel Benford               Update RelatedLanguageChipStyle
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -833,7 +834,8 @@ export function RelatedLanguageChipStyle(chipColour) {
     borderWidth: "2px",
     backgroundColor: adsWhite,
     color: chipColour,
-    fontSize: "10px",
+    fontSize: "12px",
+    fontFamily: "Nunito Sans",
   };
 }
 

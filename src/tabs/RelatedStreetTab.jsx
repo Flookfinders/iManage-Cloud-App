@@ -24,6 +24,7 @@
 //    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    012   10.01.24 Sean Flook                 Fix warnings.
 //    013   25.01.24 Sean Flook                 Changes required after UX review.
+//    014   07.02.24 Joel Benford               Spacing and colours
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -86,8 +87,8 @@ import {
   adsBlueA,
   adsWhite,
   adsLightGreyB,
-  adsLightBlue,
-  adsLightBlue10,
+  adsPurple,
+  adsPaleBlueA,
   adsBlack,
   adsYellow,
   adsPink,
@@ -363,11 +364,14 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
    * Method to get the styling to be used for the language chip.
    *
    * @param {number} state The state of the street.
+   * @param {boolean} moreBelow Are there more chips below this one that need spacing
    * @returns {object} The styling to be used for the language chip.
    */
-  function StreetLanguageChipStyle(state) {
+  function StreetLanguageChipStyle(state, moreBelow = false) {
     const streetStateRec = StreetState.find((x) => x.id === state);
-    return RelatedLanguageChipStyle(streetStateRec ? streetStateRec.colour : "");
+    const nothingBelowStyle = RelatedLanguageChipStyle(streetStateRec ? streetStateRec.colour : "");
+    const moreBelowStyle = { ...nothingBelowStyle, mb: "8px" };
+    return moreBelow ? moreBelowStyle : nothingBelowStyle;
   }
 
   /**
@@ -397,7 +401,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
           <TwoWayIcon
             sx={{
               color: adsWhite,
-              backgroundColor: adsLightBlue,
+              backgroundColor: adsPurple,
               width: theme.spacing(2),
               height: theme.spacing(2),
             }}
@@ -409,7 +413,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
           <StartToEndIcon
             sx={{
               color: adsWhite,
-              backgroundColor: adsLightBlue,
+              backgroundColor: adsPurple,
               width: theme.spacing(2),
               height: theme.spacing(2),
             }}
@@ -421,7 +425,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
           <EndToStartIcon
             sx={{
               color: adsWhite,
-              backgroundColor: adsLightBlue,
+              backgroundColor: adsPurple,
               width: theme.spacing(2),
               height: theme.spacing(2),
             }}
@@ -609,7 +613,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
         borderLeft: `solid ${adsLightGreyD} 3px`,
         backgroundColor: adsWhite,
         "&:hover": {
-          backgroundColor: adsLightBlue10,
+          backgroundColor: adsPaleBlueA,
           color: adsBlueA,
         },
       };
@@ -621,7 +625,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
         borderLeftWidth: "3px",
         "&:hover": {
           borderLeft: `solid ${adsLightGreyD} 3px`,
-          backgroundColor: adsLightBlue10,
+          backgroundColor: adsPaleBlueA,
           color: adsBlueA,
         },
       };
@@ -729,7 +733,10 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                                   <Chip
                                     size="small"
                                     label={rec.primary.language}
-                                    sx={StreetLanguageChipStyle(rec.state > 0 ? rec.state : 2)}
+                                    sx={StreetLanguageChipStyle(
+                                      rec.state > 0 ? rec.state : 2,
+                                      rec.primary.language === "ENG" && rec.additional && rec.additional.language
+                                    )}
                                   />
                                   <Typography
                                     variant="subtitle2"

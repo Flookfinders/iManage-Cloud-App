@@ -24,6 +24,7 @@
 //    011   12.01.24 Sean Flook                 Fixed duplicate key warning.
 //    012   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    013   25.01.24 Sean Flook                 Changes required after UX review.
+//    014   08.02.24 Joel Benford     RTAB3     Supply null street state to classification icon tooltip
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1093,6 +1094,7 @@ function ADSWizardAddressList({
                           21,
                           rec.blpu.logicalStatus,
                           settingsContext.isScottish ? rec.classification.classification : rec.blpu.classification,
+                          null,
                           settingsContext.isScottish
                         )}
                         arrow

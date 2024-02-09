@@ -32,6 +32,7 @@
 //    019   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    020   01.02.24 Sean Flook                 Correctly handle BS7666 in lookupToTitleCase.
 //    021   02.02.24 Sean Flook       IMANN-269 Added isIso885914.
+//    022   08.02.24 Joel Benford     RTAB3     GetAvatarTooltip now takes streetStateCode
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -48,6 +49,7 @@ import { GetStreetMapData } from "../utils/StreetUtils";
 import { GetPropertyMapData } from "../utils/PropertyUtils";
 
 import StreetType from "../data/StreetType";
+import StreetState from "../data/StreetState";
 import BLPUClassification from "../data/BLPUClassification";
 import OSGClassification from "../data/OSGClassification";
 import LPILogicalStatus from "../data/LPILogicalStatus";
@@ -532,18 +534,21 @@ export function GetAvatarColour(logicalStatus) {
  * Get the avatar tooltip depending on the type, logical status and classification code.
  *
  * @param {number} type The type of record [ 15: Street, 24: LPI, etc. ]
- * @param {number} logicalStatus If type is a street then this is the street type; otherwise it is the logical status of the LPI
+ * @param {number} logicalStatus If type is a street then this is the street type + 10 (from elastic); otherwise it is the logical status of the LPI
  * @param {string} classificationCode The classification code for the property. This is not used for streets.
+ * @param {number} streetStateCode The street state. This is only used for GP streets.
  * @param {boolean} isScottish Used to determine which field name is used to get the lookup labels.
  * @return {string} The avatar tooltip.
  */
-export function GetAvatarTooltip(type, logicalStatus, classificationCode, isScottish) {
+export function GetAvatarTooltip(type, logicalStatus, classificationCode, streetStateCode, isScottish) {
   if (!type) return null;
 
   if (type === 15) {
     const streetType = logicalStatus && logicalStatus > 10 ? StreetType.find((x) => x.id === logicalStatus - 10) : null;
-
-    return streetType ? `Open, ${streetType[GetLookupLabel(isScottish)]}` : null;
+    if (!streetType) return null;
+    const streetState = StreetState.find((x) => x.id === streetStateCode);
+    const streetStateText = streetState ? `${streetState[GetLookupLabel(isScottish)] + ", "}` : "";
+    return `${streetStateText}${streetType[GetLookupLabel(isScottish)]}`;
   } else {
     const lpiLogicalStatus = logicalStatus ? LPILogicalStatus.find((x) => x.id === logicalStatus) : null;
     const classification = classificationCode

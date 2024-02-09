@@ -31,6 +31,8 @@
 //    017   12.01.24 Sean Flook                 Fixed duplicate key warning.
 //    018   25.01.24 Sean Flook                 Changes required after UX review.
 //    019   06.02.24 Joel Benford               Change flavour of light blue
+//    020   07.02.24 Joel Benford               Spacing and colours
+//    021   08.02.24 Joel Benford     RTAB3     Supply null street state to classification icon tooltip
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -43,6 +45,7 @@ import PropertyContext from "../context/propertyContext";
 import MapContext from "../context/mapContext";
 import UserContext from "../context/userContext";
 import StreetContext from "../context/streetContext";
+import SettingsContext from "../context/settingsContext";
 
 import {
   Typography,
@@ -60,7 +63,7 @@ import { Box, Stack } from "@mui/system";
 import { TreeView, TreeItem } from "@mui/x-tree-view";
 import ADSSelectionControl from "../components/ADSSelectionControl";
 
-import { GetAvatarColour, copyTextToClipboard, openInStreetView } from "./../utils/HelperUtils";
+import { GetAvatarColour, GetAvatarTooltip, copyTextToClipboard, openInStreetView } from "./../utils/HelperUtils";
 import { addressToTitleCase, GetPropertyMapData } from "./../utils/PropertyUtils";
 
 import LPILogicalStatus from "./../data/LPILogicalStatus";
@@ -102,6 +105,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
   const mapContext = useContext(MapContext);
   const userContext = useContext(UserContext);
   const streetContext = useContext(StreetContext);
+  const settingsContext = useContext(SettingsContext);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -581,6 +585,16 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
   };
 
   /**
+   * Method to get the styling for stack holding language chip + address.
+   *
+   * @returns {object} The styling to be used for the stack.
+   */
+  function LanguageAddressPairStyle() {
+    // return {};
+    return { mb: theme.spacing(1) };
+  }
+
+  /**
    * Method to get the styling to be used for the language chip.
    *
    * @param {number} status The logical status of the property.
@@ -961,12 +975,25 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                               <Box sx={{ width: "24px" }} />
                             )}
                             <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="flex-start">
-                              {GetClassificationIcon(
-                                rec.blpuClass ? rec.blpuClass : "R",
-                                GetAvatarColour(rec.primary.logicalStatus)
-                              )}
+                              <Tooltip
+                                title={GetAvatarTooltip(
+                                  24,
+                                  rec.primary.logicalStatus,
+                                  rec.blpuClass ? rec.blpuClass : "R",
+                                  null,
+                                  settingsContext.isScottish
+                                )}
+                                arrow
+                                placement="bottom"
+                                sx={tooltipStyle}
+                              >
+                                {GetClassificationIcon(
+                                  rec.blpuClass ? rec.blpuClass : "R",
+                                  GetAvatarColour(rec.primary.logicalStatus)
+                                )}
+                              </Tooltip>
                               <Stack direction="column">
-                                <Stack direction="row" spacing={1}>
+                                <Stack direction="row" spacing={1} sx={LanguageAddressPairStyle()}>
                                   <Chip
                                     size="small"
                                     label={rec.primary.language}
@@ -983,7 +1010,12 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                 </Stack>
                                 {rec.additional.map((recAdd) => {
                                   return (
-                                    <Stack direction="row" spacing={1} key={recAdd.lpiKey}>
+                                    <Stack
+                                      direction="row"
+                                      spacing={1}
+                                      sx={LanguageAddressPairStyle()}
+                                      key={recAdd.lpiKey}
+                                    >
                                       <Chip
                                         size="small"
                                         label={recAdd.language}
@@ -1117,6 +1149,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                             spacing={1}
                                             justifyContent="flex-start"
                                             alignItems="center"
+                                            sx={LanguageAddressPairStyle()}
                                           >
                                             <Chip
                                               size="small"
@@ -1141,6 +1174,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                 justifyContent="flex-start"
                                                 alignItems="center"
                                                 key={child1Add.lpiKey}
+                                                sx={LanguageAddressPairStyle()}
                                               >
                                                 <Chip
                                                   size="small"
@@ -1291,6 +1325,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                       spacing={1}
                                                       justifyContent="flex-start"
                                                       alignItems="center"
+                                                      sx={LanguageAddressPairStyle()}
                                                     >
                                                       <Chip
                                                         size="small"
@@ -1318,6 +1353,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                           justifyContent="flex-start"
                                                           alignItems="center"
                                                           key={child2Add.lpiKey}
+                                                          sx={LanguageAddressPairStyle()}
                                                         >
                                                           <Chip
                                                             size="small"
@@ -1495,6 +1531,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                                 spacing={1}
                                                                 justifyContent="flex-start"
                                                                 alignItems="center"
+                                                                sx={LanguageAddressPairStyle()}
                                                               >
                                                                 <Chip
                                                                   size="small"
@@ -1524,6 +1561,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                                     justifyContent="flex-start"
                                                                     alignItems="center"
                                                                     key={child3Add.lpiKey}
+                                                                    sx={LanguageAddressPairStyle()}
                                                                   >
                                                                     <Chip
                                                                       size="small"

@@ -38,6 +38,7 @@
 //    024   12.01.24 Sean Flook                 Fixed duplicate key warning.
 //    025   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    026   26.01.24 Sean Flook       IMANN-260 Corrected field name.
+//    027   08.02.24 Joel Benford     RTAB3     Supply state to classification icon tooltip
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1317,7 +1318,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                           rec.type,
                           rec.logical_status,
                           rec.classification_code,
-                          settingsContext.isScottish
+                          rec.type === 15 ? rec.state : null,
+                          settingsContext.isScottish,
+                          rec
                         )}
                         arrow
                         placement="bottom"
@@ -1662,6 +1665,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                           rec.type,
                           rec.logical_status,
                           rec.classification_code,
+                          rec.type === 15 ? rec.state : null,
                           settingsContext.isScottish
                         )}
                         arrow
