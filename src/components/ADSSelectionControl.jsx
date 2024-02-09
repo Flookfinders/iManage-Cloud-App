@@ -29,6 +29,7 @@
 //    016   25.01.24 Sean Flook                 Make the create street button visible.
 //    017   31.01.24 Joel Benford               Show addList only in dev
 //    018   09.02.24 Sean Flook                 Added extents.
+//    019   09.02.24 Sean Flook                 Removed Create street button for ESUs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -588,12 +589,12 @@ function ADSSelectionControl({
    *
    * @param {object} event The event object.
    */
-  const handleCreateStreetClick = (event) => {
-    event.stopPropagation();
-    if (currentEsu && currentEsu.length > 0) {
-      streetContext.onLeavingStreet("createStreet", currentEsu);
-    }
-  };
+  // const handleCreateStreetClick = (event) => {
+  //   event.stopPropagation();
+  //   if (currentEsu && currentEsu.length > 0) {
+  //     streetContext.onLeavingStreet("createStreet", currentEsu);
+  //   }
+  // };
 
   /**
    * Event to handle when the delete ASD button is clicked.
@@ -1370,12 +1371,12 @@ function ADSSelectionControl({
                   selectionCount={selectionCount}
                   onClick={handleUnassignEsuClick}
                 />
-                <ADSSelectionButton
+                {/* <ADSSelectionButton
                   variant="createStreet"
                   isDisabled={!userCanEdit}
                   selectionCount={selectionCount}
                   onClick={handleCreateStreetClick}
-                />
+                /> */}
               </Fragment>
             )}
             {numberOfTypes === 1 && haveMapEsu && (
@@ -1386,12 +1387,12 @@ function ADSSelectionControl({
                   selectionCount={selectionCount}
                   onClick={handleAssignEsuClick}
                 />
-                <ADSSelectionButton
+                {/* <ADSSelectionButton
                   variant="createStreet"
                   isDisabled={!userCanEdit}
                   selectionCount={selectionCount}
                   onClick={handleCreateStreetClick}
-                />
+                /> */}
               </Fragment>
             )}
             {numberOfTypes === 1 && haveAsd && (

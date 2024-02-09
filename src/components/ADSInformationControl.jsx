@@ -12,6 +12,7 @@
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   18.01.24 Sean Flook                 Initial Revision.
+//    002   09.02.24 Sean Flook                 Updated message for assignESUList.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -92,7 +93,7 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
         return "Use the polyline tool to create ESU geometry, then fill out the form and click OK.";
 
       case "assignESUList":
-        return "Select an ESU on the map.";
+        return "Choose ESUs by clicking on them, then choose the Assign option in the toolbar above.";
 
       case "assignESUMap":
         return "Select an ESU on the map, then click 'Assign to active street' in the feature popup.";
