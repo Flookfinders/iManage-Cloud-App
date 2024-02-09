@@ -29,6 +29,7 @@
 //    014   12.01.24 Sean Flook       IMANN-163 Do not try and get the data if we do not have the USRN/UPRN.
 //    015   25.01.24 Sean Flook                 Changes required after UX review.
 //    016   26.01.24 Sean Flook       IMANN-260 Corrected field name.
+//    017   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -714,19 +715,23 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
 
   /**
    * Event to handle the closing of the historic dialog.
+   *
+   * @param {string} action The action taken from the dialog
    */
-  const handleHistoricPropertyClose = () => {
+  const handleHistoricPropertyClose = (action) => {
     setOpenHistoricProperty(false);
-    if (historicRec.current) {
-      doEditProperty(
-        historicRec.current.uprn,
-        historicRec.current.address,
-        historicRec.current.postcode,
-        historicRec.current.easting,
-        historicRec.current.northing,
-        historicRec.current.logicalStatus,
-        historicRec.current.classificationCode
-      );
+    if (action === "continue") {
+      if (historicRec.current) {
+        doEditProperty(
+          historicRec.current.uprn,
+          historicRec.current.address,
+          historicRec.current.postcode,
+          historicRec.current.easting,
+          historicRec.current.northing,
+          historicRec.current.logicalStatus,
+          historicRec.current.classificationCode
+        );
+      }
     }
   };
 

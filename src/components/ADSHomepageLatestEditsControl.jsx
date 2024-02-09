@@ -23,6 +23,7 @@
 //    010   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    011   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    012   02.02.24 Joel Benford               Styling changes on tabs/grid
+//    013   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -424,19 +425,23 @@ function ADSHomepageLatestEditsControl({ data }) {
 
   /**
    * Event to handle closing a historic property.
+   *
+   * @param {string} action The action taken from the dialog
    */
-  const handleHistoricPropertyClose = () => {
+  const handleHistoricPropertyClose = (action) => {
     setOpenHistoricProperty(false);
-    if (historicRec.current) {
-      doEditProperty(
-        historicRec.current.uprn,
-        historicRec.current.address,
-        historicRec.current.postcode,
-        historicRec.current.easting,
-        historicRec.current.northing,
-        historicRec.current.logicalStatus,
-        historicRec.current.classificationCode
-      );
+    if (action === "continue") {
+      if (historicRec.current) {
+        doEditProperty(
+          historicRec.current.uprn,
+          historicRec.current.address,
+          historicRec.current.postcode,
+          historicRec.current.easting,
+          historicRec.current.northing,
+          historicRec.current.logicalStatus,
+          historicRec.current.classificationCode
+        );
+      }
     }
   };
 

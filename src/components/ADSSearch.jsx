@@ -30,6 +30,7 @@
 //    017   25.01.24 Sean Flook                 Correctly handle status code 204.
 //    018   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    019   01.02.24 Joel Benford     GLB9      Adjust placement/sizing
+//    020   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -713,10 +714,14 @@ function ADSSearch({ placeholder, onSearchClick }) {
 
   /**
    * Event to handle closing the historic property dialog.
+   *
+   * @param {string} action The action taken from the dialog
    */
-  const handleHistoricPropertyClose = () => {
+  const handleHistoricPropertyClose = (action) => {
     setOpenHistoricProperty(false);
-    if (historicRec.current) doOpenProperty(historicRec.current);
+    if (action === "continue") {
+      if (historicRec.current) doOpenProperty(historicRec.current);
+    }
   };
 
   /**

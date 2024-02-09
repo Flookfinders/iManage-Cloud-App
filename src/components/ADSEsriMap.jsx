@@ -50,6 +50,7 @@
 //    036   07.02.24 Sean Flook                 Changes required to support WFS from viaEuropa mapping for OneScotland.
 //    037   08.02.24 Sean Flook                 Added a fix for using viaEuropa mapping with ArcGIS.
 //    038   09.02.24 Sean Flook                 Removed Divide and Assign from the street actions.
+//    039   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1580,20 +1581,24 @@ function ADSEsriMap(startExtent) {
 
   /**
    * Event to handle when the historic property dialog is closed.
+   *
+   * @param {string} action The action taken from the dialog
    */
-  const handleHistoricPropertyClose = async () => {
+  const handleHistoricPropertyClose = async (action) => {
     setOpenHistoricProperty(false);
-    if (historicRec.current) {
-      doOpenRecord(
-        historicRec.current.property,
-        historicRec.current.related,
-        searchContext.currentSearchData.results,
-        mapContext,
-        streetContext,
-        propertyContext,
-        userContext.current.currentUser.token,
-        isScottish.current
-      );
+    if (action === "continue") {
+      if (historicRec.current) {
+        doOpenRecord(
+          historicRec.current.property,
+          historicRec.current.related,
+          searchContext.currentSearchData.results,
+          mapContext,
+          streetContext,
+          propertyContext,
+          userContext.current.currentUser.token,
+          isScottish.current
+        );
+      }
     }
   };
 

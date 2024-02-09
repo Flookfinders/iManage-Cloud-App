@@ -39,6 +39,7 @@
 //    025   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    026   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    027   08.02.24 Joel Benford     RTAB3     Supply state to classification icon tooltip
+//    028   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -458,20 +459,24 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
 
   /**
    * Event to handle when the historic property dialog is closed.
+   *
+   * @param {string} action The action taken from the dialog
    */
-  const handleHistoricPropertyClose = () => {
+  const handleHistoricPropertyClose = (action) => {
     setOpenHistoricProperty(false);
-    if (historicRec.current) {
-      doOpenRecord(
-        historicRec.current.property,
-        historicRec.current.related,
-        searchContext.currentSearchData.results,
-        mapContext,
-        streetContext,
-        propertyContext,
-        userContext.currentUser.token,
-        settingsContext.isScottish
-      );
+    if (action === "continue") {
+      if (historicRec.current) {
+        doOpenRecord(
+          historicRec.current.property,
+          historicRec.current.related,
+          searchContext.currentSearchData.results,
+          mapContext,
+          streetContext,
+          propertyContext,
+          userContext.currentUser.token,
+          settingsContext.isScottish
+        );
+      }
     }
   };
 

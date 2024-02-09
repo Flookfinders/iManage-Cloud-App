@@ -46,6 +46,7 @@
 //    032   26.01.24 Sean Flook       IMANN-257 Bug fix handleNoteSelected.
 //    033   02.02.24 Sean Flook       IMANN-271 Reset the errors when opening a new street.
 //    034   05.02.24 Sean Flook       IMANN-276 Do not worry about ASD records when setting coordinates if the record type is 4 or 9.
+//    035   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -6362,19 +6363,26 @@ function StreetDataForm({ data, loading }) {
     setAlertOpen(false);
   };
 
-  const handleHistoricPropertyClose = () => {
+  /**
+   * Event to handle when the historic property dialog is closed.
+   *
+   * @param {string} action The action taken from the dialog
+   */
+  const handleHistoricPropertyClose = (action) => {
     setOpenHistoricProperty(false);
-    if (historicRec.current) {
-      doOpenRecord(
-        historicRec.current.property,
-        historicRec.current.related,
-        searchContext.currentSearchData.results,
-        mapContext,
-        streetContext,
-        propertyContext,
-        userContext.currentUser.token,
-        settingsContext.isScottish
-      );
+    if (action === "continue") {
+      if (historicRec.current) {
+        doOpenRecord(
+          historicRec.current.property,
+          historicRec.current.related,
+          searchContext.currentSearchData.results,
+          mapContext,
+          streetContext,
+          propertyContext,
+          userContext.currentUser.token,
+          settingsContext.isScottish
+        );
+      }
     }
   };
 
