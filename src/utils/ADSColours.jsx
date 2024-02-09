@@ -3,7 +3,7 @@
 //
 //  Description: All the colour codes used in the application
 //
-//  Copyright:    © 2023 Idox Software Limited.
+//  Copyright:    © 2023 - 2024 Idox Software Limited.
 //
 //  Useful links:
 //    https://g.co/kgs/mwa7VU
@@ -16,6 +16,7 @@
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   06.10.23 Sean Flook                 Initial version.
+//    002   09.02.24 Sean Flook                 Added new colours for ASD records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -64,6 +65,7 @@ export const adsGreenC = "#23A127"; // 1 file
 export const adsDarkGreen = "#0F7B40"; // 4 files
 export const adsLightPurple = "#DD95DA"; // 4 files
 export const adsPurple = "#A04AA9"; // 1 file
+export const adsDarkPurple = "#3D329B";
 export const adsLightPink = "#F78599"; // 4 files
 export const adsPink = "#BB2A6E"; // 8 files
 export const adsDarkPink = "#970d34"; // 4 files
@@ -72,3 +74,4 @@ export const adsMidBrownA = "#B8741A"; // 1 file
 export const adsMidBrownB = "#AA4B1D"; // 1 file
 export const adsBrown = "#8C510D"; // 6 files
 export const adsOrange = "#F48910"; // 4 files
+export const adsDarkOrange = "#DB5700";

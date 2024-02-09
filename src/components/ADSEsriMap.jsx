@@ -51,6 +51,7 @@
 //    037   08.02.24 Sean Flook                 Added a fix for using viaEuropa mapping with ArcGIS.
 //    038   09.02.24 Sean Flook                 Removed Divide and Assign from the street actions.
 //    039   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
+//    040   09.02.24 Sean Flook                 Change to use different line symbols for each type of ASD record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -469,9 +470,44 @@ const streetRenderer = {
   ],
 };
 
-const asdRenderer = {
+const asd51Renderer = {
   type: "simple",
-  symbol: GetASDMapSymbol(),
+  symbol: GetASDMapSymbol(51),
+};
+
+const asd52Renderer = {
+  type: "simple",
+  symbol: GetASDMapSymbol(52),
+};
+
+const asd53Renderer = {
+  type: "simple",
+  symbol: GetASDMapSymbol(53),
+};
+
+const asd61Renderer = {
+  type: "simple",
+  symbol: GetASDMapSymbol(61),
+};
+
+const asd62Renderer = {
+  type: "simple",
+  symbol: GetASDMapSymbol(62),
+};
+
+const asd63Renderer = {
+  type: "simple",
+  symbol: GetASDMapSymbol(63),
+};
+
+const asd64Renderer = {
+  type: "simple",
+  symbol: GetASDMapSymbol(64),
+};
+
+const asd66Renderer = {
+  type: "simple",
+  symbol: GetASDMapSymbol(66),
 };
 
 const backgroundPropertyRenderer = {
@@ -3437,7 +3473,7 @@ function ADSEsriMap(startExtent) {
         ],
         actions: [asd51OpenAction],
       },
-      renderer: asdRenderer,
+      renderer: asd51Renderer,
       spatialReference: { wkid: 27700 },
       title: "Maintenance responsibility layer",
     });
@@ -3515,7 +3551,7 @@ function ADSEsriMap(startExtent) {
         ],
         actions: [asd52OpenAction],
       },
-      renderer: asdRenderer,
+      renderer: asd52Renderer,
       spatialReference: { wkid: 27700 },
       title: "Reinstatement category layer",
     });
@@ -3593,7 +3629,7 @@ function ADSEsriMap(startExtent) {
         ],
         actions: [asd53OpenAction],
       },
-      renderer: asdRenderer,
+      renderer: asd53Renderer,
       spatialReference: { wkid: 27700 },
       title: "Special designation layer",
     });
@@ -3679,7 +3715,7 @@ function ADSEsriMap(startExtent) {
         ],
         actions: [asd61OpenAction],
       },
-      renderer: asdRenderer,
+      renderer: asd61Renderer,
       spatialReference: { wkid: 27700 },
       title: "Interest layer",
     });
@@ -3765,7 +3801,7 @@ function ADSEsriMap(startExtent) {
         ],
         actions: [asd62OpenAction],
       },
-      renderer: asdRenderer,
+      renderer: asd62Renderer,
       spatialReference: { wkid: 27700 },
       title: "Construction layer",
     });
@@ -3843,7 +3879,7 @@ function ADSEsriMap(startExtent) {
         ],
         actions: [asd63OpenAction],
       },
-      renderer: asdRenderer,
+      renderer: asd63Renderer,
       spatialReference: { wkid: 27700 },
       title: "Special designation layer",
     });
@@ -3921,7 +3957,7 @@ function ADSEsriMap(startExtent) {
         ],
         actions: [asd64OpenAction],
       },
-      renderer: asdRenderer,
+      renderer: asd64Renderer,
       spatialReference: { wkid: 27700 },
       title: "Height, width & weight restriction layer",
     });
@@ -4008,7 +4044,7 @@ function ADSEsriMap(startExtent) {
         ],
         actions: [asd66OpenAction],
       },
-      renderer: asdRenderer,
+      renderer: asd66Renderer,
       spatialReference: { wkid: 27700 },
       title: "Public right of way layer",
     });

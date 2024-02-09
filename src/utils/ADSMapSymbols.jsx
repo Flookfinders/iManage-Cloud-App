@@ -3,7 +3,7 @@
 //
 //  Description: ESU Data tab
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,6 +16,7 @@
 //    003   20.09.23 Sean Flook                 Tweaks to GetESUMapSymbol.
 //    004   03.11.23 Sean Flook       IMANN-175 Modified GetBackgroundPropertyMapSymbol for selecting properties.
 //    005   20.11.23 Sean Flook                 Added icon for street BLPUs and display the nodes on a street.
+//    006   09.02.24 Sean Flook                 Modified GetASDMapSymbol to handle different ASD types.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -975,28 +976,356 @@ export function GetESUMapSymbol() {
 /**
  * Method to get the ASD map symbol.
  *
+ * @param {number} asdType The type of ASD symbol required.
  * @returns {CIMSymbol} The required ASD symbol.
  */
-export function GetASDMapSymbol() {
-  return new CIMSymbol({
-    data: {
-      type: "CIMSymbolReference",
-      symbol: {
-        type: "CIMLineSymbol",
-        symbolLayers: [
-          {
-            type: "CIMSolidStroke",
-            enable: true,
-            capStyle: "Round",
-            joinStyle: "Round",
-            lineStyle3D: "Strip",
-            miterLimit: 10,
-            width: 1,
-            color: [61, 67, 255, 166], // #3D43FFA6  [201, 120, 213, 166], // #C978D5A6
-            effects: [],
+export function GetASDMapSymbol(asdType) {
+  switch (asdType) {
+    case 51:
+    case 61:
+      return new CIMSymbol({
+        data: {
+          type: "CIMSymbolReference",
+          symbol: {
+            type: "CIMLineSymbol",
+            symbolLayers: [
+              {
+                type: "CIMVectorMarker",
+                enable: true,
+                anchorPointUnits: "Relative",
+                dominantSizeAxis3D: "Y",
+                size: 6,
+                billboardMode3D: "FaceNearPlane",
+                frame: {
+                  xmin: 0,
+                  ymin: 0,
+                  xmax: 17,
+                  ymax: 17,
+                },
+                markerGraphics: [
+                  {
+                    type: "CIMMarkerGraphic",
+                    geometry: {
+                      rings: [
+                        [
+                          [11.77, 0],
+                          [5.23, 0],
+                          [4.21, 0.1],
+                          [3.24, 0.4],
+                          [2.33, 0.88],
+                          [1.54, 1.54],
+                          [0.88, 2.33],
+                          [0.4, 3.24],
+                          [0.1, 4.21],
+                          [0, 5.23],
+                          [0, 11.77],
+                          [0.1, 12.79],
+                          [0.4, 13.77],
+                          [0.88, 14.67],
+                          [1.54, 15.46],
+                          [2.33, 16.12],
+                          [3.23, 16.6],
+                          [4.21, 16.9],
+                          [5.23, 17],
+                          [11.77, 17],
+                          [12.79, 16.9],
+                          [13.77, 16.6],
+                          [14.67, 16.12],
+                          [15.46, 15.46],
+                          [16.12, 14.67],
+                          [16.6, 13.77],
+                          [16.9, 12.79],
+                          [17, 11.77],
+                          [17, 5.23],
+                          [16.9, 4.21],
+                          [16.6, 3.24],
+                          [16.12, 2.33],
+                          [15.46, 1.54],
+                          [14.67, 0.88],
+                          [13.76, 0.4],
+                          [12.79, 0.1],
+                          [11.77, 0],
+                        ],
+                      ],
+                    },
+                    symbol: {
+                      type: "CIMPolygonSymbol",
+                      symbolLayers: [
+                        {
+                          type: "CIMSolidStroke",
+                          enable: true,
+                          capStyle: "Round",
+                          joinStyle: "Round",
+                          lineStyle3D: "Strip",
+                          miterLimit: 10,
+                          width: 0,
+                          color: [0, 0, 0, 255], // #000000
+                        },
+                        {
+                          type: "CIMSolidFill",
+                          enable: true,
+                          color: [219, 87, 0, 255], // #DB5700
+                        },
+                      ],
+                    },
+                  },
+                ],
+                scaleSymbolsProportionally: true,
+                respectFrame: true,
+                markerPlacement: {
+                  type: "CIMMarkerPlacementAlongLineSameSize",
+                  placePerPart: true,
+                  angleToLine: true,
+                  controlPointPlacement: "WithMarkers",
+                  endings: "Custom",
+                  offsetAlongLine: 0,
+                  placementTemplate: [20],
+                },
+              },
+              {
+                type: "CIMSolidStroke",
+                effects: [
+                  {
+                    type: "CIMGeometricEffectOffset",
+                    method: "Bevelled",
+                    offset: 0,
+                    option: "Fast",
+                  },
+                ],
+                enable: true,
+                colorLocked: true,
+                capStyle: "Round",
+                joinStyle: "Round",
+                lineStyle3D: "Strip",
+                miterLimit: 10,
+                width: 3,
+                color: [219, 87, 0, 255], // #DB5700
+              },
+            ],
           },
-        ],
-      },
-    },
-  });
+        },
+      });
+
+    case 52:
+    case 62:
+      return new CIMSymbol({
+        data: {
+          type: "CIMSymbolReference",
+          symbol: {
+            type: "CIMLineSymbol",
+            symbolLayers: [
+              {
+                type: "CIMSolidStroke",
+                effects: [
+                  {
+                    type: "CIMGeometricEffectDashes",
+                    dashTemplate: [5, 2],
+                    lineDashEnding: "NoConstraint",
+                    controlPointEnding: "NoConstraint",
+                  },
+                  {
+                    type: "CIMGeometricEffectOffset",
+                    method: "Mitered",
+                    offset: 0.15,
+                    option: "Fast",
+                  },
+                  {
+                    type: "CIMGeometricEffectRotate",
+                    angle: 45,
+                  },
+                ],
+                enable: true,
+                capStyle: "Butt",
+                joinStyle: "Round",
+                lineStyle3D: "Strip",
+                miterLimit: 10,
+                width: 1.5,
+                color: [255, 255, 255, 255], // #FFFFFF
+              },
+              {
+                type: "CIMSolidStroke",
+                enable: true,
+                colorLocked: true,
+                capStyle: "Butt",
+                joinStyle: "Round",
+                lineStyle3D: "Strip",
+                miterLimit: 10,
+                width: 5,
+                color: [61, 50, 155, 255], // #3D329B
+              },
+            ],
+          },
+        },
+      });
+
+    case 53:
+    case 63:
+      return new CIMSymbol({
+        data: {
+          type: "CIMSymbolReference",
+          symbol: {
+            type: "CIMLineSymbol",
+            symbolLayers: [
+              {
+                type: "CIMSolidStroke",
+                effects: [
+                  {
+                    type: "CIMGeometricEffectDashes",
+                    dashTemplate: [5, 5],
+                    lineDashEnding: "NoConstraint",
+                    controlPointEnding: "NoConstraint",
+                  },
+                  {
+                    type: "CIMGeometricEffectOffset",
+                    method: "Square",
+                    offset: 0.15,
+                    option: "Fast",
+                  },
+                ],
+                enable: true,
+                capStyle: "Butt",
+                joinStyle: "Round",
+                lineStyle3D: "Strip",
+                miterLimit: 10,
+                width: 2.3,
+                color: [0, 0, 0, 255], // #000000
+              },
+              {
+                type: "CIMSolidStroke",
+                enable: true,
+                colorLocked: true,
+                capStyle: "Butt",
+                joinStyle: "Round",
+                lineStyle3D: "Strip",
+                miterLimit: 10,
+                width: 4.6,
+                color: [246, 226, 13, 255], // #F6E20D
+              },
+              {
+                type: "CIMSolidStroke",
+                enable: true,
+                capStyle: "Butt",
+                joinStyle: "Round",
+                lineStyle3D: "Strip",
+                miterLimit: 10,
+                width: 5,
+                color: [0, 0, 0, 255], // #000000
+              },
+            ],
+          },
+        },
+      });
+
+    case 64:
+      return new CIMSymbol({
+        data: {
+          type: "CIMSymbolReference",
+          symbol: {
+            type: "CIMLineSymbol",
+            symbolLayers: [
+              {
+                type: "CIMSolidStroke",
+                effects: [
+                  {
+                    type: "CIMGeometricEffectOffset",
+                    method: "Rounded",
+                    offset: 1.85,
+                    option: "Fast",
+                  },
+                ],
+                enable: true,
+                capStyle: "Butt",
+                joinStyle: "Round",
+                lineStyle3D: "Strip",
+                miterLimit: 10,
+                width: 3.3,
+                color: [239, 16, 15, 255], // #EF100F
+              },
+              {
+                type: "CIMSolidStroke",
+                effects: [
+                  {
+                    type: "CIMGeometricEffectOffset",
+                    method: "Rounded",
+                    offset: -3.85,
+                    option: "Fast",
+                  },
+                ],
+                enable: true,
+                capStyle: "Butt",
+                joinStyle: "Round",
+                lineStyle3D: "Strip",
+                miterLimit: 10,
+                width: 1.3,
+                color: [0, 0, 0, 255], // #000000
+              },
+              {
+                type: "CIMSolidStroke",
+                enable: true,
+                colorLocked: true,
+                capStyle: "Butt",
+                joinStyle: "Round",
+                lineStyle3D: "Strip",
+                miterLimit: 10,
+                width: 4.6,
+                color: [255, 255, 255, 255], // #FFFFFF
+              },
+            ],
+          },
+        },
+      });
+
+    case 66:
+      return new CIMSymbol({
+        data: {
+          type: "CIMSymbolReference",
+          symbol: {
+            type: "CIMLineSymbol",
+            symbolLayers: [
+              {
+                type: "CIMSolidStroke",
+                enable: true,
+                capStyle: "Round",
+                joinStyle: "Round",
+                lineStyle3D: "Strip",
+                miterLimit: 10,
+                width: 6.5,
+                color: [15, 123, 64, 255], // #0F7B40
+                effects: [
+                  {
+                    type: "CIMGeometricEffectDashes",
+                    dashTemplate: [5, 6],
+                    lineDashEnding: "NoConstraint",
+                    offsetAlongLine: 0,
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      });
+
+    default:
+      return new CIMSymbol({
+        data: {
+          type: "CIMSymbolReference",
+          symbol: {
+            type: "CIMLineSymbol",
+            symbolLayers: [
+              {
+                type: "CIMSolidStroke",
+                enable: true,
+                capStyle: "Round",
+                joinStyle: "Round",
+                lineStyle3D: "Strip",
+                miterLimit: 10,
+                width: 1,
+                color: [61, 67, 255, 166], // #3D43FFA6  [201, 120, 213, 166], // #C978D5A6
+                effects: [],
+              },
+            ],
+          },
+        },
+      });
+  }
 }

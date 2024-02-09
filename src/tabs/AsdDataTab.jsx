@@ -23,6 +23,7 @@
 //    010   24.11.23 Sean Flook                 Moved Box to @mui/system and fixed a warning.
 //    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    012   08.01.24 Sean Flook                 Changes to try and fix warnings.
+//    013   09.02.24 Sean Flook                 Changed colours used for type 51, 52, 61, and 62 records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -47,7 +48,15 @@ import {
   KeyboardArrowUp as KeyboardArrowUpIcon,
 } from "@mui/icons-material";
 import AsdDataListItem from "../components/AsdDataListItem";
-import { adsWhite, adsBlack, adsYellow, adsPink, adsMidRed, adsBrown, adsDarkGreen } from "../utils/ADSColours";
+import {
+  adsWhite,
+  adsBlack,
+  adsYellow,
+  adsMidRed,
+  adsDarkGreen,
+  adsDarkOrange,
+  adsDarkPurple,
+} from "../utils/ADSColours";
 import {
   toolbarStyle,
   ActionIconStyle,
@@ -725,7 +734,7 @@ function AsdDataTab({
                 checked={checked}
                 itemState={listState}
                 iconColour={adsWhite}
-                iconBackgroundColour={adsBrown}
+                iconBackgroundColour={adsDarkOrange}
                 primaryCodeField="streetStatus"
                 secondaryCodeField="maintainingAuthorityCode"
                 onToggleItem={(id) => handleToggleItem(id)}
@@ -745,7 +754,7 @@ function AsdDataTab({
                 checked={checked}
                 itemState={listState}
                 iconColour={adsWhite}
-                iconBackgroundColour={adsPink}
+                iconBackgroundColour={adsDarkPurple}
                 primaryCodeField="reinstatementCategoryCode"
                 secondaryCodeField="reinstatementAuthorityCode"
                 avatarVariant="hexagon"
@@ -787,7 +796,7 @@ function AsdDataTab({
                 checked={checked}
                 itemState={listState}
                 iconColour={adsWhite}
-                iconBackgroundColour={adsBrown}
+                iconBackgroundColour={adsDarkOrange}
                 primaryCodeField="streetStatus"
                 secondaryCodeField="swaOrgRefAuthority"
                 onToggleItem={(id) => handleToggleItem(id)}
@@ -805,7 +814,7 @@ function AsdDataTab({
                 checked={checked}
                 itemState={listState}
                 iconColour={adsWhite}
-                iconBackgroundColour={adsPink}
+                iconBackgroundColour={adsDarkPurple}
                 primaryCodeField="constructionType"
                 secondaryCodeField="constructionDescription"
                 avatarVariant="hexagon"
