@@ -31,6 +31,7 @@
 //    018   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    019   01.02.24 Joel Benford     GLB9      Adjust placement/sizing
 //    020   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
+//    021   09.02.24 Sean Flook                 If only 1 record found in search pressing the Enter key will open the record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -641,7 +642,11 @@ function ADSSearch({ placeholder, onSearchClick }) {
     event.stopPropagation();
     if (event.key === "Enter") {
       event.preventDefault();
-      handleSearchCheck();
+      if (data && data.length === 1) {
+        onSelectCheck(event, data[0]);
+      } else {
+        handleSearchCheck();
+      }
     }
   };
 
