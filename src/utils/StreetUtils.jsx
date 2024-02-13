@@ -39,6 +39,7 @@
 //    026   13.02.23 Sean Flook                 Modified GetWholeRoadLabel to handle type 66 (PRoW) records.
 //    027   13.02.23 Sean Flook                 Updated GetAsdSecondaryText to handle type 66 (PRoW) records.
 //    028   13.02.24 Sean Flook                 Ensure the PRoW geometry is passed through. If assigning ESUs when creating a new street use the ESU Id of the assigned ESU.
+//    029   13.02.24 Sean Flook                 Removed parameter from StreetDelete as no longer required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -518,19 +519,13 @@ export async function StreetDelete(usrn, deleteEsus, lookupContext, userToken, i
 
   if (deleteUrl) {
     // if (process.env.NODE_ENV === "development")
-    console.log(
-      "[DEBUG] StreetDelete - URL",
-      `${deleteUrl.url}/${usrn}/${deleteEsus ? "true" : "false"}?deleteEsu=${deleteEsus ? "true" : "false"}`
-    );
+    console.log("[DEBUG] StreetDelete - URL", `${deleteUrl.url}/${usrn}/${deleteEsus ? "true" : "false"}`);
 
-    return await fetch(
-      `${deleteUrl.url}/${usrn}/${deleteEsus ? "true" : "false"}?deleteEsu=${deleteEsus ? "true" : "false"}`,
-      {
-        headers: deleteUrl.headers,
-        crossDomain: true,
-        method: deleteUrl.type,
-      }
-    )
+    return await fetch(`${deleteUrl.url}/${usrn}/${deleteEsus ? "true" : "false"}`, {
+      headers: deleteUrl.headers,
+      crossDomain: true,
+      method: deleteUrl.type,
+    })
       .then((res) => (res.ok ? res : Promise.reject(res)))
       .then((res) => res.json())
       .then((result) => {
