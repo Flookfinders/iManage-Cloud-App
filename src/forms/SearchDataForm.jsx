@@ -18,6 +18,7 @@
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and removed some warnings.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    007   26.01.24 Sean Flook       IMANN-260 Corrected field name.
+//    008   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -338,7 +339,7 @@ function SearchDataForm() {
                         prowStatus: asdRec.prowStatus,
                         prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
                         prowDistrictRefConsultant: asdRec.prowDistrictRefConsultant,
-                        wholeRoad: asdRec.wholeRoad,
+                        defMapGeometryType: asdRec.defMapGeometryType,
                         geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                       }))
                     : undefined;
@@ -512,7 +513,7 @@ function SearchDataForm() {
                         prowStatus: asdRec.prowStatus,
                         prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
                         prowDistrictRefConsultant: asdRec.prowDistrictRefConsultant,
-                        wholeRoad: asdRec.wholeRoad,
+                        defMapGeometryType: asdRec.defMapGeometryType,
                         geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                       }))
                     : undefined;

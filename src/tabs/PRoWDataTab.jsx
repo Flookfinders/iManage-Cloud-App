@@ -22,6 +22,7 @@
 //    009   05.02.24 Sean Flook                 Filter available districts by the organisation.
 //    010   13.02.24 Sean Flook                 Changes required to handle the geometry.
 //    011   13.02.24 Sean Flook                 Corrected ADSWholeRoadControl variant.
+//    012   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -669,6 +670,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
       prowOrgRefConsultant: field && field === "organisation" ? newValue : organisation,
       prowDistrictRefConsultant: field && field === "district" ? newValue : district,
       neverExport: data.prowData.neverExport,
+      wktGeometry: data.prowData.wktGeometry,
       pkId: data.prowData.pkId,
       entryDate: data.prowData.entryDate,
       lastUpdateDate: data.prowData.lastUpdateDate,

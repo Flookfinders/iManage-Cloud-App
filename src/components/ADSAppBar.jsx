@@ -31,6 +31,7 @@
 //    018   26.01.24 Sean Flook       IMANN-251 Fix HandleChangeCheck and only do the postCheckAction after the record is saved.
 //    019   05.02.24 Joel Benford               Hide close button on homepage, add spacing before auth avatar
 //    020   08.02.24 Sean Flook                 Display the Add street and Select properties button when in the gazetteer page.
+//    021   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -636,7 +637,7 @@ function ADSAppBar(props) {
             prowStatus: asdRec.prowStatus,
             prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
             prowDistrictRefConsultant: asdRec.prowDistrictRefConsultant,
-            wholeRoad: asdRec.wholeRoad,
+            defMapGeometryType: asdRec.defMapGeometryType,
             geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
           })),
       };

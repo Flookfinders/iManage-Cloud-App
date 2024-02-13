@@ -24,6 +24,7 @@
 //    011   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    012   02.02.24 Joel Benford               Styling changes on tabs/grid
 //    013   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
+//    014   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -321,7 +322,7 @@ function ADSHomepageLatestEditsControl({ data }) {
               prowStatus: asdRec.prowStatus,
               prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
               prowDistrictRefConsultant: asdRec.prowDistrictRefConsultant,
-              wholeRoad: asdRec.wholeRoad,
+              defMapGeometryType: asdRec.defMapGeometryType,
               geometry:
                 asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
             }))

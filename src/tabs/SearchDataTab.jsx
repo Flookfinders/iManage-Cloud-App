@@ -40,6 +40,7 @@
 //    026   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    027   08.02.24 Joel Benford     RTAB3     Supply state to classification icon tooltip
 //    028   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
+//    029   13.02.24 Sean Flook                 Corrected the type 66 map data and added missing parameter to call to StreetDelete.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -616,7 +617,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                 prowStatus: asdRec.prowStatus,
                 prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
                 prowDistrictRefConsultant: asdRec.prowDistrictRefConsultant,
-                wholeRoad: asdRec.wholeRoad,
+                defMapGeometryType: asdRec.defMapGeometryType,
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
@@ -981,6 +982,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
         const result = await StreetDelete(
           deleteUSRN.current,
           true,
+          lookupContext,
           userContext.currentUser.token,
           settingsContext.isScottish
         );

@@ -48,6 +48,7 @@
 //    034   05.02.24 Sean Flook       IMANN-276 Do not worry about ASD records when setting coordinates if the record type is 4 or 9.
 //    035   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //    036   13.02.24 Sean Flook                 Changes required to handle the PRoW geometries.
+//    037   13.02.24 Sean Flook                 Corrected the type 66 map data and pass the correct parameters to StreetDelete.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3003,6 +3004,7 @@ function StreetDataForm({ data, loading }) {
       const result = await StreetDelete(
         streetData.usrn,
         true,
+        lookupContext,
         userContext.currentUser.token,
         settingsContext.isScottish
       );
@@ -3902,6 +3904,7 @@ function StreetDataForm({ data, loading }) {
           prowOrgRefConsultant: deletePublicRightOfWay.prowOrgRefConsultant,
           prowDistrictRefConsultant: deletePublicRightOfWay.prowDistrictRefConsultant,
           neverExport: deletePublicRightOfWay.neverExport,
+          wktGeometry: deletePublicRightOfWay.wktGeometry,
           pkId: deletePublicRightOfWay.pkId,
           entryDate: deletePublicRightOfWay.entryDate,
           lastUpdateDate: deletePublicRightOfWay.lastUpdateDate,
@@ -8530,7 +8533,7 @@ function StreetDataForm({ data, loading }) {
                 prowStatus: asdRec.prowStatus,
                 prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
                 prowDistrictRefConsultant: asdRec.prowDistrictRefConsultant,
-                wholeRoad: asdRec.wholeRoad,
+                defMapGeometryType: asdRec.defMapGeometryType,
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               })),

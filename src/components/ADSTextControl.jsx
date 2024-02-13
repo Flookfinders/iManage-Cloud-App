@@ -26,6 +26,7 @@
 //    014   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    015   29.01.24 Sean Flook                 Updated comment.
 //    016   01.02.24 Sean Flook                 Correctly handle when no label is supplied.
+//    017   13.02.24 Sean Flook                 For multi-line controls display the characters left at the same level as the label.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -91,7 +92,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Typography, Grid, Tooltip, TextField, Skeleton, InputAdornment, IconButton } from "@mui/material";
-import { Box } from "@mui/system";
+import { Box, Stack } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -278,16 +279,39 @@ function ADSTextControl({
         sx={FormRowStyle(hasError.current)}
       >
         {label ? (
-          <Grid item xs={3}>
-            <Typography
-              id={`ads-text-label-${label.toLowerCase().replaceAll(" ", "-")}`}
-              variant="body2"
-              align="left"
-              sx={controlLabelStyle}
-            >
-              {`${label}${isRequired ? "*" : ""}`}
-            </Typography>
-          </Grid>
+          multiline.current && value && value.length > 0 ? (
+            <Grid item xs={12}>
+              <Stack direction="row" alignItems="center" justifyContent="space-between">
+                <Typography
+                  id={`ads-text-label-${label.toLowerCase().replaceAll(" ", "-")}`}
+                  variant="body2"
+                  align="left"
+                  sx={controlLabelStyle}
+                >
+                  {`${label}${isRequired ? "*" : ""}`}
+                </Typography>
+                <Typography
+                  id={`ads-text-${label ? label.toLowerCase().replaceAll(" ", "-") : id}-characters-left`}
+                  variant="body2"
+                  align="right"
+                  aria-labelledby={`ads-text-label-${label ? label.toLowerCase().replaceAll(" ", "-") : id}`}
+                >
+                  {maxLength - value.length} characters left
+                </Typography>
+              </Stack>
+            </Grid>
+          ) : (
+            <Grid item xs={3}>
+              <Typography
+                id={`ads-text-label-${label.toLowerCase().replaceAll(" ", "-")}`}
+                variant="body2"
+                align="left"
+                sx={controlLabelStyle}
+              >
+                {`${label}${isRequired ? "*" : ""}`}
+              </Typography>
+            </Grid>
+          )
         ) : (
           <Grid item xs={3}></Grid>
         )}
@@ -414,7 +438,7 @@ function ADSTextControl({
             />
           )}
         </Grid>
-        {(displayCharactersLeft || multiline.current) && value && value.length > 0 ? (
+        {displayCharactersLeft && !multiline.current && value && value.length > 0 ? (
           <Grid item xs={12}>
             <Typography
               id={`ads-text-${label ? label.toLowerCase().replaceAll(" ", "-") : id}-characters-left`}

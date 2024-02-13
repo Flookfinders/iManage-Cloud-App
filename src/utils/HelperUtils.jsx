@@ -33,6 +33,7 @@
 //    020   01.02.24 Sean Flook                 Correctly handle BS7666 in lookupToTitleCase.
 //    021   02.02.24 Sean Flook       IMANN-269 Added isIso885914.
 //    022   08.02.24 Joel Benford     RTAB3     GetAvatarTooltip now takes streetStateCode
+//    023   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1424,7 +1425,7 @@ export async function doOpenRecord(
               prowStatus: asdRec.prowStatus,
               prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
               prowDistrictRefConsultant: asdRec.prowDistrictRefConsultant,
-              wholeRoad: asdRec.wholeRoad,
+              defMapGeometryType: asdRec.defMapGeometryType,
               geometry:
                 asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
             }))

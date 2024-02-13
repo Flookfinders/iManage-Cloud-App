@@ -32,6 +32,7 @@
 //    019   01.02.24 Joel Benford     GLB9      Adjust placement/sizing
 //    020   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //    021   09.02.24 Sean Flook                 If only 1 record found in search pressing the Enter key will open the record.
+//    022   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -363,7 +364,7 @@ function ADSSearch({ placeholder, onSearchClick }) {
                         prowStatus: asdRec.prowStatus,
                         prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
                         prowDistrictRefConsultant: asdRec.prowDistrictRefConsultant,
-                        wholeRoad: asdRec.wholeRoad,
+                        defMapGeometryType: asdRec.defMapGeometryType,
                         geometry:
                           asdRec.wktGeometry && asdRec.wktGeometry !== ""
                             ? GetWktCoordinates(asdRec.wktGeometry)
@@ -860,7 +861,7 @@ function ADSSearch({ placeholder, onSearchClick }) {
                 prowStatus: asdRec.prowStatus,
                 prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
                 prowDistrictRefConsultant: asdRec.prowDistrictRefConsultant,
-                wholeRoad: asdRec.wholeRoad,
+                defMapGeometryType: asdRec.defMapGeometryType,
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))

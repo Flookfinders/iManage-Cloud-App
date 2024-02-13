@@ -38,6 +38,7 @@
 //    025   06.02.23 Sean Flook       IMANN-264 In filteredOperationalDistricts if we do not have an organisation return an empty array.
 //    026   13.02.23 Sean Flook                 Modified GetWholeRoadLabel to handle type 66 (PRoW) records.
 //    027   13.02.23 Sean Flook                 Updated GetAsdSecondaryText to handle type 66 (PRoW) records.
+//    028   13.02.24 Sean Flook                 Ensure the PRoW geometry is passed through. If assigning ESUs when creating a new street use the ESU Id of the assigned ESU.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -516,11 +517,20 @@ export async function StreetDelete(usrn, deleteEsus, lookupContext, userToken, i
   const deleteUrl = GetDeleteStreetUrl(userToken, isScottish);
 
   if (deleteUrl) {
-    return await fetch(`${deleteUrl.url}/${usrn}/${deleteEsus ? "true" : "false"}`, {
-      headers: deleteUrl.headers,
-      crossDomain: true,
-      method: deleteUrl.type,
-    })
+    // if (process.env.NODE_ENV === "development")
+    console.log(
+      "[DEBUG] StreetDelete - URL",
+      `${deleteUrl.url}/${usrn}/${deleteEsus ? "true" : "false"}?deleteEsu=${deleteEsus ? "true" : "false"}`
+    );
+
+    return await fetch(
+      `${deleteUrl.url}/${usrn}/${deleteEsus ? "true" : "false"}?deleteEsu=${deleteEsus ? "true" : "false"}`,
+      {
+        headers: deleteUrl.headers,
+        crossDomain: true,
+        method: deleteUrl.type,
+      }
+    )
       .then((res) => (res.ok ? res : Promise.reject(res)))
       .then((res) => res.json())
       .then((result) => {
@@ -837,7 +847,7 @@ export function GetCurrentSearchStreets(streetData, isScottish) {
             prowStatus: asdRec.prowStatus,
             prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
             prowDistrictRefConsultant: asdRec.prowDistrictRefConsultant,
-            wholeRoad: asdRec.wholeRoad,
+            defMapGeometryType: asdRec.defMapGeometryType,
             geometry:
               asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
           })),
@@ -1504,7 +1514,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
         esus: streetData.esus
           ? streetData.esus.map((esu) => {
               return {
-                esuId: 0,
+                esuId: esu.esuId,
                 changeType: esu.changeType,
                 esuVersionNumber: esu.esuVersionNumber,
                 esuTolerance: esu.esuTolerance,
@@ -1700,6 +1710,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
                 prowOrgRefConsultant: prow.prowOrgRefConsultant,
                 prowDistrictRefConsultant: prow.prowDistrictRefConsultant,
                 neverExport: prow.neverExport,
+                wktGeometry: prow.wktGeometry,
               };
             })
           : [],
@@ -2279,6 +2290,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                 prowOrgRefConsultant: prow.prowOrgRefConsultant,
                 prowDistrictRefConsultant: prow.prowDistrictRefConsultant,
                 neverExport: prow.neverExport,
+                wktGeometry: prow.wktGeometry,
                 pkId: prow.pkId > 0 ? prow.pkId : 0,
               };
             })
@@ -2886,10 +2898,6 @@ export async function SaveStreet(
 
           default:
             const contentType = res.headers.get("content-type");
-            console.error("[SF] SaveStreet - Failed", {
-              res: res,
-              contentType: contentType,
-            });
             if (contentType && contentType.indexOf("application/json") !== -1) {
               res.json().then((body) => {
                 console.error(
@@ -2971,10 +2979,31 @@ export async function SaveStreet(
               });
             } else {
               console.error(
-                `[${res.status} ERROR] ${
-                  streetContext.currentStreet.newStreet ? "Creating" : "Updating"
-                } street (other)`,
+                `[ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} street (other)`,
                 res
+              );
+
+              streetContext.onStreetErrors(
+                [
+                  {
+                    field: "USRN",
+                    errors: [`[ERROR] ${res}. Please report this error to support.`],
+                  },
+                ],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                []
               );
             }
             break;
@@ -3304,7 +3333,7 @@ export const updateMapStreetData = (
               prowStatus: asdRec.prowStatus,
               prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
               prowDistrictRefConsultant: asdRec.prowDistrictRefConsultant,
-              wholeRoad: asdRec.wholeRoad,
+              defMapGeometryType: asdRec.defMapGeometryType,
               geometry:
                 asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
             }))
