@@ -26,6 +26,7 @@
 //    013   05.02.24 Sean Flook                 Filter available districts by the organisation.
 //    014   07.02.24 Sean Flook                 Display a warning dialog when changing from Part Road to Whole Road.
 //    015   13.02.24 Sean Flook                 Set the ADSWholeRoadControl variant.
+//    016   13.02.24 Sean Flook                 Updated to new colour.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -66,7 +67,7 @@ import SwaOrgRef from "../data/SwaOrgRef";
 import ReinstatementType from "../data/ReinstatementType";
 
 import { Texture } from "@mui/icons-material";
-import { adsWhite, adsPink } from "../utils/ADSColours";
+import { adsWhite, adsDarkPurple } from "../utils/ADSColours";
 import { toolbarStyle, dataFormStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -665,7 +666,7 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
                 width: theme.spacing(2),
                 color: adsWhite,
                 clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
-                backgroundColor: adsPink,
+                backgroundColor: adsDarkPurple,
               }}
             >
               <Texture

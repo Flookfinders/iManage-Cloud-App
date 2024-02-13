@@ -1,20 +1,20 @@
-import { adsPink } from "../utils/ADSColours";
+import { adsDarkPurple } from "../utils/ADSColours";
 
 const ConstructionType = [
   {
     id: 1,
     gpText: "Street Reinstatement",
-    colour: adsPink,
+    colour: adsDarkPurple,
   },
   {
     id: 2,
     gpText: "Special Surface",
-    colour: adsPink,
+    colour: adsDarkPurple,
   },
   {
     id: 3,
     gpText: "Special Construction Needs",
-    colour: adsPink,
+    colour: adsDarkPurple,
   },
 ];
 

@@ -37,6 +37,7 @@
 //    024   05.02.24 Sean Flook                 Added filteredOperationalDistricts.
 //    025   06.02.23 Sean Flook       IMANN-264 In filteredOperationalDistricts if we do not have an organisation return an empty array.
 //    026   13.02.23 Sean Flook                 Modified GetWholeRoadLabel to handle type 66 (PRoW) records.
+//    027   13.02.23 Sean Flook                 Updated GetAsdSecondaryText to handle type 66 (PRoW) records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3091,9 +3092,9 @@ export function GetAsdPrimaryText(d, startDateField, endDateField, variant, prim
     return (
       <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
         <Typography variant="body1">{GetAsdPrimaryCodeText(variant, d[primaryCodeField], isScottish)}</Typography>
-        <Typography variant="body2">{`${dateFormat(d[startDateField], "d mmm yyyy")} - ${
-          d[endDateField] ? dateFormat(d[endDateField], "d mmm yyyy") : ""
-        }`}</Typography>
+        <Typography variant="body2">{`${d[startDateField] ? dateFormat(d[startDateField], "d mmm yyyy") : ""}${
+          d[endDateField] ? " - " : ""
+        }${d[endDateField] ? dateFormat(d[endDateField], "d mmm yyyy") : ""}`}</Typography>
       </Stack>
     );
   } else {
@@ -3129,6 +3130,10 @@ export function GetAsdSecondaryText(value, variant, isScottish) {
           .toLowerCase()
           .replace(/\.\s+([a-z])[^.]|^(\s*[a-z])[^.]/g, (s) => s.replace(/([a-z])/, (s) => s.toUpperCase()))
       );
+
+    case "66":
+      secondaryRecord = PRoWStatusCode.filter((x) => x.id === value);
+      break;
 
     default:
       break;

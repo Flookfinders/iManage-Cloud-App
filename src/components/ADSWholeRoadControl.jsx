@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   13.02.24 Sean Flook                 Changes required to handle PRoW records.
+//    006   13.02.24 Sean Flook                 Corrected variant strings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -36,7 +37,7 @@ import { adsMidGreyA, adsWhite } from "../utils/ADSColours";
 import { FormBoxRowStyle, FormRowStyle, controlLabelStyle, tooltipStyle, getButtonStyle } from "../utils/ADSStyles";
 
 ADSWholeRoadControl.propTypes = {
-  variant: PropTypes.oneOf(["wholeRoad", "prow"]).isRequired,
+  variant: PropTypes.oneOf(["WholeRoad", "PRoW"]).isRequired,
   label: PropTypes.string.isRequired,
   isEditable: PropTypes.bool,
   isRequired: PropTypes.bool,
@@ -126,9 +127,9 @@ function ADSWholeRoadControl({
                     sx={getButtonStyle(value)}
                   >
                     <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                      {variant === "wholeRoad" ? <WholeRoadIcon wholeRoad={true} /> : <ShowChartIcon />}
+                      {variant === "WholeRoad" ? <WholeRoadIcon wholeRoad={true} /> : <ShowChartIcon />}
                       <Typography variant="body1" sx={{ textTransform: "none" }}>
-                        {`${variant === "wholeRoad" ? "Whole road" : "Exact"}`}
+                        {`${variant === "WholeRoad" ? "Whole road" : "Exact"}`}
                       </Typography>
                     </Stack>
                   </Button>
@@ -141,9 +142,9 @@ function ADSWholeRoadControl({
                     sx={getButtonStyle(value)}
                   >
                     <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                      {variant === "wholeRoad" ? <WholeRoadIcon wholeRoad={true} /> : <ShowChartIcon />}
+                      {variant === "WholeRoad" ? <WholeRoadIcon wholeRoad={true} /> : <ShowChartIcon />}
                       <Typography variant="body1" sx={{ textTransform: "none" }}>
-                        {`${variant === "wholeRoad" ? "Whole road" : "Exact"}`}
+                        {`${variant === "WholeRoad" ? "Whole road" : "Exact"}`}
                       </Typography>
                     </Stack>
                   </Button>
@@ -157,13 +158,13 @@ function ADSWholeRoadControl({
                     sx={getButtonStyle(!value)}
                   >
                     <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                      {variant === "wholeRoad" ? (
+                      {variant === "WholeRoad" ? (
                         <WholeRoadIcon wholeRoad={false} partRoadColour={adsWhite} />
                       ) : (
                         <LineAxisIcon />
                       )}
                       <Typography variant="body1" sx={{ textTransform: "none" }}>
-                        {`${variant === "wholeRoad" ? "Part of road" : "Inexact"}`}
+                        {`${variant === "WholeRoad" ? "Part of road" : "Inexact"}`}
                       </Typography>
                     </Stack>
                   </Button>
@@ -176,13 +177,13 @@ function ADSWholeRoadControl({
                     sx={getButtonStyle(!value)}
                   >
                     <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                      {variant === "wholeRoad" ? (
+                      {variant === "WholeRoad" ? (
                         <WholeRoadIcon wholeRoad={false} partRoadColour={adsMidGreyA} />
                       ) : (
                         <LineAxisIcon />
                       )}
                       <Typography variant="body1" sx={{ textTransform: "none" }}>
-                        {`${variant === "wholeRoad" ? "Part of road" : "Inexact"}`}
+                        {`${variant === "WholeRoad" ? "Part of road" : "Inexact"}`}
                       </Typography>
                     </Stack>
                   </Button>
@@ -200,9 +201,9 @@ function ADSWholeRoadControl({
                   sx={getButtonStyle(value)}
                 >
                   <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                    {variant === "wholeRoad" ? <WholeRoadIcon wholeRoad={true} /> : <ShowChartIcon />}
+                    {variant === "WholeRoad" ? <WholeRoadIcon wholeRoad={true} /> : <ShowChartIcon />}
                     <Typography variant="body1" sx={{ textTransform: "none" }}>
-                      {`${variant === "wholeRoad" ? "Whole road" : "Exact"}`}
+                      {`${variant === "WholeRoad" ? "Whole road" : "Exact"}`}
                     </Typography>
                   </Stack>
                 </Button>
@@ -215,9 +216,9 @@ function ADSWholeRoadControl({
                   sx={getButtonStyle(value)}
                 >
                   <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                    {variant === "wholeRoad" ? <WholeRoadIcon wholeRoad={true} /> : <ShowChartIcon />}
+                    {variant === "WholeRoad" ? <WholeRoadIcon wholeRoad={true} /> : <ShowChartIcon />}
                     <Typography variant="body1" sx={{ textTransform: "none" }}>
-                      {`${variant === "wholeRoad" ? "Whole road" : "Exact"}`}
+                      {`${variant === "WholeRoad" ? "Whole road" : "Exact"}`}
                     </Typography>
                   </Stack>
                 </Button>
@@ -231,13 +232,13 @@ function ADSWholeRoadControl({
                   sx={getButtonStyle(!value)}
                 >
                   <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                    {variant === "wholeRoad" ? (
+                    {variant === "WholeRoad" ? (
                       <WholeRoadIcon wholeRoad={false} partRoadColour={adsWhite} />
                     ) : (
                       <LineAxisIcon />
                     )}
                     <Typography variant="body1" sx={{ textTransform: "none" }}>
-                      {`${variant === "wholeRoad" ? "Part of road" : "Inexact"}`}
+                      {`${variant === "WholeRoad" ? "Part of road" : "Inexact"}`}
                     </Typography>
                   </Stack>
                 </Button>
@@ -250,13 +251,13 @@ function ADSWholeRoadControl({
                   sx={getButtonStyle(!value)}
                 >
                   <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                    {variant === "wholeRoad" ? (
+                    {variant === "WholeRoad" ? (
                       <WholeRoadIcon wholeRoad={false} partRoadColour={adsMidGreyA} />
                     ) : (
                       <LineAxisIcon />
                     )}
                     <Typography variant="body1" sx={{ textTransform: "none" }}>
-                      {`${variant === "wholeRoad" ? "Part of road" : "Inexact"}`}
+                      {`${variant === "WholeRoad" ? "Part of road" : "Inexact"}`}
                     </Typography>
                   </Stack>
                 </Button>

@@ -25,6 +25,7 @@
 //    012   07.02.24 Sean Flook       IMANN-289 Corrected error field name.
 //    013   07.02.24 Sean Flook                 Display a warning dialog when changing from Part Road to Whole Road.
 //    014   13.02.24 Sean Flook                 Set the ADSWholeRoadControl variant.
+//    015   13.02.24 Sean Flook                 Updated to new colour.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -59,7 +60,7 @@ import SwaOrgRef from "../data/SwaOrgRef";
 
 import { People } from "@mui/icons-material";
 
-import { adsWhite, adsBrown } from "../utils/ADSColours";
+import { adsWhite, adsDarkOrange } from "../utils/ADSColours";
 import { toolbarStyle, dataFormStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -540,7 +541,7 @@ function MaintenanceResponsibilityDataTab({
               sx={{
                 height: theme.spacing(2),
                 width: theme.spacing(2),
-                backgroundColor: adsBrown,
+                backgroundColor: adsDarkOrange,
                 color: adsWhite,
               }}
             >

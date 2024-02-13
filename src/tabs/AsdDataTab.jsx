@@ -25,6 +25,7 @@
 //    012   08.01.24 Sean Flook                 Changes to try and fix warnings.
 //    013   09.02.24 Sean Flook                 Changed colours used for type 51, 52, 61, and 62 records.
 //    014   13.02.24 Sean Flook       IMANN-294 Only allow ASD records to be added to type 1 & 2 streets apart from PRoWs on type 3 streets.
+//    015   13.02.24 Sean Flook                 Display the correct information for type 63 & 66 records in the list.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -837,9 +838,9 @@ function AsdDataTab({
                 iconBackgroundColour={adsYellow}
                 iconBorderColour={`${adsBlack}  !important`}
                 primaryCodeField="streetSpecialDesigCode"
-                secondaryCodeField="description"
-                startDateField="startDate"
-                endDateField="endDate"
+                secondaryCodeField="specialDesigDescription"
+                startDateField="specialDesigStartDate"
+                endDateField="specialDesigEndDate"
                 onToggleItem={(id) => handleToggleItem(id)}
                 onItemClicked={(specialDesignationData, index) =>
                   handleSpecialDesignationClicked(specialDesignationData, index)
@@ -879,6 +880,7 @@ function AsdDataTab({
                 iconColour={adsWhite}
                 iconBackgroundColour={adsDarkGreen}
                 primaryCodeField="prowRights"
+                secondaryCodeField="prowStatus"
                 avatarVariant="rightPoint"
                 onToggleItem={(id) => handleToggleItem(id)}
                 onItemClicked={(prowData, index) => handleProwClicked(prowData, index)}

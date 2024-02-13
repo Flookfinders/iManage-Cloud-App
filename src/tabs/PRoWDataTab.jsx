@@ -21,6 +21,7 @@
 //    008   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
 //    009   05.02.24 Sean Flook                 Filter available districts by the organisation.
 //    010   13.02.24 Sean Flook                 Changes required to handle the geometry.
+//    011   13.02.24 Sean Flook                 Corrected ADSWholeRoadControl variant.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1081,7 +1082,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
           onChange={handleDetailsChangeEvent}
         />
         <ADSWholeRoadControl
-          variant="prow"
+          variant="PRoW"
           label="Match to street route"
           isEditable={userCanEdit}
           isRequired
