@@ -25,6 +25,8 @@
 //    012   10.01.24 Sean Flook                 Fix warnings.
 //    013   25.01.24 Sean Flook                 Changes required after UX review.
 //    014   07.02.24 Joel Benford               Spacing and colours
+//    015   12.02.24 Joel Benford               Tooltip on classification icon
+//    016   12.02.24 Joel Benford       RTAB4   Removed left border on hover, interest avatar -> rounded
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -44,6 +46,7 @@ import {
   GetAvatarColour,
   copyTextToClipboard,
   openInStreetView,
+  GetAvatarTooltip,
 } from "../utils/HelperUtils";
 import { streetToTitleCase, GetStreetMapData } from "./../utils/StreetUtils";
 import {
@@ -95,7 +98,6 @@ import {
   adsMidRed,
   adsBrown,
   adsDarkGreen,
-  adsLightGreyD,
 } from "../utils/ADSColours";
 import {
   dataFormStyle,
@@ -610,8 +612,6 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
         pt: theme.spacing(1),
         pb: theme.spacing(1),
         borderBottom: `solid ${adsLightGreyB} 1px`,
-        borderLeft: `solid ${adsLightGreyD} 3px`,
-        backgroundColor: adsWhite,
         "&:hover": {
           backgroundColor: adsPaleBlueA,
           color: adsBlueA,
@@ -624,7 +624,6 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
         borderBottom: `solid ${adsLightGreyB} 1px`,
         borderLeftWidth: "3px",
         "&:hover": {
-          borderLeft: `solid ${adsLightGreyD} 3px`,
           backgroundColor: adsPaleBlueA,
           color: adsBlueA,
         },
@@ -724,10 +723,23 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                               <Box sx={{ width: "24px" }} />
                             )}
                             <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="flex-start">
-                              {GetStreetIcon(
-                                rec.stRefType > 0 ? rec.stRefType + 10 : 11, // TODO: Correct once field name as been corrected to recordType
-                                GetAvatarColour(rec.state > 0 ? rec.state + 10 : 12)
-                              )}
+                              <Tooltip
+                                title={GetAvatarTooltip(
+                                  15,
+                                  10 + rec.stRefType,
+                                  null,
+                                  rec.state,
+                                  settingsContext.isScottish
+                                )}
+                                arrow
+                                placement="bottom"
+                                sx={tooltipStyle}
+                              >
+                                {GetStreetIcon(
+                                  rec.stRefType > 0 ? rec.stRefType + 10 : 11, // TODO: Correct once field name as been corrected to recordType
+                                  GetAvatarColour(rec.state > 0 ? rec.state + 10 : 12)
+                                )}
+                              </Tooltip>
                               <Stack direction="column">
                                 <Stack direction="row" spacing={1}>
                                   <Chip
@@ -878,7 +890,12 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                         nodeId={`esu-root-${rec.usrn}`}
                         sx={treeItemStyle(rec.usrn.toString() === streetContext.currentStreet.usrn.toString())}
                         label={
-                          <Typography variant="subtitle2" sx={{ display: "inline-flex" }}>
+                          <Typography
+                            variant="subtitle2"
+                            sx={{
+                              display: "inline-flex",
+                            }}
+                          >
                             ESUs
                             <Avatar variant="rounded" sx={GetTabIconStyle(rec && rec.esus ? rec.esus.length : 0)}>
                               <Typography variant="caption">
@@ -938,7 +955,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                                       alignItems="flex-start"
                                     >
                                       {
-                                        <Avatar variant={"circular"} sx={GetAvatarStyle(61)}>
+                                        <Avatar variant={"rounded"} sx={GetAvatarStyle(61)}>
                                           <People
                                             sx={{
                                               height: theme.spacing(2),
