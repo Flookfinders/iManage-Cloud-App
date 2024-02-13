@@ -24,6 +24,7 @@
 //    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    012   08.01.24 Sean Flook                 Changes to try and fix warnings.
 //    013   09.02.24 Sean Flook                 Changed colours used for type 51, 52, 61, and 62 records.
+//    014   13.02.24 Sean Flook       IMANN-294 Only allow ASD records to be added to type 1 & 2 streets apart from PRoWs on type 3 streets.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -582,7 +583,7 @@ function AsdDataTab({
               TransitionComponent={Fade}
               sx={menuStyle}
             >
-              {!settingsContext.isScottish && (
+              {!settingsContext.isScottish && data.recordType < 3 && (
                 <MenuItem
                   dense
                   disabled={!userCanEdit}
@@ -599,7 +600,7 @@ function AsdDataTab({
                   </Typography>
                 </MenuItem>
               )}
-              {settingsContext.isScottish && (
+              {settingsContext.isScottish && data.recordType < 3 && (
                 <MenuItem
                   dense
                   disabled={!userCanEdit}
@@ -616,7 +617,7 @@ function AsdDataTab({
                   </Typography>
                 </MenuItem>
               )}
-              {!settingsContext.isScottish && (
+              {!settingsContext.isScottish && data.recordType < 3 && (
                 <MenuItem
                   dense
                   disabled={!userCanEdit}
@@ -633,7 +634,7 @@ function AsdDataTab({
                   </Typography>
                 </MenuItem>
               )}
-              {settingsContext.isScottish && (
+              {settingsContext.isScottish && data.recordType < 3 && (
                 <MenuItem
                   dense
                   disabled={!userCanEdit}
@@ -650,7 +651,7 @@ function AsdDataTab({
                   </Typography>
                 </MenuItem>
               )}
-              {!settingsContext.isScottish && (
+              {!settingsContext.isScottish && data.recordType < 3 && (
                 <MenuItem
                   dense
                   disabled={!userCanEdit}
@@ -667,7 +668,7 @@ function AsdDataTab({
                   </Typography>
                 </MenuItem>
               )}
-              {settingsContext.isScottish && (
+              {settingsContext.isScottish && data.recordType < 3 && (
                 <MenuItem
                   dense
                   disabled={!userCanEdit}
@@ -684,7 +685,7 @@ function AsdDataTab({
                   </Typography>
                 </MenuItem>
               )}
-              {!settingsContext.isScottish && (
+              {!settingsContext.isScottish && data.recordType < 3 && (
                 <MenuItem dense disabled={!userCanEdit} onClick={handleCreateHWWRecord} sx={menuItemStyle(false)}>
                   <Typography
                     variant="inherit"
@@ -725,7 +726,7 @@ function AsdDataTab({
             component="nav"
             key="asd_types"
           >
-            {settingsContext.isScottish && (
+            {settingsContext.isScottish && data.recordType < 3 && (
               <AsdDataListItem
                 variant="51"
                 title="Maintenance responsibilities"
@@ -745,7 +746,7 @@ function AsdDataTab({
                 onExpandCollapse={handleItemExpandCollapse}
               />
             )}
-            {settingsContext.isScottish && (
+            {settingsContext.isScottish && data.recordType < 3 && (
               <AsdDataListItem
                 variant="52"
                 title="Reinstatement categories"
@@ -766,7 +767,7 @@ function AsdDataTab({
                 onExpandCollapse={handleItemExpandCollapse}
               />
             )}
-            {settingsContext.isScottish && (
+            {settingsContext.isScottish && data.recordType < 3 && (
               <AsdDataListItem
                 variant="53"
                 title="Special designations"
@@ -787,7 +788,7 @@ function AsdDataTab({
                 onExpandCollapse={handleItemExpandCollapse}
               />
             )}
-            {!settingsContext.isScottish && (
+            {!settingsContext.isScottish && data.recordType < 3 && (
               <AsdDataListItem
                 variant="61"
                 title="Interested organisations"
@@ -805,7 +806,7 @@ function AsdDataTab({
                 onExpandCollapse={handleItemExpandCollapse}
               />
             )}
-            {!settingsContext.isScottish && (
+            {!settingsContext.isScottish && data.recordType < 3 && (
               <AsdDataListItem
                 variant="62"
                 title="Construction"
@@ -824,7 +825,7 @@ function AsdDataTab({
                 onExpandCollapse={handleItemExpandCollapse}
               />
             )}
-            {!settingsContext.isScottish && (
+            {!settingsContext.isScottish && data.recordType < 3 && (
               <AsdDataListItem
                 variant="63"
                 title="Special designations"
@@ -847,7 +848,7 @@ function AsdDataTab({
                 onExpandCollapse={handleItemExpandCollapse}
               />
             )}
-            {!settingsContext.isScottish && (
+            {!settingsContext.isScottish && data.recordType < 3 && (
               <AsdDataListItem
                 variant="64"
                 title="Height, width and weight restrictions"
