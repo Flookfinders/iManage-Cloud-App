@@ -23,6 +23,7 @@
 //    010   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
 //    011   07.02.24 Sean Flook       IMANN-289 Corrected error field name.
 //    012   07.02.24 Sean Flook                 Display a warning dialog when changing from Part Road to Whole Road.
+//    013   13.02.24 Sean Flook                 Set the ADSWholeRoadControl variant.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -675,6 +676,7 @@ function ReinstatementCategoryDataTab({
           onChange={handleStateChangeEvent}
         />
         <ADSWholeRoadControl
+          variant="WholeRoad"
           label="Applied to"
           isEditable={userCanEdit}
           isRequired

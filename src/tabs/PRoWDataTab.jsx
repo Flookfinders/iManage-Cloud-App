@@ -20,6 +20,7 @@
 //    007   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    008   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
 //    009   05.02.24 Sean Flook                 Filter available districts by the organisation.
+//    010   13.02.24 Sean Flook                 Changes required to handle the geometry.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,6 +32,8 @@ import PropTypes from "prop-types";
 import LookupContext from "../context/lookupContext";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
+import MapContext from "./../context/mapContext";
+import InformationContext from "../context/informationContext";
 
 import { GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
 import { filteredOperationalDistricts } from "../utils/StreetUtils";
@@ -40,7 +43,7 @@ import SwaOrgRef from "../data/SwaOrgRef";
 import PRoWDedicationCode from "../data/PRoWDedicationCode";
 import PRoWStatusCode from "../data/PRoWStatusCode";
 
-import { Grid, Typography, Avatar, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import { Grid, Typography, Avatar, Accordion, AccordionSummary, AccordionDetails, Popper } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -50,7 +53,10 @@ import ADSSwitchControl from "../components/ADSSwitchControl";
 import ADSDateControl from "../components/ADSDateControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ADSProwAccessControl from "../components/ADSProwAccessControl";
+import ADSWholeRoadControl from "../components/ADSWholeRoadControl";
+import ADSInformationControl from "../components/ADSInformationControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+import MessageDialog from "../dialogs/MessageDialog";
 
 import { DirectionsWalk, ArrowForwardIosSharp, QuestionAnswer, Flag, Done } from "@mui/icons-material";
 import { adsBlueA, adsWhite, adsLightBlue10, adsBlack125, adsDarkGreen } from "../utils/ADSColours";
@@ -74,6 +80,8 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
   const lookupContext = useContext(LookupContext);
   const sandboxContext = useContext(SandboxContext);
   const userContext = useContext(UserContext);
+  const mapContext = useContext(MapContext);
+  const informationContext = useContext(InformationContext);
 
   const [dataChanged, setDataChanged] = useState(false);
 
@@ -83,6 +91,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
   const [status, setStatus] = useState(null);
   const [location, setLocation] = useState("");
   const [details, setDetails] = useState("");
+  const [defMapGeometryType, setDefMapGeometryType] = useState(true);
   const [prowLength, setProwLength] = useState(0);
   const [promotedRoute, setPromotedRoute] = useState(false);
   const [accessibleRoute, setAccessibleRoute] = useState(false);
@@ -109,11 +118,13 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
   const [userCanEdit, setUserCanEdit] = useState(false);
 
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
+  const [showExactWarning, setShowExactWarning] = useState(false);
 
   const [dedicationError, setDedicationError] = useState(null);
   const [statusError, setStatusError] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [detailsError, setDetailsError] = useState(null);
+  const [defMapGeometryTypeError, setDefMapGeometryTypeError] = useState(null);
   const [prowLengthError, setProwLengthError] = useState(null);
   const [promotedRouteError, setPromotedRouteError] = useState(null);
   const [accessibleRouteError, setAccessibleRouteError] = useState(null);
@@ -136,6 +147,10 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
   const [appealDateError, setAppealDateError] = useState(null);
   const [appealReferenceError, setAppealReferenceError] = useState(null);
   const [appealDetailsError, setAppealDetailsError] = useState(null);
+
+  const [informationAnchorEl, setInformationAnchorEl] = useState(null);
+  const informationOpen = Boolean(informationAnchorEl);
+  const informationId = informationOpen ? "asd-information-popper" : undefined;
 
   /**
    * Method used to update the current sandbox record.
@@ -202,6 +217,31 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
       if (onDataChanged && details !== newValue) onDataChanged();
     }
     UpdateSandbox("details", newValue);
+  };
+
+  /**
+   * Event to handle when the whole road flag is changed.
+   *
+   * @param {boolean} newValue The new whole road flag.
+   */
+  const handleDefMapGeometryTypeChangeEvent = (newValue) => {
+    if (newValue && !defMapGeometryType) {
+      setShowExactWarning(true);
+    } else {
+      setDefMapGeometryType(newValue);
+      if (!dataChanged) {
+        setDataChanged(defMapGeometryType !== newValue);
+        if (onDataChanged && defMapGeometryType !== newValue) onDataChanged();
+      }
+      UpdateSandbox("defMapGeometryType", newValue);
+      if (newValue) {
+        mapContext.onEditMapObject(null, null);
+        informationContext.onClearInformation();
+      } else {
+        mapContext.onEditMapObject(66, data && data.prowData && data.prowData.pkId);
+        informationContext.onDisplayInformation("inexactASD", "PRoWDataTab");
+      }
+    }
   };
 
   /**
@@ -588,7 +628,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
       changeType:
         field && field === "changeType" ? newValue : !data.prowData.pkId || data.prowData.pkId < 0 ? "I" : "U",
       prowUsrn: data.prowData.prowUsrn,
-      defMapGeometryType: data.prowData.defMapGeometryType,
+      defMapGeometryType: field && field === "defMapGeometryType" ? newValue : defMapGeometryType,
       defMapGeometryCount: data.prowData.defMapGeometryCount,
       prowLength: field && field === "prowLength" ? newValue : prowLength,
       prowRights: field && field === "dedication" ? newValue : dedication,
@@ -665,6 +705,27 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
     }
   };
 
+  /**
+   * Event to handle when the message dialog is closed.
+   *
+   * @param {string} action The action taken from the message dialog.
+   */
+  const handleCloseMessageDialog = (action) => {
+    if (action === "continue") {
+      setDefMapGeometryType(true);
+      if (!dataChanged) {
+        setDataChanged(!defMapGeometryType);
+        if (onDataChanged && !defMapGeometryType) onDataChanged();
+      }
+      UpdateSandbox("defMapGeometryType", true);
+
+      mapContext.onEditMapObject(null, null);
+      informationContext.onClearInformation();
+    }
+
+    setShowExactWarning(false);
+  };
+
   useEffect(() => {
     if (!loading && data && data.prowData) {
       setDedication(data.prowData.prowRights);
@@ -699,6 +760,12 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
   }, [loading, data]);
 
   useEffect(() => {
+    if (!defMapGeometryType && !informationContext.informationSource) {
+      informationContext.onDisplayInformation("inexactASD", "PRoWDataTab");
+    }
+  }, [defMapGeometryType, informationContext]);
+
+  useEffect(() => {
     if (sandboxContext.currentSandbox.sourceStreet && data && data.prowData) {
       const sourcePRoW = sandboxContext.currentSandbox.sourceStreet.publicRightOfWays.find((x) => x.pkId === data.id);
 
@@ -724,10 +791,17 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
   }, [userContext]);
 
   useEffect(() => {
+    if (informationContext.informationSource && informationContext.informationSource === "PRoWDataTab") {
+      setInformationAnchorEl(document.getElementById("prow-data"));
+    } else setInformationAnchorEl(null);
+  }, [informationContext.informationSource]);
+
+  useEffect(() => {
     setDedicationError(null);
     setStatusError(null);
     setLocationError(null);
     setDetailsError(null);
+    setDefMapGeometryTypeError(null);
     setProwLengthError(null);
     setPromotedRouteError(null);
     setAccessibleRouteError(null);
@@ -768,6 +842,10 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
 
           case "prowdetails":
             setDetailsError(error.errors);
+            break;
+
+          case "defmapgeometrytype":
+            setDefMapGeometryTypeError(error.errors);
             break;
 
           case "prowlength":
@@ -867,7 +945,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
 
   return (
     <Fragment>
-      <Box sx={toolbarStyle}>
+      <Box sx={toolbarStyle} id={"prow-data"}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
             <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
@@ -1001,6 +1079,18 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
           errorText={detailsError}
           helperText="Official Reference of the PROW designation, followed by descriptive details of the PRoW as defined in the PRoW Definitive Statement."
           onChange={handleDetailsChangeEvent}
+        />
+        <ADSWholeRoadControl
+          variant="prow"
+          label="Match to street route"
+          isEditable={userCanEdit}
+          isRequired
+          isFocused={focusedField ? focusedField === "DefMapGeometryType" : false}
+          loading={loading}
+          value={defMapGeometryType}
+          helperText="Does the PRoW follow the exact route described in the type 13 ESU record."
+          errorText={defMapGeometryTypeError}
+          onChange={handleDefMapGeometryTypeChangeEvent}
         />
         <ADSNumberControl
           label="Length (m)"
@@ -1448,7 +1538,11 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
       </Box>
       <div>
         <ConfirmDeleteDialog variant="prow" open={openDeleteConfirmation} onClose={handleCloseDeleteConfirmation} />
+        <MessageDialog isOpen={showExactWarning} variant="cancelASDInexact" onClose={handleCloseMessageDialog} />
       </div>
+      <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
+        <ADSInformationControl variant={"inexactASD"} />
+      </Popper>
     </Fragment>
   );
 }

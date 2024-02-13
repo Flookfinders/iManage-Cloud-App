@@ -17,6 +17,7 @@
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    006   07.02.24 Sean Flook                 Added cancelASDPartRoad and removed editASDGeometry and editESUGeometry.
+//    007   13.02.24 Sean Flook                 Added cancelASDInexact.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -37,7 +38,7 @@ import { useTheme } from "@mui/styles";
 
 MessageDialog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
-  variant: PropTypes.oneOf(["cancelWizard", "cancelMoveBlpu", "cancelASDPartRoad"]).isRequired,
+  variant: PropTypes.oneOf(["cancelWizard", "cancelMoveBlpu", "cancelASDPartRoad", "cancelASDInexact"]).isRequired,
   onClose: PropTypes.func.isRequired,
 };
 
@@ -74,6 +75,9 @@ function MessageDialog({ isOpen, variant, onClose }) {
       case "cancelASDPartRoad":
         return "Whole road";
 
+      case "cancelASDInexact":
+        return "Exact match to street";
+
       default:
         return `Unknown variant: ${variant}`;
     }
@@ -104,6 +108,14 @@ function MessageDialog({ isOpen, variant, onClose }) {
         return (
           <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={1}>
             <Typography variant="body2">Toggling back to 'Whole Road' will reset the geometry.</Typography>
+            <Typography variant="body2">Are you sure you want to continue?</Typography>
+          </Stack>
+        );
+
+      case "cancelASDInexact":
+        return (
+          <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={1}>
+            <Typography variant="body2">Toggling back to 'Exact' will reset the geometry.</Typography>
             <Typography variant="body2">Are you sure you want to continue?</Typography>
           </Stack>
         );
@@ -145,6 +157,7 @@ function MessageDialog({ isOpen, variant, onClose }) {
         );
 
       case "cancelASDPartRoad":
+      case "cancelASDInexact":
         return (
           <Fragment>
             <Button

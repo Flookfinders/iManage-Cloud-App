@@ -23,6 +23,7 @@
 //    010   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    011   10.01.24 Sean Flook                 Fix warnings.
 //    012   25.01.24 Sean Flook                 Changes required after UX review.
+//    013   13.02.24 Sean Flook                 Only set the data if it exists.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -805,44 +806,80 @@ function AsdTemplateTab() {
 
   useEffect(() => {
     if (data) {
-      setMaintenanceResponsibilityStreetStatus(data.scoMaintenanceResponsibilityTemplate.streetStatus);
-      setMaintenanceResponsibilityCustodian(data.scoMaintenanceResponsibilityTemplate.custodianCode);
-      setMaintenanceResponsibilityAuthority(data.scoMaintenanceResponsibilityTemplate.maintainingAuthorityCode);
-      setReinstatementCategoryReinstatementCategory(data.scoReinstatementCategoryTemplate.reinstatementCategory);
-      setReinstatementCategoryCustodian(data.scoReinstatementCategoryTemplate.custodianCode);
-      setReinstatementCategoryAuthority(data.scoReinstatementCategoryTemplate.reinstatementAuthorityCode);
-      setOsSpecialDesignationSpecialDesignation(data.scoSpecialDesignationTemplate.specialDesignation);
-      setOsSpecialDesignationCustodian(data.scoSpecialDesignationTemplate.custodianCode);
-      setOsSpecialDesignationAuthority(data.scoSpecialDesignationTemplate.authorityCode);
-      setInterestStreetStatus(data.interestTemplate.streetStatus);
-      setInterestOrganisation(data.interestTemplate.swaOrgRefAuthority);
-      setInterestType(data.interestTemplate.interestType);
-      setInterestDistrict(data.interestTemplate.districtRefAuthority);
-      setInterestMaintainingOrganisation(data.interestTemplate.swaOrgRefMaintaining);
-      setConstructionType(data.constructionTemplate.constructionType);
-      setConstructionReinstatementType(data.constructionTemplate.reinstatementTypeCode);
-      setConstructionAggregateAbrasionValue(data.constructionTemplate.aggregateAbrasionValue);
-      setConstructionPolishedStoneValue(data.constructionTemplate.polishedStoneValue);
-      setConstructionOrganisation(data.constructionTemplate.swaOrgRefConsultant);
-      setConstructionDistrict(data.constructionTemplate.districtRefConsultant);
-      setSpecialDesigType(data.specialDesignationTemplate.type);
-      setSpecialDesigOrganisation(data.specialDesignationTemplate.swaOrgRefConsultant);
-      setSpecialDesigDistrict(data.specialDesignationTemplate.districtRefConsultant);
-      setSpecialDesigPeriodicity(data.specialDesignationTemplate.specialDesigPeriodicityCode);
-      setHwwDesignation(data.heightWidthWeightTemplate.hwwRestrictionCode);
-      setHwwOrganisation(data.heightWidthWeightTemplate.swaOrgRefConsultant);
-      setHwwDistrict(data.heightWidthWeightTemplate.districtRefConsultant);
-      setProwDedication(data.publicRightOfWayTemplate.prowRights);
-      setProwStatus(data.publicRightOfWayTemplate.status);
-      setProwPedestrianAccess(data.publicRightOfWayTemplate.pedestrianAccess);
-      setProwEquestrianAccess(data.publicRightOfWayTemplate.equestrianAccess);
-      setProwNonMotorisedVehicleAccess(data.publicRightOfWayTemplate.nonMotVehicleAccess);
-      setProwBicycleAccess(data.publicRightOfWayTemplate.bicycleAccess);
-      setProwMotorisedVehicleAccess(data.publicRightOfWayTemplate.motVehicleAccess);
-      setProwPromotedRoute(data.publicRightOfWayTemplate.promotedRoute);
-      setProwAccessibleRoute(data.publicRightOfWayTemplate.accessibleRoute);
-      setProwOrganisation(data.publicRightOfWayTemplate.organisation);
-      setProwDistrict(data.publicRightOfWayTemplate.district);
+      setMaintenanceResponsibilityStreetStatus(
+        data.scoMaintenanceResponsibilityTemplate ? data.scoMaintenanceResponsibilityTemplate.streetStatus : null
+      );
+      setMaintenanceResponsibilityCustodian(
+        data.scoMaintenanceResponsibilityTemplate ? data.scoMaintenanceResponsibilityTemplate.custodianCode : null
+      );
+      setMaintenanceResponsibilityAuthority(
+        data.scoMaintenanceResponsibilityTemplate
+          ? data.scoMaintenanceResponsibilityTemplate.maintainingAuthorityCode
+          : null
+      );
+      setReinstatementCategoryReinstatementCategory(
+        data.scoReinstatementCategoryTemplate ? data.scoReinstatementCategoryTemplate.reinstatementCategory : null
+      );
+      setReinstatementCategoryCustodian(
+        data.scoReinstatementCategoryTemplate ? data.scoReinstatementCategoryTemplate.custodianCode : null
+      );
+      setReinstatementCategoryAuthority(
+        data.scoReinstatementCategoryTemplate ? data.scoReinstatementCategoryTemplate.reinstatementAuthorityCode : null
+      );
+      setOsSpecialDesignationSpecialDesignation(
+        data.scoSpecialDesignationTemplate ? data.scoSpecialDesignationTemplate.specialDesignation : null
+      );
+      setOsSpecialDesignationCustodian(
+        data.scoSpecialDesignationTemplate ? data.scoSpecialDesignationTemplate.custodianCode : null
+      );
+      setOsSpecialDesignationAuthority(
+        data.scoSpecialDesignationTemplate ? data.scoSpecialDesignationTemplate.authorityCode : null
+      );
+      setInterestStreetStatus(data.interestTemplate ? data.interestTemplate.streetStatus : null);
+      setInterestOrganisation(data.interestTemplate ? data.interestTemplate.swaOrgRefAuthority : null);
+      setInterestType(data.interestTemplate ? data.interestTemplate.interestType : null);
+      setInterestDistrict(data.interestTemplate ? data.interestTemplate.districtRefAuthority : null);
+      setInterestMaintainingOrganisation(data.interestTemplate ? data.interestTemplate.swaOrgRefMaintaining : null);
+      setConstructionType(data.constructionTemplate ? data.constructionTemplate.constructionType : null);
+      setConstructionReinstatementType(
+        data.constructionTemplate ? data.constructionTemplate.reinstatementTypeCode : null
+      );
+      setConstructionAggregateAbrasionValue(
+        data.constructionTemplate ? data.constructionTemplate.aggregateAbrasionValue : null
+      );
+      setConstructionPolishedStoneValue(
+        data.constructionTemplate ? data.constructionTemplate.polishedStoneValue : null
+      );
+      setConstructionOrganisation(data.constructionTemplate ? data.constructionTemplate.swaOrgRefConsultant : null);
+      setConstructionDistrict(data.constructionTemplate ? data.constructionTemplate.districtRefConsultant : null);
+      setSpecialDesigType(data.specialDesignationTemplate ? data.specialDesignationTemplate.type : null);
+      setSpecialDesigOrganisation(
+        data.specialDesignationTemplate ? data.specialDesignationTemplate.swaOrgRefConsultant : null
+      );
+      setSpecialDesigDistrict(
+        data.specialDesignationTemplate ? data.specialDesignationTemplate.districtRefConsultant : null
+      );
+      setSpecialDesigPeriodicity(
+        data.specialDesignationTemplate ? data.specialDesignationTemplate.specialDesigPeriodicityCode : null
+      );
+      setHwwDesignation(data.heightWidthWeightTemplate ? data.heightWidthWeightTemplate.hwwRestrictionCode : null);
+      setHwwOrganisation(data.heightWidthWeightTemplate ? data.heightWidthWeightTemplate.swaOrgRefConsultant : null);
+      setHwwDistrict(data.heightWidthWeightTemplate ? data.heightWidthWeightTemplate.districtRefConsultant : null);
+      setProwDedication(data.publicRightOfWayTemplate ? data.publicRightOfWayTemplate.prowRights : null);
+      setProwStatus(data.publicRightOfWayTemplate ? data.publicRightOfWayTemplate.status : null);
+      setProwPedestrianAccess(data.publicRightOfWayTemplate ? data.publicRightOfWayTemplate.pedestrianAccess : false);
+      setProwEquestrianAccess(data.publicRightOfWayTemplate ? data.publicRightOfWayTemplate.equestrianAccess : false);
+      setProwNonMotorisedVehicleAccess(
+        data.publicRightOfWayTemplate ? data.publicRightOfWayTemplate.nonMotVehicleAccess : false
+      );
+      setProwBicycleAccess(data.publicRightOfWayTemplate ? data.publicRightOfWayTemplate.bicycleAccess : false);
+      setProwMotorisedVehicleAccess(
+        data.publicRightOfWayTemplate ? data.publicRightOfWayTemplate.motVehicleAccess : false
+      );
+      setProwPromotedRoute(data.publicRightOfWayTemplate ? data.publicRightOfWayTemplate.promotedRoute : false);
+      setProwAccessibleRoute(data.publicRightOfWayTemplate ? data.publicRightOfWayTemplate.accessibleRoute : false);
+      setProwOrganisation(data.publicRightOfWayTemplate ? data.publicRightOfWayTemplate.organisation : null);
+      setProwDistrict(data.publicRightOfWayTemplate ? data.publicRightOfWayTemplate.district : null);
     }
   }, [data]);
 

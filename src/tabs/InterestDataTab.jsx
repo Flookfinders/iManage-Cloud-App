@@ -27,6 +27,7 @@
 //    014   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
 //    015   05.02.24 Sean Flook                 Filter available districts by the organisation.
 //    016   07.02.24 Sean Flook                 Display a warning dialog when changing from Part Road to Whole Road.
+//    017   13.02.24 Sean Flook                 Set the ADSWholeRoadControl variant.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -706,6 +707,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
           onChange={handleEndDateChangeEvent}
         />
         <ADSWholeRoadControl
+          variant="WholeRoad"
           label="Applied to"
           isEditable={userCanEdit}
           isRequired

@@ -24,6 +24,7 @@
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
 //    012   25.01.24 Joel Benford               Update styling for zero record groups
 //    013   06.02.24 Sean Flook                 Set the partRoadColour on the wholeRoadIcon.
+//    014   13.02.24 Sean Flook                 Changes required to handle PRoW records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -63,6 +64,8 @@ import {
 import AsdDataListSubItem from "./AsdDataListSubItem";
 import ADSActionButton from "./ADSActionButton";
 import { IndentIcon, WholeRoadIcon, SpecialDesignationIcon, EquestrianIcon } from "../utils/ADSIcons";
+import ShowChartIcon from "@mui/icons-material/ShowChart";
+import LineAxisIcon from "@mui/icons-material/LineAxis";
 import { GetAsdPrimaryText, GetAsdSecondaryText } from "../utils/StreetUtils";
 import { adsBlueA, adsMidGreyA, adsLightBlue, adsBlue12 } from "../utils/ADSColours";
 import {
@@ -473,7 +476,13 @@ function AsdDataListItem({
                         />
                       )}
                       <IndentIcon />
-                      {variant !== "66" && <WholeRoadIcon wholeRoad={d.wholeRoad} partRoadColour={adsMidGreyA} />}
+                      {variant !== "66" ? (
+                        <WholeRoadIcon wholeRoad={d.wholeRoad} partRoadColour={adsMidGreyA} />
+                      ) : d.defMapGeometryType ? (
+                        <ShowChartIcon />
+                      ) : (
+                        <LineAxisIcon />
+                      )}
                       <Avatar
                         variant={variantAvatar}
                         sx={getAsdAvatarStyle(avatarClipPath, iconBorderColour, iconColour, iconBackgroundColour)}

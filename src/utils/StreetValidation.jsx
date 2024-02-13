@@ -7,7 +7,6 @@
 //
 //  Maximum validation numbers
 //  =================================
-//  Metadata:                   1000017
 //  Street:                     1100051
 //  ESU:                        1300039
 //  Descriptor:                 1500040
@@ -19,7 +18,7 @@
 //  OS Special Designation:     5300028
 //  Interest:                   6100050
 //  Construction:               6200051
-//  Special Designation:        6300037
+//  Special Designation:        6300042
 //  Height Width Weight:        6400048
 //  Public Right of Way:        6600058
 //  Note:                       7200012
@@ -43,6 +42,7 @@
 //    011   02.02.24 Sean Flook       IMANN-269 Use isIso885914 to determine if the various texts are compliant to the ISO 8859-14 (Celtic-8) character set.
 //    012   02.02.24 Sean Flook       IMANN-264 Correctly call includeCheck for GeoPlace ASD records.
 //    013   07.02.24 Sean Flook       IMANN-284 Added missing OneScotland ESU checks.
+//    014   12.02.24 Sean Flook                 Added new GeoPlace special designation checks.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2099,7 +2099,8 @@ export function ValidateInterestData(data, index, currentLookups) {
     if (
       includeCheck(currentCheck, false) &&
       data.swaOrgRefAuthority &&
-      !filteredLookup(SwaOrgRef, false).find((x) => x.id === data.swaOrgRefAuthority)
+      (!filteredLookup(SwaOrgRef, false).find((x) => x.id === data.swaOrgRefAuthority) ||
+        [11, 12, 13, 14, 16, 20, 7093].includes(data.swaOrgRefAuthority))
     ) {
       swaOrgRefAuthorityErrors.push(GetErrorMessage(currentCheck, true));
     }
@@ -2304,7 +2305,8 @@ export function ValidateConstructionData(data, index, currentLookups) {
     if (
       includeCheck(currentCheck, false) &&
       data.swaOrgRefConsultant &&
-      !DETRCodes.find((x) => x.id === data.swaOrgRefConsultant)
+      (!filteredLookup(SwaOrgRef, false).find((x) => x.id === data.swaOrgRefConsultant) ||
+        [11, 12, 13, 14, 16, 20, 7093].includes(data.swaOrgRefConsultant))
     ) {
       swaOrgRefConsultantErrors.push(GetErrorMessage(currentCheck, false));
     }
@@ -2818,6 +2820,29 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // When Periodicity Code is 16, Special Designation Description is mandatory.
+    currentCheck = GetCheck(6300038, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, false) &&
+      data.specialDesigPeriodicityCode &&
+      data.specialDesigPeriodicityCode === 16 &&
+      !data.specialDesigDescription
+    ) {
+      specialDesigDescriptionErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Record Start Date prior to 1990 are not allowed.
+    currentCheck = GetCheck(6300040, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, false) && data.recordStartDate && isPriorTo1990(data.recordStartDate)) {
+      recordStartDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Mandatory Periodicity Code is missing.
+    currentCheck = GetCheck(6300042, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, false) && !data.specialDesigPeriodicityCode) {
+      specialDesigPeriodicityCodeErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateSpecialDesignationData - Finished checks");
 
     if (streetSpecialDesigCodeErrors.length > 0)
@@ -3169,7 +3194,8 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
     if (
       includeCheck(currentCheck, false) &&
       data.swaOrgRefConsultant &&
-      !filteredLookup(SwaOrgRef, false).find((x) => x.id === data.swaOrgRefConsultant)
+      (!filteredLookup(SwaOrgRef, false).find((x) => x.id === data.swaOrgRefConsultant) ||
+        [11, 12, 13, 14, 16, 20, 7093].includes(data.swaOrgRefConsultant))
     ) {
       swaOrgRefConsultantErrors.push(GetErrorMessage(currentCheck, true));
     }
@@ -3301,9 +3327,10 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
  * @param {object} data The public rights of way record data that needs to be validated
  * @param {number} index The index for the public rights of way record.
  * @param {object} currentLookups The lookup context object.
+ * @param {number} authorityCode The current authority code.
  * @return {array|null} Array of validation errors found, if any.
  */
-export function ValidatePublicRightOfWayData(data, index, currentLookups) {
+export function ValidatePublicRightOfWayData(data, index, currentLookups, authorityCode) {
   const methodName = "ValidatePublicRightOfWayData";
   let validationErrors = [];
   let currentCheck;
@@ -3585,7 +3612,8 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
     if (
       includeCheck(currentCheck, false) &&
       data.prowOrgRefConsultant &&
-      !filteredLookup(SwaOrgRef, false).find((x) => x.id === data.prowOrgRefConsultant)
+      (!filteredLookup(SwaOrgRef, false).find((x) => x.id === data.prowOrgRefConsultant) ||
+        [11, 12, 13, 14, 16, 20, 7093].includes(data.prowOrgRefConsultant))
     ) {
       prowOrgRefConsultantErrors.push(GetErrorMessage(currentCheck, false));
     }

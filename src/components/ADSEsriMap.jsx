@@ -52,6 +52,7 @@
 //    038   09.02.24 Sean Flook                 Removed Divide and Assign from the street actions.
 //    039   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //    040   09.02.24 Sean Flook                 Change to use different line symbols for each type of ASD record.
+//    041   13.02.24 Sean Flook                 Ensure the ASD geometries are displayed when creating a new street.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2760,7 +2761,12 @@ function ADSEsriMap(startExtent) {
             })
           );
 
-          if (mapContext.currentSearchData.editStreet && street.asdType51) {
+          if (
+            (mapContext.currentSearchData.editStreet ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord)) &&
+            street.asdType51
+          ) {
             mapAsd51 = mapAsd51.concat(
               street.asdType51.map((asd) => {
                 return {
@@ -2776,7 +2782,12 @@ function ADSEsriMap(startExtent) {
             );
           }
 
-          if (mapContext.currentSearchData.editStreet && street.asdType52) {
+          if (
+            (mapContext.currentSearchData.editStreet ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord)) &&
+            street.asdType52
+          ) {
             mapAsd52 = mapAsd52.concat(
               street.asdType52.map((asd) => {
                 return {
@@ -2792,7 +2803,12 @@ function ADSEsriMap(startExtent) {
             );
           }
 
-          if (mapContext.currentSearchData.editStreet && street.asdType53) {
+          if (
+            (mapContext.currentSearchData.editStreet ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord)) &&
+            street.asdType53
+          ) {
             mapAsd53 = mapAsd53.concat(
               street.asdType53.map((asd) => {
                 return {
@@ -2808,7 +2824,12 @@ function ADSEsriMap(startExtent) {
             );
           }
 
-          if (mapContext.currentSearchData.editStreet && street.asdType61) {
+          if (
+            (mapContext.currentSearchData.editStreet ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord)) &&
+            street.asdType61
+          ) {
             mapAsd61 = mapAsd61.concat(
               street.asdType61.map((asd) => {
                 return {
@@ -2825,7 +2846,12 @@ function ADSEsriMap(startExtent) {
             );
           }
 
-          if (mapContext.currentSearchData.editStreet && street.asdType62) {
+          if (
+            (mapContext.currentSearchData.editStreet ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord)) &&
+            street.asdType62
+          ) {
             mapAsd62 = mapAsd62.concat(
               street.asdType62.map((asd) => {
                 return {
@@ -2842,7 +2868,12 @@ function ADSEsriMap(startExtent) {
             );
           }
 
-          if (mapContext.currentSearchData.editStreet && street.asdType63) {
+          if (
+            (mapContext.currentSearchData.editStreet ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord)) &&
+            street.asdType63
+          ) {
             mapAsd63 = mapAsd63.concat(
               street.asdType63.map((asd) => {
                 return {
@@ -2858,7 +2889,12 @@ function ADSEsriMap(startExtent) {
             );
           }
 
-          if (mapContext.currentSearchData.editStreet && street.asdType64) {
+          if (
+            (mapContext.currentSearchData.editStreet ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord)) &&
+            street.asdType64
+          ) {
             mapAsd64 = mapAsd64.concat(
               street.asdType64.map((asd) => {
                 return {
@@ -2874,7 +2910,12 @@ function ADSEsriMap(startExtent) {
             );
           }
 
-          if (mapContext.currentSearchData.editStreet && street.asdType66) {
+          if (
+            (mapContext.currentSearchData.editStreet ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord)) &&
+            street.asdType66
+          ) {
             mapAsd66 = mapAsd66.concat(
               street.asdType66.map((asd) => {
                 return {
@@ -3192,7 +3233,7 @@ function ADSEsriMap(startExtent) {
           ProwStatus: GetProwStatusLabel(rec.prowStatus),
           Organisation: GetAuthorityLabel(rec.prowOrgRefConsultant, isScottish.current),
           District: GetDistrictLabel(rec.prowDistrictRefConsultant, lookupContext.current),
-          DefMapGeometryType: GetWholeRoadLabel(rec.defMapGeometryType),
+          DefMapGeometryType: GetWholeRoadLabel(rec.defMapGeometryType, true),
         },
       }));
 

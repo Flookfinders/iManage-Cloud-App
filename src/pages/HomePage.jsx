@@ -18,6 +18,7 @@
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    007   25.01.24 Sean Flook                 Correctly handle status code 204.
+//    008   13.02.24 Sean Flook                 Correctly handle the response from the GET endpoints.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -223,8 +224,32 @@ const HomePage = () => {
       method: "GET",
     })
       .then((response) => {
-        if (response && response.status === 204) return [];
-        else return response.json();
+        if (response) {
+          switch (response.status) {
+            case 200:
+              return response.json();
+
+            case 204:
+              return [];
+
+            case 401:
+              console.error("[401 ERROR] You are not authorized.", { lookup: lookup.id });
+              setData(lookup.id, lookup.noRecords);
+              break;
+
+            case 500:
+              console.error("[500 ERROR] Fetching data", {
+                lookup: lookup.id,
+                errorText: response.statusText,
+                response: response,
+              });
+              setData(lookup.id, lookup.noRecords);
+              break;
+
+            default:
+              break;
+          }
+        } else return response.json();
       })
       .then((result) => {
         setData(lookup.id, result);
@@ -233,7 +258,7 @@ const HomePage = () => {
         // Ignore lookups that do not exist
         if (e.message !== "Unexpected end of JSON input")
           console.error("[ERROR] Fetching data", {
-            lookup: lookup,
+            lookup: lookup.id,
             error: e,
           });
         setData(lookup.id, lookup.noRecords);

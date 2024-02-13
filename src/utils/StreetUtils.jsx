@@ -36,6 +36,7 @@
 //    023   02.02.24 Sean Flook       IMANN-264 Include Scottish record types when handling errors from API.
 //    024   05.02.24 Sean Flook                 Added filteredOperationalDistricts.
 //    025   06.02.23 Sean Flook       IMANN-264 In filteredOperationalDistricts if we do not have an organisation return an empty array.
+//    026   13.02.23 Sean Flook                 Modified GetWholeRoadLabel to handle type 66 (PRoW) records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -176,10 +177,15 @@ export function GetAuthorityLabel(code, isScottish) {
  * Return a string indicating if the ASD record is for the whole of the road or just a part of the road.
  *
  * @param {boolean} wholeRoad Flag indicating if this is ASD record is for the whole road or just a part of the road.
+ * @param {boolean} [isAsd66=false] True if this if for a type 66 record; otherwise false.
  * @returns {string} The whole road label.
  */
-export function GetWholeRoadLabel(wholeRoad) {
-  return wholeRoad ? "Whole road" : "Part of road";
+export function GetWholeRoadLabel(wholeRoad, isAsd66 = false) {
+  if (isAsd66) {
+    return wholeRoad ? "Exact" : "Inexact";
+  } else {
+    return wholeRoad ? "Whole road" : "Part of road";
+  }
 }
 
 /**
@@ -509,7 +515,7 @@ export async function StreetDelete(usrn, deleteEsus, lookupContext, userToken, i
   const deleteUrl = GetDeleteStreetUrl(userToken, isScottish);
 
   if (deleteUrl) {
-    return await fetch(`${deleteUrl.url}/${usrn}/${deleteEsus}`, {
+    return await fetch(`${deleteUrl.url}/${usrn}/${deleteEsus ? "true" : "false"}`, {
       headers: deleteUrl.headers,
       crossDomain: true,
       method: deleteUrl.type,

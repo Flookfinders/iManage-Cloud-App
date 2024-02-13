@@ -23,6 +23,7 @@
 //    010   10.01.24 Sean Flook                 Fix warnings.
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
 //    012   30.01.24 Sean Flook                 Added ESU tolerance for GeoPlace.
+//    013   13.02.24 Sean Flook                 Only set the data if it exists.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -568,27 +569,27 @@ function StreetTemplateTab() {
 
   useEffect(() => {
     if (data) {
-      setStreetRefType(data.streetTemplate.recordType);
-      setState(data.streetTemplate.state);
-      setLocalityRef(data.streetTemplate.localityRef);
-      setTownRef(data.streetTemplate.townRef);
-      setIslandRef(data.streetTemplate.islandRef);
-      setAdminAreaRef(data.streetTemplate.adminAreaRef);
-      setClassification(data.streetTemplate.classification);
-      setSurface(data.streetTemplate.streetSurface);
-      setEsuDirection(data.esuTemplate.esuDirection);
-      setEsuTolerance(data.esuTemplate.esuTolerance);
-      setEsuState(data.scoEsuTemplate.state);
-      setEsuClassification(data.scoEsuTemplate.classification);
-      setOweType(data.esuTemplate.oneWayExemptionType);
-      setOwePeriodicityCode(data.esuTemplate.oneWayExemptionPeriodicityCode);
-      setHdCode(data.esuTemplate.highwayDedicationCode);
-      setHdPRoW(data.esuTemplate.hdProw);
-      setHdNCR(data.esuTemplate.hdNcr);
-      setHdQuietRoute(data.esuTemplate.hdQuietRoute);
-      setHdObstruction(data.esuTemplate.hdObstruction);
-      setHdPlanningOrder(data.esuTemplate.hdPlanningOrder);
-      setHdVehiclesProhibited(data.esuTemplate.hdVehiclesProhibited);
+      setStreetRefType(data.streetTemplate ? data.streetTemplate.recordType : null);
+      setState(data.streetTemplate ? data.streetTemplate.state : null);
+      setLocalityRef(data.streetTemplate ? data.streetTemplate.localityRef : null);
+      setTownRef(data.streetTemplate ? data.streetTemplate.townRef : null);
+      setIslandRef(data.streetTemplate ? data.streetTemplate.islandRef : null);
+      setAdminAreaRef(data.streetTemplate ? data.streetTemplate.adminAreaRef : null);
+      setClassification(data.streetTemplate ? data.streetTemplate.classification : null);
+      setSurface(data.streetTemplate ? data.streetTemplate.streetSurface : null);
+      setEsuDirection(data.esuTemplate ? data.esuTemplate.esuDirection : null);
+      setEsuTolerance(data.esuTemplate ? data.esuTemplate.esuTolerance : null);
+      setEsuState(data.scoEsuTemplate ? data.scoEsuTemplate.state : null);
+      setEsuClassification(data.scoEsuTemplate ? data.scoEsuTemplate.classification : null);
+      setOweType(data.esuTemplate ? data.esuTemplate.oneWayExemptionType : null);
+      setOwePeriodicityCode(data.esuTemplate ? data.esuTemplate.oneWayExemptionPeriodicityCode : null);
+      setHdCode(data.esuTemplate ? data.esuTemplate.highwayDedicationCode : null);
+      setHdPRoW(data.esuTemplate ? data.esuTemplate.hdProw : false);
+      setHdNCR(data.esuTemplate ? data.esuTemplate.hdNcr : false);
+      setHdQuietRoute(data.esuTemplate ? data.esuTemplate.hdQuietRoute : false);
+      setHdObstruction(data.esuTemplate ? data.esuTemplate.hdObstruction : false);
+      setHdPlanningOrder(data.esuTemplate ? data.esuTemplate.hdPlanningOrder : false);
+      setHdVehiclesProhibited(data.esuTemplate ? data.esuTemplate.hdVehiclesProhibited : false);
     }
   }, [data]);
 

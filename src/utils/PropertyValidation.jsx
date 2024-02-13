@@ -7,7 +7,6 @@
 //
 //  Maximum validation numbers
 //  =================================
-//  Metadata:                         1000017
 //  BLPU:                             2100064
 //  BLPU Provenance:                  2200020
 //  BLPU Application Cross Reference: 2300033

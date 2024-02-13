@@ -3,7 +3,7 @@
 //
 //  Description: Whole road control
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    005   13.02.24 Sean Flook                 Changes required to handle PRoW records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -22,14 +23,20 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
+
 import { Typography, Grid, Tooltip, ButtonGroup, Button, Skeleton } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
+
 import { WholeRoadIcon } from "../utils/ADSIcons";
+import ShowChartIcon from "@mui/icons-material/ShowChart";
+import LineAxisIcon from "@mui/icons-material/LineAxis";
+
 import { adsMidGreyA, adsWhite } from "../utils/ADSColours";
 import { FormBoxRowStyle, FormRowStyle, controlLabelStyle, tooltipStyle, getButtonStyle } from "../utils/ADSStyles";
 
 ADSWholeRoadControl.propTypes = {
+  variant: PropTypes.oneOf(["wholeRoad", "prow"]).isRequired,
   label: PropTypes.string.isRequired,
   isEditable: PropTypes.bool,
   isRequired: PropTypes.bool,
@@ -46,7 +53,17 @@ ADSWholeRoadControl.defaultProps = {
   loading: false,
 };
 
-function ADSWholeRoadControl({ label, isEditable, isRequired, loading, helperText, value, errorText, onChange }) {
+function ADSWholeRoadControl({
+  variant,
+  label,
+  isEditable,
+  isRequired,
+  loading,
+  helperText,
+  value,
+  errorText,
+  onChange,
+}) {
   const [displayError, setDisplayError] = useState(null);
 
   const hasError = useRef(false);
@@ -109,9 +126,9 @@ function ADSWholeRoadControl({ label, isEditable, isRequired, loading, helperTex
                     sx={getButtonStyle(value)}
                   >
                     <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                      <WholeRoadIcon wholeRoad={true} />
+                      {variant === "wholeRoad" ? <WholeRoadIcon wholeRoad={true} /> : <ShowChartIcon />}
                       <Typography variant="body1" sx={{ textTransform: "none" }}>
-                        Whole road
+                        {`${variant === "wholeRoad" ? "Whole road" : "Exact"}`}
                       </Typography>
                     </Stack>
                   </Button>
@@ -124,9 +141,9 @@ function ADSWholeRoadControl({ label, isEditable, isRequired, loading, helperTex
                     sx={getButtonStyle(value)}
                   >
                     <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                      <WholeRoadIcon wholeRoad={true} />
+                      {variant === "wholeRoad" ? <WholeRoadIcon wholeRoad={true} /> : <ShowChartIcon />}
                       <Typography variant="body1" sx={{ textTransform: "none" }}>
-                        Whole road
+                        {`${variant === "wholeRoad" ? "Whole road" : "Exact"}`}
                       </Typography>
                     </Stack>
                   </Button>
@@ -140,9 +157,13 @@ function ADSWholeRoadControl({ label, isEditable, isRequired, loading, helperTex
                     sx={getButtonStyle(!value)}
                   >
                     <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                      <WholeRoadIcon wholeRoad={false} partRoadColour={adsWhite} />
+                      {variant === "wholeRoad" ? (
+                        <WholeRoadIcon wholeRoad={false} partRoadColour={adsWhite} />
+                      ) : (
+                        <LineAxisIcon />
+                      )}
                       <Typography variant="body1" sx={{ textTransform: "none" }}>
-                        Part of road
+                        {`${variant === "wholeRoad" ? "Part of road" : "Inexact"}`}
                       </Typography>
                     </Stack>
                   </Button>
@@ -155,9 +176,13 @@ function ADSWholeRoadControl({ label, isEditable, isRequired, loading, helperTex
                     sx={getButtonStyle(!value)}
                   >
                     <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                      <WholeRoadIcon wholeRoad={false} partRoadColour={adsMidGreyA} />
+                      {variant === "wholeRoad" ? (
+                        <WholeRoadIcon wholeRoad={false} partRoadColour={adsMidGreyA} />
+                      ) : (
+                        <LineAxisIcon />
+                      )}
                       <Typography variant="body1" sx={{ textTransform: "none" }}>
-                        Part of road
+                        {`${variant === "wholeRoad" ? "Part of road" : "Inexact"}`}
                       </Typography>
                     </Stack>
                   </Button>
@@ -175,9 +200,9 @@ function ADSWholeRoadControl({ label, isEditable, isRequired, loading, helperTex
                   sx={getButtonStyle(value)}
                 >
                   <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                    <WholeRoadIcon wholeRoad={true} />
+                    {variant === "wholeRoad" ? <WholeRoadIcon wholeRoad={true} /> : <ShowChartIcon />}
                     <Typography variant="body1" sx={{ textTransform: "none" }}>
-                      Whole road
+                      {`${variant === "wholeRoad" ? "Whole road" : "Exact"}`}
                     </Typography>
                   </Stack>
                 </Button>
@@ -190,9 +215,9 @@ function ADSWholeRoadControl({ label, isEditable, isRequired, loading, helperTex
                   sx={getButtonStyle(value)}
                 >
                   <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                    <WholeRoadIcon wholeRoad={true} />
+                    {variant === "wholeRoad" ? <WholeRoadIcon wholeRoad={true} /> : <ShowChartIcon />}
                     <Typography variant="body1" sx={{ textTransform: "none" }}>
-                      Whole road
+                      {`${variant === "wholeRoad" ? "Whole road" : "Exact"}`}
                     </Typography>
                   </Stack>
                 </Button>
@@ -206,9 +231,13 @@ function ADSWholeRoadControl({ label, isEditable, isRequired, loading, helperTex
                   sx={getButtonStyle(!value)}
                 >
                   <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                    <WholeRoadIcon wholeRoad={false} partRoadColour={adsWhite} />
+                    {variant === "wholeRoad" ? (
+                      <WholeRoadIcon wholeRoad={false} partRoadColour={adsWhite} />
+                    ) : (
+                      <LineAxisIcon />
+                    )}
                     <Typography variant="body1" sx={{ textTransform: "none" }}>
-                      Part of road
+                      {`${variant === "wholeRoad" ? "Part of road" : "Inexact"}`}
                     </Typography>
                   </Stack>
                 </Button>
@@ -221,9 +250,13 @@ function ADSWholeRoadControl({ label, isEditable, isRequired, loading, helperTex
                   sx={getButtonStyle(!value)}
                 >
                   <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                    <WholeRoadIcon wholeRoad={false} partRoadColour={adsMidGreyA} />
+                    {variant === "wholeRoad" ? (
+                      <WholeRoadIcon wholeRoad={false} partRoadColour={adsMidGreyA} />
+                    ) : (
+                      <LineAxisIcon />
+                    )}
                     <Typography variant="body1" sx={{ textTransform: "none" }}>
-                      Part of road
+                      {`${variant === "wholeRoad" ? "Part of road" : "Inexact"}`}
                     </Typography>
                   </Stack>
                 </Button>

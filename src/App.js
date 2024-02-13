@@ -39,6 +39,7 @@
 //    026   25.01.24 Sean Flook                 Changes required after UX review.
 //    027   26.01.24 Sean Flook       IMANN-251 Only check why in HandleLeavingStreet.
 //    028   05.02.24 Sean Flook                 Further changes required for operational districts.
+//    029   13.02.24 Sean Flook                 Pass the authorityCode to ValidatePublicRightOfWayData.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1506,7 +1507,7 @@ function App() {
               sandbox.currentStreetRecords.publicRightOfWay,
               streetRecord.index,
               lookups,
-              false
+              authorityCode
             );
             isValid = publicRightOfWayErrors.length === 0;
             updateStreetErrors(publicRightOfWayErrors, "publicRightOfWay");

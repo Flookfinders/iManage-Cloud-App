@@ -47,6 +47,7 @@
 //    033   02.02.24 Sean Flook       IMANN-271 Reset the errors when opening a new street.
 //    034   05.02.24 Sean Flook       IMANN-276 Do not worry about ASD records when setting coordinates if the record type is 4 or 9.
 //    035   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
+//    036   13.02.24 Sean Flook                 Changes required to handle the PRoW geometries.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -88,6 +89,7 @@ import {
   GetWholeRoadGeometry,
   updateMapStreetData,
   hasStreetChanged,
+  StreetDelete,
 } from "../utils/StreetUtils";
 import { UpdateRangeAfterSave, UpdateAfterSave, GetPropertyMapData } from "../utils/PropertyUtils";
 import ObjectComparison, { MergeEsuComparison } from "./../utils/ObjectComparison";
@@ -2996,7 +2998,48 @@ function StreetDataForm({ data, loading }) {
    *
    * @param {number} pkId The id for the street that the user wants to delete.
    */
-  const handleStreetDelete = (pkId) => {};
+  const handleStreetDelete = async (pkId) => {
+    if (streetData.pkId === pkId) {
+      const result = await StreetDelete(
+        streetData.usrn,
+        true,
+        userContext.currentUser.token,
+        settingsContext.isScottish
+      );
+
+      if (result) {
+        const newStreetSearchData = searchContext.currentSearchData.results.filter(
+          (x) => x.type === 24 || x.usrn.toString() !== streetData.usrn.toString()
+        );
+        searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newStreetSearchData);
+
+        const newMapBackgroundStreets = mapContext.currentBackgroundData.streets.filter(
+          (x) => x.usrn.toString() !== streetData.usrn.toString()
+        );
+        const newMapSearchStreets = mapContext.currentSearchData.streets.filter(
+          (x) => x.usrn.toString() !== streetData.usrn.toString()
+        );
+        mapContext.onBackgroundDataChange(
+          newMapBackgroundStreets,
+          mapContext.currentBackgroundData.unassignedEsus,
+          mapContext.currentBackgroundData.properties
+        );
+        mapContext.onSearchDataChange(newMapSearchStreets, mapContext.currentSearchData.properties, null, null);
+
+        sandboxContext.resetSandbox();
+
+        streetContext.resetStreet();
+        streetContext.resetStreetErrors();
+        propertyContext.resetProperty();
+        propertyContext.resetPropertyErrors();
+        propertyContext.onWizardDone(null, false, null, null);
+
+        mapContext.onEditMapObject(null, null);
+
+        history.push(GazetteerRoute);
+      }
+    }
+  };
 
   /**
    * Event to handle the deleting of an ESU.
@@ -7877,6 +7920,115 @@ function StreetDataForm({ data, loading }) {
               hwwData: updatedAsd64,
               index: newStreetData.heightWidthWeights.indexOf(updatedAsd64),
               totalRecords: newStreetData.heightWidthWeights.filter((x) => x.changeType !== "D").length,
+            });
+          }
+          break;
+
+        case 66: // Public Right of Way
+          const currentAsd66 = sandboxContext.currentSandbox.currentStreetRecords.prow
+            ? sandboxContext.currentSandbox.currentStreetRecords.prow
+            : streetData.heightWidthWeights
+            ? streetData.heightWidthWeights.find((x) => x.pkId === mapContext.currentLineGeometry.objectId)
+            : null;
+
+          if (currentAsd66 && currentAsd66.wktGeometry !== mapContext.currentLineGeometry.wktGeometry) {
+            startX = currentAsd66.startX;
+            startY = currentAsd66.startY;
+            endX = currentAsd66.endX;
+            endY = currentAsd66.endY;
+
+            if (!currentAsd66.defMapGeometryType) {
+              const coordinates = getStartEndCoordinates(mapContext.currentLineGeometry.wktGeometry);
+              if (coordinates) {
+                startX = coordinates.startX;
+                startY = coordinates.startY;
+                endX = coordinates.endX;
+                endY = coordinates.endY;
+              }
+            }
+
+            const updatedAsd66 = {
+              changeType: contextStreet.usrn === 0 || currentAsd66.pkId < 0 ? "I" : "U",
+              prowUsrn: currentAsd66.prowUsrn,
+              defMapGeometryType: currentAsd66.defMapGeometryType,
+              defMapGeometryCount: currentAsd66.defMapGeometryCount,
+              prowLength: currentAsd66.prowLength,
+              prowRights: currentAsd66.prowRights,
+              pedAccess: currentAsd66.pedAccess,
+              equAccess: currentAsd66.equAccess,
+              nonMotAccess: currentAsd66.nonMotAccess,
+              cycAccess: currentAsd66.cycAccess,
+              motAccess: currentAsd66.motAccess,
+              recordStartDate: currentAsd66.recordStartDate,
+              relevantStartDate: currentAsd66.relevantStartDate,
+              recordEndDate: currentAsd66.recordEndDate,
+              prowStatus: currentAsd66.prowStatus,
+              consultStartDate: currentAsd66.consultStartDate,
+              consultEndDate: currentAsd66.consultEndDate,
+              consultRef: currentAsd66.consultRef,
+              consultDetails: currentAsd66.consultDetails,
+              appealDate: currentAsd66.appealDate,
+              appealRef: currentAsd66.appealRef,
+              appealDetails: currentAsd66.appealDetails,
+              divRelatedUsrn: currentAsd66.divRelatedUsrn,
+              prowLocation: currentAsd66.prowLocation,
+              prowDetails: currentAsd66.prowDetails,
+              promotedRoute: currentAsd66.promotedRoute,
+              accessibleRoute: currentAsd66.accessibleRoute,
+              sourceText: currentAsd66.sourceText,
+              prowOrgRefConsultant: currentAsd66.prowOrgRefConsultant,
+              prowDistrictRefConsultant: currentAsd66.prowDistrictRefConsultant,
+              neverExport: currentAsd66.neverExport,
+              pkId: currentAsd66.pkId,
+              wktGeometry: mapContext.currentLineGeometry.wktGeometry,
+            };
+
+            sandboxContext.onSandboxChange("prow", updatedAsd66);
+
+            const newAsd66 = streetData.publicRightOfWays.map(
+              (x) => [updatedAsd66].find((rec) => rec.pkId === x.pkId) || x
+            );
+
+            newStreetData = {
+              changeType: contextStreet.changeType,
+              usrn: contextStreet.usrn,
+              swaOrgRefNaming: contextStreet.swaOrgRefNaming,
+              streetSurface: contextStreet.streetSurface,
+              streetStartDate: contextStreet.streetStartDate,
+              streetEndDate: contextStreet.streetEndDate,
+              neverExport: contextStreet.neverExport,
+              version: contextStreet.version,
+              recordType: contextStreet.recordType,
+              state: contextStreet.state,
+              stateDate: contextStreet.stateDate,
+              streetClassification: contextStreet.streetClassification,
+              streetTolerance: contextStreet.streetTolerance,
+              streetStartX: contextStreet.streetStartX,
+              streetStartY: contextStreet.streetStartY,
+              streetEndX: contextStreet.streetEndX,
+              streetEndY: contextStreet.streetEndY,
+              pkId: contextStreet.pkId,
+              lastUpdateDate: contextStreet.lastUpdateDate,
+              entryDate: contextStreet.entryDate,
+              streetLastUpdated: contextStreet.streetLastUpdated,
+              streetLastUser: contextStreet.streetLastUser,
+              relatedPropertyCount: contextStreet.relatedPropertyCount,
+              relatedStreetCount: contextStreet.relatedStreetCount,
+              esus: contextStreet.esus,
+              streetDescriptors: contextStreet.streetDescriptors,
+              streetNotes: contextStreet.streetNotes,
+              interests: contextStreet.interests,
+              constructions: contextStreet.constructions,
+              specialDesignations: contextStreet.specialDesignations,
+              publicRightOfWays: newAsd66,
+              heightWidthWeights: contextStreet.heightWidthWeights,
+            };
+
+            setProwFormData({
+              pkId: updatedAsd66.pkId,
+              prowData: updatedAsd66,
+              index: newStreetData.publicRightOfWays.indexOf(updatedAsd66),
+              totalRecords: newStreetData.publicRightOfWays.filter((x) => x.changeType !== "D").length,
             });
           }
           break;

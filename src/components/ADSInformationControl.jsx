@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   18.01.24 Sean Flook                 Initial Revision.
 //    002   09.02.24 Sean Flook                 Updated message for assignESUList.
+//    003   13.02.24 Sean Flook                 Added inexactASD variant.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -36,6 +37,7 @@ ADSInformationControl.propTypes = {
     "divideESU",
     "moveBLPU",
     "partRoadASD",
+    "inexactASD",
     "unknown",
   ]),
   hasCancel: PropTypes.bool,
@@ -77,6 +79,9 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
       case "partRoadASD":
         return "Create ASD geometry";
 
+      case "inexactASD":
+        return "Create PRoW geometry";
+
       default:
         break;
     }
@@ -105,6 +110,7 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
         return "To move a seed point, click and drag it to the desired location. If needed, use the options to add a note or edit the RPC. Click 'Finish & Save' to apply the changes.";
 
       case "partRoadASD":
+      case "inexactASD":
         return "Edit or create new geometry using the drawing tools.";
 
       default:
