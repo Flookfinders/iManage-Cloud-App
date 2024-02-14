@@ -49,6 +49,7 @@
 //    035   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //    036   13.02.24 Sean Flook                 Changes required to handle the PRoW geometries.
 //    037   13.02.24 Sean Flook                 Corrected the type 66 map data and pass the correct parameters to StreetDelete.
+//    038   14.02.24 Sean Flook        ASD10_GP When opening a PRoW record if it is marked as Inexact set the map accordingly.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2805,6 +2806,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("prow", prowData);
       streetContext.onRecordChange(66, dataIdx, null);
+      if (!prowData.defMapGeometryType) mapContext.onEditMapObject(66, pkId);
     }
   };
 

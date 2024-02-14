@@ -53,6 +53,7 @@
 //    039   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //    040   09.02.24 Sean Flook                 Change to use different line symbols for each type of ASD record.
 //    041   13.02.24 Sean Flook                 Ensure the ASD geometries are displayed when creating a new street.
+//    042   14.02.24 Sean Flook        ASD10_GP When editing an ASD record hide the other ASD geometries.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -6633,6 +6634,52 @@ function ADSEsriMap(startExtent) {
     propertyContext.currentProperty,
     propertyContext.currentRecord,
   ]);
+
+  // ASD Layer visibility
+  useEffect(() => {
+    if (streetContext.currentRecord) {
+      const asd51Layer = mapRef.current && mapRef.current.findLayerById(asd51LayerName);
+      const asd52Layer = mapRef.current && mapRef.current.findLayerById(asd52LayerName);
+      const asd53Layer = mapRef.current && mapRef.current.findLayerById(asd53LayerName);
+      const asd61Layer = mapRef.current && mapRef.current.findLayerById(asd61LayerName);
+      const asd62Layer = mapRef.current && mapRef.current.findLayerById(asd62LayerName);
+      const asd63Layer = mapRef.current && mapRef.current.findLayerById(asd63LayerName);
+      const asd64Layer = mapRef.current && mapRef.current.findLayerById(asd64LayerName);
+      const asd66Layer = mapRef.current && mapRef.current.findLayerById(asd66LayerName);
+
+      if (asd51Layer) {
+        asd51Layer.visible = [11, 51].includes(streetContext.currentRecord.type);
+      }
+
+      if (asd52Layer) {
+        asd52Layer.visible = [11, 52].includes(streetContext.currentRecord.type);
+      }
+
+      if (asd53Layer) {
+        asd53Layer.visible = [11, 53].includes(streetContext.currentRecord.type);
+      }
+
+      if (asd61Layer) {
+        asd61Layer.visible = [11, 61].includes(streetContext.currentRecord.type);
+      }
+
+      if (asd62Layer) {
+        asd62Layer.visible = [11, 62].includes(streetContext.currentRecord.type);
+      }
+
+      if (asd63Layer) {
+        asd63Layer.visible = [11, 63].includes(streetContext.currentRecord.type);
+      }
+
+      if (asd64Layer) {
+        asd64Layer.visible = [11, 64].includes(streetContext.currentRecord.type);
+      }
+
+      if (asd66Layer) {
+        asd66Layer.visible = [11, 66].includes(streetContext.currentRecord.type);
+      }
+    }
+  }, [streetContext.currentRecord]);
 
   // Store sandboxContext
   useEffect(() => {
