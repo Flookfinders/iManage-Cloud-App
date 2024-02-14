@@ -50,6 +50,7 @@
 //    036   13.02.24 Sean Flook                 Changes required to handle the PRoW geometries.
 //    037   13.02.24 Sean Flook                 Corrected the type 66 map data and pass the correct parameters to StreetDelete.
 //    038   14.02.24 Sean Flook        ASD10_GP When opening a PRoW record if it is marked as Inexact set the map accordingly.
+//    039   14.02.24 Sean Flook        ASD10_GP Changes required to filter the ASD map layers when editing a record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -634,92 +635,124 @@ function StreetDataForm({ data, loading }) {
 
       switch (newValue) {
         case 0:
-          if (descriptorFormData) streetContext.onRecordChange(15, descriptorFormData.index, null);
-          else streetContext.onRecordChange(11, null, null);
+          if (descriptorFormData)
+            streetContext.onRecordChange(15, descriptorFormData.pkId, descriptorFormData.index, null);
+          else streetContext.onRecordChange(11, null, null, null);
           break;
 
         case 1:
-          if (oweFormData) streetContext.onRecordChange(16, oweFormData.index, oweFormData.esuIndex);
-          else if (hdFormData) streetContext.onRecordChange(17, hdFormData.index, hdFormData.esuIndex);
+          if (oweFormData) streetContext.onRecordChange(16, oweFormData.pkId, oweFormData.index, oweFormData.esuIndex);
+          else if (hdFormData) streetContext.onRecordChange(17, hdFormData.pkId, hdFormData.index, hdFormData.esuIndex);
           else if (esuFormData) {
-            streetContext.onRecordChange(13, esuFormData.index, null);
+            streetContext.onRecordChange(13, esuFormData.pkId, esuFormData.index, null);
             mapContext.onEditMapObject(13, esuFormData.esuData.esuId);
           }
           break;
 
         case 2:
           if (settingsContext.isScottish) {
-            if (successorCrossRefFormData) streetContext.onRecordChange(30, successorCrossRefFormData.index, null);
+            if (successorCrossRefFormData)
+              streetContext.onRecordChange(30, successorCrossRefFormData.pkId, successorCrossRefFormData.index, null);
           } else {
             if (maintenanceResponsibilityFormData) {
-              streetContext.onRecordChange(51, maintenanceResponsibilityFormData.index, null);
+              streetContext.onRecordChange(
+                51,
+                maintenanceResponsibilityFormData.pkId,
+                maintenanceResponsibilityFormData.index,
+                null
+              );
               if (!maintenanceResponsibilityFormData.maintenanceResponsibilityData.wholeRoad)
                 mapContext.onEditMapObject(51, maintenanceResponsibilityFormData.maintenanceResponsibilityData.pkId);
             } else if (reinstatementCategoryFormData) {
-              streetContext.onRecordChange(52, reinstatementCategoryFormData.index, null);
+              streetContext.onRecordChange(
+                52,
+                reinstatementCategoryFormData.pkId,
+                reinstatementCategoryFormData.index,
+                null
+              );
               if (!reinstatementCategoryFormData.reinstatementCategoryData.wholeRoad)
                 mapContext.onEditMapObject(52, reinstatementCategoryFormData.reinstatementCategoryData.pkId);
             } else if (osSpecialDesignationFormData) {
-              streetContext.onRecordChange(53, osSpecialDesignationFormData.index, null);
+              streetContext.onRecordChange(
+                53,
+                osSpecialDesignationFormData.pkId,
+                osSpecialDesignationFormData.index,
+                null
+              );
               if (!osSpecialDesignationFormData.osSpecialDesignationData.wholeRoad)
                 mapContext.onEditMapObject(53, osSpecialDesignationFormData.osSpecialDesignationData.pkId);
             } else if (interestFormData) {
-              streetContext.onRecordChange(61, interestFormData.index, null);
+              streetContext.onRecordChange(61, interestFormData.pkId, interestFormData.index, null);
               if (!interestFormData.interestData.wholeRoad)
                 mapContext.onEditMapObject(61, interestFormData.interestData.pkId);
             } else if (constructionFormData) {
-              streetContext.onRecordChange(62, constructionFormData.index, null);
+              streetContext.onRecordChange(62, constructionFormData.pkId, constructionFormData.index, null);
               if (!constructionFormData.constructionData.wholeRoad)
                 mapContext.onEditMapObject(62, constructionFormData.constructionData.pkId);
             } else if (specialDesignationFormData) {
-              streetContext.onRecordChange(63, specialDesignationFormData.index, null);
+              streetContext.onRecordChange(63, specialDesignationFormData.pkId, specialDesignationFormData.index, null);
               if (!specialDesignationFormData.specialDesignationData.wholeRoad)
                 mapContext.onEditMapObject(63, specialDesignationFormData.specialDesignationData.pkId);
             } else if (hwwFormData) {
-              streetContext.onRecordChange(64, hwwFormData.index, null);
+              streetContext.onRecordChange(64, hwwFormData.pkId, hwwFormData.index, null);
               if (!hwwFormData.hwwData.wholeRoad) mapContext.onEditMapObject(64, hwwFormData.hwwData.pkId);
-            } else if (prowFormData) streetContext.onRecordChange(66, prowFormData.index, null);
+            } else if (prowFormData) streetContext.onRecordChange(66, prowFormData.pkId, prowFormData.index, null);
           }
           break;
 
         case 3:
           if (settingsContext.isScottish) {
             if (maintenanceResponsibilityFormData) {
-              streetContext.onRecordChange(51, maintenanceResponsibilityFormData.index, null);
+              streetContext.onRecordChange(
+                51,
+                maintenanceResponsibilityFormData.pkId,
+                maintenanceResponsibilityFormData.index,
+                null
+              );
               if (!maintenanceResponsibilityFormData.maintenanceResponsibilityData.wholeRoad)
                 mapContext.onEditMapObject(51, maintenanceResponsibilityFormData.maintenanceResponsibilityData.pkId);
             } else if (reinstatementCategoryFormData) {
-              streetContext.onRecordChange(52, reinstatementCategoryFormData.index, null);
+              streetContext.onRecordChange(
+                52,
+                reinstatementCategoryFormData.pkId,
+                reinstatementCategoryFormData.index,
+                null
+              );
               if (!reinstatementCategoryFormData.reinstatementCategoryData.wholeRoad)
                 mapContext.onEditMapObject(52, reinstatementCategoryFormData.reinstatementCategoryData.pkId);
             } else if (osSpecialDesignationFormData) {
-              streetContext.onRecordChange(53, osSpecialDesignationFormData.index, null);
+              streetContext.onRecordChange(
+                53,
+                osSpecialDesignationFormData.pkId,
+                osSpecialDesignationFormData.index,
+                null
+              );
               if (!osSpecialDesignationFormData.osSpecialDesignationData.wholeRoad)
                 mapContext.onEditMapObject(53, osSpecialDesignationFormData.osSpecialDesignationData.pkId);
             } else if (interestFormData) {
-              streetContext.onRecordChange(61, interestFormData.index, null);
+              streetContext.onRecordChange(61, interestFormData.pkId, interestFormData.index, null);
               if (!interestFormData.interestData.wholeRoad)
                 mapContext.onEditMapObject(61, interestFormData.interestData.pkId);
             } else if (constructionFormData) {
-              streetContext.onRecordChange(62, constructionFormData.index, null);
+              streetContext.onRecordChange(62, constructionFormData.pkId, constructionFormData.index, null);
               if (!constructionFormData.constructionData.wholeRoad)
                 mapContext.onEditMapObject(62, constructionFormData.constructionData.pkId);
             } else if (specialDesignationFormData) {
-              streetContext.onRecordChange(63, specialDesignationFormData.index, null);
+              streetContext.onRecordChange(63, specialDesignationFormData.pkId, specialDesignationFormData.index, null);
               if (!specialDesignationFormData.specialDesignationData.wholeRoad)
                 mapContext.onEditMapObject(63, specialDesignationFormData.specialDesignationData.pkId);
             } else if (hwwFormData) {
-              streetContext.onRecordChange(64, hwwFormData.index, null);
+              streetContext.onRecordChange(64, hwwFormData.pkId, hwwFormData.index, null);
               if (!hwwFormData.hwwData.wholeRoad) mapContext.onEditMapObject(64, hwwFormData.hwwData.pkId);
-            } else if (prowFormData) streetContext.onRecordChange(66, prowFormData.index, null);
+            } else if (prowFormData) streetContext.onRecordChange(66, prowFormData.pkId, prowFormData.index, null);
           } else {
-            if (notesFormData) streetContext.onRecordChange(72, notesFormData.index, null);
+            if (notesFormData) streetContext.onRecordChange(72, notesFormData.pkId, notesFormData.index, null);
           }
           break;
 
         case 4:
         case 5:
-          if (notesFormData) streetContext.onRecordChange(72, notesFormData.index, null);
+          if (notesFormData) streetContext.onRecordChange(72, notesFormData.pkId, notesFormData.index, null);
           break;
 
         default:
@@ -745,7 +778,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setDescriptorFormData(null);
-      streetContext.onRecordChange(11, null, null);
+      streetContext.onRecordChange(11, null, null, null);
     } else if (pkId === 0) {
       const newIdx = streetData && streetData.streetDescriptors ? streetData.streetDescriptors.length + 1 : 1;
       const minPkId =
@@ -917,7 +950,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("streetDescriptor", newEngRec);
-      streetContext.onRecordChange(15, newIdx, null, true);
+      streetContext.onRecordChange(15, newPkId, newIdx, null, true);
     } else {
       const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
 
@@ -932,7 +965,7 @@ function StreetDataForm({ data, loading }) {
         });
 
         sandboxContext.onSandboxChange("streetDescriptor", sdData);
-        streetContext.onRecordChange(15, dataIdx, null);
+        streetContext.onRecordChange(15, pkId, dataIdx, null);
       } else if (streetChanged) {
         failedValidation.current = true;
         saveResult.current = false;
@@ -1027,7 +1060,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setEsuFormData(null);
-      streetContext.onRecordChange(11, null, null);
+      streetContext.onRecordChange(11, null, null, null);
       mapContext.onEditMapObject(null, null);
     } else if (pkId === 0) {
       const newIdx =
@@ -1169,7 +1202,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("esu", newRec);
-      streetContext.onRecordChange(13, newIdx, null, true);
+      streetContext.onRecordChange(13, newPkId, newIdx, null, true);
       mapContext.onEditMapObject(13, newPkId);
     } else {
       setEsuFormData({
@@ -1180,7 +1213,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("esu", esuData);
-      streetContext.onRecordChange(13, dataIdx, null);
+      streetContext.onRecordChange(13, pkId, dataIdx, null);
       mapContext.onEditMapObject(13, esuData.esuId);
     }
   };
@@ -1220,7 +1253,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setHdFormData(null);
       if (currentEsuFormData.current) resetEsuData();
-      streetContext.onRecordChange(11, null, null);
+      streetContext.onRecordChange(11, null, null, null);
     } else if (pkId === 0) {
       currentStreetEsuData.current = JSON.parse(JSON.stringify(streetData.esus));
 
@@ -1330,7 +1363,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("highwayDedication", newRec);
-      streetContext.onRecordChange(17, newIdx, esuIndex, true);
+      streetContext.onRecordChange(17, newPkId, newIdx, esuIndex, true);
     } else {
       setHdFormData({
         pkId: pkId,
@@ -1341,7 +1374,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("highwayDedication", hdData);
-      streetContext.onRecordChange(17, index, esuIndex);
+      streetContext.onRecordChange(17, pkId, index, esuIndex);
     }
   };
 
@@ -1380,7 +1413,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setOweFormData(null);
       if (currentEsuFormData.current) resetEsuData();
-      streetContext.onRecordChange(11, null, null);
+      streetContext.onRecordChange(11, null, null, null);
     } else if (pkId === 0) {
       currentStreetEsuData.current = JSON.parse(JSON.stringify(streetData.esus));
 
@@ -1464,7 +1497,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("oneWayExemption", newRec);
-      streetContext.onRecordChange(16, newIdx, esuIndex, true);
+      streetContext.onRecordChange(16, newPkId, newIdx, esuIndex, true);
     } else {
       setOweFormData({
         pkId: pkId,
@@ -1475,7 +1508,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("oneWayExemption", oweData);
-      streetContext.onRecordChange(16, index, esuIndex);
+      streetContext.onRecordChange(16, pkId, index, esuIndex);
     }
   };
 
@@ -1558,7 +1591,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("successorCrossRef", newRec);
-      streetContext.onRecordChange(30, newIdx, null);
+      streetContext.onRecordChange(30, newPkId, newIdx, null);
     } else {
       setSuccessorCrossRefFormData({
         id: pkId,
@@ -1568,7 +1601,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("successorCrossRef", successorCrossRefData);
-      streetContext.onRecordChange(30, dataIdx);
+      streetContext.onRecordChange(30, pkId, dataIdx);
       mapContext.onEditMapObject(30, pkId);
     }
   };
@@ -1595,7 +1628,7 @@ function StreetDataForm({ data, loading }) {
   const handleAsdHomeClick = () => {
     clearAsdFormData();
 
-    streetContext.onRecordChange(11, null, null);
+    streetContext.onRecordChange(11, null, null, null);
     mapContext.onEditMapObject(null, null);
   };
 
@@ -1612,7 +1645,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setMaintenanceResponsibilityFormData(null);
-      streetContext.onRecordChange(51, null, null);
+      streetContext.onRecordChange(51, null, null, null);
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
         JSON.stringify({
@@ -1721,7 +1754,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("maintenanceResponsibility", newRec);
-      streetContext.onRecordChange(51, newIdx, null, true);
+      streetContext.onRecordChange(51, newPkId, newIdx, null, true);
     } else {
       setMaintenanceResponsibilityFormData({
         pkId: pkId,
@@ -1731,7 +1764,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("maintenanceResponsibility", maintenanceResponsibilityData);
-      streetContext.onRecordChange(51, dataIdx, null);
+      streetContext.onRecordChange(51, pkId, dataIdx, null);
       if (!maintenanceResponsibilityData.wholeRoad) mapContext.onEditMapObject(51, pkId);
     }
   };
@@ -1749,7 +1782,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setReinstatementCategoryFormData(null);
-      streetContext.onRecordChange(52, null, null);
+      streetContext.onRecordChange(52, null, null, null);
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
         JSON.stringify({
@@ -1857,7 +1890,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("reinstatementCategory", newRec);
-      streetContext.onRecordChange(52, newIdx, null, true);
+      streetContext.onRecordChange(52, newPkId, newIdx, null, true);
     } else {
       setReinstatementCategoryFormData({
         pkId: pkId,
@@ -1867,7 +1900,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("reinstatementCategory", reinstatementCategoryData);
-      streetContext.onRecordChange(52, dataIdx, null);
+      streetContext.onRecordChange(52, pkId, dataIdx, null);
       if (!reinstatementCategoryData.wholeRoad) mapContext.onEditMapObject(52, pkId);
     }
   };
@@ -1885,7 +1918,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setOSSpecialDesignationFormData(null);
-      streetContext.onRecordChange(53, null, null);
+      streetContext.onRecordChange(53, null, null, null);
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
         JSON.stringify({
@@ -1994,7 +2027,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("osSpecialDesignation", newRec);
-      streetContext.onRecordChange(53, newIdx, null, true);
+      streetContext.onRecordChange(53, newPkId, newIdx, null, true);
     } else {
       setOSSpecialDesignationFormData({
         pkId: pkId,
@@ -2004,7 +2037,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("osSpecialDesignation", osSpecialDesignationData);
-      streetContext.onRecordChange(53, dataIdx, null);
+      streetContext.onRecordChange(53, pkId, dataIdx, null);
       if (!osSpecialDesignationData.wholeRoad) mapContext.onEditMapObject(53, pkId);
     }
   };
@@ -2022,7 +2055,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setInterestFormData(null);
-      streetContext.onRecordChange(61, null, null);
+      streetContext.onRecordChange(61, null, null, null);
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
         JSON.stringify({
@@ -2145,7 +2178,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("interest", newRec);
-      streetContext.onRecordChange(61, newIdx, null, true);
+      streetContext.onRecordChange(61, newPkId, newIdx, null, true);
     } else {
       setInterestFormData({
         pkId: pkId,
@@ -2155,7 +2188,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("interest", interestData);
-      streetContext.onRecordChange(61, dataIdx, null);
+      streetContext.onRecordChange(61, pkId, dataIdx, null);
       if (!interestData.wholeRoad) mapContext.onEditMapObject(61, pkId);
     }
   };
@@ -2173,7 +2206,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setConstructionFormData(null);
-      streetContext.onRecordChange(62, null, null);
+      streetContext.onRecordChange(62, null, null, null);
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
         JSON.stringify({
@@ -2307,7 +2340,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("construction", newRec);
-      streetContext.onRecordChange(62, newIdx, null, true);
+      streetContext.onRecordChange(62, newPkId, newIdx, null, true);
     } else {
       setConstructionFormData({
         pkId: pkId,
@@ -2317,7 +2350,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("construction", constructionData);
-      streetContext.onRecordChange(62, dataIdx, null);
+      streetContext.onRecordChange(62, pkId, dataIdx, null);
       if (!constructionData.wholeRoad) mapContext.onEditMapObject(62, pkId);
     }
   };
@@ -2335,7 +2368,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setSpecialDesignationFormData(null);
-      streetContext.onRecordChange(63, null, null);
+      streetContext.onRecordChange(63, null, null, null);
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
         JSON.stringify({
@@ -2460,7 +2493,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("specialDesignation", newRec);
-      streetContext.onRecordChange(63, newIdx, null, true);
+      streetContext.onRecordChange(63, newPkId, newIdx, null, true);
     } else {
       setSpecialDesignationFormData({
         pkId: pkId,
@@ -2470,7 +2503,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("specialDesignation", specialDesignationData);
-      streetContext.onRecordChange(63, dataIdx, null);
+      streetContext.onRecordChange(63, pkId, dataIdx, null);
       if (!specialDesignationData.wholeRoad) mapContext.onEditMapObject(63, pkId);
     }
   };
@@ -2488,7 +2521,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setHwwFormData(null);
-      streetContext.onRecordChange(64, null, null);
+      streetContext.onRecordChange(64, null, null, null);
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
         JSON.stringify({
@@ -2605,7 +2638,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("hww", newRec);
-      streetContext.onRecordChange(64, newIdx, null, true);
+      streetContext.onRecordChange(64, newPkId, newIdx, null, true);
     } else {
       setHwwFormData({
         pkId: pkId,
@@ -2615,7 +2648,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("hww", hwwData);
-      streetContext.onRecordChange(64, dataIdx, null);
+      streetContext.onRecordChange(64, pkId, dataIdx, null);
       if (!hwwData.wholeRoad) mapContext.onEditMapObject(64, pkId);
     }
   };
@@ -2633,7 +2666,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setProwFormData(null);
-      streetContext.onRecordChange(66, null, null);
+      streetContext.onRecordChange(66, null, null, null);
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
         JSON.stringify({
@@ -2795,7 +2828,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("prow", newRec);
-      streetContext.onRecordChange(66, newIdx, null, true);
+      streetContext.onRecordChange(66, newPkId, newIdx, null, true);
     } else {
       setProwFormData({
         pkId: pkId,
@@ -2805,7 +2838,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("prow", prowData);
-      streetContext.onRecordChange(66, dataIdx, null);
+      streetContext.onRecordChange(66, pkId, dataIdx, null);
       if (!prowData.defMapGeometryType) mapContext.onEditMapObject(66, pkId);
     }
   };
@@ -2819,7 +2852,7 @@ function StreetDataForm({ data, loading }) {
    */
   const handleNoteSelected = (pkId, noteData, dataIdx) => {
     setNotesFormData(null);
-    streetContext.onRecordChange(11, null, null);
+    streetContext.onRecordChange(11, null, null, null);
     mapContext.onEditMapObject(null, null);
 
     if (pkId === 0) {
@@ -2878,7 +2911,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("streetNote", newRec);
-      streetContext.onRecordChange(72, newIdx, null, true);
+      streetContext.onRecordChange(72, newPkId, newIdx, null, true);
     } else if (pkId !== -1) {
       setNotesFormData({
         pkId: pkId,
@@ -2889,7 +2922,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       sandboxContext.onSandboxChange("streetNote", noteData);
-      streetContext.onRecordChange(72, dataIdx, null);
+      streetContext.onRecordChange(72, pkId, dataIdx, null);
     }
   };
 
@@ -6798,7 +6831,7 @@ function StreetDataForm({ data, loading }) {
         case 11:
           setStreetFocusedField(streetContext.goToField.fieldName);
           if (value !== 0) setValue(0);
-          streetContext.onRecordChange(11, null, null);
+          streetContext.onRecordChange(11, null, null, null);
           setDescriptorFormData(null);
           break;
 
@@ -6812,7 +6845,7 @@ function StreetDataForm({ data, loading }) {
               ? streetData.esus[streetContext.goToField.index]
               : null;
           if (esuData) {
-            streetContext.onRecordChange(13, streetContext.goToField.index, null);
+            streetContext.onRecordChange(13, esuData.pkId, streetContext.goToField.index, null);
             setEsuFormData({
               pkId: esuData.pkId,
               esuData: esuData,
@@ -6830,7 +6863,7 @@ function StreetDataForm({ data, loading }) {
               ? streetData.streetDescriptors[streetContext.goToField.index]
               : null;
           if (descriptorData) {
-            streetContext.onRecordChange(15, streetContext.goToField.index, null);
+            streetContext.onRecordChange(15, descriptorData.pkId, streetContext.goToField.index, null);
             setDescriptorFormData({
               pkId: descriptorData.pkId,
               descriptorData: descriptorData,
@@ -6860,7 +6893,12 @@ function StreetDataForm({ data, loading }) {
                 ? oweEsuData.oneWayExemptions[streetContext.goToField.index]
                 : null;
             if (oneWayExemptionData) {
-              streetContext.onRecordChange(16, streetContext.goToField.index, streetContext.goToField.parentIndex);
+              streetContext.onRecordChange(
+                16,
+                oneWayExemptionData.pkId,
+                streetContext.goToField.index,
+                streetContext.goToField.parentIndex
+              );
               setOweFormData({
                 pkId: oneWayExemptionData.pkId,
                 oweData: oneWayExemptionData,
@@ -6892,7 +6930,12 @@ function StreetDataForm({ data, loading }) {
                 ? hdEsuData.highwayDedications[streetContext.goToField.index]
                 : null;
             if (highwayDedicationData) {
-              streetContext.onRecordChange(17, streetContext.goToField.index, streetContext.goToField.parentIndex);
+              streetContext.onRecordChange(
+                17,
+                highwayDedicationData.pkId,
+                streetContext.goToField.index,
+                streetContext.goToField.parentIndex
+              );
               setHdFormData({
                 pkId: highwayDedicationData.pkId,
                 hdData: highwayDedicationData,
@@ -6912,7 +6955,7 @@ function StreetDataForm({ data, loading }) {
               ? streetData.successorCrossRefs[streetContext.goToField.index]
               : null;
           if (successorCrossRefData) {
-            streetContext.onRecordChange(30, streetContext.goToField.index, null);
+            streetContext.onRecordChange(30, successorCrossRefData.pkId, streetContext.goToField.index, null);
             setSuccessorCrossRefFormData({
               pkId: successorCrossRefData.pkId,
               successorCrossRefData: successorCrossRefData,
@@ -6931,7 +6974,7 @@ function StreetDataForm({ data, loading }) {
               ? streetData.maintenanceResponsibilities[streetContext.goToField.index]
               : null;
           if (maintenanceResponsibilityData) {
-            streetContext.onRecordChange(51, streetContext.goToField.index, null);
+            streetContext.onRecordChange(51, maintenanceResponsibilityData.pkId, streetContext.goToField.index, null);
             setMaintenanceResponsibilityFormData({
               pkId: maintenanceResponsibilityData.pkId,
               maintenanceResponsibilityData: maintenanceResponsibilityData,
@@ -6950,7 +6993,7 @@ function StreetDataForm({ data, loading }) {
               ? streetData.reinstatementCategories[streetContext.goToField.index]
               : null;
           if (reinstatementCategoryData) {
-            streetContext.onRecordChange(52, streetContext.goToField.index, null);
+            streetContext.onRecordChange(52, reinstatementCategoryData.pkId, streetContext.goToField.index, null);
             setReinstatementCategoryFormData({
               pkId: reinstatementCategoryData.pkId,
               reinstatementCategoryData: reinstatementCategoryData,
@@ -6969,7 +7012,7 @@ function StreetDataForm({ data, loading }) {
               ? streetData.specialDesignations[streetContext.goToField.index]
               : null;
           if (osSpecialDesignationData) {
-            streetContext.onRecordChange(53, streetContext.goToField.index, null);
+            streetContext.onRecordChange(53, osSpecialDesignationData.pkId, streetContext.goToField.index, null);
             setOSSpecialDesignationFormData({
               pkId: osSpecialDesignationData.pkId,
               osSpecialDesignationData: osSpecialDesignationData,
@@ -6988,7 +7031,7 @@ function StreetDataForm({ data, loading }) {
               ? streetData.interests[streetContext.goToField.index]
               : null;
           if (interestData) {
-            streetContext.onRecordChange(61, streetContext.goToField.index, null);
+            streetContext.onRecordChange(61, interestData.pkId, streetContext.goToField.index, null);
             setInterestFormData({
               pkId: interestData.pkId,
               interestData: interestData,
@@ -7007,7 +7050,7 @@ function StreetDataForm({ data, loading }) {
               ? streetData.constructions[streetContext.goToField.index]
               : null;
           if (constructionData) {
-            streetContext.onRecordChange(62, streetContext.goToField.index, null);
+            streetContext.onRecordChange(62, constructionData.pkId, streetContext.goToField.index, null);
             setConstructionFormData({
               pkId: constructionData.pkId,
               constructionData: constructionData,
@@ -7026,7 +7069,7 @@ function StreetDataForm({ data, loading }) {
               ? streetData.specialDesignations[streetContext.goToField.index]
               : null;
           if (specialDesignationData) {
-            streetContext.onRecordChange(63, streetContext.goToField.index, null);
+            streetContext.onRecordChange(63, specialDesignationData.pkId, streetContext.goToField.index, null);
             setSpecialDesignationFormData({
               pkId: specialDesignationData.pkId,
               specialDesignationData: specialDesignationData,
@@ -7045,7 +7088,7 @@ function StreetDataForm({ data, loading }) {
               ? streetData.heightWidthWeights[streetContext.goToField.index]
               : null;
           if (heightWidthWeightData) {
-            streetContext.onRecordChange(64, streetContext.goToField.index, null);
+            streetContext.onRecordChange(64, heightWidthWeightData.pkId, streetContext.goToField.index, null);
             setHwwFormData({
               pkId: heightWidthWeightData.pkId,
               hwwData: heightWidthWeightData,
@@ -7064,7 +7107,7 @@ function StreetDataForm({ data, loading }) {
               ? streetData.publicRightOfWays[streetContext.goToField.index]
               : null;
           if (publicRightOfWayData) {
-            streetContext.onRecordChange(66, streetContext.goToField.index, null);
+            streetContext.onRecordChange(66, publicRightOfWayData.pkId, streetContext.goToField.index, null);
             setProwFormData({
               pkId: publicRightOfWayData.pkId,
               prowData: publicRightOfWayData,
@@ -7082,7 +7125,7 @@ function StreetDataForm({ data, loading }) {
               ? streetData.streetNotes[streetContext.goToField.index]
               : null;
           if (noteData) {
-            streetContext.onRecordChange(72, streetContext.goToField.index, null);
+            streetContext.onRecordChange(72, noteData.pkId, streetContext.goToField.index, null);
             setNotesFormData({
               pkId: noteData.pkId,
               noteData: noteData,
@@ -8817,7 +8860,7 @@ function StreetDataForm({ data, loading }) {
 
           if (esuFormData) {
             setEsuFormData(null);
-            streetContext.onRecordChange(11, null, null);
+            streetContext.onRecordChange(11, null, null, null);
           }
 
           streetContext.onEsuDividedMerged(true);
@@ -9205,7 +9248,7 @@ function StreetDataForm({ data, loading }) {
 
         if (esuFormData) {
           setEsuFormData(null);
-          streetContext.onRecordChange(11, null, null);
+          streetContext.onRecordChange(11, null, null, null);
         }
 
         alertType.current = "unassignEsus";

@@ -40,6 +40,7 @@
 //    027   26.01.24 Sean Flook       IMANN-251 Only check why in HandleLeavingStreet.
 //    028   05.02.24 Sean Flook                 Further changes required for operational districts.
 //    029   13.02.24 Sean Flook                 Pass the authorityCode to ValidatePublicRightOfWayData.
+//    030   14.02.24 Sean Flook        ASD10_GP Changes required to filter the ASD map layers when editing a record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -274,7 +275,7 @@ function App() {
 
   const [streetGoToField, setStreetGoToField] = useState(null);
 
-  const [streetRecord, setStreetRecord] = useState({ type: 11, index: null });
+  const [streetRecord, setStreetRecord] = useState({ type: 11, id: null, index: null });
 
   const [esuDataChanged, setEsuDataChanged] = useState(false);
 
@@ -1136,12 +1137,13 @@ function App() {
    * Event to handle when the street record changes.
    *
    * @param {number} type The type of street record.
+   * @param {number} id The id of the record.
    * @param {number} index The index of the street record in the search array.
    * @param {number} parentIndex The index for the parent
    * @param {boolean} [newRecord=false] True if this is a new record; otherwise false.
    */
-  function HandleStreetRecordChange(type, index, parentIndex, newRecord = false) {
-    setStreetRecord({ type: type, index: index, parentIndex: parentIndex, newRecord: newRecord });
+  function HandleStreetRecordChange(type, id, index, parentIndex, newRecord = false) {
+    setStreetRecord({ type: type, id: id, index: index, parentIndex: parentIndex, newRecord: newRecord });
   }
 
   /**

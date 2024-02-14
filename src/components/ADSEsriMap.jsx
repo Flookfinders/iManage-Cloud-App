@@ -54,6 +54,7 @@
 //    040   09.02.24 Sean Flook                 Change to use different line symbols for each type of ASD record.
 //    041   13.02.24 Sean Flook                 Ensure the ASD geometries are displayed when creating a new street.
 //    042   14.02.24 Sean Flook        ASD10_GP When editing an ASD record hide the other ASD geometries.
+//    043   14.02.24 Sean Flook        ASD10_GP Filter the current ASD layer to the one that is currently being viewed.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -6649,34 +6650,74 @@ function ADSEsriMap(startExtent) {
 
       if (asd51Layer) {
         asd51Layer.visible = [11, 51].includes(streetContext.currentRecord.type);
+        if (streetContext.currentRecord.type === 51 && streetContext.currentRecord.id) {
+          asd51Layer.definitionExpression = `PkId = ${streetContext.currentRecord.id}`;
+        } else {
+          asd51Layer.definitionExpression = null;
+        }
       }
 
       if (asd52Layer) {
         asd52Layer.visible = [11, 52].includes(streetContext.currentRecord.type);
+        if (streetContext.currentRecord.type === 52 && streetContext.currentRecord.id) {
+          asd52Layer.definitionExpression = `PkId = ${streetContext.currentRecord.id}`;
+        } else {
+          asd52Layer.definitionExpression = null;
+        }
       }
 
       if (asd53Layer) {
         asd53Layer.visible = [11, 53].includes(streetContext.currentRecord.type);
+        if (streetContext.currentRecord.type === 53 && streetContext.currentRecord.id) {
+          asd53Layer.definitionExpression = `PkId = ${streetContext.currentRecord.id}`;
+        } else {
+          asd53Layer.definitionExpression = null;
+        }
       }
 
       if (asd61Layer) {
         asd61Layer.visible = [11, 61].includes(streetContext.currentRecord.type);
+        if (streetContext.currentRecord.type === 61 && streetContext.currentRecord.id) {
+          asd61Layer.definitionExpression = `PkId = ${streetContext.currentRecord.id}`;
+        } else {
+          asd61Layer.definitionExpression = null;
+        }
       }
 
       if (asd62Layer) {
         asd62Layer.visible = [11, 62].includes(streetContext.currentRecord.type);
+        if (streetContext.currentRecord.type === 62 && streetContext.currentRecord.id) {
+          asd62Layer.definitionExpression = `PkId = ${streetContext.currentRecord.id}`;
+        } else {
+          asd62Layer.definitionExpression = null;
+        }
       }
 
       if (asd63Layer) {
         asd63Layer.visible = [11, 63].includes(streetContext.currentRecord.type);
+        if (streetContext.currentRecord.type === 63 && streetContext.currentRecord.id) {
+          asd63Layer.definitionExpression = `PkId = ${streetContext.currentRecord.id}`;
+        } else {
+          asd63Layer.definitionExpression = null;
+        }
       }
 
       if (asd64Layer) {
         asd64Layer.visible = [11, 64].includes(streetContext.currentRecord.type);
+        if (streetContext.currentRecord.type === 64 && streetContext.currentRecord.id) {
+          asd64Layer.definitionExpression = `PkId = ${streetContext.currentRecord.id}`;
+        } else {
+          asd64Layer.definitionExpression = null;
+        }
       }
 
       if (asd66Layer) {
         asd66Layer.visible = [11, 66].includes(streetContext.currentRecord.type);
+        if (streetContext.currentRecord.type === 66 && streetContext.currentRecord.id) {
+          asd66Layer.definitionExpression = `PkId = ${streetContext.currentRecord.id}`;
+        } else {
+          asd66Layer.definitionExpression = null;
+        }
       }
     }
   }, [streetContext.currentRecord]);
