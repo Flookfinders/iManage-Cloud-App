@@ -22,6 +22,7 @@
 //    009   17.01.24 Sean Flook                 Changes after Louise's review.
 //    010   25.01.24 Sean Flook                 Changes required after UX review.
 //    011   02.02.24 Joel Benford               ESU direction icon color
+//    012   14.02.24 Sean Flook        ESU14_GP Filter done the delete.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -109,6 +110,7 @@ ADSEsuDataListItem.propTypes = {
   onHighwayDedicationAdd: PropTypes.func.isRequired,
   onOneWayExceptionClicked: PropTypes.func.isRequired,
   onOneWayExceptionAdd: PropTypes.func.isRequired,
+  onDeleteEsu: PropTypes.func.isRequired,
   onToggleItem: PropTypes.func.isRequired,
   onSetCopyOpen: PropTypes.func.isRequired,
   onDivideError: PropTypes.func.isRequired,
@@ -129,6 +131,7 @@ function ADSEsuDataListItem({
   onHighwayDedicationAdd,
   onOneWayExceptionClicked,
   onOneWayExceptionAdd,
+  onDeleteEsu,
   onToggleItem,
   onSetCopyOpen,
   onDivideError,
@@ -432,10 +435,9 @@ function ADSEsuDataListItem({
    */
   const handleCloseDeleteConfirmation = (deleteConfirmed) => {
     setOpenDeleteConfirmation(false);
-    const pkId = data && data.pkId ? data.pkId : -1;
+    const pkId = data && data.esu.pkId ? data.esu.pkId : -1;
 
-    if (deleteConfirmed && pkId && pkId > 0) {
-    }
+    if (deleteConfirmed && onDeleteEsu) onDeleteEsu(pkId);
   };
 
   /**

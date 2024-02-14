@@ -51,6 +51,7 @@
 //    037   13.02.24 Sean Flook                 Corrected the type 66 map data and pass the correct parameters to StreetDelete.
 //    038   14.02.24 Sean Flook        ASD10_GP When opening a PRoW record if it is marked as Inexact set the map accordingly.
 //    039   14.02.24 Sean Flook        ASD10_GP Changes required to filter the ASD map layers when editing a record.
+//    040   14.02.24 Sean Flook        ESU14_GP Modify handleEsuDeleted to also update the map.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3162,6 +3163,144 @@ function StreetDataForm({ data, loading }) {
       streetData.publicRightOfWays,
       streetData.heightWidthWeights
     );
+
+    const contextStreet = sandboxContext.currentSandbox.currentStreet || sandboxContext.currentSandbox.sourceStreet;
+    const newStreetData =
+      !settingsContext.isScottish && !HasASD()
+        ? {
+            changeType: contextStreet.changeType,
+            usrn: contextStreet.usrn,
+            swaOrgRefNaming: contextStreet.swaOrgRefNaming,
+            streetSurface: contextStreet.streetSurface,
+            streetStartDate: contextStreet.streetStartDate,
+            streetEndDate: contextStreet.streetEndDate,
+            neverExport: contextStreet.neverExport,
+            version: contextStreet.version,
+            recordType: contextStreet.recordType,
+            state: contextStreet.state,
+            stateDate: contextStreet.stateDate,
+            streetClassification: contextStreet.streetClassification,
+            streetTolerance: contextStreet.streetTolerance,
+            streetStartX: contextStreet.streetStartX,
+            streetStartY: contextStreet.streetStartY,
+            streetEndX: contextStreet.streetEndX,
+            streetEndY: contextStreet.streetEndY,
+            pkId: contextStreet.pkId,
+            lastUpdateDate: contextStreet.lastUpdateDate,
+            entryDate: contextStreet.entryDate,
+            streetLastUpdated: contextStreet.streetLastUpdated,
+            streetLastUser: contextStreet.streetLastUser,
+            relatedPropertyCount: contextStreet.relatedPropertyCount,
+            relatedStreetCount: contextStreet.relatedStreetCount,
+            esus: newEsus,
+            streetDescriptors: contextStreet.streetDescriptors,
+            streetNotes: contextStreet.streetNotes,
+          }
+        : !settingsContext.isScottish && HasASD()
+        ? {
+            changeType: contextStreet.changeType,
+            usrn: contextStreet.usrn,
+            swaOrgRefNaming: contextStreet.swaOrgRefNaming,
+            streetSurface: contextStreet.streetSurface,
+            streetStartDate: contextStreet.streetStartDate,
+            streetEndDate: contextStreet.streetEndDate,
+            neverExport: contextStreet.neverExport,
+            version: contextStreet.version,
+            recordType: contextStreet.recordType,
+            state: contextStreet.state,
+            stateDate: contextStreet.stateDate,
+            streetClassification: contextStreet.streetClassification,
+            streetTolerance: contextStreet.streetTolerance,
+            streetStartX: contextStreet.streetStartX,
+            streetStartY: contextStreet.streetStartY,
+            streetEndX: contextStreet.streetEndX,
+            streetEndY: contextStreet.streetEndY,
+            pkId: contextStreet.pkId,
+            lastUpdateDate: contextStreet.lastUpdateDate,
+            entryDate: contextStreet.entryDate,
+            streetLastUpdated: contextStreet.streetLastUpdated,
+            streetLastUser: contextStreet.streetLastUser,
+            relatedPropertyCount: contextStreet.relatedPropertyCount,
+            relatedStreetCount: contextStreet.relatedStreetCount,
+            esus: newEsus,
+            streetDescriptors: contextStreet.streetDescriptors,
+            streetNotes: contextStreet.streetNotes,
+            interests: contextStreet.recordType < 4 ? contextStreet.interests : null,
+            constructions: contextStreet.recordType < 4 ? contextStreet.constructions : null,
+            specialDesignations: contextStreet.recordType < 4 ? contextStreet.specialDesignations : null,
+            publicRightOfWays: contextStreet.recordType < 4 ? contextStreet.publicRightOfWays : null,
+            heightWidthWeights: contextStreet.recordType < 4 ? contextStreet.heightWidthWeights : null,
+          }
+        : {
+            pkId: contextStreet.pkId,
+            changeType: contextStreet.changeType,
+            usrn: contextStreet.usrn,
+            recordType: contextStreet.recordType,
+            swaOrgRefNaming: contextStreet.swaOrgRefNaming,
+            version: contextStreet.version,
+            recordEntryDate: contextStreet.recordEntryDate,
+            lastUpdateDate: contextStreet.lastUpdateDate,
+            streetStartDate: contextStreet.streetStartDate,
+            streetEndDate: contextStreet.streetEndDate,
+            streetStartX: contextStreet.streetStartX,
+            streetStartY: contextStreet.streetStartY,
+            streetEndX: contextStreet.streetEndX,
+            streetEndY: contextStreet.streetEndY,
+            streetTolerance: contextStreet.streetTolerance,
+            esuCount: contextStreet.esuCount,
+            streetLastUpdated: contextStreet.streetLastUpdated,
+            streetLastUser: contextStreet.streetLastUser,
+            neverExport: contextStreet.neverExport,
+            relatedPropertyCount: contextStreet.relatedPropertyCount,
+            relatedStreetCount: contextStreet.relatedStreetCount,
+            lastUpdated: contextStreet.lastUpdated,
+            insertedTimestamp: contextStreet.insertedTimestamp,
+            insertedUser: contextStreet.insertedUser,
+            lastUser: contextStreet.lastUser,
+            esus: newEsus,
+            successorCrossRefs: contextStreet.successorCrossRefs,
+            streetDescriptors: contextStreet.streetDescriptors,
+            streetNotes: contextStreet.streetNotes,
+            maintenanceResponsibilities:
+              contextStreet.recordType < 4 ? contextStreet.maintenanceResponsibilities : null,
+            reinstatementCategories: contextStreet.recordType < 4 ? contextStreet.reinstatementCategories : null,
+            specialDesignations: contextStreet.recordType < 4 ? contextStreet.specialDesignations : null,
+          };
+
+    if (newStreetData) {
+      updateMapStreetData(
+        newStreetData,
+        settingsContext.isScottish && newStreetData && newStreetData.recordType < 4
+          ? newStreetData.maintenanceResponsibilities
+          : null,
+        settingsContext.isScottish && newStreetData && newStreetData.recordType < 4
+          ? newStreetData.reinstatementCategories
+          : null,
+        settingsContext.isScottish && newStreetData && newStreetData.recordType < 4
+          ? newStreetData.specialDesignations
+          : null,
+        !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+          ? newStreetData.interests
+          : null,
+        !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+          ? newStreetData.constructions
+          : null,
+        !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+          ? newStreetData.specialDesignations
+          : null,
+        !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+          ? newStreetData.heightWidthWeights
+          : null,
+        !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+          ? newStreetData.publicRightOfWays
+          : null,
+        settingsContext.isScottish,
+        mapContext,
+        lookupContext.currentLookups
+      );
+
+      setStreetData(newStreetData);
+    }
   };
 
   /**
@@ -9851,6 +9990,7 @@ function StreetDataForm({ data, loading }) {
               handleOneWayExemptionSelected(esuId, pkId, oweData, index, esuIndex)
             }
             onAddOneWayExemption={(esuId, esuIndex) => handleAddOneWayExemption(esuId, esuIndex)}
+            onDeleteEsu={(pkId) => handleEsuDeleted(pkId)}
             onMultiEsuDelete={(esuIds) => handleMultiDeleteEsu(esuIds)}
           />
         )}

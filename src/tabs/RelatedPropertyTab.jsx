@@ -33,6 +33,7 @@
 //    019   06.02.24 Joel Benford               Change flavour of light blue
 //    020   07.02.24 Joel Benford               Spacing and colours
 //    021   08.02.24 Joel Benford     RTAB3     Supply null street state to classification icon tooltip
+//    022   14.02.24 Joel Benford     RTAB5     Interim check-in for comments
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -754,9 +755,10 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
         pt: theme.spacing(1),
         pb: theme.spacing(1),
         borderBottom: `solid ${adsLightGreyB} 1px`,
-        borderLeft: `solid ${adsLightGreyD} 3px`,
+        // borderRight: `solid ${adsLightGreyD} 3px`,
         backgroundColor: adsWhite,
         "&:hover": {
+          borderRight: `solid ${adsLightGreyD} 3px`,
           backgroundColor: adsPaleBlueA,
           color: adsBlueA,
         },
@@ -766,9 +768,9 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
         pt: theme.spacing(1),
         pb: theme.spacing(1),
         borderBottom: `solid ${adsLightGreyB} 1px`,
-        borderLeftWidth: "3px",
+        // borderRightWidth: "3px",
         "&:hover": {
-          borderLeft: `solid ${adsLightGreyD} 3px`,
+          borderRight: `solid ${adsLightGreyD} 3px`,
           backgroundColor: adsPaleBlueA,
           color: adsBlueA,
         },

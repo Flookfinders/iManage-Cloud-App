@@ -25,6 +25,7 @@
 //    012   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    013   17.01.24 Sean Flook                 Changes after Louise's review.
 //    014   25.01.24 Sean Flook                 Changes required after UX review.
+//    015   14.02.24 Sean Flook        ESU14_GP Filter done the ESU delete.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -93,6 +94,7 @@ EsuListTab.propTypes = {
   onAddHighwayDedication: PropTypes.func.isRequired,
   onOneWayExemptionSelected: PropTypes.func.isRequired,
   onAddOneWayExemption: PropTypes.func.isRequired,
+  onDeleteEsu: PropTypes.func.isRequired,
 };
 
 function EsuListTab({
@@ -108,6 +110,7 @@ function EsuListTab({
   onAddHighwayDedication,
   onOneWayExemptionSelected,
   onAddOneWayExemption,
+  onDeleteEsu,
 }) {
   const theme = useTheme();
 
@@ -309,6 +312,15 @@ function EsuListTab({
   };
 
   /**
+   * Event to handle when the ESU is being deleted.
+   *
+   * @param {number} pkId The id of the ESU to be deleted.
+   */
+  const handleDeleteEsu = (pkId) => {
+    if (onDeleteEsu) onDeleteEsu(pkId);
+  };
+
+  /**
    * Event to handle the display of the copy alert.
    *
    * @param {boolean} open True isf the alert is top be displayed; otherwise false.
@@ -497,6 +509,7 @@ function EsuListTab({
                     handleOneWayExemptionClicked(oweData, oweIndex, index)
                   }
                   onOneWayExceptionAdd={(esuId) => handleOneWayExemptionAdd(esuId, index)}
+                  onDeleteEsu={(pkId) => handleDeleteEsu(pkId)}
                   onToggleItem={(value) => ToggleItem(value)}
                   onSetCopyOpen={(open, dataType) => handleCopyOpen(open, dataType)}
                   onDivideError={handleSelectionError}

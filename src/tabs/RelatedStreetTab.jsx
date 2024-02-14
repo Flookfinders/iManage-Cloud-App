@@ -27,6 +27,7 @@
 //    014   07.02.24 Joel Benford               Spacing and colours
 //    015   12.02.24 Joel Benford               Tooltip on classification icon
 //    016   12.02.24 Joel Benford       RTAB4   Removed left border on hover, interest avatar -> rounded
+//    017   14.02.24 Joel Benford       RTAB2   Styling for additional languages and records
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -366,14 +367,20 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
    * Method to get the styling to be used for the language chip.
    *
    * @param {number} state The state of the street.
-   * @param {boolean} moreBelow Are there more chips below this one that need spacing
    * @returns {object} The styling to be used for the language chip.
    */
-  function StreetLanguageChipStyle(state, moreBelow = false) {
+  function StreetLanguageChipStyle(state) {
     const streetStateRec = StreetState.find((x) => x.id === state);
-    const nothingBelowStyle = RelatedLanguageChipStyle(streetStateRec ? streetStateRec.colour : "");
-    const moreBelowStyle = { ...nothingBelowStyle, mb: "8px" };
-    return moreBelow ? moreBelowStyle : nothingBelowStyle;
+    return RelatedLanguageChipStyle(streetStateRec ? streetStateRec.colour : "");
+  }
+
+  /**
+   * Method to get the styling for stack holding language chip + address.
+   *
+   * @returns {object} The styling to be used for the stack.
+   */
+  function LanguageDescriptionPairStyle() {
+    return { mb: theme.spacing(1) };
   }
 
   /**
@@ -741,14 +748,11 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                                 )}
                               </Tooltip>
                               <Stack direction="column">
-                                <Stack direction="row" spacing={1}>
+                                <Stack direction="row" spacing={1} sx={LanguageDescriptionPairStyle()}>
                                   <Chip
                                     size="small"
                                     label={rec.primary.language}
-                                    sx={StreetLanguageChipStyle(
-                                      rec.state > 0 ? rec.state : 2,
-                                      rec.primary.language === "ENG" && rec.additional && rec.additional.language
-                                    )}
+                                    sx={StreetLanguageChipStyle(rec.state > 0 ? rec.state : 2)}
                                   />
                                   <Typography
                                     variant="subtitle2"
@@ -767,7 +771,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                                       sx={StreetLanguageChipStyle(rec.state > 0 ? rec.state : 2)}
                                     />
                                     <Typography
-                                      variant="caption"
+                                      variant="subtitle2"
                                       sx={AddressStyle(
                                         rec.usrn.toString() === streetContext.currentStreet.usrn.toString()
                                       )}
