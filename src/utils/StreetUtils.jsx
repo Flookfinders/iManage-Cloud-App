@@ -40,6 +40,7 @@
 //    027   13.02.23 Sean Flook                 Updated GetAsdSecondaryText to handle type 66 (PRoW) records.
 //    028   13.02.24 Sean Flook                 Ensure the PRoW geometry is passed through. If assigning ESUs when creating a new street use the ESU Id of the assigned ESU.
 //    029   13.02.24 Sean Flook                 Removed parameter from StreetDelete as no longer required.
+//    030   14.02.24 Sean Flook                 When creating a new street ensure the ESU Id is correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1314,7 +1315,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
       esus: streetData.esus
         ? streetData.esus.map((esu) => {
             return {
-              esuId: 0,
+              esuId: esu.esuId > 0 ? esu.esuId : 0,
               changeType: esu.changeType,
               state: esu.state,
               stateDate: esu.stateDate,
@@ -1400,7 +1401,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
         esus: streetData.esus
           ? streetData.esus.map((esu) => {
               return {
-                esuId: 0,
+                esuId: esu.esuId > 0 ? esu.esuId : 0,
                 changeType: esu.changeType,
                 esuVersionNumber: esu.esuVersionNumber,
                 esuTolerance: esu.esuTolerance,
@@ -1509,7 +1510,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
         esus: streetData.esus
           ? streetData.esus.map((esu) => {
               return {
-                esuId: esu.esuId,
+                esuId: esu.esuId > 0 ? esu.esuId : 0,
                 changeType: esu.changeType,
                 esuVersionNumber: esu.esuVersionNumber,
                 esuTolerance: esu.esuTolerance,

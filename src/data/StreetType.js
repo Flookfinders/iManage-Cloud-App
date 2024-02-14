@@ -28,7 +28,7 @@ const StreetType = [
   {
     id: 3,
     gpText: "Numbered Street",
-    osText: "Numbered Street",
+    osText: "Numbered street",
     colour: adsPurple,
     chartColour: "#62A1CD", // Highlight: #2C98E5
     default: false,
