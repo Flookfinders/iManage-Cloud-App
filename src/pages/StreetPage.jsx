@@ -18,6 +18,7 @@
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    006   25.01.24 Sean Flook                 Changes required after UX review.
 //    007   26.01.24 Sean Flook       IMANN-232 Correctly initialise loadingRef.
+//    008   14.02.24 Sean Flook                 Added a bit of error trapping.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -67,18 +68,46 @@ function StreetPage() {
             dataUsrn.current = streetContext.currentStreet.usrn;
             setLoading(true);
             loadingRef.current = true;
-            // console.log(
-            //   "fetching Street data",
-            //   dataUsrn.current,
-            //   `${apiUrl.url}/${streetContext.currentStreet.usrn}`
-            // );
+            console.log(
+              "[DEBUG] fetching Street data",
+              dataUsrn.current,
+              `${apiUrl.url}/${streetContext.currentStreet.usrn}`
+            );
             fetch(`${apiUrl.url}/${streetContext.currentStreet.usrn}`, {
               headers: apiUrl.headers,
               crossDomain: true,
               method: apiUrl.type,
             })
               .then((res) => (res.ok ? res : Promise.reject(res)))
-              .then((res) => res.json())
+              .then((res) => {
+                switch (res.status) {
+                  case 200:
+                    return res.json();
+
+                  case 204:
+                    console.log("[DEBUG] SetUpStreetData: No content found");
+                    return null;
+
+                  case 401:
+                    console.error(
+                      "[401 ERROR] SetUpStreetData: Authorization details are not valid or have expired.",
+                      res
+                    );
+                    return null;
+
+                  case 403:
+                    console.error("[402 ERROR] SetUpStreetData: You do not have database access.", res);
+                    return null;
+
+                  case 500:
+                    console.error("[500 ERROR] SetUpStreetData: Unexpected server error.", res);
+                    return null;
+
+                  default:
+                    console.error("[ERROR] SetUpStreetData: Unexpected error.", res);
+                    return null;
+                }
+              })
               .then(
                 (result) => {
                   setData(result);

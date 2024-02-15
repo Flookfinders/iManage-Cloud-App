@@ -25,6 +25,7 @@
 //    012   02.02.24 Joel Benford               Styling changes on tabs/grid
 //    013   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //    014   13.02.24 Sean Flook                 Corrected the type 66 map data.
+//    015   14.02.24 Sean Flook                 Added a bit of error trapping.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -205,15 +206,16 @@ function ADSHomepageLatestEditsControl({ data }) {
     } else {
       //else fetch what we need and pass to map
       const streetData = await GetStreetMapData(usrn, userContext.currentUser.token, settingsContext.isScottish);
-      const esus = streetData
-        ? streetData.esus.map((rec) => ({
-            esuId: rec.esuId,
-            geometry: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
-          }))
-        : undefined;
+      const esus =
+        streetData && streetData.esus
+          ? streetData.esus.map((rec) => ({
+              esuId: rec.esuId,
+              geometry: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
+            }))
+          : [];
       const engDescriptor = streetData.streetDescriptors.filter((sd) => sd.language === "ENG")[0];
       const asdType51 =
-        settingsContext.isScottish && streetData
+        settingsContext.isScottish && streetData && streetData.maintenanceResponsibilities
           ? streetData.maintenanceResponsibilities.map((asdRec) => ({
               type: 51,
               pkId: asdRec.pkId,
@@ -227,7 +229,7 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType52 =
-        settingsContext.isScottish && streetData
+        settingsContext.isScottish && streetData && streetData.reinstatementCategories
           ? streetData.reinstatementCategories.map((asdRec) => ({
               type: 52,
               pkId: asdRec.pkId,
@@ -241,7 +243,7 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType53 =
-        settingsContext.isScottish && streetData
+        settingsContext.isScottish && streetData && streetData.specialDesignations
           ? streetData.specialDesignations.map((asdRec) => ({
               type: 53,
               pkId: asdRec.pkId,
@@ -255,7 +257,7 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType61 =
-        !settingsContext.isScottish && HasASD() && streetData
+        !settingsContext.isScottish && HasASD() && streetData && streetData.interests
           ? streetData.interests.map((asdRec) => ({
               type: 61,
               pkId: asdRec.pkId,
@@ -270,7 +272,7 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType62 =
-        !settingsContext.isScottish && HasASD() && streetData
+        !settingsContext.isScottish && HasASD() && streetData && streetData.constructions
           ? streetData.constructions.map((asdRec) => ({
               type: 62,
               pkId: asdRec.pkId,
@@ -285,7 +287,7 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType63 =
-        !settingsContext.isScottish && HasASD() && streetData
+        !settingsContext.isScottish && HasASD() && streetData && streetData.specialDesignations
           ? streetData.specialDesignations.map((asdRec) => ({
               type: 63,
               pkId: asdRec.pkId,
@@ -299,7 +301,7 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType64 =
-        !settingsContext.isScottish && HasASD() && streetData
+        !settingsContext.isScottish && HasASD() && streetData && streetData.heightWidthWeights
           ? streetData.heightWidthWeights.map((asdRec) => ({
               type: 64,
               pkId: asdRec.pkId,
@@ -313,7 +315,7 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType66 =
-        !settingsContext.isScottish && HasASD() && streetData
+        !settingsContext.isScottish && HasASD() && streetData && streetData.publicRightOfWays
           ? streetData.publicRightOfWays.map((asdRec) => ({
               type: 66,
               pkId: asdRec.pkId,

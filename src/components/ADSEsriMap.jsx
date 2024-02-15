@@ -55,6 +55,7 @@
 //    041   13.02.24 Sean Flook                 Ensure the ASD geometries are displayed when creating a new street.
 //    042   14.02.24 Sean Flook        ASD10_GP When editing an ASD record hide the other ASD geometries.
 //    043   14.02.24 Sean Flook        ASD10_GP Filter the current ASD layer to the one that is currently being viewed.
+//    044   14.02.24 Sean Flook                 Added a bit of error trapping.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2747,21 +2748,23 @@ function ADSEsriMap(startExtent) {
         let mapAsd66 = [];
 
         currentStreets.forEach((street) => {
-          mapStreets = mapStreets.concat(
-            street.esus.map((esu) => {
-              return {
-                usrn: street.usrn,
-                description: street.description,
-                language: street.language,
-                locality: street.locality,
-                town: street.town,
-                type: street.type,
-                state: isScottish.current ? esu.state : street.state,
-                esuId: esu.esuId,
-                geometry: esu.geometry,
-              };
-            })
-          );
+          if (street.esus) {
+            mapStreets = mapStreets.concat(
+              street.esus.map((esu) => {
+                return {
+                  usrn: street.usrn,
+                  description: street.description,
+                  language: street.language,
+                  locality: street.locality,
+                  town: street.town,
+                  type: street.type,
+                  state: isScottish.current ? esu.state : street.state,
+                  esuId: esu.esuId,
+                  geometry: esu.geometry,
+                };
+              })
+            );
+          }
 
           if (
             (mapContext.currentSearchData.editStreet ||

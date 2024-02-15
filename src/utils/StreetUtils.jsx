@@ -42,6 +42,7 @@
 //    029   13.02.24 Sean Flook                 Removed parameter from StreetDelete as no longer required.
 //    030   14.02.24 Sean Flook                 When creating a new street ensure the ESU Id is correctly set.
 //    031   14.02.24 Sean Flook        ESU14_GP Changed updateMapStreetData to exclude deleted records.
+//    032   14.02.24 Sean Flook                 Added a bit of error trapping.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2546,7 +2547,32 @@ export async function GetStreetMapData(usrn, userToken, isScottish) {
       method: "GET",
     })
       .then((res) => (res.ok ? res : Promise.reject(res)))
-      .then((res) => res.json())
+      .then((res) => {
+        switch (res.status) {
+          case 200:
+            return res.json();
+
+          case 204:
+            console.log("[DEBUG] GetStreetMapData: No content found");
+            return null;
+
+          case 401:
+            console.error("[401 ERROR] GetStreetMapData: Authorization details are not valid or have expired.", res);
+            return null;
+
+          case 403:
+            console.error("[402 ERROR] GetStreetMapData: You do not have database access.", res);
+            return null;
+
+          case 500:
+            console.error("[500 ERROR] GetStreetMapData: Unexpected server error.", res);
+            return null;
+
+          default:
+            console.error("[ERROR] GetStreetMapData: Unexpected error.", res);
+            return null;
+        }
+      })
       .then(
         (result) => {
           return result;
@@ -2894,7 +2920,7 @@ export async function SaveStreet(
             break;
 
           default:
-            const contentType = res.headers.get("content-type");
+            const contentType = res.headers ? res.headers.get("content-type") : null;
             if (contentType && contentType.indexOf("application/json") !== -1) {
               res.json().then((body) => {
                 console.error(
@@ -3222,7 +3248,7 @@ export const updateMapStreetData = (
                 state: isScottish ? esu.state : undefined,
                 geometry: esu.wktGeometry && esu.wktGeometry !== "" ? GetWktCoordinates(esu.wktGeometry) : undefined,
               }))
-          : null,
+          : [],
       asdType51:
         isScottish && asdType51
           ? asdType51
@@ -3238,7 +3264,7 @@ export const updateMapStreetData = (
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
-          : null,
+          : [],
       asdType52:
         isScottish && asdType52
           ? asdType52
@@ -3254,7 +3280,7 @@ export const updateMapStreetData = (
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
-          : null,
+          : [],
       asdType53:
         isScottish && asdType53
           ? asdType53
@@ -3270,7 +3296,7 @@ export const updateMapStreetData = (
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
-          : null,
+          : [],
       asdType61:
         !isScottish && HasASD() && asdType61
           ? asdType61
@@ -3287,7 +3313,7 @@ export const updateMapStreetData = (
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
-          : null,
+          : [],
       asdType62:
         !isScottish && HasASD() && asdType62
           ? asdType62
@@ -3304,7 +3330,7 @@ export const updateMapStreetData = (
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
-          : null,
+          : [],
       asdType63:
         !isScottish && HasASD() && asdType63
           ? asdType63
@@ -3320,7 +3346,7 @@ export const updateMapStreetData = (
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
-          : null,
+          : [],
       asdType64:
         !isScottish && HasASD() && asdType64
           ? asdType64
@@ -3336,7 +3362,7 @@ export const updateMapStreetData = (
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
-          : null,
+          : [],
       asdType66:
         !isScottish && HasASD() && asdType66
           ? asdType66
@@ -3353,7 +3379,7 @@ export const updateMapStreetData = (
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
-          : null,
+          : [],
     },
   ];
 
