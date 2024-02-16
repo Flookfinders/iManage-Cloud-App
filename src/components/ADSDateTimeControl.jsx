@@ -20,6 +20,7 @@
 //    007   05.01.24 Sean Flook                 use CSS shortcuts.
 //    008   16.01.24 Sean Flook       IMANN-237 Added a clear button.
 //    009   19.01.24 Sean Flook       IMANN-243 Correctly update the time.
+//    010   16.02.24 Sean Flook       IMANN-243 Correctly handle the incoming time.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,7 +32,7 @@ import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import dateFormat from "dateformat";
-import { parseISO } from "date-fns";
+import { parseISO, parse } from "date-fns";
 import { isValidDate } from "../utils/HelperUtils";
 
 import { Grid, Typography, Tooltip, Skeleton } from "@mui/material";
@@ -144,9 +145,14 @@ function ADSDateTimeControl({
       if (isValidDate(dateValue)) setSelectedDate(dateValue);
       else setSelectedDate(parseISO(dateValue));
     }
-    if (!loading && timeValue) {
+    if (
+      !loading &&
+      timeValue &&
+      timeValue.toString() !== "0001-01-01T00:00:00" &&
+      timeValue.toString() !== "00:00:00"
+    ) {
       if (isValidDate(timeValue)) setSelectedTime(timeValue);
-      else setSelectedTime(parseISO(timeValue));
+      else setSelectedTime(timeValue.includes("T") ? parseISO(timeValue) : parse(timeValue, "HH:mm:ss", new Date()));
     }
   }, [loading, dateValue, timeValue]);
 

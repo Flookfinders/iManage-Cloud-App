@@ -19,6 +19,7 @@
 //    006   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    007   16.01.24 Sean Flook       IMANN-237 Added a clear button.
 //    008   19.01.24 Sean Flook       IMANN-243 Correctly update the time.
+//    009   16.02.24 Sean Flook       IMANN-243 Correctly handle the incoming time.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -32,10 +33,11 @@ import { Grid, Typography, Tooltip, Skeleton } from "@mui/material";
 import { Box } from "@mui/system";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dateFormat from "dateformat";
-import { parseISO } from "date-fns";
+import { parseISO, parse } from "date-fns";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { useTheme } from "@mui/styles";
 import { FormBoxRowStyle, FormRowStyle, FormDateInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
+import { isValidDate } from "../utils/HelperUtils";
 
 /* #endregion imports */
 
@@ -130,8 +132,20 @@ function ADSFromToTimeControl({
   }, [fromErrorText, toErrorText]);
 
   useEffect(() => {
-    if (!loading && fromValue) setSelectedFromTime(parseISO(fromValue));
-    if (!loading && toValue) setSelectedToTime(parseISO(toValue));
+    if (
+      !loading &&
+      fromValue &&
+      fromValue.toString() !== "0001-01-01T00:00:00" &&
+      fromValue.toString() !== "00:00:00"
+    ) {
+      if (isValidDate(fromValue)) setSelectedFromTime(fromValue);
+      else
+        setSelectedFromTime(fromValue.includes("T") ? parseISO(fromValue) : parse(fromValue, "HH:mm:ss", new Date()));
+    }
+    if (!loading && toValue && toValue.toString() !== "0001-01-01T00:00:00" && toValue.toString() !== "00:00:00") {
+      if (isValidDate(toValue)) setSelectedFromTime(toValue);
+      else setSelectedToTime(toValue.includes("T") ? parseISO(toValue) : parse(toValue, "HH:mm:ss", new Date()));
+    }
   }, [loading, fromValue, toValue]);
 
   useEffect(() => {
