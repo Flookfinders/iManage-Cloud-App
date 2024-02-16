@@ -34,6 +34,7 @@
 //    021   02.02.24 Sean Flook       IMANN-269 Added isIso885914.
 //    022   08.02.24 Joel Benford     RTAB3     GetAvatarTooltip now takes streetStateCode
 //    023   13.02.24 Sean Flook                 Corrected the type 66 map data.
+//    024   16.02.24 Sean Flook        ESU17_GP Added mergeArrays.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1557,4 +1558,11 @@ export const isIso885914 = (text) => {
     }
   }
   return result;
+};
+
+export const mergeArrays = (a, b, predicate = (a, b) => a === b) => {
+  const c = [...a]; // copy to avoid side effects
+  // add all items from B to copy C if they're not already present
+  b.forEach((bItem) => (c.some((cItem) => predicate(bItem, cItem)) ? null : c.push(bItem)));
+  return c;
 };

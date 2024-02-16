@@ -55,6 +55,7 @@
 //    041   16.02.24 Sean Flook         ESU9_GP When discarding an ESU do not remove from list if it has been merged or divided.
 //    042   16.02.24 Sean Flook        ESU12_GP When returning from a highway dedication or one way exemption record always show the parent ESU record.
 //    043   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    044   16.02.24 Sean Flook        ESU17_GP Hide ASD layers when viewing the ESU list and add the unassigned ESUs to the relevant map layer.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -84,6 +85,7 @@ import {
   GetPolylineAsWKT,
   doOpenRecord,
   getStartEndCoordinates,
+  mergeArrays,
 } from "../utils/HelperUtils";
 import {
   GetNewStreetData,
@@ -652,13 +654,14 @@ function StreetDataForm({ data, loading }) {
           else if (esuFormData) {
             streetContext.onRecordChange(13, esuFormData.pkId, esuFormData.index, null);
             mapContext.onEditMapObject(13, esuFormData.esuData.esuId);
-          }
+          } else streetContext.onRecordChange(13, null, null, null);
           break;
 
         case 2:
           if (settingsContext.isScottish) {
             if (successorCrossRefFormData)
               streetContext.onRecordChange(30, successorCrossRefFormData.pkId, successorCrossRefFormData.index, null);
+            else streetContext.onRecordChange(13, null, null, null);
           } else {
             if (maintenanceResponsibilityFormData) {
               streetContext.onRecordChange(
@@ -703,6 +706,7 @@ function StreetDataForm({ data, loading }) {
               streetContext.onRecordChange(64, hwwFormData.pkId, hwwFormData.index, null);
               if (!hwwFormData.hwwData.wholeRoad) mapContext.onEditMapObject(64, hwwFormData.hwwData.pkId);
             } else if (prowFormData) streetContext.onRecordChange(66, prowFormData.pkId, prowFormData.index, null);
+            else streetContext.onRecordChange(11, null, null, null);
           }
           break;
 
@@ -751,14 +755,17 @@ function StreetDataForm({ data, loading }) {
               streetContext.onRecordChange(64, hwwFormData.pkId, hwwFormData.index, null);
               if (!hwwFormData.hwwData.wholeRoad) mapContext.onEditMapObject(64, hwwFormData.hwwData.pkId);
             } else if (prowFormData) streetContext.onRecordChange(66, prowFormData.pkId, prowFormData.index, null);
+            else streetContext.onRecordChange(11, null, null, null);
           } else {
             if (notesFormData) streetContext.onRecordChange(72, notesFormData.pkId, notesFormData.index, null);
+            else streetContext.onRecordChange(11, null, null, null);
           }
           break;
 
         case 4:
         case 5:
           if (notesFormData) streetContext.onRecordChange(72, notesFormData.pkId, notesFormData.index, null);
+          else streetContext.onRecordChange(11, null, null, null);
           break;
 
         default:
@@ -9429,10 +9436,35 @@ function StreetDataForm({ data, loading }) {
         mapContext.onHighlightClear();
         mapContext.onEditMapObject(null, null);
 
+        const newUnassignedEsus = newEsus.filter((x) => streetContext.unassignEsus.includes(x.esuId));
+        const oldUnassignedEsus = [...mapContext.currentBackgroundData.unassignedEsus];
+
+        const combinedUnassignedEsus = mergeArrays(
+          oldUnassignedEsus,
+          newUnassignedEsus.map((x) => {
+            return {
+              usrn: 0,
+              address: "",
+              street: "",
+              state: 0,
+              type: 0,
+              esuId: x.esuId,
+              wktGeometry: x.wktGeometry,
+            };
+          }),
+          (a, b) => a.esuId === b.esuId
+        );
+
+        mapContext.onBackgroundDataChange(
+          mapContext.currentBackgroundData.streets,
+          combinedUnassignedEsus,
+          mapContext.currentBackgroundData.properties
+        );
+
         if (esuFormData) {
           setEsuFormData(null);
           streetContext.onRecordChange(11, null, null, null);
-        }
+        } else streetContext.onRecordChange(13, null, null, null);
 
         alertType.current = "unassignEsus";
         setAlertOpen(true);
