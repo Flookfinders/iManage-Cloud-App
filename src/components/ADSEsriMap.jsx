@@ -56,6 +56,7 @@
 //    042   14.02.24 Sean Flook        ASD10_GP When editing an ASD record hide the other ASD geometries.
 //    043   14.02.24 Sean Flook        ASD10_GP Filter the current ASD layer to the one that is currently being viewed.
 //    044   14.02.24 Sean Flook                 Added a bit of error trapping.
+//    045   16.02.24 Sean Flook                 Corrected the parameters in GetViaEuropaFeatureAtCoord.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4742,10 +4743,10 @@ function ADSEsriMap(startExtent) {
 
                         const newSelected = [...new Set(graphics.map((x) => x.attributes.TOID))];
                         setSelectedExtents(newSelected);
-                        console.log("[SF] selectedExtents", {
-                          selectedExtents: newSelected,
-                          graphics: graphics,
-                        });
+                        // console.log("[SF] selectedExtents", {
+                        //   selectedExtents: newSelected,
+                        //   graphics: graphics,
+                        // });
                         if (newSelected.length > 0) {
                           setSelectionAnchorEl(document.getElementById("ads-provenance-data-tab"));
                           setDisplayExtentMergeTool(true);
@@ -4900,22 +4901,13 @@ function ADSEsriMap(startExtent) {
     }
 
     function GetViaEuropaFeatureAtCoord(coord, layer) {
-      // const coordPoint = coord.split(",");
       const wfsParams = {
-        key: layer.layerKey,
         service: "WFS",
         request: "GetFeature",
-        version: "2.0.0",
         typeNames: layer.activeLayerId,
         propertyName: layer.propertyName,
         outputFormat: "JSON",
-        srsName: "urn:ogc:def:crs:EPSG::27700",
-        // filter: `<ogc:Filter><ogc:Contains><ogc:PropertyName>geom</ogc:PropertyName><gml:Point srsName="urn:ogc:def:crs:EPSG::27700"><gml:coordinates>${coord}</gml:coordinates></gml:Point></ogc:Contains></ogc:Filter>`,
-        // filter: `<ogc:Filter><ogc:Contains><ogc:PropertyName>geom</ogc:PropertyName><gml:Point srsName="urn:ogc:def:crs:EPSG::27700" x="${coordPoint[0]}" y="${coordPoint[1]}" /></ogc:Contains></ogc:Filter>`,
-        // filter: `<ogc:Filter><ogc:Contains><ogc:PropertyName>geom</ogc:PropertyName><gml:Point srsName="urn:ogc:def:crs:EPSG::27700"><gml:coordinates x="${coordPoint[0]}" y="${coordPoint[1]}" /></gml:Point></ogc:Contains></ogc:Filter>`,
-        // filter: `<ogc:Filter><ogc:Contains><ogc:PropertyName>geom</ogc:PropertyName><gml:Point srsName="urn:ogc:def:crs:EPSG::27700"><gml:pos>${coord}</gml:pos></gml:Point></ogc:Contains></ogc:Filter>`,
-        filter: `<ogc:Filter><ogc:Contains><ogc:PropertyName>geom</ogc:PropertyName><gml:Point srsName="urn:ogc:def:crs:EPSG::27700"><gml:pos>${coord}</gml:pos></gml:Point></ogc:Contains></ogc:Filter>`,
-        count: 1,
+        filter: `<Filter xmlns:gml="http://www.opengis.net/gml"><Intersects><PropertyName>geom</PropertyName><gml:Point srsName="27700"><gml:coordinates>${coord}</gml:coordinates></gml:Point></Intersects></Filter>`,
       };
 
       const options = {
