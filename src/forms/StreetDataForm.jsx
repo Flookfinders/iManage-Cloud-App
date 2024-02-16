@@ -52,6 +52,7 @@
 //    038   14.02.24 Sean Flook        ASD10_GP When opening a PRoW record if it is marked as Inexact set the map accordingly.
 //    039   14.02.24 Sean Flook        ASD10_GP Changes required to filter the ASD map layers when editing a record.
 //    040   14.02.24 Sean Flook        ESU14_GP Modify handleEsuDeleted to also update the map.
+//    041   16.02.24 Sean Flook         ESU9_GP When discarding an ESU do not remove from list if it has been merged or divided.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -219,6 +220,7 @@ function StreetDataForm({ data, loading }) {
   const saveResult = useRef(null);
   const failedValidation = useRef(null);
   const esuChanged = useRef(false);
+  const mergedDividedEsus = useRef([]);
 
   const [streetErrors, setStreetErrors] = useState([]);
   const [descriptorErrors, setDescriptorErrors] = useState([]);
@@ -4476,7 +4478,12 @@ function StreetDataForm({ data, loading }) {
    */
   const handleEsuHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkData) => {
-      if (checkData && checkData.pkId < 0) {
+      if (
+        checkData &&
+        checkData.pkId < 0 &&
+        !mergedDividedEsus.current.length &&
+        mergedDividedEsus.current.includes(checkData.pkId)
+      ) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredEsus = streetData.esus.filter((x) => x.pkId !== checkData.pkId);
 
@@ -6618,6 +6625,7 @@ function StreetDataForm({ data, loading }) {
       streetUsrn.current = data.usrn;
       streetContext.resetStreetErrors();
       setStreetData(data);
+      mergedDividedEsus.current = [];
       if (data && data.usrn.toString() === "0" && saveDisabled) {
         setSaveDisabled(false);
         streetContext.onStreetModified(true);
@@ -8834,6 +8842,7 @@ function StreetDataForm({ data, loading }) {
             : null;
         let newPkId = !minPkId || !minPkId.pkId || minPkId.pkId > -10 ? -10 : minPkId.pkId - 1;
         let newGeometry = GetPolylineAsWKT(mapContext.currentDivideEsu.newEsu1);
+        let dividedEsus = [newPkId];
 
         const newRec1 = settingsContext.isScottish
           ? {
@@ -8907,6 +8916,10 @@ function StreetDataForm({ data, loading }) {
 
         newPkId = newPkId - 1;
         newGeometry = GetPolylineAsWKT(mapContext.currentDivideEsu.newEsu2);
+
+        dividedEsus.push(newPkId);
+
+        mergedDividedEsus.current = dividedEsus;
 
         const newRec2 = settingsContext.isScottish
           ? {
@@ -9182,6 +9195,7 @@ function StreetDataForm({ data, loading }) {
             : null;
         let newPkId = !minPkId || !minPkId.pkId || minPkId.pkId > -10 ? -10 : minPkId.pkId - 1;
         let newGeometry = GetPolylineAsWKT(streetContext.mergedEsus.newGeometry);
+        mergedDividedEsus.current = [newPkId];
 
         const mergeEsusSame = MergeEsuComparison(originalEsu1, originalEsu2, settingsContext.isScottish);
 
