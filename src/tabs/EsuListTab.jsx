@@ -26,6 +26,7 @@
 //    013   17.01.24 Sean Flook                 Changes after Louise's review.
 //    014   25.01.24 Sean Flook                 Changes required after UX review.
 //    015   14.02.24 Sean Flook        ESU14_GP Filter done the ESU delete.
+//    016   16.02.24 Sean Flook        ESU16_GP Whilst assigning ESU prevent anything else from occurring with the ESUs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -123,6 +124,7 @@ function EsuListTab({
   const [expandCollapseLabel, setExpandCollapseLabel] = useState("Expand all");
   const [listState, setListState] = useState("stored");
   const [checked, setChecked] = useState([]);
+  const [assigningEsus, setAssigningEsus] = useState(false);
 
   const [selectionAnchorEl, setSelectionAnchorEl] = useState(null);
   const selectionOpen = Boolean(selectionAnchorEl);
@@ -267,6 +269,7 @@ function EsuListTab({
     mapContext.onHighlightClear();
     mapContext.onSelectEsus();
     setAnchorEl(null);
+    setAssigningEsus(true);
   };
 
   /**
@@ -338,6 +341,8 @@ function EsuListTab({
     setAllChecked(false);
     setSelectionAnchorEl(null);
     mapContext.onHighlightClear();
+    setAssigningEsus(false);
+    informationContext.onClearInformation();
   };
 
   /**
@@ -399,7 +404,10 @@ function EsuListTab({
   useEffect(() => {
     if (informationContext.informationSource && informationContext.informationSource === "ESUListTab") {
       setInformationAnchorEl(document.getElementById("ads-esu-data-grid"));
-    } else setInformationAnchorEl(null);
+    } else {
+      setInformationAnchorEl(null);
+      setAssigningEsus(false);
+    }
   }, [informationContext.informationSource]);
 
   return (
@@ -408,32 +416,41 @@ function EsuListTab({
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <FormControlLabel
             control={
-              <Checkbox checked={allChecked} color="primary" size="small" onChange={handleCheckAll} name="checkAll" />
+              <Checkbox
+                checked={allChecked}
+                color="primary"
+                size="small"
+                onChange={handleCheckAll}
+                name="checkAll"
+                disabled={assigningEsus}
+              />
             }
             label={<Typography variant="subtitle1">Elementary Street Units</Typography>}
             sx={{ pl: theme.spacing(1.5) }}
           />
           <Stack direction="row" alignItems="center" justifyContent="flex-end">
             {!settingsContext.isScottish && (
-              <Tooltip title={`${expandCollapseLabel} items in list`} arrow placement="right" sx={tooltipStyle}>
+              <Tooltip title={`${expandCollapseLabel} items in list`} arrow placement="bottom" sx={tooltipStyle}>
                 <IconButton
                   onClick={handleExpandCollapse}
                   sx={ActionIconStyle()}
                   aria-controls="expand-collapse"
                   size="small"
+                  disabled={assigningEsus}
                 >
                   {expandCollapseLabel === "Expand all" ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
-                  <Typography variant="subtitle1">{expandCollapseLabel}</Typography>
+                  <Typography variant="body2">{expandCollapseLabel}</Typography>
                 </IconButton>
               </Tooltip>
             )}
-            <Tooltip title="Add or assign ESU record" arrow placement="right" sx={tooltipStyle}>
+            <Tooltip title="Add or assign ESU record" arrow placement="bottom" sx={tooltipStyle}>
               <IconButton
                 sx={ActionIconStyle()}
                 onClick={handleAddESUClick}
                 aria_controls="actions-menu"
                 aria-haspopup="true"
                 size="small"
+                disabled={assigningEsus}
               >
                 <AddCircleIcon />
                 <Typography
@@ -499,6 +516,7 @@ function EsuListTab({
                   oneWayExemptionErrors={oneWayExemptionErrors.filter((x) => x.esuIndex === index)}
                   highwayDedicationErrors={highwayDedicationErrors.filter((x) => x.esuIndex === index)}
                   checked={checked}
+                  assigningEsus={assigningEsus}
                   itemState={listState}
                   onEsuClicked={(pkId, esuData) => handleESUClicked(pkId, esuData, index)}
                   onHighwayDedicationClicked={(hdData, hdIndex) =>
@@ -575,7 +593,7 @@ function EsuListTab({
         />
       </Popper>
       <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
-        <ADSInformationControl variant={"assignESUList"} />
+        <ADSInformationControl variant={"assignESUList"} hasCancel onCancel={handleCloseSelection} />
       </Popper>
     </Fragment>
   );

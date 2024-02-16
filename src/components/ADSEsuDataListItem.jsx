@@ -23,6 +23,7 @@
 //    010   25.01.24 Sean Flook                 Changes required after UX review.
 //    011   02.02.24 Joel Benford               ESU direction icon color
 //    012   14.02.24 Sean Flook        ESU14_GP Filter done the delete.
+//    013   16.02.24 Sean Flook        ESU16_GP Whilst assigning ESU prevent anything else from occurring with the ESUs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -104,6 +105,7 @@ ADSEsuDataListItem.propTypes = {
   oneWayExemptionErrors: PropTypes.array,
   highwayDedicationErrors: PropTypes.array,
   checked: PropTypes.array.isRequired,
+  assigningEsus: PropTypes.bool.isRequired,
   itemState: PropTypes.string.isRequired,
   onEsuClicked: PropTypes.func.isRequired,
   onHighwayDedicationClicked: PropTypes.func.isRequired,
@@ -125,6 +127,7 @@ function ADSEsuDataListItem({
   oneWayExemptionErrors,
   highwayDedicationErrors,
   checked,
+  assigningEsus,
   itemState,
   onEsuClicked,
   onHighwayDedicationClicked,
@@ -166,8 +169,10 @@ function ADSEsuDataListItem({
    * Event to handle when an ESU is clicked.
    */
   const handleEsuClick = () => {
-    informationContext.onClearInformation();
-    if (onEsuClicked) onEsuClicked(data.esu.pkId, data.esu);
+    if (!assigningEsus) {
+      informationContext.onClearInformation();
+      if (onEsuClicked) onEsuClicked(data.esu.pkId, data.esu);
+    }
   };
 
   /**
@@ -177,8 +182,10 @@ function ADSEsuDataListItem({
    * @param {number} index The index of the data within the array.
    */
   function handleHighwayDedicationClick(hdData, index) {
-    informationContext.onClearInformation();
-    if (onHighwayDedicationClicked) onHighwayDedicationClicked(hdData, index);
+    if (!assigningEsus) {
+      informationContext.onClearInformation();
+      if (onHighwayDedicationClicked) onHighwayDedicationClicked(hdData, index);
+    }
   }
 
   /**
@@ -187,9 +194,11 @@ function ADSEsuDataListItem({
    * @param {object} event The event object.
    */
   function handleAddHighwayDedication(event) {
-    informationContext.onClearInformation();
-    event.stopPropagation();
-    if (onHighwayDedicationAdd) onHighwayDedicationAdd(data.esu.esuId);
+    if (!assigningEsus) {
+      informationContext.onClearInformation();
+      event.stopPropagation();
+      if (onHighwayDedicationAdd) onHighwayDedicationAdd(data.esu.esuId);
+    }
   }
 
   /**
@@ -199,8 +208,10 @@ function ADSEsuDataListItem({
    * @param {number} index The index of the data within the array.
    */
   function handleOneWayExemptionClick(oweData, index) {
-    informationContext.onClearInformation();
-    if (onOneWayExceptionClicked) onOneWayExceptionClicked(oweData, index);
+    if (!assigningEsus) {
+      informationContext.onClearInformation();
+      if (onOneWayExceptionClicked) onOneWayExceptionClicked(oweData, index);
+    }
   }
 
   /**
@@ -209,9 +220,11 @@ function ADSEsuDataListItem({
    * @param {object} event The event object.
    */
   function handleAddOneWayExemption(event) {
-    informationContext.onClearInformation();
-    event.stopPropagation();
-    if (canAddOneWayExemption && onOneWayExceptionAdd) onOneWayExceptionAdd(data.esu.esuId);
+    if (!assigningEsus) {
+      informationContext.onClearInformation();
+      event.stopPropagation();
+      if (canAddOneWayExemption && onOneWayExceptionAdd) onOneWayExceptionAdd(data.esu.esuId);
+    }
   }
 
   /**
@@ -501,7 +514,7 @@ function ADSEsuDataListItem({
    * @returns {object} The styling for the list item icon.
    */
   function getListItemIconStyle() {
-    if (itemSelected || itemChecked)
+    if ((itemSelected || itemChecked) && !assigningEsus)
       return {
         pl: theme.spacing(1.5),
         pt: theme.spacing(1),
@@ -654,7 +667,7 @@ function ADSEsuDataListItem({
       >
         <ListItemIcon sx={getListItemIconStyle()}>
           <Fragment>
-            {(itemSelected || itemChecked) && (
+            {(itemSelected || itemChecked) && !assigningEsus && (
               <Checkbox
                 sx={{
                   pb: theme.spacing(2),
@@ -711,7 +724,7 @@ function ADSEsuDataListItem({
             minWidth: 32,
           }}
         >
-          {itemSelected && checked && checked.length < 2 && (
+          {itemSelected && checked && checked.length < 2 && !assigningEsus && (
             <Fragment>
               <ADSActionButton
                 variant="copy"

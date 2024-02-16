@@ -57,6 +57,7 @@
 //    043   14.02.24 Sean Flook        ASD10_GP Filter the current ASD layer to the one that is currently being viewed.
 //    044   14.02.24 Sean Flook                 Added a bit of error trapping.
 //    045   16.02.24 Sean Flook                 Corrected the parameters in GetViaEuropaFeatureAtCoord.
+//    046   16.02.24 Sean Flook        ESU16_GP Whilst assigning ESU prevent anything else from occurring with the ESUs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -7821,6 +7822,17 @@ function ADSEsriMap(startExtent) {
     userContext.current.currentUser.token,
     searchContext.currentSearchData.results,
   ]);
+
+  // Clear selection control if required.
+  useEffect(() => {
+    if (!informationContext.informationSource && selectionAnchorEl) {
+      selectedEsus.current = [];
+      setSelectedExtents([]);
+      setSelectionAnchorEl(null);
+      mapContext.onHighlightClear();
+      mapContext.onPointCapture(null);
+    }
+  }, [informationContext.informationSource, selectionAnchorEl, mapContext]);
 
   // Selecting properties
   useEffect(() => {

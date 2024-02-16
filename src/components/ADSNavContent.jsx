@@ -24,6 +24,7 @@
 //    011   29.01.24 Sean Flook       IMANN-262 Do not display the users settings card if no user is logged in.
 //    012   30.01.24 Sean Flook                 Updated to use new Idox logo.
 //    013   05.02.24 Sean Flook                 Tweaked position of logo.
+//    014   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -41,6 +42,7 @@ import MapContext from "../context/mapContext";
 import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
+import InformationContext from "../context/informationContext";
 import { StreetComparison, PropertyComparison } from "../utils/ObjectComparison";
 import { GetChangedAssociatedRecords, StringAvatar, stringToSentenceCase, ResetContexts } from "../utils/HelperUtils";
 import { GetCurrentStreetData, SaveStreet } from "../utils/StreetUtils";
@@ -101,6 +103,7 @@ const ADSNavContent = (props) => {
   const lookupContext = useContext(LookupContext);
   const userContext = useContext(UserContext);
   const settingsContext = useContext(SettingsContext);
+  const informationContext = useContext(InformationContext);
 
   const [homeActive, setHomeActive] = useState(location.pathname === HomeRoute);
   const [gazetteerActive, setGazetteerActive] = useState(
@@ -306,6 +309,8 @@ const ADSNavContent = (props) => {
    * @param {string} page The page we want to go to.
    */
   const GoToPage = (page) => {
+    informationContext.onClearInformation();
+
     switch (page) {
       case "gazetteer":
         handleGazetteerClick();
@@ -501,17 +506,23 @@ const ADSNavContent = (props) => {
   /**
    * Event to handle when the notification button is clicked.
    */
-  const handleNotificationClick = () => {};
+  const handleNotificationClick = () => {
+    informationContext.onClearInformation();
+  };
 
   /**
    * Event to handle when the what's new button is clicked.
    */
-  const handleWhatsNewClick = () => {};
+  const handleWhatsNewClick = () => {
+    informationContext.onClearInformation();
+  };
 
   /**
    * Event to handle when the my profile button is clicked.
    */
-  const handleMyProfileClick = () => {};
+  const handleMyProfileClick = () => {
+    informationContext.onClearInformation();
+  };
 
   /**
    * Event to handle logging out of the system.
@@ -519,6 +530,7 @@ const ADSNavContent = (props) => {
   const handleLogout = () => {
     setAnchorEl(null);
     handleHomeClick();
+    informationContext.onClearInformation();
     userContext.onUserChange(null);
     window.location.reload();
   };

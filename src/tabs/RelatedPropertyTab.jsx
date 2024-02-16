@@ -34,6 +34,7 @@
 //    020   07.02.24 Joel Benford               Spacing and colours
 //    021   08.02.24 Joel Benford     RTAB3     Supply null street state to classification icon tooltip
 //    022   14.02.24 Joel Benford     RTAB5     Interim check-in for comments
+//    023   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -47,6 +48,7 @@ import MapContext from "../context/mapContext";
 import UserContext from "../context/userContext";
 import StreetContext from "../context/streetContext";
 import SettingsContext from "../context/settingsContext";
+import InformationContext from "../context/informationContext";
 
 import {
   Typography,
@@ -107,6 +109,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
   const userContext = useContext(UserContext);
   const streetContext = useContext(StreetContext);
   const settingsContext = useContext(SettingsContext);
+  const informationContext = useContext(InformationContext);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -830,6 +833,16 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
         .getElementById(`property-related-tree-${propertyContext.currentProperty.uprn.toString()}`)
         .scrollIntoView();
   }, [streetContext, propertyContext, expanded, onNodeToggle]);
+
+  // Clear selection control if required.
+  useEffect(() => {
+    if (!informationContext.informationSource && selectionAnchorEl) {
+      setPropertyChecked([]);
+      setAllChecked(false);
+      setPartialChecked(false);
+      setSelectionAnchorEl(null);
+    }
+  }, [informationContext.informationSource, selectionAnchorEl]);
 
   return (
     <Fragment>

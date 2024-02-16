@@ -35,6 +35,8 @@
 //    022   14.02.24 Joshua McCormick IMANN-282 shorthand padding and Add new street title change
 //    023   15.02.24 Joshua McCormick IMANN-282 Changed logic for street title change
 //    024   15.02.24 Joshua McCormick IMANN-282 Final tweaks, shortened condition
+//    025   16.02.24 Joshua McCormick IMANN-282 currentSearchStreets title change
+//    026   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -52,6 +54,7 @@ import SandboxContext from "../context/sandboxContext";
 import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
+import InformationContext from "../context/informationContext";
 import { StreetComparison, PropertyComparison } from "../utils/ObjectComparison";
 import {
   GetChangedAssociatedRecords,
@@ -110,6 +113,7 @@ function ADSAppBar(props) {
   const lookupContext = useContext(LookupContext);
   const userContext = useContext(UserContext);
   const settingsContext = useContext(SettingsContext);
+  const informationContext = useContext(InformationContext);
 
   // const navigate = useNavigate();
   const history = useHistory();
@@ -161,7 +165,7 @@ function ADSAppBar(props) {
     const currentSearchStreets = mapContext.currentSearchData.streets;
     currentSearchStreets.push({
       usrn: 0,
-      description: "New Street",
+      description: "Add new Street",
       language: "ENG",
       locality:
         settingsContext.streetTemplate &&
@@ -343,6 +347,8 @@ function ADSAppBar(props) {
    * @param {boolean} discardChanges If true the changes are discarded; otherwise they are saved.
    */
   function PerformReturnAction(action, discardChanges) {
+    informationContext.onClearInformation();
+
     switch (action) {
       case "home":
         handleHomeClick();
@@ -501,6 +507,7 @@ function ADSAppBar(props) {
     mapContext.onSearchDataChange([], [], null, null);
     mapContext.onMapChange([], null, null);
     mapContext.onEditMapObject(null, null);
+    informationContext.onClearInformation();
     history.push(HomeRoute);
   };
 
@@ -701,6 +708,8 @@ function ADSAppBar(props) {
     mapContext.onSearchDataChange(currentSearchStreets, currentSearchProperties, null, null);
     mapContext.onEditMapObject(null, null);
 
+    informationContext.onClearInformation();
+
     history.push(GazetteerRoute);
   }
 
@@ -853,9 +862,7 @@ function ADSAppBar(props) {
                     <Typography sx={titleStyle()} variant="subtitle1" noWrap align="left">
                       <strong>{streetContext.currentStreet.usrn || ""}</strong>
                       {streetToTitleCase(
-                        `${streetContext.currentStreet.usrn ? " -" : ""} ${
-                          streetContext.currentStreet.descriptor
-                        }`
+                        `${streetContext.currentStreet.usrn ? " -" : ""} ${streetContext.currentStreet.descriptor}`
                       )}
                     </Typography>
                   </Tooltip>

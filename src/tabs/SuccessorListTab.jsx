@@ -19,6 +19,7 @@
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    007   08.01.24 Sean Flook                 Pass the correct variant to the confirmDeleteDialog.
 //    008   25.01.24 Sean Flook                 Changes required after UX review.
+//    009   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -27,6 +28,7 @@
 import React, { useState, useRef, useContext, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 import UserContext from "../context/userContext";
+import InformationContext from "../context/informationContext";
 import dateFormat from "dateformat";
 import {
   Tooltip,
@@ -81,6 +83,7 @@ function SuccessorListTab({
   const classes = useStyles();
 
   const userContext = useContext(UserContext);
+  const informationContext = useContext(InformationContext);
 
   const [sortModel, setSortModel] = useState([{ field: "successor", sort: "asc" }]);
   const [selectionModel, setSelectionModel] = useState([]);
@@ -308,6 +311,14 @@ function SuccessorListTab({
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
   }, [userContext]);
+
+  // Clear selection control if required.
+  useEffect(() => {
+    if (!informationContext.informationSource && selectionAnchorEl) {
+      setSelectionAnchorEl(null);
+      setSelectionModel([]);
+    }
+  }, [informationContext.informationSource, selectionAnchorEl]);
 
   return (
     <Fragment>

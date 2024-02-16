@@ -41,6 +41,7 @@
 //    027   08.02.24 Joel Benford     RTAB3     Supply state to classification icon tooltip
 //    028   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //    029   13.02.24 Sean Flook                 Corrected the type 66 map data and added missing parameter to call to StreetDelete.
+//    030   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -58,6 +59,7 @@ import SearchContext from "../context/searchContext";
 import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
 import SandboxContext from "../context/sandboxContext";
+import InformationContext from "../context/informationContext";
 
 import {
   Checkbox,
@@ -144,6 +146,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   const settingsContext = useContext(SettingsContext);
   const lookupContext = useContext(LookupContext);
   const sandboxContext = useContext(SandboxContext);
+  const informationContext = useContext(InformationContext);
 
   const history = useHistory();
 
@@ -1274,6 +1277,14 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
     searchContext.currentSearchData.results,
     settingsContext.isScottish,
   ]);
+
+  // Clear selection control if required.
+  useEffect(() => {
+    if (!informationContext.informationSource && selectionAnchorEl) {
+      setSelectionAnchorEl(null);
+      mapContext.onHighlightClear();
+    }
+  }, [informationContext.informationSource, selectionAnchorEl, mapContext]);
 
   return (
     <Fragment>

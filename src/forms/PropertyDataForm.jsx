@@ -39,6 +39,7 @@
 //    026   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    027   26.01.24 Sean Flook       IMANN-232 Do not remove record when creating a new property.
 //    028   02.02.24 Sean Flook       IMANN-271 Reset the errors when opening a new property.
+//    029   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -57,6 +58,7 @@ import MapContext from "../context/mapContext";
 import SearchContext from "../context/searchContext";
 import LookupContext from "./../context/lookupContext";
 import SettingsContext from "../context/settingsContext";
+import InformationContext from "../context/informationContext";
 import {
   FormatDateTime,
   GetUserAvatar,
@@ -156,6 +158,7 @@ function PropertyDataForm({ data, loading }) {
   const searchContext = useContext(SearchContext);
   const lookupContext = useContext(LookupContext);
   const settingsContext = useContext(SettingsContext);
+  const informationContext = useContext(InformationContext);
 
   const history = useHistory();
 
@@ -560,6 +563,7 @@ function PropertyDataForm({ data, loading }) {
       failedValidation.current = false;
       setValue(newValue);
       mapContext.onEditMapObject(null, null);
+      informationContext.onClearInformation();
 
       switch (newValue) {
         case 0:

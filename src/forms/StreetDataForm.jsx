@@ -54,6 +54,7 @@
 //    040   14.02.24 Sean Flook        ESU14_GP Modify handleEsuDeleted to also update the map.
 //    041   16.02.24 Sean Flook         ESU9_GP When discarding an ESU do not remove from list if it has been merged or divided.
 //    042   16.02.24 Sean Flook        ESU12_GP When returning from a highway dedication or one way exemption record always show the parent ESU record.
+//    043   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -636,6 +637,7 @@ function StreetDataForm({ data, loading }) {
       failedValidation.current = false;
       setValue(newValue);
       mapContext.onEditMapObject(null, null);
+      informationContext.onClearInformation();
 
       switch (newValue) {
         case 0:

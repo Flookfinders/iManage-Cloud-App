@@ -19,6 +19,7 @@
 //    006   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    008   25.01.24 Sean Flook                 Changes required after UX review.
+//    009   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,6 +31,7 @@ import MapContext from "../context/mapContext";
 import UserContext from "../context/userContext";
 import PropertyContext from "../context/propertyContext";
 import SettingsContext from "../context/settingsContext";
+import InformationContext from "../context/informationContext";
 import dateFormat from "dateformat";
 import { GetLookupLabel } from "../utils/HelperUtils";
 import {
@@ -88,6 +90,7 @@ function PropertyBLPUProvenanceListTab({
   const userContext = useContext(UserContext);
   const propertyContext = useContext(PropertyContext);
   const settingsContext = useContext(SettingsContext);
+  const informationContext = useContext(InformationContext);
 
   const [sortModel, setSortModel] = useState([{ field: "provenanceCode", sort: "asc" }]);
   const [selectionModel, setSelectionModel] = useState([]);
@@ -342,6 +345,14 @@ function PropertyBLPUProvenanceListTab({
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
   }, [userContext]);
+
+  // Clear selection control if required.
+  useEffect(() => {
+    if (!informationContext.informationSource && selectionAnchorEl) {
+      setSelectionAnchorEl(null);
+      setSelectionModel([]);
+    }
+  }, [informationContext.informationSource, selectionAnchorEl]);
 
   return (
     <Fragment>
