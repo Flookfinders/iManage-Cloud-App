@@ -53,6 +53,7 @@
 //    039   14.02.24 Sean Flook        ASD10_GP Changes required to filter the ASD map layers when editing a record.
 //    040   14.02.24 Sean Flook        ESU14_GP Modify handleEsuDeleted to also update the map.
 //    041   16.02.24 Sean Flook         ESU9_GP When discarding an ESU do not remove from list if it has been merged or divided.
+//    042   16.02.24 Sean Flook        ESU12_GP When returning from a highway dedication or one way exemption record always show the parent ESU record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1253,6 +1254,19 @@ function StreetDataForm({ data, loading }) {
 
     mapContext.onEditMapObject(null, null);
 
+    if (pkId !== -1 && !currentEsuFormData.current) {
+      if (esuFormData) {
+        currentEsuFormData.current = esuFormData;
+      } else {
+        currentEsuFormData.current = {
+          pkId: esuData.pkId,
+          esuData: esuData,
+          index: esuIndex,
+          totalRecords: streetData.esus.filter((x) => x.changeType !== "D" && x.assignUnassign !== -1).length,
+        };
+      }
+    }
+
     if (pkId === -1) {
       setHdFormData(null);
       if (currentEsuFormData.current) resetEsuData();
@@ -1413,11 +1427,25 @@ function StreetDataForm({ data, loading }) {
 
     mapContext.onEditMapObject(null, null);
 
+    if (pkId !== -1) {
+      if (esuFormData) {
+        currentEsuFormData.current = esuFormData;
+      } else {
+        currentEsuFormData.current = {
+          pkId: esuData.pkId,
+          esuData: esuData,
+          index: esuIndex,
+          totalRecords: streetData.esus.filter((x) => x.changeType !== "D" && x.assignUnassign !== -1).length,
+        };
+      }
+    }
+
     if (pkId === -1) {
       setOweFormData(null);
       if (currentEsuFormData.current) resetEsuData();
       streetContext.onRecordChange(11, null, null, null);
     } else if (pkId === 0) {
+      if (!esuFormData) currentEsuFormData.current = esuFormData;
       currentStreetEsuData.current = JSON.parse(JSON.stringify(streetData.esus));
 
       const newIdx =
