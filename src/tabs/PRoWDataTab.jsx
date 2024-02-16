@@ -23,6 +23,7 @@
 //    010   13.02.24 Sean Flook                 Changes required to handle the geometry.
 //    011   13.02.24 Sean Flook                 Corrected ADSWholeRoadControl variant.
 //    012   13.02.24 Sean Flook                 Corrected the type 66 map data.
+//    013   14.02.24 Joel Benford     IMANN-299 Toolbar changes
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -36,6 +37,7 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
 import MapContext from "./../context/mapContext";
 import InformationContext from "../context/informationContext";
+import StreetContext from "../context/streetContext";
 
 import { GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
 import { filteredOperationalDistricts } from "../utils/StreetUtils";
@@ -84,6 +86,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
   const userContext = useContext(UserContext);
   const mapContext = useContext(MapContext);
   const informationContext = useContext(InformationContext);
+  const streetContext = useContext(StreetContext);
 
   const [dataChanged, setDataChanged] = useState(false);
 
@@ -951,7 +954,16 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
       <Box sx={toolbarStyle} id={"prow-data"}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            {streetContext.currentRecord.type === 66 && streetContext.currentRecord.newRecord ? (
+              <ADSActionButton
+                variant="close"
+                tooltipTitle="Close"
+                tooltipPlacement="bottom"
+                onClick={handleCancelClicked}
+              />
+            ) : (
+              <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            )}
             <Typography
               sx={{
                 flexGrow: 1,
@@ -995,25 +1007,29 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
               noWrap
               align="left"
             >
-              {` Public right of way (${data.index + 1} of ${data.totalRecords})`}
+              {streetContext.currentRecord.type === 66 && streetContext.currentRecord.newRecord
+                ? "Add new public right of way"
+                : `Public right of way (${data.index + 1} of ${data.totalRecords})`}
             </Typography>
           </Stack>
-          <Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <ADSActionButton
-              variant="delete"
-              disabled={!userCanEdit}
-              tooltipTitle="Delete PRoW record"
-              tooltipPlacement="right"
-              onClick={handleDeletePRoW}
-            />
-            <ADSActionButton
-              variant="add"
-              disabled={!userCanEdit}
-              tooltipTitle="Add new PRoW record"
-              tooltipPlacement="right"
-              onClick={handleAddPRoW}
-            />
-          </Stack>
+          {!(streetContext.currentRecord.type === 66 && streetContext.currentRecord.newRecord) && (
+            <Stack direction="row" alignItems="center" justifyContent="flex-end">
+              <ADSActionButton
+                variant="delete"
+                disabled={!userCanEdit}
+                tooltipTitle="Delete PRoW record"
+                tooltipPlacement="right"
+                onClick={handleDeletePRoW}
+              />
+              <ADSActionButton
+                variant="add"
+                disabled={!userCanEdit}
+                tooltipTitle="Add new PRoW record"
+                tooltipPlacement="right"
+                onClick={handleAddPRoW}
+              />
+            </Stack>
+          )}
         </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>

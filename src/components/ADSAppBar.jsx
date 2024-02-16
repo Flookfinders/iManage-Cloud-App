@@ -33,6 +33,8 @@
 //    020   08.02.24 Sean Flook                 Display the Add street and Select properties button when in the gazetteer page.
 //    021   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //    022   14.02.24 Joshua McCormick IMANN-282 shorthand padding and Add new street title change
+//    023   15.02.24 Joshua McCormick IMANN-282 Changed logic for street title change
+//    024   15.02.24 Joshua McCormick IMANN-282 Final tweaks, shortened condition
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -154,7 +156,7 @@ function ADSAppBar(props) {
    * Event to handle creating a new street.
    */
   const handleCreateStreet = () => {
-    streetContext.onStreetChange(null, "Add new Street", true);
+    streetContext.onStreetChange(0, "Add new Street", true);
 
     const currentSearchStreets = mapContext.currentSearchData.streets;
     currentSearchStreets.push({
@@ -849,9 +851,9 @@ function ADSAppBar(props) {
                 <>
                   <Tooltip title="USRN - Street" arrow placement="bottom-start" sx={tooltipStyle}>
                     <Typography sx={titleStyle()} variant="subtitle1" noWrap align="left">
-                      <strong>{streetContext.currentStreet.usrn}</strong>
+                      <strong>{streetContext.currentStreet.usrn || ""}</strong>
                       {streetToTitleCase(
-                        `${streetContext.currentStreet.usrn !== null ? " -" : ""} ${
+                        `${streetContext.currentStreet.usrn ? " -" : ""} ${
                           streetContext.currentStreet.descriptor
                         }`
                       )}

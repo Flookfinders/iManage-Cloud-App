@@ -24,6 +24,9 @@
 //    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    012   11.01.24 Sean Flook                 Fix warnings.
 //    013   25.01.24 Joel Benford               Stop overriding descriptor background.
+//    014   15.02.24 Joel Benford     IMANN-296 Changing state to closed sets state/end dates to today.
+//    015   15.02.24 Joshua McCormick IMANN-282 Changed logic for street title change
+//    016   15.02.24 Joshua McCormick IMANN-282 Final tweaks, shortened condition
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -37,7 +40,7 @@ import UserContext from "../context/userContext";
 import MapContext from "../context/mapContext";
 import SettingsContext from "../context/settingsContext";
 import { HasASD } from "../configuration/ADSConfig";
-import { copyTextToClipboard, GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
+import { copyTextToClipboard, GetLookupLabel, ConvertDate, GetCurrentDate } from "../utils/HelperUtils";
 import { streetToTitleCase, FilteredStreetType, DisplayStreetInStreetView } from "../utils/StreetUtils";
 import DETRCodes from "../data/DETRCodes";
 import StreetState from "../data/StreetState";
@@ -205,7 +208,9 @@ function StreetDataTab({
             : null
           : state,
       stateDate:
-        updatedField === "stateDate"
+        updatedField === "state" && newValue === 4
+          ? GetCurrentDate()
+          : updatedField === "stateDate"
           ? newValue
             ? ConvertDate(newValue)
             : null
@@ -233,7 +238,13 @@ function StreetDataTab({
             : null
           : startDate && ConvertDate(startDate),
       streetEndDate:
-        updatedField === "streetEndDate" ? (newValue ? ConvertDate(newValue) : null) : endDate && ConvertDate(endDate),
+        updatedField === "state" && newValue === 4
+          ? GetCurrentDate()
+          : updatedField === "streetEndDate"
+          ? newValue
+            ? ConvertDate(newValue)
+            : null
+          : endDate && ConvertDate(endDate),
       streetStartX: updatedField === "streetStartX" ? newValue : eastingStart,
       streetStartY: updatedField === "streetStartY" ? newValue : northingStart,
       streetEndX: updatedField === "streetEndX" ? newValue : eastingEnd,
@@ -882,7 +893,7 @@ function StreetDataTab({
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Typography variant="subtitle1" sx={{ pl: theme.spacing(1.5) }}>{`${streetToTitleCase(
             streetContext.currentStreet.descriptor
-          )}: ${streetContext.currentStreet.usrn}`}</Typography>
+          )}${streetContext.currentStreet.usrn ? ": " + streetContext.currentStreet.usrn : ""}`}</Typography>
           <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
             <IconButton onClick={handleActionsClick} aria_controls="actions-menu" aria-haspopup="true" size="small">
               <ActionsIcon sx={ActionIconStyle()} />
