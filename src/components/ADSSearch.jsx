@@ -33,6 +33,7 @@
 //    020   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //    021   09.02.24 Sean Flook                 If only 1 record found in search pressing the Enter key will open the record.
 //    022   13.02.24 Sean Flook                 Corrected the type 66 map data.
+//    023   16.02.24 Sean Flook        ESU27_GP Tweaked styling for new Add street button.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1231,7 +1232,7 @@ function ADSSearch({ placeholder, onSearchClick }) {
       <Autocomplete
         id="ads-search"
         open={searchContext.searchPopupOpen}
-        sx={{ color: "inherit" }}
+        sx={{ color: "inherit", pr: "24px" }}
         getOptionLabel={(option) => addressToTitleCase(option.address, option.postcode)}
         isOptionEqualToValue={(option, value) => option.address === value.address}
         filterOptions={(x) => x}
@@ -1289,7 +1290,7 @@ function ADSSearch({ placeholder, onSearchClick }) {
               borderStyle: "solid",
               borderWidth: "1px",
               borderRadius: "18px",
-              mt: "6px",
+              mt: "8px",
               height: "32px",
               transition: theme.transitions.create("width"),
               [theme.breakpoints.up("sm")]: {

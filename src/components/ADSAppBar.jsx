@@ -37,6 +37,7 @@
 //    024   15.02.24 Joshua McCormick IMANN-282 Final tweaks, shortened condition
 //    025   16.02.24 Joshua McCormick IMANN-282 currentSearchStreets title change
 //    026   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    027   16.02.24 Sean Flook        ESU27_GP Changed the Add street button to make it more prominent.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -72,7 +73,19 @@ import {
 } from "../utils/PropertyUtils";
 import { HasASD } from "../configuration/ADSConfig";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
-import { AppBar, IconButton, Typography, Tooltip, Snackbar, Alert, Divider, Link, Popper, Avatar } from "@mui/material";
+import {
+  AppBar,
+  IconButton,
+  Button,
+  Typography,
+  Tooltip,
+  Snackbar,
+  Alert,
+  Divider,
+  Link,
+  Popper,
+  Avatar,
+} from "@mui/material";
 import { Stack } from "@mui/system";
 import { EditConfirmationServiceProvider } from "../pages/EditConfirmationPage";
 import ADSErrorList from "./ADSErrorList";
@@ -81,7 +94,7 @@ import ADSSearch from "./ADSSearch";
 import ADSBookmarkDrawer from "../drawer/ADSBookmarkDrawer";
 import ADSTaskDrawer from "../drawer/ADSTaskDrawer";
 import ADSHelpDrawer from "../drawer/ADSHelpDrawer";
-import { AddStreetIcon } from "../utils/ADSIcons";
+import AddIcon from "@mui/icons-material/Add";
 import SelectPropertiesIcon from "@mui/icons-material/HolidayVillageOutlined";
 import BookmarkIcon from "@mui/icons-material/BookmarkBorderOutlined";
 import TaskIcon from "@mui/icons-material/AssignmentOutlined";
@@ -97,6 +110,7 @@ import {
   GetAlertSeverity,
   tooltipStyle,
   SelectPropertiesIconStyle,
+  blueButtonStyle,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -981,9 +995,15 @@ function ADSAppBar(props) {
             <ADSSearch placeholder="Search…" onSearchClick={handleSearchClick} />
             {userCanEdit && (haveSearch || haveStreet || haveProperty || location.pathname === GazetteerRoute) ? (
               <Tooltip title="Add street" arrow placement="bottom-end" sx={tooltipStyle}>
-                <IconButton aria-label="add street" onClick={() => HandleChangeCheck("street")} size="large">
-                  <AddStreetIcon sx={ActionIconStyle()} />
-                </IconButton>
+                <Button
+                  onClick={() => HandleChangeCheck("street")}
+                  autoFocus
+                  variant="contained"
+                  sx={blueButtonStyle}
+                  startIcon={<AddIcon />}
+                >
+                  Add street
+                </Button>
               </Tooltip>
             ) : (
               ""
