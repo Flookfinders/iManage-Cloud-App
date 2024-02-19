@@ -27,6 +27,7 @@
 //    014   25.01.24 Sean Flook                 Changes required after UX review.
 //    015   14.02.24 Sean Flook        ESU14_GP Filter done the ESU delete.
 //    016   16.02.24 Sean Flook        ESU16_GP Whilst assigning ESU prevent anything else from occurring with the ESUs.
+//    017   16.02.24 Sean Flook        ESU26_GP Display information for selecting ESUs from map.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -410,6 +411,12 @@ function EsuListTab({
     }
   }, [informationContext.informationSource]);
 
+  useEffect(() => {
+    if (!informationContext.informationSource) {
+      informationContext.onDisplayInformation("selectESUs", "ESUListTab");
+    }
+  }, [informationContext]);
+
   return (
     <Fragment>
       <Box sx={toolbarStyle} id="ads-esu-data-grid">
@@ -593,7 +600,11 @@ function EsuListTab({
         />
       </Popper>
       <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
-        <ADSInformationControl variant={"assignESUList"} hasCancel onCancel={handleCloseSelection} />
+        <ADSInformationControl
+          variant={informationContext.informationType}
+          hasCancel={informationContext.informationType === "assignESUList"}
+          onCancel={handleCloseSelection}
+        />
       </Popper>
     </Fragment>
   );

@@ -14,6 +14,7 @@
 //    001   18.01.24 Sean Flook                 Initial Revision.
 //    002   09.02.24 Sean Flook                 Updated message for assignESUList.
 //    003   13.02.24 Sean Flook                 Added inexactASD variant.
+//    017   16.02.24 Sean Flook        ESU26_GP Added selectESUs variant.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,6 +32,7 @@ import { adsLightGreyA50, adsPaleBlueA, adsBlueA, adsLightBlue10 } from "../util
 
 ADSInformationControl.propTypes = {
   variant: PropTypes.oneOf([
+    "selectESUs",
     "createESU",
     "assignESUList",
     "assignESUMap",
@@ -66,6 +68,9 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
       case "createESU":
         return "Create new ESU";
 
+      case "selectESUs":
+        return "Select ESU";
+
       case "assignESUList":
       case "assignESUMap":
         return "Assign ESU";
@@ -96,6 +101,9 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
     switch (variant) {
       case "createESU":
         return "Use the polyline tool to create ESU geometry, then fill out the form and click OK.";
+
+      case "selectESUs":
+        return "Choose ESUs by clicking on them, then choose what you want to do from the toolbar above.";
 
       case "assignESUList":
         return "Choose ESUs by clicking on them, then choose the Assign option in the toolbar above.";
