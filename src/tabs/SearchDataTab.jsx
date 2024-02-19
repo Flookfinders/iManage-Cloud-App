@@ -42,6 +42,7 @@
 //    028   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //    029   13.02.24 Sean Flook                 Corrected the type 66 map data and added missing parameter to call to StreetDelete.
 //    030   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    031   19.02.24 Sean Flook        ESU16_GP Do not clear the controls if we have items checked.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1280,11 +1281,11 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
 
   // Clear selection control if required.
   useEffect(() => {
-    if (!informationContext.informationSource && selectionAnchorEl) {
+    if (!informationContext.informationSource && selectionAnchorEl && !checked && !checked.length) {
       setSelectionAnchorEl(null);
       mapContext.onHighlightClear();
     }
-  }, [informationContext.informationSource, selectionAnchorEl, mapContext]);
+  }, [informationContext.informationSource, selectionAnchorEl, mapContext, checked]);
 
   return (
     <Fragment>
