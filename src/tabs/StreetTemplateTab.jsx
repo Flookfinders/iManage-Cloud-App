@@ -24,6 +24,7 @@
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
 //    012   30.01.24 Sean Flook                 Added ESU tolerance for GeoPlace.
 //    013   13.02.24 Sean Flook                 Only set the data if it exists.
+//    014   19.02.24 Sean Flook       IMANN-307 Check for the ESU objects when trying to edit the ESU template.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -366,10 +367,10 @@ function StreetTemplateTab() {
   const doEditEsu = () => {
     setEditVariant("esu");
     setEditData({
-      esuDirection: data.esuTemplate.esuDirection,
-      esuTolerance: data.esuTemplate.esuTolerance,
-      esuState: data.scoEsuTemplate.state,
-      esuClassification: data.scoEsuTemplate.classification,
+      esuDirection: data.esuTemplate ? data.esuTemplate.esuDirection : null,
+      esuTolerance: data.esuTemplate ? data.esuTemplate.esuTolerance : null,
+      esuState: data.scoEsuTemplate ? data.scoEsuTemplate.state : null,
+      esuClassification: data.scoEsuTemplate ? data.scoEsuTemplate.classification : null,
     });
     setShowEditDialog(true);
   };
