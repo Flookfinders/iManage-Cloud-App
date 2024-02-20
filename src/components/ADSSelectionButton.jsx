@@ -14,6 +14,7 @@
 //    001   18.01.24 Sean Flook                 Initial Revision.
 //    002   09.02.24 Sean Flook                 Added mergeExtent.
 //    003   20.02.24 Sean Flook            MUL1 Added createList and existingList variants.
+//    004   20.02.24 Sean Flook            MUL6 Changed the RPC icon to PushPin.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -35,7 +36,7 @@ import MergeIcon from "@mui/icons-material/Merge";
 import CheckIcon from "@mui/icons-material/Check";
 import NoteAddIcon from "@mui/icons-material/NoteAddOutlined";
 import InsightsIcon from "@mui/icons-material/Insights";
-import GpsFixedIcon from "@mui/icons-material/GpsFixed";
+import PushPinIcon from "@mui/icons-material/PushPin";
 import ReorderIcon from "@mui/icons-material/Reorder";
 import { UnassignEsuIcon, AddStreetIcon, MoveIcon } from "../utils/ADSIcons";
 
@@ -145,7 +146,7 @@ function ADSSelectionButton({ variant, selectionCount, menuControlId, isDisabled
         return <NoteAddIcon />;
 
       case "rpc":
-        return <GpsFixedIcon />;
+        return <PushPinIcon />;
 
       case "createList":
         return <ReorderIcon />;

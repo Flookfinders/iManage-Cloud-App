@@ -16,6 +16,7 @@
 //    003   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    004   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    005   25.01.24 Sean Flook                 Changes required after UX review.
+//    006   20.02.24 Sean Flook            MUL6 Updated title.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -660,9 +661,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
                 noWrap
                 align="left"
               >
-                {`Move BLPU seed point for ${propertyUprns ? propertyUprns.length : 0} ${
-                  propertyUprns && propertyUprns.length === 1 ? "property" : "properties"
-                }`}
+                {`Move BLPU seed point${propertyUprns && propertyUprns.length === 1 ? "" : "s"}`}
               </Typography>
             </Stack>
             <Button
