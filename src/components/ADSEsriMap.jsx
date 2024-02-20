@@ -58,6 +58,7 @@
 //    044   14.02.24 Sean Flook                 Added a bit of error trapping.
 //    045   16.02.24 Sean Flook                 Corrected the parameters in GetViaEuropaFeatureAtCoord.
 //    046   16.02.24 Sean Flook        ESU16_GP Whilst assigning ESU prevent anything else from occurring with the ESUs.
+//    047   20.02.24 Sean Flook            MUL1 Changes required to selecting properties from the map.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -80,7 +81,7 @@ import InformationContext from "../context/informationContext";
 
 import { StreetComparison, PropertyComparison } from "../utils/ObjectComparison";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
-import { GetPropertyFromUPRNUrl, GetMultiEditSearchUrl, GetMapLayersUrl } from "../configuration/ADSConfig";
+import { GetPropertyFromUPRNUrl, GetMapLayersUrl } from "../configuration/ADSConfig";
 import {
   GetWktCoordinates,
   GetPolylineAsWKT,
@@ -90,6 +91,7 @@ import {
   openInStreetView,
   doOpenRecord,
   defaultMapLayerIds,
+  mergeArrays,
 } from "../utils/HelperUtils";
 import {
   GetStreetStateLabel,
@@ -153,7 +155,6 @@ import { Box, Stack } from "@mui/system";
 import ADSSelectionControl from "../components/ADSSelectionControl";
 import AddPropertyWizardDialog from "../dialogs/AddPropertyWizardDialog";
 import HistoricPropertyDialog from "../dialogs/HistoricPropertyDialog";
-import SelectPropertiesDialog from "../dialogs/SelectPropertiesDialog";
 import UploadShpFileDialog from "../dialogs/UploadShpFileDialog";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -184,6 +185,7 @@ const asd64LayerName = "asd64Layer";
 const asd66LayerName = "asd66Layer";
 const zoomGraphicLayerName = "zoomGraphicLayer";
 const editGraphicLayerName = "editGraphicLayer";
+const selectPropertyLayerName = "selectPropertyLayer";
 
 const defaultValidColour = [117, 112, 179]; // purple
 const defaultInvalidColour = [255, 0, 0]; // red
@@ -991,6 +993,8 @@ function ADSEsriMap(startExtent) {
   const [view, setView] = useState(null);
   const viewRef = useRef(null);
   const sketchRef = useRef(null);
+  const sketchUpdateEvent = useRef(null);
+  const sketchCreateEvent = useRef(null);
   const layerListRef = useRef(null);
   const measurementRef = useRef(null);
   const coordinateConversionRef = useRef(null);
@@ -1032,8 +1036,7 @@ function ADSEsriMap(startExtent) {
   const [openHistoricProperty, setOpenHistoricProperty] = useState(false);
   const historicRec = useRef(null);
 
-  const [openSelectProperties, setOpenSelectProperties] = useState(false);
-  const [selectedProperties, setSelectedProperties] = useState([]);
+  const selectedProperties = useRef([]);
 
   const [openUploadShpFileDialog, setOpenUploadShpFileDialog] = useState(false);
 
@@ -1083,6 +1086,7 @@ function ADSEsriMap(startExtent) {
   const highlightASD64 = useRef(null);
   const highlightASD66 = useRef(null);
   const highlightProperty = useRef(null);
+  const highlightSelectProperty = useRef(null);
   const highlightExtent = useRef(null);
   const editingObject = useRef(null);
   const selectedLines = useRef([]);
@@ -1645,43 +1649,6 @@ function ADSEsriMap(startExtent) {
   };
 
   /**
-   * Method to handle when the selected properties dialog is closed.
-   *
-   * @param {string} action The action the user selected to do with the selected properties.
-   */
-  const handleSelectPropertiesClose = async (action) => {
-    setOpenSelectProperties(false);
-
-    if (action !== "cancel") {
-      const searchMultiEditUrl = GetMultiEditSearchUrl(userContext.current.currentUser.token);
-
-      if (searchMultiEditUrl) {
-        const newSearchData = await fetch(`${searchMultiEditUrl.url}/${selectedProperties.join()}`, {
-          headers: searchMultiEditUrl.headers,
-          crossDomain: true,
-          method: searchMultiEditUrl.type,
-        })
-          .then((res) => (res.ok ? res : Promise.reject(res)))
-          .then((res) => res.json())
-          .then(
-            (result) => {
-              return result;
-            },
-            (error) => {
-              console.error("[ERROR] Getting selected properties", error);
-              return null;
-            }
-          );
-
-        if (newSearchData) searchContext.onPropertiesSelected(action, selectedProperties, newSearchData);
-      }
-    }
-
-    setSelectedProperties([]);
-    mapContext.onSelectPropertiesChange(false);
-  };
-
-  /**
    * Method to handle when the upload shp file dialog is closed.
    */
   const handleUploadShpFileDialogClose = (shpFile) => {
@@ -1755,6 +1722,7 @@ function ADSEsriMap(startExtent) {
     setSelectionAnchorEl(null);
     mapContext.onHighlightClear();
     mapContext.onPointCapture(null);
+    mapContext.onSelectPropertiesChange(false);
     informationContext.onClearInformation();
   };
 
@@ -2641,10 +2609,108 @@ function ADSEsriMap(startExtent) {
       title: "Background Property layer",
     });
 
+    const selectPropertyFeatures =
+      mapContext.currentBackgroundData.properties &&
+      mapContext.currentBackgroundData.properties.map((rec, index) => ({
+        geometry: {
+          type: "point",
+          x: rec.easting,
+          y: rec.northing,
+          spatialReference: { wkid: 27700 },
+        },
+        attributes: {
+          ObjectID: index,
+          UPRN: rec.uprn ? rec.uprn.toString() : "",
+          Address: addressToTitleCase(rec.address, rec.postcode),
+          Postcode: rec.postcode,
+          Easting: rec.easting,
+          Northing: rec.northing,
+          LogicalStatus: rec.logicalStatus,
+          LogicalStatusLabel: GetLPILogicalStatusLabel(rec.logicalStatus, isScottish.current),
+          Classification: rec.blpuClass,
+          ClassificationLabel: GetClassificationLabel(rec.blpuClass, isScottish.current),
+        },
+      }));
+
+    const selectPropertyLayer = new FeatureLayer({
+      id: selectPropertyLayerName,
+      copyright: `© Copyright Idox Software Ltd. ${new Date().getFullYear()}`,
+      source: selectPropertyFeatures,
+      fields: [
+        {
+          name: "ObjectID",
+          alias: "ObjectID",
+          type: "oid",
+        },
+        {
+          name: "UPRN",
+          alias: "UPRN",
+          type: "string",
+        },
+        {
+          name: "Address",
+          alias: "Address",
+          type: "string",
+        },
+        {
+          name: "Postcode",
+          alias: "Postcode",
+          type: "string",
+        },
+        {
+          name: "Easting",
+          alias: "Easting",
+          type: "double",
+        },
+        {
+          name: "Northing",
+          alias: "Northing",
+          type: "double",
+        },
+        {
+          name: "LogicalStatus",
+          alias: "LogicalStatus",
+          type: "integer",
+        },
+        {
+          name: "LogicalStatusLabel",
+          alias: "LogicalStatusLabel",
+          type: "string",
+        },
+        {
+          name: "Classification",
+          alias: "Classification",
+          type: "string",
+        },
+        {
+          name: "ClassificationLabel",
+          alias: "ClassificationLabel",
+          type: "string",
+        },
+      ],
+      outFields: ["*"],
+      objectIdField: "ObjectID",
+      displayInList: "hide",
+      visible: selectingProperties.current,
+      popupEnabled: false,
+      renderer: backgroundPropertyRenderer,
+      opacity: 0.5,
+      spatialReference: { wkid: 27700 },
+      title: "Select Property layer",
+    });
+
     mapRef.current.remove(mapRef.current.findLayerById(backgroundPropertyLayerName));
+    mapRef.current.remove(mapRef.current.findLayerById(selectPropertyLayerName));
 
     if (backgroundPropertyData && backgroundPropertyData.current && backgroundPropertyData.current.length > 0)
       mapRef.current.add(backgroundPropertyLayer);
+
+    if (
+      mapContext.currentBackgroundData &&
+      mapContext.currentBackgroundData.properties &&
+      mapContext.currentBackgroundData.properties.length > 0
+    )
+      mapRef.current.add(selectPropertyLayer);
 
     backgroundPropertyLayerRef.current = backgroundPropertyLayer;
   }, [mapContext.currentBackgroundData, propertyData, zoomPropertyData]);
@@ -5089,7 +5155,9 @@ function ADSEsriMap(startExtent) {
         coordinateConversionRef.current.conversions.add(new Conversion({ format: f }));
       });
 
-    sketchRef.current.on("create", (event) => {
+    if (sketchCreateEvent.current) sketchCreateEvent.current.remove();
+
+    sketchCreateEvent.current = sketchRef.current.on("create", (event) => {
       if (event.state === "start") {
         editGraphicsLayer.current.graphics.removeAll();
       }
@@ -5132,10 +5200,12 @@ function ADSEsriMap(startExtent) {
       }
     });
 
-    sketchRef.current.on(
+    if (sketchUpdateEvent.current) sketchUpdateEvent.current.remove();
+
+    sketchUpdateEvent.current = sketchRef.current.on(
       ["update", "undo", "redo", "vertex-add", "vertex-remove", "cursor-update", "draw-complete"],
       (event) => {
-        if (selectingProperties.current && event.graphics && event.graphics.length > 0) {
+        if (selectingProperties.current && event.graphics && event.graphics.length > 0 && event.state === "start") {
           // Get the list of UPRNs of the selected properties
           const selectedUprns = [];
 
@@ -5145,18 +5215,30 @@ function ADSEsriMap(startExtent) {
             }
           });
 
-          if (selectedUprns.length > 300) {
+          if (selectedProperties.current.length + selectedUprns.length > 300) {
             saveResult.current = false;
             saveType.current = "maxSelectProperties";
             saveOpenRef.current = true;
             setSaveOpen(true);
-            setSelectedProperties([]);
             mapContext.onSelectPropertiesChange(false);
           } else {
             saveOpenRef.current = false;
             setSaveOpen(false);
-            setSelectedProperties(selectedUprns);
-            setOpenSelectProperties(true);
+            const removedProperties = selectedProperties.current.filter((x) => selectedUprns.includes(x));
+            const newSelectedProperties = mergeArrays(
+              selectedProperties.current.filter((x) => !removedProperties.includes(x)),
+              selectedUprns.filter((x) => !removedProperties.includes(x)),
+              (a, b) => a === b
+            );
+            selectedProperties.current = newSelectedProperties;
+
+            if (newSelectedProperties.length > 0) {
+              setSelectionAnchorEl(document.getElementById("ads-search-data-list"));
+              mapContext.onHighlightListItem("selectProperties", newSelectedProperties);
+            } else {
+              setSelectionAnchorEl(null);
+              mapContext.onHighlightClear();
+            }
           }
         } else {
           // get the graphic as it is being updated
@@ -7420,6 +7502,7 @@ function ADSEsriMap(startExtent) {
         !mapContext.currentHighlight.asd64 &&
         !mapContext.currentHighlight.asd66 &&
         !mapContext.currentHighlight.property &&
+        !mapContext.currentHighlight.selectProperties &&
         !mapContext.currentHighlight.extent)
     )
       return;
@@ -7438,6 +7521,7 @@ function ADSEsriMap(startExtent) {
     let asd64Layer = null;
     let asd66Layer = null;
     let propertyLayer = null;
+    let selectPropertyLayer = null;
     let extentLayer = null;
 
     for (let index = 0; index < mapLayers.length; index++) {
@@ -7454,6 +7538,7 @@ function ADSEsriMap(startExtent) {
       if (mapLayers[index] && mapLayers[index].id === asd64LayerName) asd64Layer = mapLayers[index];
       if (mapLayers[index] && mapLayers[index].id === asd66LayerName) asd66Layer = mapLayers[index];
       if (mapLayers[index] && mapLayers[index].id === propertyLayerName) propertyLayer = mapLayers[index];
+      if (mapLayers[index] && mapLayers[index].id === selectPropertyLayerName) selectPropertyLayer = mapLayers[index];
       if (mapLayers[index] && mapLayers[index].id === extentLayerName) extentLayer = mapLayers[index];
     }
 
@@ -7615,6 +7700,19 @@ function ADSEsriMap(startExtent) {
       if (highlightProperty.current) highlightProperty.current.remove();
       if (highlightExtent.current) highlightExtent.current.remove();
     }
+
+    if (mapContext.currentHighlight.selectProperties) {
+      if (selectPropertyLayer) {
+        view.whenLayerView(selectPropertyLayer).then(function (layerView) {
+          let selectPropertyQuery = selectPropertyLayer.createQuery();
+          selectPropertyQuery.where = `uprn IN ('${mapContext.currentHighlight.selectProperties.join("', '")}')`;
+          selectPropertyLayer.queryFeatures(selectPropertyQuery).then(function (result) {
+            if (highlightSelectProperty.current) highlightSelectProperty.current.remove();
+            highlightSelectProperty.current = layerView.highlight(result.features);
+          });
+        });
+      } else if (highlightSelectProperty.current) highlightSelectProperty.current.remove();
+    } else if (highlightSelectProperty.current) highlightSelectProperty.current.remove();
 
     if (mapContext.currentHighlight.extent) {
       if (extentLayer) {
@@ -7823,17 +7921,6 @@ function ADSEsriMap(startExtent) {
     searchContext.currentSearchData.results,
   ]);
 
-  // Clear selection control if required.
-  useEffect(() => {
-    if (!informationContext.informationSource && selectionAnchorEl) {
-      selectedEsus.current = [];
-      setSelectedExtents([]);
-      setSelectionAnchorEl(null);
-      mapContext.onHighlightClear();
-      mapContext.onPointCapture(null);
-    }
-  }, [informationContext.informationSource, selectionAnchorEl, mapContext]);
-
   // Selecting properties
   useEffect(() => {
     if (mapContext.currentBackgroundData.properties && !(editingObject.current && editingObject.current.objectType)) {
@@ -7844,34 +7931,47 @@ function ADSEsriMap(startExtent) {
 
       const streetLayer = mapRef.current && mapRef.current.findLayerById(streetLayerName);
       const propertyLayer = mapRef.current && mapRef.current.findLayerById(propertyLayerName);
+      const selectPropertyLayer = mapRef.current && mapRef.current.findLayerById(selectPropertyLayerName);
 
       if (mapContext.currentBackgroundData.properties.length > 0 && mapContext.selectingProperties) {
-        selectingProperties.current = true;
+        if (!selectingProperties.current) {
+          selectedProperties.current = [];
 
-        if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.visible = false;
-        if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.visible = false;
-        if (streetLayer) streetLayer.visible = false;
-        if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.visible = false;
-        if (propertyLayer) propertyLayer.visible = false;
+          selectingProperties.current = true;
 
-        mapRef.current.add(editGraphicsLayer.current);
-        sketchRef.current.layer = editGraphicsLayer.current;
+          if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.visible = false;
+          if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.visible = false;
+          if (streetLayer) streetLayer.visible = false;
+          if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.visible = false;
+          if (propertyLayer) propertyLayer.visible = false;
+          if (selectPropertyLayer) selectPropertyLayer.visible = true;
 
-        mapContext.currentBackgroundData.properties.forEach((property) => {
-          editGraphicsLayer.current.graphics.add(
-            createSelectablePointGraphic(property.easting, property.northing, property.uprn, property.logicalStatus)
-          );
-        });
+          mapRef.current.add(editGraphicsLayer.current);
 
-        sketchRef.current.availableCreateTools = [];
-        sketchRef.current.visibleElements = {
-          deleteButton: false,
-          duplicateButton: false,
-          settingsMenu: false,
-          snappingControls: false,
-          undoRedoMenu: false,
-        };
-        sketchRef.current.visible = true;
+          viewRef.current.whenLayerView(editGraphicsLayer.current).then((editGraphicsLayerView) => {
+            editGraphicsLayerView.highlightOptions = {
+              haloOpacity: 0,
+              fillOpacity: 0,
+            };
+          });
+          sketchRef.current.layer = editGraphicsLayer.current;
+
+          mapContext.currentBackgroundData.properties.forEach((property) => {
+            editGraphicsLayer.current.graphics.add(
+              createSelectablePointGraphic(property.easting, property.northing, property.uprn, property.logicalStatus)
+            );
+          });
+
+          sketchRef.current.availableCreateTools = [];
+          sketchRef.current.visibleElements = {
+            deleteButton: false,
+            duplicateButton: false,
+            settingsMenu: false,
+            snappingControls: false,
+            undoRedoMenu: false,
+          };
+          sketchRef.current.visible = true;
+        }
       } else {
         selectingProperties.current = false;
 
@@ -7880,6 +7980,7 @@ function ADSEsriMap(startExtent) {
         if (streetLayer) streetLayer.visible = true;
         if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.visible = true;
         if (propertyLayer) propertyLayer.visible = true;
+        if (selectPropertyLayer) selectPropertyLayer.visible = false;
 
         sketchRef.current.availableCreateTools = [];
         sketchRef.current.visibleElements = {
@@ -7968,11 +8069,6 @@ function ADSEsriMap(startExtent) {
           onClose={handlePropertyWizardClose}
         />
         <HistoricPropertyDialog open={openHistoricProperty} onClose={handleHistoricPropertyClose} />
-        <SelectPropertiesDialog
-          open={openSelectProperties}
-          propertyCount={selectedProperties.length}
-          onClose={handleSelectPropertiesClose}
-        />
         <UploadShpFileDialog
           isOpen={openUploadShpFileDialog}
           currentIds={baseMappingLayerIds.current.concat(defaultMapLayerIds)}
@@ -7987,12 +8083,16 @@ function ADSEsriMap(startExtent) {
                   : 0
                 : selectedEsus.current && selectedEsus.current.length > 0
                 ? selectedEsus.current.length
+                : selectedProperties.current && selectedProperties.current.length > 0
+                ? selectedProperties.current.length
                 : 0
             }
             haveMapEsu={selectedEsus.current && selectedEsus.current.length > 0}
             currentEsu={selectedEsus.current}
             haveMapExtent={selectedExtents && selectedExtents.length > 0}
             currentExtent={selectedExtents}
+            haveMapProperty={selectedProperties.current && selectedProperties.current.length > 0}
+            propertyUprns={selectedProperties.current}
             onMergeExtent={handleMergeFeatures}
             onClose={handleCloseSelection}
           />

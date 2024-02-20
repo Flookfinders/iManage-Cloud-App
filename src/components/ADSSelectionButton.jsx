@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   18.01.24 Sean Flook                 Initial Revision.
 //    002   09.02.24 Sean Flook                 Added mergeExtent.
+//    003   20.02.24 Sean Flook            MUL1 Added createList and existingList variants.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -35,6 +36,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import NoteAddIcon from "@mui/icons-material/NoteAddOutlined";
 import InsightsIcon from "@mui/icons-material/Insights";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
+import ReorderIcon from "@mui/icons-material/Reorder";
 import { UnassignEsuIcon, AddStreetIcon, MoveIcon } from "../utils/ADSIcons";
 
 import { adsMidGreyA, adsBlueA, adsLightGreyB, adsWhite, adsLightBlue } from "../utils/ADSColours";
@@ -63,6 +65,8 @@ ADSSelectionButton.propTypes = {
     "moveBlpu",
     "addNote",
     "rpc",
+    "createList",
+    "existingList",
   ]).isRequired,
   selectionCount: PropTypes.number.isRequired,
   menuControlId: PropTypes.string,
@@ -97,6 +101,7 @@ function ADSSelectionButton({ variant, selectionCount, menuControlId, isDisabled
         return <MyLocationIcon />;
 
       case "addList":
+      case "existingList":
         return <PlaylistAddIcon />;
 
       case "more":
@@ -141,6 +146,9 @@ function ADSSelectionButton({ variant, selectionCount, menuControlId, isDisabled
 
       case "rpc":
         return <GpsFixedIcon />;
+
+      case "createList":
+        return <ReorderIcon />;
 
       default:
         break;
@@ -218,6 +226,12 @@ function ADSSelectionButton({ variant, selectionCount, menuControlId, isDisabled
       case "rpc":
         return `Edit RPC for propert${selectionCount === 1 ? "y" : "ies"}`;
 
+      case "createList":
+        return "Create a new list";
+
+      case "existingList":
+        return "Add to existing list";
+
       default:
         break;
     }
@@ -278,6 +292,12 @@ function ADSSelectionButton({ variant, selectionCount, menuControlId, isDisabled
 
       case "rpc":
         return "Edit RPC";
+
+      case "createList":
+        return "Create list";
+
+      case "existingList":
+        return "Add to existing list";
 
       default:
         break;

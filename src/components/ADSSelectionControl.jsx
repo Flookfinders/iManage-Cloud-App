@@ -30,6 +30,7 @@
 //    017   31.01.24 Joel Benford               Show addList only in dev
 //    018   09.02.24 Sean Flook                 Added extents.
 //    019   09.02.24 Sean Flook                 Removed Create street button for ESUs.
+//    020   20.02.24 Sean Flook            MUL1 Changes required to handle selecting properties from the map.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -67,6 +68,7 @@ import MoveBLPUDialog from "../dialogs/MoveBLPUDialog";
 import { copyTextToClipboard, GetWktCoordinates, openInStreetView } from "../utils/HelperUtils";
 import { GetStreetMapData } from "../utils/StreetUtils";
 import { GetPropertyMapData, UpdateRangeAfterSave, getClassificationCode } from "../utils/PropertyUtils";
+import { GetMultiEditSearchUrl } from "../configuration/ADSConfig";
 
 import Polyline from "@arcgis/core/geometry/Polyline";
 import * as geometryEngine from "@arcgis/core/geometry/geometryEngine";
@@ -92,6 +94,7 @@ ADSSelectionControl.propTypes = {
   haveCrossReference: PropTypes.bool,
   haveWizard: PropTypes.bool,
   haveMoveBlpu: PropTypes.bool,
+  haveMapProperty: PropTypes.bool,
   currentStreet: PropTypes.object,
   currentEsu: PropTypes.array,
   currentProperty: PropTypes.object,
@@ -131,6 +134,7 @@ ADSSelectionControl.defaultProps = {
   haveCrossReference: false,
   haveWizard: false,
   haveMoveBlpu: false,
+  haveMapProperty: false,
 };
 
 function ADSSelectionControl({
@@ -148,6 +152,7 @@ function ADSSelectionControl({
   haveCrossReference,
   haveWizard,
   haveMoveBlpu,
+  haveMapProperty,
   currentStreet,
   currentEsu,
   currentProperty,
@@ -898,6 +903,67 @@ function ADSSelectionControl({
   };
 
   /**
+   * Event to handle when the create new list button is clicked
+   */
+  const handleCreateNewList = () => {
+    handlePropertiesSelected("new");
+  };
+
+  /**
+   * Event to handle when the add to existing list button is clicked
+   */
+  const handleAddToExistingList = () => {
+    handlePropertiesSelected("existing");
+  };
+
+  const handlePropertiesSelected = async (action) => {
+    const searchMultiEditUrl = GetMultiEditSearchUrl(userContext.currentUser.token);
+
+    if (searchMultiEditUrl) {
+      const newSearchData = await fetch(`${searchMultiEditUrl.url}/${propertyUprns.join()}`, {
+        headers: searchMultiEditUrl.headers,
+        crossDomain: true,
+        method: searchMultiEditUrl.type,
+      })
+        .then((res) => (res.ok ? res : Promise.reject(res)))
+        .then((res) => {
+          switch (res.status) {
+            case 200:
+              return res.json();
+
+            case 204:
+              console.log("[DEBUG] handlePropertiesSelected: No content found");
+              return null;
+
+            case 401:
+              console.error(
+                "[401 ERROR] handlePropertiesSelected: Authorization details are not valid or have expired.",
+                res
+              );
+              return null;
+
+            default:
+              console.error("[ERROR] handlePropertiesSelected: Unexpected error.", res);
+              return null;
+          }
+        })
+        .then(
+          (result) => {
+            return result;
+          },
+          (error) => {
+            console.error("[ERROR] handlePropertiesSelected: Unexpected error.", error);
+            return null;
+          }
+        );
+
+      if (newSearchData) searchContext.onPropertiesSelected(action, propertyUprns, newSearchData);
+    }
+
+    if (onClose) onClose();
+  };
+
+  /**
    * Event to handle deleting a classification
    */
   const handleDeleteClassification = () => {
@@ -1135,6 +1201,7 @@ function ADSSelectionControl({
     if (haveCrossReference) numTypes++;
     if (haveWizard) numTypes++;
     if (haveMoveBlpu) numTypes++;
+    if (haveMapProperty) numTypes++;
 
     setNumberOfTypes(numTypes);
   }, [
@@ -1151,6 +1218,7 @@ function ADSSelectionControl({
     haveCrossReference,
     haveWizard,
     haveMoveBlpu,
+    haveMapProperty,
   ]);
 
   useEffect(() => {
@@ -1704,6 +1772,22 @@ function ADSSelectionControl({
                     )}
                   </Menu>
                 )}
+              </Fragment>
+            )}
+            {numberOfTypes === 1 && haveMapProperty && (
+              <Fragment>
+                <ADSSelectionButton
+                  variant="createList"
+                  selectionCount={selectionCount}
+                  isDisabled={!userCanEdit}
+                  onClick={handleCreateNewList}
+                />
+                <ADSSelectionButton
+                  variant="existingList"
+                  selectionCount={selectionCount}
+                  isDisabled={!userCanEdit}
+                  onClick={handleAddToExistingList}
+                />
               </Fragment>
             )}
             {numberOfTypes === 1 && haveClassification && (

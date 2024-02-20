@@ -29,6 +29,7 @@
 //    016   12.02.24 Joel Benford       RTAB4   Removed left border on hover, interest avatar -> rounded
 //    017   14.02.24 Joel Benford       RTAB2   Styling for additional languages and records
 //    018   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    019   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -39,7 +40,6 @@ import MapContext from "../context/mapContext";
 import UserContext from "../context/userContext";
 import StreetContext from "../context/streetContext";
 import SettingsContext from "../context/settingsContext";
-import InformationContext from "../context/informationContext";
 import { HasASD } from "../configuration/ADSConfig";
 import PropTypes from "prop-types";
 import dateFormat from "dateformat";
@@ -133,7 +133,6 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
   const userContext = useContext(UserContext);
   const streetContext = useContext(StreetContext);
   const settingsContext = useContext(SettingsContext);
-  const informationContext = useContext(InformationContext);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -680,14 +679,6 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
     )
       document.getElementById(`street-related-tree-${streetContext.currentStreet.usrn.toString()}`).scrollIntoView();
   }, [streetContext.currentStreet.usrn]);
-
-  // Clear selection control if required.
-  useEffect(() => {
-    if (!informationContext.informationSource && selectionAnchorEl) {
-      setStreetChecked([]);
-      setSelectionAnchorEl(null);
-    }
-  }, [informationContext.informationSource, selectionAnchorEl]);
 
   return (
     <Fragment>

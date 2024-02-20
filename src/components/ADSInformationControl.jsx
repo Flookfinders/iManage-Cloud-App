@@ -14,7 +14,8 @@
 //    001   18.01.24 Sean Flook                 Initial Revision.
 //    002   09.02.24 Sean Flook                 Updated message for assignESUList.
 //    003   13.02.24 Sean Flook                 Added inexactASD variant.
-//    017   16.02.24 Sean Flook        ESU26_GP Added selectESUs variant.
+//    004   16.02.24 Sean Flook        ESU26_GP Added selectESUs variant.
+//    005   20.02.24 Sean Flook            MUL1 Added selectProperties variant.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -40,6 +41,7 @@ ADSInformationControl.propTypes = {
     "moveBLPU",
     "partRoadASD",
     "inexactASD",
+    "selectProperties",
     "unknown",
   ]),
   hasCancel: PropTypes.bool,
@@ -87,6 +89,9 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
       case "inexactASD":
         return "Create PRoW geometry";
 
+      case "selectProperties":
+        return "Select properties";
+
       default:
         break;
     }
@@ -120,6 +125,9 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
       case "partRoadASD":
       case "inexactASD":
         return "Edit or create new geometry using the drawing tools.";
+
+      case "selectProperties":
+        return "Select the properties using the selection tools, then choose what you want to do from the toolbar above.";
 
       default:
         break;

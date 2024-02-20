@@ -41,6 +41,7 @@
 //    028   05.02.24 Sean Flook                 Further changes required for operational districts.
 //    029   13.02.24 Sean Flook                 Pass the authorityCode to ValidatePublicRightOfWayData.
 //    030   14.02.24 Sean Flook        ASD10_GP Changes required to filter the ASD map layers when editing a record.
+//    031   20.02.24 Sean Flook            MUL1 Changes required for handling selecting properties fom the map.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -69,7 +70,7 @@ import {
   GetBackgroundPropertiesUrl,
   GetPropertyFromUPRNUrl,
 } from "./configuration/ADSConfig";
-import { stringToSentenceCase, mapSelectSearchString } from "./utils/HelperUtils";
+import { stringToSentenceCase, mapSelectSearchString, mergeArrays } from "./utils/HelperUtils";
 import {
   ValidateStreetData,
   ValidateDescriptorData,
@@ -384,7 +385,16 @@ function App() {
   const [highlight, setHighlight] = useState({
     street: null,
     esu: null,
+    asd51: null,
+    asd52: null,
+    asd53: null,
+    asd61: null,
+    asd62: null,
+    asd63: null,
+    asd64: null,
+    asd66: null,
     property: null,
+    selectProperties: null,
     extent: null,
   });
 
@@ -881,9 +891,13 @@ function App() {
         break;
 
       case "existing":
-        const newSearchData = searchData.results.concat(data);
+        const newSearchData = mergeArrays(searchData.results, data, (a, b) => a.id === b.id);
         HandleSearchDataChange(mapSelectSearchString, newSearchData);
-        const newExistingMapSearchProperties = mapSearchData.properties.concat(newMapSearchProperties);
+        const newExistingMapSearchProperties = mergeArrays(
+          mapSearchData.properties,
+          newMapSearchProperties,
+          (a, b) => a.uprn === b.uprn
+        );
         HandleMapSearchDataChange(null, newExistingMapSearchProperties, null, null);
         break;
 
@@ -2250,20 +2264,22 @@ function App() {
    * @param {object|null} property Th property to highlight
    */
   function HandleStreetPropertyHighlight(street, property) {
-    setHighlight({
-      street: street,
-      esu: null,
-      asd51: null,
-      asd52: null,
-      asd53: null,
-      asd61: null,
-      asd62: null,
-      asd63: null,
-      asd64: null,
-      asd66: null,
-      property: property,
-      extent: null,
-    });
+    if (!selectingProperties)
+      setHighlight({
+        street: street,
+        esu: null,
+        asd51: null,
+        asd52: null,
+        asd53: null,
+        asd61: null,
+        asd62: null,
+        asd63: null,
+        asd64: null,
+        asd66: null,
+        property: property,
+        selectProperties: null,
+        extent: null,
+      });
   }
 
   /**
@@ -2285,6 +2301,7 @@ function App() {
       asd64: type === "asd64" ? array : null,
       asd66: type === "asd66" ? array : null,
       property: null,
+      selectProperties: type === "selectProperties" ? array : null,
       extent: type === "extent" ? array : null,
     });
   }
@@ -2305,6 +2322,7 @@ function App() {
       asd64: null,
       asd66: null,
       property: null,
+      selectProperties: null,
       extent: null,
     });
   }

@@ -43,6 +43,7 @@
 //    029   13.02.24 Sean Flook                 Corrected the type 66 map data and added missing parameter to call to StreetDelete.
 //    030   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    031   19.02.24 Sean Flook        ESU16_GP Do not clear the controls if we have items checked.
+//    032   20.02.24 Sean Flook            MUL1 Added removal of items from the list.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -746,6 +747,33 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   }
 
   /**
+   * Method to remove the given item from the list.
+   *
+   * @param {object} event The event object.
+   * @param {string} id The id of the record to remove.
+   * @param {boolean} isStreet True if this is a street; otherwise false.
+   */
+  const removeFromList = (event, id, isStreet) => {
+    if (isStreet) handleStreetActionsMenuClose(event);
+    else handlePropertyActionsMenuClose(event);
+
+    const newSearchData = searchContext.currentSearchData.results.filter((x) => x.id !== id);
+    const removedItem = searchContext.currentSearchData.results.find((x) => x.id === id);
+
+    const newMapSearchStreets =
+      isStreet && removedItem
+        ? mapContext.currentSearchData.streets.filter((x) => x.usrn !== removedItem.usrn)
+        : mapContext.currentSearchData.streets;
+    const newMapSearchProperties =
+      !isStreet && removedItem
+        ? mapContext.currentSearchData.properties.filter((x) => x.uprn !== removedItem.uprn)
+        : mapContext.currentSearchData.properties;
+
+    searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newSearchData);
+    mapContext.onSearchDataChange(newMapSearchStreets, newMapSearchProperties, null, null);
+  };
+
+  /**
    * Method to close the street.
    *
    * @param {object} event The event object.
@@ -1365,6 +1393,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                     >
                       {itemSelected &&
                         itemSelected === rec.id &&
+                        checked &&
+                        checked.length < 2 &&
                         (rec.type === 15 ? (
                           <Fragment>
                             <Tooltip title="Copy USRN" arrow placement="bottom" sx={tooltipStyle}>
@@ -1452,10 +1482,18 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                 </MenuItem>
                               )}
                               {process.env.NODE_ENV === "development" && (
-                                <MenuItem dense divider disabled sx={menuItemStyle(true)}>
+                                <MenuItem dense disabled sx={menuItemStyle(true)}>
                                   <Typography variant="inherit">Add to list</Typography>
                                 </MenuItem>
                               )}
+                              <MenuItem
+                                dense
+                                divider
+                                onClick={(event) => removeFromList(event, rec.id, true)}
+                                sx={menuItemStyle(true)}
+                              >
+                                <Typography variant="inherit">Remove from list</Typography>
+                              </MenuItem>
                               <MenuItem
                                 dense
                                 disabled={!userCanEdit}
@@ -1575,8 +1613,16 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                   <Typography variant="inherit">Add to list</Typography>
                                 </MenuItem>
                               )}
+                              <MenuItem
+                                dense
+                                divider
+                                onClick={(event) => removeFromList(event, rec.id, false)}
+                                sx={menuItemStyle(true)}
+                              >
+                                <Typography variant="inherit">Remove from list</Typography>
+                              </MenuItem>
                               {process.env.NODE_ENV === "development" && (
-                                <MenuItem dense divider disabled sx={menuItemStyle(true)}>
+                                <MenuItem dense disabled sx={menuItemStyle(true)}>
                                   <Typography variant="inherit">Export to...</Typography>
                                 </MenuItem>
                               )}

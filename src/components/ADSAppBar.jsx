@@ -38,6 +38,7 @@
 //    025   16.02.24 Joshua McCormick IMANN-282 currentSearchStreets title change
 //    026   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    027   16.02.24 Sean Flook        ESU27_GP Changed the Add street button to make it more prominent.
+//    028   20.02.24 Sean Flook            MUL1 Display information control for selecting properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -88,6 +89,7 @@ import {
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import { EditConfirmationServiceProvider } from "../pages/EditConfirmationPage";
+import ADSInformationControl from "../components/ADSInformationControl";
 import ADSErrorList from "./ADSErrorList";
 import ADSActionButton from "./ADSActionButton";
 import ADSSearch from "./ADSSearch";
@@ -163,6 +165,10 @@ function ADSAppBar(props) {
   const issueOpen = Boolean(issueAnchorEl);
   const issueId = issueOpen ? "issue-list-popper" : undefined;
 
+  const [informationAnchorEl, setInformationAnchorEl] = useState(null);
+  const informationOpen = Boolean(informationAnchorEl);
+  const informationId = informationOpen ? "select-properties-popper" : undefined;
+
   /**
    * Event to handle when the search is clicked.
    */
@@ -224,6 +230,11 @@ function ADSAppBar(props) {
    * Event to handle selecting properties.
    */
   const handleSelectProperties = () => {
+    if (!selectingProperties) {
+      informationContext.onDisplayInformation("selectProperties", "ADSAppBar");
+    } else {
+      informationContext.onClearInformation();
+    }
     mapContext.onSelectPropertiesChange(!selectingProperties);
     setSelectingProperties(!selectingProperties);
   };
@@ -811,6 +822,12 @@ function ADSAppBar(props) {
     if (selectingProperties !== mapContext.selectingProperties) setSelectingProperties(mapContext.selectingProperties);
   }, [selectingProperties, mapContext.selectingProperties]);
 
+  useEffect(() => {
+    if (informationContext.informationSource && informationContext.informationSource === "ADSAppBar")
+      setInformationAnchorEl(document.getElementById("ads-search-data-list"));
+    else setInformationAnchorEl(null);
+  }, [informationContext.informationSource]);
+
   return (
     <Fragment>
       <AppBar
@@ -1104,6 +1121,9 @@ function ADSAppBar(props) {
           <ADSErrorList onClose={handleCloseErrorList} />
         </Popper>
       </EditConfirmationServiceProvider>
+      <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
+        <ADSInformationControl variant={"selectProperties"} />
+      </Popper>
     </Fragment>
   );
 }
