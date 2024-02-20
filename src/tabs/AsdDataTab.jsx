@@ -27,6 +27,7 @@
 //    014   13.02.24 Sean Flook       IMANN-294 Only allow ASD records to be added to type 1 & 2 streets apart from PRoWs on type 3 streets.
 //    015   13.02.24 Sean Flook                 Display the correct information for type 63 & 66 records in the list.
 //    016   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    017   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -36,7 +37,6 @@ import React, { useContext, useState, useRef, useEffect, Fragment } from "react"
 import PropTypes from "prop-types";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
-import InformationContext from "../context/informationContext";
 
 import { getAsdDeleteVariant } from "../utils/StreetUtils";
 
@@ -130,7 +130,6 @@ function AsdDataTab({
 
   const userContext = useContext(UserContext);
   const settingsContext = useContext(SettingsContext);
-  const informationContext = useContext(InformationContext);
 
   const [expandCollapseLabel, setExpandCollapseLabel] = useState("Expand all");
   const [listState, setListState] = useState("stored");
@@ -530,14 +529,6 @@ function AsdDataTab({
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
   }, [userContext]);
-
-  // Clear selection control if required.
-  useEffect(() => {
-    if (!informationContext.informationSource && selectionAnchorEl) {
-      setChecked([]);
-      setSelectionAnchorEl(null);
-    }
-  }, [informationContext.informationSource, selectionAnchorEl]);
 
   return (
     <Fragment>

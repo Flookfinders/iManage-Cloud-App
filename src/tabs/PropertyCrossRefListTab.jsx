@@ -19,6 +19,7 @@
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    007   25.01.24 Sean Flook                 Changes required after UX review.
 //    008   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    009   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -29,7 +30,6 @@ import PropTypes from "prop-types";
 import UserContext from "../context/userContext";
 import LookupContext from "../context/lookupContext";
 import SettingsContext from "../context/settingsContext";
-import InformationContext from "../context/informationContext";
 import { copyTextToClipboard, GetCrossRefAvatar, GetHistoricAvatar } from "../utils/HelperUtils";
 import { getBilingualSource } from "../utils/PropertyUtils";
 import {
@@ -87,7 +87,6 @@ function PropertyCrossRefListTab({
   const userContext = useContext(UserContext);
   const lookupContext = useContext(LookupContext);
   const settingsContext = useContext(SettingsContext);
-  const informationContext = useContext(InformationContext);
 
   const [sortModel, setSortModel] = useState([{ field: "source", sort: "asc" }]);
   const [selectionModel, setSelectionModel] = useState([]);
@@ -328,14 +327,6 @@ function PropertyCrossRefListTab({
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
   }, [userContext]);
-
-  // Clear selection control if required.
-  useEffect(() => {
-    if (!informationContext.informationSource && selectionAnchorEl) {
-      setSelectionAnchorEl(null);
-      setSelectionModel([]);
-    }
-  }, [informationContext.informationSource, selectionAnchorEl]);
 
   return (
     <Fragment>
