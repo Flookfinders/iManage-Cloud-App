@@ -26,6 +26,7 @@
 //    013   05.02.24 Sean Flook                 Filter available districts by the organisation.
 //    014   07.02.24 Sean Flook                 Display a warning dialog when changing from Part Road to Whole Road.
 //    015   13.02.24 Sean Flook                 Set the ADSWholeRoadControl variant.
+//    016   20.02.24 Joel Benford     IMANN-299 Toolbar changes
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -39,6 +40,7 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
 import MapContext from "./../context/mapContext";
 import InformationContext from "../context/informationContext";
+import StreetContext from "../context/streetContext";
 
 import { GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
 import { filteredOperationalDistricts } from "../utils/StreetUtils";
@@ -84,6 +86,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
   const userContext = useContext(UserContext);
   const mapContext = useContext(MapContext);
   const informationContext = useContext(InformationContext);
+  const streetContext = useContext(StreetContext);
 
   const [dataChanged, setDataChanged] = useState(false);
 
@@ -574,7 +577,16 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
       <Box sx={toolbarStyle} id={"height-width-weight-data"}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            {streetContext.currentRecord.type === 64 && streetContext.currentRecord.newRecord ? (
+              <ADSActionButton
+                variant="close"
+                tooltipTitle="Close"
+                tooltipPlacement="bottom"
+                onClick={handleCancelClicked}
+              />
+            ) : (
+              <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            )}
             <Typography
               sx={{
                 flexGrow: 1,
@@ -620,25 +632,29 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
               noWrap
               align="left"
             >
-              {` Height, width and weight restriction (${data.index + 1} of ${data.totalRecords})`}
+              {streetContext.currentRecord.type === 64 && streetContext.currentRecord.newRecord
+                ? "Add new height, width and weight restriction"
+                : `Height, width and weight restriction (${data.index + 1} of ${data.totalRecords})`}
             </Typography>
           </Stack>
-          <Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <ADSActionButton
-              variant="delete"
-              disabled={!userCanEdit}
-              tooltipTitle="Delete height, width and weight restriction record"
-              tooltipPlacement="right"
-              onClick={handleDeleteHWW}
-            />
-            <ADSActionButton
-              variant="add"
-              disabled={!userCanEdit}
-              tooltipTitle="Add new height, width and weight restriction record"
-              tooltipPlacement="right"
-              onClick={handleAddHWW}
-            />
-          </Stack>
+          {!(streetContext.currentRecord.type === 64 && streetContext.currentRecord.newRecord) && (
+            <Stack direction="row" alignItems="center" justifyContent="flex-end">
+              <ADSActionButton
+                variant="delete"
+                disabled={!userCanEdit}
+                tooltipTitle="Delete height, width and weight restriction record"
+                tooltipPlacement="right"
+                onClick={handleDeleteHWW}
+              />
+              <ADSActionButton
+                variant="add"
+                disabled={!userCanEdit}
+                tooltipTitle="Add new height, width and weight restriction record"
+                tooltipPlacement="right"
+                onClick={handleAddHWW}
+              />
+            </Stack>
+          )}
         </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>

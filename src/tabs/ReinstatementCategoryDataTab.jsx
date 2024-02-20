@@ -25,6 +25,7 @@
 //    012   07.02.24 Sean Flook                 Display a warning dialog when changing from Part Road to Whole Road.
 //    013   13.02.24 Sean Flook                 Set the ADSWholeRoadControl variant.
 //    014   13.02.24 Sean Flook                 Updated to new colour.
+//    015   20.02.24 Joel Benford     IMANN-299 Toolbar changes
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -37,6 +38,7 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
 import MapContext from "./../context/mapContext";
 import InformationContext from "../context/informationContext";
+import StreetContext from "../context/streetContext";
 
 import { ConvertDate } from "../utils/HelperUtils";
 import { Avatar, Typography, Popper } from "@mui/material";
@@ -92,6 +94,7 @@ function ReinstatementCategoryDataTab({
   const userContext = useContext(UserContext);
   const mapContext = useContext(MapContext);
   const informationContext = useContext(InformationContext);
+  const streetContext = useContext(StreetContext);
 
   const [dataChanged, setDataChanged] = useState(false);
 
@@ -520,7 +523,16 @@ function ReinstatementCategoryDataTab({
       <Box sx={toolbarStyle} id={"reinstatement-category-data"}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            {streetContext.currentRecord.type === 52 && streetContext.currentRecord.newRecord ? (
+              <ADSActionButton
+                variant="close"
+                tooltipTitle="Close"
+                tooltipPlacement="bottom"
+                onClick={handleCancelClicked}
+              />
+            ) : (
+              <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            )}
             <Typography
               sx={{
                 flexGrow: 1,
@@ -564,25 +576,29 @@ function ReinstatementCategoryDataTab({
               noWrap
               align="left"
             >
-              {` Reinstatement category (${data.index + 1} of ${data.totalRecords})`}
+              {streetContext.currentRecord.type === 52 && streetContext.currentRecord.newRecord
+                ? "Add new reinstatement category"
+                : `Reinstatement category (${data.index + 1} of ${data.totalRecords})`}
             </Typography>
           </Stack>
-          <Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <ADSActionButton
-              variant="delete"
-              disabled={!userCanEdit}
-              tooltipTitle="Delete reinstatement category record"
-              tooltipPlacement="right"
-              onClick={handleDeleteReinstatementCategory}
-            />
-            <ADSActionButton
-              variant="add"
-              disabled={!userCanEdit}
-              tooltipTitle="Add new reinstatement category record"
-              tooltipPlacement="right"
-              onClick={handleAddReinstatementCategory}
-            />
-          </Stack>
+          {!(streetContext.currentRecord.type === 52 && streetContext.currentRecord.newRecord) && (
+            <Stack direction="row" alignItems="center" justifyContent="flex-end">
+              <ADSActionButton
+                variant="delete"
+                disabled={!userCanEdit}
+                tooltipTitle="Delete reinstatement category record"
+                tooltipPlacement="right"
+                onClick={handleDeleteReinstatementCategory}
+              />
+              <ADSActionButton
+                variant="add"
+                disabled={!userCanEdit}
+                tooltipTitle="Add new reinstatement category record"
+                tooltipPlacement="right"
+                onClick={handleAddReinstatementCategory}
+              />
+            </Stack>
+          )}
         </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>

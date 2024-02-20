@@ -25,6 +25,7 @@
 //    012   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
 //    013   07.02.24 Sean Flook                 Display a warning dialog when changing from Part Road to Whole Road.
 //    014   13.02.24 Sean Flook                 Set the ADSWholeRoadControl variant.
+//    015   20.02.24 Joel Benford     IMANN-299 Toolbar changes
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -37,6 +38,7 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
 import MapContext from "./../context/mapContext";
 import InformationContext from "../context/informationContext";
+import StreetContext from "../context/streetContext";
 
 import { GetLookupLabel, ConvertDate, isAfter1stApril2015, filteredLookup } from "../utils/HelperUtils";
 import ObjectComparison from "../utils/ObjectComparison";
@@ -89,6 +91,7 @@ function OSSpecialDesignationDataTab({
   const userContext = useContext(UserContext);
   const mapContext = useContext(MapContext);
   const informationContext = useContext(InformationContext);
+  const streetContext = useContext(StreetContext);
 
   const [dataChanged, setDataChanged] = useState(false);
 
@@ -554,7 +557,16 @@ function OSSpecialDesignationDataTab({
       <Box sx={toolbarStyle} id={"os-special-designation-data"}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            {streetContext.currentRecord.type === 53 && streetContext.currentRecord.newRecord ? (
+              <ADSActionButton
+                variant="close"
+                tooltipTitle="Close"
+                tooltipPlacement="bottom"
+                onClick={handleCancelClicked}
+              />
+            ) : (
+              <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            )}
             <Typography
               sx={{
                 flexGrow: 1,
@@ -600,25 +612,29 @@ function OSSpecialDesignationDataTab({
               noWrap
               align="left"
             >
-              {` ${getType(specialDesignation)} (${data.index + 1} of ${data.totalRecords})`}
+              {streetContext.currentRecord.type === 53 && streetContext.currentRecord.newRecord
+                ? `Add new ${getType(specialDesignation)}`
+                : `${getType(specialDesignation)} (${data.index + 1} of ${data.totalRecords})`}
             </Typography>
           </Stack>
-          <Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <ADSActionButton
-              variant="delete"
-              disabled={!userCanEdit}
-              tooltipTitle="Delete special designation record"
-              tooltipPlacement="right"
-              onClick={handleDeleteSpecialDesignation}
-            />
-            <ADSActionButton
-              variant="add"
-              disabled={!userCanEdit}
-              tooltipTitle="Add new special designation record"
-              tooltipPlacement="right"
-              onClick={handleAddSpecialDesignation}
-            />
-          </Stack>
+          {!(streetContext.currentRecord.type === 61 && streetContext.currentRecord.newRecord) && (
+            <Stack direction="row" alignItems="center" justifyContent="flex-end">
+              <ADSActionButton
+                variant="delete"
+                disabled={!userCanEdit}
+                tooltipTitle="Delete special designation record"
+                tooltipPlacement="right"
+                onClick={handleDeleteSpecialDesignation}
+              />
+              <ADSActionButton
+                variant="add"
+                disabled={!userCanEdit}
+                tooltipTitle="Add new special designation record"
+                tooltipPlacement="right"
+                onClick={handleAddSpecialDesignation}
+              />
+            </Stack>
+          )}
         </Stack>
       </Box>
       <Box sx={dataFormStyle("77.7vh")}>
