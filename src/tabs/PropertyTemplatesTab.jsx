@@ -25,6 +25,7 @@
 //    012   08.01.24 Joel Benford               Classification and sub locality
 //    013   16.01.23 Joel Benford               OS/GP level split
 //    014   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    015   20.02.24 Sean Flook                 Default blpuLevel to 0 if null when saving.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -110,7 +111,7 @@ function PropertyTemplatesTab() {
         lpiLogicalStatus: newRecord.lpiLogicalStatus,
         postTownRef: newRecord.postTownRef,
         subLocalityRef: newRecord.subLocalityRef,
-        blpuLevel: newRecord.blpuLevel,
+        blpuLevel: newRecord.blpuLevel ? newRecord.blpuLevel : 0,
         lpiLevel: newRecord.lpiLevel,
         officialAddressMaker: newRecord.officialAddressMaker,
         postallyAddressable: newRecord.postallyAddressable,
@@ -212,7 +213,7 @@ function PropertyTemplatesTab() {
           numberingSystem: updatedData.numberingSystem,
           blpuTemplatePkId: updatedData.blpuTemplatePkId,
           blpuLogicalStatus: updatedData.blpuLogicalStatus,
-          blpuLevel: updatedData.blpuLevel,
+          blpuLevel: updatedData.blpuLevel ? updatedData.blpuLevel : 0,
           rpc: updatedData.rpc,
           state: updatedData.state,
           classification: updatedData.classification,
