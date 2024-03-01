@@ -21,6 +21,7 @@
 //    008   25.01.24 Sean Flook                 Changes required after UX review.
 //    009   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    010   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
+//    011   23.02.24 Joel Benford     IMANN-287 Correct hover blue
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectionControl from "../components/ADSSelectionControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import { AddCircleOutlineOutlined as AddCircleIcon } from "@mui/icons-material";
-import { adsBlueA, adsLightBlue10 } from "../utils/ADSColours";
+import { adsBlueA, adsPaleBlueA } from "../utils/ADSColours";
 import { toolbarStyle, ActionIconStyle, dataFormStyle, tooltipStyle, gridRowStyle } from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
 import { useTheme, makeStyles } from "@mui/styles";
@@ -426,7 +427,7 @@ function PropertyBLPUProvenanceListTab({
               sx={{
                 height: "30px",
                 "&:hover": {
-                  backgroundColor: adsLightBlue10,
+                  backgroundColor: adsPaleBlueA,
                   color: adsBlueA,
                 },
               }}

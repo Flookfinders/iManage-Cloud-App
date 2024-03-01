@@ -17,6 +17,8 @@
 //    004   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    007   22.02.24 Joel Benford     IMANN-287 Correct blue on hover
+//    008   23.02.24 Joel Benford     IMANN-287 Tweak layout since bottom padding hid hover on row below
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -34,7 +36,7 @@ import {
   Edit as EditIcon,
   DeleteOutline as DeleteIcon,
 } from "@mui/icons-material";
-import { adsBlueA, adsRed10, adsRed20, adsLightBlue10, adsLightGreyA } from "../utils/ADSColours";
+import { adsBlueA, adsRed10, adsRed20, adsPaleBlueA, adsLightGreyA } from "../utils/ADSColours";
 import { toolbarStyle, dataFormStyle, ActionIconStyle, tooltipStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -137,16 +139,16 @@ function NotesListTab({ data, errors, loading, variant, onNoteSelected, onNoteDe
       return {
         ml: "auto",
         mr: "auto",
-        mb: theme.spacing(1.7),
+        mb: theme.spacing(1),
         width: "85%",
-        backgroundColor: adsLightBlue10,
+        backgroundColor: adsPaleBlueA,
         color: adsBlueA,
       };
     } else {
       return {
         ml: "auto",
         mr: "auto",
-        mb: theme.spacing(1.7),
+        mb: theme.spacing(1),
         width: "85%",
         backgroundColor: adsLightGreyA,
       };
@@ -161,9 +163,9 @@ function NotesListTab({ data, errors, loading, variant, onNoteSelected, onNoteDe
    */
   const getNoteStyle = (index) => {
     const defaultStyle = {
-      height: "100px",
+      height: "108px",
       "&:hover": {
-        backgroundColor: adsLightBlue10,
+        backgroundColor: adsPaleBlueA,
         color: adsBlueA,
       },
     };
@@ -232,6 +234,7 @@ function NotesListTab({ data, errors, loading, variant, onNoteSelected, onNoteDe
                   width: "100%",
                   backgroundColor: theme.palette.background.paper,
                   pt: theme.spacing(0),
+                  pb: theme.spacing(0),
                 }}
                 component="nav"
                 key={`key_${index}`}

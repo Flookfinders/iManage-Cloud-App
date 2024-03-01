@@ -22,6 +22,7 @@
 //    009   25.01.24 Sean Flook       IMANN-253 Include historic when checking for changes.
 //    010   01.02.24 Sean Flook                 Initial changes required for operational districts.
 //    011   05.02.24 Sean Flook                 Further changes required for operational districts.
+//    012   29.02.24 Joel Benford     IMANN-242 Add DbAuthority.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -42,6 +43,7 @@ import {
   GetTownUrl,
   GetIslandUrl,
   GetAdministrativeAreaUrl,
+  GetDbAuthorityUrl,
   GetWardsForAuthorityUrl,
   GetParishesForAuthorityUrl,
   GetOperationalDistrictUrl,
@@ -52,7 +54,6 @@ import { Snackbar, Alert } from "@mui/material";
 import { Box } from "@mui/system";
 
 import LookupTableGridTab from "../tabs/LookupTableGridTab";
-import AuthorityLookupTableTab from "../tabs/AuthorityLookupTableTab";
 
 import AddLookupDialog from "../dialogs/AddLookupDialog";
 import EditLookupDialog from "../dialogs/EditLookupDialog";
@@ -637,8 +638,22 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
     } else return [];
   };
 
-  const getAuthoritiesData = () => {
-    return [];
+  const getDbAuthoritiesData = () => {
+    if (
+      lookupContext.currentLookups &&
+      lookupContext.currentLookups.dbAuthorities &&
+      lookupContext.currentLookups.dbAuthorities.length > 0
+    )
+      return lookupContext.currentLookups.dbAuthorities.map(function (x) {
+        return {
+          id: x.authorityRef,
+          dbAuthorityRef: x.authorityRef,
+          dbAuthorityName: x.authorityName,
+          dbAuthorityMinUsrn: x.minUsrn,
+          dbAuthorityMaxUsrn: x.maxUsrn,
+        };
+      });
+    else return [];
   };
 
   const getWardsData = () => {
@@ -978,6 +993,23 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
     setShowDeleteDialog(true);
   };
 
+  const handleAddDbAuthority = () => {
+    setLookupType("dbAuthority");
+    setShowAddDialog(true);
+  };
+
+  const handleEditDbAuthority = (id) => {
+    setLookupId(id);
+    setLookupType("dbAuthority");
+    setShowEditDialog(true);
+  };
+
+  const handleDeleteDbAuthority = (id) => {
+    setLookupId(id);
+    setLookupType("dbAuthority");
+    setShowDeleteDialog(true);
+  };
+
   const handleAddOperationalDistrict = () => {
     setLookupType("operationalDistrict");
     if (onAddOperationalDistrict) onAddOperationalDistrict();
@@ -1022,6 +1054,9 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
       case "administrativeArea":
         return GetAdministrativeAreaUrl(endPointType, userContext.currentUser.token);
+
+      case "dbAuthority":
+        return GetDbAuthorityUrl(endPointType, userContext.currentUser.token);
 
       case "ward":
         return GetWardsForAuthorityUrl(endPointType, userContext.currentUser.token, settingsContext.authorityCode);
@@ -1090,6 +1125,9 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
       case "parish":
         return JSON.parse(JSON.stringify(lookupContext.currentLookups.parishes));
+
+      case "dbAuthority":
+        return JSON.parse(JSON.stringify(lookupContext.currentLookups.dbAuthorities));
 
       case "operationalDistrict":
         return JSON.parse(JSON.stringify(lookupContext.currentLookups.operationalDistricts));
@@ -1232,6 +1270,14 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
               parish: data.lookupData.parish,
               detrCode: settingsContext ? settingsContext.authorityCode : null,
               historic: data.lookupData.historic,
+            };
+
+          case "dbAuthority":
+            return {
+              authorityRef: data.lookupData.dbAuthorityRef,
+              authorityName: data.lookupData.dbAuthorityName,
+              minUsrn: data.lookupData.dbAuthorityMinUsrn,
+              maxUsrn: data.lookupData.dbAuthorityMaxUsrn,
             };
 
           case "operationalDistrict":
@@ -1783,6 +1829,11 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
         case "parish":
           return lookupContext.currentLookups.parishes.map(
             (x) => [updatedLookup].find((rec) => rec.pkId === x.pkId) || x
+          );
+
+        case "dbAuthority":
+          return lookupContext.currentLookups.dbAuthorities.map(
+            (x) => [updatedLookup].find((rec) => rec.authorityRef === x.authorityRef) || x
           );
 
         case "operationalDistrict":
@@ -2858,6 +2909,20 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
               };
             } else return null;
 
+          case "dbAuthority":
+            const dbAuthorityRecord = lookupContext.currentLookups.dbAuthorities.find(
+              (x) => x.authorityRef === data.lookupData.lookupId
+            );
+            if (dbAuthorityRecord) {
+              return {
+                authorityRef: data.lookupData.lookupId,
+                authorityName: data.lookupData.dbAuthorityName,
+                minUsrn: data.lookupData.dbAuthorityMinUsrn,
+                maxUsrn: data.lookupData.dbAuthorityMaxUsrn,
+                currentAuthorityRef: data.lookupData.dbAuthorityRefCurrent,
+              };
+            } else return null;
+
           case "operationalDistrict":
             const operationalDistrictRecord = lookupContext.currentLookups.operationalDistricts.find(
               (x) => x.operationalDistrictId === data.lookupData.lookupId
@@ -3339,21 +3404,36 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
           }
 
           if (lookupEdited) {
-            const oldLookups = GetOldLookups(data.variant);
-            let updatedLookups = null;
+            if (data.variant !== "dbAuthority") {
+              const oldLookups = GetOldLookups(data.variant);
+              let updatedLookups = null;
 
-            if (oldLookups) {
-              if (settingsContext.isWelsh) {
-                updatedLookups = updateCymLookups(data.variant, data.lookupData.lookupId, newEngLookup, newCymLookup);
-              } else if (settingsContext.isScottish) {
-                updatedLookups = updateGaeLookups(data.variant, data.lookupData.lookupId, newEngLookup, newGaeLookup);
-              } else {
-                updatedLookups = updateSingleLookups(data.variant, data.lookupData.lookupId, newEngLookup);
+              if (oldLookups) {
+                if (settingsContext.isWelsh) {
+                  updatedLookups = updateCymLookups(data.variant, data.lookupData.lookupId, newEngLookup, newCymLookup);
+                } else if (settingsContext.isScottish) {
+                  updatedLookups = updateGaeLookups(data.variant, data.lookupData.lookupId, newEngLookup, newGaeLookup);
+                } else {
+                  updatedLookups = updateSingleLookups(data.variant, data.lookupData.lookupId, newEngLookup);
+                }
+
+                if (updatedLookups && updatedLookups.length > 0) UpdateLookups(data.variant, updatedLookups);
               }
-
-              if (updatedLookups && updatedLookups.length > 0) UpdateLookups(data.variant, updatedLookups);
+              editResult.current = true;
             }
-            editResult.current = true;
+            //dbAuthority can edit the Id so handle separately
+            else {
+              const oldLookups = GetOldLookups(data.variant);
+              const updatedLookups = oldLookups.filter((x) => x.authorityRef !== data.lookupData.lookupId);
+              updatedLookups.push({
+                authorityRef: data.lookupData.dbAuthorityRefCurrent,
+                authorityName: data.lookupData.dbAuthorityName,
+                minUsrn: data.lookupData.dbAuthorityMinUsrn,
+                maxUsrn: data.lookupData.dbAuthorityMaxUsrn,
+              });
+              UpdateLookups(data.variant, updatedLookups);
+              editResult.current = true;
+            }
           } else editResult.current = false;
         }
       }
@@ -3547,6 +3627,10 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
               case "parish":
                 updatedLookups = oldLookups.filter((x) => x.pkId !== lookupId);
+                break;
+
+              case "dbAuthority":
+                updatedLookups = oldLookups.filter((x) => x.authorityRef !== lookupId);
                 break;
 
               case "operationalDistrict":
@@ -3786,6 +3870,18 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
               parish: parishRecord.parish,
               detrCode: parishRecord.detrCode,
               historic: true,
+            };
+          } else return null;
+
+        case "dbAuthority":
+          const dbAuthorityRecord = lookupContext.currentLookups.dbAuthorities.find((x) => x.authorityRef === lookupId);
+          if (dbAuthorityRecord) {
+            return {
+              authorityRef: lookupId,
+              authorityName: dbAuthorityRecord.authorityName,
+              minUsrn: dbAuthorityRecord.minUsrn,
+              maxUsrn: dbAuthorityRecord.maxUsrn,
+              currentAuthorityRef: lookupId,
             };
           } else return null;
 
@@ -4477,7 +4573,13 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
           />
         </TabPanel>
         <TabPanel value={currentTab} index={9}>
-          <AuthorityLookupTableTab data={getAuthoritiesData()} />
+          <LookupTableGridTab
+            variant="dbAuthority"
+            data={getDbAuthoritiesData()}
+            onAddLookup={handleAddDbAuthority}
+            onEditLookup={(id) => handleEditDbAuthority(id)}
+            onDeleteLookup={(id) => handleDeleteDbAuthority(id)}
+          />
         </TabPanel>
         <TabPanel value={currentTab} index={10}>
           <LookupTableGridTab

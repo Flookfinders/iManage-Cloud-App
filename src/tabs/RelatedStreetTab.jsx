@@ -30,6 +30,7 @@
 //    017   14.02.24 Joel Benford       RTAB2   Styling for additional languages and records
 //    018   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    019   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
+//    020   22.02.24 Joel Benford     IMANN-287 Checked items blue
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -610,17 +611,20 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
   };
 
   /**
-   * Method to get the styling used for the tree item.
+   * Method to get styling used for a tree item, based on whether usrn is current street and/or checked.
    *
-   * @param {boolean} currentStreet True if the street is the currently selected street; otherwise false.
+   * @param {number} usrn The usrn for the street in the tree item
    * @returns {object} The styling for the tree item.
    */
-  const treeItemStyle = (currentStreet) => {
+  const treeItemStyle = (usrn) => {
+    const currentStreet = usrn.toString() === streetContext.currentStreet.usrn.toString();
+    const checked = streetChecked.includes(usrn.toString());
     if (currentStreet)
       return {
-        pt: theme.spacing(1),
-        pb: theme.spacing(1),
+        backgroundColor: checked ? adsPaleBlueA : "inherit",
         borderBottom: `solid ${adsLightGreyB} 1px`,
+        pb: theme.spacing(1),
+        pt: theme.spacing(1),
         "&:hover": {
           backgroundColor: adsPaleBlueA,
           color: adsBlueA,
@@ -628,10 +632,11 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
       };
     else
       return {
-        pt: theme.spacing(1),
-        pb: theme.spacing(1),
+        backgroundColor: checked ? adsPaleBlueA : "inherit",
         borderBottom: `solid ${adsLightGreyB} 1px`,
         borderLeftWidth: "3px",
+        pb: theme.spacing(1),
+        pt: theme.spacing(1),
         "&:hover": {
           backgroundColor: adsPaleBlueA,
           color: adsBlueA,
@@ -712,7 +717,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                     <TreeItem
                       key={`street-${rec.usrn}-${index}`}
                       nodeId={rec.usrn.toString()}
-                      sx={treeItemStyle(rec.usrn.toString() === streetContext.currentStreet.usrn.toString())}
+                      sx={treeItemStyle(rec.usrn)}
                       label={
                         <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
                           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
@@ -894,7 +899,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                       <TreeItem
                         key={"esu-root"}
                         nodeId={`esu-root-${rec.usrn}`}
-                        sx={treeItemStyle(rec.usrn.toString() === streetContext.currentStreet.usrn.toString())}
+                        sx={treeItemStyle(rec.usrn)}
                         label={
                           <Typography
                             variant="subtitle2"
@@ -916,7 +921,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                             <TreeItem
                               key={`esu-${recEsu.esuId}-${index}`}
                               nodeId={recEsu.esuId.toString()}
-                              sx={treeItemStyle(rec.usrn.toString() === streetContext.currentStreet.usrn.toString())}
+                              sx={treeItemStyle(rec.usrn)}
                               label={
                                 <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="flex-start">
                                   {showDirectionIcon(recEsu.esuDirection)}
@@ -931,7 +936,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                         <TreeItem
                           key={"asd-root"}
                           nodeId={`asd-root-${rec.usrn}`}
-                          sx={treeItemStyle(rec.usrn.toString() === streetContext.currentStreet.usrn.toString())}
+                          sx={treeItemStyle(rec.usrn)}
                           label={
                             <Typography variant="subtitle2" sx={{ display: "inline-flex" }}>
                               ASDs
@@ -950,9 +955,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                                 <TreeItem
                                   key={`asd-${recAsd61.asdType}-${recAsd61.pkId}-${index}`}
                                   nodeId={`asd${recAsd61.asdType}|${rec.usrn}|${recAsd61.pkId}`}
-                                  sx={treeItemStyle(
-                                    rec.usrn.toString() === streetContext.currentStreet.usrn.toString()
-                                  )}
+                                  sx={treeItemStyle(rec.usrn)}
                                   label={
                                     <Stack
                                       direction="row"
@@ -990,9 +993,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                                 <TreeItem
                                   key={`asd-${recAsd62.asdType}-${recAsd62.pkId}-${index}`}
                                   nodeId={`asd${recAsd62.asdType}|${rec.usrn}|${recAsd62.pkId}`}
-                                  sx={treeItemStyle(
-                                    rec.usrn.toString() === streetContext.currentStreet.usrn.toString()
-                                  )}
+                                  sx={treeItemStyle(rec.usrn)}
                                   label={
                                     <Stack
                                       direction="row"
@@ -1037,9 +1038,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                                 <TreeItem
                                   key={`asd-${recAsd63.asdType}-${recAsd63.pkId}-${index}`}
                                   nodeId={`asd${recAsd63.asdType}|${rec.usrn}|${recAsd63.pkId}`}
-                                  sx={treeItemStyle(
-                                    rec.usrn.toString() === streetContext.currentStreet.usrn.toString()
-                                  )}
+                                  sx={treeItemStyle(rec.usrn)}
                                   label={
                                     <Stack
                                       direction="row"
@@ -1119,9 +1118,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                                 <TreeItem
                                   key={`asd-${recAsd64.asdType}-${recAsd64.pkId}-${index}`}
                                   nodeId={`asd${recAsd64.asdType}|${rec.usrn}|${recAsd64.pkId}`}
-                                  sx={treeItemStyle(
-                                    rec.usrn.toString() === streetContext.currentStreet.usrn.toString()
-                                  )}
+                                  sx={treeItemStyle(rec.usrn)}
                                   label={
                                     <Stack
                                       direction="row"
@@ -1166,9 +1163,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
                                 <TreeItem
                                   key={`asd-${recAsd66.asdType}-${recAsd66.pkId}-${index}`}
                                   nodeId={`asd${recAsd66.asdType}|${rec.usrn}|${recAsd66.pkId}`}
-                                  sx={treeItemStyle(
-                                    rec.usrn.toString() === streetContext.currentStreet.usrn.toString()
-                                  )}
+                                  sx={treeItemStyle(rec.usrn)}
                                   label={
                                     <Stack
                                       direction="row"

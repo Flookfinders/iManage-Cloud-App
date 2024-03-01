@@ -121,6 +121,13 @@
   background-color: inherit;
 }
 
+.MuiDataGrid-root .MuiDataGrid-row.Mui-selected {
+  background-color: #e6f3f9;
+}
+.MuiDataGrid-root .MuiDataGrid-row.Mui-selected:hover {
+  background-color: #e6f3f9;
+}
+
 .esri-view .esri-view-surface:focus::after {
   outline-color: #2a6ebb;
 }

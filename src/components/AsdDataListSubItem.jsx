@@ -24,6 +24,7 @@
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
 //    012   25.01.24 Joel Benford               Record counts to bold
 //    013   06.02.24 Sean Flook                 Set the partRoadColour on the wholeRoadIcon.
+//    014   22.02.24 Joel Benford     IMANN-287 Correct hover blue
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ import { Stack } from "@mui/system";
 import ADSActionButton from "./ADSActionButton";
 import { IndentIcon, WholeRoadIcon } from "../utils/ADSIcons";
 import { ExpandMore, ChevronRight } from "@mui/icons-material";
-import { adsBlueA, adsMidGreyA, adsBlue12 } from "../utils/ADSColours";
+import { adsBlueA, adsMidGreyA, adsPaleBlueA } from "../utils/ADSColours";
 import {
   RecordCountStyle,
   getAsdAvatarStyle,
@@ -273,7 +274,7 @@ function AsdDataListSubItem({
           height: "50px",
           backgroundColor: grey[100],
           "&:hover": {
-            backgroundColor: adsBlue12,
+            backgroundColor: adsPaleBlueA,
             color: adsBlueA,
           },
         }}

@@ -56,6 +56,7 @@
 //    042   16.02.24 Sean Flook        ESU12_GP When returning from a highway dedication or one way exemption record always show the parent ESU record.
 //    043   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    044   16.02.24 Sean Flook        ESU17_GP Hide ASD layers when viewing the ESU list and add the unassigned ESUs to the relevant map layer.
+//    045   28.02.24 Joshua McCormick IMANN-280 Made tabStyle full-width when horizontal scrolling is not needed, so borders are full-width
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -9716,6 +9717,12 @@ function StreetDataForm({ data, loading }) {
     settingsContext.isScottish,
   ]);
 
+  const tabStyleFullWidth = {
+    ...tabStyle,
+    minWidth: "fit-content",
+    flex: 1,
+  };
+
   return (
     <div id="street-data-form">
       <AppBar position="static" color="default">
@@ -9730,7 +9737,7 @@ function StreetDataForm({ data, loading }) {
           sx={{ backgroundColor: adsWhite, color: adsMidGreyA }}
         >
           <Tab
-            sx={tabStyle}
+            sx={tabStyleFullWidth}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography variant="subtitle2" sx={tabLabelStyle(value === 0)}>
@@ -9744,7 +9751,7 @@ function StreetDataForm({ data, loading }) {
             {...a11yProps(0)}
           />
           <Tab
-            sx={tabStyle}
+            sx={tabStyleFullWidth}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography variant="subtitle2" sx={tabLabelStyle(value === 1)}>
@@ -9778,7 +9785,7 @@ function StreetDataForm({ data, loading }) {
           />
           {settingsContext.isScottish && (
             <Tab
-              sx={tabStyle}
+              sx={tabStyleFullWidth}
               label={
                 <Stack direction="row" spacing={0.5} alignItems="center">
                   <Typography variant="subtitle2" sx={tabLabelStyle(value === 2)}>
@@ -9811,7 +9818,7 @@ function StreetDataForm({ data, loading }) {
           )}
           {HasASD() && streetData && streetData.recordType < 4 && (
             <Tab
-              sx={tabStyle}
+              sx={tabStyleFullWidth}
               label={
                 <Stack direction="row" spacing={0.5} alignItems="center">
                   <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 3 : 2))}>
@@ -9887,7 +9894,7 @@ function StreetDataForm({ data, loading }) {
             />
           )}
           <Tab
-            sx={tabStyle}
+            sx={tabStyleFullWidth}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography
@@ -9912,7 +9919,7 @@ function StreetDataForm({ data, loading }) {
             {...a11yProps(settingsContext.isScottish ? 4 : HasASD() && streetData && streetData.recordType < 4 ? 3 : 2)}
           />
           <Tab
-            sx={tabStyle}
+            sx={tabStyleFullWidth}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography
@@ -9949,7 +9956,7 @@ function StreetDataForm({ data, loading }) {
             {...a11yProps(settingsContext.isScottish ? 5 : HasASD() && streetData && streetData.recordType < 4 ? 4 : 3)}
           />
           <Tab
-            sx={tabStyle}
+            sx={tabStyleFullWidth}
             label={
               <Typography
                 variant="subtitle2"

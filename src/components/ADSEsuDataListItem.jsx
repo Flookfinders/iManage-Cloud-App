@@ -24,6 +24,8 @@
 //    011   02.02.24 Joel Benford               ESU direction icon color
 //    012   14.02.24 Sean Flook        ESU14_GP Filter done the delete.
 //    013   16.02.24 Sean Flook        ESU16_GP Whilst assigning ESU prevent anything else from occurring with the ESUs.
+//    014   22.02.24 Joel Benford     IMANN-287 Blue on checked and hover
+//    015   27.02.24 Joshua McCormick IMANN-286 Using clippath for highway dedication indicator to alter appearance
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -91,8 +93,8 @@ import {
   adsRed20,
   adsWhite,
   adsLightBlue,
-  adsLightBlue10,
   adsPurple,
+  adsPaleBlueA,
 } from "../utils/ADSColours";
 import { ActionIconStyle, menuStyle, menuItemStyle, tooltipStyle } from "../utils/ADSStyles";
 import { grey } from "@mui/material/colors";
@@ -482,7 +484,7 @@ function ADSEsuDataListItem({
     const defaultEsuStyle = {
       height: "50px",
       "&:hover": {
-        backgroundColor: adsLightBlue10,
+        backgroundColor: adsPaleBlueA,
         color: adsBlueA,
       },
     };
@@ -539,7 +541,7 @@ function ADSEsuDataListItem({
       pl: theme.spacing(9),
       backgroundColor: grey[100],
       "&:hover": {
-        backgroundColor: adsLightBlue10,
+        backgroundColor: adsPaleBlueA,
         color: adsBlueA,
       },
     };
@@ -581,7 +583,7 @@ function ADSEsuDataListItem({
       pl: theme.spacing(9),
       backgroundColor: grey[100],
       "&:hover": {
-        backgroundColor: adsLightBlue10,
+        backgroundColor: adsPaleBlueA,
         color: adsBlueA,
       },
     };
@@ -835,6 +837,9 @@ function ADSEsuDataListItem({
                         sx={{
                           width: theme.spacing(2),
                           height: theme.spacing(2),
+                          mr: theme.spacing(1),
+                          padding: 1.25,
+                          clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
                           color: adsWhite,
                           backgroundColor: adsBlueA,
                         }}
@@ -890,7 +895,7 @@ function ADSEsuDataListItem({
                 sx={{
                   height: "30px",
                   "&:hover": {
-                    backgroundColor: adsLightBlue10,
+                    backgroundColor: adsPaleBlueA,
                     color: adsBlueA,
                   },
                 }}
@@ -1000,7 +1005,7 @@ function ADSEsuDataListItem({
                 sx={{
                   height: "30px",
                   "&:hover": {
-                    backgroundColor: adsLightBlue10,
+                    backgroundColor: adsPaleBlueA,
                     color: adsBlueA,
                   },
                 }}

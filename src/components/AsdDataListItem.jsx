@@ -25,6 +25,7 @@
 //    012   25.01.24 Joel Benford               Update styling for zero record groups
 //    013   06.02.24 Sean Flook                 Set the partRoadColour on the wholeRoadIcon.
 //    014   13.02.24 Sean Flook                 Changes required to handle PRoW records.
+//    015   22.02.24 Joel Benford     IMANN-287 Correct hover blue
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -67,7 +68,7 @@ import { IndentIcon, WholeRoadIcon, SpecialDesignationIcon, EquestrianIcon } fro
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import LineAxisIcon from "@mui/icons-material/LineAxis";
 import { GetAsdPrimaryText, GetAsdSecondaryText } from "../utils/StreetUtils";
-import { adsBlueA, adsMidGreyA, adsLightBlue, adsBlue12 } from "../utils/ADSColours";
+import { adsBlueA, adsMidGreyA, adsLightBlue, adsPaleBlueA } from "../utils/ADSColours";
 import {
   RecordCountStyle,
   getAsdAvatarStyle,
@@ -383,7 +384,7 @@ function AsdDataListItem({
         sx={{
           height: "50px",
           "&:hover": {
-            backgroundColor: adsBlue12,
+            backgroundColor: adsPaleBlueA,
             color: adsBlueA,
           },
         }}

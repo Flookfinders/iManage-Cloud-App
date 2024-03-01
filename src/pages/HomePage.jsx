@@ -19,6 +19,7 @@
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    007   25.01.24 Sean Flook                 Correctly handle status code 204.
 //    008   13.02.24 Sean Flook                 Correctly handle the response from the GET endpoints.
+//    009   26.02.24 Joel Benford     IMANN-242 Add DbAuthority to lookups context
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -43,6 +44,7 @@ import {
   GetPostcodeUrl,
   GetWardsForAuthorityUrl,
   GetParishesForAuthorityUrl,
+  GetDbAuthorityUrl,
   GetApiMetadataUrl,
   GetLookupMetadataUrl,
   GetSettingsMetadataUrl,
@@ -71,6 +73,7 @@ const HomePage = () => {
   const [lookupPostcodes, setLookupPostcodes] = useState();
   const [lookupWards, setLookupWards] = useState();
   const [lookupParishes, setLookupParishes] = useState();
+  const [lookupDbAuthorities, setLookupDbAuthorities] = useState();
   const [apiMetadata, setApiMetadata] = useState();
   const [lookupMetadata, setLookupMetadata] = useState();
   const [settingsMetadata, setSettingsMetadata] = useState();
@@ -93,6 +96,7 @@ const HomePage = () => {
   const postcodesLoaded = useRef(false);
   const wardsLoaded = useRef(false);
   const parishesLoaded = useRef(false);
+  const dbAuthoritiesLoaded = useRef(false);
   const apiMetadataLoaded = useRef(false);
   const lookupMetadataLoaded = useRef(false);
   const settingsMetadataLoaded = useRef(false);
@@ -176,6 +180,11 @@ const HomePage = () => {
         case "lookupParishes":
           setLookupParishes(result);
           parishesLoaded.current = true;
+          break;
+
+        case "lookupDbAuthorities":
+          setLookupDbAuthorities(result);
+          dbAuthoritiesLoaded.current = true;
           break;
 
         case "apiMetadata":
@@ -371,6 +380,12 @@ const HomePage = () => {
           id: "lookupPostcodes",
         },
         {
+          url: GetDbAuthorityUrl("GET", userContext.currentUser.token),
+          data: lookupDbAuthorities,
+          noRecords: [],
+          id: "lookupDbAuthorities",
+        },
+        {
           url: GetApiMetadataUrl(userContext.currentUser.token),
           data: apiMetadata,
           noRecords: {
@@ -500,6 +515,7 @@ const HomePage = () => {
       postcodesLoaded.current &&
       wardsLoaded.current &&
       parishesLoaded.current &&
+      dbAuthoritiesLoaded.current &&
       apiMetadataLoaded.current &&
       lookupMetadataLoaded.current &&
       settingsMetadataLoaded.current &&
@@ -521,7 +537,8 @@ const HomePage = () => {
         lookupPostTowns,
         lookupPostcodes,
         lookupWards,
-        lookupParishes
+        lookupParishes,
+        lookupDbAuthorities
       );
 
       lookupsContext.onMetadataChange(
@@ -566,6 +583,7 @@ const HomePage = () => {
     lookupPostcodes,
     lookupWards,
     lookupParishes,
+    lookupDbAuthorities,
     apiMetadata,
     lookupMetadata,
     settingsMetadata,

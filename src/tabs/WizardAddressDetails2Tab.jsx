@@ -20,6 +20,7 @@
 //    007   06.10.23 Sean Flook                 Use colour variables.
 //    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    009   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
+//    010   23.02.24 Joel Benford     IMANN-287 Correct hover blue
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -58,7 +59,7 @@ import {
   adsMidGreyA,
   adsDarkGrey,
   adsLightGreyB,
-  adsLightBlue10,
+  adsPaleBlueA,
   adsPaleBlueB,
   adsLightGreyC,
 } from "../utils/ADSColours";
@@ -1345,7 +1346,7 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
         pl: theme.spacing(1),
         backgroundColor: adsPaleBlueB,
         color: adsDarkGrey,
-        "&:hover": { backgroundColor: adsLightBlue10 },
+        "&:hover": { backgroundColor: adsPaleBlueA },
       };
     else
       return {

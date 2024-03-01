@@ -24,6 +24,10 @@
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
 //    012   30.01.24 Sean Flook                 Changed tolerance to a select control so we can limit the options to valid items.
 //    013   07.02.24 Sean Flook       IMANN-284 Corrected error field name.
+//    014   27.02.24 Joshua McCormick IMANN-288 Add new ESU Title & removed unnecessary actions in toolbar
+//    015   27.02.24 Joshua McCormick IMANN-288 Added back toolbar, now hidden if esuId is negative 
+//    016   27.02.24 Joshua McCormick IMANN-286 Changed highway dedication indicator to appear diamond like, rotated 45 as mui offers no alternative
+//    017   27.02.24 Joshua McCormick IMANN-286 Using clippath instead of rotate 45 for highway dedication indicator
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -901,31 +905,32 @@ function EsuDataTab({
               noWrap
               align="left"
             >
-              {`| ${
-                data.esuData.esuId < 0
-                  ? `New ESU - ID set on save [${data.esuData.esuId * -1 - 9}]`
-                  : `${data.esuData.esuId}`
-              }`}
+              {data.esuData.esuId < 0 ? `Add new ESU` : `${data.esuData.esuId}`}
             </Typography>
           </Stack>
           <Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <ADSActionButton
-              variant="copy"
-              tooltipTitle="Copy ESU Id to clipboard"
-              tooltipPlacement="right"
-              disabled={informationContext.informationType && informationContext.informationType === "createESU"}
-              onClick={handleCopyEsuId}
-            />
-            <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
-              <IconButton
-                onClick={handleActionsClick}
-                sx={ActionIconStyle()}
-                aria_controls={`actions-menu-${data.esuData.esuId}`}
-                size="small"
-              >
-                <ActionsIcon />
-              </IconButton>
-            </Tooltip>
+            {data.esuData.esuId > 0 && (
+              <>
+                <ADSActionButton
+                  variant="copy"
+                  tooltipTitle="Copy ESU Id to clipboard"
+                  tooltipPlacement="right"
+                  disabled={informationContext.informationType && informationContext.informationType === "createESU"}
+                  onClick={handleCopyEsuId}
+                />
+                <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
+                  <IconButton
+                    onClick={handleActionsClick}
+                    sx={ActionIconStyle()}
+                    aria_controls={`actions-menu-${data.esuData.esuId}`}
+                    size="small"
+                  >
+                    <ActionsIcon />
+                  </IconButton>
+                </Tooltip>
+              </>
+            )}
+
             <Menu
               id={`actions-menu-${data.esuData.esuId}`}
               elevation={2}
@@ -1279,10 +1284,14 @@ function EsuDataTab({
                         >
                           <Avatar
                             alt={d.avatarText}
+                            variant="square"
                             src={d.avatarIcon}
                             sx={{
                               width: theme.spacing(2),
                               height: theme.spacing(2),
+                              mr: theme.spacing(1),
+                              padding: 1.25,
+                              clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
                               color: adsWhite,
                               backgroundColor: adsBlueA,
                             }}

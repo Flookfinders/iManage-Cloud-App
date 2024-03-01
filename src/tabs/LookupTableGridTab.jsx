@@ -18,6 +18,7 @@
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    006   10.01.24 Sean Flook                 Fix warnings.
 //    007   01.02.24 Sean Flook                 Initial changes required for operational districts.
+//    008   29.02.24 Joel Benford     IMANN-242 Add DbAuthority.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -56,12 +57,11 @@ import { AddCircleOutlineOutlined as AddCircleIcon } from "@mui/icons-material";
 import {
   adsBlueA,
   adsLightGreyB,
-  adsLightBlue10,
   adsDarkGrey10,
   adsDarkGrey20,
   adsLightGreyC,
   adsMidGreyA,
-  adsPaleBlueB,
+  adsPaleBlueA,
 } from "../utils/ADSColours";
 import { ActionIconStyle, ClearSearchIconStyle, blueButtonStyle, tooltipStyle } from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
@@ -74,7 +74,7 @@ const useStyles = makeStyles(
       root: {
         "& .live-row": {
           "&:hover": {
-            backgroundColor: adsPaleBlueB,
+            backgroundColor: adsPaleBlueA,
             color: adsBlueA,
             // cursor: "pointer",
           },
@@ -107,6 +107,7 @@ LookupTableGridTab.propTypes = {
     "ward",
     "parish",
     "operationalDistrict",
+    "dbAuthority",
   ]).isRequired,
   data: PropTypes.array.isRequired,
   onAddLookup: PropTypes.func.isRequired,
@@ -606,6 +607,30 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
   }
 
   /**
+   * Method to get the DbAuthority name.
+   *
+   * @param {object} params The parameters passed into the method from the grid.
+   * @returns {JSX.Element} The display of for the DbAuthority.
+   */
+  function GetDbAuthorityName(params) {
+    if (params) {
+      return <Typography variant="body2">{lookupToTitleCase(params.value, false)}</Typography>;
+    }
+  }
+
+  /**
+   * Method to get the DbAuthority numeric fields code, min usrn, max usrn.
+   *
+   * @param {object} params The parameters passed into the method from the grid.
+   * @returns {JSX.Element} The display of for the DbAuthority field.
+   */
+  function GetDbAuthorityNumeric(params) {
+    if (params) {
+      return <Typography variant="body2">{params.value}</Typography>;
+    }
+  }
+
+  /**
    * Method to get the operational district name.
    *
    * @param {object} params The parameters passed into the method from the grid.
@@ -814,7 +839,8 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
             );
           break;
 
-        case "authority":
+        case "dbAuthority":
+          filteredData = data.filter((x) => x.name.toUpperCase().includes(event.target.value.toUpperCase()));
           break;
 
         case "ward":
@@ -1673,6 +1699,53 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
           },
         ];
 
+      case "dbAuthority":
+        return [
+          {
+            field: "id",
+            headerClassName: "idox-lookup-data-grid-header",
+            hide: true,
+            sortable: false,
+            filterable: false,
+          },
+          {
+            field: "dbAuthorityRef",
+            headerName: "DETR Code",
+            headerClassName: "idox-lookup-data-grid-header",
+            flex: 20,
+            renderCell: GetDbAuthorityNumeric,
+          },
+          {
+            field: "dbAuthorityName",
+            headerName: "Authority",
+            headerClassName: "idox-lookup-data-grid-header",
+            flex: 40,
+            renderCell: GetDbAuthorityName,
+          },
+          {
+            field: "dbAuthorityMinUsrn",
+            headerName: "Min USRN",
+            headerClassName: "idox-lookup-data-grid-header",
+            flex: 20,
+            renderCell: GetDbAuthorityNumeric,
+          },
+          {
+            field: "dbAuthorityMaxUsrn",
+            headerName: "Max USRN",
+            headerClassName: "idox-lookup-data-grid-header",
+            flex: 20,
+            renderCell: GetDbAuthorityNumeric,
+          },
+          {
+            field: "actions",
+            type: "actions",
+            headerClassName: "idox-lookup-data-grid-header",
+            sortable: false,
+            filterable: false,
+            renderCell: displayActionButtons,
+          },
+        ];
+
       case "operationalDistrict":
         return [
           {
@@ -2013,6 +2086,12 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
         setSortModel([{ field: "parish", sort: "asc" }]);
         break;
 
+      case "dbAuthority":
+        setLookupType("authority");
+        setLookupTypeId("db-authority");
+        setSortModel([{ field: "dbAuthorityRef", sort: "asc" }]);
+        break;
+
       case "operationalDistrict":
         setLookupType("district");
         setLookupTypeId("operational-district");
@@ -2126,7 +2205,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
                 sx={{
                   height: "30px",
                   "&:hover": {
-                    backgroundColor: adsLightBlue10,
+                    backgroundColor: adsPaleBlueA,
                     color: adsBlueA,
                   },
                 }}

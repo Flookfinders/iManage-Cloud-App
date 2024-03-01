@@ -559,6 +559,18 @@ export function GetLocalityUrl(endPointType, userToken) {
 }
 
 /**
+ * Get the URL used to return the list of available DbAuthorities.
+ *
+ * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
+ * @param {string} userToken The token for the user who is calling the endpoint.
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function GetDbAuthorityUrl(endPointType, userToken) {
+  const url = GetApiSite("lookup", "/api/DbAuthority");
+  return getUrl(url, endPointType, "application/json", userToken);
+}
+
+/**
  * Get the URL used to return the list of available islands.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
