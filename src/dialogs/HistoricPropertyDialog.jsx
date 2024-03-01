@@ -16,6 +16,7 @@
 //    003   24.11.23 Sean Flook                 Moved Stack to @mui/system.
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   09.02.24 Sean Flook                 Modified after UX review.
+//    006   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,8 +32,7 @@ import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ADSActionButton from "../components/ADSActionButton";
 
-import { adsLightGreyC } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 HistoricPropertyDialog.propTypes = {
@@ -66,10 +66,7 @@ function HistoricPropertyDialog({ open, onClose }) {
       sx={{ p: "16px 16px 24px 16px", borderRadius: "9px" }}
       onClose={handleCancel}
     >
-      <DialogTitle
-        id="confirmation-dialog-title"
-        sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsLightGreyC, mb: "8px" }}
-      >
+      <DialogTitle id="confirmation-dialog-title" sx={dialogTitleStyle}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ fontWeight: 600 }}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
             Warning: editable historic record

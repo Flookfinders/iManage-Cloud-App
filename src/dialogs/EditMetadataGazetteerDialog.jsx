@@ -19,6 +19,7 @@
 //    006   11.01.24 Sean Flook                 Fix warnings.
 //    007   24.01.24 Joel Benford               Update names
 //    008   31.01.24 Joel Benford               Changes to as save and support OS
+//    009   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -37,8 +38,7 @@ import ADSSelectControl from "../components/ADSSelectControl";
 import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 
-import { adsBlueA } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditMetadataGazetteerDialog.propTypes = {
@@ -281,10 +281,7 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
         maxWidth="md"
         onClose={handleDialogClose}
       >
-        <DialogTitle
-          id="edit-metadata-gazetteer-dialog"
-          sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
-        >
+        <DialogTitle id="edit-metadata-gazetteer-dialog" sx={dialogTitleStyle}>
           <Typography sx={{ textSize: "20px" }}>{getTitle()}</Typography>
           <IconButton
             aria-label="close"

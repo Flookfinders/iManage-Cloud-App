@@ -18,6 +18,7 @@
 //    006   03.01.24 Sean Flook                 For Scottish authorities force Create Street BLPU to true and prevent the user from changing it.
 //    007   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    008   10.01.24 Sean Flook                 Fix warnings.
+//    009   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -43,8 +44,7 @@ import DETRCodes from "../data/DETRCodes";
 import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 
-import { adsBlueA } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditAuthorityDetailsDialog.propTypes = {
@@ -317,10 +317,7 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
         maxWidth="md"
         onClose={handleDialogClose}
       >
-        <DialogTitle
-          id="edit-authority-details-dialog"
-          sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
-        >
+        <DialogTitle id="edit-authority-details-dialog" sx={dialogTitleStyle}>
           <Typography sx={{ fontSize: "20px" }}>Edit authority details</Typography>
           <IconButton
             aria-label="close"

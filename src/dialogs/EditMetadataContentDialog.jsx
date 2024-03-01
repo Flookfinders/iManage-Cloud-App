@@ -17,6 +17,7 @@
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   10.01.24 Sean Flook                 Fix warnings.
 //    006   31.01.24 Joel Benford               Changes to as save and support OS
+//    007   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -32,8 +33,7 @@ import ADSSliderControl from "../components/ADSSliderControl";
 import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 
-import { adsBlueA } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditMetadataContentDialog.propTypes = {
@@ -524,10 +524,7 @@ function EditMetadataContentDialog({ isOpen, data, variant, onDone, onClose }) {
         maxWidth="md"
         onClose={handleDialogClose}
       >
-        <DialogTitle
-          id="edit-metadata-content-dialog"
-          sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
-        >
+        <DialogTitle id="edit-metadata-content-dialog" sx={dialogTitleStyle}>
           <Typography sx={{ textSize: "20px" }}>{getTitle()}</Typography>
           <IconButton
             aria-label="close"

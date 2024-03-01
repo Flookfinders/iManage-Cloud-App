@@ -15,6 +15,7 @@
 //    002   09.02.24 Sean Flook                 Added mergeExtent.
 //    003   20.02.24 Sean Flook            MUL1 Added createList and existingList variants.
 //    004   20.02.24 Sean Flook            MUL6 Changed the RPC icon to PushPin.
+//    005   27.02.24 Sean Flook           MUL16 Added removeFromList.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -38,6 +39,7 @@ import NoteAddIcon from "@mui/icons-material/NoteAddOutlined";
 import InsightsIcon from "@mui/icons-material/Insights";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import ReorderIcon from "@mui/icons-material/Reorder";
+import PlaylistRemoveIcon from "@mui/icons-material/PlaylistRemove";
 import { UnassignEsuIcon, AddStreetIcon, MoveIcon } from "../utils/ADSIcons";
 
 import { adsMidGreyA, adsBlueA, adsLightGreyB, adsWhite, adsLightBlue } from "../utils/ADSColours";
@@ -68,6 +70,7 @@ ADSSelectionButton.propTypes = {
     "rpc",
     "createList",
     "existingList",
+    "removeFromList",
   ]).isRequired,
   selectionCount: PropTypes.number.isRequired,
   menuControlId: PropTypes.string,
@@ -151,6 +154,9 @@ function ADSSelectionButton({ variant, selectionCount, menuControlId, isDisabled
       case "createList":
         return <ReorderIcon />;
 
+      case "removeFromList":
+        return <PlaylistRemoveIcon />;
+
       default:
         break;
     }
@@ -233,6 +239,9 @@ function ADSSelectionButton({ variant, selectionCount, menuControlId, isDisabled
       case "existingList":
         return "Add to existing list";
 
+      case "removeFromList":
+        return "Remove from list";
+
       default:
         break;
     }
@@ -299,6 +308,9 @@ function ADSSelectionButton({ variant, selectionCount, menuControlId, isDisabled
 
       case "existingList":
         return "Add to existing list";
+
+      case "removeFromList":
+        return "Remove from list";
 
       default:
         break;

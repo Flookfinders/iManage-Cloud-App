@@ -17,6 +17,8 @@
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   10.01.24 Sean Flook                 Fix warnings.
 //    006   05.02.24 Sean Flook                 Include operational districts.
+//    007   29.02.24 Joel Benford     IMANN-242 Add DbAuthority.
+//    008   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -36,8 +38,8 @@ import { stringToSentenceCase } from "../utils/HelperUtils";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import BlockIcon from "@mui/icons-material/Block";
-import { adsBlueA, adsRed } from "../utils/ADSColours";
-import { redButtonStyle, blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import { adsRed } from "../utils/ADSColours";
+import { redButtonStyle, blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 DeleteLookupDialog.propTypes = {
@@ -53,6 +55,7 @@ DeleteLookupDialog.propTypes = {
     "authority",
     "ward",
     "parish",
+    "dbAuthority",
     "operationalDistrict",
     "unknown",
   ]).isRequired,
@@ -252,6 +255,12 @@ function DeleteLookupDialog({
         if (parishRecord) setLookupText(stringToSentenceCase(parishRecord.parish));
         break;
 
+      case "dbAuthority":
+        setLookupType("authority");
+        const dbAuthorityRecord = lookupContext.currentLookups.dbAuthorities.find((x) => x.authorityRef === lookupId);
+        if (dbAuthorityRecord) setLookupText(stringToSentenceCase(dbAuthorityRecord.authorityName));
+        break;
+
       case "operationalDistrict":
         setLookupType("operational district");
         const operationalDistrictRecord = lookupContext.currentLookups.operationalDistricts.find(
@@ -282,10 +291,7 @@ function DeleteLookupDialog({
       maxWidth="sm"
       onClose={handleDialogClose}
     >
-      <DialogTitle
-        id="delete-lookup-dialog"
-        sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
-      >
+      <DialogTitle id="delete-lookup-dialog" sx={dialogTitleStyle}>
         <Typography variant="h6">{`Delete ${lookupType}`}</Typography>
         <IconButton
           aria-label="close"
@@ -311,10 +317,12 @@ function DeleteLookupDialog({
                 variant="body2"
                 align="justify"
               >{`On deletion this ${lookupType} will no longer appear in the lookup table and cannot be retrieved.`}</Typography>
-              <Typography variant="body2" align="justify">
-                If you would like to keep it for reference but avoid it being attached to records then you can make it
-                historic.
-              </Typography>
+              {lookupType !== "authority" && (
+                <Typography variant="body2" align="justify">
+                  If you would like to keep it for reference but avoid it being attached to records then you can make it
+                  historic.
+                </Typography>
+              )}
             </Fragment>
           ) : (
             <Typography
@@ -335,7 +343,7 @@ function DeleteLookupDialog({
             Delete forever
           </Button>
         )}
-        {canDelete && (
+        {canDelete && lookupType !== "authority" && (
           <Button
             onClick={handleHistoricClick}
             autoFocus

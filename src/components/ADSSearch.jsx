@@ -34,6 +34,7 @@
 //    021   09.02.24 Sean Flook                 If only 1 record found in search pressing the Enter key will open the record.
 //    022   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //    023   16.02.24 Sean Flook        ESU27_GP Tweaked styling for new Add street button.
+//    024   27.02.24 Sean Flook           MUL16 Changes required to allow control to be used for make child of dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -42,6 +43,7 @@
 /* #region imports */
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
+import PropTypes from "prop-types";
 
 import SearchContext from "../context/searchContext";
 import StreetContext from "../context/streetContext";
@@ -120,10 +122,10 @@ const apiFetch = async (url, headers, dataIfAborted, signal) => {
         return data;
 
       case 204:
-        return [{ uprn: 0, address: "No records found", postcode: "" }];
+        return [{ type: 24, uprn: 0, address: "No records found", postcode: "" }];
 
       default:
-        return [{ uprn: 0, address: "Search failed...", postcode: "" }];
+        return [{ type: 24, uprn: 0, address: "Search failed...", postcode: "" }];
     }
   } catch (err) {
     if (err.name === "AbortError") {
@@ -143,7 +145,17 @@ const StyledPopper = styled(Popper)({
   },
 });
 
-function ADSSearch({ placeholder, onSearchClick }) {
+ADSSearch.propTypes = {
+  variant: PropTypes.oneOf(["appBar", "makeChild"]).isRequired,
+  placeholder: PropTypes.string.isRequired,
+  onSearchClick: PropTypes.func.isRequired,
+};
+
+ADSSearch.defaultProps = {
+  variant: "appBar",
+};
+
+function ADSSearch({ variant, placeholder, onSearchClick }) {
   const theme = useTheme();
 
   const searchContext = useContext(SearchContext);
@@ -155,15 +167,13 @@ function ADSSearch({ placeholder, onSearchClick }) {
   const lookupContext = useContext(LookupContext);
   const settingsContext = useContext(SettingsContext);
 
-  // const isWelsh = useRef(settingsContext ? settingsContext.isWelsh : false);
-
   const [data, setData] = useState([]);
   const [urlDetails, setUrlDetails] = useState(null);
   const [search, setSearch] = useState();
   const [showIcons, setShowIcons] = useState(false);
-  // const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState("");
+  const [maxResults, setMaxResults] = useState(8);
   const backgroundStreetData = useRef(null);
   const unassignedEsuData = useRef(null);
   const backgroundPropertyData = useRef(null);
@@ -646,7 +656,7 @@ function ADSSearch({ placeholder, onSearchClick }) {
       event.preventDefault();
       if (data && data.length === 1) {
         onSelectCheck(event, data[0]);
-      } else {
+      } else if (variant === "appBar") {
         handleSearchCheck();
       }
     }
@@ -656,7 +666,7 @@ function ADSSearch({ placeholder, onSearchClick }) {
    * Event to handle when the filter button is clicked.
    */
   const handleFilterClick = () => {
-    setFilterAnchorEl(filterAnchorEl ? null : document.getElementById("ads-search"));
+    setFilterAnchorEl(filterAnchorEl ? null : document.getElementById(`ads-${variant}-search`));
   };
 
   /**
@@ -911,94 +921,144 @@ function ADSSearch({ placeholder, onSearchClick }) {
   function onSelectCheck(event, newValue) {
     event.stopPropagation();
 
-    if (sandboxContext.currentSandbox.sourceStreet) {
-      const streetChanged =
-        sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor ||
-        sandboxContext.currentSandbox.currentStreetRecords.esu ||
-        sandboxContext.currentSandbox.currentStreetRecords.highwayDedication ||
-        sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption ||
-        sandboxContext.currentSandbox.currentStreetRecords.interest ||
-        sandboxContext.currentSandbox.currentStreetRecords.construction ||
-        sandboxContext.currentSandbox.currentStreetRecords.specialDesignation ||
-        sandboxContext.currentSandbox.currentStreetRecords.hww ||
-        sandboxContext.currentSandbox.currentStreetRecords.prow ||
-        sandboxContext.currentSandbox.currentStreetRecords.note ||
-        (sandboxContext.currentSandbox.currentStreet &&
-          !StreetComparison(sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreet));
+    if (variant === "appBar") {
+      if (sandboxContext.currentSandbox.sourceStreet) {
+        const streetChanged =
+          sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor ||
+          sandboxContext.currentSandbox.currentStreetRecords.esu ||
+          sandboxContext.currentSandbox.currentStreetRecords.highwayDedication ||
+          sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption ||
+          sandboxContext.currentSandbox.currentStreetRecords.interest ||
+          sandboxContext.currentSandbox.currentStreetRecords.construction ||
+          sandboxContext.currentSandbox.currentStreetRecords.specialDesignation ||
+          sandboxContext.currentSandbox.currentStreetRecords.hww ||
+          sandboxContext.currentSandbox.currentStreetRecords.prow ||
+          sandboxContext.currentSandbox.currentStreetRecords.note ||
+          (sandboxContext.currentSandbox.currentStreet &&
+            !StreetComparison(sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreet));
 
-      if (streetChanged) {
-        saveConfirmDialog(true)
-          .then((result) => {
-            if (result === "save") {
-              // if (process.env.NODE_ENV === "development")
-            }
-            ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
-            onSelectChange(newValue);
-          })
-          .catch(() => {});
-      }
-    } else if (sandboxContext.currentSandbox.sourceProperty) {
-      const propertyChanged =
-        !!sandboxContext.currentSandbox.currentPropertyRecords.lpi ||
-        !!sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef ||
-        !!sandboxContext.currentSandbox.currentPropertyRecords.provenance ||
-        !!sandboxContext.currentSandbox.currentPropertyRecords.note ||
-        (sandboxContext.currentSandbox.currentProperty &&
-          !PropertyComparison(
-            sandboxContext.currentSandbox.sourceProperty,
-            sandboxContext.currentSandbox.currentProperty
-          ));
-
-      if (propertyChanged) {
-        associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);
-
-        const propertyData = sandboxContext.currentSandbox.currentProperty
-          ? sandboxContext.currentSandbox.currentProperty
-          : sandboxContext.currentSandbox.sourceProperty;
-
-        if (associatedRecords.current.length > 0) {
-          saveConfirmDialog(associatedRecords.current)
-            .then((result) => {
-              if (result === "save") {
-                const currentPropertyData = GetCurrentPropertyData(
-                  propertyData,
-                  sandboxContext,
-                  lookupContext,
-                  settingsContext.isWelsh,
-                  settingsContext.isScottish
-                );
-                HandleSaveProperty(currentPropertyData);
-              }
-              ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
-              handleSearchClick();
-            })
-            .catch(() => {});
-        } else {
+        if (streetChanged) {
           saveConfirmDialog(true)
             .then((result) => {
               if (result === "save") {
-                HandleSaveProperty(sandboxContext.currentSandbox.currentProperty);
+                // if (process.env.NODE_ENV === "development")
               }
-              ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
-              handleSearchClick();
+              ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+              onSelectChange(newValue);
             })
             .catch(() => {});
         }
+      } else if (sandboxContext.currentSandbox.sourceProperty) {
+        const propertyChanged =
+          !!sandboxContext.currentSandbox.currentPropertyRecords.lpi ||
+          !!sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef ||
+          !!sandboxContext.currentSandbox.currentPropertyRecords.provenance ||
+          !!sandboxContext.currentSandbox.currentPropertyRecords.note ||
+          (sandboxContext.currentSandbox.currentProperty &&
+            !PropertyComparison(
+              sandboxContext.currentSandbox.sourceProperty,
+              sandboxContext.currentSandbox.currentProperty
+            ));
+
+        if (propertyChanged) {
+          associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);
+
+          const propertyData = sandboxContext.currentSandbox.currentProperty
+            ? sandboxContext.currentSandbox.currentProperty
+            : sandboxContext.currentSandbox.sourceProperty;
+
+          if (associatedRecords.current.length > 0) {
+            saveConfirmDialog(associatedRecords.current)
+              .then((result) => {
+                if (result === "save") {
+                  const currentPropertyData = GetCurrentPropertyData(
+                    propertyData,
+                    sandboxContext,
+                    lookupContext,
+                    settingsContext.isWelsh,
+                    settingsContext.isScottish
+                  );
+                  HandleSaveProperty(currentPropertyData);
+                }
+                ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+                handleSearchClick();
+              })
+              .catch(() => {});
+          } else {
+            saveConfirmDialog(true)
+              .then((result) => {
+                if (result === "save") {
+                  HandleSaveProperty(sandboxContext.currentSandbox.currentProperty);
+                }
+                ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+                handleSearchClick();
+              })
+              .catch(() => {});
+          }
+        } else {
+          ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+          handleSearchClick();
+        }
       } else {
-        ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
-        handleSearchClick();
+        ResetContexts("all", false, mapContext, streetContext, propertyContext, sandboxContext);
+        onSelectChange(newValue);
       }
     } else {
-      ResetContexts("all", false, mapContext, streetContext, propertyContext, sandboxContext);
-      onSelectChange(newValue);
+      if (newValue && newValue.type === 24 && onSearchClick) onSearchClick(newValue);
     }
   }
+
+  const getSearchStyle = () => {
+    if (variant === "appBar") {
+      return {
+        color: adsMidGreyA,
+        fontFamily: "Nunito Sans",
+        fontSize: "15px",
+        display: "inline-flex",
+        pl: theme.spacing(1),
+        pr: theme.spacing(1),
+        borderStyle: "solid",
+        borderWidth: "1px",
+        borderRadius: "18px",
+        mt: "8px",
+        height: "32px",
+        transition: theme.transitions.create("width"),
+        [theme.breakpoints.up("sm")]: {
+          width: "176px",
+          borderColor: adsLightGreyB,
+          "&:focus-within": {
+            width: "640px",
+            borderColor: adsMidGreyB,
+          },
+        },
+      };
+    } else {
+      return {
+        color: adsMidGreyA,
+        fontFamily: "Nunito Sans",
+        fontSize: "15px",
+        display: "inline-flex",
+        pl: theme.spacing(1),
+        pr: theme.spacing(1),
+        borderStyle: "solid",
+        borderWidth: "1px",
+        borderRadius: "18px",
+        mt: "8px",
+        height: "32px",
+        width: "540px",
+        borderColor: adsLightGreyB,
+        "&:focus-within": {
+          borderColor: adsMidGreyB,
+        },
+      };
+    }
+  };
 
   useEffect(() => {
     const controller = new window.AbortController();
 
     if (urlDetails && search && search.length > 0) {
-      const whileWaiting = [{ uprn: 0, address: "Loading Data...", postcode: "" }];
+      const whileWaiting = [{ type: 24, uprn: 0, address: "Loading Data...", postcode: "" }];
 
       setData(whileWaiting);
 
@@ -1006,7 +1066,11 @@ function ADSSearch({ placeholder, onSearchClick }) {
 
       const url = `${urlDetails.url}/${search}`;
       apiFetch(url, urlDetails.headers, whileWaiting, signal).then((res) => {
-        setData(res);
+        if (variant === "appBar") {
+          setData(res);
+        } else {
+          setData(res.filter((x) => x.type === 24));
+        }
       });
     } else {
       setData([]);
@@ -1214,30 +1278,59 @@ function ADSSearch({ placeholder, onSearchClick }) {
       }
     }
 
-    if (!backgroundStreetData.current && mapContext.currentExtent && mapContext.currentExtent.zoomLevel > 15)
+    if (
+      variant === "appBar" &&
+      !backgroundStreetData.current &&
+      mapContext.currentExtent &&
+      mapContext.currentExtent.zoomLevel > 15
+    )
       GetBackgroundStreetData();
-    if (!unassignedEsuData.current && mapContext.currentExtent && mapContext.currentExtent.zoomLevel > 15)
+
+    if (
+      variant === "appBar" &&
+      !unassignedEsuData.current &&
+      mapContext.currentExtent &&
+      mapContext.currentExtent.zoomLevel > 15
+    )
       GetUnassignedEsuData();
-    if (!backgroundPropertyData.current && mapContext.currentExtent && mapContext.currentExtent.zoomLevel > 17)
+
+    if (
+      variant === "appBar" &&
+      !backgroundPropertyData.current &&
+      mapContext.currentExtent &&
+      mapContext.currentExtent.zoomLevel > 17
+    )
       GetBackgroundPropertyData();
 
     return () => {
       setData([{ uprn: 0, address: "Loading Data...", postcode: "" }]);
       controller.abort();
     };
-  }, [search, urlDetails, searchContext, userContext, mapContext, settingsContext]);
+  }, [search, urlDetails, searchContext, userContext, mapContext, settingsContext, variant]);
+
+  useEffect(() => {
+    switch (variant) {
+      case "appBar":
+        setMaxResults(8);
+        break;
+
+      default:
+        setMaxResults(20);
+        break;
+    }
+  }, [variant]);
 
   return (
     <Fragment>
       <Autocomplete
-        id="ads-search"
+        id={`ads-${variant}-search`}
         open={searchContext.searchPopupOpen}
         sx={{ color: "inherit", pr: "24px" }}
         getOptionLabel={(option) => addressToTitleCase(option.address, option.postcode)}
         isOptionEqualToValue={(option, value) => option.address === value.address}
         filterOptions={(x) => x}
         noOptionsText="No search results"
-        options={data.length > 8 ? data.slice(0, 8) : data}
+        options={data.length > maxResults ? data.slice(0, maxResults) : data}
         onOpen={() => {
           if (search) {
             searchContext.onSearchOpen(true);
@@ -1262,8 +1355,6 @@ function ADSSearch({ placeholder, onSearchClick }) {
                 justifyContent="flex-start"
                 spacing={1}
                 sx={{
-                  // pt: theme.spacing(0.5),
-                  // pb: theme.spacing(1),
                   color: adsMidGreyA,
                   "&:hover": { cursor: "pointer", color: adsBlueA, backgroundColor: adsPaleBlueA },
                 }}
@@ -1280,28 +1371,7 @@ function ADSSearch({ placeholder, onSearchClick }) {
             ref={params.InputProps.ref}
             variant="standard"
             placeholder={placeholder}
-            sx={{
-              color: adsMidGreyA,
-              fontFamily: "Nunito Sans",
-              fontSize: "15px",
-              display: "inline-flex",
-              pl: theme.spacing(1),
-              pr: theme.spacing(1),
-              borderStyle: "solid",
-              borderWidth: "1px",
-              borderRadius: "18px",
-              mt: "8px",
-              height: "32px",
-              transition: theme.transitions.create("width"),
-              [theme.breakpoints.up("sm")]: {
-                width: "176px",
-                borderColor: adsLightGreyB,
-                "&:focus-within": {
-                  width: "640px",
-                  borderColor: adsMidGreyB,
-                },
-              },
-            }}
+            sx={getSearchStyle()}
             fullWidth
             onKeyDownCapture={handleKeyDown}
             InputProps={{
@@ -1318,12 +1388,12 @@ function ADSSearch({ placeholder, onSearchClick }) {
                   <IconButton id="btnClear" onClick={handleClearSearch} aria-label="clear button" size="small">
                     <ClearIcon sx={ClearSearchIconStyle(search)} />
                   </IconButton>
-                  {process.env.NODE_ENV === "development" && showIcons && (
+                  {process.env.NODE_ENV === "development" && showIcons && variant === "appBar" && (
                     <IconButton id="filter-button" disabled onClick={handleFilterClick} aria-label="filter button">
                       <FilterListIcon sx={ActionIconStyle()} />
                     </IconButton>
                   )}
-                  {process.env.NODE_ENV === "development" && showIcons && (
+                  {process.env.NODE_ENV === "development" && showIcons && variant === "appBar" && (
                     <IconButton
                       id="query-builder-button"
                       disabled

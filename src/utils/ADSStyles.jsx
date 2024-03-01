@@ -26,6 +26,10 @@
 //    013   25.01.24 Joel Benford               Update RecordCountStyle
 //    014   02.02.24 Joel Benford               Update tabLabelStyle and gridRowStyle
 //    015   07.02.24 Joel Benford               Update RelatedLanguageChipStyle
+//    016   22.02.24 Joel Benford     IMANN-287 Correct hover blue
+//    017   23.02.24 Joel Benford     IMANN-287 Correct valid-row blue
+//    018   28.02.24 Joshua McCormick IMANN-280 Removed unnecessary height in toolbarStyle 
+//    019   27.02.24 Sean Flook           MUL16 New styles used for parent child.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -43,12 +47,12 @@ import {
   adsOffWhite,
   adsLightGreyA,
   adsLightGreyB,
+  adsLightGreyC,
   adsLightGreyA50,
   adsMidGreyA,
   adsDarkGrey,
   adsPaleBlueA,
   adsBlueA,
-  adsBlue12,
   adsLightBlue,
   adsMidBlueA,
   adsRed,
@@ -156,29 +160,51 @@ export function FormBoxRowStyle(hasError) {
  * Return the styling for the row object that contains the component on a form.
  *
  * @param {boolean} hasError True if the component is displaying an error; otherwise false.
+ * @param {boolean} [noLeftPadding=false] True if no left padding is required; otherwise false.
  * @return {object} The styling to use for the form row.
  */
-export function FormRowStyle(hasError) {
-  if (hasError)
-    return {
-      pt: "4px",
-      pl: "12px",
-      pr: "8px",
-      color: adsMidGreyA,
-      backgroundColor: adsRed10,
-      display: "flex",
-      justifyContent: "flex-start",
-    };
-  else
-    return {
-      borderLeftStyle: "none",
-      pt: "4px",
-      pl: "12px",
-      pr: "8px",
-      color: adsMidGreyA,
-      display: "flex",
-      justifyContent: "flex-start",
-    };
+export function FormRowStyle(hasError, noLeftPadding = false) {
+  if (noLeftPadding) {
+    if (hasError)
+      return {
+        pt: "4px",
+        pr: "8px",
+        color: adsMidGreyA,
+        backgroundColor: adsRed10,
+        display: "flex",
+        justifyContent: "flex-start",
+      };
+    else
+      return {
+        borderLeftStyle: "none",
+        pt: "4px",
+        pr: "8px",
+        color: adsMidGreyA,
+        display: "flex",
+        justifyContent: "flex-start",
+      };
+  } else {
+    if (hasError)
+      return {
+        pt: "4px",
+        pl: "12px",
+        pr: "8px",
+        color: adsMidGreyA,
+        backgroundColor: adsRed10,
+        display: "flex",
+        justifyContent: "flex-start",
+      };
+    else
+      return {
+        borderLeftStyle: "none",
+        pt: "4px",
+        pl: "12px",
+        pr: "8px",
+        color: adsMidGreyA,
+        display: "flex",
+        justifyContent: "flex-start",
+      };
+  }
 }
 
 /**
@@ -306,7 +332,7 @@ export const toolbarStyle = {
   borderTop: `1px solid ${adsLightGreyB}`,
   pl: "4px",
   pr: "6px",
-  height: "44px",
+  height: "36px",
   width: "100%",
 };
 
@@ -518,6 +544,19 @@ export const blueButtonStyle = {
 export const whiteButtonStyle = {
   color: adsBlueA,
   backgroundColor: adsWhite,
+  textTransform: "none",
+  "&:hover": {
+    backgroundColor: adsLightBlue,
+    color: adsWhite,
+  },
+};
+
+/**
+ * The styling used for a white button.
+ */
+export const transparentButtonStyle = {
+  color: adsBlueA,
+  backgroundColor: "inherit",
   textTransform: "none",
   "&:hover": {
     backgroundColor: adsLightBlue,
@@ -849,7 +888,7 @@ export const gridRowStyle = {
     color: adsDarkGrey,
     "& .valid-row": {
       "&:hover": {
-        backgroundColor: adsPaleBlueB,
+        backgroundColor: adsPaleBlueA,
         color: adsBlueA,
         cursor: "pointer",
       },
@@ -968,7 +1007,7 @@ export function getASDListItemStyle(id, subItem, index, checked, variant, select
     pl: getPaddingSize(),
     backgroundColor: grey[100],
     "&:hover": {
-      backgroundColor: adsBlue12,
+      backgroundColor: adsPaleBlueA,
       color: adsBlueA,
     },
   };
@@ -1088,4 +1127,11 @@ export const getSaveButtonStyle = (hasErrors) => {
 export const getSaveIcon = (hasError) => {
   if (hasError) return <ErrorIcon />;
   else return <SaveIcon />;
+};
+
+export const dialogTitleStyle = {
+  borderBottomWidth: "1px",
+  borderBottomStyle: "solid",
+  borderBottomColor: adsLightGreyC,
+  mb: "8px",
 };

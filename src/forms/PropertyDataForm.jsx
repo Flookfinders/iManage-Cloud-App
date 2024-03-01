@@ -40,6 +40,8 @@
 //    027   26.01.24 Sean Flook       IMANN-232 Do not remove record when creating a new property.
 //    028   02.02.24 Sean Flook       IMANN-271 Reset the errors when opening a new property.
 //    029   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    030   28.02.24 Joshua McCormick IMANN-280 Made tabStyle full-width when horizontal scrolling is not needed, so borders are full-width
+//    031   27.02.24 Sean Flook           MUL16 Changes required to correctly open the related tab.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -596,15 +598,15 @@ function PropertyDataForm({ data, loading }) {
         case 3:
           if (settingsContext.isScottish) {
             if (successorCrossRefFormData) propertyContext.onRecordChange(30, successorCrossRefFormData.index);
-          } else {
-            if (notesFormData) propertyContext.onRecordChange(23, notesFormData.index);
-          }
+          } else if (propertyData.parentUprn) setupRelated();
           break;
 
         case 4:
           if (settingsContext.isScottish && provenanceFormData) {
             propertyContext.onRecordChange(22, provenanceFormData.index);
             mapContext.onEditMapObject(22, provenanceFormData.provenanceData.pkId);
+          } else {
+            if (notesFormData) propertyContext.onRecordChange(71, notesFormData.index);
           }
           break;
 
@@ -614,7 +616,11 @@ function PropertyDataForm({ data, loading }) {
           break;
 
         case 6:
-          if (settingsContext.isScottish && notesFormData) propertyContext.onRecordChange(23, notesFormData.index);
+          if (settingsContext.isScottish && propertyData.parentUprn) setupRelated();
+          break;
+
+        case 7:
+          if (settingsContext.isScottish && notesFormData) propertyContext.onRecordChange(71, notesFormData.index);
           break;
 
         default:
@@ -2261,6 +2267,40 @@ function PropertyDataForm({ data, loading }) {
   };
 
   /**
+   * Method to setup the related object.
+   */
+  const setupRelated = () => {
+    const relatedObj = propertyData.parentUprn
+      ? {
+          parent: propertyData.parentUprn,
+          property: propertyData.uprn,
+          userToken: userContext.currentUser.token,
+        }
+      : null;
+
+    propertyContext.onPropertyChange(
+      propertyContext.currentProperty.uprn,
+      propertyContext.currentProperty.usrn,
+      propertyContext.currentProperty.address,
+      propertyContext.currentProperty.formattedAddress,
+      propertyContext.currentProperty.postcode,
+      propertyContext.currentProperty.easting,
+      propertyContext.currentProperty.northing,
+      propertyContext.currentProperty.newProperty,
+      propertyContext.currentProperty.parent,
+      relatedObj
+    );
+  };
+
+  /**
+   * Event to show the related tab for the current property.
+   */
+  const handleViewRelated = () => {
+    setupRelated();
+    setValue(settingsContext.isScottish ? 6 : 3);
+  };
+
+  /**
    * Event to handle the closing of the copy alert.
    *
    * @param {object} event This is not used.
@@ -2378,7 +2418,9 @@ function PropertyDataForm({ data, loading }) {
     const newPropertyData = !settingsContext.isScottish
       ? {
           blpuStateDate: srcData.blpuStateDate,
-          parentUprn: propertyData.parentUprn,
+          parentUprn: srcData.parentUprn,
+          parentAddress: srcData.parentAddress,
+          parentPostcode: srcData.parentPostcode,
           neverExport: srcData.neverExport,
           siteSurvey: srcData.siteSurvey,
           uprn: propertyData.uprn,
@@ -2409,7 +2451,9 @@ function PropertyDataForm({ data, loading }) {
         }
       : {
           blpuStateDate: srcData.blpuStateDate,
-          parentUprn: propertyData.parentUprn,
+          parentUprn: srcData.parentUprn,
+          parentAddress: srcData.parentAddress,
+          parentPostcode: srcData.parentPostcode,
           neverExport: srcData.neverExport,
           siteSurvey: srcData.siteSurvey,
           uprn: propertyData.uprn,
@@ -3754,11 +3798,11 @@ function PropertyDataForm({ data, loading }) {
   useEffect(() => {
     if (propertyContext.currentProperty.openRelated) {
       failedValidation.current = false;
-      setValue(3);
+      setValue(settingsContext.isScottish ? 6 : 3);
       mapContext.onEditMapObject(null, null);
       // propertyContext.onRelatedOpened();
     }
-  }, [propertyContext, mapContext]);
+  }, [propertyContext, mapContext, settingsContext.isScottish]);
 
   useEffect(() => {
     if (
@@ -3909,7 +3953,7 @@ function PropertyDataForm({ data, loading }) {
 
         case 22:
           setProvenanceFocusedField(propertyContext.goToField.fieldName);
-          if (value !== 1) setValue(1);
+          setValue(settingsContext.isScottish ? 4 : 1);
           const provenanceData =
             propertyData && propertyData.blpuProvenances.length > propertyContext.goToField.index
               ? propertyData.blpuProvenances[propertyContext.goToField.index]
@@ -3928,7 +3972,7 @@ function PropertyDataForm({ data, loading }) {
 
         case 23:
           setCrossRefFocusedField(propertyContext.goToField.fieldName);
-          if (value !== 2) setValue(2);
+          setValue(settingsContext.isScottish ? 5 : 2);
           const crossRefData =
             propertyData && propertyData.blpuAppCrossRefs.length > propertyContext.goToField.index
               ? propertyData.blpuAppCrossRefs[propertyContext.goToField.index]
@@ -3968,7 +4012,7 @@ function PropertyDataForm({ data, loading }) {
 
         case 30:
           setSuccessorCrossRefFocusedField(propertyContext.goToField.fieldName);
-          if (value !== 1) setValue(1);
+          if (value !== 3) setValue(3);
           const successorCrossRefData =
             propertyData && propertyData.successorCrossRefs.length > propertyContext.goToField.index
               ? propertyData.successorCrossRefs[propertyContext.goToField.index]
@@ -3987,7 +4031,7 @@ function PropertyDataForm({ data, loading }) {
 
         case 31:
           setOrganisationFocusedField(propertyContext.goToField.fieldName);
-          if (value !== 1) setValue(1);
+          if (value !== 2) setValue(2);
           const organisationData =
             propertyData && propertyData.organisations.length > propertyContext.goToField.index
               ? propertyData.organisations[propertyContext.goToField.index]
@@ -4025,7 +4069,7 @@ function PropertyDataForm({ data, loading }) {
 
         case 71:
           setNoteFocusedField(propertyContext.goToField.fieldName);
-          if (value !== 4) setValue(4);
+          setValue(settingsContext.isScottish ? 7 : 4);
           const noteData =
             propertyData && propertyData.blpuNotes.length > propertyContext.goToField.index
               ? propertyData.blpuNotes[propertyContext.goToField.index]
@@ -4048,7 +4092,14 @@ function PropertyDataForm({ data, loading }) {
 
       propertyContext.onGoToField(null, null, null);
     }
-  }, [propertyContext, propertyContext.goToField, value, propertyData]);
+  }, [propertyContext, propertyContext.goToField, value, propertyData, settingsContext.isScottish]);
+
+  const tabStyleFullWidth = {
+    ...tabStyle,
+    minWidth: "fit-content",
+    flex: 1,
+  };
+
 
   return (
     <div id="property-data-form">
@@ -4064,7 +4115,7 @@ function PropertyDataForm({ data, loading }) {
           sx={{ backgroundColor: adsWhite, color: adsMidGreyA }}
         >
           <Tab
-            sx={tabStyle}
+            sx={tabStyleFullWidth}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography variant="subtitle2" sx={tabLabelStyle(value === 0)}>
@@ -4079,7 +4130,7 @@ function PropertyDataForm({ data, loading }) {
           />
           {settingsContext.isScottish && (
             <Tab
-              sx={tabStyle}
+              sx={tabStyleFullWidth}
               label={
                 <Stack direction="row" spacing={0.5} alignItems="center">
                   <Typography variant="subtitle2" sx={tabLabelStyle(value === 1)}>
@@ -4112,7 +4163,7 @@ function PropertyDataForm({ data, loading }) {
           )}
           {settingsContext.isScottish && (
             <Tab
-              sx={tabStyle}
+              sx={tabStyleFullWidth}
               label={
                 <Stack direction="row" spacing={0.5} alignItems="center">
                   <Typography variant="subtitle2" sx={tabLabelStyle(value === 2)}>
@@ -4145,7 +4196,7 @@ function PropertyDataForm({ data, loading }) {
           )}
           {settingsContext.isScottish && (
             <Tab
-              sx={tabStyle}
+              sx={tabStyleFullWidth}
               label={
                 <Stack direction="row" spacing={0.5} alignItems="center">
                   <Typography variant="subtitle2" sx={tabLabelStyle(value === 3)}>
@@ -4177,7 +4228,7 @@ function PropertyDataForm({ data, loading }) {
             />
           )}
           <Tab
-            sx={tabStyle}
+            sx={tabStyleFullWidth}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 4 : 1))}>
@@ -4208,7 +4259,7 @@ function PropertyDataForm({ data, loading }) {
             {...a11yProps(settingsContext.isScottish ? 4 : 1)}
           />
           <Tab
-            sx={tabStyle}
+            sx={tabStyleFullWidth}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 5 : 2))}>
@@ -4239,7 +4290,7 @@ function PropertyDataForm({ data, loading }) {
             {...a11yProps(settingsContext.isScottish ? 5 : 2)}
           />
           <Tab
-            sx={tabStyle}
+            sx={tabStyleFullWidth}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 6 : 3))}>
@@ -4262,7 +4313,7 @@ function PropertyDataForm({ data, loading }) {
             {...a11yProps(settingsContext.isScottish ? 6 : 3)}
           />
           <Tab
-            sx={tabStyle}
+            sx={tabStyleFullWidth}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 7 : 4))}>
@@ -4293,7 +4344,7 @@ function PropertyDataForm({ data, loading }) {
             {...a11yProps(settingsContext.isScottish ? 7 : 4)}
           />
           <Tab
-            sx={tabStyle}
+            sx={tabStyleFullWidth}
             label={
               <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 8 : 5))}>
                 History
@@ -4324,6 +4375,7 @@ function PropertyDataForm({ data, loading }) {
             loading={loading}
             focusedField={blpuFocusedField}
             onSetCopyOpen={(open, dataType) => handleCopyOpen(open, dataType)}
+            onViewRelated={handleViewRelated}
             onLpiSelected={(pkId, lpiData, dataIdx, dataLength) =>
               handleLPISelected(pkId, lpiData, dataIdx, dataLength)
             }

@@ -31,6 +31,7 @@
 //    018   09.02.24 Sean Flook                 Added extents.
 //    019   09.02.24 Sean Flook                 Removed Create street button for ESUs.
 //    020   20.02.24 Sean Flook            MUL1 Changes required to handle selecting properties from the map.
+//    021   27.02.24 Sean Flook           MUL16 Changes required to handle parent child relationships.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -78,6 +79,7 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
 import { adsBlueA, adsWhite, adsLightGreyA50 } from "../utils/ADSColours";
 import { menuStyle, menuItemStyle } from "../utils/ADSStyles";
+import MakeChildDialog from "../dialogs/MakeChildDialog";
 
 ADSSelectionControl.propTypes = {
   selectionCount: PropTypes.number.isRequired,
@@ -105,6 +107,7 @@ ADSSelectionControl.propTypes = {
   currentProvenance: PropTypes.array,
   currentExtent: PropTypes.array,
   currentCrossReference: PropTypes.array,
+  streetUsrns: PropTypes.array,
   propertyUprns: PropTypes.array,
   onSetCopyOpen: PropTypes.func,
   onAddNote: PropTypes.func,
@@ -163,6 +166,7 @@ function ADSSelectionControl({
   currentProvenance,
   currentExtent,
   currentCrossReference,
+  streetUsrns,
   propertyUprns,
   onSetCopyOpen,
   onAddNote,
@@ -218,6 +222,10 @@ function ADSSelectionControl({
   const [openRemoveCrossReference, setOpenRemoveCrossReference] = useState(false);
   const [openAddClassification, setOpenAddClassification] = useState(false);
   const [openMoveBlpu, setOpenMoveBlpu] = useState(false);
+  const [openMakeChild, setOpenMakeChild] = useState(false);
+
+  const [makeChildUprn, setMakeChildUprn] = useState([]);
+  // const [removeParentUprn, setRemoveParentUprn] = useState([]);
 
   /**
    * Event to handle the closing.
@@ -435,10 +443,46 @@ function ADSSelectionControl({
   };
 
   /**
-   * event to handle when the move BLPU seed point dialog is closed
+   * event to handle when the move BLPU seed point dialog is closed.
    */
   const handleMoveBlpuClose = () => {
     setOpenMoveBlpu(false);
+  };
+
+  /**
+   * event to handle when the make child of dialog is closed.
+   */
+  const handleMakeChildClose = () => {
+    setOpenMakeChild(false);
+    searchContext.onHideSearch(false);
+  };
+
+  /**
+   * event to handle when the remove from list item is clicked.
+   */
+  const handleRemoveFromList = () => {
+    const newStreetSearchData =
+      haveStreet && streetUsrns
+        ? searchContext.currentSearchData.results.filter((x) => x.type === 15 && !streetUsrns.includes(x.usrn))
+        : searchContext.currentSearchData.results.filter((x) => x.type === 15);
+    const newPropertySearchData =
+      haveProperty && propertyUprns
+        ? searchContext.currentSearchData.results.filter((x) => x.type === 24 && !propertyUprns.includes(x.uprn))
+        : searchContext.currentSearchData.results.filter((x) => x.type === 24);
+    const newSearchData = newStreetSearchData.concat(newPropertySearchData);
+
+    const newMapSearchStreets =
+      haveStreet && streetUsrns
+        ? mapContext.currentSearchData.streets.filter((x) => !streetUsrns.includes(x.usrn))
+        : mapContext.currentSearchData.streets;
+    const newMapSearchProperties =
+      haveProperty && propertyUprns
+        ? mapContext.currentSearchData.properties.filter((x) => !propertyUprns.includes(x.uprn))
+        : mapContext.currentSearchData.properties;
+
+    searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newSearchData);
+    mapContext.onSearchDataChange(newMapSearchStreets, newMapSearchProperties, null, null);
+    if (onClose) onClose();
   };
 
   /**
@@ -698,6 +742,34 @@ function ADSSelectionControl({
 
     if (found) {
       mapContext.onMapChange(mapContext.currentLayers.extents, null, uprn);
+    }
+  };
+
+  /**
+   * Event to handle when the make child of menu item is clicked.
+   */
+  const handleMakeChildOf = () => {
+    setAnchorPropertyActionsEl(null);
+
+    if (selectionCount === 1) {
+      setMakeChildUprn([Number(currentUprn)]);
+    } else {
+      setMakeChildUprn(propertyUprns);
+    }
+    setOpenMakeChild(true);
+    searchContext.onHideSearch(true);
+  };
+
+  /**
+   * Event to handle when the remove from parent menu item is clicked.
+   */
+  const handleRemoveFromParent = () => {
+    setAnchorPropertyActionsEl(null);
+
+    if (selectionCount === 1) {
+      // setRemoveParentUprn([Number(currentUprn)]);
+    } else {
+      // setRemoveParentUprn(propertyUprns);
     }
   };
 
@@ -1258,11 +1330,19 @@ function ADSSelectionControl({
             <Typography variant="body2" noWrap>{`${selectionCount} selected`}</Typography>
           </Stack>
           <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={1}>
-            {numberOfTypes > 1 && (
-              <Typography variant="body2" color="error">
-                No shared actions
-              </Typography>
-            )}
+            {numberOfTypes > 1 &&
+              (numberOfTypes === 2 && haveStreet && haveProperty ? (
+                <ADSSelectionButton
+                  variant="removeFromList"
+                  selectionCount={selectionCount}
+                  userCanEdit
+                  onClick={handleRemoveFromList}
+                />
+              ) : (
+                <Typography variant="body2" color="error">
+                  No shared actions
+                </Typography>
+              ))}
             {numberOfTypes === 1 && haveStreet && (
               <Fragment>
                 {selectionCount === 1 && (
@@ -1350,10 +1430,13 @@ function ADSSelectionControl({
                       </MenuItem>
                     )}
                     {process.env.NODE_ENV === "development" && (
-                      <MenuItem dense divider disabled sx={menuItemStyle(true)}>
+                      <MenuItem dense disabled sx={menuItemStyle(true)}>
                         <Typography variant="inherit">Add to list</Typography>
                       </MenuItem>
                     )}
+                    <MenuItem dense divider onClick={handleRemoveFromList} sx={menuItemStyle(true)}>
+                      <Typography variant="inherit">Remove from list</Typography>
+                    </MenuItem>
                     {process.env.NODE_ENV === "development" && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Close street</Typography>
@@ -1396,10 +1479,13 @@ function ADSSelectionControl({
                       </MenuItem>
                     )}
                     {process.env.NODE_ENV === "development" && (
-                      <MenuItem dense divider disabled sx={menuItemStyle(true)}>
+                      <MenuItem dense disabled sx={menuItemStyle(true)}>
                         <Typography variant="inherit">Add to list</Typography>
                       </MenuItem>
                     )}
+                    <MenuItem dense divider onClick={handleRemoveFromList} sx={menuItemStyle(true)}>
+                      <Typography variant="inherit">Remove from list</Typography>
+                    </MenuItem>
                     {process.env.NODE_ENV === "development" && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Close street</Typography>
@@ -1580,6 +1666,9 @@ function ADSSelectionControl({
                         <Typography variant="inherit">Add to list</Typography>
                       </MenuItem>
                     )}
+                    <MenuItem dense divider onClick={handleRemoveFromList} sx={menuItemStyle(true)}>
+                      <Typography variant="inherit">Remove from list</Typography>
+                    </MenuItem>
                     {process.env.NODE_ENV === "development" && (
                       <MenuItem dense divider disabled sx={menuItemStyle(true)}>
                         <Typography variant="inherit">Export to...</Typography>
@@ -1590,9 +1679,12 @@ function ADSSelectionControl({
                         <Typography variant="inherit">Move street</Typography>
                       </MenuItem>
                     )}
+                    <MenuItem dense onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
+                      <Typography variant="inherit">Make child of...</Typography>
+                    </MenuItem>
                     {process.env.NODE_ENV === "development" && (
-                      <MenuItem dense disabled sx={menuItemStyle(false)}>
-                        <Typography variant="inherit">Make child of...</Typography>
+                      <MenuItem dense onClick={handleRemoveFromParent} sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Remove from parent</Typography>
                       </MenuItem>
                     )}
                     <MenuItem
@@ -1744,6 +1836,9 @@ function ADSSelectionControl({
                         <Typography variant="inherit">Add to list</Typography>
                       </MenuItem>
                     )}
+                    <MenuItem dense divider onClick={handleRemoveFromList} sx={menuItemStyle(true)}>
+                      <Typography variant="inherit">Remove from list</Typography>
+                    </MenuItem>
                     {process.env.NODE_ENV === "development" && (
                       <NestedMenuItem
                         dense
@@ -1760,13 +1855,11 @@ function ADSSelectionControl({
                         <Typography variant="inherit">Move street</Typography>
                       </MenuItem>
                     )}
+                    <MenuItem dense onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
+                      <Typography variant="inherit">Make child of...</Typography>
+                    </MenuItem>
                     {process.env.NODE_ENV === "development" && (
-                      <MenuItem dense disabled sx={menuItemStyle(false)}>
-                        <Typography variant="inherit">Make child of...</Typography>
-                      </MenuItem>
-                    )}
-                    {process.env.NODE_ENV === "development" && (
-                      <MenuItem dense disabled sx={menuItemStyle(false)}>
+                      <MenuItem dense onClick={handleRemoveFromParent} sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Remove from parent</Typography>
                       </MenuItem>
                     )}
@@ -1965,6 +2058,12 @@ function ADSSelectionControl({
         propertyUprns={propertyUprns ? propertyUprns : []}
         isOpen={openMoveBlpu}
         onClose={handleMoveBlpuClose}
+      />
+      <MakeChildDialog
+        isOpen={openMakeChild}
+        variant="multi"
+        selectedUPRNs={makeChildUprn}
+        onClose={handleMakeChildClose}
       />
       <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
         <ADSInformationControl variant={"divideESU"} hasCancel onCancel={handleInformationCancel} />

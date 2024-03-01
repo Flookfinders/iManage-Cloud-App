@@ -31,6 +31,8 @@
 //    018   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    019   30.01.24 Sean Flook                 Added ESU tolerance for GeoPlace.
 //    020   05.02.24 Sean Flook                 Further filter for maintaining organisation.
+//    021   01.03.24 Joel Benford     IMANN-330 Stop defaulting interested/maintaining auth on open.
+//    022   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -110,7 +112,7 @@ import {
 } from "../utils/ADSIcons";
 
 import { adsBlueA, adsMidGreyA, adsDarkPink, adsDarkGreen } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle, FormRowStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, FormRowStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditTemplateDialog.propTypes = {
@@ -2943,51 +2945,31 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         case "maintenanceResponsibility":
           setTemplateType("Maintenance responsibility");
           setMaintenanceResponsibilityStreetStatus(data.maintenanceResponsibilityStreetStatus);
-          setMaintenanceResponsibilityCustodian(
-            data.maintenanceResponsibilityCustodian
-              ? data.maintenanceResponsibilityCustodian
-              : settingsContext.authorityCode
-          );
-          setMaintenanceResponsibilityAuthority(
-            data.maintenanceResponsibilityAuthority
-              ? data.maintenanceResponsibilityAuthority
-              : settingsContext.authorityCode
-          );
+          setMaintenanceResponsibilityCustodian(data.maintenanceResponsibilityCustodian);
+          setMaintenanceResponsibilityAuthority(data.maintenanceResponsibilityAuthority);
           break;
 
         case "reinstatementCategory":
           setTemplateType("Reinstatement category");
           setReinstatementCategoryReinstatementCategory(data.reinstatementCategoryReinstatementCategory);
-          setReinstatementCategoryCustodian(
-            data.reinstatementCategoryCustodian ? data.reinstatementCategoryCustodian : settingsContext.authorityCode
-          );
-          setReinstatementCategoryAuthority(
-            data.reinstatementCategoryAuthority ? data.reinstatementCategoryAuthority : settingsContext.authorityCode
-          );
+          setReinstatementCategoryCustodian(data.reinstatementCategoryCustodian);
+          setReinstatementCategoryAuthority(data.reinstatementCategoryAuthority);
           break;
 
         case "osSpecialDesignation":
           setTemplateType("Special designation");
           setOsSpecialDesignationSpecialDesignation(data.osSpecialDesignationSpecialDesignation);
-          setOsSpecialDesignationCustodian(
-            data.osSpecialDesignationCustodian ? data.osSpecialDesignationCustodian : settingsContext.authorityCode
-          );
-          setOsSpecialDesignationAuthority(
-            data.osSpecialDesignationAuthority ? data.osSpecialDesignationAuthority : settingsContext.authorityCode
-          );
+          setOsSpecialDesignationCustodian(data.osSpecialDesignationCustodian);
+          setOsSpecialDesignationAuthority(data.osSpecialDesignationAuthority);
           break;
 
         case "interest":
           setTemplateType("Interested organisation");
           setInterestStreetStatus(data.interestStreetStatus);
-          setInterestOrganisation(
-            data.interestOrganisation ? data.interestOrganisation : settingsContext.authorityCode
-          );
+          setInterestOrganisation(data.interestOrganisation);
           setInterestType(data.interestType);
           setInterestDistrict(data.interestDistrict);
-          setInterestMaintainingOrganisation(
-            data.maintainingOrganisation ? data.maintainingOrganisation : settingsContext.authorityCode
-          );
+          setInterestMaintainingOrganisation(data.maintainingOrganisation);
           break;
 
         case "construction":
@@ -2996,18 +2978,14 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           setConstructionReinstatementType(data.reinstatementType);
           setConstructionAggregateAbrasionValue(data.aggregateAbrasionValue);
           setConstructionPolishedStoneValue(data.polishedStoneValue);
-          setConstructionOrganisation(
-            data.constructionOrganisation ? data.constructionOrganisation : settingsContext.authorityCode
-          );
+          setConstructionOrganisation(data.constructionOrganisation);
           setConstructionDistrict(data.constructionDistrict);
           break;
 
         case "specialDesignation":
           setTemplateType("Special designation");
           setSpecialDesigType(data.specialDesigType);
-          setSpecialDesigOrganisation(
-            data.specialDesigOrganisation ? data.specialDesigOrganisation : settingsContext.authorityCode
-          );
+          setSpecialDesigOrganisation(data.specialDesigOrganisation);
           setSpecialDesigDistrict(data.specialDesigDistrict);
           setSpecialDesigPeriodicity(data.specialDesigPeriodicity);
           break;
@@ -3015,7 +2993,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         case "hww":
           setTemplateType("Height, width & weight restriction");
           setHwwDesignation(data.hwwDesignation);
-          setHwwOrganisation(data.hwwOrganisation ? data.hwwOrganisation : settingsContext.authorityCode);
+          setHwwOrganisation(data.hwwOrganisation);
           setHwwDistrict(data.hwwDistrict);
           break;
 
@@ -3030,7 +3008,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           setProwMotorisedVehicleAccess(data.motorisedVehicleAccess ? data.motorisedVehicleAccess : false);
           setProwPromotedRoute(data.promotedRoute ? data.promotedRoute : false);
           setProwAccessibleRoute(data.accessibleRoute ? data.accessibleRoute : false);
-          setProwOrganisation(data.prowOrganisation ? data.prowOrganisation : settingsContext.authorityCode);
+          setProwOrganisation(data.prowOrganisation);
           setProwDistrict(data.prowDistrict);
           break;
 
@@ -3176,7 +3154,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
     }
 
     setShowDialog(isOpen);
-  }, [variant, data, isOpen, settingsContext.authorityCode, settingsContext.isScottish]);
+  }, [variant, data, isOpen, settingsContext.isScottish]);
 
   return (
     <Dialog
@@ -3186,14 +3164,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
       maxWidth="sm"
       onClose={handleDialogClose}
     >
-      <DialogTitle
-        id="edit-template-dialog"
-        sx={{
-          borderBottomWidth: "1px",
-          borderBottomStyle: "solid",
-          borderBottomColor: adsBlueA,
-        }}
-      >
+      <DialogTitle id="edit-template-dialog" sx={dialogTitleStyle}>
         <Typography sx={{ fontSize: "20px" }}>{getDialogTitle()}</Typography>
         <IconButton
           aria-label="close"

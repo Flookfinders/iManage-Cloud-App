@@ -35,6 +35,7 @@
 //    022   08.02.24 Joel Benford     RTAB3     GetAvatarTooltip now takes streetStateCode
 //    023   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //    024   16.02.24 Sean Flook        ESU17_GP Added mergeArrays.
+//    025   27.02.24 Sean Flook           MUL16 Added renderErrors.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1565,4 +1566,30 @@ export const mergeArrays = (a, b, predicate = (a, b) => a === b) => {
   // add all items from B to copy C if they're not already present
   b.forEach((bItem) => (c.some((cItem) => predicate(bItem, cItem)) ? null : c.push(bItem)));
   return c;
+};
+
+/**
+ * Method to render the contents of the error cell in the grid.
+ *
+ * @param {object} params The parameters object
+ * @returns {JSX.Element} The contents of the error cell in the grid.
+ */
+export const renderErrors = (params) => {
+  const formatError = (error) => {
+    if (error && error.includes(": ")) {
+      const errorParts = error.split(": ");
+      if (errorParts && errorParts.length === 2) return errorParts[1];
+      else return error;
+    } else return error;
+  };
+
+  if (Array.isArray(params.row.errors))
+    return (
+      <Stack direction="column" spacing={0}>
+        {params.row.errors.map((error) => {
+          return <Typography variant="body2">{formatError(error)}</Typography>;
+        })}
+      </Stack>
+    );
+  else return <Typography variant="body2">{formatError(params.row.errors)}</Typography>;
 };

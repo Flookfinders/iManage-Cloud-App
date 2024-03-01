@@ -16,6 +16,8 @@
 //    003   13.02.24 Sean Flook                 Added inexactASD variant.
 //    004   16.02.24 Sean Flook        ESU26_GP Added selectESUs variant.
 //    005   20.02.24 Sean Flook            MUL1 Added selectProperties variant.
+//    006   23.02.24 Joel Benford     IMANN-287 Correct hover blue
+//    007   23.02.24 Sean Flook        ESU29_GP Updated text.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -29,11 +31,11 @@ import { Box, Stack } from "@mui/system";
 
 import CloseIcon from "@mui/icons-material/Close";
 
-import { adsLightGreyA50, adsPaleBlueA, adsBlueA, adsLightBlue10 } from "../utils/ADSColours";
+import { adsLightGreyA50, adsPaleBlueA, adsBlueA } from "../utils/ADSColours";
 
 ADSInformationControl.propTypes = {
   variant: PropTypes.oneOf([
-    "selectESUs",
+    "manageESUs",
     "createESU",
     "assignESUList",
     "assignESUMap",
@@ -70,8 +72,8 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
       case "createESU":
         return "Create new ESU";
 
-      case "selectESUs":
-        return "Select ESU";
+      case "manageESUs":
+        return "Manage ESUs";
 
       case "assignESUList":
       case "assignESUMap":
@@ -107,8 +109,8 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
       case "createESU":
         return "Use the polyline tool to create ESU geometry, then fill out the form and click OK.";
 
-      case "selectESUs":
-        return "Choose ESUs by clicking on them, then choose what you want to do from the toolbar above.";
+      case "manageESUs":
+        return "Select ESUs in the list or map to divide, merge, or unassign them.";
 
       case "assignESUList":
         return "Choose ESUs by clicking on them, then choose the Assign option in the toolbar above.";
@@ -124,7 +126,7 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
 
       case "partRoadASD":
       case "inexactASD":
-        return "Edit or create new geometry using the drawing tools.";
+        return "Modify the current geometry by editing it directly, or use the polyline tool to replace it with a new one.";
 
       case "selectProperties":
         return "Select the properties using the selection tools, then choose what you want to do from the toolbar above.";
@@ -188,7 +190,7 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
                 mt: "6px",
                 color: adsBlueA,
                 "&:hover": {
-                  backgroundColor: adsLightBlue10,
+                  backgroundColor: adsPaleBlueA,
                 },
               }}
               variant="text"

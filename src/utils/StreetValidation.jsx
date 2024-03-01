@@ -13,14 +13,14 @@
 //  One Way Exemption:          1600023
 //  Highway Dedication:         1700022
 //  Successor Cross Reference:  3000017
-//  Maintenance Responsibility: 5100029
-//  Reinstatement Category:     5200026
-//  OS Special Designation:     5300028
-//  Interest:                   6100050
-//  Construction:               6200051
-//  Special Designation:        6300042
+//  Maintenance Responsibility: 5100029 - 5100030
+//  Reinstatement Category:     5200026 - 5200027
+//  OS Special Designation:     5300028 - 5300029
+//  Interest:                   6100050 - 6100051
+//  Construction:               6200051 - 6200052
+//  Special Designation:        6300042 - 6300050
 //  Height Width Weight:        6400048
-//  Public Right of Way:        6600058
+//  Public Right of Way:        6600058 - 6600064
 //  Note:                       7200012
 //
 //--------------------------------------------------------------------------------------------------

@@ -16,6 +16,7 @@
 //    003   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   11.01.24 Sean Flook                 Fix warnings.
+//    006   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle and renderErrors.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ import ADSSelectControl from "../components/ADSSelectControl";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSDateControl from "../components/ADSDateControl";
 
-import { GetCurrentDate } from "../utils/HelperUtils";
+import { GetCurrentDate, renderErrors } from "../utils/HelperUtils";
 import { GetPropertyMapData, SaveProperty, addressToTitleCase } from "../utils/PropertyUtils";
 import { ValidateCrossRefData } from "../utils/PropertyValidation";
 
@@ -72,7 +73,7 @@ import {
   adsDarkGrey20,
   adsDarkPink,
 } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
 import { useTheme, makeStyles } from "@mui/styles";
 
@@ -168,6 +169,7 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
       cellClassName: "idox-multi-add-xref-error-data-grid-error",
       headerClassName: "idox-multi-add-xref-error-data-grid-header",
       flex: 30,
+      renderCell: renderErrors,
     },
   ];
 
@@ -652,10 +654,7 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
       maxWidth="sm"
       onClose={handleDialogClose}
     >
-      <DialogTitle
-        id="multi-add-xref-dialog"
-        sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
-      >
+      <DialogTitle id="multi-add-xref-dialog" sx={dialogTitleStyle}>
         <Typography variant="h6">{`${title}`}</Typography>
         <IconButton
           aria-label="close"
@@ -785,7 +784,7 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
                 <Typography variant="body1" gutterBottom sx={{ fontWeight: 700, color: adsGreenC }}>
                   {updatedCount.current}
                 </Typography>
-                <Typography variant="body2" gutterBottom>
+                <Typography variant="body1" gutterBottom>
                   properties were successfully updated
                 </Typography>
               </Stack>
@@ -795,7 +794,7 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
                     <Typography variant="body1" gutterBottom sx={{ fontWeight: 700, color: adsRed }}>
                       {failedCount.current}
                     </Typography>
-                    <Typography variant="body2" gutterBottom>
+                    <Typography variant="body1" gutterBottom>
                       properties were not updated:
                     </Typography>
                   </Stack>
@@ -828,6 +827,7 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
                         disableColumnMenu
                         disableRowSelectionOnClick
                         pagination
+                        rowHeight={32}
                         sortModel={sortModel}
                         rowSelectionModel={selectionModel}
                         onRowSelectionModelChange={(newSelectionModel) => {
@@ -870,7 +870,7 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
             </Button>
           </Stack>
         ) : (
-          <Stack direction="row" spacing={1} justifyContent="center" alignItems="center">
+          <Fragment>
             <Button
               onClick={handleCloseClick}
               autoFocus
@@ -885,13 +885,13 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
                 onClick={handleAddToListClick}
                 autoFocus
                 variant="contained"
-                sx={whiteButtonStyle}
+                sx={{ ...whiteButtonStyle, position: "relative", left: "-96px", top: "-68px" }}
                 startIcon={<PlaylistAddIcon />}
               >
                 Add to list
               </Button>
             )}
-          </Stack>
+          </Fragment>
         )}
       </DialogActions>
       {updating && (

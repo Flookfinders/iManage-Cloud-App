@@ -14,6 +14,7 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    004   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -28,8 +29,7 @@ import ADSAddressableObjectControl from "../components/ADSAddressableObjectContr
 import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 
-import { adsBlueA } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditPaoDetailsDialog.propTypes = {
@@ -156,10 +156,7 @@ function EditPaoDetailsDialog({ isOpen, data, onDone, onClose }) {
       maxWidth="sm"
       onClose={handleDialogClose}
     >
-      <DialogTitle
-        id="edit-pao-details-dialog"
-        sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
-      >
+      <DialogTitle id="edit-pao-details-dialog" sx={dialogTitleStyle}>
         <Typography variant="h6">PAO details</Typography>
         <IconButton
           aria-label="close"

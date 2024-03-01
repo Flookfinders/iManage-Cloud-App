@@ -44,6 +44,7 @@
 //    030   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    031   19.02.24 Sean Flook        ESU16_GP Do not clear the controls if we have items checked.
 //    032   20.02.24 Sean Flook            MUL1 Added removal of items from the list.
+//    033   27.02.24 Sean Flook           MUL16 Changes required to handle parent child relationships.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -86,6 +87,7 @@ import ADSSelectionControl from "../components/ADSSelectionControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import AddPropertyWizardDialog from "../dialogs/AddPropertyWizardDialog";
 import HistoricPropertyDialog from "../dialogs/HistoricPropertyDialog";
+import MakeChildDialog from "../dialogs/MakeChildDialog";
 
 import {
   copyTextToClipboard,
@@ -174,6 +176,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   const [openPropertyWizard, setOpenPropertyWizard] = useState(false);
 
   const [openHistoricProperty, setOpenHistoricProperty] = useState(false);
+
+  const [openMakeChild, setOpenMakeChild] = useState(false);
+  const [makeChildUprn, setMakeChildUprn] = useState([]);
 
   const [errorOpen, setErrorOpen] = useState(false);
   const errorType = useRef(null);
@@ -487,6 +492,15 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   };
 
   /**
+   * Event to handle when the make child of dialog closes.
+   */
+  const handleMakeChildClose = () => {
+    setOpenMakeChild(false);
+    searchContext.onHideSearch(false);
+    setMakeChildUprn([]);
+  };
+
+  /**
    * Event to handle when a record is clicked.
    *
    * @param {object} event The event object.
@@ -774,6 +788,32 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   };
 
   /**
+   * Method to make the record a child.
+   *
+   * @param {object} event The event object.
+   * @param {object} rec The search record.
+   */
+  const handleMakeChildOf = (event, rec) => {
+    handlePropertyActionsMenuClose(event);
+
+    if (rec) {
+      setMakeChildUprn([rec.uprn]);
+      setOpenMakeChild(true);
+      searchContext.onHideSearch(true);
+    }
+  };
+
+  /**
+   * Method to remove the record from its parent property.
+   *
+   * @param {object} event The event object.
+   * @param {object} rec The search record.
+   */
+  const handleRemoveFromParent = (event, rec) => {
+    handlePropertyActionsMenuClose(event);
+  };
+
+  /**
    * Method to close the street.
    *
    * @param {object} event The event object.
@@ -989,6 +1029,16 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   const getAddressFromLPIKey = (lpiKey) => {
     const property = data.find((x) => x.id === lpiKey);
     return property ? property.formattedaddress : null;
+  };
+
+  /**
+   * Method to get the unique selected USRNs from the ids.
+   *
+   * @param {array} ids The array of ids for the selected streets
+   * @returns {array} An array of the unique selected USRNs.
+   */
+  const getUsrnsFromIds = (ids) => {
+    return [...new Set(data.filter((x) => ids.includes(x.id)).map((x) => x.usrn))];
   };
 
   /**
@@ -1631,9 +1681,20 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                   <Typography variant="inherit">Move street</Typography>
                                 </MenuItem>
                               )}
+                              <MenuItem
+                                dense
+                                sx={menuItemStyle(false)}
+                                onClick={(event) => handleMakeChildOf(event, rec)}
+                              >
+                                <Typography variant="inherit">Make child of...</Typography>
+                              </MenuItem>
                               {process.env.NODE_ENV === "development" && (
-                                <MenuItem dense disabled sx={menuItemStyle(false)}>
-                                  <Typography variant="inherit">Make child of...</Typography>
+                                <MenuItem
+                                  dense
+                                  sx={menuItemStyle(false)}
+                                  onClick={(event) => handleRemoveFromParent(event, rec)}
+                                >
+                                  <Typography variant="inherit">Remove from parent</Typography>
                                 </MenuItem>
                               )}
                               {process.env.NODE_ENV === "development" && (
@@ -2160,9 +2221,20 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                           <Typography variant="inherit">Move street</Typography>
                                         </MenuItem>
                                       )}
+                                      <MenuItem
+                                        dense
+                                        onClick={(event) => handleMakeChildOf(event, rec)}
+                                        sx={menuItemStyle(false)}
+                                      >
+                                        <Typography variant="inherit">Make child of...</Typography>
+                                      </MenuItem>
                                       {process.env.NODE_ENV === "development" && (
-                                        <MenuItem dense disabled sx={menuItemStyle(false)}>
-                                          <Typography variant="inherit">Make child of...</Typography>
+                                        <MenuItem
+                                          dense
+                                          sx={menuItemStyle(false)}
+                                          onClick={(event) => handleRemoveFromParent(event, rec)}
+                                        >
+                                          <Typography variant="inherit">Remove from parent</Typography>
                                         </MenuItem>
                                       )}
                                       {process.env.NODE_ENV === "development" && (
@@ -2356,6 +2428,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
           currentAddress={
             checked && checked.length === 1 && propertyCount === 1 ? getAddressFromLPIKey(checked[0]) : null
           }
+          streetUsrns={getUsrnsFromIds(checked)}
           propertyUprns={getUprnsFromLpiKeys(checked)}
           onSetCopyOpen={handleSetCopyOpen}
           onError={handleSelectionError}
@@ -2398,6 +2471,12 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
           onClose={handlePropertyWizardClose}
         />
         <HistoricPropertyDialog open={openHistoricProperty} onClose={handleHistoricPropertyClose} />
+        <MakeChildDialog
+          isOpen={openMakeChild}
+          variant="multi"
+          selectedUPRNs={makeChildUprn}
+          onClose={handleMakeChildClose}
+        />
       </div>
     </Fragment>
   );

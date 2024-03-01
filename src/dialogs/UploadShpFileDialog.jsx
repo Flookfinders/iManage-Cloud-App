@@ -15,6 +15,7 @@
 //    002   03.01.24 Sean Flook                 Fixed warning.
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    004   11.01.24 Sean Flook                 Fix warnings.
+//    005   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -47,8 +48,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import UploadIcon from "@mui/icons-material/Upload";
 import CancelIcon from "@mui/icons-material/Cancel";
 
-import { blueButtonStyle, whiteButtonStyle, tooltipStyle } from "../utils/ADSStyles";
 import { adsBlueA, adsDarkGrey, adsOffWhite, adsMidGreyA } from "../utils/ADSColours";
+import { blueButtonStyle, whiteButtonStyle, tooltipStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 UploadShpFileDialog.propTypes = {
@@ -265,10 +266,7 @@ function UploadShpFileDialog({ isOpen, currentIds, onClose }) {
   return (
     <div>
       <Dialog open={showDialog} aria-labelledby="message-dialog" fullWidth maxWidth="md" onClose={handleCancelClick}>
-        <DialogTitle
-          id="message-dialog"
-          sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA, mb: "8px" }}
-        >
+        <DialogTitle id="message-dialog" sx={dialogTitleStyle}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
             Load Shape file
           </Typography>

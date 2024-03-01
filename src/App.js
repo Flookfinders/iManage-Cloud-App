@@ -41,7 +41,9 @@
 //    028   05.02.24 Sean Flook                 Further changes required for operational districts.
 //    029   13.02.24 Sean Flook                 Pass the authorityCode to ValidatePublicRightOfWayData.
 //    030   14.02.24 Sean Flook        ASD10_GP Changes required to filter the ASD map layers when editing a record.
-//    031   20.02.24 Sean Flook            MUL1 Changes required for handling selecting properties fom the map.
+//    031   20.02.24 Sean Flook            MUL1 Changes required for handling selecting properties from the map.
+//    032   26.02.24 Joel Benford     IMANN-242 Add DbAuthority to lookups context
+//    033   27.02.24 Sean Flook           MUL16 Added ability too hide the search control.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -131,6 +133,7 @@ function App() {
     postcodes: [],
     wards: [],
     parishes: [],
+    dbAuthorities: [],
   });
 
   const [metadata, setMetadata] = useState(null);
@@ -180,6 +183,7 @@ function App() {
   });
 
   const [searchOpen, setSearchOpen] = useState(false);
+  const [hideSearch, setHideSearch] = useState(false);
 
   const [searchFilter, setSearchFilter] = useState({});
 
@@ -459,6 +463,7 @@ function App() {
    * @param {array} postcodes The list of postcodes.
    * @param {array} wards The list of wards (GeoPlace only).
    * @param {array} parishes The list of parishes (GeoPlace only).
+   * @param {array} dbAuthorities The list of dbAuthorities.
    */
   function HandleLookupChange(
     validationMessages,
@@ -473,7 +478,8 @@ function App() {
     postTowns,
     postcodes,
     wards,
-    parishes
+    parishes,
+    dbAuthorities
   ) {
     setLookups({
       validationMessages: validationMessages,
@@ -489,13 +495,14 @@ function App() {
       postcodes: postcodes,
       wards: wards,
       parishes: parishes,
+      dbAuthorities: dbAuthorities,
     });
   }
 
   /**
    * Event to handle when a lookup is updated.
    *
-   * @param {string} variant The type of lookup that is being updated ["validationMessage", "locality", "town", "island", "administrativeArea", "operationalDistrict", "crossReference", "subLocality", "streetDescriptor", "postTown", "postcode", "ward", "parish"]
+   * @param {string} variant The type of lookup that is being updated ["validationMessage", "locality", "town", "island", "administrativeArea", "operationalDistrict", "crossReference", "subLocality", "streetDescriptor", "postTown", "postcode", "ward", "parish", "dbAuthority"]
    * @param {Array} newLookups The updated list of lookups.
    */
   function HandleUpdateLookup(variant, newLookups) {
@@ -513,6 +520,7 @@ function App() {
       postcodes: variant === "postcode" ? newLookups : lookups.postcodes,
       wards: variant === "ward" ? newLookups : lookups.wards,
       parishes: variant === "parish" ? newLookups : lookups.parishes,
+      dbAuthorities: variant === "dbAuthority" ? newLookups : lookups.dbAuthorities,
     });
   }
 
@@ -908,10 +916,20 @@ function App() {
 
   /**
    * Event to handle the changing of the state of the search dropdown.
+   *
    * @param {boolean} open True if the search dropdown is being displayed; otherwise false.
    */
   function HandleSearchOpenChange(open) {
     setSearchOpen(open);
+  }
+
+  /**
+   * Event to handle when the search control needs to be hidden.
+   *
+   * @param {boolean} hide True if the search control should be hidden; otherwise false.
+   */
+  function HandleHideSearch(hide) {
+    setHideSearch(hide);
   }
 
   /**
@@ -2513,9 +2531,11 @@ function App() {
                   currentSearchData: searchData,
                   previousSearchData: previousSearchData,
                   searchPopupOpen: searchOpen,
+                  hideSearch: hideSearch,
                   onSearchDataChange: HandleSearchDataChange,
                   onPropertiesSelected: HandlePropertiesSelected,
                   onSearchOpen: HandleSearchOpenChange,
+                  onHideSearch: HandleHideSearch,
                 }}
               >
                 <FilterContext.Provider

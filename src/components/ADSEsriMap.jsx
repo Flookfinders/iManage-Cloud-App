@@ -59,6 +59,7 @@
 //    045   16.02.24 Sean Flook                 Corrected the parameters in GetViaEuropaFeatureAtCoord.
 //    046   16.02.24 Sean Flook        ESU16_GP Whilst assigning ESU prevent anything else from occurring with the ESUs.
 //    047   20.02.24 Sean Flook            MUL1 Changes required to selecting properties from the map.
+//    048   22.02.24 Sean Flook         ESU3_GP Set the fillOpacity on the highlight to 0.25.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1990,7 +1991,7 @@ function ADSEsriMap(startExtent) {
       },
       highlightOptions: {
         color: [217, 0, 182, 255],
-        fillOpacity: 0,
+        fillOpacity: 0.25,
       },
       popup: {
         collapseEnabled: false,

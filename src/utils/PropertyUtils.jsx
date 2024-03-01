@@ -34,6 +34,7 @@
 //    021   12.01.24 Sean Flook       IMANN-163 Handle when we have no search results.
 //    022   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    023   25.01.24 Sean Flook                 Bug fix.
+//    024   01.03.24 Sean Flook           MUL16 Added some error trapping.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1694,7 +1695,7 @@ export async function SaveProperty(currentProperty, newProperty, userToken, prop
             break;
 
           default:
-            const contentType = res.headers.get("content-type");
+            const contentType = res && res.headers ? res.headers.get("content-type") : null;
             console.error("[SF] SaveProperty - Failed", {
               res: res,
               contentType: contentType,

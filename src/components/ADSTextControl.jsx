@@ -27,6 +27,7 @@
 //    015   29.01.24 Sean Flook                 Updated comment.
 //    016   01.02.24 Sean Flook                 Correctly handle when no label is supplied.
 //    017   13.02.24 Sean Flook                 For multi-line controls display the characters left at the same level as the label.
+//    018   21.02.24 Sean Flook           MUL16 Added noLeftPadding parameter.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -107,6 +108,7 @@ ADSTextControl.propTypes = {
   isRequired: PropTypes.bool,
   isFocused: PropTypes.bool,
   isHidden: PropTypes.bool,
+  noLeftPadding: PropTypes.bool,
   loading: PropTypes.bool,
   displayCharactersLeft: PropTypes.bool,
   maxLength: PropTypes.number.isRequired,
@@ -136,6 +138,7 @@ ADSTextControl.defaultProps = {
   isRequired: false,
   isFocused: false,
   isHidden: false,
+  noLeftPadding: false,
   loading: false,
   displayCharactersLeft: false,
   minLines: 1,
@@ -149,6 +152,7 @@ function ADSTextControl({
   isRequired,
   isFocused,
   isHidden,
+  noLeftPadding,
   loading,
   displayCharactersLeft,
   maxLength,
@@ -276,7 +280,7 @@ function ADSTextControl({
         container
         justifyContent="flex-start"
         alignItems={multiline.current ? "flex-start" : "center"}
-        sx={FormRowStyle(hasError.current)}
+        sx={FormRowStyle(hasError.current, noLeftPadding)}
       >
         {label ? (
           multiline.current && value && value.length > 0 ? (

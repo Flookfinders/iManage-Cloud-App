@@ -17,6 +17,7 @@
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   11.01.24 Sean Flook                 Fix warnings.
 //    006   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    007   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle and renderErrors.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -47,7 +48,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSTextControl from "../components/ADSTextControl";
 
-import { GetLookupLabel, filteredLookup } from "../utils/HelperUtils";
+import { GetLookupLabel, filteredLookup, renderErrors } from "../utils/HelperUtils";
 import { GetPropertyMapData, SaveProperty, addressToTitleCase } from "../utils/PropertyUtils";
 
 import OfficialAddress from "./../data/OfficialAddress";
@@ -68,7 +69,7 @@ import {
   adsDarkGrey10,
   adsDarkGrey20,
 } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
 import { useTheme, makeStyles } from "@mui/styles";
 
@@ -159,6 +160,7 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
       cellClassName: "idox-multi-edit-address-fields-error-data-grid-error",
       headerClassName: "idox-multi-edit-address-fields-error-data-grid-header",
       flex: 30,
+      renderCell: renderErrors,
     },
   ];
 
@@ -596,10 +598,7 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
       maxWidth="sm"
       onClose={handleDialogClose}
     >
-      <DialogTitle
-        id="multi-edit-address-fields-dialog"
-        sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
-      >
+      <DialogTitle id="multi-edit-address-fields-dialog" sx={dialogTitleStyle}>
         <Typography variant="h6">{`${title}`}</Typography>
         <IconButton
           aria-label="close"
@@ -722,7 +721,7 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                 <Typography variant="body1" gutterBottom sx={{ fontWeight: 700, color: adsGreenC }}>
                   {updatedCount.current}
                 </Typography>
-                <Typography variant="body2" gutterBottom>
+                <Typography variant="body1" gutterBottom>
                   properties were successfully updated
                 </Typography>
               </Stack>
@@ -732,7 +731,7 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                     <Typography variant="body1" gutterBottom sx={{ fontWeight: 700, color: adsRed }}>
                       {failedCount.current}
                     </Typography>
-                    <Typography variant="body2" gutterBottom>
+                    <Typography variant="body1" gutterBottom>
                       properties were not updated:
                     </Typography>
                   </Stack>
@@ -765,6 +764,7 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                         disableColumnMenu
                         disableRowSelectionOnClick
                         pagination
+                        rowHeight={32}
                         sortModel={sortModel}
                         rowSelectionModel={selectionModel}
                         onRowSelectionModelChange={(newSelectionModel) => {
@@ -807,7 +807,7 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
             </Button>
           </Stack>
         ) : (
-          <Stack direction="row" spacing={1} justifyContent="center" alignItems="center">
+          <Fragment>
             <Button
               onClick={handleCloseClick}
               autoFocus
@@ -822,13 +822,13 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                 onClick={handleAddToListClick}
                 autoFocus
                 variant="contained"
-                sx={whiteButtonStyle}
+                sx={{ ...whiteButtonStyle, position: "relative", left: "-96px", top: "-68px" }}
                 startIcon={<PlaylistAddIcon />}
               >
                 Add to list
               </Button>
             )}
-          </Stack>
+          </Fragment>
         )}
       </DialogActions>
       {updating && (

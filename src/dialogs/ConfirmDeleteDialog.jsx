@@ -21,6 +21,7 @@
 //    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //    009   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    010   08.01.24 Sean Flook                 Changes to fix warnings.
+//    011   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -50,7 +51,8 @@ import CircleIcon from "@mui/icons-material/Circle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { adsBlueA, adsMidGreyA, adsRed, adsWhite, adsPaleBlueA, adsLightGreyC, adsDarkRed } from "../utils/ADSColours";
+import { adsBlueA, adsMidGreyA, adsRed, adsWhite, adsPaleBlueA, adsDarkRed } from "../utils/ADSColours";
+import { dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 /* #endregion imports */
@@ -1099,10 +1101,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
       sx={{ p: "16px 16px 24px 16px", borderRadius: "9px" }}
       onClose={handleCancel}
     >
-      <DialogTitle
-        id="confirmation-dialog-title"
-        sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsLightGreyC, mb: "8px" }}
-      >
+      <DialogTitle id="confirmation-dialog-title" sx={dialogTitleStyle}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ fontWeight: 600 }}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
             {title}

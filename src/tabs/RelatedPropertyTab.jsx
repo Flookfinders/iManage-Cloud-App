@@ -36,6 +36,8 @@
 //    022   14.02.24 Joel Benford     RTAB5     Interim check-in for comments
 //    023   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    024   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
+//    025   22.02.24 Joel Benford     IMANN-287 Checked items blue
+//    026   01.03.24 Sean Flook           MUL16 Handle make child of.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -49,6 +51,7 @@ import MapContext from "../context/mapContext";
 import UserContext from "../context/userContext";
 import StreetContext from "../context/streetContext";
 import SettingsContext from "../context/settingsContext";
+import SearchContext from "../context/searchContext";
 
 import {
   Typography,
@@ -65,6 +68,7 @@ import {
 import { Box, Stack } from "@mui/system";
 import { TreeView, TreeItem } from "@mui/x-tree-view";
 import ADSSelectionControl from "../components/ADSSelectionControl";
+import MakeChildDialog from "../dialogs/MakeChildDialog";
 
 import { GetAvatarColour, GetAvatarTooltip, copyTextToClipboard, openInStreetView } from "./../utils/HelperUtils";
 import { addressToTitleCase, GetPropertyMapData } from "./../utils/PropertyUtils";
@@ -109,6 +113,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
   const userContext = useContext(UserContext);
   const streetContext = useContext(StreetContext);
   const settingsContext = useContext(SettingsContext);
+  const searchContext = useContext(SearchContext);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -127,6 +132,9 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
 
   const [allChecked, setAllChecked] = useState(false);
   const [partialChecked, setPartialChecked] = useState(false);
+
+  const [openMakeChild, setOpenMakeChild] = useState(false);
+  const [makeChildUprn, setMakeChildUprn] = useState([]);
 
   /**
    * Event to handle when a node is selected.
@@ -336,6 +344,31 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
       copyTextToClipboard(text);
       if (onSetCopyOpen) onSetCopyOpen(true, dataType);
     }
+  };
+
+  /**
+   * Method to make the record a child.
+   *
+   * @param {object} event The event object.
+   * @param {object} rec The related record.
+   */
+  const handleMakeChildOf = (event, record) => {
+    event.stopPropagation();
+
+    if (record) {
+      setMakeChildUprn([record.uprn]);
+      setOpenMakeChild(true);
+      searchContext.onHideSearch(true);
+    }
+  };
+
+  /**
+   * Event to handle when the make child of dialog closes.
+   */
+  const handleMakeChildClose = () => {
+    setOpenMakeChild(false);
+    searchContext.onHideSearch(false);
+    setMakeChildUprn([]);
   };
 
   /**
@@ -714,9 +747,12 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
             <Typography variant="inherit">Move street</Typography>
           </MenuItem>
         )}
+        <MenuItem dense onClick={(event) => handleMakeChildOf(event, record)} sx={menuItemStyle(false)}>
+          <Typography variant="inherit">Make child of...</Typography>
+        </MenuItem>
         {process.env.NODE_ENV === "development" && (
           <MenuItem dense disabled sx={menuItemStyle(false)}>
-            <Typography variant="inherit">Make child of...</Typography>
+            <Typography variant="inherit">Remove from parent</Typography>
           </MenuItem>
         )}
         {process.env.NODE_ENV === "development" && (
@@ -746,34 +782,35 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
   }
 
   /**
-   * Method used to style the tree items.
+   * Method used to style the tree items by whether they are checked and/or current.
    *
-   * @param {boolean} currentProperty True if the tree item is the currently selected property.
+   * @param {number} uprn Uprn for the tree item.
    * @returns {object} The styling to use for the tree item.
    */
-  const treeItemStyle = (currentProperty) => {
+  const treeItemStyle = (uprn) => {
+    const currentProperty = uprn.toString() === propertyContext.currentProperty.uprn.toString();
+    const checked = propertyChecked.includes(uprn.toString());
     if (currentProperty)
       return {
-        pt: theme.spacing(1),
-        pb: theme.spacing(1),
+        backgroundColor: checked ? adsPaleBlueA : adsWhite,
         borderBottom: `solid ${adsLightGreyB} 1px`,
-        // borderRight: `solid ${adsLightGreyD} 3px`,
-        backgroundColor: adsWhite,
+        pb: theme.spacing(1),
+        pt: theme.spacing(1),
         "&:hover": {
-          borderRight: `solid ${adsLightGreyD} 3px`,
           backgroundColor: adsPaleBlueA,
+          borderRight: `solid ${adsLightGreyD} 3px`,
           color: adsBlueA,
         },
       };
     else
       return {
-        pt: theme.spacing(1),
-        pb: theme.spacing(1),
+        backgroundColor: checked ? adsPaleBlueA : "inherit",
         borderBottom: `solid ${adsLightGreyB} 1px`,
-        // borderRightWidth: "3px",
+        pb: theme.spacing(1),
+        pt: theme.spacing(1),
         "&:hover": {
-          borderRight: `solid ${adsLightGreyD} 3px`,
           backgroundColor: adsPaleBlueA,
+          borderRight: `solid ${adsLightGreyD} 3px`,
           color: adsBlueA,
         },
       };
@@ -939,7 +976,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                     <TreeItem
                       key={rec.uprn}
                       nodeId={rec.uprn.toString()}
-                      sx={treeItemStyle(rec.uprn.toString() === propertyContext.currentProperty.uprn.toString())}
+                      sx={treeItemStyle(rec.uprn)}
                       label={
                         <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
                           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
@@ -1097,9 +1134,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                               <TreeItem
                                 key={child1.uprn}
                                 nodeId={child1.uprn.toString()}
-                                sx={treeItemStyle(
-                                  child1.uprn.toString() === propertyContext.currentProperty.uprn.toString()
-                                )}
+                                sx={treeItemStyle(child1.uprn)}
                                 label={
                                   <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
                                     <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
@@ -1258,9 +1293,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                         <TreeItem
                                           key={child2.uprn}
                                           nodeId={child2.uprn.toString()}
-                                          sx={treeItemStyle(
-                                            child2.uprn.toString() === propertyContext.currentProperty.uprn.toString()
-                                          )}
+                                          sx={treeItemStyle(child2.uprn)}
                                           label={
                                             <Stack
                                               direction="row"
@@ -1457,10 +1490,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
                                                   <TreeItem
                                                     key={child3.uprn}
                                                     nodeId={child3.uprn.toString()}
-                                                    sx={treeItemStyle(
-                                                      child3.uprn.toString() ===
-                                                        propertyContext.currentProperty.uprn.toString()
-                                                    )}
+                                                    sx={treeItemStyle(child3.uprn)}
                                                     label={
                                                       <Stack
                                                         direction="row"
@@ -1691,6 +1721,12 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
           onClose={handleCloseSelection}
         />
       </Popper>
+      <MakeChildDialog
+        isOpen={openMakeChild}
+        variant="multi"
+        selectedUPRNs={makeChildUprn}
+        onClose={handleMakeChildClose}
+      />
     </Fragment>
   );
 }

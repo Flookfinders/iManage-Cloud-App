@@ -20,6 +20,8 @@
 //    007   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    008   10.01.24 Sean Flook                 Fix warnings.
 //    009   25.01.24 Sean Flook       IMANN-253 Include historic when checking for changes.
+//    010   29.02.24 Joel Benford     IMANN-242 Add DbAuthority.
+//    011   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -51,8 +53,8 @@ import { stringToSentenceCase, GeoPlaceCrossRefSources } from "../utils/HelperUt
 import CloseIcon from "@mui/icons-material/Close";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import DoneIcon from "@mui/icons-material/Done";
-import { adsBlueA, adsRed, adsMagenta } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import { adsRed, adsMagenta } from "../utils/ADSColours";
+import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditLookupDialog.propTypes = {
@@ -65,7 +67,7 @@ EditLookupDialog.propTypes = {
     "town",
     "island",
     "administrativeArea",
-    "authority",
+    "dbAuthority",
     "ward",
     "parish",
     "unknown",
@@ -112,6 +114,15 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
   const [wardCodeError, setWardCodeError] = useState(null);
   const [parishNameError, setParishNameError] = useState(null);
   const [parishCodeError, setParishCodeError] = useState(null);
+
+  const [dbAuthorityRef, setDbAuthorityRef] = useState(null);
+  const [dbAuthorityName, setDbAuthorityName] = useState(null);
+  const [dbAuthorityMinUsrn, setDbAuthorityMinUsrn] = useState(null);
+  const [dbAuthorityMaxUsrn, setDbAuthorityMaxUsrn] = useState(null);
+  const [dbAuthorityRefError, setDbAuthorityRefError] = useState(null);
+  const [dbAuthorityNameError, setDbAuthorityNameError] = useState(null);
+  const [dbAuthorityMinUsrnError, setDbAuthorityMinUsrnError] = useState(null);
+  const [dbAuthorityMaxUsrnError, setDbAuthorityMaxUsrnError] = useState(null);
 
   /**
    * Method to determine if the data is valid or not.
@@ -549,6 +560,58 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
         }
         break;
 
+      case "dbAuthority":
+        if (!Number.isInteger(parseFloat(dbAuthorityRef)) || dbAuthorityRef <= 0 || dbAuthorityRef > 9999) {
+          setDbAuthorityRefError("DETR code must be 0 to 9999.");
+          validData = false;
+        } else {
+          const dbAuthorityRefRecord = lookupContext.currentLookups.dbAuthorities.find(
+            (x) => x.authorityRef === parseInt(dbAuthorityRef) && x.authorityRef !== lookupId
+          );
+          if (dbAuthorityRefRecord) {
+            setDbAuthorityRefError("There is already an entry with this code in the table.");
+            validData = false;
+          }
+        }
+
+        if (!dbAuthorityName || dbAuthorityName.length === 0) {
+          setDbAuthorityNameError("You cannot add an empty authority name.");
+          validData = false;
+        } else {
+          const dbAuthorityNameRecord = lookupContext.currentLookups.dbAuthorities.find(
+            (x) => x.authorityName === dbAuthorityName && x.authorityRef !== lookupId
+          );
+          if (dbAuthorityNameRecord) {
+            setDbAuthorityNameError("There is already an entry with this authority name in the table.");
+            validData = false;
+          }
+        }
+
+        if (
+          !Number.isInteger(parseFloat(dbAuthorityMinUsrn)) ||
+          dbAuthorityMinUsrn <= 0 ||
+          dbAuthorityMinUsrn > 99999999
+        ) {
+          setDbAuthorityMinUsrnError("USRN must be 0 to 99999999.");
+          validData = false;
+        }
+
+        if (
+          !Number.isInteger(parseFloat(dbAuthorityMinUsrn)) ||
+          dbAuthorityMaxUsrn <= 0 ||
+          dbAuthorityMaxUsrn > 99999999
+        ) {
+          setDbAuthorityMaxUsrnError("USRN must be 0 to 99999999.");
+          validData = false;
+        }
+
+        if (validData && parseInt(dbAuthorityMinUsrn) > parseInt(dbAuthorityMaxUsrn)) {
+          setDbAuthorityMaxUsrnError("Min USRN cannot be greater than max.");
+          setDbAuthorityMinUsrnError("Min USRN cannot be greater than max.");
+          validData = false;
+        }
+        break;
+
       default:
         break;
     }
@@ -845,6 +908,17 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
           oldParishRecord !== lookupHistoric;
         break;
 
+      case "dbAuthority":
+        const oldDbAuthorityRecord = lookupContext.currentLookups.dbAuthorities.find(
+          (x) => x.authorityRef === lookupId
+        );
+        dataChanged =
+          oldDbAuthorityRecord.authorityRef !== dbAuthorityRef ||
+          oldDbAuthorityRecord.authorityName !== dbAuthorityName ||
+          oldDbAuthorityRecord.minUsrn !== dbAuthorityMinUsrn ||
+          oldDbAuthorityRecord.maxUsrn !== dbAuthorityMaxUsrn;
+        break;
+
       default:
         break;
     }
@@ -907,6 +981,19 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
         return {
           variant: variant,
           lookupData: { lookupId: lookupId, parish: parishName, parishCode: parishCode, historic: lookupHistoric },
+        };
+
+      case "dbAuthority":
+        return {
+          variant: variant,
+          lookupData: {
+            lookupId: lookupId,
+            dbAuthorityRef: lookupId,
+            dbAuthorityName: dbAuthorityName.toUpperCase(),
+            dbAuthorityMinUsrn: parseInt(dbAuthorityMinUsrn),
+            dbAuthorityMaxUsrn: parseInt(dbAuthorityMaxUsrn),
+            dbAuthorityRefCurrent: parseInt(dbAuthorityRef),
+          },
         };
 
       default:
@@ -1056,6 +1143,42 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
   };
 
   /**
+   * Event to handle when the dbAuthority ref changes.
+   *
+   * @param {object} event The event object.
+   */
+  const onDbAuthorityRefChange = (event) => {
+    setDbAuthorityRef(event.target.value);
+  };
+
+  /**
+   * Event to handle when the dbAuthority name changes.
+   *
+   * @param {object} event The event object.
+   */
+  const onDbAuthorityNameChange = (event) => {
+    setDbAuthorityName(event.target.value);
+  };
+
+  /**
+   * Event to handle when the dbAuthority min usrn changes.
+   *
+   * @param {object} event The event object.
+   */
+  const onDbAuthorityMinUsrnChange = (event) => {
+    setDbAuthorityMinUsrn(event.target.value);
+  };
+
+  /**
+   * Event to handle when the dbAuthority max usrn changes.
+   *
+   * @param {object} event The event object.
+   */
+  const onDbAuthorityMaxUsrnChange = (event) => {
+    setDbAuthorityMaxUsrn(event.target.value);
+  };
+
+  /**
    * Method to get the maximum field length by variant.
    *
    * @returns {string} The maximum field length.
@@ -1082,6 +1205,9 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
 
       case "administrativeArea":
         return "30";
+
+      case "dbAuthority":
+        return "255";
 
       default:
         break;
@@ -1449,6 +1575,29 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
         }
         break;
 
+      case "dbAuthority":
+        setLookupType("authority");
+        if (lookupId) {
+          const dbAuthorityRecord = lookupContext.currentLookups.dbAuthorities.find((x) => x.authorityRef === lookupId);
+          if (dbAuthorityRecord) {
+            setDbAuthorityRef(dbAuthorityRecord.authorityRef.toString());
+            setDbAuthorityName(dbAuthorityRecord.authorityName);
+            setDbAuthorityMinUsrn(dbAuthorityRecord.minUsrn.toString());
+            setDbAuthorityMaxUsrn(dbAuthorityRecord.maxUsrn.toString());
+          } else {
+            setDbAuthorityRef(null);
+            setDbAuthorityName(null);
+            setDbAuthorityMinUsrn(null);
+            setDbAuthorityMaxUsrn(null);
+          }
+        } else {
+          setDbAuthorityRef(null);
+          setDbAuthorityName(null);
+          setDbAuthorityMinUsrn(null);
+          setDbAuthorityMaxUsrn(null);
+        }
+        break;
+
       default:
         setLookupType("unknown");
         break;
@@ -1472,10 +1621,7 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
 
   return (
     <Dialog open={showDialog} aria-labelledby="edit-lookup-dialog" fullWidth maxWidth="xs" onClose={handleDialogClose}>
-      <DialogTitle
-        id="edit-lookup-dialog"
-        sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
-      >
+      <DialogTitle id="edit-lookup-dialog" sx={dialogTitleStyle}>
         <Typography variant="h6">{`Edit ${lookupType}`}</Typography>
         <IconButton
           aria-label="close"
@@ -1628,6 +1774,118 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
               </Grid>
             )}
           </Grid>
+        ) : variant === "dbAuthority" ? (
+          <Stack direction="column">
+            <Grid container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
+              <Grid item xs={4}>
+                <Typography variant="body1" align="right" gutterBottom>
+                  DETR code
+                </Typography>
+              </Grid>
+              <Grid item xs={8}>
+                <TextField
+                  variant="outlined"
+                  type="number"
+                  error={dbAuthorityRefError}
+                  helperText={
+                    <Typography variant="caption" color={adsRed} align="left">
+                      {dbAuthorityRefError}
+                    </Typography>
+                  }
+                  value={dbAuthorityRef}
+                  fullWidth
+                  size="small"
+                  inputProps={{ min: 0, max: 9999 }}
+                  sx={{
+                    color: theme.palette.background.contrastText,
+                    pl: theme.spacing(1),
+                    pr: theme.spacing(1),
+                  }}
+                  onChange={onDbAuthorityRefChange}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <Typography variant="body1" align="right" gutterBottom>
+                  Authority
+                </Typography>
+              </Grid>
+              <Grid item xs={8}>
+                <TextField
+                  variant="outlined"
+                  error={dbAuthorityNameError}
+                  helperText={
+                    <Typography variant="caption" color={adsRed} align="left">
+                      {dbAuthorityNameError}
+                    </Typography>
+                  }
+                  value={dbAuthorityName}
+                  fullWidth
+                  size="small"
+                  inputProps={{ maxLength: "255" }}
+                  sx={{
+                    color: theme.palette.background.contrastText,
+                    pl: theme.spacing(1),
+                    pr: theme.spacing(1),
+                  }}
+                  onChange={onDbAuthorityNameChange}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <Typography variant="body1" align="right" gutterBottom>
+                  Min USRN
+                </Typography>
+              </Grid>
+              <Grid item xs={8}>
+                <TextField
+                  variant="outlined"
+                  type="number"
+                  error={dbAuthorityMinUsrnError}
+                  helperText={
+                    <Typography variant="caption" color={adsRed} align="left">
+                      {dbAuthorityMinUsrnError}
+                    </Typography>
+                  }
+                  value={dbAuthorityMinUsrn}
+                  fullWidth
+                  size="small"
+                  inputProps={{ min: 0, max: 99999999 }}
+                  sx={{
+                    color: theme.palette.background.contrastText,
+                    pl: theme.spacing(1),
+                    pr: theme.spacing(1),
+                  }}
+                  onChange={onDbAuthorityMinUsrnChange}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <Typography variant="body1" align="right" gutterBottom>
+                  Max USRN
+                </Typography>
+              </Grid>
+              <Grid item xs={8}>
+                <TextField
+                  variant="outlined"
+                  type="number"
+                  error={dbAuthorityMaxUsrnError}
+                  helperText={
+                    <Typography variant="caption" color={adsRed} align="left">
+                      {dbAuthorityMaxUsrnError}
+                    </Typography>
+                  }
+                  value={dbAuthorityMaxUsrn}
+                  fullWidth
+                  size="small"
+                  inputProps={{ min: 0, max: 99999999 }}
+                  sx={{
+                    color: theme.palette.background.contrastText,
+                    pl: theme.spacing(1),
+                    pr: theme.spacing(1),
+                  }}
+                  onChange={onDbAuthorityMaxUsrnChange}
+                />
+              </Grid>
+            </Grid>
+          </Stack>
         ) : variant === "ward" ? (
           <Stack direction="column">
             <Stack direction="row" alignItems="center" spacing={1}>

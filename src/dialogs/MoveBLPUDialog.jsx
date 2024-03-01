@@ -17,6 +17,7 @@
 //    004   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    005   25.01.24 Sean Flook                 Changes required after UX review.
 //    006   20.02.24 Sean Flook            MUL6 Updated title.
+//    007   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -62,7 +63,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ErrorIcon from "@mui/icons-material/Error";
 
 import { adsBlueA, adsOffWhite } from "../utils/ADSColours";
-import { blueButtonStyle, redButtonStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, redButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 MoveBLPUDialog.propTypes = {
@@ -632,10 +633,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
         onClose={handleDialogClose}
         TransitionComponent={Transition}
       >
-        <DialogTitle
-          id="add-property-wizard-dialog"
-          sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
-        >
+        <DialogTitle id="add-property-wizard-dialog" sx={dialogTitleStyle}>
           <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Stack
               direction="row"

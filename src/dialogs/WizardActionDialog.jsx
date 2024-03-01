@@ -21,6 +21,7 @@
 //    008   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    009   11.01.24 Sean Flook                 Fix warnings.
 //    010   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    011   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -48,8 +49,8 @@ import OSGClassification from "../data/OSGClassification";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/SaveOutlined";
 
-import { adsMidGreyA, adsLightGreyC } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import { adsMidGreyA } from "../utils/ADSColours";
+import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 WizardActionDialog.propTypes = {
@@ -390,10 +391,7 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
       sx={{ p: "16px 16px 24px 16px", borderRadius: "9px" }}
       onClose={handleCancel}
     >
-      <DialogTitle
-        id="wizard-action-dialog-title"
-        sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsLightGreyC, mb: "8px" }}
-      >
+      <DialogTitle id="wizard-action-dialog-title" sx={dialogTitleStyle}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ fontWeight: 600 }}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
             {getTitle()}

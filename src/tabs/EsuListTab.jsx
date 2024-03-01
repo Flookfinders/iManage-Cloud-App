@@ -28,6 +28,8 @@
 //    015   14.02.24 Sean Flook        ESU14_GP Filter done the ESU delete.
 //    016   16.02.24 Sean Flook        ESU16_GP Whilst assigning ESU prevent anything else from occurring with the ESUs.
 //    017   16.02.24 Sean Flook        ESU26_GP Display information for selecting ESUs from map.
+//    018   22.02.24 Joel Benford     IMANN-287 Blue on checked and hover
+//    019   27.02.24 Sean Flook           MUL16 Updated information type.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -69,7 +71,7 @@ import {
   KeyboardArrowUp as KeyboardArrowUpIcon,
 } from "@mui/icons-material";
 
-import { adsBlueA, adsLightBlue10 } from "../utils/ADSColours";
+import { adsBlueA, adsPaleBlueA } from "../utils/ADSColours";
 import {
   toolbarStyle,
   ActionIconStyle,
@@ -413,7 +415,7 @@ function EsuListTab({
 
   useEffect(() => {
     if (!informationContext.informationSource) {
-      informationContext.onDisplayInformation("selectESUs", "ESUListTab");
+      informationContext.onDisplayInformation("manageESUs", "ESUListTab");
     }
   }, [informationContext]);
 
@@ -509,8 +511,9 @@ function EsuListTab({
               <List
                 sx={{
                   width: "100%",
-                  backgroundColor: theme.palette.background.paper,
+                  backgroundColor: checked.indexOf(rec.esuId) !== -1 ? adsPaleBlueA : theme.palette.background.paper,
                   pt: theme.spacing(0),
+                  pb: theme.spacing(0),
                 }}
                 component="nav"
                 key={`key_${index}`}
@@ -559,7 +562,7 @@ function EsuListTab({
               sx={{
                 height: "30px",
                 "&:hover": {
-                  backgroundColor: adsLightBlue10,
+                  backgroundColor: adsPaleBlueA,
                   color: adsBlueA,
                 },
               }}

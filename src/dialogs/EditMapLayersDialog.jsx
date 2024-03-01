@@ -22,6 +22,7 @@
 //    009   07.02.24 Sean Flook                 Changes required for viaEuropa.
 //    010   07.02.24 Sean Flook                 Changes required to support WFS from viaEuropa mapping for OneScotland.
 //    011   08.02.24 Sean Flook                 Correctly set additional fields.
+//    012   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -54,8 +55,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 import ErrorIcon from "@mui/icons-material/Error";
 
-import { adsBlueA } from "../utils/ADSColours";
-import { redButtonStyle, blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import { redButtonStyle, blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditMapLayersDialog.propTypes = {
@@ -672,10 +672,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
         maxWidth="md"
         onClose={handleDialogClose}
       >
-        <DialogTitle
-          id="edit-map-layer-dialog"
-          sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
-        >
+        <DialogTitle id="edit-map-layer-dialog" sx={dialogTitleStyle}>
           <Typography sx={{ fontSize: "20px" }}>{`${isNew ? "Add" : "Edit"} map layer`}</Typography>
           <IconButton
             aria-label="close"

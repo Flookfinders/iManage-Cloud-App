@@ -16,6 +16,7 @@
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    004   16.01.24 Joel Benford               OS/GP level split
 //    005   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    006   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -45,7 +46,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import LocationCityIcon from "@mui/icons-material/LocationCity";
 import DoneIcon from "@mui/icons-material/Done";
 import { adsBlueA, adsMidGreyA, adsWhite } from "../utils/ADSColours";
-import { blueButtonStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 AddTemplateDialog.propTypes = {
@@ -279,14 +280,7 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
 
   return (
     <Dialog open={showDialog} aria-labelledby="add-lookup-dialog" fullWidth maxWidth="xs" onClose={handleDialogClose}>
-      <DialogTitle
-        id="add-lookup-dialog"
-        sx={{
-          borderBottomWidth: "1px",
-          borderBottomStyle: "solid",
-          borderBottomColor: adsBlueA,
-        }}
-      >
+      <DialogTitle id="add-lookup-dialog" sx={dialogTitleStyle}>
         <Typography sx={{ sizeFont: "20px" }}>{`${
           step === 1 ? "Create new template" : duplicateId ? "Duplicate template" : "New template: name and description"
         }`}</Typography>

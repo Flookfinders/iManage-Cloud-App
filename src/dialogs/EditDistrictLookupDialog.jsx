@@ -12,6 +12,7 @@
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   01.02.24 Sean Flook                 Initial Revision.
+//    002   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -37,8 +38,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import SwaOrgRef from "../data/SwaOrgRef";
 import OperationalDistrictFunction from "../data/OperationalDistrictFunction";
 
-import { adsBlueA } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditDistrictLookupDialog.propTypes = {
@@ -1763,10 +1763,7 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
 
   return (
     <Dialog open={showDialog} aria-labelledby="edit-lookup-dialog" fullWidth maxWidth="md" onClose={handleDialogClose}>
-      <DialogTitle
-        id="edit-operational-district-dialog"
-        sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
-      >
+      <DialogTitle id="edit-operational-district-dialog" sx={dialogTitleStyle}>
         <Typography variant="h6">{`Edit ${lookupType} information`}</Typography>
         <IconButton
           aria-label="close"

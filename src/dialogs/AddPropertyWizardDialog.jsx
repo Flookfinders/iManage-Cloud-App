@@ -27,6 +27,7 @@
 //    014   01.12.23 Sean Flook                 Corrected field names.
 //    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    016   17.01.24 Sean Flook                 Renamed fields and included sub-locality.
+//    017   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -83,7 +84,7 @@ import SkipNextIcon from "@mui/icons-material/SkipNext";
 import ErrorIcon from "@mui/icons-material/Error";
 
 import { adsBlueA, adsOffWhite } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle, redButtonStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, redButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 AddPropertyWizardDialog.propTypes = {
@@ -2345,10 +2346,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
         onClose={handleDialogClose}
         TransitionComponent={Transition}
       >
-        <DialogTitle
-          id="add-property-wizard-dialog"
-          sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
-        >
+        <DialogTitle id="add-property-wizard-dialog" sx={dialogTitleStyle}>
           <Stack
             direction="row"
             alignItems="center"

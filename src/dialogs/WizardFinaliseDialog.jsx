@@ -17,6 +17,7 @@
 //    004   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    006   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    007   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -38,13 +39,13 @@ import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import CloseIcon from "@mui/icons-material/Close";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 
-import { adsMidGreyA, adsRed, adsGreenC, adsLightGreyC } from "../utils/ADSColours";
-import { redButtonStyle, blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import { adsMidGreyA, adsRed, adsGreenC } from "../utils/ADSColours";
+import { redButtonStyle, blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 WizardFinaliseDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  variant: PropTypes.oneOf(["property", "child", "range", "rangeChildren", "moveBlpu"]),
+  variant: PropTypes.oneOf(["property", "child", "range", "rangeChildren", "moveBlpu", "makeChildOf"]),
   errors: PropTypes.array,
   createdCount: PropTypes.number,
   failedCount: PropTypes.number,
@@ -123,13 +124,19 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
       if (Array.isArray(errors)) {
         for (const error of errors) {
           blpuErrors =
-            ["property", "child", "moveBlpu"].includes(variant) && error && error.blpu && error.blpu.length > 0
+            ["property", "child", "moveBlpu", "makeChildOf"].includes(variant) &&
+            error &&
+            error.blpu &&
+            error.blpu.length > 0
               ? [...new Set([...error.blpu.flatMap((x) => x.errors), ...blpuErrors])]
               : blpuErrors.length > 0
               ? blpuErrors
               : [];
           lpiErrors =
-            ["property", "child", "moveBlpu"].includes(variant) && error && error.lpi && error.lpi.length > 0
+            ["property", "child", "moveBlpu", "makeChildOf"].includes(variant) &&
+            error &&
+            error.lpi &&
+            error.lpi.length > 0
               ? [...new Set([...error.lpi.flatMap((x) => x.errors), ...lpiErrors])]
               : lpiErrors.length > 0
               ? lpiErrors
@@ -147,7 +154,7 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
               ? crossRefErrors
               : [];
           noteErrors =
-            ["property", "child"].includes(variant) && error && error.note && error.note.length > 0
+            ["property", "child", "makeChildOf"].includes(variant) && error && error.note && error.note.length > 0
               ? [...new Set([...error.note.flatMap((x) => x.errors), ...noteErrors])]
               : noteErrors.length > 0
               ? noteErrors
@@ -155,11 +162,17 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
         }
       } else {
         blpuErrors =
-          ["property", "child", "moveBlpu"].includes(variant) && errors && errors.blpu && errors.blpu.length > 0
+          ["property", "child", "moveBlpu", "makeChildOf"].includes(variant) &&
+          errors &&
+          errors.blpu &&
+          errors.blpu.length > 0
             ? [...new Set(errors.blpu.flatMap((x) => x.errors))]
             : [];
         lpiErrors =
-          ["property", "child", "moveBlpu"].includes(variant) && errors && errors.lpi && errors.lpi.length > 0
+          ["property", "child", "moveBlpu", "makeChildOf"].includes(variant) &&
+          errors &&
+          errors.lpi &&
+          errors.lpi.length > 0
             ? [...new Set(errors.lpi.flatMap((x) => x.errors))]
             : [];
         provenanceErrors =
@@ -171,7 +184,7 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
             ? [...new Set(errors.crossRef.flatMap((x) => x.errors))]
             : [];
         noteErrors =
-          ["property", "child"].includes(variant) && errors && errors.note && errors.note.length > 0
+          ["property", "child", "makeChildOf"].includes(variant) && errors && errors.note && errors.note.length > 0
             ? [...new Set(errors.note.flatMap((x) => x.errors))]
             : [];
       }
@@ -318,12 +331,39 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
           );
           break;
 
+        case "makeChildOf":
+          setIsRange(true);
+          setTitle(
+            `Make selected ${createdCount + failedCount === 1 ? "property" : "properties"} child of...: completed`
+          );
+          setContent(
+            <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+              <Stack direction="column">
+                <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
+                  <Typography variant="h6" color={adsGreenC} sx={{ fontSize: "20px" }}>{`${createdCount}`}</Typography>
+                  <Typography variant="body2">{`${
+                    createdCount === 1 ? "property was" : "properties were"
+                  } successfully updated.`}</Typography>
+                </Stack>
+                {failedCount > 0 && (
+                  <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
+                    <Typography variant="h6" color={adsRed} sx={{ fontSize: "20px" }}>{`${failedCount}`}</Typography>
+                    <Typography variant="body2">{`${
+                      failedCount === 1 ? "property" : "properties"
+                    } failed to be updated.`}</Typography>
+                  </Stack>
+                )}
+              </Stack>
+            </Box>
+          );
+          break;
+
         default:
           break;
       }
     }
 
-    if (["property", "range", "child", "rangeChildren", "moveBlpu"].includes(variant)) setShowOpen(open);
+    if (["property", "range", "child", "rangeChildren", "moveBlpu", "makeChildOf"].includes(variant)) setShowOpen(open);
     else setShowOpen(false);
   }, [variant, errors, createdCount, failedCount, saveFailed, open]);
 
@@ -336,10 +376,7 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
       sx={{ p: "16px 16px 24px 16px", borderRadius: "9px" }}
       onClose={handleClose}
     >
-      <DialogTitle
-        id="wizard-finalise-dialog-title"
-        sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsLightGreyC, mb: "8px" }}
-      >
+      <DialogTitle id="wizard-finalise-dialog-title" sx={dialogTitleStyle}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ fontWeight: 600 }}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
             {title}
@@ -359,7 +396,7 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
             Return
           </Button>
         )}
-        {!saveFailed && variant !== "moveBlpu" && (
+        {!saveFailed && !["moveBlpu", "makeChildOf"].includes(variant) && (
           <Button
             variant="contained"
             autoFocus={!saveFailed}
@@ -370,12 +407,12 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
             {`View ${isRange ? "properties" : "property"}`}
           </Button>
         )}
-        {!saveFailed && !isRange && variant !== "moveBlpu" && (
+        {!saveFailed && !isRange && !["moveBlpu", "makeChildOf"].includes(variant) && (
           <Button variant="contained" onClick={handleAddChild} sx={blueButtonStyle} startIcon={<AddIcon />}>
             Add child
           </Button>
         )}
-        {!saveFailed && !isRange && variant !== "moveBlpu" && (
+        {!saveFailed && !isRange && !["moveBlpu", "makeChildOf"].includes(variant) && (
           <Button variant="contained" onClick={handleAddChildren} sx={blueButtonStyle} startIcon={<PlaylistAddIcon />}>
             Add children
           </Button>

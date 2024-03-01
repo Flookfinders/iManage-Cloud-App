@@ -31,6 +31,7 @@
 //    018   10.01.24 Sean Flook                 Fix warnings.
 //    019   11.01.24 Sean Flook                 Fix warnings.
 //    020   25.01.24 Joel Benford               Stop overriding descriptor background.
+//    021   27.02.24 Sean Flook           MUL16 Changes required to handle parent child relationships.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -40,11 +41,14 @@
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
+
 import PropertyContext from "../context/propertyContext";
 import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 import MapContext from "../context/mapContext";
 import SettingsContext from "../context/settingsContext";
+import SearchContext from "../context/searchContext";
+
 import { copyTextToClipboard, GetLookupLabel, ConvertDate, openInStreetView } from "../utils/HelperUtils";
 import {
   FilteredBLPULogicalStatus,
@@ -52,10 +56,7 @@ import {
   FilteredBLPUState,
   addressToTitleCase,
 } from "../utils/PropertyUtils";
-import BLPUClassification from "../data/BLPUClassification";
-import OSGClassification from "../data/OSGClassification";
-import LPILogicalStatus from "./../data/LPILogicalStatus";
-import DETRCodes from "../data/DETRCodes";
+
 import {
   Grid,
   Menu,
@@ -79,7 +80,16 @@ import ADSNumberControl from "../components/ADSNumberControl";
 import ADSSwitchControl from "../components/ADSSwitchControl";
 import ADSCoordinateControl from "../components/ADSCoordinateControl";
 import ADSActionButton from "../components/ADSActionButton";
+import ADSReadOnlyControl from "../components/ADSReadOnlyControl";
+
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+import MakeChildDialog from "../dialogs/MakeChildDialog";
+
+import BLPUClassification from "../data/BLPUClassification";
+import OSGClassification from "../data/OSGClassification";
+import LPILogicalStatus from "./../data/LPILogicalStatus";
+import DETRCodes from "../data/DETRCodes";
+
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddCircleIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import { CopyIcon } from "../utils/ADSIcons";
@@ -112,6 +122,7 @@ PropertyDetailsTab.propTypes = {
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
   onSetCopyOpen: PropTypes.func.isRequired,
+  onViewRelated: PropTypes.func.isRequired,
   onLpiSelected: PropTypes.func.isRequired,
   onLpiDeleted: PropTypes.func.isRequired,
   onDataChanged: PropTypes.func.isRequired,
@@ -126,6 +137,7 @@ function PropertyDetailsTab({
   loading,
   focusedField,
   onSetCopyOpen,
+  onViewRelated,
   onLpiSelected,
   onLpiDeleted,
   onDataChanged,
@@ -139,6 +151,7 @@ function PropertyDetailsTab({
   const userContext = useContext(UserContext);
   const mapContext = useContext(MapContext);
   const settingsContext = useContext(SettingsContext);
+  const searchContext = useContext(SearchContext);
 
   const [itemSelected, setItemSelected] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -171,6 +184,10 @@ function PropertyDetailsTab({
   const [siteSurvey, setSiteSurvey] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [parentUprn, setParentUprn] = useState(null);
+  const [parentAddress, setParentAddress] = useState(null);
+  const [parentPostcode, setParentPostcode] = useState(null);
+  const [hasParent, setHasParent] = useState(false);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -179,6 +196,9 @@ function PropertyDetailsTab({
   const [propertyAssociatedRecords, setPropertyAssociatedRecords] = useState(null);
   const [lpiAssociatedRecords, setLpiAssociatedRecords] = useState(null);
   const [deleteVariant, setDeleteVariant] = useState(null);
+
+  const [openMakeChild, setOpenMakeChild] = useState(false);
+  const [makeChildUprn, setMakeChildUprn] = useState([]);
 
   const [blpuLogicalStatusError, setBLPULogicalStatusError] = useState(null);
   const [rpcError, setRpcError] = useState(null);
@@ -247,6 +267,9 @@ function PropertyDetailsTab({
             fieldName && fieldName === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
           neverExport: fieldName && fieldName === "neverExport" ? newValue : excludeFromExport,
           siteSurvey: fieldName && fieldName === "siteSurvey" ? newValue : siteSurvey,
+          parentUprn: fieldName && fieldName === "parentUprn" ? (newValue ? newValue.uprn : null) : parentUprn,
+          parentAddress: fieldName && fieldName === "parentUprn" ? (newValue ? newValue.address : null) : parentUprn,
+          parentPostcode: fieldName && fieldName === "parentUprn" ? (newValue ? newValue.postcode : null) : parentUprn,
         }
       : {
           level: fieldName && fieldName === "level" ? newValue : level,
@@ -268,6 +291,9 @@ function PropertyDetailsTab({
             fieldName && fieldName === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
           neverExport: fieldName && fieldName === "neverExport" ? newValue : excludeFromExport,
           siteSurvey: fieldName && fieldName === "siteSurvey" ? newValue : siteSurvey,
+          parentUprn: fieldName && fieldName === "parentUprn" ? (newValue ? newValue.uprn : null) : parentUprn,
+          parentAddress: fieldName && fieldName === "parentUprn" ? (newValue ? newValue.address : null) : parentUprn,
+          parentPostcode: fieldName && fieldName === "parentUprn" ? (newValue ? newValue.postcode : null) : parentUprn,
         };
 
     if (fieldName === "organisation") {
@@ -278,6 +304,13 @@ function PropertyDetailsTab({
 
     if (["logicalStatus", "classification", "easting", "northing"].includes(fieldName))
       mapContext.onMapPropertyChange(currentData);
+  };
+
+  /**
+   * Event to handle when the view related button is clicked.
+   */
+  const handleViewRelatedClick = () => {
+    if (onViewRelated) onViewRelated();
   };
 
   /**
@@ -567,6 +600,10 @@ function PropertyDetailsTab({
    */
   const handleMakeChildOf = () => {
     setAnchorEl(null);
+
+    setMakeChildUprn([data.uprn]);
+    setOpenMakeChild(true);
+    searchContext.onHideSearch(true);
   };
 
   /**
@@ -574,6 +611,11 @@ function PropertyDetailsTab({
    */
   const handleRemoveFromParent = () => {
     setAnchorEl(null);
+    setHasParent(false);
+    setParentUprn(null);
+    setParentAddress(null);
+    setParentPostcode(null);
+    updateCurrentData("parentUprn", null);
   };
 
   /**
@@ -620,6 +662,22 @@ function PropertyDetailsTab({
       // onDeleteClick(pkId);
     }
     setDeleteVariant(null);
+  };
+
+  /**
+   * Event to handle when the make child of dialog closes.
+   */
+  const handleMakeChildClose = (parent) => {
+    setOpenMakeChild(false);
+    searchContext.onHideSearch(false);
+    setMakeChildUprn([]);
+    if (parent) {
+      setParentUprn(parent.uprn);
+      setParentAddress(parent.address);
+      setParentPostcode(parent.postcode);
+      setHasParent(true);
+      updateCurrentData("parentUprn", parent);
+    }
   };
 
   /**
@@ -806,6 +864,11 @@ function PropertyDetailsTab({
       setSiteSurvey(data.siteSurvey ? data.siteSurvey : false);
       setStartDate(data.startDate);
       setEndDate(data.endDate);
+      setParentUprn(data.parentUprn);
+      setParentAddress(data.parentAddress);
+      setParentPostcode(data.parentPostcode);
+
+      setHasParent(!!data.parentUprn);
 
       setBLPULogicalStatusLookup(FilteredBLPULogicalStatus(settingsContext.isScottish));
       setRepresentativePointCodeLookup(FilteredRepresentativePointCode(settingsContext.isScottish));
@@ -1035,13 +1098,11 @@ function PropertyDetailsTab({
                 <Typography variant="inherit">Move street</Typography>
               </MenuItem>
             )}
+            <MenuItem dense onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
+              <Typography variant="inherit">Make child of...</Typography>
+            </MenuItem>
             {process.env.NODE_ENV === "development" && (
-              <MenuItem dense disabled onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
-                <Typography variant="inherit">Make child of...</Typography>
-              </MenuItem>
-            )}
-            {process.env.NODE_ENV === "development" && (
-              <MenuItem dense disabled onClick={handleRemoveFromParent} divider sx={menuItemStyle(true)}>
+              <MenuItem dense onClick={handleRemoveFromParent} divider sx={menuItemStyle(true)}>
                 <Typography variant="inherit">Remove from parent</Typography>
               </MenuItem>
             )}
@@ -1191,6 +1252,15 @@ function PropertyDetailsTab({
             )}
           </Grid>
         </Grid>
+        {hasParent && (
+          <ADSReadOnlyControl
+            loading={loading}
+            label="Child of"
+            value={addressToTitleCase(parentAddress, parentPostcode)}
+            buttonVariant="viewRelated"
+            onButtonClick={handleViewRelatedClick}
+          />
+        )}
         <ADSSelectControl
           label="BLPU logical status"
           isEditable={userCanEdit}
@@ -1422,6 +1492,12 @@ function PropertyDetailsTab({
           open={openDeleteConfirmation}
           associatedRecords={deleteVariant === "lpi" ? lpiAssociatedRecords : propertyAssociatedRecords}
           onClose={handleCloseDeleteConfirmation}
+        />
+        <MakeChildDialog
+          isOpen={openMakeChild}
+          variant="property"
+          selectedUPRNs={makeChildUprn}
+          onClose={handleMakeChildClose}
         />
       </div>
     </Fragment>

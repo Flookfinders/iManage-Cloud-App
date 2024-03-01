@@ -18,6 +18,7 @@
 //    005   10.01.24 Sean Flook                 Fix warnings.
 //    006   11.01.24 Sean Flook                 Fix warnings.
 //    007   31.01.24 Joel Benford               Changes to as save and support OS
+//    008   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -38,8 +39,7 @@ import DETRCodes from "../data/DETRCodes";
 import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 
-import { adsBlueA } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditMetadataCustodianDialog.propTypes = {
@@ -228,10 +228,7 @@ function EditMetadataCustodianDialog({ isOpen, data, variant, onDone, onClose })
         maxWidth="md"
         onClose={handleDialogClose}
       >
-        <DialogTitle
-          id="edit-metadata-custodian-dialog"
-          sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
-        >
+        <DialogTitle id="edit-metadata-custodian-dialog" sx={dialogTitleStyle}>
           <Typography sx={{ textSize: "20px" }}>{getTitle()}</Typography>
           <IconButton
             aria-label="close"

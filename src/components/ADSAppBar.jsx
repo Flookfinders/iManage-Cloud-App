@@ -39,6 +39,7 @@
 //    026   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    027   16.02.24 Sean Flook        ESU27_GP Changed the Add street button to make it more prominent.
 //    028   20.02.24 Sean Flook            MUL1 Display information control for selecting properties.
+//    029   27.02.24 Sean Flook           MUL16 Hide the search control when required and reduce padding on the Add street button.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1009,14 +1010,16 @@ function ADSAppBar(props) {
             </Stack>
           </Stack>
           <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={1} sx={{ mt: "4px" }}>
-            <ADSSearch placeholder="Search…" onSearchClick={handleSearchClick} />
+            {!searchContext.hideSearch && (
+              <ADSSearch variant="appBar" placeholder="Search…" onSearchClick={handleSearchClick} />
+            )}
             {userCanEdit && (haveSearch || haveStreet || haveProperty || location.pathname === GazetteerRoute) ? (
               <Tooltip title="Add street" arrow placement="bottom-end" sx={tooltipStyle}>
                 <Button
                   onClick={() => HandleChangeCheck("street")}
                   autoFocus
                   variant="contained"
-                  sx={blueButtonStyle}
+                  sx={{ ...blueButtonStyle, pl: "8px", pr: "8px" }}
                   startIcon={<AddIcon />}
                 >
                   Add street

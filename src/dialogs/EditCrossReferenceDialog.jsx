@@ -16,6 +16,7 @@
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    004   11.01.24 Sean Flook                 Fix warnings.
 //    005   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    006   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -37,8 +38,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 import ErrorIcon from "@mui/icons-material/Error";
 
-import { adsBlueA, adsDarkPink } from "../utils/ADSColours";
-import { redButtonStyle, blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import { adsDarkPink } from "../utils/ADSColours";
+import { redButtonStyle, blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditCrossReferenceDialog.propTypes = {
@@ -220,10 +221,7 @@ function EditCrossReferenceDialog({ isOpen, isNew, data, onDone, onClose }) {
       maxWidth="sm"
       onClose={handleDialogClose}
     >
-      <DialogTitle
-        id="edit-cross-reference-dialog"
-        sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA }}
-      >
+      <DialogTitle id="edit-cross-reference-dialog" sx={dialogTitleStyle}>
         <Typography sx={{ fontSize: "20px" }}>{isNew ? "Add cross reference" : "Edit cross reference"}</Typography>
         <IconButton
           aria-label="close"

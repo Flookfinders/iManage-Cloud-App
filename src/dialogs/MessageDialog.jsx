@@ -18,6 +18,7 @@
 //    005   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    006   07.02.24 Sean Flook                 Added cancelASDPartRoad and removed editASDGeometry and editESUGeometry.
 //    007   13.02.24 Sean Flook                 Added cancelASDInexact.
+//    008   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -32,8 +33,7 @@ import { Stack } from "@mui/system";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 
-import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
-import { adsBlueA } from "../utils/ADSColours";
+import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 MessageDialog.propTypes = {
@@ -197,10 +197,7 @@ function MessageDialog({ isOpen, variant, onClose }) {
 
   return (
     <Dialog open={isOpen} aria-labelledby="message-dialog" fullWidth maxWidth="xs" onClose={handleCloseClick}>
-      <DialogTitle
-        id="message-dialog"
-        sx={{ borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: adsBlueA, mb: "8px" }}
-      >
+      <DialogTitle id="message-dialog" sx={dialogTitleStyle}>
         <Typography sx={{ fontSize: "20px", fontWeight: 600 }}>{getDialogTitle()}</Typography>
         <IconButton
           aria-label="close"
