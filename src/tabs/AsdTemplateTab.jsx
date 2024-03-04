@@ -24,6 +24,7 @@
 //    011   10.01.24 Sean Flook                 Fix warnings.
 //    012   25.01.24 Sean Flook                 Changes required after UX review.
 //    013   13.02.24 Sean Flook                 Only set the data if it exists.
+//    014   01.03.24 Joel Benford               Restrict Districts to suit organisation
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -40,6 +41,8 @@ import { Box, Stack } from "@mui/system";
 import EditTemplateDialog from "../dialogs/EditTemplateDialog";
 
 import { GetStreetTemplateUrl } from "../configuration/ADSConfig";
+
+import { StringToTitleCase } from "../utils/HelperUtils";
 
 import RoadStatusCode from "../data/RoadStatusCode";
 import InterestType from "../data/InterestType";
@@ -288,6 +291,7 @@ function AsdTemplateTab() {
   /**
    * Method to get the district description.
    *
+   * @param {number} orgValue The interest organisation detr.
    * @param {number} value The district reference number.
    * @returns {string|null} The description to display for the district.
    */
@@ -296,7 +300,7 @@ function AsdTemplateTab() {
       (x) => x.organisationId === orgValue && x.districtId === value
     );
 
-    if (rec) return rec.districtName;
+    if (rec) return StringToTitleCase(rec.districtName);
     else return null;
   };
 
@@ -1127,7 +1131,7 @@ function AsdTemplateTab() {
                       </Grid>
                       <Grid item xs={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getDistrict(interestOrganisation, interestDistrict, true)}
+                          {getDistrict(interestOrganisation, interestDistrict)}
                         </Typography>
                       </Grid>
                       <Grid item xs={3}>

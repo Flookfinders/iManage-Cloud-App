@@ -33,6 +33,7 @@
 //    020   05.02.24 Sean Flook                 Further filter for maintaining organisation.
 //    021   01.03.24 Joel Benford     IMANN-330 Stop defaulting interested/maintaining auth on open.
 //    022   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
+//    023   01.03.24 Joel Benford               Restrict Districts to suit organisation
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -70,7 +71,7 @@ import {
   FilteredBLPUState,
   FilteredLPILogicalStatus,
 } from "../utils/PropertyUtils";
-import { FilteredStreetType } from "../utils/StreetUtils";
+import { FilteredStreetType, filteredOperationalDistricts } from "../utils/StreetUtils";
 
 import BLPUClassification from "../data/BLPUClassification";
 import OSGClassification from "../data/OSGClassification";
@@ -1048,6 +1049,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleInterestOrganisationChangeEvent = (newValue) => {
     setInterestOrganisation(newValue);
+    const possibleDistricts = filteredOperationalDistricts(lookupContext.currentLookups.operationalDistricts, newValue);
+    if (possibleDistricts.filter((x) => x.districtId === interestDistrict).length === 0) setInterestDistrict(null);
   };
 
   /**
@@ -1120,6 +1123,9 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleConstructionOrganisationChangeEvent = (newValue) => {
     setConstructionOrganisation(newValue);
+    const possibleDistricts = filteredOperationalDistricts(lookupContext.currentLookups.operationalDistricts, newValue);
+    if (possibleDistricts.filter((x) => x.districtId === constructionDistrict).length === 0)
+      setConstructionDistrict(null);
   };
 
   /**
@@ -1147,6 +1153,9 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleSpecialDesigOrganisationChangeEvent = (newValue) => {
     setSpecialDesigOrganisation(newValue);
+    const possibleDistricts = filteredOperationalDistricts(lookupContext.currentLookups.operationalDistricts, newValue);
+    if (possibleDistricts.filter((x) => x.districtId === specialDesigDistrict).length === 0)
+      setSpecialDesigDistrict(null);
   };
 
   /**
@@ -1183,6 +1192,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleHwwOrganisationChangeEvent = (newValue) => {
     setHwwOrganisation(newValue);
+    const possibleDistricts = filteredOperationalDistricts(lookupContext.currentLookups.operationalDistricts, newValue);
+    if (possibleDistricts.filter((x) => x.districtId === hwwDistrict).length === 0) setHwwDistrict(null);
   };
 
   /**
@@ -1282,6 +1293,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleProwOrganisationChangeEvent = (newValue) => {
     setProwOrganisation(newValue);
+    const possibleDistricts = filteredOperationalDistricts(lookupContext.currentLookups.operationalDistricts, newValue);
+    if (possibleDistricts.filter((x) => x.districtId === prowDistrict).length === 0) setProwDistrict(null);
   };
 
   /**
@@ -2226,7 +2239,10 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               includeHistoric
-              lookupData={lookupContext.currentLookups.operationalDistricts.sort(function (a, b) {
+              lookupData={filteredOperationalDistricts(
+                lookupContext.currentLookups.operationalDistricts,
+                interestOrganisation
+              ).sort(function (a, b) {
                 return a.districtName.localeCompare(b.districtName, undefined, {
                   numeric: true,
                   sensitivity: "base",
@@ -2331,7 +2347,10 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               includeHistoric
-              lookupData={lookupContext.currentLookups.operationalDistricts.sort(function (a, b) {
+              lookupData={filteredOperationalDistricts(
+                lookupContext.currentLookups.operationalDistricts,
+                constructionOrganisation
+              ).sort(function (a, b) {
                 return a.districtName.localeCompare(b.districtName, undefined, {
                   numeric: true,
                   sensitivity: "base",
@@ -2380,7 +2399,10 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               includeHistoric
-              lookupData={lookupContext.currentLookups.operationalDistricts.sort(function (a, b) {
+              lookupData={filteredOperationalDistricts(
+                lookupContext.currentLookups.operationalDistricts,
+                specialDesigOrganisation
+              ).sort(function (a, b) {
                 return a.districtName.localeCompare(b.districtName, undefined, {
                   numeric: true,
                   sensitivity: "base",
@@ -2442,7 +2464,10 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               includeHistoric
-              lookupData={lookupContext.currentLookups.operationalDistricts.sort(function (a, b) {
+              lookupData={filteredOperationalDistricts(
+                lookupContext.currentLookups.operationalDistricts,
+                hwwOrganisation
+              ).sort(function (a, b) {
                 return a.districtName.localeCompare(b.districtName, undefined, {
                   numeric: true,
                   sensitivity: "base",
@@ -2573,7 +2598,10 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={lookupContext.currentLookups.operationalDistricts.sort(function (a, b) {
+              lookupData={filteredOperationalDistricts(
+                lookupContext.currentLookups.operationalDistricts,
+                prowOrganisation
+              ).sort(function (a, b) {
                 return a.districtName.localeCompare(b.districtName, undefined, {
                   numeric: true,
                   sensitivity: "base",
