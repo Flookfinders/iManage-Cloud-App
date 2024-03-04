@@ -37,6 +37,7 @@
 //    013   15.12.23 Sean Flook                 Added new checks and comments.
 //    014   19.12.23 Sean Flook                 Various bug fixes.
 //    015   29.01.24 Sean Flook                 Added new checks.
+//    016   01.03.24 Sean Flook                 Corrected check for 2100011.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -113,11 +114,12 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
     if (
       includeCheck(currentCheck, isScottish) &&
       data.logicalStatus &&
-      ((data.logicalStatus === 1 && data.state && ![1, 2, 3, 4].includes(data.state)) ||
-        (data.logicalStatus === 5 && ![1, 2, 3, 4, 6].includes(data.blpuState)) ||
-        (data.logicalStatus === 6 && ![1, 5, 6, 7].includes(data.blpuState)) ||
+      ((data.logicalStatus === 1 && data.state && ![1, 2, 3].includes(data.state)) ||
+        (data.logicalStatus === 5 && (!data.state || ![1, 2, 3, 4, 6].includes(data.state))) ||
+        (data.logicalStatus === 6 && (!data.state || ![1, 5, 6, 7].includes(data.state))) ||
         (data.logicalStatus === 7 && data.state && ![1, 2, 3, 4, 6].includes(data.state)) ||
-        (data.logicalStatus === 8 && data.state && ![4, 7].includes(data.state)))
+        (data.logicalStatus === 8 && data.state && ![4, 7].includes(data.state)) ||
+        (data.logicalStatus === 9 && data.state && ![1, 2, 3, 4, 5, 6, 7].includes(data.state)))
     ) {
       blpuStateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -330,7 +332,7 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
         (data.logicalStatus === 8 && data.state && ![4, 7].includes(data.state)) ||
         (data.logicalStatus === 9 && data.state && ![1, 2, 3, 4, 5, 6, 7].includes(data.state)))
     ) {
-      endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      logicalStatusErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // A Logical Status of 8 or 9 requires an End Date.

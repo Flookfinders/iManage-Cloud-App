@@ -2860,7 +2860,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700010,
-    errorMessage: "Mandatory HD Prow is missing.",
+    errorMessage: "Mandatory HD PRoW is missing.",
     llpgCode: "",
     lsgCode: "LG17.016",
     osgCode: "",
@@ -5798,8 +5798,8 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: true,
-    osCheck: true,
+    gpCheck: false,
+    osCheck: false,
   },
   {
     messageId: 2400073,
@@ -11030,7 +11030,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600002,
-    errorMessage: "Mandatory PROW USRN is missing.",
+    errorMessage: "Mandatory PRoW USRN is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11075,7 +11075,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600005,
-    errorMessage: "PROW USRN is invalid.",
+    errorMessage: "PRoW USRN is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11165,7 +11165,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600011,
-    errorMessage: "Mandatory PROW Rights is missing.",
+    errorMessage: "Mandatory PRoW Rights is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11180,7 +11180,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600012,
-    errorMessage: "PROW Rights is invalid.",
+    errorMessage: "PRoW Rights is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11195,7 +11195,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600013,
-    errorMessage: "Mandatory PROW Status is missing.",
+    errorMessage: "Mandatory PRoW Status is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11210,7 +11210,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600014,
-    errorMessage: "PROW Status is invalid.",
+    errorMessage: "PRoW Status is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11226,7 +11226,7 @@ const ValidationMessages = [
   {
     messageId: 6600015,
     errorMessage:
-      "The supplied PROW USRN and Primary Key (PkId) do not match a record in the Public Right of Way table.",
+      "The supplied PRoW USRN and Primary Key (PkId) do not match a record in the Public Right of Way table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11256,7 +11256,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600017,
-    errorMessage: "PROW Length is invalid.",
+    errorMessage: "PRoW Length is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11286,7 +11286,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600019,
-    errorMessage: "Mandatory PROW Length is missing.",
+    errorMessage: "Mandatory PRoW Length is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11511,7 +11511,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600034,
-    errorMessage: "PROW Location is too long.",
+    errorMessage: "PRoW Location is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11526,7 +11526,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600035,
-    errorMessage: "PROW Location contains an invalid character.",
+    errorMessage: "PRoW Location contains an invalid character.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11541,7 +11541,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600036,
-    errorMessage: "PROW Details is too long.",
+    errorMessage: "PRoW Details is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11556,7 +11556,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600037,
-    errorMessage: "PROW Details contains an invalid character.",
+    errorMessage: "PRoW Details contains an invalid character.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11631,7 +11631,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600042,
-    errorMessage: "PROW Org Ref Consultant is invalid.",
+    errorMessage: "PRoW Org Ref Consultant is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11647,7 +11647,7 @@ const ValidationMessages = [
   {
     messageId: 6600043,
     errorMessage:
-      "PROW Org Ref Consultant and PROW District Ref Consultant must either both be blank or both have a value.",
+      "PRoW Org Ref Consultant and PRoW District Ref Consultant must either both be blank or both have a value.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11662,7 +11662,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600044,
-    errorMessage: "PROW District Ref Consultant is invalid.",
+    errorMessage: "PRoW District Ref Consultant is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11677,7 +11677,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600045,
-    errorMessage: "A PROW record is not allowed on a Street with a State of 4 or 5.",
+    errorMessage: "A PRoW record is not allowed on a Street with a State of 4 or 5.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11692,7 +11692,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600046,
-    errorMessage: "Mandatory PROW Location is missing.",
+    errorMessage: "Mandatory PRoW Location is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11707,7 +11707,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600047,
-    errorMessage: "Mandatory PROW Details is missing.",
+    errorMessage: "Mandatory PRoW Details is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11782,7 +11782,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600052,
-    errorMessage: "Mandatory PROW District Ref Consultant is missing.",
+    errorMessage: "Mandatory PRoW District Ref Consultant is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11798,7 +11798,7 @@ const ValidationMessages = [
   {
     messageId: 6600053,
     errorMessage:
-      "For PROW Status of C the Consult Start Date, Consult End Date, Consult Ref and Consult Details must be present.",
+      "For PRoW Status of C the Consult Start Date, Consult End Date, Consult Ref and Consult Details must be present.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11828,7 +11828,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600055,
-    errorMessage: "For PROW Status of A the Appeal Date, Appeal Ref and Appeal Details must be present.",
+    errorMessage: "For PRoW Status of A the Appeal Date, Appeal Ref and Appeal Details must be present.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11843,7 +11843,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600056,
-    errorMessage: "For PROW Status of D the Div Related USRN must be present.",
+    errorMessage: "For PRoW Status of D the Div Related USRN must be present.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11858,7 +11858,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600057,
-    errorMessage: "For PROW Status of D the Div Related USRN must be for a Type 3 Street.",
+    errorMessage: "For PRoW Status of D the Div Related USRN must be for a Type 3 Street.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11873,7 +11873,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600058,
-    errorMessage: "PROW Org Ref Consultant value does not exist in the SWA Org Ref table.",
+    errorMessage: "PRoW Org Ref Consultant value does not exist in the SWA Org Ref table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11904,7 +11904,7 @@ const ValidationMessages = [
   {
     messageId: 6600060,
     errorMessage:
-      "If a cross referenced Highway Dedication record with a dedication Code of 2 is present then PRow Rights must be 4.",
+      "If a cross referenced Highway Dedication record with a dedication Code of 2 is present then PRoW Rights must be 4.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11920,7 +11920,7 @@ const ValidationMessages = [
   {
     messageId: 6600061,
     errorMessage:
-      "If a cross referenced Highway Dedication record with a dedication Code of 4 is present then PRow Rights must be 1.",
+      "If a cross referenced Highway Dedication record with a dedication Code of 4 is present then PRoW Rights must be 1.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11936,7 +11936,7 @@ const ValidationMessages = [
   {
     messageId: 6600062,
     errorMessage:
-      "If a cross referenced Highway Dedication record with a dedication Code of 9 is present then PRow Rights must be 3.",
+      "If a cross referenced Highway Dedication record with a dedication Code of 9 is present then PRoW Rights must be 3.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11952,7 +11952,7 @@ const ValidationMessages = [
   {
     messageId: 6600063,
     errorMessage:
-      "If a cross referenced Highway Dedication record with a dedication Code of 10 is present then PRow Rights must be 2.",
+      "If a cross referenced Highway Dedication record with a dedication Code of 10 is present then PRoW Rights must be 2.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11968,7 +11968,7 @@ const ValidationMessages = [
   {
     messageId: 6600064,
     errorMessage:
-      "If a cross referenced Highway Dedication record with a dedication Code of 6 is present then PRow Rights must be 5.",
+      "If a cross referenced Highway Dedication record with a dedication Code of 6 is present then PRoW Rights must be 5.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",

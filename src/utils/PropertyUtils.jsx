@@ -35,6 +35,7 @@
 //    022   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    023   25.01.24 Sean Flook                 Bug fix.
 //    024   01.03.24 Sean Flook           MUL16 Added some error trapping.
+//    025   04.03.24 Sean Flook           MUL16 Try and ensure we get a new temp address when required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -239,17 +240,17 @@ export async function GetTempAddress(lpiRecord, organisation, lookupContext, use
 
   const addressData = isScottish
     ? {
-        usrn: lpiRecord.usrn,
+        usrn: lpiRecord.usrn ? lpiRecord.usrn : 0,
         language: lpiRecord.language,
         organisation: organisation,
-        saonStartNum: lpiRecord.saoStartNumber,
+        saonStartNum: lpiRecord.saoStartNumber ? lpiRecord.saoStartNumber : 0,
         saonStartSuffix: lpiRecord.saoStartSuffix,
-        saonEndNum: lpiRecord.saoEndNumber,
+        saonEndNum: lpiRecord.saoEndNumber ? lpiRecord.saoEndNumber : 0,
         saonEndSuffix: lpiRecord.saoEndSuffix,
         saonText: lpiRecord.saoText,
-        paonStartNum: lpiRecord.paoStartNumber,
+        paonStartNum: lpiRecord.paoStartNumber ? lpiRecord.paoStartNumber : 0,
         paonStartSuffix: lpiRecord.paoStartSuffix,
-        paonEndNum: lpiRecord.paoEndNumber,
+        paonEndNum: lpiRecord.paoEndNumber ? lpiRecord.paoEndNumber : 0,
         paonEndSuffix: lpiRecord.paoEndSuffix,
         paonText: lpiRecord.paoText,
         postTown: postTown,
@@ -258,17 +259,17 @@ export async function GetTempAddress(lpiRecord, organisation, lookupContext, use
         postallyAddressable: lpiRecord.postalAddress,
       }
     : {
-        usrn: lpiRecord.usrn,
+        usrn: lpiRecord.usrn ? lpiRecord.usrn : 0,
         language: lpiRecord.language,
         organisation: organisation,
-        saonStartNum: lpiRecord.saoStartNumber,
+        saonStartNum: lpiRecord.saoStartNumber ? lpiRecord.saoStartNumber : 0,
         saonStartSuffix: lpiRecord.saoStartSuffix,
-        saonEndNum: lpiRecord.saoEndNumber,
+        saonEndNum: lpiRecord.saoEndNumber ? lpiRecord.saoEndNumber : 0,
         saonEndSuffix: lpiRecord.saoEndSuffix,
         saonText: lpiRecord.saoText,
-        paonStartNum: lpiRecord.paoStartNumber,
+        paonStartNum: lpiRecord.paoStartNumber ? lpiRecord.paoStartNumber : 0,
         paonStartSuffix: lpiRecord.paoStartSuffix,
-        paonEndNum: lpiRecord.paoEndNumber,
+        paonEndNum: lpiRecord.paoEndNumber ? lpiRecord.paoEndNumber : 0,
         paonEndSuffix: lpiRecord.paoEndSuffix,
         paonText: lpiRecord.paoText,
         postTown: postTown,
@@ -278,6 +279,9 @@ export async function GetTempAddress(lpiRecord, organisation, lookupContext, use
 
   const tempAddressUrl = GetTempAddressUrl(userToken);
 
+  // if (process.env.NODE_ENV === "development")
+  console.log("[DEBUG] GetTempAddress", tempAddressUrl, JSON.stringify(addressData));
+
   if (tempAddressUrl) {
     const tempAddress = await fetch(`${tempAddressUrl.url}?AddressSeparator=%2C%20`, {
       headers: tempAddressUrl.headers,
@@ -286,10 +290,36 @@ export async function GetTempAddress(lpiRecord, organisation, lookupContext, use
       body: JSON.stringify(addressData),
     })
       .then((res) => (res.ok ? res : Promise.reject(res)))
-      .then((res) => res.text())
+      .then((res) => {
+        switch (res.status) {
+          case 200:
+            return res.text();
+
+          case 204:
+            console.log("[DEBUG] GetTempAddress: No content found");
+            return "No content found";
+
+          case 400:
+            console.error("[400 ERROR] GetTempAddress: Bad Request.", res);
+            return null;
+
+          case 401:
+            console.error("[401 ERROR] GetTempAddress: Authorization details are not valid or have expired.", res);
+            return null;
+
+          case 403:
+            console.error("[403 ERROR] GetTempAddress: You do not have database access.", res);
+            return null;
+
+          default:
+            console.error("[ERROR] GetTempAddress: Unexpected error.", res);
+            return null;
+        }
+      })
       .then(
         (tempAddress) => {
-          return addressToTitleCase(tempAddress, addressData.postcode);
+          if (tempAddress !== "No content found") return addressToTitleCase(tempAddress, addressData.postcode);
+          else return tempAddress;
         },
         (error) => {
           console.error("[ERROR] Get temp address data", error);

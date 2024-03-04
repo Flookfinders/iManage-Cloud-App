@@ -28,6 +28,7 @@
 //    015   13.02.24 Sean Flook                 Display the correct information for type 63 & 66 records in the list.
 //    016   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    017   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
+//    018   04.03.24 Sean Flook            COL3 Changed the colour for type 51/61 ASD records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -58,7 +59,7 @@ import {
   adsYellow,
   adsMidRed,
   adsDarkGreen,
-  adsDarkOrange,
+  adsMidBlueA,
   adsDarkPurple,
 } from "../utils/ADSColours";
 import {
@@ -738,7 +739,7 @@ function AsdDataTab({
                 checked={checked}
                 itemState={listState}
                 iconColour={adsWhite}
-                iconBackgroundColour={adsDarkOrange}
+                iconBackgroundColour={adsMidBlueA}
                 primaryCodeField="streetStatus"
                 secondaryCodeField="maintainingAuthorityCode"
                 onToggleItem={(id) => handleToggleItem(id)}
@@ -800,7 +801,7 @@ function AsdDataTab({
                 checked={checked}
                 itemState={listState}
                 iconColour={adsWhite}
-                iconBackgroundColour={adsDarkOrange}
+                iconBackgroundColour={adsMidBlueA}
                 primaryCodeField="streetStatus"
                 secondaryCodeField="swaOrgRefAuthority"
                 onToggleItem={(id) => handleToggleItem(id)}

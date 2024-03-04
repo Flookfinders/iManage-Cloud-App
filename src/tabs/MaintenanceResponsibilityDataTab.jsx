@@ -27,6 +27,7 @@
 //    014   13.02.24 Sean Flook                 Set the ADSWholeRoadControl variant.
 //    015   13.02.24 Sean Flook                 Updated to new colour.
 //    016   20.02.24 Joel Benford     IMANN-299 Toolbar changes
+//    017   04.03.24 Sean Flook            COL3 Changed the colour for type 51/61 ASD records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -62,7 +63,7 @@ import SwaOrgRef from "../data/SwaOrgRef";
 
 import { People } from "@mui/icons-material";
 
-import { adsWhite, adsDarkOrange } from "../utils/ADSColours";
+import { adsWhite, adsMidBlueA } from "../utils/ADSColours";
 import { toolbarStyle, dataFormStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -553,7 +554,7 @@ function MaintenanceResponsibilityDataTab({
               sx={{
                 height: theme.spacing(2),
                 width: theme.spacing(2),
-                backgroundColor: adsDarkOrange,
+                backgroundColor: adsMidBlueA,
                 color: adsWhite,
               }}
             >

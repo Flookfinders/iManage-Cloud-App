@@ -42,6 +42,7 @@
 //    029   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    030   28.02.24 Joshua McCormick IMANN-280 Made tabStyle full-width when horizontal scrolling is not needed, so borders are full-width
 //    031   27.02.24 Sean Flook           MUL16 Changes required to correctly open the related tab.
+//    032   04.03.24 Sean Flook           MUL16 Try and ensure we get a new temp address when required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3204,13 +3205,28 @@ function PropertyDataForm({ data, loading }) {
 
     let newLpis = null;
 
-    const newAddress = await GetTempAddress(
+    let newAddress = await GetTempAddress(
       newData,
       propertyData.organisation,
       lookupContext,
       userContext.currentUser.token,
       settingsContext.isScottish
     );
+
+    // If we did not get the address try the English version of the address
+    if (newAddress === "No content found") {
+      if (newData.language !== "ENG") {
+        newAddress = await GetTempAddress(
+          { ...newData, language: "ENG" },
+          propertyData.organisation,
+          lookupContext,
+          userContext.currentUser.token,
+          settingsContext.isScottish
+        );
+
+        if (newAddress === "No content found") newAddress = "";
+      } else newAddress = "";
+    } else newAddress = "";
 
     const updatedData = settingsContext.isScottish
       ? {
@@ -3333,12 +3349,27 @@ function PropertyDataForm({ data, loading }) {
         lastUpdateDate: secondLpi.lastUpdateDate,
       };
 
-      const newSecondAddress = await GetTempAddress(
+      let newSecondAddress = await GetTempAddress(
         newSecondLpi,
         propertyData.organisation,
         lookupContext,
         userContext.currentUser.token
       );
+
+      // If we did not get the address try the English version of the address
+      if (newSecondAddress === "No content found") {
+        if (newSecondLpi.language !== "ENG") {
+          newSecondAddress = await GetTempAddress(
+            { ...newSecondLpi, language: "ENG" },
+            propertyData.organisation,
+            lookupContext,
+            userContext.currentUser.token,
+            settingsContext.isScottish
+          );
+
+          if (newSecondAddress === "No content found") newSecondAddress = "";
+        } else newSecondAddress = "";
+      } else newSecondAddress = "";
 
       const updatedSecondLpi = {
         language: newSecondLpi.language,
@@ -3374,10 +3405,7 @@ function PropertyDataForm({ data, loading }) {
         lastUpdateDate: newSecondLpi.lastUpdateDate,
       };
 
-      newLpis = propertyData.lpis.map(
-        (x) =>
-          [updatedData].find((lpi) => lpi.pkId === x.pkId) || [updatedSecondLpi].find((lpi) => lpi.pkId === x.pkId) || x
-      );
+      newLpis = propertyData.lpis.map((x) => [updatedData, updatedSecondLpi].find((lpi) => lpi.pkId === x.pkId) || x);
     } else {
       newLpis = propertyData.lpis.map((x) => [updatedData].find((lpi) => lpi.pkId === x.pkId) || x);
     }
@@ -4099,7 +4127,6 @@ function PropertyDataForm({ data, loading }) {
     minWidth: "fit-content",
     flex: 1,
   };
-
 
   return (
     <div id="property-data-form">

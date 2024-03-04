@@ -32,6 +32,7 @@
 //    019   11.01.24 Sean Flook                 Fix warnings.
 //    020   25.01.24 Joel Benford               Stop overriding descriptor background.
 //    021   27.02.24 Sean Flook           MUL16 Changes required to handle parent child relationships.
+//    022   04.03.24 Sean Flook           MUL16 Temporarily changed field name whilst waiting for API to be fixed.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -866,7 +867,7 @@ function PropertyDetailsTab({
       setEndDate(data.endDate);
       setParentUprn(data.parentUprn);
       setParentAddress(data.parentAddress);
-      setParentPostcode(data.parentPostcode);
+      setParentPostcode(data.parentPostCode); // TODO: Change back to parentPostcode once API has been fixed.
 
       setHasParent(!!data.parentUprn);
 
