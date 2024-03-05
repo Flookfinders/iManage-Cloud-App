@@ -44,6 +44,7 @@
 //    031   27.02.24 Sean Flook           MUL16 Changes required to correctly open the related tab.
 //    032   04.03.24 Sean Flook           MUL16 Try and ensure we get a new temp address when required.
 //    033   05.03.24 Sean Flook       IMANN-338 If navigating back to an existing record ensure the form is setup as it was left.
+//    034   05.03.24 Sean Flook       IMANN-338 Added code to ensure the tabs are not kept open when not required any more.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -183,6 +184,7 @@ function PropertyDataForm({ data, loading }) {
   const failedValidation = useRef(null);
   const associatedRecords = useRef([]);
   const provenanceChanged = useRef(false);
+  const clearingType = useRef("");
 
   const [blpuErrors, setBlpuErrors] = useState([]);
   const [lpiErrors, setLpiErrors] = useState([]);
@@ -311,6 +313,7 @@ function PropertyDataForm({ data, loading }) {
    */
   const updatePropertyDataAndClear = (newPropertyData, clearType) => {
     setPropertyData(newPropertyData);
+    clearingType.current = clearType;
     sandboxContext.onUpdateAndClear("currentProperty", newPropertyData, clearType);
     updateSaveButton(false);
   };
@@ -2617,17 +2620,18 @@ function PropertyDataForm({ data, loading }) {
           restoredLpis = restoredLpis.filter((x) => x.dualLanguageLink !== checkData.dualLanguageLink);
 
         if (restoredLpis)
-          setAssociatedPropertyData(
+          setAssociatedPropertyDataAndClear(
             restoredLpis,
             propertyData.blpuProvenances,
             propertyData.blpuAppCrossRefs,
             propertyData.classifications,
             propertyData.organisations,
             propertyData.successorCrossRefs,
-            propertyData.blpuNotes
+            propertyData.blpuNotes,
+            "lpi"
           );
       }
-      failedValidation.current = true;
+      failedValidation.current = false;
       sandboxContext.onSandboxChange("lpi", null);
       handleLPISelected(-1, null, null, null);
     };
@@ -2670,6 +2674,7 @@ function PropertyDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "lpi";
           sandboxContext.onSandboxChange("lpi", null);
           handleLPISelected(-1, null, null, null);
         }
@@ -2711,17 +2716,19 @@ function PropertyDataForm({ data, loading }) {
         const restoredClassifications = propertyData.classifications.filter((x) => x.pkId !== checkPkID);
 
         if (restoredClassifications)
-          setAssociatedPropertyData(
+          setAssociatedPropertyDataAndClear(
             propertyData.lpis,
             propertyData.blpuProvenances,
             propertyData.blpuAppCrossRefs,
             restoredClassifications,
             propertyData.organisations,
             propertyData.successorCrossRefs,
-            propertyData.blpuNotes
+            propertyData.blpuNotes,
+            "classification"
           );
       }
 
+      failedValidation.current = false;
       sandboxContext.onSandboxChange("classification", null);
       handleClassificationSelected(-1, null, null, null);
     };
@@ -2753,6 +2760,7 @@ function PropertyDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "classification";
           sandboxContext.onSandboxChange("classification", null);
           handleClassificationSelected(-1, null, null, null);
         }
@@ -2794,17 +2802,19 @@ function PropertyDataForm({ data, loading }) {
         const restoredOrganisations = propertyData.organisations.filter((x) => x.pkId !== checkPkID);
 
         if (restoredOrganisations)
-          setAssociatedPropertyData(
+          setAssociatedPropertyDataAndClear(
             propertyData.lpis,
             propertyData.blpuProvenances,
             propertyData.blpuAppCrossRefs,
             propertyData.classifications,
             restoredOrganisations,
             propertyData.successorCrossRefs,
-            propertyData.blpuNotes
+            propertyData.blpuNotes,
+            "organisation"
           );
       }
 
+      failedValidation.current = false;
       sandboxContext.onSandboxChange("organisation", null);
       handleOrganisationSelected(-1, null, null, null);
     };
@@ -2836,6 +2846,7 @@ function PropertyDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "organisation";
           sandboxContext.onSandboxChange("organisation", null);
           handleOrganisationSelected(-1, null, null, null);
         }
@@ -2877,17 +2888,19 @@ function PropertyDataForm({ data, loading }) {
         const restoredSuccessorCrossRefs = propertyData.successorCrossRefs.filter((x) => x.pkId !== checkPkID);
 
         if (restoredSuccessorCrossRefs)
-          setAssociatedPropertyData(
+          setAssociatedPropertyDataAndClear(
             propertyData.lpis,
             propertyData.blpuProvenances,
             propertyData.blpuAppCrossRefs,
             propertyData.classifications,
             propertyData.organisations,
             restoredSuccessorCrossRefs,
-            propertyData.blpuNotes
+            propertyData.blpuNotes,
+            "successorCrossRef"
           );
       }
 
+      failedValidation.current = false;
       sandboxContext.onSandboxChange("successorCrossRef", null);
       handleSuccessorCrossRefSelected(-1, null, null, null);
     };
@@ -2919,6 +2932,7 @@ function PropertyDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "successorCrossRef";
           sandboxContext.onSandboxChange("successorCrossRef", null);
           handleSuccessorCrossRefSelected(-1, null, null, null);
         }
@@ -2960,17 +2974,19 @@ function PropertyDataForm({ data, loading }) {
         const restoredProvenances = propertyData.blpuProvenances.filter((x) => x.pkId !== checkPkID);
 
         if (restoredProvenances)
-          setAssociatedPropertyData(
+          setAssociatedPropertyDataAndClear(
             propertyData.lpis,
             restoredProvenances,
             propertyData.blpuAppCrossRefs,
             propertyData.classifications,
             propertyData.organisations,
             propertyData.successorCrossRefs,
-            propertyData.blpuNotes
+            propertyData.blpuNotes,
+            "provenance"
           );
       }
 
+      failedValidation.current = false;
       sandboxContext.onSandboxChange("provenance", null);
       handleProvenanceSelected(-1, null, null, null);
     };
@@ -3002,6 +3018,7 @@ function PropertyDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "provenance";
           sandboxContext.onSandboxChange("provenance", null);
           handleProvenanceSelected(-1, null, null, null);
         }
@@ -3044,17 +3061,19 @@ function PropertyDataForm({ data, loading }) {
         const restoredAppCrossRefs = propertyData.blpuAppCrossRefs.filter((x) => x.pkId !== checkPkId);
 
         if (restoredAppCrossRefs)
-          setAssociatedPropertyData(
+          setAssociatedPropertyDataAndClear(
             propertyData.lpis,
             propertyData.blpuProvenances,
             restoredAppCrossRefs,
             propertyData.classifications,
             propertyData.organisations,
             propertyData.successorCrossRefs,
-            propertyData.blpuNotes
+            propertyData.blpuNotes,
+            "appCrossRef"
           );
       }
 
+      failedValidation.current = false;
       sandboxContext.onSandboxChange("appCrossRef", null);
       handleCrossRefSelected(-1, null, null, null);
     };
@@ -3086,6 +3105,7 @@ function PropertyDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "appCrossRef";
           sandboxContext.onSandboxChange("appCrossRef", null);
           handleCrossRefSelected(-1, null, null, null);
         }
@@ -3127,17 +3147,19 @@ function PropertyDataForm({ data, loading }) {
         const restoredNotes = propertyData.blpuNotes.filter((x) => x.pkId !== checkData.pkId);
 
         if (restoredNotes)
-          setAssociatedPropertyData(
+          setAssociatedPropertyDataAndClear(
             propertyData.lpis,
             propertyData.blpuProvenances,
             propertyData.blpuAppCrossRefs,
             propertyData.classifications,
             propertyData.organisations,
             propertyData.successorCrossRefs,
-            restoredNotes
+            restoredNotes,
+            "propertyNote"
           );
       }
 
+      failedValidation.current = false;
       sandboxContext.onSandboxChange("propertyNote", null);
       handleNoteSelected(-1, null, null, null);
     };
@@ -3170,6 +3192,7 @@ function PropertyDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "propertyNote";
           sandboxContext.onSandboxChange("propertyNote", null);
           handleNoteSelected(-1, null, null, null);
         }
@@ -3796,6 +3819,7 @@ function PropertyDataForm({ data, loading }) {
           mapContext.onSetPolygonGeometry(null);
 
           setPropertyData(newPropertyData);
+          clearingType.current = "provenance";
           sandboxContext.onUpdateAndClear("currentProperty", newPropertyData, "provenance");
           setSaveDisabled(false);
           provenanceChanged.current = true;
@@ -3830,7 +3854,11 @@ function PropertyDataForm({ data, loading }) {
 
     if (value !== sandboxContext.currentSandbox.propertyTab) setValue(sandboxContext.currentSandbox.propertyTab);
 
-    if (sandboxContext.currentSandbox.currentPropertyRecords.lpi && !lpiFormData) {
+    if (
+      sandboxContext.currentSandbox.currentPropertyRecords.lpi &&
+      !lpiFormData &&
+      !["lpi", "allAssociatedProperty", "allProperty"].includes(clearingType.current)
+    ) {
       setLpiFormData({
         pkId: sandboxContext.currentSandbox.currentPropertyRecords.lpi.pkId,
         lpiData: sandboxContext.currentSandbox.currentPropertyRecords.lpi,
@@ -3839,7 +3867,11 @@ function PropertyDataForm({ data, loading }) {
         index: data.lpis.findIndex((x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.lpi.pkId),
         totalRecords: data.lpis.length,
       });
-    } else if (sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef && !crossRefFormData) {
+    } else if (
+      sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef &&
+      !crossRefFormData &&
+      !["appCrossRef", "allAssociatedProperty", "allProperty"].includes(clearingType.current)
+    ) {
       setCrossRefFormData({
         id: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.pkId,
         xrefData: {
@@ -3861,7 +3893,11 @@ function PropertyDataForm({ data, loading }) {
         ),
         totalRecords: data.blpuAppCrossRefs.length,
       });
-    } else if (sandboxContext.currentSandbox.currentPropertyRecords.provenance && !provenanceFormData) {
+    } else if (
+      sandboxContext.currentSandbox.currentPropertyRecords.provenance &&
+      !provenanceFormData &&
+      !["provenance", "allAssociatedProperty", "allProperty"].includes(clearingType.current)
+    ) {
       setProvenanceFormData({
         id: sandboxContext.currentSandbox.currentPropertyRecords.provenance.pkId,
         provenanceData: {
@@ -3883,7 +3919,11 @@ function PropertyDataForm({ data, loading }) {
         ),
         totalRecords: data.blpuProvenances.length,
       });
-    } else if (sandboxContext.currentSandbox.currentPropertyRecords.classification && !classificationFormData) {
+    } else if (
+      sandboxContext.currentSandbox.currentPropertyRecords.classification &&
+      !classificationFormData &&
+      !["classification", "allAssociatedProperty", "allProperty"].includes(clearingType.current)
+    ) {
       setClassificationFormData({
         id: sandboxContext.currentSandbox.currentPropertyRecords.classification.pkId,
         classificationData: {
@@ -3905,7 +3945,11 @@ function PropertyDataForm({ data, loading }) {
         ),
         totalRecords: data.classifications.length,
       });
-    } else if (sandboxContext.currentSandbox.currentPropertyRecords.organisation && !organisationFormData) {
+    } else if (
+      sandboxContext.currentSandbox.currentPropertyRecords.organisation &&
+      !organisationFormData &&
+      !["organisation", "allAssociatedProperty", "allProperty"].includes(clearingType.current)
+    ) {
       setOrganisationFormData({
         id: sandboxContext.currentSandbox.currentPropertyRecords.organisation.pkId,
         organisationData: {
@@ -3926,7 +3970,11 @@ function PropertyDataForm({ data, loading }) {
         ),
         totalRecords: data.organisations.length,
       });
-    } else if (sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef && !successorCrossRefFormData) {
+    } else if (
+      sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef &&
+      !successorCrossRefFormData &&
+      !["successorCrossRef", "allAssociatedProperty", "allProperty"].includes(clearingType.current)
+    ) {
       setSuccessorCrossRefFormData({
         id: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.pkId,
         successorCrossRefData: {
@@ -3947,7 +3995,11 @@ function PropertyDataForm({ data, loading }) {
         ),
         totalRecords: data.successorCrossRefs.length,
       });
-    } else if (sandboxContext.currentSandbox.currentPropertyRecords.note && !notesFormData) {
+    } else if (
+      sandboxContext.currentSandbox.currentPropertyRecords.note &&
+      !notesFormData &&
+      !["propertyNote", "allAssociatedProperty", "allProperty"].includes(clearingType.current)
+    ) {
       setNotesFormData({
         pkId: sandboxContext.currentSandbox.currentPropertyRecords.note.pkId,
         noteData: sandboxContext.currentSandbox.currentPropertyRecords.note,
@@ -3971,6 +4023,44 @@ function PropertyDataForm({ data, loading }) {
     notesFormData,
     data,
   ]);
+
+  useEffect(() => {
+    if (
+      !sandboxContext.currentSandbox.currentPropertyRecords.lpi &&
+      ["lpi", "allAssociatedProperty", "allProperty"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef &&
+      ["appCrossRef", "allAssociatedProperty", "allProperty"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentPropertyRecords.provenance &&
+      ["provenance", "allAssociatedProperty", "allProperty"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentPropertyRecords.classification &&
+      ["classification", "allAssociatedProperty", "allProperty"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentPropertyRecords.organisation &&
+      ["organisation", "allAssociatedProperty", "allProperty"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef &&
+      ["successorCrossRef", "allAssociatedProperty", "allProperty"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentPropertyRecords.note &&
+      ["propertyNote", "allAssociatedProperty", "allProperty"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+  }, [sandboxContext.currentSandbox.currentPropertyRecords]);
 
   useEffect(() => {
     if (propertyContext.currentProperty.openRelated) {

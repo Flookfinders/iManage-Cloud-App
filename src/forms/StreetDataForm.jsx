@@ -58,6 +58,7 @@
 //    044   16.02.24 Sean Flook        ESU17_GP Hide ASD layers when viewing the ESU list and add the unassigned ESUs to the relevant map layer.
 //    045   28.02.24 Joshua McCormick IMANN-280 Made tabStyle full-width when horizontal scrolling is not needed, so borders are full-width
 //    046   05.03.24 Sean Flook       IMANN-338 If navigating back to an existing record ensure the form is setup as it was left.
+//    047   05.03.24 Sean Flook       IMANN-338 Added code to ensure the tabs are not kept open when not required any more.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -227,6 +228,7 @@ function StreetDataForm({ data, loading }) {
   const failedValidation = useRef(null);
   const esuChanged = useRef(false);
   const mergedDividedEsus = useRef([]);
+  const clearingType = useRef("");
 
   const [streetErrors, setStreetErrors] = useState([]);
   const [descriptorErrors, setDescriptorErrors] = useState([]);
@@ -411,6 +413,7 @@ function StreetDataForm({ data, loading }) {
    */
   const updateStreetDataAndClear = (newStreetData, clearType) => {
     setStreetData(newStreetData);
+    clearingType.current = clearType;
     sandboxContext.onUpdateAndClear("currentStreet", newStreetData, clearType);
     updateSaveButton(false);
   };
@@ -1040,11 +1043,8 @@ function StreetDataForm({ data, loading }) {
 
   /**
    * Rests the ASD data and sets the associated street data.
-   *
    */
   const resetStreetAsdData = () => {
-    clearAsdFormData();
-
     setAssociatedStreetData(
       streetData.esus,
       streetData.successorCrossRefs,
@@ -1060,6 +1060,7 @@ function StreetDataForm({ data, loading }) {
       currentStreetAsdData.current.heightWidthWeights
     );
 
+    clearAsdFormData();
     currentStreetAsdData.current = null;
   };
 
@@ -4329,6 +4330,7 @@ function StreetDataForm({ data, loading }) {
     ).then((result) => {
       if (result) {
         setStreetData(result);
+        clearingType.current = "allStreet";
         sandboxContext.onUpdateAndClear("sourceStreet", result, "allStreet");
         currentStreetAsdData.current = null;
         streetContext.onEsuDividedMerged(false);
@@ -4375,7 +4377,7 @@ function StreetDataForm({ data, loading }) {
         const restoredDescriptors = streetData.streetDescriptors.filter((x) => x.pkId !== checkData.pkId);
 
         if (restoredDescriptors)
-          setAssociatedStreetData(
+          setAssociatedStreetDataAndClear(
             streetData.esus,
             streetData.successorCrossRefs,
             restoredDescriptors,
@@ -4387,11 +4389,12 @@ function StreetDataForm({ data, loading }) {
             streetData.constructions,
             !settingsContext.isScottish ? streetData.specialDesignations : null,
             streetData.publicRightOfWays,
-            streetData.heightWidthWeights
+            streetData.heightWidthWeights,
+            "streetDescriptor"
           );
       }
 
-      failedValidation.current = true;
+      failedValidation.current = false;
       sandboxContext.onSandboxChange("streetDescriptor", null);
       handleDescriptorSelected(-1, null, null, null);
     };
@@ -4434,6 +4437,7 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "streetDescriptor";
           sandboxContext.onSandboxChange("streetDescriptor", null);
           handleDescriptorSelected(-1, null, null, null);
         }
@@ -4528,7 +4532,7 @@ function StreetDataForm({ data, loading }) {
         const restoredEsus = streetData.esus.filter((x) => x.pkId !== checkData.pkId);
 
         if (restoredEsus)
-          setAssociatedStreetData(
+          setAssociatedStreetDataAndClear(
             restoredEsus,
             streetData.successorCrossRefs,
             streetData.streetDescriptors,
@@ -4540,11 +4544,12 @@ function StreetDataForm({ data, loading }) {
             streetData.constructions,
             !settingsContext.isScottish ? streetData.specialDesignations : null,
             streetData.publicRightOfWays,
-            streetData.heightWidthWeights
+            streetData.heightWidthWeights,
+            "esu"
           );
       }
 
-      failedValidation.current = true;
+      failedValidation.current = false;
       esuChanged.current = false;
       sandboxContext.onSandboxChange("esu", null);
       handleEsuSelected(-1, null, null);
@@ -4594,6 +4599,7 @@ function StreetDataForm({ data, loading }) {
             .catch(() => {});
         } else {
           esuChanged.current = false;
+          clearingType.current = "esu";
           sandboxContext.onSandboxChange("esu", null);
           handleEsuSelected(-1, null, null);
         }
@@ -4631,7 +4637,8 @@ function StreetDataForm({ data, loading }) {
    */
   const handleHighwayDedicationHomeClick = (action, srcData, currentData) => {
     const discardChanges = () => {
-      failedValidation.current = true;
+      failedValidation.current = false;
+      clearingType.current = "highwayDedication";
       sandboxContext.onSandboxChange("highwayDedication", null);
       if (currentEsuFormData.current) resetEsuData();
       else if (currentStreetEsuData.current) resetStreetEsuData();
@@ -4673,6 +4680,7 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "highwayDedication";
           sandboxContext.onSandboxChange("highwayDedication", null);
           if (currentEsuFormData.current) resetEsuData();
           else if (currentStreetEsuData.current) resetStreetEsuData();
@@ -4712,7 +4720,8 @@ function StreetDataForm({ data, loading }) {
    */
   const handleOneWayExemptionHomeClick = (action, srcData, currentData) => {
     const discardChanges = () => {
-      failedValidation.current = true;
+      failedValidation.current = false;
+      clearingType.current = "oneWayExemption";
       sandboxContext.onSandboxChange("oneWayExemption", null);
       if (currentEsuFormData.current) resetEsuData();
       else if (currentStreetEsuData.current) resetStreetEsuData();
@@ -4754,6 +4763,7 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "oneWayExemption";
           sandboxContext.onSandboxChange("oneWayExemption", null);
           if (currentEsuFormData.current) resetEsuData();
           else if (currentStreetEsuData.current) resetStreetEsuData();
@@ -4798,7 +4808,7 @@ function StreetDataForm({ data, loading }) {
         const restoredSuccessorCrossRefs = streetData.successorCrossRefs.filter((x) => x.pkId !== checkPkID);
 
         if (restoredSuccessorCrossRefs)
-          setAssociatedStreetData(
+          setAssociatedStreetDataAndClear(
             streetData.esus,
             restoredSuccessorCrossRefs,
             streetData.streetDescriptors,
@@ -4810,10 +4820,12 @@ function StreetDataForm({ data, loading }) {
             null,
             null,
             null,
-            null
+            null,
+            "successorCrossRef"
           );
       }
 
+      failedValidation.current = false;
       sandboxContext.onSandboxChange("successorCrossRef", null);
       handleSuccessorCrossRefSelected(-1, null, null, null);
     };
@@ -4845,6 +4857,7 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "successorCrossRef";
           sandboxContext.onSandboxChange("successorCrossRef", null);
           handleSuccessorCrossRefSelected(-1, null, null, null);
         }
@@ -4888,7 +4901,7 @@ function StreetDataForm({ data, loading }) {
         );
 
         if (restoredMaintenanceResponsibilities)
-          setAssociatedStreetData(
+          setAssociatedStreetDataAndClear(
             streetData.esus,
             streetData.successorCrossRefs,
             streetData.streetDescriptors,
@@ -4900,10 +4913,11 @@ function StreetDataForm({ data, loading }) {
             null,
             null,
             null,
-            null
+            null,
+            "maintenanceResponsibility"
           );
       }
-      failedValidation.current = true;
+      failedValidation.current = false;
       sandboxContext.onSandboxChange("maintenanceResponsibility", null);
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
@@ -4945,6 +4959,7 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "maintenanceResponsibility";
           sandboxContext.onSandboxChange("maintenanceResponsibility", null);
           if (currentStreetAsdData.current) resetStreetAsdData();
           else handleAsdHomeClick();
@@ -4989,7 +5004,7 @@ function StreetDataForm({ data, loading }) {
         );
 
         if (restoredReinstatementCategories)
-          setAssociatedStreetData(
+          setAssociatedStreetDataAndClear(
             streetData.esus,
             streetData.successorCrossRefs,
             streetData.streetDescriptors,
@@ -5001,11 +5016,12 @@ function StreetDataForm({ data, loading }) {
             null,
             null,
             null,
-            null
+            null,
+            "reinstatementCategory"
           );
       }
 
-      failedValidation.current = true;
+      failedValidation.current = false;
       sandboxContext.onSandboxChange("reinstatementCategory", null);
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
@@ -5048,6 +5064,7 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "reinstatementCategory";
           sandboxContext.onSandboxChange("reinstatementCategory", null);
           if (currentStreetAsdData.current) resetStreetAsdData();
           else handleAsdHomeClick();
@@ -5090,7 +5107,7 @@ function StreetDataForm({ data, loading }) {
         const restoredSpecialDesignations = streetData.specialDesignations.filter((x) => x.pkId !== checkData.pkId);
 
         if (restoredSpecialDesignations)
-          setAssociatedStreetData(
+          setAssociatedStreetDataAndClear(
             streetData.esus,
             streetData.successorCrossRefs,
             streetData.streetDescriptors,
@@ -5102,11 +5119,12 @@ function StreetDataForm({ data, loading }) {
             null,
             null,
             null,
-            null
+            null,
+            "osSpecialDesignation"
           );
       }
 
-      failedValidation.current = true;
+      failedValidation.current = false;
       sandboxContext.onSandboxChange("osSpecialDesignation", null);
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
@@ -5149,6 +5167,7 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "osSpecialDesignation";
           sandboxContext.onSandboxChange("osSpecialDesignation", null);
           if (currentStreetAsdData.current) resetStreetAsdData();
           else handleAsdHomeClick();
@@ -5191,7 +5210,7 @@ function StreetDataForm({ data, loading }) {
         const restoredInterests = streetData.interests.filter((x) => x.pkId !== checkData.pkId);
 
         if (restoredInterests)
-          setAssociatedStreetData(
+          setAssociatedStreetDataAndClear(
             streetData.esus,
             null,
             streetData.streetDescriptors,
@@ -5203,11 +5222,12 @@ function StreetDataForm({ data, loading }) {
             streetData.constructions,
             streetData.specialDesignations,
             streetData.publicRightOfWays,
-            streetData.heightWidthWeights
+            streetData.heightWidthWeights,
+            "interest"
           );
       }
 
-      failedValidation.current = true;
+      failedValidation.current = false;
       sandboxContext.onSandboxChange("interest", null);
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
@@ -5291,7 +5311,7 @@ function StreetDataForm({ data, loading }) {
         const restoredConstructions = streetData.constructions.filter((x) => x.pkId !== checkData.pkId);
 
         if (restoredConstructions)
-          setAssociatedStreetData(
+          setAssociatedStreetDataAndClear(
             streetData.esus,
             null,
             streetData.streetDescriptors,
@@ -5303,11 +5323,12 @@ function StreetDataForm({ data, loading }) {
             restoredConstructions,
             streetData.specialDesignations,
             streetData.publicRightOfWays,
-            streetData.heightWidthWeights
+            streetData.heightWidthWeights,
+            "construction"
           );
       }
 
-      failedValidation.current = true;
+      failedValidation.current = false;
       sandboxContext.onSandboxChange("construction", null);
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
@@ -5350,6 +5371,7 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "construction";
           sandboxContext.onSandboxChange("construction", null);
           if (currentStreetAsdData.current) resetStreetAsdData();
           else handleAsdHomeClick();
@@ -5392,7 +5414,7 @@ function StreetDataForm({ data, loading }) {
         const restoredSpecialDesignations = streetData.specialDesignations.filter((x) => x.pkId !== checkData.pkId);
 
         if (restoredSpecialDesignations)
-          setAssociatedStreetData(
+          setAssociatedStreetDataAndClear(
             streetData.esus,
             null,
             streetData.streetDescriptors,
@@ -5404,11 +5426,12 @@ function StreetDataForm({ data, loading }) {
             streetData.constructions,
             restoredSpecialDesignations,
             streetData.publicRightOfWays,
-            streetData.heightWidthWeights
+            streetData.heightWidthWeights,
+            "specialDesignation"
           );
       }
 
-      failedValidation.current = true;
+      failedValidation.current = false;
       sandboxContext.onSandboxChange("specialDesignation", null);
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
@@ -5451,6 +5474,7 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "specialDesignation";
           sandboxContext.onSandboxChange("specialDesignation", null);
           if (currentStreetAsdData.current) resetStreetAsdData();
           else handleAsdHomeClick();
@@ -5493,7 +5517,7 @@ function StreetDataForm({ data, loading }) {
         const restoredHeightWidthWeights = streetData.heightWidthWeights.filter((x) => x.pkId !== checkData.pkId);
 
         if (restoredHeightWidthWeights)
-          setAssociatedStreetData(
+          setAssociatedStreetDataAndClear(
             streetData.esus,
             null,
             streetData.streetDescriptors,
@@ -5505,12 +5529,13 @@ function StreetDataForm({ data, loading }) {
             streetData.constructions,
             streetData.specialDesignations,
             streetData.publicRightOfWays,
-            restoredHeightWidthWeights
+            restoredHeightWidthWeights,
+            "hww"
           );
       }
 
-      failedValidation.current = true;
-      sandboxContext.onSandboxChange("heightWidthWeight", null);
+      failedValidation.current = false;
+      sandboxContext.onSandboxChange("hww", null);
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
     };
@@ -5550,7 +5575,8 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
-          sandboxContext.onSandboxChange("heightWidthWeight", null);
+          clearingType.current = "hww";
+          sandboxContext.onSandboxChange("hww", null);
           if (currentStreetAsdData.current) resetStreetAsdData();
           else handleAsdHomeClick();
         }
@@ -5592,7 +5618,7 @@ function StreetDataForm({ data, loading }) {
         const restoredPublicRightOfWays = streetData.publicRightOfWays.filter((x) => x.pkId !== checkData.pkId);
 
         if (restoredPublicRightOfWays)
-          setAssociatedStreetData(
+          setAssociatedStreetDataAndClear(
             streetData.esus,
             null,
             streetData.streetDescriptors,
@@ -5604,11 +5630,13 @@ function StreetDataForm({ data, loading }) {
             streetData.constructions,
             streetData.specialDesignations,
             restoredPublicRightOfWays,
-            streetData.heightWidthWeights
+            streetData.heightWidthWeights,
+            "prow"
           );
       }
-      failedValidation.current = true;
-      sandboxContext.onSandboxChange("publicRightOfWay", null);
+
+      failedValidation.current = false;
+      sandboxContext.onSandboxChange("prow", null);
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
     };
@@ -5650,7 +5678,8 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
-          sandboxContext.onSandboxChange("publicRightOfWay", null);
+          clearingType.current = "prow";
+          sandboxContext.onSandboxChange("prow", null);
           if (currentStreetAsdData.current) resetStreetAsdData();
           else handleAsdHomeClick();
         }
@@ -5692,7 +5721,7 @@ function StreetDataForm({ data, loading }) {
         const restoredNotes = streetData.streetNotes.filter((x) => x.pkId !== checkData.pkId);
 
         if (restoredNotes)
-          setAssociatedStreetData(
+          setAssociatedStreetDataAndClear(
             streetData.esus,
             streetData.successorCrossRefs,
             streetData.streetDescriptors,
@@ -5704,10 +5733,12 @@ function StreetDataForm({ data, loading }) {
             streetData.constructions,
             !settingsContext.isScottish ? streetData.specialDesignations : null,
             streetData.publicRightOfWays,
-            streetData.heightWidthWeights
+            streetData.heightWidthWeights,
+            "streetNote"
           );
       }
-      failedValidation.current = true;
+      failedValidation.current = false;
+      clearingType.current = "streetNote";
       sandboxContext.onSandboxChange("streetNote", null);
       handleNoteSelected(-1, null, null, null);
     };
@@ -5748,6 +5779,7 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
+          clearingType.current = "streetNote";
           sandboxContext.onSandboxChange("streetNote", null);
           handleNoteSelected(-1, null, null, null);
         }
@@ -6678,7 +6710,11 @@ function StreetDataForm({ data, loading }) {
 
     if (value !== sandboxContext.currentSandbox.streetTab) setValue(sandboxContext.currentSandbox.streetTab);
 
-    if (sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor && !descriptorFormData) {
+    if (
+      sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor &&
+      !descriptorFormData &&
+      !["streetDescriptor", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    ) {
       setDescriptorFormData({
         pkId: sandboxContext.currentSandbox.currentStreetRecords.descriptor.pkId,
         sdData: sandboxContext.currentSandbox.currentStreetRecords.descriptor,
@@ -6688,14 +6724,22 @@ function StreetDataForm({ data, loading }) {
         ),
         totalRecords: data.streetDescriptors.length,
       });
-    } else if (sandboxContext.currentSandbox.currentStreetRecords.esu && !esuFormData) {
+    } else if (
+      sandboxContext.currentSandbox.currentStreetRecords.esu &&
+      !esuFormData &&
+      !["esu", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    ) {
       setEsuFormData({
         pkId: sandboxContext.currentSandbox.currentStreetRecords.esu.pkId,
         esuData: sandboxContext.currentSandbox.currentStreetRecords.esu,
         index: data.esus.findIndex((x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.esu.pkId),
         totalRecords: data.esus.length,
       });
-    } else if (sandboxContext.currentSandbox.currentStreetRecords.highwayDedication && !hdFormData) {
+    } else if (
+      sandboxContext.currentSandbox.currentStreetRecords.highwayDedication &&
+      !hdFormData &&
+      !["highwayDedication", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    ) {
       setHdFormData({
         pkId: sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.pkId,
         hdData: sandboxContext.currentSandbox.currentStreetRecords.highwayDedication,
@@ -6711,7 +6755,11 @@ function StreetDataForm({ data, loading }) {
           (x) => x.esuId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.esuId
         ).highwayDedications.length,
       });
-    } else if (sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption && !oweFormData) {
+    } else if (
+      sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption &&
+      !oweFormData &&
+      !["oneWayExemption", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    ) {
       setOweFormData({
         pkId: sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.pkId,
         oweData: sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption,
@@ -6727,7 +6775,11 @@ function StreetDataForm({ data, loading }) {
           (x) => x.esuId === sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.esuId
         ).oneWayExemptions.length,
       });
-    } else if (sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef && !successorCrossRefFormData) {
+    } else if (
+      sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef &&
+      !successorCrossRefFormData &&
+      !["successorCrossRef", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    ) {
       setSuccessorCrossRefFormData({
         id: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.pkId,
         successorCrossRefData: {
@@ -6750,7 +6802,8 @@ function StreetDataForm({ data, loading }) {
       });
     } else if (
       sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility &&
-      !maintenanceResponsibilityFormData
+      !maintenanceResponsibilityFormData &&
+      !["maintenanceResponsibility", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
     ) {
       setMaintenanceResponsibilityFormData({
         pkId: sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility.pkId,
@@ -6762,7 +6815,8 @@ function StreetDataForm({ data, loading }) {
       });
     } else if (
       sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory &&
-      !reinstatementCategoryFormData
+      !reinstatementCategoryFormData &&
+      !["reinstatementCategory", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
     ) {
       setReinstatementCategoryFormData({
         pkId: sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory.pkId,
@@ -6774,7 +6828,8 @@ function StreetDataForm({ data, loading }) {
       });
     } else if (
       sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation &&
-      !osSpecialDesignationFormData
+      !osSpecialDesignationFormData &&
+      !["osSpecialDesignation", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
     ) {
       setOSSpecialDesignationFormData({
         pkId: sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation.pkId,
@@ -6784,7 +6839,11 @@ function StreetDataForm({ data, loading }) {
         ),
         totalRecords: data.specialDesignations.length,
       });
-    } else if (sandboxContext.currentSandbox.currentStreetRecords.interest && !interestFormData) {
+    } else if (
+      sandboxContext.currentSandbox.currentStreetRecords.interest &&
+      !interestFormData &&
+      !["interest", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    ) {
       setInterestFormData({
         pkId: sandboxContext.currentSandbox.currentStreetRecords.interest.pkId,
         interestData: sandboxContext.currentSandbox.currentStreetRecords.interest,
@@ -6793,7 +6852,11 @@ function StreetDataForm({ data, loading }) {
         ),
         totalRecords: data.interests.length,
       });
-    } else if (sandboxContext.currentSandbox.currentStreetRecords.construction && !constructionFormData) {
+    } else if (
+      sandboxContext.currentSandbox.currentStreetRecords.construction &&
+      !constructionFormData &&
+      !["construction", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    ) {
       setConstructionFormData({
         pkId: sandboxContext.currentSandbox.currentStreetRecords.construction.pkId,
         constructionData: sandboxContext.currentSandbox.currentStreetRecords.construction,
@@ -6802,7 +6865,11 @@ function StreetDataForm({ data, loading }) {
         ),
         totalRecords: data.constructions.length,
       });
-    } else if (sandboxContext.currentSandbox.currentStreetRecords.specialDesignation && !specialDesignationFormData) {
+    } else if (
+      sandboxContext.currentSandbox.currentStreetRecords.specialDesignation &&
+      !specialDesignationFormData &&
+      !["specialDesignation", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    ) {
       setSpecialDesignationFormData({
         pkId: sandboxContext.currentSandbox.currentStreetRecords.specialDesignation.pkId,
         specialDesignationData: sandboxContext.currentSandbox.currentStreetRecords.specialDesignation,
@@ -6811,7 +6878,11 @@ function StreetDataForm({ data, loading }) {
         ),
         totalRecords: data.specialDesignations.length,
       });
-    } else if (sandboxContext.currentSandbox.currentStreetRecords.hww && !hwwFormData) {
+    } else if (
+      sandboxContext.currentSandbox.currentStreetRecords.hww &&
+      !hwwFormData &&
+      !["hww", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    ) {
       setHwwFormData({
         pkId: sandboxContext.currentSandbox.currentStreetRecords.hww.pkId,
         hwwData: sandboxContext.currentSandbox.currentStreetRecords.hww,
@@ -6820,7 +6891,11 @@ function StreetDataForm({ data, loading }) {
         ),
         totalRecords: data.heightWidthWeights.length,
       });
-    } else if (sandboxContext.currentSandbox.currentStreetRecords.prow && !prowFormData) {
+    } else if (
+      sandboxContext.currentSandbox.currentStreetRecords.prow &&
+      !prowFormData &&
+      !["prow", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    ) {
       setProwFormData({
         pkId: sandboxContext.currentSandbox.currentStreetRecords.prow.pkId,
         prowData: sandboxContext.currentSandbox.currentStreetRecords.prow,
@@ -6829,7 +6904,11 @@ function StreetDataForm({ data, loading }) {
         ),
         totalRecords: data.publicRightOfWays.length,
       });
-    } else if (sandboxContext.currentSandbox.currentStreetRecords.note && !notesFormData) {
+    } else if (
+      sandboxContext.currentSandbox.currentStreetRecords.note &&
+      !notesFormData &&
+      !["streetNote", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    ) {
       setNotesFormData({
         pkId: sandboxContext.currentSandbox.currentStreetRecords.note.pkId,
         noteData: sandboxContext.currentSandbox.currentStreetRecords.note,
@@ -6860,6 +6939,79 @@ function StreetDataForm({ data, loading }) {
     prowFormData,
     notesFormData,
   ]);
+
+  useEffect(() => {
+    if (
+      !sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor &&
+      ["streetDescriptor", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentStreetRecords.esu &&
+      ["esu", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentStreetRecords.highwayDedication &&
+      ["highwayDedication", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption &&
+      ["oneWayExemption", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef &&
+      ["successorCrossRef", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility &&
+      ["maintenanceResponsibility", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory &&
+      ["reinstatementCategory", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation &&
+      ["osSpecialDesignation", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentStreetRecords.interest &&
+      ["interest", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentStreetRecords.construction &&
+      ["construction", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentStreetRecords.specialDesignation &&
+      ["specialDesignation", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentStreetRecords.hww &&
+      ["hww", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentStreetRecords.prow &&
+      ["prow", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+    if (
+      !sandboxContext.currentSandbox.currentStreetRecords.note &&
+      ["streetNote", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
+    )
+      clearingType.current = "";
+  }, [sandboxContext.currentSandbox.currentStreetRecords]);
 
   useEffect(() => {
     if (streetContext.streetClosing && streetData && !streetData.streetEndDate) {
@@ -8497,6 +8649,7 @@ function StreetDataForm({ data, loading }) {
 
         switch (mapContext.currentLineGeometry.objectType) {
           case 13:
+            clearingType.current = "esu";
             sandboxContext.onUpdateAndClear("currentStreet", newStreetData, "esu");
 
             esuChanged.current = true;
@@ -8504,30 +8657,37 @@ function StreetDataForm({ data, loading }) {
             break;
 
           case 51:
+            clearingType.current = "maintenanceResponsibility";
             sandboxContext.onUpdateAndClear("currentStreet", newStreetData, "maintenanceResponsibility");
             break;
 
           case 52:
+            clearingType.current = "reinstatementCategory";
             sandboxContext.onUpdateAndClear("currentStreet", newStreetData, "reinstatementCategory");
             break;
 
           case 53:
+            clearingType.current = "osSpecialDesignation";
             sandboxContext.onUpdateAndClear("currentStreet", newStreetData, "osSpecialDesignation");
             break;
 
           case 61:
+            clearingType.current = "interest";
             sandboxContext.onUpdateAndClear("currentStreet", newStreetData, "interest");
             break;
 
           case 62:
+            clearingType.current = "construction";
             sandboxContext.onUpdateAndClear("currentStreet", newStreetData, "construction");
             break;
 
           case 63:
+            clearingType.current = "specialDesignation";
             sandboxContext.onUpdateAndClear("currentStreet", newStreetData, "specialDesignation");
             break;
 
           case 64:
+            clearingType.current = "hww";
             sandboxContext.onUpdateAndClear("currentStreet", newStreetData, "hww");
             break;
 
@@ -8963,6 +9123,7 @@ function StreetDataForm({ data, loading }) {
         mapContext.onSearchDataChange(currentSearchStreets, [], newStreetData.usrn, null);
       }
       setStreetData(newStreetData);
+      clearingType.current = "esu";
       sandboxContext.onUpdateAndClear("currentStreet", newStreetData, "esu");
       setSaveDisabled(false);
       streetContext.onStreetModified(true);
@@ -9232,6 +9393,7 @@ function StreetDataForm({ data, loading }) {
           mapContext.onSetCoordinate(null);
           mapContext.onSearchDataChange(newEsuStreetData.searchStreets, [], newEsuStreetData.streetData.usrn, null);
           setStreetData(newEsuStreetData.streetData);
+          clearingType.current = "esu";
           sandboxContext.onUpdateAndClear("currentStreet", newEsuStreetData.streetData, "esu");
           setSaveDisabled(false);
           streetContext.onStreetModified(true);
@@ -9544,6 +9706,7 @@ function StreetDataForm({ data, loading }) {
           mapContext.onSetCoordinate(null);
           mapContext.onSearchDataChange(newEsuStreetData.searchStreets, [], newEsuStreetData.streetData.usrn, null);
           setStreetData(newEsuStreetData.streetData);
+          clearingType.current = "esu";
           sandboxContext.onUpdateAndClear("currentStreet", newEsuStreetData.streetData, "esu");
           setSaveDisabled(false);
           streetContext.onStreetModified(true);
@@ -9620,6 +9783,7 @@ function StreetDataForm({ data, loading }) {
         mapContext.onSetCoordinate(null);
         mapContext.onSearchDataChange(newEsuStreetData.searchStreets, [], newEsuStreetData.streetData.usrn, null);
         setStreetData(newEsuStreetData.streetData);
+        clearingType.current = "esu";
         sandboxContext.onUpdateAndClear("currentStreet", newEsuStreetData.streetData, "esu");
         setSaveDisabled(false);
         streetContext.onStreetModified(true);
@@ -9694,6 +9858,7 @@ function StreetDataForm({ data, loading }) {
               mapContext.onSetCoordinate(null);
               mapContext.onSearchDataChange(newEsuStreetData.searchStreets, [], newEsuStreetData.streetData.usrn, null);
               setStreetData(newEsuStreetData.streetData);
+              clearingType.current = "esu";
               sandboxContext.onUpdateAndClear("currentStreet", newEsuStreetData.streetData, "esu");
               setSaveDisabled(false);
               streetContext.onStreetModified(true);
@@ -9748,6 +9913,7 @@ function StreetDataForm({ data, loading }) {
           if (newEsuStreetData) {
             mapContext.onSearchDataChange(newEsuStreetData.searchStreets, [], newEsuStreetData.streetData.usrn, null);
             setStreetData(newEsuStreetData.streetData);
+            clearingType.current = "esu";
             sandboxContext.onUpdateAndClear("currentStreet", newEsuStreetData.streetData, "esu");
             setSaveDisabled(false);
             streetContext.onStreetModified(true);
