@@ -43,6 +43,7 @@
 //    030   28.02.24 Joshua McCormick IMANN-280 Made tabStyle full-width when horizontal scrolling is not needed, so borders are full-width
 //    031   27.02.24 Sean Flook           MUL16 Changes required to correctly open the related tab.
 //    032   04.03.24 Sean Flook           MUL16 Try and ensure we get a new temp address when required.
+//    033   05.03.24 Sean Flook       IMANN-338 If navigating back to an existing record ensure the form is setup as it was left.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -565,6 +566,7 @@ function PropertyDataForm({ data, loading }) {
     if (!propertyChanged || propertyContext.validateData()) {
       failedValidation.current = false;
       setValue(newValue);
+      sandboxContext.onPropertyTabChange(newValue);
       mapContext.onEditMapObject(null, null);
       informationContext.onClearInformation();
 
@@ -3822,6 +3824,153 @@ function PropertyDataForm({ data, loading }) {
       }
     }
   }, [data, saveDisabled, propertyContext]);
+
+  useEffect(() => {
+    if (!data) return;
+
+    if (value !== sandboxContext.currentSandbox.propertyTab) setValue(sandboxContext.currentSandbox.propertyTab);
+
+    if (sandboxContext.currentSandbox.currentPropertyRecords.lpi && !lpiFormData) {
+      setLpiFormData({
+        pkId: sandboxContext.currentSandbox.currentPropertyRecords.lpi.pkId,
+        lpiData: sandboxContext.currentSandbox.currentPropertyRecords.lpi,
+        blpuLogicalStatus: data.logicalStatus,
+        organisation: data.organisation,
+        index: data.lpis.findIndex((x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.lpi.pkId),
+        totalRecords: data.lpis.length,
+      });
+    } else if (sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef && !crossRefFormData) {
+      setCrossRefFormData({
+        id: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.pkId,
+        xrefData: {
+          id: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.pkId,
+          uprn: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.uprn,
+          changeType: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.changeType,
+          xrefKey: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.xrefKey,
+          source: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.source,
+          sourceId: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.sourceId,
+          crossReference: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.crossReference,
+          startDate: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.startDate,
+          endDate: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.endDate,
+          lastUpdateDate: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.lastUpdateDate,
+          neverExport: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.neverExport,
+        },
+        blpuLogicalStatus: data.logicalStatus,
+        index: data.blpuAppCrossRefs.findIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.pkId
+        ),
+        totalRecords: data.blpuAppCrossRefs.length,
+      });
+    } else if (sandboxContext.currentSandbox.currentPropertyRecords.provenance && !provenanceFormData) {
+      setProvenanceFormData({
+        id: sandboxContext.currentSandbox.currentPropertyRecords.provenance.pkId,
+        provenanceData: {
+          id: sandboxContext.currentSandbox.currentPropertyRecords.provenance.pkId,
+          changeType: sandboxContext.currentSandbox.currentPropertyRecords.provenance.changeType,
+          uprn: sandboxContext.currentSandbox.currentPropertyRecords.provenance.uprn,
+          provenanceKey: sandboxContext.currentSandbox.currentPropertyRecords.provenance.provenanceKey,
+          provenanceCode: sandboxContext.currentSandbox.currentPropertyRecords.provenance.provenanceCode,
+          annotation: sandboxContext.currentSandbox.currentPropertyRecords.provenance.annotation,
+          startDate: sandboxContext.currentSandbox.currentPropertyRecords.provenance.startDate,
+          endDate: sandboxContext.currentSandbox.currentPropertyRecords.provenance.endDate,
+          entryDate: sandboxContext.currentSandbox.currentPropertyRecords.provenance.entryDate,
+          lastUpdateDate: sandboxContext.currentSandbox.currentPropertyRecords.provenance.lastUpdateDate,
+          wktGeometry: sandboxContext.currentSandbox.currentPropertyRecords.provenance.wktGeometry,
+        },
+        blpuLogicalStatus: data.logicalStatus,
+        index: data.blpuProvenances.findIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.provenance.pkId
+        ),
+        totalRecords: data.blpuProvenances.length,
+      });
+    } else if (sandboxContext.currentSandbox.currentPropertyRecords.classification && !classificationFormData) {
+      setClassificationFormData({
+        id: sandboxContext.currentSandbox.currentPropertyRecords.classification.pkId,
+        classificationData: {
+          id: sandboxContext.currentSandbox.currentPropertyRecords.classification.pkId,
+          changeType: sandboxContext.currentSandbox.currentPropertyRecords.classification.changeType,
+          uprn: sandboxContext.currentSandbox.currentPropertyRecords.classification.uprn,
+          classKey: sandboxContext.currentSandbox.currentPropertyRecords.classification.classKey,
+          classificationScheme:
+            sandboxContext.currentSandbox.currentPropertyRecords.classification.classificationScheme,
+          blpuClass: sandboxContext.currentSandbox.currentPropertyRecords.classification.blpuClass,
+          startDate: sandboxContext.currentSandbox.currentPropertyRecords.classification.startDate,
+          endDate: sandboxContext.currentSandbox.currentPropertyRecords.classification.endDate,
+          entryDate: sandboxContext.currentSandbox.currentPropertyRecords.classification.entryDate,
+          lastUpdateDate: sandboxContext.currentSandbox.currentPropertyRecords.classification.lastUpdateDate,
+          neverExport: sandboxContext.currentSandbox.currentPropertyRecords.classification.neverExport,
+        },
+        index: data.classifications.finIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.classification.pkId
+        ),
+        totalRecords: data.classifications.length,
+      });
+    } else if (sandboxContext.currentSandbox.currentPropertyRecords.organisation && !organisationFormData) {
+      setOrganisationFormData({
+        id: sandboxContext.currentSandbox.currentPropertyRecords.organisation.pkId,
+        organisationData: {
+          id: sandboxContext.currentSandbox.currentPropertyRecords.organisation.pkId,
+          changeType: sandboxContext.currentSandbox.currentPropertyRecords.organisation.changeType,
+          uprn: sandboxContext.currentSandbox.currentPropertyRecords.organisation.uprn,
+          orgKey: sandboxContext.currentSandbox.currentPropertyRecords.organisation.orgKey,
+          organisation: sandboxContext.currentSandbox.currentPropertyRecords.organisation.organisation,
+          legalName: sandboxContext.currentSandbox.currentPropertyRecords.organisation.legalName,
+          startDate: sandboxContext.currentSandbox.currentPropertyRecords.organisation.startDate,
+          endDate: sandboxContext.currentSandbox.currentPropertyRecords.organisation.endDate,
+          entryDate: sandboxContext.currentSandbox.currentPropertyRecords.organisation.entryDate,
+          lastUpdateDate: sandboxContext.currentSandbox.currentPropertyRecords.organisation.lastUpdateDate,
+          neverExport: sandboxContext.currentSandbox.currentPropertyRecords.organisation.neverExport,
+        },
+        index: data.organisations.findIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.organisation.pkId
+        ),
+        totalRecords: data.organisations.length,
+      });
+    } else if (sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef && !successorCrossRefFormData) {
+      setSuccessorCrossRefFormData({
+        id: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.pkId,
+        successorCrossRefData: {
+          id: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.pkId,
+          changeType: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.changeType,
+          succKey: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.succKey,
+          successor: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.successor,
+          successorType: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.successorType,
+          predecessor: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.predecessor,
+          startDate: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.startDate,
+          endDate: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.endDate,
+          entryDate: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.entryDate,
+          lastUpdateDate: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.lastUpdateDate,
+          neverExport: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.neverExport,
+        },
+        index: data.successorCrossRefs.findIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.pkId
+        ),
+        totalRecords: data.successorCrossRefs.length,
+      });
+    } else if (sandboxContext.currentSandbox.currentPropertyRecords.note && !notesFormData) {
+      setNotesFormData({
+        pkId: sandboxContext.currentSandbox.currentPropertyRecords.note.pkId,
+        noteData: sandboxContext.currentSandbox.currentPropertyRecords.note,
+        index: data.blpuNotes.findIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.note.pkId
+        ),
+        totalRecords: data.blpuNotes.length,
+        variant: "property",
+      });
+    }
+  }, [
+    sandboxContext.currentSandbox.currentPropertyRecords,
+    sandboxContext.currentSandbox.propertyTab,
+    value,
+    lpiFormData,
+    crossRefFormData,
+    provenanceFormData,
+    classificationFormData,
+    organisationFormData,
+    successorCrossRefFormData,
+    notesFormData,
+    data,
+  ]);
 
   useEffect(() => {
     if (propertyContext.currentProperty.openRelated) {

@@ -44,6 +44,7 @@
 //    031   20.02.24 Sean Flook            MUL1 Changes required for handling selecting properties from the map.
 //    032   26.02.24 Joel Benford     IMANN-242 Add DbAuthority to lookups context
 //    033   27.02.24 Sean Flook           MUL16 Added ability too hide the search control.
+//    034   05.03.24 Sean Flook       IMANN-338 Store the last opened street and property tab.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -170,6 +171,8 @@ function App() {
       successorCrossRef: null,
       note: null,
     },
+    streetTab: 0,
+    propertyTab: 0,
   });
 
   const [searchData, setSearchData] = useState({
@@ -644,6 +647,8 @@ function App() {
             : sandbox.currentPropertyRecords.successorCrossRef,
         note: type === "propertyNote" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentPropertyRecords.note,
       },
+      streetTab: sandbox.streetTab,
+      propertyTab: sandbox.propertyTab,
     };
     setSandbox(newSandbox);
   }
@@ -811,8 +816,48 @@ function App() {
             ? null
             : sandbox.currentPropertyRecords.note,
       },
+      streetTab: sandbox.streetTab,
+      propertyTab: sandbox.propertyTab,
     };
     setSandbox(newSandbox);
+  }
+
+  /**
+   * Event to handle when the tab changes on the street form.
+   *
+   * @param {number} newValue The new tab value
+   */
+  function HandleStreetTabChange(newValue) {
+    const updatedSandbox = {
+      sourceStreet: sandbox.sourceStreet,
+      currentStreet: sandbox.currentStreet,
+      sourceProperty: sandbox.sourceProperty,
+      currentProperty: sandbox.currentProperty,
+      currentStreetRecords: sandbox.currentStreetRecords,
+      currentPropertyRecords: sandbox.currentPropertyRecords,
+      streetTab: newValue,
+      propertyTab: sandbox.propertyTab,
+    };
+    setSandbox(updatedSandbox);
+  }
+
+  /**
+   * Event to handle when the tab changes on the property form.
+   *
+   * @param {number} newValue The new tab value
+   */
+  function HandlePropertyTabChange(newValue) {
+    const updatedSandbox = {
+      sourceStreet: sandbox.sourceStreet,
+      currentStreet: sandbox.currentStreet,
+      sourceProperty: sandbox.sourceProperty,
+      currentProperty: sandbox.currentProperty,
+      currentStreetRecords: sandbox.currentStreetRecords,
+      currentPropertyRecords: sandbox.currentPropertyRecords,
+      streetTab: sandbox.streetTab,
+      propertyTab: newValue,
+    };
+    setSandbox(updatedSandbox);
   }
 
   /**
@@ -851,6 +896,8 @@ function App() {
         successorCrossRef: null,
         note: null,
       },
+      streetTab: sourceType !== "street" ? 0 : sandbox.streetTab,
+      propertyTab: sourceType !== "property" ? 0 : sandbox.propertyTab,
     };
     setSandbox(resetSandbox);
   }
@@ -2523,6 +2570,8 @@ function App() {
                 currentSandbox: sandbox,
                 onSandboxChange: HandleSandboxChange,
                 onUpdateAndClear: HandleSandboxUpdateAndClear,
+                onStreetTabChange: HandleStreetTabChange,
+                onPropertyTabChange: HandlePropertyTabChange,
                 resetSandbox: HandleResetSandbox,
               }}
             >

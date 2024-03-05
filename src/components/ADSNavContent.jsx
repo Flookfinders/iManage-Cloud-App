@@ -25,6 +25,7 @@
 //    012   30.01.24 Sean Flook                 Updated to use new Idox logo.
 //    013   05.02.24 Sean Flook                 Tweaked position of logo.
 //    014   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    015   05.03.24 Sean Flook       IMANN-338 Check for changes when clicking any of the buttons which would cause to navigate away from a record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -324,6 +325,18 @@ const ADSNavContent = (props) => {
         handleReportsClick();
         break;
 
+      case "whatsNew":
+        handleWhatsNewClick();
+        break;
+
+      case "notification":
+        handleNotificationClick();
+        break;
+
+      case "user":
+        handleUserClick();
+        break;
+
       default:
         // Home
         handleHomeClick();
@@ -337,6 +350,7 @@ const ADSNavContent = (props) => {
    * @param {string} page The page we are changing to.
    */
   const handlePageChangeClick = (page) => {
+    const resetRequired = ["gazetteer", "home"].includes(page);
     if (sandboxContext.currentSandbox.sourceStreet) {
       const streetChanged =
         sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor ||
@@ -379,7 +393,8 @@ const ADSNavContent = (props) => {
                   setSaveOpen(true);
                 }
               }
-              ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+              if (resetRequired)
+                ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
               GoToPage(page);
             })
             .catch(() => {});
@@ -389,13 +404,14 @@ const ADSNavContent = (props) => {
               if (result === "save") {
                 HandleSaveStreet(sandboxContext.currentSandbox.currentStreet);
               }
-              ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+              if (resetRequired)
+                ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
               GoToPage(page);
             })
             .catch(() => {});
         }
       } else {
-        ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+        if (resetRequired) ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
         GoToPage(page);
       }
     } else if (sandboxContext.currentSandbox.sourceProperty) {
@@ -431,7 +447,8 @@ const ADSNavContent = (props) => {
                     settingsContext.isScottish
                   );
                   HandleSaveProperty(currentPropertyData);
-                  ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+                  if (resetRequired)
+                    ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
                   GoToPage(page);
                 } else {
                   failedValidation.current = true;
@@ -439,7 +456,8 @@ const ADSNavContent = (props) => {
                   setSaveOpen(true);
                 }
               } else {
-                ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+                if (resetRequired)
+                  ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
                 GoToPage(page);
               }
             })
@@ -450,17 +468,18 @@ const ADSNavContent = (props) => {
               if (result === "save") {
                 HandleSaveProperty(sandboxContext.currentSandbox.currentProperty);
               }
-              ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+              if (resetRequired)
+                ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
               GoToPage(page);
             })
             .catch(() => {});
         }
       } else {
-        ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+        if (resetRequired) ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
         GoToPage(page);
       }
     } else {
-      ResetContexts("all", false, mapContext, streetContext, propertyContext, sandboxContext);
+      if (resetRequired) ResetContexts("all", false, mapContext, streetContext, propertyContext, sandboxContext);
       GoToPage(page);
     }
   };
@@ -666,12 +685,12 @@ const ADSNavContent = (props) => {
           <Grid item>
             <Grid container direction="column" alignItems="center" justifyContent="flex-end">
               {process.env.NODE_ENV === "development" && (
-                <ADSWhatsNewAvatar count={0} handleClick={handleWhatsNewClick} />
+                <ADSWhatsNewAvatar count={0} handleClick={() => handlePageChangeClick("whatsNew")} />
               )}
               {process.env.NODE_ENV === "development" && (
-                <ADSNotificationsAvatar count={0} handleClick={handleNotificationClick} />
+                <ADSNotificationsAvatar count={0} handleClick={() => handlePageChangeClick("notification")} />
               )}
-              <ADSUserAvatar onUserClick={handleUserClick} />
+              <ADSUserAvatar onUserClick={() => handlePageChangeClick("user")} />
             </Grid>
           </Grid>
         </Grid>

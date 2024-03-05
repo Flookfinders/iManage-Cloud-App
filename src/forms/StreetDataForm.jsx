@@ -57,6 +57,7 @@
 //    043   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    044   16.02.24 Sean Flook        ESU17_GP Hide ASD layers when viewing the ESU list and add the unassigned ESUs to the relevant map layer.
 //    045   28.02.24 Joshua McCormick IMANN-280 Made tabStyle full-width when horizontal scrolling is not needed, so borders are full-width
+//    046   05.03.24 Sean Flook       IMANN-338 If navigating back to an existing record ensure the form is setup as it was left.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -639,6 +640,7 @@ function StreetDataForm({ data, loading }) {
     if (!streetChanged || streetContext.validateData()) {
       failedValidation.current = false;
       setValue(newValue);
+      sandboxContext.onStreetTabChange(newValue);
       mapContext.onEditMapObject(null, null);
       informationContext.onClearInformation();
 
@@ -6670,6 +6672,194 @@ function StreetDataForm({ data, loading }) {
       }
     }
   }, [data, saveDisabled, streetContext]);
+
+  useEffect(() => {
+    if (!data) return;
+
+    if (value !== sandboxContext.currentSandbox.streetTab) setValue(sandboxContext.currentSandbox.streetTab);
+
+    if (sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor && !descriptorFormData) {
+      setDescriptorFormData({
+        pkId: sandboxContext.currentSandbox.currentStreetRecords.descriptor.pkId,
+        sdData: sandboxContext.currentSandbox.currentStreetRecords.descriptor,
+        streetType: data.recordType,
+        index: data.streetDescriptors.findIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.descriptor.pkId
+        ),
+        totalRecords: data.streetDescriptors.length,
+      });
+    } else if (sandboxContext.currentSandbox.currentStreetRecords.esu && !esuFormData) {
+      setEsuFormData({
+        pkId: sandboxContext.currentSandbox.currentStreetRecords.esu.pkId,
+        esuData: sandboxContext.currentSandbox.currentStreetRecords.esu,
+        index: data.esus.findIndex((x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.esu.pkId),
+        totalRecords: data.esus.length,
+      });
+    } else if (sandboxContext.currentSandbox.currentStreetRecords.highwayDedication && !hdFormData) {
+      setHdFormData({
+        pkId: sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.pkId,
+        hdData: sandboxContext.currentSandbox.currentStreetRecords.highwayDedication,
+        index: data.esus
+          .find((x) => x.esuId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.esuId)
+          .highwayDedications.findIndex(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.pkId
+          ),
+        esuIndex: data.esus.findIndex(
+          (x) => x.esuId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.esuId
+        ),
+        totalRecords: data.esus.find(
+          (x) => x.esuId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.esuId
+        ).highwayDedications.length,
+      });
+    } else if (sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption && !oweFormData) {
+      setOweFormData({
+        pkId: sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.pkId,
+        oweData: sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption,
+        index: data.esus
+          .find((x) => x.esuId === sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.esuId)
+          .oneWayExemptions.findIndex(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.pkId
+          ),
+        esuIndex: data.esus.findIndex(
+          (x) => x.esuId === sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.esuId
+        ),
+        totalRecords: data.esus.find(
+          (x) => x.esuId === sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.esuId
+        ).oneWayExemptions.length,
+      });
+    } else if (sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef && !successorCrossRefFormData) {
+      setSuccessorCrossRefFormData({
+        id: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.pkId,
+        successorCrossRefData: {
+          id: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.pkId,
+          changeType: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.changeType,
+          succKey: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.succKey,
+          successor: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.successor,
+          successorType: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.successorType,
+          predecessor: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.predecessor,
+          startDate: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.startDate,
+          endDate: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.endDate,
+          entryDate: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.entryDate,
+          lastUpdateDate: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.lastUpdateDate,
+          neverExport: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.neverExport,
+        },
+        index: data.successorCrossRefs.findIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.pkId
+        ),
+        totalRecords: data.successorCrossRefs.length,
+      });
+    } else if (
+      sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility &&
+      !maintenanceResponsibilityFormData
+    ) {
+      setMaintenanceResponsibilityFormData({
+        pkId: sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility.pkId,
+        maintenanceResponsibilityData: sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility,
+        index: data.maintenanceResponsibilities.findIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility.pkId
+        ),
+        totalRecords: data.maintenanceResponsibilities.length,
+      });
+    } else if (
+      sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory &&
+      !reinstatementCategoryFormData
+    ) {
+      setReinstatementCategoryFormData({
+        pkId: sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory.pkId,
+        reinstatementCategoryData: sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory,
+        index: data.reinstatementCategories.findIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory.pkId
+        ),
+        totalRecords: data.reinstatementCategories.length,
+      });
+    } else if (
+      sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation &&
+      !osSpecialDesignationFormData
+    ) {
+      setOSSpecialDesignationFormData({
+        pkId: sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation.pkId,
+        osSpecialDesignationData: sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation,
+        index: data.specialDesignations.findIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation.pkId
+        ),
+        totalRecords: data.specialDesignations.length,
+      });
+    } else if (sandboxContext.currentSandbox.currentStreetRecords.interest && !interestFormData) {
+      setInterestFormData({
+        pkId: sandboxContext.currentSandbox.currentStreetRecords.interest.pkId,
+        interestData: sandboxContext.currentSandbox.currentStreetRecords.interest,
+        index: data.interests.findIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.interest.pkId
+        ),
+        totalRecords: data.interests.length,
+      });
+    } else if (sandboxContext.currentSandbox.currentStreetRecords.construction && !constructionFormData) {
+      setConstructionFormData({
+        pkId: sandboxContext.currentSandbox.currentStreetRecords.construction.pkId,
+        constructionData: sandboxContext.currentSandbox.currentStreetRecords.construction,
+        index: data.constructions.findIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.construction.pkId
+        ),
+        totalRecords: data.constructions.length,
+      });
+    } else if (sandboxContext.currentSandbox.currentStreetRecords.specialDesignation && !specialDesignationFormData) {
+      setSpecialDesignationFormData({
+        pkId: sandboxContext.currentSandbox.currentStreetRecords.specialDesignation.pkId,
+        specialDesignationData: sandboxContext.currentSandbox.currentStreetRecords.specialDesignation,
+        index: data.specialDesignations.findIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.specialDesignation.pkId
+        ),
+        totalRecords: data.specialDesignations.length,
+      });
+    } else if (sandboxContext.currentSandbox.currentStreetRecords.hww && !hwwFormData) {
+      setHwwFormData({
+        pkId: sandboxContext.currentSandbox.currentStreetRecords.hww.pkId,
+        hwwData: sandboxContext.currentSandbox.currentStreetRecords.hww,
+        index: data.heightWidthWeights.findIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.hww.pkId
+        ),
+        totalRecords: data.heightWidthWeights.length,
+      });
+    } else if (sandboxContext.currentSandbox.currentStreetRecords.prow && !prowFormData) {
+      setProwFormData({
+        pkId: sandboxContext.currentSandbox.currentStreetRecords.prow.pkId,
+        prowData: sandboxContext.currentSandbox.currentStreetRecords.prow,
+        index: data.publicRightOfWays.findIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.prow.pkId
+        ),
+        totalRecords: data.publicRightOfWays.length,
+      });
+    } else if (sandboxContext.currentSandbox.currentStreetRecords.note && !notesFormData) {
+      setNotesFormData({
+        pkId: sandboxContext.currentSandbox.currentStreetRecords.note.pkId,
+        noteData: sandboxContext.currentSandbox.currentStreetRecords.note,
+        index: data.streetNotes.findIndex(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.note.pkId
+        ),
+        totalRecords: data.streetNotes.length,
+        variant: "street",
+      });
+    }
+  }, [
+    data,
+    value,
+    sandboxContext.currentSandbox.streetTab,
+    sandboxContext.currentSandbox.currentStreetRecords,
+    descriptorFormData,
+    esuFormData,
+    hdFormData,
+    oweFormData,
+    successorCrossRefFormData,
+    maintenanceResponsibilityFormData,
+    reinstatementCategoryFormData,
+    osSpecialDesignationFormData,
+    interestFormData,
+    constructionFormData,
+    specialDesignationFormData,
+    hwwFormData,
+    prowFormData,
+    notesFormData,
+  ]);
 
   useEffect(() => {
     if (streetContext.streetClosing && streetData && !streetData.streetEndDate) {
