@@ -59,6 +59,7 @@
 //    045   28.02.24 Joshua McCormick IMANN-280 Made tabStyle full-width when horizontal scrolling is not needed, so borders are full-width
 //    046   05.03.24 Sean Flook       IMANN-338 If navigating back to an existing record ensure the form is setup as it was left.
 //    047   05.03.24 Sean Flook       IMANN-338 Added code to ensure the tabs are not kept open when not required any more.
+//    048   06.03.24 Sean Flook       IMANN-344 Ensure the sandbox is cleared when cancelling a new ASD record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4918,9 +4919,9 @@ function StreetDataForm({ data, loading }) {
           );
       }
       failedValidation.current = false;
-      sandboxContext.onSandboxChange("maintenanceResponsibility", null);
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
+      sandboxContext.onSandboxChange("maintenanceResponsibility", null);
     };
 
     failedValidation.current = false;
@@ -4959,10 +4960,10 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
-          clearingType.current = "maintenanceResponsibility";
-          sandboxContext.onSandboxChange("maintenanceResponsibility", null);
           if (currentStreetAsdData.current) resetStreetAsdData();
           else handleAsdHomeClick();
+          clearingType.current = "maintenanceResponsibility";
+          sandboxContext.onSandboxChange("maintenanceResponsibility", null);
         }
         break;
 
@@ -5022,9 +5023,9 @@ function StreetDataForm({ data, loading }) {
       }
 
       failedValidation.current = false;
-      sandboxContext.onSandboxChange("reinstatementCategory", null);
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
+      sandboxContext.onSandboxChange("reinstatementCategory", null);
     };
 
     failedValidation.current = false;
@@ -5064,10 +5065,10 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
-          clearingType.current = "reinstatementCategory";
-          sandboxContext.onSandboxChange("reinstatementCategory", null);
           if (currentStreetAsdData.current) resetStreetAsdData();
           else handleAsdHomeClick();
+          clearingType.current = "reinstatementCategory";
+          sandboxContext.onSandboxChange("reinstatementCategory", null);
         }
         break;
 
@@ -5125,9 +5126,9 @@ function StreetDataForm({ data, loading }) {
       }
 
       failedValidation.current = false;
-      sandboxContext.onSandboxChange("osSpecialDesignation", null);
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
+      sandboxContext.onSandboxChange("osSpecialDesignation", null);
     };
 
     failedValidation.current = false;
@@ -5167,10 +5168,10 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
-          clearingType.current = "osSpecialDesignation";
-          sandboxContext.onSandboxChange("osSpecialDesignation", null);
           if (currentStreetAsdData.current) resetStreetAsdData();
           else handleAsdHomeClick();
+          clearingType.current = "osSpecialDesignation";
+          sandboxContext.onSandboxChange("osSpecialDesignation", null);
         }
         break;
 
@@ -5228,9 +5229,9 @@ function StreetDataForm({ data, loading }) {
       }
 
       failedValidation.current = false;
-      sandboxContext.onSandboxChange("interest", null);
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
+      sandboxContext.onSandboxChange("interest", null);
     };
 
     failedValidation.current = false;
@@ -5269,9 +5270,10 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
-          sandboxContext.onSandboxChange("interest", null);
           if (currentStreetAsdData.current) resetStreetAsdData();
           else handleAsdHomeClick();
+          clearingType.current = "interest";
+          sandboxContext.onSandboxChange("interest", null);
         }
         break;
 
@@ -5329,9 +5331,9 @@ function StreetDataForm({ data, loading }) {
       }
 
       failedValidation.current = false;
-      sandboxContext.onSandboxChange("construction", null);
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
+      sandboxContext.onSandboxChange("construction", null);
     };
 
     failedValidation.current = false;
@@ -5371,10 +5373,10 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
-          clearingType.current = "construction";
-          sandboxContext.onSandboxChange("construction", null);
           if (currentStreetAsdData.current) resetStreetAsdData();
           else handleAsdHomeClick();
+          clearingType.current = "construction";
+          sandboxContext.onSandboxChange("construction", null);
         }
         break;
 
@@ -5432,9 +5434,9 @@ function StreetDataForm({ data, loading }) {
       }
 
       failedValidation.current = false;
-      sandboxContext.onSandboxChange("specialDesignation", null);
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
+      sandboxContext.onSandboxChange("specialDesignation", null);
     };
 
     failedValidation.current = false;
@@ -5474,10 +5476,10 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
-          clearingType.current = "specialDesignation";
-          sandboxContext.onSandboxChange("specialDesignation", null);
           if (currentStreetAsdData.current) resetStreetAsdData();
           else handleAsdHomeClick();
+          clearingType.current = "specialDesignation";
+          sandboxContext.onSandboxChange("specialDesignation", null);
         }
         break;
 
@@ -5535,9 +5537,9 @@ function StreetDataForm({ data, loading }) {
       }
 
       failedValidation.current = false;
-      sandboxContext.onSandboxChange("hww", null);
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
+      sandboxContext.onSandboxChange("hww", null);
     };
 
     failedValidation.current = false;
@@ -5575,10 +5577,10 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
-          clearingType.current = "hww";
-          sandboxContext.onSandboxChange("hww", null);
           if (currentStreetAsdData.current) resetStreetAsdData();
           else handleAsdHomeClick();
+          clearingType.current = "hww";
+          sandboxContext.onSandboxChange("hww", null);
         }
         break;
 
@@ -5636,9 +5638,9 @@ function StreetDataForm({ data, loading }) {
       }
 
       failedValidation.current = false;
-      sandboxContext.onSandboxChange("prow", null);
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
+      sandboxContext.onSandboxChange("prow", null);
     };
 
     failedValidation.current = false;
@@ -5678,10 +5680,10 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
-          clearingType.current = "prow";
-          sandboxContext.onSandboxChange("prow", null);
           if (currentStreetAsdData.current) resetStreetAsdData();
           else handleAsdHomeClick();
+          clearingType.current = "prow";
+          sandboxContext.onSandboxChange("prow", null);
         }
         break;
 
