@@ -18,6 +18,7 @@
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    006   01.02.24 Sean Flook                 Initial changes required for operational districts.
 //    007   05.02.24 Sean Flook                 Further changes required for operational districts.
+//    008   05.03.24 Joel Benford     IMANN-242 Stop hiding authorities tab outside debug mode.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -602,17 +603,15 @@ function LookupTablesTab() {
                       }
                       sx={TreeItemStyle(selectedNode === "ADMINISTRATIVE_AREAS")}
                     />
-                    {process.env.NODE_ENV === "development" && (
-                      <TreeItem
-                        nodeId="AUTHORITIES"
-                        label={
-                          <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
-                            Authorities
-                          </Typography>
-                        }
-                        sx={TreeItemStyle(selectedNode === "AUTHORITIES")}
-                      />
-                    )}
+                    <TreeItem
+                      nodeId="AUTHORITIES"
+                      label={
+                        <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
+                          Authorities
+                        </Typography>
+                      }
+                      sx={TreeItemStyle(selectedNode === "AUTHORITIES")}
+                    />
                     {!settingsContext.isScottish && HasProperties() && (
                       <TreeItem
                         nodeId="WARDS"
