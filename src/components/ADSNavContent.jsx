@@ -26,6 +26,7 @@
 //    013   05.02.24 Sean Flook                 Tweaked position of logo.
 //    014   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    015   05.03.24 Sean Flook       IMANN-338 Check for changes when clicking any of the buttons which would cause to navigate away from a record.
+//    016   07.03.24 Sean Flook       IMANN-338 Always clear any errors if we are leaving the current page.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -394,7 +395,8 @@ const ADSNavContent = (props) => {
                 }
               }
               if (resetRequired)
-                ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+                ResetContexts("street", true, mapContext, streetContext, propertyContext, sandboxContext);
+              else streetContext.resetStreetErrors();
               GoToPage(page);
             })
             .catch(() => {});
@@ -405,13 +407,15 @@ const ADSNavContent = (props) => {
                 HandleSaveStreet(sandboxContext.currentSandbox.currentStreet);
               }
               if (resetRequired)
-                ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+                ResetContexts("street", true, mapContext, streetContext, propertyContext, sandboxContext);
+              else streetContext.resetStreetErrors();
               GoToPage(page);
             })
             .catch(() => {});
         }
       } else {
-        if (resetRequired) ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+        if (resetRequired) ResetContexts("street", true, mapContext, streetContext, propertyContext, sandboxContext);
+        else streetContext.resetStreetErrors();
         GoToPage(page);
       }
     } else if (sandboxContext.currentSandbox.sourceProperty) {
@@ -448,7 +452,8 @@ const ADSNavContent = (props) => {
                   );
                   HandleSaveProperty(currentPropertyData);
                   if (resetRequired)
-                    ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+                    ResetContexts("property", true, mapContext, streetContext, propertyContext, sandboxContext);
+                  else propertyContext.resetPropertyErrors();
                   GoToPage(page);
                 } else {
                   failedValidation.current = true;
@@ -457,7 +462,8 @@ const ADSNavContent = (props) => {
                 }
               } else {
                 if (resetRequired)
-                  ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+                  ResetContexts("property", true, mapContext, streetContext, propertyContext, sandboxContext);
+                else propertyContext.resetPropertyErrors();
                 GoToPage(page);
               }
             })
@@ -469,17 +475,23 @@ const ADSNavContent = (props) => {
                 HandleSaveProperty(sandboxContext.currentSandbox.currentProperty);
               }
               if (resetRequired)
-                ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+                ResetContexts("property", true, mapContext, streetContext, propertyContext, sandboxContext);
+              else propertyContext.resetPropertyErrors();
               GoToPage(page);
             })
             .catch(() => {});
         }
       } else {
-        if (resetRequired) ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+        if (resetRequired) ResetContexts("property", true, mapContext, streetContext, propertyContext, sandboxContext);
+        else propertyContext.resetPropertyErrors();
         GoToPage(page);
       }
     } else {
-      if (resetRequired) ResetContexts("all", false, mapContext, streetContext, propertyContext, sandboxContext);
+      if (resetRequired) ResetContexts("all", true, mapContext, streetContext, propertyContext, sandboxContext);
+      else {
+        streetContext.resetStreetErrors();
+        propertyContext.resetPropertyErrors();
+      }
       GoToPage(page);
     }
   };

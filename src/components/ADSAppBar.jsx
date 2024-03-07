@@ -41,6 +41,7 @@
 //    028   20.02.24 Sean Flook            MUL1 Display information control for selecting properties.
 //    029   27.02.24 Sean Flook           MUL16 Hide the search control when required and reduce padding on the Add street button.
 //    030   05.03.24 Sean Flook       IMANN-338 Correctly display controls and navigate as required.
+//    031   07.03.24 Sean Flook       IMANN-338 Use the correct fields to hide the issue popper.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -819,8 +820,8 @@ function ADSAppBar(props) {
   }, [searchContext.currentSearchData, streetContext, propertyContext, mapContext.currentBackgroundData, location]);
 
   useEffect(() => {
-    if (!haveStreet && !haveProperty) setIssueAnchorEl(null);
-  }, [haveStreet, haveProperty]);
+    if (!haveStreetError && !havePropertyError) setIssueAnchorEl(null);
+  }, [haveStreetError, havePropertyError, haveAdminSettings]);
 
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
