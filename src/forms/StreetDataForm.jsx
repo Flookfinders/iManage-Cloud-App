@@ -61,7 +61,6 @@
 //    047   05.03.24 Sean Flook       IMANN-338 Added code to ensure the tabs are not kept open when not required any more.
 //    048   06.03.24 Sean Flook       IMANN-344 Ensure the sandbox is cleared when cancelling a new ASD record.
 //    049   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the Save button is correctly enabled.
-//    049   07.03.24 Sean Flook       IMANN-339 Hide the ASD tab if the street type is 3 or 4 for Scottish authorities.
 //    050   07.03.24 Sean Flook       IMANN-339 Hide the ASD tab if the street type is 3 or 4 for Scottish authorities.
 //    051   07.03.24 Joshua McCormick IMANN-280 Added tabContainerStyle to tab container
 //    052   07.03.24 Joel Benford     IMANN-331 Don't default organisation if not set in template
