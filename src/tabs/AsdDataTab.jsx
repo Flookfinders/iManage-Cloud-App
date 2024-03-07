@@ -29,6 +29,7 @@
 //    016   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    017   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
 //    018   04.03.24 Sean Flook            COL3 Changed the colour for type 51/61 ASD records.
+//    019   07.03.24 Sean Flook       IMANN-339 Only show the Add button for Scottish authorities if the street is type 1 or 2.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -550,25 +551,27 @@ function AsdDataTab({
                 <Typography variant="body2">{expandCollapseLabel}</Typography>
               </IconButton>
             </Tooltip>
-            <IconButton
-              sx={ActionIconStyle()}
-              disabled={!userCanEdit}
-              onClick={handleAddASDClick}
-              aria_controls="add-menu"
-              aria-haspopup="true"
-              size="small"
-            >
-              <AddCircleIcon />
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  pl: theme.spacing(1),
-                  pr: theme.spacing(1),
-                }}
+            {(!settingsContext.isScottish || data.recordType < 3) && (
+              <IconButton
+                sx={ActionIconStyle()}
+                disabled={!userCanEdit}
+                onClick={handleAddASDClick}
+                aria_controls="add-menu"
+                aria-haspopup="true"
+                size="small"
               >
-                Add ASD
-              </Typography>
-            </IconButton>
+                <AddCircleIcon />
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    pl: theme.spacing(1),
+                    pr: theme.spacing(1),
+                  }}
+                >
+                  Add ASD
+                </Typography>
+              </IconButton>
+            )}
             <Menu
               id="asd-add-menu"
               elevation={2}
@@ -734,7 +737,11 @@ function AsdDataTab({
               <AsdDataListItem
                 variant="51"
                 title="Maintenance responsibilities"
-                data={!loading ? data.maintenanceResponsibilities.filter((x) => x.changeType !== "D") : null}
+                data={
+                  !loading && data.maintenanceResponsibilities
+                    ? data.maintenanceResponsibilities.filter((x) => x.changeType !== "D")
+                    : null
+                }
                 errors={maintenanceResponsibilityErrors}
                 checked={checked}
                 itemState={listState}
@@ -754,7 +761,11 @@ function AsdDataTab({
               <AsdDataListItem
                 variant="52"
                 title="Reinstatement categories"
-                data={!loading ? data.reinstatementCategories.filter((x) => x.changeType !== "D") : null}
+                data={
+                  !loading && data.reinstatementCategories
+                    ? data.reinstatementCategories.filter((x) => x.changeType !== "D")
+                    : null
+                }
                 errors={reinstatementCategoryErrors}
                 checked={checked}
                 itemState={listState}
@@ -775,7 +786,11 @@ function AsdDataTab({
               <AsdDataListItem
                 variant="53"
                 title="Special designations"
-                data={!loading ? data.specialDesignations.filter((x) => x.changeType !== "D") : null}
+                data={
+                  !loading && data.specialDesignations
+                    ? data.specialDesignations.filter((x) => x.changeType !== "D")
+                    : null
+                }
                 errors={specialDesignationErrors}
                 checked={checked}
                 itemState={listState}
@@ -796,7 +811,7 @@ function AsdDataTab({
               <AsdDataListItem
                 variant="61"
                 title="Interested organisations"
-                data={!loading ? data.interests.filter((x) => x.changeType !== "D") : null}
+                data={!loading && data.interests ? data.interests.filter((x) => x.changeType !== "D") : null}
                 errors={interestErrors}
                 checked={checked}
                 itemState={listState}
@@ -814,7 +829,7 @@ function AsdDataTab({
               <AsdDataListItem
                 variant="62"
                 title="Construction"
-                data={!loading ? data.constructions.filter((x) => x.changeType !== "D") : null}
+                data={!loading && data.constructions ? data.constructions.filter((x) => x.changeType !== "D") : null}
                 errors={constructionErrors}
                 checked={checked}
                 itemState={listState}
@@ -833,7 +848,11 @@ function AsdDataTab({
               <AsdDataListItem
                 variant="63"
                 title="Special designations"
-                data={!loading ? data.specialDesignations.filter((x) => x.changeType !== "D") : null}
+                data={
+                  !loading && data.specialDesignations
+                    ? data.specialDesignations.filter((x) => x.changeType !== "D")
+                    : null
+                }
                 errors={specialDesignationErrors}
                 checked={checked}
                 itemState={listState}
@@ -856,7 +875,11 @@ function AsdDataTab({
               <AsdDataListItem
                 variant="64"
                 title="Height, width and weight restrictions"
-                data={!loading ? data.heightWidthWeights.filter((x) => x.changeType !== "D") : null}
+                data={
+                  !loading && data.heightWidthWeights
+                    ? data.heightWidthWeights.filter((x) => x.changeType !== "D")
+                    : null
+                }
                 errors={heightWidthWeightErrors}
                 checked={checked}
                 itemState={listState}
@@ -876,7 +899,9 @@ function AsdDataTab({
               <AsdDataListItem
                 variant="66"
                 title="Public right of way"
-                data={!loading ? data.publicRightOfWays.filter((x) => x.changeType !== "D") : null}
+                data={
+                  !loading && data.publicRightOfWays ? data.publicRightOfWays.filter((x) => x.changeType !== "D") : null
+                }
                 errors={publicRightOfWayErrors}
                 checked={checked}
                 itemState={listState}

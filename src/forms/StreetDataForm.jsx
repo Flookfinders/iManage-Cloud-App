@@ -61,6 +61,7 @@
 //    047   05.03.24 Sean Flook       IMANN-338 Added code to ensure the tabs are not kept open when not required any more.
 //    048   06.03.24 Sean Flook       IMANN-344 Ensure the sandbox is cleared when cancelling a new ASD record.
 //    049   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the Save button is correctly enabled.
+//    049   07.03.24 Sean Flook       IMANN-339 Hide the ASD tab if the street type is 3 or 4 for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3309,21 +3310,21 @@ function StreetDataForm({ data, loading }) {
             streetDescriptors: contextStreet.streetDescriptors,
             streetNotes: contextStreet.streetNotes,
             maintenanceResponsibilities:
-              contextStreet.recordType < 4 ? contextStreet.maintenanceResponsibilities : null,
-            reinstatementCategories: contextStreet.recordType < 4 ? contextStreet.reinstatementCategories : null,
-            specialDesignations: contextStreet.recordType < 4 ? contextStreet.specialDesignations : null,
+              contextStreet.recordType < 3 ? contextStreet.maintenanceResponsibilities : null,
+            reinstatementCategories: contextStreet.recordType < 3 ? contextStreet.reinstatementCategories : null,
+            specialDesignations: contextStreet.recordType < 3 ? contextStreet.specialDesignations : null,
           };
 
     if (newStreetData) {
       updateMapStreetData(
         newStreetData,
-        settingsContext.isScottish && newStreetData && newStreetData.recordType < 4
+        settingsContext.isScottish && newStreetData && newStreetData.recordType < 3
           ? newStreetData.maintenanceResponsibilities
           : null,
-        settingsContext.isScottish && newStreetData && newStreetData.recordType < 4
+        settingsContext.isScottish && newStreetData && newStreetData.recordType < 3
           ? newStreetData.reinstatementCategories
           : null,
-        settingsContext.isScottish && newStreetData && newStreetData.recordType < 4
+        settingsContext.isScottish && newStreetData && newStreetData.recordType < 3
           ? newStreetData.specialDesignations
           : null,
         !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
@@ -4277,13 +4278,13 @@ function StreetDataForm({ data, loading }) {
             } else {
               updateMapStreetData(
                 streetData,
-                settingsContext.isScottish && streetData && streetData.recordType < 4
+                settingsContext.isScottish && streetData && streetData.recordType < 3
                   ? streetData.maintenanceResponsibilities
                   : null,
-                settingsContext.isScottish && streetData && streetData.recordType < 4
+                settingsContext.isScottish && streetData && streetData.recordType < 3
                   ? streetData.reinstatementCategories
                   : null,
-                settingsContext.isScottish && streetData && streetData.recordType < 4
+                settingsContext.isScottish && streetData && streetData.recordType < 3
                   ? streetData.specialDesignations
                   : null,
                 !settingsContext.isScottish && HasASD() && streetData && streetData.recordType < 4
@@ -6345,9 +6346,9 @@ function StreetDataForm({ data, loading }) {
           successorCrossRefs: streetData.successorCrossRefs,
           streetDescriptors: streetData.streetDescriptors,
           streetNotes: streetData.streetNotes,
-          maintenanceResponsibilities: streetData.recordType < 4 ? streetData.maintenanceResponsibilities : null,
-          reinstatementCategories: streetData.recordType < 4 ? streetData.reinstatementCategories : null,
-          specialDesignations: streetData.recordType < 4 ? streetData.specialDesignations : null,
+          maintenanceResponsibilities: streetData.recordType < 3 ? streetData.maintenanceResponsibilities : null,
+          reinstatementCategories: streetData.recordType < 3 ? streetData.reinstatementCategories : null,
+          specialDesignations: streetData.recordType < 3 ? streetData.specialDesignations : null,
         }
       : !HasASD()
       ? {
@@ -6938,9 +6939,9 @@ function StreetDataForm({ data, loading }) {
               successorCrossRefs: streetData.successorCrossRefs,
               streetDescriptors: streetData.streetDescriptors,
               streetNotes: streetData.streetNotes,
-              maintenanceResponsibilities: streetData.recordType < 4 ? streetData.maintenanceResponsibilities : null,
-              reinstatementCategories: streetData.recordType < 4 ? streetData.reinstatementCategories : null,
-              specialDesignations: streetData.recordType < 4 ? streetData.specialDesignations : null,
+              maintenanceResponsibilities: streetData.recordType < 3 ? streetData.maintenanceResponsibilities : null,
+              reinstatementCategories: streetData.recordType < 3 ? streetData.reinstatementCategories : null,
+              specialDesignations: streetData.recordType < 3 ? streetData.specialDesignations : null,
             };
 
       setStreetData(newStreetData);
@@ -6959,10 +6960,10 @@ function StreetDataForm({ data, loading }) {
   useEffect(() => {
     if (streetContext.currentStreet.openRelated) {
       failedValidation.current = false;
-      setValue(HasASD() && streetData && streetData.recordType < 4 ? 3 : 2);
+      setValue(HasASD() && streetData && streetData.recordType < (settingsContext.isScottish ? 3 : 4) ? 3 : 2);
       mapContext.onEditMapObject(null, null);
     }
-  }, [streetContext.currentStreet.openRelated, mapContext, streetData]);
+  }, [streetContext.currentStreet.openRelated, mapContext, streetData, settingsContext.isScottish]);
 
   useEffect(() => {
     if (streetContext.currentErrors) {
@@ -7682,10 +7683,10 @@ function StreetDataForm({ data, loading }) {
                     streetDescriptors: contextStreet.streetDescriptors,
                     streetNotes: contextStreet.streetNotes,
                     maintenanceResponsibilities:
-                      contextStreet.recordType < 4 ? contextStreet.maintenanceResponsibilities : null,
+                      contextStreet.recordType < 3 ? contextStreet.maintenanceResponsibilities : null,
                     reinstatementCategories:
-                      contextStreet.recordType < 4 ? contextStreet.reinstatementCategories : null,
-                    specialDesignations: contextStreet.recordType < 4 ? contextStreet.specialDesignations : null,
+                      contextStreet.recordType < 3 ? contextStreet.reinstatementCategories : null,
+                    specialDesignations: contextStreet.recordType < 3 ? contextStreet.specialDesignations : null,
                   };
 
             setEsuFormData({
@@ -8437,13 +8438,13 @@ function StreetDataForm({ data, loading }) {
         mapContext.onSetLineGeometry(null);
         updateMapStreetData(
           newStreetData,
-          settingsContext.isScottish && newStreetData && newStreetData.recordType < 4
+          settingsContext.isScottish && newStreetData && newStreetData.recordType < 3
             ? newStreetData.maintenanceResponsibilities
             : null,
-          settingsContext.isScottish && newStreetData && newStreetData.recordType < 4
+          settingsContext.isScottish && newStreetData && newStreetData.recordType < 3
             ? newStreetData.reinstatementCategories
             : null,
-          settingsContext.isScottish && newStreetData && newStreetData.recordType < 4
+          settingsContext.isScottish && newStreetData && newStreetData.recordType < 3
             ? newStreetData.specialDesignations
             : null,
           !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
@@ -8660,9 +8661,10 @@ function StreetDataForm({ data, loading }) {
                 successorCrossRefs: contextStreet.successorCrossRefs,
                 streetDescriptors: contextStreet.streetDescriptors,
                 streetNotes: contextStreet.streetNotes,
-                interests: contextStreet.recordType < 4 ? contextStreet.interests : null,
-                constructions: contextStreet.recordType < 4 ? contextStreet.constructions : null,
-                specialDesignations: contextStreet.recordType < 4 ? contextStreet.specialDesignations : null,
+                maintenanceResponsibility:
+                  contextStreet.recordType < 3 ? contextStreet.maintenanceResponsibility : null,
+                reinstatementCategory: contextStreet.recordType < 3 ? contextStreet.reinstatementCategory : null,
+                specialDesignations: contextStreet.recordType < 3 ? contextStreet.specialDesignations : null,
               };
       }
     } else if (mapContext.currentStreetEnd) {
@@ -8792,9 +8794,9 @@ function StreetDataForm({ data, loading }) {
                 streetDescriptors: contextStreet.streetDescriptors,
                 streetNotes: contextStreet.streetNotes,
                 maintenanceResponsibility:
-                  contextStreet.recordType < 4 ? contextStreet.maintenanceResponsibility : null,
-                reinstatementCategory: contextStreet.recordType < 4 ? contextStreet.reinstatementCategory : null,
-                specialDesignations: contextStreet.recordType < 4 ? contextStreet.specialDesignations : null,
+                  contextStreet.recordType < 3 ? contextStreet.maintenanceResponsibility : null,
+                reinstatementCategory: contextStreet.recordType < 3 ? contextStreet.reinstatementCategory : null,
+                specialDesignations: contextStreet.recordType < 3 ? contextStreet.specialDesignations : null,
               };
       }
     }
@@ -8820,6 +8822,7 @@ function StreetDataForm({ data, loading }) {
             })),
             asdType51:
               settingsContext.isScottish &&
+              newStreetData.recordType < 3 &&
               newStreetData.maintenanceResponsibilities.map((asdRec) => ({
                 type: 51,
                 pkId: asdRec.pkId,
@@ -8833,6 +8836,7 @@ function StreetDataForm({ data, loading }) {
               })),
             asdType52:
               settingsContext.isScottish &&
+              newStreetData.recordType < 3 &&
               newStreetData.reinstatementCategories.map((asdRec) => ({
                 type: 52,
                 pkId: asdRec.pkId,
@@ -8846,6 +8850,7 @@ function StreetDataForm({ data, loading }) {
               })),
             asdType53:
               settingsContext.isScottish &&
+              newStreetData.recordType < 3 &&
               newStreetData.specialDesignations.map((asdRec) => ({
                 type: 53,
                 pkId: asdRec.pkId,
@@ -9985,7 +9990,7 @@ function StreetDataForm({ data, loading }) {
               {...a11yProps(2)}
             />
           )}
-          {HasASD() && streetData && streetData.recordType < 4 && (
+          {HasASD() && streetData && streetData.recordType < (settingsContext.isScottish ? 3 : 4) && (
             <Tab
               sx={tabStyleFullWidth}
               label={
@@ -10070,7 +10075,13 @@ function StreetDataForm({ data, loading }) {
                   variant="subtitle2"
                   sx={tabLabelStyle(
                     value ===
-                      (settingsContext.isScottish ? 4 : HasASD() && streetData && streetData.recordType < 4 ? 3 : 2)
+                      (settingsContext.isScottish
+                        ? streetData && streetData.recordType < 3
+                          ? 4
+                          : 3
+                        : HasASD() && streetData && streetData.recordType < 4
+                        ? 3
+                        : 2)
                   )}
                 >
                   Related
@@ -10085,7 +10096,15 @@ function StreetDataForm({ data, loading }) {
                 </Avatar>
               </Stack>
             }
-            {...a11yProps(settingsContext.isScottish ? 4 : HasASD() && streetData && streetData.recordType < 4 ? 3 : 2)}
+            {...a11yProps(
+              settingsContext.isScottish
+                ? streetData && streetData.recordType < 3
+                  ? 4
+                  : 3
+                : HasASD() && streetData && streetData.recordType < 4
+                ? 3
+                : 2
+            )}
           />
           <Tab
             sx={tabStyleFullWidth}
@@ -10095,7 +10114,13 @@ function StreetDataForm({ data, loading }) {
                   variant="subtitle2"
                   sx={tabLabelStyle(
                     value ===
-                      (settingsContext.isScottish ? 5 : HasASD() && streetData && streetData.recordType < 4 ? 4 : 3)
+                      (settingsContext.isScottish
+                        ? streetData && streetData.recordType < 3
+                          ? 5
+                          : 4
+                        : HasASD() && streetData && streetData.recordType < 4
+                        ? 4
+                        : 3)
                   )}
                 >
                   Notes
@@ -10122,7 +10147,15 @@ function StreetDataForm({ data, loading }) {
                 )}
               </Stack>
             }
-            {...a11yProps(settingsContext.isScottish ? 5 : HasASD() && streetData && streetData.recordType < 4 ? 4 : 3)}
+            {...a11yProps(
+              settingsContext.isScottish
+                ? streetData && streetData.recordType < 3
+                  ? 5
+                  : 4
+                : HasASD() && streetData && streetData.recordType < 4
+                ? 4
+                : 3
+            )}
           />
           <Tab
             sx={tabStyleFullWidth}
@@ -10131,13 +10164,27 @@ function StreetDataForm({ data, loading }) {
                 variant="subtitle2"
                 sx={tabLabelStyle(
                   value ===
-                    (settingsContext.isScottish ? 6 : HasASD() && streetData && streetData.recordType < 4 ? 5 : 4)
+                    (settingsContext.isScottish
+                      ? streetData && streetData.recordType < 3
+                        ? 6
+                        : 5
+                      : HasASD() && streetData && streetData.recordType < 4
+                      ? 5
+                      : 4)
                 )}
               >
                 History
               </Typography>
             }
-            {...a11yProps(settingsContext.isScottish ? 6 : HasASD() && streetData && streetData.recordType < 4 ? 5 : 4)}
+            {...a11yProps(
+              settingsContext.isScottish
+                ? streetData && streetData.recordType < 3
+                  ? 6
+                  : 5
+                : HasASD() && streetData && streetData.recordType < 4
+                ? 5
+                : 4
+            )}
           />
         </Tabs>
       </AppBar>
@@ -10297,7 +10344,7 @@ function StreetDataForm({ data, loading }) {
           )}
         </TabPanel>
       )}
-      {HasASD() && streetData && streetData.recordType < 4 ? (
+      {HasASD() && streetData && streetData.recordType < (settingsContext.isScottish ? 3 : 4) ? (
         <Fragment>
           <TabPanel value={value} index={settingsContext.isScottish ? 3 : 2}>
             {maintenanceResponsibilityFormData ? (
@@ -10513,7 +10560,15 @@ function StreetDataForm({ data, loading }) {
           </TabPanel>
           <TabPanel
             value={value}
-            index={settingsContext.isScottish ? 6 : HasASD() && streetData && streetData.recordType < 4 ? 5 : 4}
+            index={
+              settingsContext.isScottish
+                ? streetData && streetData.recordType < 3
+                  ? 6
+                  : 5
+                : HasASD() && streetData && streetData.recordType < 4
+                ? 5
+                : 4
+            }
           >
             <EntityHistoryTab variant="street" />
           </TabPanel>
