@@ -25,6 +25,7 @@
 //    012   10.01.24 Sean Flook                 Fix warnings.
 //    013   11.01.24 Sean Flook                 Fix warnings.
 //    014   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    015   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -41,7 +42,7 @@ import SettingsContext from "../context/settingsContext";
 import { GetTempAddressUrl } from "../configuration/ADSConfig";
 import { copyTextToClipboard, GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
 import { addressToTitleCase, FilteredLPILogicalStatus } from "../utils/PropertyUtils";
-import ObjectComparison from "./../utils/ObjectComparison";
+import ObjectComparison, { lpiKeysToIgnore } from "./../utils/ObjectComparison";
 
 import { Typography, Tooltip, IconButton, Menu, MenuItem, Fade, Divider } from "@mui/material";
 import { Box, Stack } from "@mui/system";
@@ -75,24 +76,13 @@ PropertyLPITab.propTypes = {
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onSetCopyOpen: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
   onAddLpi: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 
-function PropertyLPITab({
-  data,
-  errors,
-  loading,
-  focusedField,
-  onDataChanged,
-  onSetCopyOpen,
-  onHomeClick,
-  onAddLpi,
-  onDelete,
-}) {
+function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, onHomeClick, onAddLpi, onDelete }) {
   const theme = useTheme();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -178,10 +168,6 @@ function PropertyLPITab({
    */
   const handleLanguageChangeEvent = (newValue) => {
     setLanguage(newValue);
-    if (!dataChanged) {
-      setDataChanged(language !== newValue);
-      if (onDataChanged && language !== newValue) onDataChanged();
-    }
     UpdateSandbox("language", newValue);
   };
 
@@ -192,10 +178,6 @@ function PropertyLPITab({
    */
   const handleLogicalStatusChangeEvent = (newValue) => {
     setLogicalStatus(newValue);
-    if (!dataChanged) {
-      setDataChanged(logicalStatus !== newValue);
-      if (onDataChanged && logicalStatus !== newValue) onDataChanged();
-    }
     UpdateSandbox("logicalStatus", newValue);
   };
 
@@ -206,10 +188,6 @@ function PropertyLPITab({
    */
   const handleSaoStartNumberChangeEvent = (newValue) => {
     setSaoStartNumber(newValue);
-    if (!dataChanged) {
-      setDataChanged(saoStartNumber !== newValue);
-      if (onDataChanged && saoStartNumber !== newValue) onDataChanged();
-    }
     UpdateSandbox("saoStartNumber", newValue);
   };
 
@@ -220,9 +198,6 @@ function PropertyLPITab({
    */
   const handleSaoStartSuffixChangeEvent = (newValue) => {
     setSaoStartSuffix(newValue);
-    if (!dataChanged) {
-      setDataChanged(saoStartSuffix !== newValue);
-    }
     UpdateSandbox("saoStartSuffix", newValue);
   };
 
@@ -233,9 +208,6 @@ function PropertyLPITab({
    */
   const handleSaoEndNumberChangeEvent = (newValue) => {
     setSaoEndNumber(newValue);
-    if (!dataChanged) {
-      setDataChanged(saoEndNumber !== newValue);
-    }
     UpdateSandbox("saoEndNumber", newValue);
   };
 
@@ -246,10 +218,6 @@ function PropertyLPITab({
    */
   const handleSaoEndSuffixChangeEvent = (newValue) => {
     setSaoEndSuffix(newValue);
-    if (!dataChanged) {
-      setDataChanged(saoEndSuffix !== newValue);
-      if (onDataChanged && saoEndSuffix !== newValue) onDataChanged();
-    }
     UpdateSandbox("saoEndSuffix", newValue);
   };
 
@@ -260,10 +228,6 @@ function PropertyLPITab({
    */
   const handleSaoTextChangeEvent = (newValue) => {
     setSaoText(newValue);
-    if (!dataChanged) {
-      setDataChanged(saoText !== newValue);
-      if (onDataChanged && saoText !== newValue) onDataChanged();
-    }
     UpdateSandbox("saoText", newValue);
   };
 
@@ -274,10 +238,6 @@ function PropertyLPITab({
    */
   const handlePaoStartNumberChangeEvent = (newValue) => {
     setPaoStartNumber(newValue);
-    if (!dataChanged) {
-      setDataChanged(paoStartNumber !== newValue);
-      if (onDataChanged && paoStartNumber !== newValue) onDataChanged();
-    }
     UpdateSandbox("paoStartNumber", newValue);
   };
 
@@ -288,10 +248,6 @@ function PropertyLPITab({
    */
   const handlePaoStartSuffixChangeEvent = (newValue) => {
     setPaoStartSuffix(newValue);
-    if (!dataChanged) {
-      setDataChanged(paoStartSuffix !== newValue);
-      if (onDataChanged && paoStartSuffix !== newValue) onDataChanged();
-    }
     UpdateSandbox("paoStartSuffix", newValue);
   };
 
@@ -302,10 +258,6 @@ function PropertyLPITab({
    */
   const handlePaoEndNumberChangeEvent = (newValue) => {
     setPaoEndNumber(newValue);
-    if (!dataChanged) {
-      setDataChanged(paoEndNumber !== newValue);
-      if (onDataChanged && paoEndNumber !== newValue) onDataChanged();
-    }
     UpdateSandbox("paoEndNumber", newValue);
   };
 
@@ -316,10 +268,6 @@ function PropertyLPITab({
    */
   const handlePaoEndSuffixChangeEvent = (newValue) => {
     setPaoEndSuffix(newValue);
-    if (!dataChanged) {
-      setDataChanged(paoEndSuffix !== newValue);
-      if (onDataChanged && paoEndSuffix !== newValue) onDataChanged();
-    }
     UpdateSandbox("paoEndSuffix", newValue);
   };
 
@@ -330,10 +278,6 @@ function PropertyLPITab({
    */
   const handlePaoTextChangeEvent = (newValue) => {
     setPaoText(newValue);
-    if (!dataChanged) {
-      setDataChanged(paoText !== newValue);
-      if (onDataChanged && paoText !== newValue) onDataChanged();
-    }
     UpdateSandbox("paoText", newValue);
   };
 
@@ -344,10 +288,6 @@ function PropertyLPITab({
    */
   const handleUsrnChangeEvent = (newValue) => {
     setUsrn(newValue);
-    if (!dataChanged) {
-      setDataChanged(usrn !== newValue);
-      if (onDataChanged && usrn !== newValue) onDataChanged();
-    }
     UpdateSandbox("usrn", newValue);
   };
 
@@ -358,10 +298,6 @@ function PropertyLPITab({
    */
   const handlePostTownRefChangeEvent = (newValue) => {
     setPostTownRef(newValue);
-    if (!dataChanged) {
-      setDataChanged(postTownRef !== newValue);
-      if (onDataChanged && postTownRef !== newValue) onDataChanged();
-    }
     UpdateSandbox("postTownRef", newValue);
   };
 
@@ -372,10 +308,6 @@ function PropertyLPITab({
    */
   const handleSubLocalityRefChangeEvent = (newValue) => {
     setSubLocalityRef(newValue);
-    if (!dataChanged) {
-      setDataChanged(subLocalityRef !== newValue);
-      if (onDataChanged && subLocalityRef !== newValue) onDataChanged();
-    }
     UpdateSandbox("subLocalityRef", newValue);
   };
 
@@ -386,10 +318,6 @@ function PropertyLPITab({
    */
   const handlePostcodeRefChangeEvent = (newValue) => {
     setPostcodeRef(newValue);
-    if (!dataChanged) {
-      setDataChanged(postcodeRef !== newValue);
-      if (onDataChanged && postcodeRef !== newValue) onDataChanged();
-    }
     UpdateSandbox("postcodeRef", newValue);
   };
 
@@ -400,10 +328,6 @@ function PropertyLPITab({
    */
   const handleLevelChangeEvent = (newValue) => {
     setLevel(newValue);
-    if (!dataChanged) {
-      setDataChanged(level !== newValue);
-      if (onDataChanged && level !== newValue) onDataChanged();
-    }
     UpdateSandbox("level", newValue);
   };
 
@@ -414,10 +338,6 @@ function PropertyLPITab({
    */
   const handleOfficialFlagChangeEvent = (newValue) => {
     setOfficialFlag(newValue);
-    if (!dataChanged) {
-      setDataChanged(officialFlag !== newValue);
-      if (onDataChanged && officialFlag !== newValue) onDataChanged();
-    }
     UpdateSandbox("officialFlag", newValue);
   };
 
@@ -428,10 +348,6 @@ function PropertyLPITab({
    */
   const handlePostalAddressChangeEvent = (newValue) => {
     setPostalAddress(newValue);
-    if (!dataChanged) {
-      setDataChanged(postalAddress !== newValue);
-      if (onDataChanged && postalAddress !== newValue) onDataChanged();
-    }
     UpdateSandbox("postalAddress", newValue);
   };
 
@@ -442,10 +358,6 @@ function PropertyLPITab({
    */
   const handleStartDateChangeEvent = (newValue) => {
     setStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(startDate !== newValue);
-      if (onDataChanged && startDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("startDate", newValue);
   };
 
@@ -456,10 +368,6 @@ function PropertyLPITab({
    */
   const handleEndDateChangeEvent = (newValue) => {
     setEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(endDate !== newValue);
-      if (onDataChanged && endDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("endDate", newValue);
   };
 
@@ -569,12 +477,10 @@ function PropertyLPITab({
         : null;
 
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          dataChanged ? (sandboxContext.currentSandbox.currentPropertyRecords.lpi ? "check" : "discard") : "discard",
-          sourceLpi,
-          sandboxContext.currentSandbox.currentPropertyRecords.lpi
-        )
+      onHomeClick(
+        dataChanged ? (sandboxContext.currentSandbox.currentPropertyRecords.lpi ? "check" : "discard") : "discard",
+        sourceLpi,
+        sandboxContext.currentSandbox.currentPropertyRecords.lpi
       );
   };
 
@@ -600,7 +506,6 @@ function PropertyLPITab({
   const handleAddNewLpi = () => {
     setAnchorEl(null);
     if (onAddLpi) onAddLpi();
-    if (!dataChanged) setDataChanged(true);
   };
 
   /**
@@ -632,7 +537,6 @@ function PropertyLPITab({
     if (logicalStatus !== 9) {
       setLogicalStatus(9);
       setLogicalStatusLookup(FilteredLPILogicalStatus(settingsContext.isScottish, 9));
-      if (!dataChanged) setDataChanged(true);
       UpdateSandbox("logicalStatus", 9);
     }
     setAnchorEl(null);
@@ -645,7 +549,6 @@ function PropertyLPITab({
     if (logicalStatus !== 8) {
       setLogicalStatus(8);
       setLogicalStatusLookup(FilteredLPILogicalStatus(settingsContext.isScottish, 8));
-      if (!dataChanged) setDataChanged(true);
       UpdateSandbox("logicalStatus", 8);
     }
     setAnchorEl(null);
@@ -704,8 +607,7 @@ function PropertyLPITab({
    * Event to handle when the OK button is clicked.
    */
   const handleOkClicked = () => {
-    if (onHomeClick)
-      setDataChanged(onHomeClick("save", null, sandboxContext.currentSandbox.currentPropertyRecords.lpi));
+    if (onHomeClick) onHomeClick("save", null, sandboxContext.currentSandbox.currentPropertyRecords.lpi);
   };
 
   /**
@@ -737,7 +639,6 @@ function PropertyLPITab({
         setEndDate(data.lpiData.endDate);
       }
     }
-    setDataChanged(false);
     if (onHomeClick) onHomeClick("discard", data.lpiData, null);
   };
 
@@ -874,28 +775,18 @@ function PropertyLPITab({
   ]);
 
   useEffect(() => {
-    if (sandboxContext.currentSandbox.sourceProperty && data && data.lpiData) {
-      const sourceLpi = sandboxContext.currentSandbox.sourceProperty.lpis.find((x) => x.pkId === data.pkId);
+    if (sandboxContext.currentSandbox.sourceProperty && sandboxContext.currentSandbox.currentPropertyRecords.lpi) {
+      const sourceLpi = sandboxContext.currentSandbox.sourceProperty.lpis.find(
+        (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.lpi.pkId
+      );
 
       if (sourceLpi) {
         setDataChanged(
-          !ObjectComparison(sourceLpi, data.lpiData, [
-            "custodianOne",
-            "custodianTwo",
-            "canKey",
-            "changeType",
-            "dualLanguageLink",
-            "lastUpdateDate",
-            "address",
-            "postTown",
-            "postcode",
-            "lastUpdated",
-            "lastUser",
-          ])
+          !ObjectComparison(sourceLpi, sandboxContext.currentSandbox.currentPropertyRecords.lpi, lpiKeysToIgnore)
         );
-      } else if (data.pkId < 0) setDataChanged(true);
+      } else if (sandboxContext.currentSandbox.currentPropertyRecords.lpi.pkId < 0) setDataChanged(true);
     }
-  }, [data, sandboxContext.currentSandbox.sourceProperty]);
+  }, [sandboxContext.currentSandbox.currentPropertyRecords.lpi, sandboxContext.currentSandbox.sourceProperty]);
 
   useEffect(() => {
     if (

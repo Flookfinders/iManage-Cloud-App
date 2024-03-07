@@ -24,6 +24,7 @@
 //    011   13.02.24 Sean Flook                 Corrected ADSWholeRoadControl variant.
 //    012   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //    013   14.02.24 Joel Benford     IMANN-299 Toolbar changes
+//    014   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -41,7 +42,7 @@ import StreetContext from "../context/streetContext";
 
 import { GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
 import { filteredOperationalDistricts } from "../utils/StreetUtils";
-import ObjectComparison from "../utils/ObjectComparison";
+import ObjectComparison, { publicRightOfWayKeysToIgnore } from "../utils/ObjectComparison";
 
 import SwaOrgRef from "../data/SwaOrgRef";
 import PRoWDedicationCode from "../data/PRoWDedicationCode";
@@ -72,13 +73,12 @@ PRoWDataTab.propTypes = {
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 
-function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHomeClick, onAdd, onDelete }) {
+function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, onDelete }) {
   const theme = useTheme();
 
   const lookupContext = useContext(LookupContext);
@@ -175,10 +175,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleDedicationChangeEvent = (newValue) => {
     setDedication(newValue);
-    if (!dataChanged) {
-      setDataChanged(dedication !== newValue);
-      if (onDataChanged && dedication !== newValue) onDataChanged();
-    }
     UpdateSandbox("dedication", newValue);
   };
 
@@ -189,10 +185,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleStatusChangeEvent = (newValue) => {
     setStatus(newValue);
-    if (!dataChanged) {
-      setDataChanged(status !== newValue);
-      if (onDataChanged && status !== newValue) onDataChanged();
-    }
     UpdateSandbox("status", newValue);
   };
 
@@ -203,10 +195,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleLocationChangeEvent = (newValue) => {
     setLocation(newValue);
-    if (!dataChanged) {
-      setDataChanged(location !== newValue);
-      if (onDataChanged && location !== newValue) onDataChanged();
-    }
     UpdateSandbox("location", newValue);
   };
 
@@ -217,10 +205,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleDetailsChangeEvent = (newValue) => {
     setDetails(newValue);
-    if (!dataChanged) {
-      setDataChanged(details !== newValue);
-      if (onDataChanged && details !== newValue) onDataChanged();
-    }
     UpdateSandbox("details", newValue);
   };
 
@@ -234,10 +218,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
       setShowExactWarning(true);
     } else {
       setDefMapGeometryType(newValue);
-      if (!dataChanged) {
-        setDataChanged(defMapGeometryType !== newValue);
-        if (onDataChanged && defMapGeometryType !== newValue) onDataChanged();
-      }
       UpdateSandbox("defMapGeometryType", newValue);
       if (newValue) {
         mapContext.onEditMapObject(null, null);
@@ -256,10 +236,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleProwLengthChangeEvent = (newValue) => {
     setProwLength(newValue);
-    if (!dataChanged) {
-      setDataChanged(prowLength !== newValue);
-      if (onDataChanged && prowLength !== newValue) onDataChanged();
-    }
     UpdateSandbox("prowLength", newValue);
   };
 
@@ -270,10 +246,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handlePromotedRouteChangeEvent = (newValue) => {
     setPromotedRoute(newValue);
-    if (!dataChanged) {
-      setDataChanged(promotedRoute !== newValue);
-      if (onDataChanged && promotedRoute !== newValue) onDataChanged();
-    }
     UpdateSandbox("promotedRoute", newValue);
   };
 
@@ -284,10 +256,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleAccessibleRouteChangeEvent = (newValue) => {
     setAccessibleRoute(newValue);
-    if (!dataChanged) {
-      setDataChanged(accessibleRoute !== newValue);
-      if (onDataChanged && accessibleRoute !== newValue) onDataChanged();
-    }
     UpdateSandbox("accessibleRoute", newValue);
   };
 
@@ -298,10 +266,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleSourceTextChangeEvent = (newValue) => {
     setSourceText(newValue);
-    if (!dataChanged) {
-      setDataChanged(sourceText !== newValue);
-      if (onDataChanged && sourceText !== newValue) onDataChanged();
-    }
     UpdateSandbox("sourceText", newValue);
   };
 
@@ -312,10 +276,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleOrganisationChangeEvent = (newValue) => {
     setOrganisation(newValue);
-    if (!dataChanged) {
-      setDataChanged(organisation !== newValue);
-      if (onDataChanged && organisation !== newValue) onDataChanged();
-    }
     UpdateSandbox("organisation", newValue);
   };
 
@@ -326,10 +286,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleDistrictChangeEvent = (newValue) => {
     setDistrict(newValue);
-    if (!dataChanged) {
-      setDataChanged(district !== newValue);
-      if (onDataChanged && district !== newValue) onDataChanged();
-    }
     UpdateSandbox("district", newValue);
   };
 
@@ -340,10 +296,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleDiversionRelatedUsrnChangeEvent = (newValue) => {
     setDiversionRelatedUsrn(newValue);
-    if (!dataChanged) {
-      setDataChanged(diversionRelatedUsrn !== newValue);
-      if (onDataChanged && diversionRelatedUsrn !== newValue) onDataChanged();
-    }
     UpdateSandbox("diversionRelatedUsrn", newValue);
   };
 
@@ -354,10 +306,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handlePedestrianAccessChangeEvent = (newValue) => {
     setPedestrianAccess(newValue);
-    if (!dataChanged) {
-      setDataChanged(pedestrianAccess !== newValue);
-      if (onDataChanged && pedestrianAccess !== newValue) onDataChanged();
-    }
     UpdateSandbox("pedestrianAccess", newValue);
   };
 
@@ -368,10 +316,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleEquestrianAccessChangeEvent = (newValue) => {
     setEquestrianAccess(newValue);
-    if (!dataChanged) {
-      setDataChanged(equestrianAccess !== newValue);
-      if (onDataChanged && equestrianAccess !== newValue) onDataChanged();
-    }
     UpdateSandbox("equestrianAccess", newValue);
   };
 
@@ -382,10 +326,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleNonMotorisedAccessChangeEvent = (newValue) => {
     setNonMotorisedAccess(newValue);
-    if (!dataChanged) {
-      setDataChanged(nonMotorisedAccess !== newValue);
-      if (onDataChanged && nonMotorisedAccess !== newValue) onDataChanged();
-    }
     UpdateSandbox("nonMotorisedAccess", newValue);
   };
 
@@ -396,10 +336,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleCycleAccessChangeEvent = (newValue) => {
     setCycleAccess(newValue);
-    if (!dataChanged) {
-      setDataChanged(cycleAccess !== newValue);
-      if (onDataChanged && cycleAccess !== newValue) onDataChanged();
-    }
     UpdateSandbox("cycleAccess", newValue);
   };
 
@@ -410,10 +346,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleMotorisedAccessChangeEvent = (newValue) => {
     setMotorisedAccess(newValue);
-    if (!dataChanged) {
-      setDataChanged(motorisedAccess !== newValue);
-      if (onDataChanged && motorisedAccess !== newValue) onDataChanged();
-    }
     UpdateSandbox("motorisedAccess", newValue);
   };
 
@@ -424,10 +356,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleStartDateChangeEvent = (newValue) => {
     setStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(startDate !== newValue);
-      if (onDataChanged && startDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("startDate", newValue);
   };
 
@@ -438,10 +366,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleRelevantStartDateChangeEvent = (newValue) => {
     setRelevantStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(relevantStartDate !== newValue);
-      if (onDataChanged && relevantStartDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("relevantStartDate", newValue);
   };
 
@@ -452,10 +376,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleEndDateChangeEvent = (newValue) => {
     setEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(endDate !== newValue);
-      if (onDataChanged && endDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("endDate", newValue);
   };
 
@@ -466,10 +386,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleConsultationStartDateChangeEvent = (newValue) => {
     setConsultationStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(consultationStartDate !== newValue);
-      if (onDataChanged && consultationStartDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("consultationStartDate", newValue);
   };
 
@@ -480,10 +396,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleConsultationCloseDateChangeEvent = (newValue) => {
     setConsultationCloseDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(consultationCloseDate !== newValue);
-      if (onDataChanged && consultationCloseDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("consultationCloseDate", newValue);
   };
 
@@ -494,10 +406,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleConsultationReferenceChangeEvent = (newValue) => {
     setConsultationReference(newValue);
-    if (!dataChanged) {
-      setDataChanged(consultationReference !== newValue);
-      if (onDataChanged && consultationReference !== newValue) onDataChanged();
-    }
     UpdateSandbox("consultationReference", newValue);
   };
 
@@ -508,10 +416,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleConsultationDetailsChangeEvent = (newValue) => {
     setConsultationDetails(newValue);
-    if (!dataChanged) {
-      setDataChanged(consultationDetails !== newValue);
-      if (onDataChanged && consultationDetails !== newValue) onDataChanged();
-    }
     UpdateSandbox("consultationDetails", newValue);
   };
 
@@ -522,10 +426,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleAppealDateChangeEvent = (newValue) => {
     setAppealDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(appealDate !== newValue);
-      if (onDataChanged && appealDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("appealDate", newValue);
   };
 
@@ -536,10 +436,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleAppealReferenceChangeEvent = (newValue) => {
     setAppealReference(newValue);
-    if (!dataChanged) {
-      setDataChanged(appealReference !== newValue);
-      if (onDataChanged && appealReference !== newValue) onDataChanged();
-    }
     UpdateSandbox("appealReference", newValue);
   };
 
@@ -550,10 +446,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleAppealDetailsChangeEvent = (newValue) => {
     setAppealDetails(newValue);
-    if (!dataChanged) {
-      setDataChanged(appealDetails !== newValue);
-      if (onDataChanged && appealDetails !== newValue) onDataChanged();
-    }
     UpdateSandbox("appealDetails", newValue);
   };
 
@@ -567,12 +459,10 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
         : null;
 
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          dataChanged ? (sandboxContext.currentSandbox.currentStreetRecords.prow ? "check" : "discard") : "discard",
-          sourcePublicRightOfWay,
-          sandboxContext.currentSandbox.currentStreetRecords.prow
-        )
+      onHomeClick(
+        dataChanged ? (sandboxContext.currentSandbox.currentStreetRecords.prow ? "check" : "discard") : "discard",
+        sourcePublicRightOfWay,
+        sandboxContext.currentSandbox.currentStreetRecords.prow
       );
   };
 
@@ -580,7 +470,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    * Event to handle when the OK button is clicked.
    */
   const handleOkClicked = () => {
-    if (onHomeClick) setDataChanged(onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.prow));
+    if (onHomeClick) onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.prow);
   };
 
   /**
@@ -617,7 +507,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
         setAppealDetails(data.prowData.appealDetails ? data.prowData.appealDetails : "");
       }
     }
-    setDataChanged(false);
     if (onHomeClick) onHomeClick("discard", data.prowData, null);
   };
 
@@ -685,7 +574,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
    */
   const handleAddPRoW = () => {
     if (onAdd) onAdd();
-    if (!dataChanged) setDataChanged(true);
   };
 
   /**
@@ -719,10 +607,6 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
   const handleCloseMessageDialog = (action) => {
     if (action === "continue") {
       setDefMapGeometryType(true);
-      if (!dataChanged) {
-        setDataChanged(!defMapGeometryType);
-        if (onDataChanged && !defMapGeometryType) onDataChanged();
-      }
       UpdateSandbox("defMapGeometryType", true);
 
       mapContext.onEditMapObject(null, null);
@@ -772,25 +656,22 @@ function PRoWDataTab({ data, errors, loading, focusedField, onDataChanged, onHom
   }, [defMapGeometryType, informationContext]);
 
   useEffect(() => {
-    if (sandboxContext.currentSandbox.sourceStreet && data && data.prowData) {
-      const sourcePRoW = sandboxContext.currentSandbox.sourceStreet.publicRightOfWays.find((x) => x.pkId === data.id);
+    if (sandboxContext.currentSandbox.sourceStreet && sandboxContext.currentSandbox.currentStreetRecords.prow) {
+      const sourcePRoW = sandboxContext.currentSandbox.sourceStreet.publicRightOfWays.find(
+        (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.prow.pkId
+      );
 
       if (sourcePRoW) {
         setDataChanged(
-          !ObjectComparison(sourcePRoW, data.prowData, [
-            "changeType",
-            "neverExport",
-            "endDate",
-            "lastUpdateDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ])
+          !ObjectComparison(
+            sourcePRoW,
+            sandboxContext.currentSandbox.currentStreetRecords.prow,
+            publicRightOfWayKeysToIgnore
+          )
         );
-      } else if (data.pkId < 0) setDataChanged(true);
+      } else if (sandboxContext.currentSandbox.currentStreetRecords.prow.pkId < 0) setDataChanged(true);
     }
-  }, [sandboxContext.currentSandbox.sourceStreet, data]);
+  }, [sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreetRecords.prow]);
 
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);

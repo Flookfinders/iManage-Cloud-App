@@ -45,6 +45,7 @@
 //    032   04.03.24 Sean Flook           MUL16 Try and ensure we get a new temp address when required.
 //    033   05.03.24 Sean Flook       IMANN-338 If navigating back to an existing record ensure the form is setup as it was left.
 //    034   05.03.24 Sean Flook       IMANN-338 Added code to ensure the tabs are not kept open when not required any more.
+//    035   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the Save button is correctly enabled.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -80,8 +81,17 @@ import {
   GetTempAddress,
   getBilingualSource,
   getClassificationCode,
+  hasPropertyChanged,
 } from "../utils/PropertyUtils";
-import ObjectComparison, { PropertyComparison } from "./../utils/ObjectComparison";
+import ObjectComparison, {
+  blpuAppCrossRefKeysToIgnore,
+  classificationKeysToIgnore,
+  lpiKeysToIgnore,
+  noteKeysToIgnore,
+  organisationKeysToIgnore,
+  provenanceKeysToIgnore,
+  successorCrossRefKeysToIgnore,
+} from "./../utils/ObjectComparison";
 import { useEditConfirmation } from "../pages/EditConfirmationPage";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
 import { AppBar, Tabs, Tab, Avatar, Typography, Snackbar, Alert, Toolbar, Button } from "@mui/material";
@@ -284,17 +294,6 @@ function PropertyDataForm({ data, loading }) {
   };
 
   /**
-   * Method to set the availability of the save button.
-   *
-   * @param {boolean} disabled If true then the button is disabled; otherwise it is enabled.
-   */
-  const updateSaveButton = (disabled) => {
-    setSaveDisabled(disabled);
-    propertyContext.onPropertyModified(!disabled);
-    if (!disabled) mapContext.onSetCoordinate(null);
-  };
-
-  /**
    * Method to update the property data with the latest data.
    *
    * @param {object} newPropertyData The updated property object.
@@ -302,7 +301,6 @@ function PropertyDataForm({ data, loading }) {
   const updatePropertyData = (newPropertyData) => {
     setPropertyData(newPropertyData);
     sandboxContext.onSandboxChange("currentProperty", newPropertyData);
-    updateSaveButton(false);
   };
 
   /**
@@ -315,7 +313,6 @@ function PropertyDataForm({ data, loading }) {
     setPropertyData(newPropertyData);
     clearingType.current = clearType;
     sandboxContext.onUpdateAndClear("currentProperty", newPropertyData, clearType);
-    updateSaveButton(false);
   };
 
   /**
@@ -554,17 +551,10 @@ function PropertyDataForm({ data, loading }) {
         break;
     }
 
-    const propertyChanged =
-      propertyContext.currentProperty.newProperty ||
-      sandboxContext.currentSandbox.currentPropertyRecords.lpi ||
-      sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef ||
-      sandboxContext.currentSandbox.currentPropertyRecords.provenance ||
-      sandboxContext.currentSandbox.currentPropertyRecords.note ||
-      (sandboxContext.currentSandbox.currentProperty &&
-        !PropertyComparison(
-          sandboxContext.currentSandbox.sourceProperty,
-          sandboxContext.currentSandbox.currentProperty
-        ));
+    const propertyChanged = hasPropertyChanged(
+      propertyContext.currentProperty.newProperty,
+      sandboxContext.currentSandbox
+    );
 
     if (!propertyChanged || propertyContext.validateData()) {
       failedValidation.current = false;
@@ -817,13 +807,10 @@ function PropertyDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("lpi", newEngRec);
       propertyContext.onRecordChange(24, newIdx, true);
     } else {
-      const propertyChanged =
-        propertyContext.currentProperty.newProperty ||
-        (sandboxContext.currentSandbox.currentProperty &&
-          !PropertyComparison(
-            sandboxContext.currentSandbox.sourceProperty,
-            sandboxContext.currentSandbox.currentProperty
-          ));
+      const propertyChanged = hasPropertyChanged(
+        propertyContext.currentProperty.newProperty,
+        sandboxContext.currentSandbox
+      );
 
       if (!propertyChanged || propertyContext.validateData()) {
         failedValidation.current = false;
@@ -2090,17 +2077,10 @@ function PropertyDataForm({ data, loading }) {
    * @param {object} parent The details of the parent property if creating a child property.
    */
   const handlePropertyAdd = (usrn, easting, northing, parent) => {
-    const propertyChanged =
-      propertyContext.currentProperty.newProperty ||
-      sandboxContext.currentSandbox.currentPropertyRecords.lpi ||
-      sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef ||
-      sandboxContext.currentSandbox.currentPropertyRecords.provenance ||
-      sandboxContext.currentSandbox.currentPropertyRecords.note ||
-      (sandboxContext.currentSandbox.currentProperty &&
-        !PropertyComparison(
-          sandboxContext.currentSandbox.sourceProperty,
-          sandboxContext.currentSandbox.currentProperty
-        ));
+    const propertyChanged = hasPropertyChanged(
+      propertyContext.currentProperty.newProperty,
+      sandboxContext.currentSandbox
+    );
 
     if (propertyChanged) {
       saveConfirmDialog(true)
@@ -2366,7 +2346,6 @@ function PropertyDataForm({ data, loading }) {
               setSaveOpen(true);
             }
           } else if (result === "discard") {
-            updateSaveButton(true);
             saveResult.current = true;
             ResetContexts("property", true, mapContext, streetContext, propertyContext, sandboxContext);
             if (propertyContext.currentProperty.newProperty) {
@@ -2405,7 +2384,6 @@ function PropertyDataForm({ data, loading }) {
       if (result) {
         setPropertyData(result);
 
-        updateSaveButton(true);
         saveResult.current = true;
         setSaveOpen(true);
       } else {
@@ -2588,17 +2566,9 @@ function PropertyDataForm({ data, loading }) {
   };
 
   /**
-   * Method to set the Save button when associated records data changes.
-   */
-  const handleAssociatedRecordDataChanged = () => {
-    updateSaveButton(false);
-  };
-
-  /**
    * Event to handle when the provenance data changes.
    */
   const handleProvenanceDataChanged = () => {
-    updateSaveButton(false);
     provenanceChanged.current = true;
   };
 
@@ -2640,19 +2610,7 @@ function PropertyDataForm({ data, loading }) {
 
     switch (action) {
       case "check":
-        const dataHasChanged =
-          currentData.pkId < 0 ||
-          !ObjectComparison(srcData, currentData, [
-            "changeType",
-            "dualLanguageLink",
-            "lastUpdateDate",
-            "address",
-            "postTown",
-            "subLocality",
-            "postcode",
-            "lastUpdated",
-            "lastUser",
-          ]);
+        const dataHasChanged = currentData.pkId < 0 || !ObjectComparison(srcData, currentData, lpiKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -2661,7 +2619,6 @@ function PropertyDataForm({ data, loading }) {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   updateLPIData(currentData);
-                  updateSaveButton(false);
                   handleLPISelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -2684,7 +2641,6 @@ function PropertyDataForm({ data, loading }) {
         if (propertyContext.validateData()) {
           failedValidation.current = false;
           updateLPIData(currentData);
-          updateSaveButton(false);
           handleLPISelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -2738,7 +2694,7 @@ function PropertyDataForm({ data, loading }) {
     switch (action) {
       case "check":
         const dataHasChanged =
-          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, ["changeType", "entryDate", "id", "pkId"]);
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, classificationKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -2747,7 +2703,6 @@ function PropertyDataForm({ data, loading }) {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   updateClassificationData(currentData);
-                  updateSaveButton(false);
                   handleClassificationSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -2770,7 +2725,6 @@ function PropertyDataForm({ data, loading }) {
         if (propertyContext.validateData()) {
           failedValidation.current = false;
           updateClassificationData(currentData);
-          updateSaveButton(false);
           handleClassificationSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -2824,7 +2778,7 @@ function PropertyDataForm({ data, loading }) {
     switch (action) {
       case "check":
         const dataHasChanged =
-          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, ["changeType", "entryDate", "id", "pkId"]);
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, organisationKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -2833,7 +2787,6 @@ function PropertyDataForm({ data, loading }) {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   updateOrganisationData(currentData);
-                  updateSaveButton(false);
                   handleOrganisationSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -2856,7 +2809,6 @@ function PropertyDataForm({ data, loading }) {
         if (propertyContext.validateData()) {
           failedValidation.current = false;
           updateOrganisationData(currentData);
-          updateSaveButton(false);
           handleOrganisationSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -2910,7 +2862,7 @@ function PropertyDataForm({ data, loading }) {
     switch (action) {
       case "check":
         const dataHasChanged =
-          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, ["changeType", "entryDate", "id", "pkId"]);
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, successorCrossRefKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -2919,7 +2871,6 @@ function PropertyDataForm({ data, loading }) {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   updateSuccessorCrossRefData(currentData);
-                  updateSaveButton(false);
                   handleSuccessorCrossRefSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -2942,7 +2893,6 @@ function PropertyDataForm({ data, loading }) {
         if (propertyContext.validateData()) {
           failedValidation.current = false;
           updateSuccessorCrossRefData(currentData);
-          updateSaveButton(false);
           handleSuccessorCrossRefSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -2995,8 +2945,7 @@ function PropertyDataForm({ data, loading }) {
 
     switch (action) {
       case "check":
-        const dataHasChanged =
-          currentData.id < 0 || !ObjectComparison(srcData, currentData, ["changeType", "entryDate", "id", "pkId"]);
+        const dataHasChanged = currentData.id < 0 || !ObjectComparison(srcData, currentData, provenanceKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -3005,7 +2954,6 @@ function PropertyDataForm({ data, loading }) {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   updateProvenanceData(currentData);
-                  updateSaveButton(false);
                   handleProvenanceSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -3029,7 +2977,6 @@ function PropertyDataForm({ data, loading }) {
           failedValidation.current = false;
           updateProvenanceData(currentData);
           provenanceChanged.current = false;
-          updateSaveButton(false);
           handleProvenanceSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -3083,7 +3030,7 @@ function PropertyDataForm({ data, loading }) {
     switch (action) {
       case "check":
         const dataHasChanged =
-          currentData.id < 0 || !ObjectComparison(srcData, currentData, ["changeType", "entryDate", "id", "pkId"]);
+          currentData.id < 0 || !ObjectComparison(srcData, currentData, blpuAppCrossRefKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -3092,7 +3039,6 @@ function PropertyDataForm({ data, loading }) {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   updateCrossRefData(currentData);
-                  updateSaveButton(false);
                   handleCrossRefSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -3115,7 +3061,6 @@ function PropertyDataForm({ data, loading }) {
         if (propertyContext.validateData()) {
           failedValidation.current = false;
           updateCrossRefData(currentData);
-          updateSaveButton(false);
           handleCrossRefSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -3168,9 +3113,7 @@ function PropertyDataForm({ data, loading }) {
 
     switch (action) {
       case "check":
-        const dataHasChanged =
-          currentData.pkId < 0 ||
-          !ObjectComparison(srcData, currentData, ["changeType", "createdDate", "lastUpdatedDate", "lastUser"]);
+        const dataHasChanged = currentData.pkId < 0 || !ObjectComparison(srcData, currentData, noteKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -3179,7 +3122,6 @@ function PropertyDataForm({ data, loading }) {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   updateNoteData(currentData);
-                  updateSaveButton(false);
                   handleNoteSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -3202,7 +3144,6 @@ function PropertyDataForm({ data, loading }) {
         if (propertyContext.validateData()) {
           failedValidation.current = false;
           updateNoteData(currentData);
-          updateSaveButton(false);
           handleNoteSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -3702,8 +3643,6 @@ function PropertyDataForm({ data, loading }) {
         }
         setPropertyData(newPropertyData);
         sandboxContext.onSandboxChange("currentProperty", newPropertyData);
-        setSaveDisabled(false);
-        propertyContext.onPropertyModified(true);
       }
     }
   }, [mapContext.currentPropertyPin, mapContext, sandboxContext, propertyContext, settingsContext]);
@@ -3821,9 +3760,7 @@ function PropertyDataForm({ data, loading }) {
           setPropertyData(newPropertyData);
           clearingType.current = "provenance";
           sandboxContext.onUpdateAndClear("currentProperty", newPropertyData, "provenance");
-          setSaveDisabled(false);
           provenanceChanged.current = true;
-          propertyContext.onPropertyModified(true);
           propertyContext.onProvenanceDataChange(true);
         }
       }
@@ -4161,8 +4098,6 @@ function PropertyDataForm({ data, loading }) {
 
       setPropertyData(newPropertyData);
       sandboxContext.onSandboxChange("currentProperty", newPropertyData);
-      setSaveDisabled(false);
-      propertyContext.onPropertyModified(true);
     }
   }, [propertyData, propertyContext.newLogicalStatus, sandboxContext, propertyContext, settingsContext]);
 
@@ -4360,6 +4295,16 @@ function PropertyDataForm({ data, loading }) {
       propertyContext.onGoToField(null, null, null);
     }
   }, [propertyContext, propertyContext.goToField, value, propertyData, settingsContext.isScottish]);
+
+  useEffect(() => {
+    const propertyChanged = hasPropertyChanged(
+      propertyContext.currentProperty.newProperty,
+      sandboxContext.currentSandbox
+    );
+    setSaveDisabled(!propertyChanged);
+    propertyContext.onPropertyModified(propertyChanged);
+    if (propertyChanged) mapContext.onSetCoordinate(null);
+  }, [propertyContext, sandboxContext.currentSandbox, mapContext]);
 
   const tabStyleFullWidth = {
     ...tabStyle,
@@ -4627,7 +4572,6 @@ function PropertyDataForm({ data, loading }) {
             errors={lpiErrors && lpiErrors.filter((x) => x.index === lpiFormData.index)}
             loading={loading}
             focusedField={lpiFocusedField}
-            onDataChanged={handleAssociatedRecordDataChanged}
             onSetCopyOpen={(open, dataType) => handleCopyOpen(open, dataType)}
             onHomeClick={(action, srcData, currentData) => handleLPIHomeClick(action, srcData, currentData)}
             onAddLpi={handleAddLPI}
@@ -4664,7 +4608,6 @@ function PropertyDataForm({ data, loading }) {
               }
               loading={loading}
               focusedField={classificationFocusedField}
-              onDataChanged={handleAssociatedRecordDataChanged}
               onHomeClick={(action, srcData, currentData) =>
                 handleClassificationHomeClick(action, srcData, currentData)
               }
@@ -4711,7 +4654,6 @@ function PropertyDataForm({ data, loading }) {
               errors={organisationErrors && organisationErrors.filter((x) => x.index === organisationFormData.index)}
               loading={loading}
               focusedField={organisationFocusedField}
-              onDataChanged={handleAssociatedRecordDataChanged}
               onHomeClick={(action, srcData, currentData) => handleOrganisationHomeClick(action, srcData, currentData)}
               onDelete={(pkId) => handleDeleteOrganisation(pkId)}
             />
@@ -4760,7 +4702,6 @@ function PropertyDataForm({ data, loading }) {
               }
               loading={loading}
               focusedField={successorCrossRefFocusedField}
-              onDataChanged={handleAssociatedRecordDataChanged}
               onHomeClick={(action, srcData, currentData) =>
                 handleSuccessorCrossRefHomeClick(action, srcData, currentData)
               }
@@ -4854,7 +4795,6 @@ function PropertyDataForm({ data, loading }) {
             errors={crossRefErrors && crossRefErrors.filter((x) => x.index === crossRefFormData.index)}
             loading={loading}
             focusedField={crossRefFocusedField}
-            onDataChanged={handleAssociatedRecordDataChanged}
             onHomeClick={(action, srcData, currentData) => handleCrossRefHomeClick(action, srcData, currentData)}
             onDelete={(pkId) => handleDeleteCrossRef(pkId)}
           />
@@ -4909,7 +4849,6 @@ function PropertyDataForm({ data, loading }) {
             errors={noteErrors && noteErrors.filter((x) => x.index === notesFormData.index)}
             loading={loading}
             focusedField={noteFocusedField}
-            onDataChanged={handleAssociatedRecordDataChanged}
             onDelete={(pkId) => handleDeleteNote(pkId)}
             onHomeClick={(action, srcData, currentData) => handleNoteHomeClick(action, srcData, currentData)}
           />

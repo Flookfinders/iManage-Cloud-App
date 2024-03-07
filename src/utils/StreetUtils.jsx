@@ -43,6 +43,7 @@
 //    030   14.02.24 Sean Flook                 When creating a new street ensure the ESU Id is correctly set.
 //    031   14.02.24 Sean Flook        ESU14_GP Changed updateMapStreetData to exclude deleted records.
 //    032   14.02.24 Sean Flook                 Added a bit of error trapping.
+//    033   07.03.24 Sean Flook       IMANN-348 Made hasStreetChanged more robust.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -60,7 +61,21 @@ import {
   getStartEndCoordinates,
   filteredLookup,
 } from "./HelperUtils";
-import { StreetComparison } from "./ObjectComparison";
+import ObjectComparison, {
+  StreetComparison,
+  constructionKeysToIgnore,
+  heightWidthWeightKeysToIgnore,
+  highwayDedicationKeysToIgnore,
+  interestKeysToIgnore,
+  maintenanceResponsibilityKeysToIgnore,
+  noteKeysToIgnore,
+  oneWayExemptionKeysToIgnore,
+  publicRightOfWayKeysToIgnore,
+  reinstatementCategoryKeysToIgnore,
+  specialDesignationKeysToIgnore,
+  streetDescriptorKeysToIgnore,
+  successorCrossRefKeysToIgnore,
+} from "./ObjectComparison";
 import {
   GetStreetByUSRNUrl,
   GetDeleteStreetUrl,
@@ -3396,19 +3411,106 @@ export const updateMapStreetData = (
 export const hasStreetChanged = (newStreet, currentSandbox) => {
   return (
     newStreet ||
-    currentSandbox.currentStreetRecords.descriptor ||
-    currentSandbox.currentStreetRecords.highwayDedication ||
-    currentSandbox.currentStreetRecords.oneWayExemption ||
-    currentSandbox.currentStreetRecords.successorCrossRef ||
-    currentSandbox.currentStreetRecords.maintenanceResponsibility ||
-    currentSandbox.currentStreetRecords.reinstatementCategory ||
-    currentSandbox.currentStreetRecords.osSpecialDesignation ||
-    currentSandbox.currentStreetRecords.interest ||
-    currentSandbox.currentStreetRecords.construction ||
-    currentSandbox.currentStreetRecords.specialDesignation ||
-    currentSandbox.currentStreetRecords.hww ||
-    currentSandbox.currentStreetRecords.prow ||
-    currentSandbox.currentStreetRecords.note ||
+    (currentSandbox.currentStreetRecords.streetDescriptor &&
+      !ObjectComparison(
+        currentSandbox.sourceStreet.streetDescriptors.find(
+          (x) => x.pkId === currentSandbox.currentStreetRecords.streetDescriptor.pkId
+        ),
+        currentSandbox.currentStreetRecords.streetDescriptor,
+        streetDescriptorKeysToIgnore
+      )) ||
+    (currentSandbox.currentStreetRecords.highwayDedication &&
+      !ObjectComparison(
+        currentSandbox.sourceStreet.esus
+          .find((x) => x.esuId === currentSandbox.currentStreetRecords.highwayDedication.esuId)
+          .highwayDedications.find((x) => x.pkId === currentSandbox.currentStreetRecords.highwayDedication.pkId),
+        currentSandbox.currentStreetRecords.highwayDedication,
+        highwayDedicationKeysToIgnore
+      )) ||
+    (currentSandbox.currentStreetRecords.oneWayExemption &&
+      !ObjectComparison(
+        currentSandbox.sourceStreet.esus
+          .find((x) => x.esuId === currentSandbox.currentStreetRecords.oneWayExemption.esuId)
+          .oneWayExemptions.find((x) => x.pkId === currentSandbox.currentStreetRecords.oneWayExemption.pkId),
+        currentSandbox.currentStreetRecords.oneWayExemption,
+        oneWayExemptionKeysToIgnore
+      )) ||
+    (currentSandbox.currentStreetRecords.successorCrossRef &&
+      !ObjectComparison(
+        currentSandbox.sourceStreet.successorCrossRefs.find(
+          (x) => x.pkId === currentSandbox.currentStreetRecords.successorCrossRef.pkId
+        ),
+        currentSandbox.currentStreetRecords.successorCrossRef,
+        successorCrossRefKeysToIgnore
+      )) ||
+    (currentSandbox.currentStreetRecords.maintenanceResponsibility &&
+      !ObjectComparison(
+        currentSandbox.sourceStreet.maintenanceResponsibilities.find(
+          (x) => x.pkId === currentSandbox.currentStreetRecords.maintenanceResponsibility.pkId
+        ),
+        currentSandbox.currentStreetRecords.maintenanceResponsibility,
+        maintenanceResponsibilityKeysToIgnore
+      )) ||
+    (currentSandbox.currentStreetRecords.reinstatementCategory &&
+      !ObjectComparison(
+        currentSandbox.sourceStreet.reinstatementCategories.find(
+          (x) => x.pkId === currentSandbox.currentStreetRecords.reinstatementCategory.pkId
+        ),
+        currentSandbox.currentStreetRecords.reinstatementCategory,
+        reinstatementCategoryKeysToIgnore
+      )) ||
+    (currentSandbox.currentStreetRecords.osSpecialDesignation &&
+      !ObjectComparison(
+        currentSandbox.sourceStreet.specialDesignations.find(
+          (x) => x.pkId === currentSandbox.currentStreetRecords.osSpecialDesignation.pkId
+        ),
+        currentSandbox.currentStreetRecords.osSpecialDesignation,
+        specialDesignationKeysToIgnore
+      )) ||
+    (currentSandbox.currentStreetRecords.interest &&
+      !ObjectComparison(
+        currentSandbox.sourceStreet.interests.find((x) => x.pkId === currentSandbox.currentStreetRecords.interest.pkId),
+        currentSandbox.currentStreetRecords.interest,
+        interestKeysToIgnore
+      )) ||
+    (currentSandbox.currentStreetRecords.construction &&
+      !ObjectComparison(
+        currentSandbox.sourceStreet.constructions.find(
+          (x) => x.pkId === currentSandbox.currentStreetRecords.construction.pkId
+        ),
+        currentSandbox.currentStreetRecords.construction,
+        constructionKeysToIgnore
+      )) ||
+    (currentSandbox.currentStreetRecords.specialDesignation &&
+      !ObjectComparison(
+        currentSandbox.sourceStreet.specialDesignations.find(
+          (x) => x.pkId === currentSandbox.currentStreetRecords.specialDesignation.pkId
+        ),
+        currentSandbox.currentStreetRecords.specialDesignation,
+        specialDesignationKeysToIgnore
+      )) ||
+    (currentSandbox.currentStreetRecords.hww &&
+      !ObjectComparison(
+        currentSandbox.sourceStreet.heightWidthWeights.find(
+          (x) => x.pkId === currentSandbox.currentStreetRecords.hww.pkId
+        ),
+        currentSandbox.currentStreetRecords.hww,
+        heightWidthWeightKeysToIgnore
+      )) ||
+    (currentSandbox.currentStreetRecords.prow &&
+      !ObjectComparison(
+        currentSandbox.sourceStreet.publicRightOfWays.find(
+          (x) => x.pkId === currentSandbox.currentStreetRecords.prow.pkId
+        ),
+        currentSandbox.currentStreetRecords.prow,
+        publicRightOfWayKeysToIgnore
+      )) ||
+    (currentSandbox.currentStreetRecords.note &&
+      !ObjectComparison(
+        currentSandbox.sourceStreet.streetNotes.find((x) => x.pkId === currentSandbox.currentStreetRecords.note.pkId),
+        currentSandbox.currentStreetRecords.note,
+        noteKeysToIgnore
+      )) ||
     (currentSandbox.currentStreet && !StreetComparison(currentSandbox.sourceStreet, currentSandbox.currentStreet))
   );
 };

@@ -28,6 +28,7 @@
 //    015   07.02.24 Sean Flook                 Display a warning dialog when changing from Part Road to Whole Road.
 //    016   13.02.24 Sean Flook                 Set the ADSWholeRoadControl variant.
 //    017   15.02.24 Joel Benford     IMANN-299 Toolbar changes
+//    018   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -45,7 +46,7 @@ import StreetContext from "../context/streetContext";
 
 import { GetLookupLabel, ConvertDate, isAfter1stApril2015, filteredLookup } from "../utils/HelperUtils";
 import { filteredOperationalDistricts } from "../utils/StreetUtils";
-import ObjectComparison from "../utils/ObjectComparison";
+import ObjectComparison, { specialDesignationKeysToIgnore } from "../utils/ObjectComparison";
 
 import SwaOrgRef from "../data/SwaOrgRef";
 import SpecialDesignationCode from "./../data/SpecialDesignationCode";
@@ -75,22 +76,12 @@ SpecialDesignationDataTab.propTypes = {
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 
-function SpecialDesignationDataTab({
-  data,
-  errors,
-  loading,
-  focusedField,
-  onDataChanged,
-  onHomeClick,
-  onAdd,
-  onDelete,
-}) {
+function SpecialDesignationDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, onDelete }) {
   const theme = useTheme();
 
   const lookupContext = useContext(LookupContext);
@@ -168,10 +159,6 @@ function SpecialDesignationDataTab({
    */
   const handleDesignationTypeChangeEvent = (newValue) => {
     setDesignationType(newValue);
-    if (!dataChanged) {
-      setDataChanged(designationType !== newValue);
-      if (onDataChanged && designationType !== newValue) onDataChanged();
-    }
     UpdateSandbox("designationType", newValue);
   };
 
@@ -182,10 +169,6 @@ function SpecialDesignationDataTab({
    */
   const handleOrganisationChangeEvent = (newValue) => {
     setOrganisation(newValue);
-    if (!dataChanged) {
-      setDataChanged(organisation !== newValue);
-      if (onDataChanged && organisation !== newValue) onDataChanged();
-    }
     UpdateSandbox("organisation", newValue);
   };
 
@@ -196,10 +179,6 @@ function SpecialDesignationDataTab({
    */
   const handleDistrictChangeEvent = (newValue) => {
     setDistrict(newValue);
-    if (!dataChanged) {
-      setDataChanged(district !== newValue);
-      if (onDataChanged && district !== newValue) onDataChanged();
-    }
     UpdateSandbox("district", newValue);
   };
 
@@ -210,10 +189,6 @@ function SpecialDesignationDataTab({
    */
   const handleDescriptionChangeEvent = (newValue) => {
     setDescription(newValue);
-    if (!dataChanged) {
-      setDataChanged(description !== newValue);
-      if (onDataChanged && description !== newValue) onDataChanged();
-    }
     UpdateSandbox("description", newValue);
   };
 
@@ -224,10 +199,6 @@ function SpecialDesignationDataTab({
    */
   const handlePeriodicityChangeEvent = (newValue) => {
     setPeriodicity(newValue);
-    if (!dataChanged) {
-      setDataChanged(periodicity !== newValue);
-      if (onDataChanged && periodicity !== newValue) onDataChanged();
-    }
     UpdateSandbox("periodicity", newValue);
   };
 
@@ -238,10 +209,6 @@ function SpecialDesignationDataTab({
    */
   const handleOperationalStartTimeChangeEvent = (newValue) => {
     setOperationalStartTime(newValue);
-    if (!dataChanged) {
-      setDataChanged(operationalStartTime !== newValue);
-      if (onDataChanged && operationalStartTime !== newValue) onDataChanged();
-    }
     UpdateSandbox("operationalStartTime", newValue);
   };
 
@@ -252,10 +219,6 @@ function SpecialDesignationDataTab({
    */
   const handleOperationalEndTimeChangeEvent = (newValue) => {
     setOperationalEndTime(newValue);
-    if (!dataChanged) {
-      setDataChanged(operationalEndTime !== newValue);
-      if (onDataChanged && operationalEndTime !== newValue) onDataChanged();
-    }
     UpdateSandbox("operationalEndTime", newValue);
   };
 
@@ -266,10 +229,6 @@ function SpecialDesignationDataTab({
    */
   const handleOperationalStartDateChangeEvent = (newValue) => {
     setOperationalStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(operationalStartDate !== newValue);
-      if (onDataChanged && operationalStartDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("operationalStartDate", newValue);
   };
 
@@ -280,10 +239,6 @@ function SpecialDesignationDataTab({
    */
   const handleOperationalEndDateChangeEvent = (newValue) => {
     setOperationalEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(operationalEndDate !== newValue);
-      if (onDataChanged && operationalEndDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("operationalEndDate", newValue);
   };
 
@@ -294,10 +249,6 @@ function SpecialDesignationDataTab({
    */
   const handleStartDateChangeEvent = (newValue) => {
     setStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(startDate !== newValue);
-      if (onDataChanged && startDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("startDate", newValue);
   };
 
@@ -308,10 +259,6 @@ function SpecialDesignationDataTab({
    */
   const handleEndDateChangeEvent = (newValue) => {
     setEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(endDate !== newValue);
-      if (onDataChanged && endDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("endDate", newValue);
   };
 
@@ -322,10 +269,6 @@ function SpecialDesignationDataTab({
    */
   const handleSourceChangeEvent = (newValue) => {
     setSource(newValue);
-    if (!dataChanged) {
-      setDataChanged(source !== newValue);
-      if (onDataChanged && source !== newValue) onDataChanged();
-    }
     UpdateSandbox("source", newValue);
   };
 
@@ -339,10 +282,6 @@ function SpecialDesignationDataTab({
       setShowWholeRoadWarning(true);
     } else {
       setWholeRoad(newValue);
-      if (!dataChanged) {
-        setDataChanged(wholeRoad !== newValue);
-        if (onDataChanged && wholeRoad !== newValue) onDataChanged();
-      }
       UpdateSandbox("wholeRoad", newValue);
       if (newValue) {
         mapContext.onEditMapObject(null, null);
@@ -361,10 +300,6 @@ function SpecialDesignationDataTab({
    */
   const handleSpecificLocationChangeEvent = (newValue) => {
     setSpecificLocation(newValue);
-    if (!dataChanged) {
-      setDataChanged(specificLocation !== newValue);
-      if (onDataChanged && specificLocation !== newValue) onDataChanged();
-    }
     UpdateSandbox("specificLocation", newValue);
   };
 
@@ -378,16 +313,14 @@ function SpecialDesignationDataTab({
         : null;
 
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          dataChanged
-            ? sandboxContext.currentSandbox.currentStreetRecords.specialDesignation
-              ? "check"
-              : "discard"
-            : "discard",
-          sourceSpecialDesignation,
-          sandboxContext.currentSandbox.currentStreetRecords.specialDesignation
-        )
+      onHomeClick(
+        dataChanged
+          ? sandboxContext.currentSandbox.currentStreetRecords.specialDesignation
+            ? "check"
+            : "discard"
+          : "discard",
+        sourceSpecialDesignation,
+        sandboxContext.currentSandbox.currentStreetRecords.specialDesignation
       );
   };
 
@@ -395,8 +328,7 @@ function SpecialDesignationDataTab({
    * Event to handle when the OK button is clicked.
    */
   const handleOkClicked = () => {
-    if (onHomeClick)
-      setDataChanged(onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.specialDesignation));
+    if (onHomeClick) onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.specialDesignation);
   };
 
   /**
@@ -439,7 +371,6 @@ function SpecialDesignationDataTab({
         );
       }
     }
-    setDataChanged(false);
     if (onHomeClick) onHomeClick("discard", data.specialDesignationData, null);
   };
 
@@ -500,7 +431,6 @@ function SpecialDesignationDataTab({
    */
   const handleAddSpecialDesignation = () => {
     if (onAdd) onAdd();
-    if (!dataChanged) setDataChanged(true);
   };
 
   /**
@@ -547,10 +477,6 @@ function SpecialDesignationDataTab({
   const handleCloseMessageDialog = (action) => {
     if (action === "continue") {
       setWholeRoad(true);
-      if (!dataChanged) {
-        setDataChanged(!wholeRoad);
-        if (onDataChanged && !wholeRoad) onDataChanged();
-      }
       UpdateSandbox("wholeRoad", true);
 
       mapContext.onEditMapObject(null, null);
@@ -607,27 +533,29 @@ function SpecialDesignationDataTab({
   }, [wholeRoad, informationContext]);
 
   useEffect(() => {
-    if (sandboxContext.currentSandbox.sourceStreet && data && data.specialDesignationData) {
+    if (
+      sandboxContext.currentSandbox.sourceStreet &&
+      sandboxContext.currentSandbox.currentStreetRecords.specialDesigDescription
+    ) {
       const sourceSpecialDesignation = sandboxContext.currentSandbox.sourceStreet.specialDesignations.find(
-        (x) => x.pkId === data.id
+        (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.specialDesigDescription.pkId
       );
 
       if (sourceSpecialDesignation) {
         setDataChanged(
-          !ObjectComparison(sourceSpecialDesignation, data.specialDesignationData, [
-            "changeType",
-            "neverExport",
-            "endDate",
-            "lastUpdateDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ])
+          !ObjectComparison(
+            sourceSpecialDesignation,
+            sandboxContext.currentSandbox.currentStreetRecords.specialDesigDescription,
+            specialDesignationKeysToIgnore
+          )
         );
-      } else if (data.pkId < 0) setDataChanged(true);
+      } else if (sandboxContext.currentSandbox.currentStreetRecords.specialDesigDescription.pkId < 0)
+        setDataChanged(true);
     }
-  }, [sandboxContext.currentSandbox.sourceStreet, data]);
+  }, [
+    sandboxContext.currentSandbox.sourceStreet,
+    sandboxContext.currentSandbox.currentStreetRecords.specialDesigDescription,
+  ]);
 
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);

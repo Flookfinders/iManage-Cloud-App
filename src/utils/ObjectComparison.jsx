@@ -3,7 +3,7 @@
 //
 //  Description: Compare two objects.
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -16,12 +16,165 @@
 //    003   07.09.23 Sean Flook                 Added EsuComparison.
 //    004   13.10.23 Sean Flook                 Renamed EsuComparison to MergeEsuComparison and corrected list of ignore fields to use.
 //    005   03.11.23 Sean Flook                 Added hyphen to one-way.
+//    006   07.03.24 Sean Flook       IMANN-348 Centralised keys to ignore and added missing record types to StreetComparison and PropertyComparison.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
 import { HasASD } from "../configuration/ADSConfig";
+
+export const streetKeysToIgnore = [
+  "maintenanceResponsibility",
+  "reinstatementCategory",
+  "osSpecialDesignation",
+  "interests",
+  "constructions",
+  "specialDesignations",
+  "publicRightOfWays",
+  "heightWidthWeights",
+  "successorCrossRefs",
+  "esus",
+  "streetDescriptors",
+  "streetNotes",
+  "esuCount",
+  "relatedPropertyCount",
+  "relatedStreetCount",
+  "version",
+  "changeType",
+  "lastUpdateDate",
+  "lastUpdated",
+  "insertedTimestamp",
+  "insertedUser",
+  "lastUser",
+];
+
+export const streetDescriptorKeysToIgnore = ["changeType", "locality", "town", "administrativeArea", "island"];
+
+export const esuKeysToIgnore = [
+  "changeType",
+  "highwayDedications",
+  "oneWayExemptions",
+  "esuVersionNumber",
+  "entryDate",
+];
+
+export const mergeEsuKeysToIgnore = [
+  "assignUnassign",
+  "pkId",
+  "esuId",
+  "changeType",
+  "highwayDedications",
+  "oneWayExemptions",
+  "esuVersionNumber",
+  "numCoordCount",
+  "entryDate",
+  "lastUpdateDate",
+  "wktGeometry",
+];
+
+export const successorCrossRefKeysToIgnore = ["changeType", "entryDate", "lastUpdateDate"];
+
+export const highwayDedicationKeysToIgnore = ["changeType", "entryDate", "lastUpdateDate"];
+
+export const oneWayExemptionKeysToIgnore = ["changeType", "recordEntryDate", "lastUpdateDate"];
+
+export const maintenanceResponsibilityKeysToIgnore = ["changeType", "entryDate", "lastUpdateDate"];
+
+export const reinstatementCategoryKeysToIgnore = ["changeType", "entryDate", "lastUpdateDate"];
+
+export const interestKeysToIgnore = [
+  "changeType",
+  "asdCoordinate",
+  "asdCoordinateCount",
+  "startX",
+  "startY",
+  "endX",
+  "endY",
+  "lastUpdateDate",
+];
+
+export const constructionKeysToIgnore = [
+  "changeType",
+  "asdCoordinate",
+  "asdCoordinateCount",
+  "constructionStartX",
+  "constructionStartY",
+  "constructionEndX",
+  "constructionEndY",
+  "lastUpdateDate",
+];
+
+export const specialDesignationKeysToIgnore = [
+  "changeType",
+  "asdCoordinate",
+  "asdCoordinateCount",
+  "specialDesigStartX",
+  "specialDesigStartY",
+  "specialDesigEndX",
+  "specialDesigEndY",
+  "entryDate",
+  "lastUpdateDate",
+];
+
+export const heightWidthWeightKeysToIgnore = [
+  "changeType",
+  "recordEntryDate",
+  "asdCoordinate",
+  "asdCoordinateCount",
+  "hwwStartX",
+  "hwwStartY",
+  "hwwEndX",
+  "hwwEndY",
+  "lastUpdateDate",
+];
+
+export const publicRightOfWayKeysToIgnore = [
+  "changeType",
+  "defMapGeometryType",
+  "defMapGeometryCount",
+  "defMapGeometryCount",
+  "lastUpdateDate",
+];
+
+export const noteKeysToIgnore = ["changeType", "lastUser"];
+
+export const blpuKeysToIgnore = [
+  "blpuAppCrossRefs",
+  "blpuProvenances",
+  "blpuNotes",
+  "lpis",
+  "classifications",
+  "organisations",
+  "successorCrossRefs",
+  "changeType",
+  "parentAddress",
+  "parentPostcode",
+  "lastUpdateDate",
+  "entryDate",
+  "propertyLastUpdated",
+  "propertyLastUser",
+  "relatedPropertyCount",
+  "relatedStreetCount",
+];
+
+export const lpiKeysToIgnore = [
+  "changeType",
+  "lastUpdateDate",
+  "entryDate",
+  "address",
+  "postTown",
+  "postcode",
+  "subLocality",
+];
+
+export const blpuAppCrossRefKeysToIgnore = ["lastUpdateDate", "entryDate", "changeType"];
+
+export const provenanceKeysToIgnore = ["lastUpdateDate", "entryDate", "changeType"];
+
+export const classificationKeysToIgnore = ["lastUpdateDate", "entryDate", "changeType"];
+
+export const organisationKeysToIgnore = ["lastUpdateDate", "entryDate", "changeType"];
 
 /**
  * Method to compare 2 objects.
@@ -67,21 +220,7 @@ export function MergeEsuComparison(source, current, isScottish) {
   if (source && current) {
     let esuSame = true;
 
-    if (
-      !ObjectComparison(source, current, [
-        "assignUnassign",
-        "pkId",
-        "esuId",
-        "changeType",
-        "highwayDedications",
-        "oneWayExemptions",
-        "esuVersionNumber",
-        "numCoordCount",
-        "entryDate",
-        "lastUpdateDate",
-        "wktGeometry",
-      ])
-    ) {
+    if (!ObjectComparison(source, current, mergeEsuKeysToIgnore)) {
       esuSame = false;
     }
 
@@ -176,29 +315,7 @@ export function StreetComparison(source, current) {
   if (!source || !current) return false;
 
   // Compare street data
-  if (
-    !ObjectComparison(source, current, [
-      "interests",
-      "constructions",
-      "specialDesignations",
-      "publicRightOfWays",
-      "heightWidthWeights",
-      "esus",
-      "streetDescriptors",
-      "streetNotes",
-      "esuCount",
-      "relatedPropertyCount",
-      "relatedStreetCount",
-      "version",
-      "changeType",
-      "lastUpdateDate",
-      "lastUpdated",
-      "insertedTimestamp",
-      "insertedUser",
-      "lastUser",
-    ])
-  )
-    return false;
+  if (!ObjectComparison(source, current, streetKeysToIgnore)) return false;
 
   // Compare Street Descriptor records
   if (source.streetDescriptors && current.streetDescriptors) {
@@ -213,18 +330,7 @@ export function StreetComparison(source, current) {
           break;
         }
 
-        if (
-          !ObjectComparison(sourceDescriptor, currentDescriptor[0], [
-            "changeType",
-            "locality",
-            "town",
-            "administrativeArea",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ])
-        ) {
+        if (!ObjectComparison(sourceDescriptor, currentDescriptor[0], streetDescriptorKeysToIgnore)) {
           descriptorSame = false;
           break;
         }
@@ -247,21 +353,7 @@ export function StreetComparison(source, current) {
           break;
         }
 
-        if (
-          !ObjectComparison(sourceEsu, currentEsu[0], [
-            "changeType",
-            "highwayDedications",
-            "oneWayExemptions",
-            "esuVersionNumber",
-            "numCoordCount",
-            "esuEntryDate",
-            "esuLastUpdateDate",
-            "esuEndDate",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ])
-        ) {
+        if (!ObjectComparison(sourceEsu, currentEsu[0], esuKeysToIgnore)) {
           esuSame = false;
           break;
         }
@@ -285,13 +377,7 @@ export function StreetComparison(source, current) {
               }
 
               if (
-                !ObjectComparison(sourceHighwayDedication, currentHighwayDedication[0], [
-                  "changeType",
-                  "lastUpdated",
-                  "insertedTimestamp",
-                  "insertedUser",
-                  "lastUser",
-                ])
+                !ObjectComparison(sourceHighwayDedication, currentHighwayDedication[0], highwayDedicationKeysToIgnore)
               ) {
                 hdSame = false;
                 break;
@@ -323,15 +409,7 @@ export function StreetComparison(source, current) {
                 break;
               }
 
-              if (
-                !ObjectComparison(sourceOneWayExemption, currentOneWayExemption[0], [
-                  "changeType",
-                  "lastUpdated",
-                  "insertedTimestamp",
-                  "insertedUser",
-                  "lastUser",
-                ])
-              ) {
+              if (!ObjectComparison(sourceOneWayExemption, currentOneWayExemption[0], oneWayExemptionKeysToIgnore)) {
                 oweSame = false;
                 break;
               }
@@ -350,6 +428,68 @@ export function StreetComparison(source, current) {
   }
 
   if (HasASD()) {
+    // Compare Maintenance Responsibility records
+    if (source.maintenanceResponsibilities && current.maintenanceResponsibilities) {
+      if (source.maintenanceResponsibilities.length !== current.maintenanceResponsibilities.length) return false;
+
+      if (source.maintenanceResponsibilities.length > 0 && current.maintenanceResponsibilities.length > 0) {
+        let maintenanceResponsibilitySame = true;
+        for (const sourceMaintenanceResponsibility of source.maintenanceResponsibilities) {
+          const currentMaintenanceResponsibility = current.maintenanceResponsibilities.filter(
+            (x) => x.pkId === sourceMaintenanceResponsibility.pkId
+          );
+          if (!currentMaintenanceResponsibility || currentMaintenanceResponsibility.length !== 1) {
+            maintenanceResponsibilitySame = false;
+            break;
+          }
+
+          if (
+            !ObjectComparison(
+              sourceMaintenanceResponsibility,
+              currentMaintenanceResponsibility[0],
+              maintenanceResponsibilityKeysToIgnore
+            )
+          ) {
+            maintenanceResponsibilitySame = false;
+            break;
+          }
+        }
+
+        if (!maintenanceResponsibilitySame) return false;
+      }
+    }
+
+    // Compare Reinstatement Category records
+    if (source.reinstatementCategories && current.reinstatementCategories) {
+      if (source.reinstatementCategories.length !== current.reinstatementCategories.length) return false;
+
+      if (source.reinstatementCategories.length > 0 && current.reinstatementCategories.length > 0) {
+        let reinstatementCategorySame = true;
+        for (const sourceReinstatementCategory of source.reinstatementCategories) {
+          const currentReinstatementCategory = current.reinstatementCategories.filter(
+            (x) => x.pkId === sourceReinstatementCategory.pkId
+          );
+          if (!currentReinstatementCategory || currentReinstatementCategory.length !== 1) {
+            reinstatementCategorySame = false;
+            break;
+          }
+
+          if (
+            !ObjectComparison(
+              sourceReinstatementCategory,
+              currentReinstatementCategory[0],
+              reinstatementCategoryKeysToIgnore
+            )
+          ) {
+            reinstatementCategorySame = false;
+            break;
+          }
+        }
+
+        if (!reinstatementCategorySame) return false;
+      }
+    }
+
     // Compare Interest records
     if (source.interests && current.interests) {
       if (source.interests.length !== current.interests.length) return false;
@@ -363,17 +503,7 @@ export function StreetComparison(source, current) {
             break;
           }
 
-          if (
-            !ObjectComparison(sourceInterest, currentInterest[0], [
-              "changeType",
-              "recordEntryDate",
-              "recordEndDate",
-              "lastUpdated",
-              "insertedTimestamp",
-              "insertedUser",
-              "lastUser",
-            ])
-          ) {
+          if (!ObjectComparison(sourceInterest, currentInterest[0], interestKeysToIgnore)) {
             interestSame = false;
             break;
           }
@@ -396,18 +526,7 @@ export function StreetComparison(source, current) {
             break;
           }
 
-          if (
-            !ObjectComparison(sourceConstruction, currentConstruction[0], [
-              "changeType",
-              "neverExport",
-              "endDate",
-              "lastUpdateDate",
-              "lastUpdated",
-              "insertedTimestamp",
-              "insertedUser",
-              "lastUser",
-            ])
-          ) {
+          if (!ObjectComparison(sourceConstruction, currentConstruction[0], constructionKeysToIgnore)) {
             constructionSame = false;
             break;
           }
@@ -433,16 +552,7 @@ export function StreetComparison(source, current) {
           }
 
           if (
-            !ObjectComparison(sourceSpecialDesignation, currentSpecialDesignation[0], [
-              "changeType",
-              "neverExport",
-              "endDate",
-              "lastUpdateDate",
-              "lastUpdated",
-              "insertedTimestamp",
-              "insertedUser",
-              "lastUser",
-            ])
+            !ObjectComparison(sourceSpecialDesignation, currentSpecialDesignation[0], specialDesignationKeysToIgnore)
           ) {
             specialDesignationSame = false;
             break;
@@ -468,16 +578,7 @@ export function StreetComparison(source, current) {
             break;
           }
 
-          if (
-            !ObjectComparison(sourceHeightWidthWeight, currentHeightWidthWeight[0], [
-              "changeType",
-              "neverExport",
-              "endDate",
-              "lastUpdateDate",
-              "lastUpdated",
-              "lastUser",
-            ])
-          ) {
+          if (!ObjectComparison(sourceHeightWidthWeight, currentHeightWidthWeight[0], heightWidthWeightKeysToIgnore)) {
             hwwSame = false;
             break;
           }
@@ -502,18 +603,7 @@ export function StreetComparison(source, current) {
             break;
           }
 
-          if (
-            !ObjectComparison(sourcePublicRightOfWay, currentPublicRightOfWay[0], [
-              "changeType",
-              "neverExport",
-              "endDate",
-              "lastUpdateDate",
-              "lastUpdated",
-              "insertedTimestamp",
-              "insertedUser",
-              "lastUser",
-            ])
-          ) {
+          if (!ObjectComparison(sourcePublicRightOfWay, currentPublicRightOfWay[0], publicRightOfWayKeysToIgnore)) {
             prowSame = false;
             break;
           }
@@ -537,17 +627,7 @@ export function StreetComparison(source, current) {
           break;
         }
 
-        if (
-          !ObjectComparison(sourceNote, currentNote[0], [
-            "changeType",
-            "createdDate",
-            "lastUpdatedDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ])
-        ) {
+        if (!ObjectComparison(sourceNote, currentNote[0], noteKeysToIgnore)) {
           noteSame = false;
           break;
         }
@@ -571,31 +651,7 @@ export function PropertyComparison(source, current) {
   if (!source || !current) return false;
 
   // Compare BLPU data
-  if (
-    !ObjectComparison(source, current, [
-      "custodianOne",
-      "custodianTwo",
-      "canKey",
-      "blpuAppCrossRefs",
-      "blpuProvenances",
-      "blpuNotes",
-      "lpis",
-      "changeType",
-      "lastUpdateDate",
-      "entryDate",
-      "propertyLastUpdated",
-      "propertyLastUser",
-      "relatedPropertyCount",
-      "relatedStreetCount",
-      "latitude",
-      "longitude",
-      "lastUpdated",
-      "insertedTimestamp",
-      "insertedUser",
-      "lastUser",
-    ])
-  )
-    return false;
+  if (!ObjectComparison(source, current, blpuKeysToIgnore)) return false;
 
   // Compare LPI records
   if (source.lpis && current.lpis) {
@@ -610,26 +666,7 @@ export function PropertyComparison(source, current) {
           break;
         }
 
-        if (
-          !ObjectComparison(sourceLpi, currentLpi[0], [
-            "custodianOne",
-            "custodianTwo",
-            "canKey",
-            "changeType",
-            "lastUpdateDate",
-            "address",
-            "bs7666Address",
-            "saonDetails",
-            "paonDetails",
-            "searchAddress",
-            "postTown",
-            "postcode",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ])
-        ) {
+        if (!ObjectComparison(sourceLpi, currentLpi[0], lpiKeysToIgnore)) {
           lpiSame = false;
           break;
         }
@@ -652,15 +689,7 @@ export function PropertyComparison(source, current) {
           break;
         }
 
-        if (
-          !ObjectComparison(sourceBlpuAppCrossRef, currentBlpuAppCrossRef[0], [
-            "lastUpdateDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ])
-        ) {
+        if (!ObjectComparison(sourceBlpuAppCrossRef, currentBlpuAppCrossRef[0], blpuAppCrossRefKeysToIgnore)) {
           blpuAppCrossRefSame = false;
           break;
         }
@@ -683,22 +712,84 @@ export function PropertyComparison(source, current) {
           break;
         }
 
-        if (
-          !ObjectComparison(sourceProvenance, currentProvenance[0], [
-            "changeType",
-            "lastUpdateDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ])
-        ) {
+        if (!ObjectComparison(sourceProvenance, currentProvenance[0], provenanceKeysToIgnore)) {
           provenanceSame = false;
           break;
         }
       }
 
       if (!provenanceSame) return false;
+    }
+  }
+
+  // Compare Classification records
+  if (source.classifications && current.classifications) {
+    if (source.classifications.length !== current.classifications.length) return false;
+
+    if (source.classifications.length > 0 && current.classifications.length > 0) {
+      let classificationSame = true;
+      for (const sourceClassification of source.classifications) {
+        const currentClassification = current.classifications.filter((x) => x.pkId === sourceClassification.pkId);
+        if (!currentClassification || currentClassification.length !== 1) {
+          classificationSame = false;
+          break;
+        }
+
+        if (!ObjectComparison(sourceClassification, currentClassification[0], classificationKeysToIgnore)) {
+          classificationSame = false;
+          break;
+        }
+      }
+
+      if (!classificationSame) return false;
+    }
+  }
+
+  // Compare Organisation records
+  if (source.organisations && current.organisations) {
+    if (source.organisations.length !== current.organisations.length) return false;
+
+    if (source.organisations.length > 0 && current.organisations.length > 0) {
+      let organisationSame = true;
+      for (const sourceOrganisation of source.organisations) {
+        const currentOrganisation = current.organisations.filter((x) => x.pkId === sourceOrganisation.pkId);
+        if (!currentOrganisation || currentOrganisation.length !== 1) {
+          organisationSame = false;
+          break;
+        }
+
+        if (!ObjectComparison(sourceOrganisation, currentOrganisation[0], organisationKeysToIgnore)) {
+          organisationSame = false;
+          break;
+        }
+      }
+
+      if (!organisationSame) return false;
+    }
+  }
+
+  // Compare Successor Cross Reference records
+  if (source.successorCrossRefs && current.successorCrossRefs) {
+    if (source.successorCrossRefs.length !== current.successorCrossRefs.length) return false;
+
+    if (source.successorCrossRefs.length > 0 && current.successorCrossRefs.length > 0) {
+      let successorCrossRefSame = true;
+      for (const sourceSuccessorCrossRef of source.successorCrossRefs) {
+        const currentSuccessorCrossRef = current.successorCrossRefs.filter(
+          (x) => x.pkId === sourceSuccessorCrossRef.pkId
+        );
+        if (!currentSuccessorCrossRef || currentSuccessorCrossRef.length !== 1) {
+          successorCrossRefSame = false;
+          break;
+        }
+
+        if (!ObjectComparison(sourceSuccessorCrossRef, currentSuccessorCrossRef[0], successorCrossRefKeysToIgnore)) {
+          successorCrossRefSame = false;
+          break;
+        }
+      }
+
+      if (!successorCrossRefSame) return false;
     }
   }
 
@@ -715,17 +806,7 @@ export function PropertyComparison(source, current) {
           break;
         }
 
-        if (
-          !ObjectComparison(sourceNote, currentNote[0], [
-            "changeType",
-            "createdDate",
-            "lastUpdatedDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ])
-        ) {
+        if (!ObjectComparison(sourceNote, currentNote[0], noteKeysToIgnore)) {
           noteSame = false;
           break;
         }

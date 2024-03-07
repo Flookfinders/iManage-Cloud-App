@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    006   11.01.24 Sean Flook                 Fix warnings.
+//    007   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -29,7 +30,7 @@ import UserContext from "../context/userContext";
 import { Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { ConvertDate } from "../utils/HelperUtils";
-import ObjectComparison from "./../utils/ObjectComparison";
+import ObjectComparison, { organisationKeysToIgnore } from "./../utils/ObjectComparison";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSDateControl from "../components/ADSDateControl";
@@ -45,12 +46,11 @@ PropertyOrganisationTab.propTypes = {
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 
-function PropertyOrganisationTab({ data, errors, loading, focusedField, onDataChanged, onHomeClick, onDelete }) {
+function PropertyOrganisationTab({ data, errors, loading, focusedField, onHomeClick, onDelete }) {
   const theme = useTheme();
 
   const sandboxContext = useContext(SandboxContext);
@@ -91,10 +91,6 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onDataCh
    */
   const handleOrganisationChangeEvent = (newValue) => {
     setOrganisation(newValue);
-    if (!dataChanged) {
-      setDataChanged(organisation !== newValue);
-      if (onDataChanged && organisation !== newValue) onDataChanged();
-    }
     UpdateSandbox("organisation", newValue);
   };
 
@@ -105,10 +101,6 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onDataCh
    */
   const handleLegalNameChangeEvent = (newValue) => {
     setLegalName(newValue);
-    if (!dataChanged) {
-      setDataChanged(legalName !== newValue);
-      if (onDataChanged && legalName !== newValue) onDataChanged();
-    }
     UpdateSandbox("legalName", newValue);
   };
 
@@ -119,10 +111,6 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onDataCh
    */
   const handleStartDateChangeEvent = (newValue) => {
     setStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(startDate !== newValue);
-      if (onDataChanged && startDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("startDate", newValue);
   };
 
@@ -133,10 +121,6 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onDataCh
    */
   const handleEndDateChangeEvent = (newValue) => {
     setEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(endDate !== newValue);
-      if (onDataChanged && endDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("endDate", newValue);
   };
 
@@ -150,16 +134,14 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onDataCh
         : null;
 
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          dataChanged
-            ? sandboxContext.currentSandbox.currentPropertyRecords.organisation
-              ? "check"
-              : "discard"
-            : "discard",
-          sourceOrganisation,
-          sandboxContext.currentSandbox.currentPropertyRecords.organisation
-        )
+      onHomeClick(
+        dataChanged
+          ? sandboxContext.currentSandbox.currentPropertyRecords.organisation
+            ? "check"
+            : "discard"
+          : "discard",
+        sourceOrganisation,
+        sandboxContext.currentSandbox.currentPropertyRecords.organisation
       );
   };
 
@@ -174,8 +156,7 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onDataCh
    * Event to handle when the OK button is clicked.
    */
   const handleOkClicked = () => {
-    if (onHomeClick)
-      setDataChanged(onHomeClick("save", null, sandboxContext.currentSandbox.currentPropertyRecords.organisation));
+    if (onHomeClick) onHomeClick("save", null, sandboxContext.currentSandbox.currentPropertyRecords.organisation);
   };
 
   /**
@@ -190,7 +171,6 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onDataCh
         setEndDate(data.organisationData.endDate);
       }
     }
-    setDataChanged(false);
     if (onHomeClick) onHomeClick("discard", data.organisationData, null);
   };
 
@@ -243,25 +223,25 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onDataCh
   }, [data]);
 
   useEffect(() => {
-    if (sandboxContext.currentSandbox.sourceProperty && data && data.organisationData) {
+    if (
+      sandboxContext.currentSandbox.sourceProperty &&
+      sandboxContext.currentSandbox.currentPropertyRecords.organisation
+    ) {
       const sourceOrganisation = sandboxContext.currentSandbox.sourceProperty.organisations.find(
-        (x) => x.pkId === data.id
+        (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.organisation.pkId
       );
 
       if (sourceOrganisation) {
         setDataChanged(
-          !ObjectComparison(sourceOrganisation, data.organisationData, [
-            "changeType",
-            "entryDate",
-            "pkId",
-            "id",
-            "lastUpdateDate",
-            "neverExport",
-          ])
+          !ObjectComparison(
+            sourceOrganisation,
+            sandboxContext.currentSandbox.currentPropertyRecords.organisation,
+            organisationKeysToIgnore
+          )
         );
-      } else if (data.id < 0) setDataChanged(true);
+      } else if (sandboxContext.currentSandbox.currentPropertyRecords.organisation.pkId < 0) setDataChanged(true);
     }
-  }, [data, sandboxContext.currentSandbox.sourceProperty]);
+  }, [sandboxContext.currentSandbox.currentPropertyRecords.organisation, sandboxContext.currentSandbox.sourceProperty]);
 
   useEffect(() => {
     if (

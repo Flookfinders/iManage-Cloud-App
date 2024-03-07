@@ -20,6 +20,7 @@
 //    007   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    008   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    009   11.01.24 Sean Flook                 Fix warnings.
+//    010   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -32,7 +33,7 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
 import SettingsContext from "../context/settingsContext";
 import { ConvertDate } from "../utils/HelperUtils";
-import ObjectComparison from "./../utils/ObjectComparison";
+import ObjectComparison, { blpuAppCrossRefKeysToIgnore } from "./../utils/ObjectComparison";
 import { Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
@@ -52,12 +53,11 @@ PropertyCrossRefTab.propTypes = {
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 
-function PropertyCrossRefTab({ data, errors, loading, focusedField, onDataChanged, onHomeClick, onDelete }) {
+function PropertyCrossRefTab({ data, errors, loading, focusedField, onHomeClick, onDelete }) {
   const theme = useTheme();
 
   const lookupContext = useContext(LookupContext);
@@ -101,10 +101,6 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onDataChange
    */
   const handleSourceIdChangeEvent = (newValue) => {
     setSourceId(newValue);
-    if (!dataChanged) {
-      setDataChanged(sourceId !== newValue);
-      if (onDataChanged && sourceId !== newValue) onDataChanged();
-    }
     UpdateSandbox("sourceId", newValue);
   };
 
@@ -115,10 +111,6 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onDataChange
    */
   const handleCrossReferenceChangeEvent = (newValue) => {
     setCrossReference(newValue);
-    if (!dataChanged) {
-      setDataChanged(crossReference !== newValue);
-      if (onDataChanged && crossReference !== newValue) onDataChanged();
-    }
     UpdateSandbox("crossReference", newValue);
   };
 
@@ -129,10 +121,6 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onDataChange
    */
   const handleStartDateChangeEvent = (newValue) => {
     setStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(startDate !== newValue);
-      if (onDataChanged && startDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("startDate", newValue);
   };
 
@@ -143,10 +131,6 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onDataChange
    */
   const handleEndDateChangeEvent = (newValue) => {
     setEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(endDate !== newValue);
-      if (onDataChanged && endDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("endDate", newValue);
   };
 
@@ -160,16 +144,14 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onDataChange
         : null;
 
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          dataChanged
-            ? sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef
-              ? "check"
-              : "discard"
-            : "discard",
-          sourceCrossRef,
-          sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef
-        )
+      onHomeClick(
+        dataChanged
+          ? sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef
+            ? "check"
+            : "discard"
+          : "discard",
+        sourceCrossRef,
+        sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef
       );
   };
 
@@ -205,8 +187,7 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onDataChange
    * Event to handle when the OK button is clicked.
    */
   const handleOkClicked = () => {
-    if (onHomeClick)
-      setDataChanged(onHomeClick("save", null, sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef));
+    if (onHomeClick) onHomeClick("save", null, sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef);
   };
 
   /**
@@ -221,7 +202,6 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onDataChange
         setEndDate(data.xrefData.endDate);
       }
     }
-    setDataChanged(false);
     if (onHomeClick) onHomeClick("discard", data.xrefData, null);
   };
 
@@ -272,25 +252,25 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onDataChange
   }, [loading, data]);
 
   useEffect(() => {
-    if (sandboxContext.currentSandbox.sourceProperty && data && data.xrefData) {
+    if (
+      sandboxContext.currentSandbox.sourceProperty &&
+      sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef
+    ) {
       const sourceCrossRef = sandboxContext.currentSandbox.sourceProperty.blpuAppCrossRefs.find(
-        (x) => x.pkId === data.id
+        (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.pkId
       );
 
       if (sourceCrossRef) {
         setDataChanged(
-          !ObjectComparison(sourceCrossRef, data.xrefData, [
-            "changeType",
-            "entryDate",
-            "pkId",
-            "id",
-            "lastUpdateDate",
-            "neverExport",
-          ])
+          !ObjectComparison(
+            sourceCrossRef,
+            sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef,
+            blpuAppCrossRefKeysToIgnore
+          )
         );
-      } else if (data.id < 0) setDataChanged(true);
+      } else if (sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.pkId < 0) setDataChanged(true);
     }
-  }, [data, sandboxContext.currentSandbox.sourceProperty]);
+  }, [sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef, sandboxContext.currentSandbox.sourceProperty]);
 
   useEffect(() => {
     if (

@@ -19,6 +19,7 @@
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    007   11.01.24 Sean Flook                 Fix warnings.
 //    008   25.01.24 Sean Flook                 Changes required after UX review.
+//    009   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -29,7 +30,7 @@ import PropTypes from "prop-types";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
 import { GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
-import ObjectComparison from "../utils/ObjectComparison";
+import ObjectComparison, { oneWayExemptionKeysToIgnore } from "../utils/ObjectComparison";
 import OneWayExemptionType from "../data/OneWayExemptionType";
 import OneWayExemptionPeriodicity from "../data/OneWayExemptionPeriodicity";
 import { Typography } from "@mui/material";
@@ -47,13 +48,12 @@ OneWayExemptionDataTab.propTypes = {
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 
-function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataChanged, onHomeClick, onAdd, onDelete }) {
+function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, onDelete }) {
   const theme = useTheme();
 
   const sandboxContext = useContext(SandboxContext);
@@ -97,10 +97,6 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataCha
    */
   const handleOneWayExemptionTypeChangeEvent = (newValue) => {
     setOweType(newValue);
-    if (!dataChanged) {
-      setDataChanged(oweType !== newValue);
-      if (onDataChanged && oweType !== newValue) onDataChanged();
-    }
     UpdateSandbox("oweType", newValue);
   };
 
@@ -111,10 +107,6 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataCha
    */
   const handleOweStartDateChangeEvent = (newValue) => {
     setOweStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(oweStartDate !== newValue);
-      if (onDataChanged && oweStartDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("oweType", newValue);
   };
 
@@ -125,10 +117,6 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataCha
    */
   const handleOweEndDateChangeEvent = (newValue) => {
     setOweEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(oweEndDate !== newValue);
-      if (onDataChanged && oweEndDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("oweEndDate", newValue);
   };
 
@@ -139,10 +127,6 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataCha
    */
   const handleOweStartTimeChangeEvent = (newValue) => {
     setOweStartTime(newValue);
-    if (!dataChanged) {
-      setDataChanged(oweStartTime !== newValue);
-      if (onDataChanged && oweStartTime !== newValue) onDataChanged();
-    }
     UpdateSandbox("oweStartTime", newValue);
   };
 
@@ -153,10 +137,6 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataCha
    */
   const handleOweEndTimeChangeEvent = (newValue) => {
     setOweEndTime(newValue);
-    if (!dataChanged) {
-      setDataChanged(oweEndTime !== newValue);
-      if (onDataChanged && oweEndTime !== newValue) onDataChanged();
-    }
     UpdateSandbox("oweEndTime", newValue);
   };
 
@@ -167,10 +147,6 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataCha
    */
   const handlePeriodicityChangeEvent = (newValue) => {
     setPeriodicity(newValue);
-    if (!dataChanged) {
-      setDataChanged(periodicity !== newValue);
-      if (onDataChanged && periodicity !== newValue) onDataChanged();
-    }
     UpdateSandbox("periodicity", newValue);
   };
 
@@ -187,16 +163,14 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataCha
         : null;
 
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          dataChanged
-            ? sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption
-              ? "check"
-              : "discard"
-            : "discard",
-          sourceOneWayExemption,
-          sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption
-        )
+      onHomeClick(
+        dataChanged
+          ? sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption
+            ? "check"
+            : "discard"
+          : "discard",
+        sourceOneWayExemption,
+        sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption
       );
   };
 
@@ -204,8 +178,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataCha
    * Event to handle when the OK button is clicked.
    */
   const handleOkClicked = () => {
-    if (onHomeClick)
-      setDataChanged(onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption));
+    if (onHomeClick) onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption);
   };
 
   /**
@@ -222,7 +195,6 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataCha
         setPeriodicity(data.oweData.oneWayExemptionPeriodicityCode);
       }
     }
-    setDataChanged(false);
     if (onHomeClick) onHomeClick("discard", data.oweData, null);
   };
 
@@ -263,7 +235,6 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataCha
    */
   const handleAddOneWayExemption = () => {
     if (onAdd) onAdd(data.oweData.esuId, data.esuIndex);
-    if (!dataChanged) setDataChanged(true);
   };
 
   /**
@@ -295,26 +266,31 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onDataCha
 
   useEffect(() => {
     const contextStreet = sandboxContext.currentSandbox.currentStreet || sandboxContext.currentSandbox.sourceStreet;
-    if (contextStreet && data && data.oweData) {
+    if (contextStreet && sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption) {
       const sourceOneWayExemption =
-        data.pkId > 0 && contextStreet
+        sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.pkId > 0 && contextStreet
           ? contextStreet.esus
-              .find((esu) => esu.esuId === data.oweData.esuId)
-              .oneWayExemptions.find((x) => x.pkId === data.pkId)
+              .find((esu) => esu.esuId === sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.esuId)
+              .oneWayExemptions.find(
+                (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.pkId
+              )
           : null;
 
       if (sourceOneWayExemption) {
         setDataChanged(
-          !ObjectComparison(sourceOneWayExemption, data.oweData, [
-            "changeType",
-            "recordEntryDate",
-            "recordEndDate",
-            "lastUpdateDate",
-          ])
+          !ObjectComparison(
+            sourceOneWayExemption,
+            sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption,
+            oneWayExemptionKeysToIgnore
+          )
         );
-      } else if (data.oweData.pkId < 0) setDataChanged(true);
+      } else if (sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.pkId < 0) setDataChanged(true);
     }
-  }, [sandboxContext.currentSandbox.currentStreet, sandboxContext.currentSandbox.sourceStreet, data]);
+  }, [
+    sandboxContext.currentSandbox.currentStreet,
+    sandboxContext.currentSandbox.sourceStreet,
+    sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption,
+  ]);
 
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);

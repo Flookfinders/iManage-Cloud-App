@@ -26,6 +26,7 @@
 //    013   13.02.24 Sean Flook                 Set the ADSWholeRoadControl variant.
 //    014   13.02.24 Sean Flook                 Updated to new colour.
 //    015   20.02.24 Joel Benford     IMANN-299 Toolbar changes
+//    016   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -44,7 +45,7 @@ import { ConvertDate } from "../utils/HelperUtils";
 import { Avatar, Typography, Popper } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { GetLookupLabel, filteredLookup } from "../utils/HelperUtils";
-import ObjectComparison from "../utils/ObjectComparison";
+import ObjectComparison, { reinstatementCategoryKeysToIgnore } from "../utils/ObjectComparison";
 
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -72,22 +73,12 @@ ReinstatementCategoryDataTab.propTypes = {
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 
-function ReinstatementCategoryDataTab({
-  data,
-  errors,
-  loading,
-  focusedField,
-  onDataChanged,
-  onHomeClick,
-  onAdd,
-  onDelete,
-}) {
+function ReinstatementCategoryDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, onDelete }) {
   const theme = useTheme();
 
   const sandboxContext = useContext(SandboxContext);
@@ -183,10 +174,6 @@ function ReinstatementCategoryDataTab({
    */
   const handleReinstatementCategoryChangeEvent = (newValue) => {
     setReinstatementCategory(newValue);
-    if (!dataChanged) {
-      setDataChanged(reinstatementCategory !== newValue);
-      if (onDataChanged && reinstatementCategory !== newValue) onDataChanged();
-    }
     UpdateSandbox("reinstatementCategory", newValue);
   };
 
@@ -197,10 +184,6 @@ function ReinstatementCategoryDataTab({
    */
   const handleCustodianChangeEvent = (newValue) => {
     setCustodian(newValue);
-    if (!dataChanged) {
-      setDataChanged(custodian !== newValue);
-      if (onDataChanged && custodian !== newValue) onDataChanged();
-    }
     UpdateSandbox("custodian", newValue);
   };
 
@@ -211,10 +194,6 @@ function ReinstatementCategoryDataTab({
    */
   const handleAuthorityChangeEvent = (newValue) => {
     setAuthority(newValue);
-    if (!dataChanged) {
-      setDataChanged(authority !== newValue);
-      if (onDataChanged && authority !== newValue) onDataChanged();
-    }
     UpdateSandbox("authority", newValue);
   };
 
@@ -225,10 +204,6 @@ function ReinstatementCategoryDataTab({
    */
   const handleStartDateChangeEvent = (newValue) => {
     setStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(startDate !== newValue);
-      if (onDataChanged && startDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("startDate", newValue);
   };
 
@@ -239,10 +214,6 @@ function ReinstatementCategoryDataTab({
    */
   const handleEndDateChangeEvent = (newValue) => {
     setEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(endDate !== newValue);
-      if (onDataChanged && endDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("endDate", newValue);
   };
 
@@ -253,10 +224,6 @@ function ReinstatementCategoryDataTab({
    */
   const handleStateChangeEvent = (newValue) => {
     setState(newValue);
-    if (!dataChanged) {
-      setDataChanged(state !== newValue);
-      if (onDataChanged && state !== newValue) onDataChanged();
-    }
     UpdateSandbox("state", newValue);
   };
 
@@ -270,10 +237,6 @@ function ReinstatementCategoryDataTab({
       setShowWholeRoadWarning(true);
     } else {
       setWholeRoad(newValue);
-      if (!dataChanged) {
-        setDataChanged(wholeRoad !== newValue);
-        if (onDataChanged && wholeRoad !== newValue) onDataChanged();
-      }
       UpdateSandbox("wholeRoad", newValue);
       if (newValue) {
         mapContext.onEditMapObject(null, null);
@@ -292,10 +255,6 @@ function ReinstatementCategoryDataTab({
    */
   const handleSpecificLocationChangeEvent = (newValue) => {
     setSpecificLocation(newValue);
-    if (!dataChanged) {
-      setDataChanged(specificLocation !== newValue);
-      if (onDataChanged && specificLocation !== newValue) onDataChanged();
-    }
     UpdateSandbox("specificLocation", newValue);
   };
 
@@ -309,16 +268,14 @@ function ReinstatementCategoryDataTab({
         : null;
 
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          dataChanged
-            ? sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory
-              ? "check"
-              : "discard"
-            : "discard",
-          sourceReinstatementCategory,
-          sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory
-        )
+      onHomeClick(
+        dataChanged
+          ? sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory
+            ? "check"
+            : "discard"
+          : "discard",
+        sourceReinstatementCategory,
+        sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory
       );
   };
 
@@ -327,9 +284,7 @@ function ReinstatementCategoryDataTab({
    */
   const handleOkClicked = () => {
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory)
-      );
+      onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory);
   };
 
   /**
@@ -350,7 +305,6 @@ function ReinstatementCategoryDataTab({
         );
       }
     }
-    setDataChanged(false);
     if (onHomeClick) onHomeClick("discard", data.reinstatementCategoryData, null);
   };
 
@@ -359,7 +313,6 @@ function ReinstatementCategoryDataTab({
    */
   const handleAddReinstatementCategory = () => {
     if (onAdd) onAdd();
-    if (!dataChanged) setDataChanged(true);
   };
 
   /**
@@ -393,10 +346,6 @@ function ReinstatementCategoryDataTab({
   const handleCloseMessageDialog = (action) => {
     if (action === "continue") {
       setWholeRoad(true);
-      if (!dataChanged) {
-        setDataChanged(!wholeRoad);
-        if (onDataChanged && !wholeRoad) onDataChanged();
-      }
       UpdateSandbox("wholeRoad", true);
 
       mapContext.onEditMapObject(null, null);
@@ -431,27 +380,29 @@ function ReinstatementCategoryDataTab({
   }, [wholeRoad, informationContext]);
 
   useEffect(() => {
-    if (sandboxContext.currentSandbox.sourceStreet && data && data.reinstatementCategoryData) {
+    if (
+      sandboxContext.currentSandbox.sourceStreet &&
+      sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory
+    ) {
       const sourceReinstatementCategory = sandboxContext.currentSandbox.sourceStreet.reinstatementCategories.find(
-        (x) => x.pkId === data.id
+        (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory.pkId
       );
 
       if (sourceReinstatementCategory) {
         setDataChanged(
-          !ObjectComparison(sourceReinstatementCategory, data.reinstatementCategoryData, [
-            "changeType",
-            "neverExport",
-            "endDate",
-            "lastUpdateDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ])
+          !ObjectComparison(
+            sourceReinstatementCategory,
+            sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory,
+            reinstatementCategoryKeysToIgnore
+          )
         );
-      } else if (data.pkId < 0) setDataChanged(true);
+      } else if (sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory.pkId < 0)
+        setDataChanged(true);
     }
-  }, [sandboxContext.currentSandbox.sourceStreet, data]);
+  }, [
+    sandboxContext.currentSandbox.sourceStreet,
+    sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory,
+  ]);
 
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);

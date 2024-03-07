@@ -20,6 +20,7 @@
 //    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    008   11.01.24 Sean Flook                 Fix warnings.
 //    009   25.01.24 Sean Flook                 Changes required after UX review.
+//    010   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -32,7 +33,7 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
 
 import { GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
-import ObjectComparison from "../utils/ObjectComparison";
+import ObjectComparison, { highwayDedicationKeysToIgnore } from "../utils/ObjectComparison";
 
 import { Grid, Typography, FormControlLabel, Checkbox } from "@mui/material";
 import { Box, Stack } from "@mui/system";
@@ -63,22 +64,12 @@ HighwayDedicationDataTab.propTypes = {
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 
-function HighwayDedicationDataTab({
-  data,
-  errors,
-  loading,
-  focusedField,
-  onDataChanged,
-  onHomeClick,
-  onAdd,
-  onDelete,
-}) {
+function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, onDelete }) {
   const theme = useTheme();
 
   const sandboxContext = useContext(SandboxContext);
@@ -139,10 +130,6 @@ function HighwayDedicationDataTab({
    */
   const handleHighwayDedicationCodeChangeEvent = (newValue) => {
     setHighwayDedicationCode(newValue);
-    if (!dataChanged) {
-      setDataChanged(highwayDedicationCode !== newValue);
-      if (onDataChanged && highwayDedicationCode !== newValue) onDataChanged();
-    }
     UpdateSandbox("highwayDedicationCode", newValue);
   };
 
@@ -153,10 +140,6 @@ function HighwayDedicationDataTab({
    */
   const handleStartDateChangeEvent = (newValue) => {
     setStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(startDate !== newValue);
-      if (onDataChanged && startDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("startDate", newValue);
   };
 
@@ -167,10 +150,6 @@ function HighwayDedicationDataTab({
    */
   const handleEndDateChangeEvent = (newValue) => {
     setEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(endDate !== newValue);
-      if (onDataChanged && endDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("endDate", newValue);
   };
 
@@ -181,10 +160,6 @@ function HighwayDedicationDataTab({
    */
   const handleStartTimeChangeEvent = (newValue) => {
     setStartTime(newValue);
-    if (!dataChanged) {
-      setDataChanged(startTime !== newValue);
-      if (onDataChanged && startTime !== newValue) onDataChanged();
-    }
     UpdateSandbox("startTime", newValue);
   };
 
@@ -195,10 +170,6 @@ function HighwayDedicationDataTab({
    */
   const handleEndTimeChangeEvent = (newValue) => {
     setEndTime(newValue);
-    if (!dataChanged) {
-      setDataChanged(endTime !== newValue);
-      if (onDataChanged && endTime !== newValue) onDataChanged();
-    }
     UpdateSandbox("endTime", newValue);
   };
 
@@ -210,10 +181,6 @@ function HighwayDedicationDataTab({
   const handleProwChangeEvent = (event) => {
     const newValue = event.target.checked;
     setProw(newValue);
-    if (!dataChanged) {
-      setDataChanged(prow !== newValue);
-      if (onDataChanged && prow !== newValue) onDataChanged();
-    }
     UpdateSandbox("prow", newValue);
   };
 
@@ -225,10 +192,6 @@ function HighwayDedicationDataTab({
   const handleNcrChangeEvent = (event) => {
     const newValue = event.target.checked;
     setNcr(newValue);
-    if (!dataChanged) {
-      setDataChanged(ncr !== newValue);
-      if (onDataChanged && ncr !== newValue) onDataChanged();
-    }
     UpdateSandbox("ncr", newValue);
   };
 
@@ -240,10 +203,6 @@ function HighwayDedicationDataTab({
   const handleQuietRouteChangeEvent = (event) => {
     const newValue = event.target.checked;
     setQuietRoute(newValue);
-    if (!dataChanged) {
-      setDataChanged(quietRoute !== newValue);
-      if (onDataChanged && quietRoute !== newValue) onDataChanged();
-    }
     UpdateSandbox("quietRoute", newValue);
   };
 
@@ -255,10 +214,6 @@ function HighwayDedicationDataTab({
   const handleObstructionChangeEvent = (event) => {
     const newValue = event.target.checked;
     setObstruction(newValue);
-    if (!dataChanged) {
-      setDataChanged(obstruction !== newValue);
-      if (onDataChanged && obstruction !== newValue) onDataChanged();
-    }
     UpdateSandbox("obstruction", newValue);
   };
 
@@ -270,10 +225,6 @@ function HighwayDedicationDataTab({
   const handlePlanningOrderChangeEvent = (event) => {
     const newValue = event.target.checked;
     setPlanningOrder(newValue);
-    if (!dataChanged) {
-      setDataChanged(planningOrder !== newValue);
-      if (onDataChanged && planningOrder !== newValue) onDataChanged();
-    }
     UpdateSandbox("planningOrder", newValue);
   };
 
@@ -285,10 +236,6 @@ function HighwayDedicationDataTab({
   const handleVehiclesProhibitedChangeEvent = (event) => {
     const newValue = event.target.checked;
     setVehiclesProhibited(newValue);
-    if (!dataChanged) {
-      setDataChanged(vehiclesProhibited !== newValue);
-      if (onDataChanged && vehiclesProhibited !== newValue) onDataChanged();
-    }
     UpdateSandbox("vehiclesProhibited", newValue);
   };
 
@@ -299,10 +246,6 @@ function HighwayDedicationDataTab({
    */
   const handleSeasonalStartDateChangeEvent = (newValue) => {
     setSeasonalStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(seasonalStartDate !== newValue);
-      if (onDataChanged && seasonalStartDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("seasonalStartDate", newValue);
   };
 
@@ -313,10 +256,6 @@ function HighwayDedicationDataTab({
    */
   const handleSeasonalEndDateChangeEvent = (newValue) => {
     setSeasonalEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(seasonalEndDate !== newValue);
-      if (onDataChanged && seasonalEndDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("seasonalEndDate", newValue);
   };
 
@@ -327,10 +266,6 @@ function HighwayDedicationDataTab({
    */
   const handleRecordEndDateChangeEvent = (newValue) => {
     setRecordEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(recordEndDate !== newValue);
-      if (onDataChanged && recordEndDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("recordEndDate", newValue);
   };
 
@@ -347,16 +282,14 @@ function HighwayDedicationDataTab({
         : null;
 
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          dataChanged
-            ? sandboxContext.currentSandbox.currentStreetRecords.highwayDedication
-              ? "check"
-              : "discard"
-            : "discard",
-          sourceHighwayDedication,
-          sandboxContext.currentSandbox.currentStreetRecords.highwayDedication
-        )
+      onHomeClick(
+        dataChanged
+          ? sandboxContext.currentSandbox.currentStreetRecords.highwayDedication
+            ? "check"
+            : "discard"
+          : "discard",
+        sourceHighwayDedication,
+        sandboxContext.currentSandbox.currentStreetRecords.highwayDedication
       );
   };
 
@@ -364,8 +297,7 @@ function HighwayDedicationDataTab({
    * Event to handle when the OK button is clicked.
    */
   const handleOkClicked = () => {
-    if (onHomeClick)
-      setDataChanged(onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.highwayDedication));
+    if (onHomeClick) onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.highwayDedication);
   };
 
   /**
@@ -390,7 +322,6 @@ function HighwayDedicationDataTab({
         setRecordEndDate(data.hdData.recordEndDate);
       }
     }
-    setDataChanged(false);
     if (onHomeClick) onHomeClick("discard", data.hdData, null);
   };
 
@@ -439,7 +370,6 @@ function HighwayDedicationDataTab({
    */
   const handleAddHighwayDedication = () => {
     if (onAdd) onAdd(data.hdData.esuId, data.esuIndex);
-    if (!dataChanged) setDataChanged(true);
   };
 
   /**
@@ -592,27 +522,34 @@ function HighwayDedicationDataTab({
   }, [loading, data]);
 
   useEffect(() => {
-    const contextStreet = sandboxContext.currentSandbox.currentStreet || sandboxContext.currentSandbox.sourceStreet;
-    if (contextStreet && data && data.hdData) {
+    if (
+      sandboxContext.currentSandbox.sourceStreet &&
+      sandboxContext.currentSandbox.currentStreetRecords.highwayDedication
+    ) {
       const sourceHighwayDedication =
-        data.pkId > 0 && contextStreet
-          ? contextStreet.esus
-              .find((esu) => esu.esuId === data.hdData.esuId)
-              .highwayDedications.find((x) => x.pkId === data.pkId)
+        sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.pkId > 0 &&
+        sandboxContext.currentSandbox.sourceStreet
+          ? sandboxContext.currentSandbox.sourceStreet.esus
+              .find((esu) => esu.esuId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.esuId)
+              .highwayDedications.find(
+                (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.pkId
+              )
           : null;
 
       if (sourceHighwayDedication) {
         setDataChanged(
-          !ObjectComparison(sourceHighwayDedication, data.hdData, [
-            "changeType",
-            "entryDate",
-            "recordEndDate",
-            "lastUpdateDate",
-          ])
+          !ObjectComparison(
+            sourceHighwayDedication,
+            sandboxContext.currentSandbox.currentStreetRecords.highwayDedication,
+            highwayDedicationKeysToIgnore
+          )
         );
-      } else if (data.hdData.pkId < 0) setDataChanged(true);
+      } else if (sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.pkId < 0) setDataChanged(true);
     }
-  }, [sandboxContext.currentSandbox.currentStreet, sandboxContext.currentSandbox.sourceStreet, data]);
+  }, [
+    sandboxContext.currentSandbox.sourceStreet,
+    sandboxContext.currentSandbox.currentStreetRecords.highwayDedication,
+  ]);
 
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);

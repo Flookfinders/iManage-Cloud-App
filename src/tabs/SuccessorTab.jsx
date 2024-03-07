@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    006   11.01.24 Sean Flook                 Fix warnings.
+//    007   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -29,7 +30,7 @@ import UserContext from "../context/userContext";
 import { Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { ConvertDate } from "../utils/HelperUtils";
-import ObjectComparison from "./../utils/ObjectComparison";
+import ObjectComparison, { successorCrossRefKeysToIgnore } from "./../utils/ObjectComparison";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSNumberControl from "../components/ADSNumberControl";
 import ADSDateControl from "../components/ADSDateControl";
@@ -46,12 +47,11 @@ SuccessorTab.propTypes = {
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 
-function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChanged, onHomeClick, onDelete }) {
+function SuccessorTab({ data, variant, errors, loading, focusedField, onHomeClick, onDelete }) {
   const theme = useTheme();
 
   const sandboxContext = useContext(SandboxContext);
@@ -92,10 +92,6 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
    */
   const handleSuccessorChangeEvent = (newValue) => {
     setSuccessor(newValue);
-    if (!dataChanged) {
-      setDataChanged(successor !== newValue);
-      if (onDataChanged && successor !== newValue) onDataChanged();
-    }
     UpdateSandbox("successor", newValue);
   };
 
@@ -106,10 +102,6 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
    */
   const handlePredecessorChangeEvent = (newValue) => {
     setPredecessor(newValue);
-    if (!dataChanged) {
-      setDataChanged(predecessor !== newValue);
-      if (onDataChanged && predecessor !== newValue) onDataChanged();
-    }
     UpdateSandbox("predecessor", newValue);
   };
 
@@ -120,10 +112,6 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
    */
   const handleStartDateChangeEvent = (newValue) => {
     setStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(startDate !== newValue);
-      if (onDataChanged && startDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("startDate", newValue);
   };
 
@@ -134,10 +122,6 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
    */
   const handleEndDateChangeEvent = (newValue) => {
     setEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(endDate !== newValue);
-      if (onDataChanged && endDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("endDate", newValue);
   };
 
@@ -163,12 +147,10 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
     }
 
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          dataChanged ? (currentSuccessorCrossRefRecords ? "check" : "discard") : "discard",
-          sourceSuccessorCrossRef,
-          currentSuccessorCrossRefRecords
-        )
+      onHomeClick(
+        dataChanged ? (currentSuccessorCrossRefRecords ? "check" : "discard") : "discard",
+        sourceSuccessorCrossRef,
+        currentSuccessorCrossRefRecords
       );
   };
 
@@ -184,14 +166,12 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
    */
   const handleOkClicked = () => {
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          "save",
-          null,
-          variant === "property"
-            ? sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef
-            : sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef
-        )
+      onHomeClick(
+        "save",
+        null,
+        variant === "property"
+          ? sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef
+          : sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef
       );
   };
 
@@ -207,7 +187,6 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
         setEndDate(data.successorCrossRefData.endDate);
       }
     }
-    setDataChanged(false);
     if (onHomeClick) onHomeClick("discard", data.successorCrossRefData, null);
   };
 
@@ -264,23 +243,24 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onDataChan
       variant === "property"
         ? sandboxContext.currentSandbox.sourceProperty
         : sandboxContext.currentSandbox.sourceStreet;
-    if (sourceObject && data && data.successorCrossRefData) {
-      const sourceSuccessorCrossRef = sourceObject.successorCrossRefs.find((x) => x.pkId === data.id);
+    const currentObject =
+      variant === "property"
+        ? sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef
+        : sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef;
+    if (sourceObject && currentObject) {
+      const sourceSuccessorCrossRef = sourceObject.successorCrossRefs.find((x) => x.pkId === currentObject.pkId);
 
       if (sourceSuccessorCrossRef) {
-        setDataChanged(
-          !ObjectComparison(sourceSuccessorCrossRef, data.successorCrossRefData, [
-            "changeType",
-            "entryDate",
-            "pkId",
-            "id",
-            "lastUpdateDate",
-            "neverExport",
-          ])
-        );
-      } else if (data.id < 0) setDataChanged(true);
+        setDataChanged(!ObjectComparison(sourceSuccessorCrossRef, currentObject, successorCrossRefKeysToIgnore));
+      } else if (currentObject.pkId < 0) setDataChanged(true);
     }
-  }, [data, variant, sandboxContext.currentSandbox.sourceProperty, sandboxContext.currentSandbox.sourceStreet]);
+  }, [
+    sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef,
+    sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef,
+    variant,
+    sandboxContext.currentSandbox.sourceProperty,
+    sandboxContext.currentSandbox.sourceStreet,
+  ]);
 
   useEffect(() => {
     if (

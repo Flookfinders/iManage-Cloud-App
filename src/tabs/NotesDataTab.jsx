@@ -20,6 +20,7 @@
 //    007   11.01.24 Sean Flook                 Fix warnings.
 //    008   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    009   26.01.24 Sean Flook       IMANN-257 Fix handleCloseDeleteConfirmation.
+//    010   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -27,7 +28,7 @@
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
-import ObjectComparison from "./../utils/ObjectComparison";
+import ObjectComparison, { noteKeysToIgnore } from "./../utils/ObjectComparison";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
 import { Typography } from "@mui/material";
@@ -45,12 +46,11 @@ NotesDataTab.propTypes = {
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
 };
 
-function NotesDataTab({ data, errors, loading, focusedField, onDataChanged, onDelete, onHomeClick }) {
+function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeClick }) {
   const theme = useTheme();
 
   const sandboxContext = useContext(SandboxContext);
@@ -85,10 +85,6 @@ function NotesDataTab({ data, errors, loading, focusedField, onDataChanged, onDe
    */
   const handleNoteChangeEvent = (newValue) => {
     setNote(newValue);
-    if (!dataChanged) {
-      setDataChanged(note !== newValue);
-      if (onDataChanged && note !== newValue) onDataChanged();
-    }
     UpdateSandbox("note", newValue);
   };
 
@@ -106,19 +102,17 @@ function NotesDataTab({ data, errors, loading, focusedField, onDataChanged, onDe
         : null;
 
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          dataChanged
-            ? (data.variant === "street" && sandboxContext.currentSandbox.currentStreetRecords.note) ||
-              (data.variant === "property" && sandboxContext.currentSandbox.currentPropertyRecords.note)
-              ? "check"
-              : "discard"
-            : "discard",
-          sourceNote,
-          data.variant === "property"
-            ? sandboxContext.currentSandbox.currentPropertyRecords.note
-            : sandboxContext.currentSandbox.currentStreetRecords.note
-        )
+      onHomeClick(
+        dataChanged
+          ? (data.variant === "street" && sandboxContext.currentSandbox.currentStreetRecords.note) ||
+            (data.variant === "property" && sandboxContext.currentSandbox.currentPropertyRecords.note)
+            ? "check"
+            : "discard"
+          : "discard",
+        sourceNote,
+        data.variant === "property"
+          ? sandboxContext.currentSandbox.currentPropertyRecords.note
+          : sandboxContext.currentSandbox.currentStreetRecords.note
       );
   };
 
@@ -148,7 +142,6 @@ function NotesDataTab({ data, errors, loading, focusedField, onDataChanged, onDe
             setNote(data.noteData.note);
           }
         }
-        setDataChanged(false);
         if (onHomeClick) onHomeClick("discard", data.noteData, null);
       }
       if (onDelete) onDelete(id);
@@ -160,14 +153,12 @@ function NotesDataTab({ data, errors, loading, focusedField, onDataChanged, onDe
    */
   const handleOkClicked = () => {
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          "save",
-          null,
-          data.variant === "property"
-            ? sandboxContext.currentSandbox.currentPropertyRecords.note
-            : sandboxContext.currentSandbox.currentStreetRecords.note
-        )
+      onHomeClick(
+        "save",
+        null,
+        data.variant === "property"
+          ? sandboxContext.currentSandbox.currentPropertyRecords.note
+          : sandboxContext.currentSandbox.currentStreetRecords.note
       );
   };
 
@@ -180,7 +171,6 @@ function NotesDataTab({ data, errors, loading, focusedField, onDataChanged, onDe
         setNote(data.noteData.note);
       }
     }
-    setDataChanged(false);
     if (onHomeClick) onHomeClick("discard", data.noteData, null);
   };
 
@@ -240,24 +230,32 @@ function NotesDataTab({ data, errors, loading, focusedField, onDataChanged, onDe
   }, [loading, data]);
 
   useEffect(() => {
+    const currentNote =
+      data.variant === "street"
+        ? sandboxContext.currentSandbox.currentStreetRecords.note
+        : sandboxContext.currentSandbox.currentPropertyRecords.note;
+
     if (
-      data &&
-      data.noteData &&
+      currentNote &&
       ((data.variant === "street" && sandboxContext.currentSandbox.sourceStreet) ||
         (data.variant === "property" && sandboxContext.currentSandbox.sourceProperty))
     ) {
       const sourceNote =
         data.variant === "street"
-          ? sandboxContext.currentSandbox.sourceStreet.streetNotes.find((x) => x.pkId === data.pkId)
-          : sandboxContext.currentSandbox.sourceProperty.blpuNotes.find((x) => x.pkId === data.pkId);
+          ? sandboxContext.currentSandbox.sourceStreet.streetNotes.find((x) => x.pkId === currentNote.pkId)
+          : sandboxContext.currentSandbox.sourceProperty.blpuNotes.find((x) => x.pkId === currentNote.pkId);
 
       if (sourceNote) {
-        setDataChanged(
-          !ObjectComparison(sourceNote, data.noteData, ["changeType", "pkId", "lastUpdatedDate", "lastUser"])
-        );
-      } else if (data.pkId < 0) setDataChanged(true);
+        setDataChanged(!ObjectComparison(sourceNote, currentNote, noteKeysToIgnore));
+      } else if (currentNote.pkId < 0) setDataChanged(true);
     }
-  }, [data, sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.sourceProperty]);
+  }, [
+    data.variant,
+    sandboxContext.currentSandbox.currentPropertyRecords.note,
+    sandboxContext.currentSandbox.currentStreetRecords.note,
+    sandboxContext.currentSandbox.sourceStreet,
+    sandboxContext.currentSandbox.sourceProperty,
+  ]);
 
   useEffect(() => {
     if (

@@ -36,12 +36,23 @@
 //    023   25.01.24 Sean Flook                 Bug fix.
 //    024   01.03.24 Sean Flook           MUL16 Added some error trapping.
 //    025   04.03.24 Sean Flook           MUL16 Try and ensure we get a new temp address when required.
+//    026   07.03.24 Sean Flook       IMANN-348 Added hasPropertyChanged.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
 import { GetLookupLabel, GetCurrentDate } from "./HelperUtils";
+import ObjectComparison, {
+  PropertyComparison,
+  blpuAppCrossRefKeysToIgnore,
+  classificationKeysToIgnore,
+  lpiKeysToIgnore,
+  noteKeysToIgnore,
+  organisationKeysToIgnore,
+  provenanceKeysToIgnore,
+  successorCrossRefKeysToIgnore,
+} from "./ObjectComparison";
 import {
   GetPropertyFromUPRNUrl,
   GetDeletePropertyUrl,
@@ -2316,4 +2327,71 @@ export const getClassificationCode = (property) => {
     : property.blpuClass;
 
   return classificationCode ? classificationCode : "U";
+};
+
+/**
+ * Method used to determine if a property has been modified.
+ *
+ * @param {boolean} newProperty If true the property is being created.
+ * @param {object} currentSandbox The current state of the sandbox.
+ * @returns {boolean} True if the property has been changed; otherwise false.
+ */
+export const hasPropertyChanged = (newProperty, currentSandbox) => {
+  return (
+    newProperty ||
+    (currentSandbox.currentPropertyRecords.lpi &&
+      !ObjectComparison(
+        currentSandbox.sourceProperty.lpis.find((x) => x.pkId === currentSandbox.currentPropertyRecords.lpi.pkId),
+        currentSandbox.currentPropertyRecords.lpi,
+        lpiKeysToIgnore
+      )) ||
+    (currentSandbox.currentPropertyRecords.appCrossRef &&
+      !ObjectComparison(
+        currentSandbox.sourceProperty.blpuAppCrossRefs.find(
+          (x) => x.pkId === currentSandbox.currentPropertyRecords.appCrossRef.pkId
+        ),
+        currentSandbox.currentPropertyRecords.appCrossRef,
+        blpuAppCrossRefKeysToIgnore
+      )) ||
+    (currentSandbox.currentPropertyRecords.provenance &&
+      !ObjectComparison(
+        currentSandbox.sourceProperty.blpuProvenances.find(
+          (x) => x.pkId === currentSandbox.currentPropertyRecords.provenance.pkId
+        ),
+        currentSandbox.currentPropertyRecords.provenance,
+        provenanceKeysToIgnore
+      )) ||
+    (currentSandbox.currentPropertyRecords.classification &&
+      !ObjectComparison(
+        currentSandbox.sourceProperty.classifications.find(
+          (x) => x.pkId === currentSandbox.currentPropertyRecords.classification.pkId
+        ),
+        currentSandbox.currentPropertyRecords.classification,
+        classificationKeysToIgnore
+      )) ||
+    (currentSandbox.currentPropertyRecords.organisation &&
+      !ObjectComparison(
+        currentSandbox.sourceProperty.organisations.find(
+          (x) => x.pkId === currentSandbox.currentPropertyRecords.organisation.pkId
+        ),
+        currentSandbox.currentPropertyRecords.organisation,
+        organisationKeysToIgnore
+      )) ||
+    (currentSandbox.currentPropertyRecords.successorCrossRef &&
+      !ObjectComparison(
+        currentSandbox.sourceProperty.successorCrossRefs.find(
+          (x) => x.pkId === currentSandbox.currentPropertyRecords.successorCrossRef.pkId
+        ),
+        currentSandbox.currentPropertyRecords.successorCrossRef,
+        successorCrossRefKeysToIgnore
+      )) ||
+    (currentSandbox.currentPropertyRecords.note &&
+      !ObjectComparison(
+        currentSandbox.sourceProperty.blpuNotes.find((x) => x.pkId === currentSandbox.currentPropertyRecords.note.pkId),
+        currentSandbox.currentPropertyRecords.note,
+        noteKeysToIgnore
+      )) ||
+    (currentSandbox.currentProperty &&
+      !PropertyComparison(currentSandbox.sourceProperty, currentSandbox.currentProperty))
+  );
 };

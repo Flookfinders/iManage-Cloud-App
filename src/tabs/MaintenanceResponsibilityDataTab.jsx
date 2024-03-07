@@ -28,6 +28,7 @@
 //    015   13.02.24 Sean Flook                 Updated to new colour.
 //    016   20.02.24 Joel Benford     IMANN-299 Toolbar changes
 //    017   04.03.24 Sean Flook            COL3 Changed the colour for type 51/61 ASD records.
+//    018   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -43,7 +44,7 @@ import InformationContext from "../context/informationContext";
 import StreetContext from "../context/streetContext";
 
 import { GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
-import ObjectComparison from "../utils/ObjectComparison";
+import ObjectComparison, { maintenanceResponsibilityKeysToIgnore } from "../utils/ObjectComparison";
 
 import { Avatar, Typography, Popper } from "@mui/material";
 import { Box, Stack } from "@mui/system";
@@ -72,22 +73,12 @@ MaintenanceResponsibilityDataTab.propTypes = {
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 
-function MaintenanceResponsibilityDataTab({
-  data,
-  errors,
-  loading,
-  focusedField,
-  onDataChanged,
-  onHomeClick,
-  onAdd,
-  onDelete,
-}) {
+function MaintenanceResponsibilityDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, onDelete }) {
   const theme = useTheme();
 
   const sandboxContext = useContext(SandboxContext);
@@ -183,10 +174,6 @@ function MaintenanceResponsibilityDataTab({
    */
   const handleStreetStatusChangeEvent = (newValue) => {
     setStreetStatus(newValue);
-    if (!dataChanged) {
-      setDataChanged(streetStatus !== newValue);
-      if (onDataChanged && streetStatus !== newValue) onDataChanged();
-    }
     UpdateSandbox("streetStatus", newValue);
   };
 
@@ -197,10 +184,6 @@ function MaintenanceResponsibilityDataTab({
    */
   const handleCustodianChangeEvent = (newValue) => {
     setCustodian(newValue);
-    if (!dataChanged) {
-      setDataChanged(custodian !== newValue);
-      if (onDataChanged && custodian !== newValue) onDataChanged();
-    }
     UpdateSandbox("custodian", newValue);
   };
 
@@ -211,10 +194,6 @@ function MaintenanceResponsibilityDataTab({
    */
   const handleAuthorityChangeEvent = (newValue) => {
     setAuthority(newValue);
-    if (!dataChanged) {
-      setDataChanged(authority !== newValue);
-      if (onDataChanged && authority !== newValue) onDataChanged();
-    }
     UpdateSandbox("authority", newValue);
   };
 
@@ -225,10 +204,6 @@ function MaintenanceResponsibilityDataTab({
    */
   const handleStartDateChangeEvent = (newValue) => {
     setStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(startDate !== newValue);
-      if (onDataChanged && startDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("startDate", newValue);
   };
 
@@ -239,10 +214,6 @@ function MaintenanceResponsibilityDataTab({
    */
   const handleEndDateChangeEvent = (newValue) => {
     setEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(endDate !== newValue);
-      if (onDataChanged && endDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("endDate", newValue);
   };
 
@@ -253,10 +224,6 @@ function MaintenanceResponsibilityDataTab({
    */
   const handleStateChangeEvent = (newValue) => {
     setState(newValue);
-    if (!dataChanged) {
-      setDataChanged(state !== newValue);
-      if (onDataChanged && state !== newValue) onDataChanged();
-    }
     UpdateSandbox("state", newValue);
   };
 
@@ -270,10 +237,6 @@ function MaintenanceResponsibilityDataTab({
       setShowWholeRoadWarning(true);
     } else {
       setWholeRoad(newValue);
-      if (!dataChanged) {
-        setDataChanged(wholeRoad !== newValue);
-        if (onDataChanged && wholeRoad !== newValue) onDataChanged();
-      }
       UpdateSandbox("wholeRoad", newValue);
       if (newValue) {
         mapContext.onEditMapObject(null, null);
@@ -295,10 +258,6 @@ function MaintenanceResponsibilityDataTab({
    */
   const handleSpecificLocationChangeEvent = (newValue) => {
     setSpecificLocation(newValue);
-    if (!dataChanged) {
-      setDataChanged(specificLocation !== newValue);
-      if (onDataChanged && specificLocation !== newValue) onDataChanged();
-    }
     UpdateSandbox("specificLocation", newValue);
   };
 
@@ -312,16 +271,14 @@ function MaintenanceResponsibilityDataTab({
         : null;
 
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          dataChanged
-            ? sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility
-              ? "check"
-              : "discard"
-            : "discard",
-          sourceMaintenanceResponsibility,
-          sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility
-        )
+      onHomeClick(
+        dataChanged
+          ? sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility
+            ? "check"
+            : "discard"
+          : "discard",
+        sourceMaintenanceResponsibility,
+        sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility
       );
   };
 
@@ -330,9 +287,7 @@ function MaintenanceResponsibilityDataTab({
    */
   const handleOkClicked = () => {
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility)
-      );
+      onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility);
   };
 
   /**
@@ -353,7 +308,6 @@ function MaintenanceResponsibilityDataTab({
         );
       }
     }
-    setDataChanged(false);
     if (onHomeClick) onHomeClick("discard", data.maintenanceResponsibilityData, null);
   };
 
@@ -362,7 +316,6 @@ function MaintenanceResponsibilityDataTab({
    */
   const handleAddMaintenanceResponsibility = () => {
     if (onAdd) onAdd();
-    if (!dataChanged) setDataChanged(true);
   };
 
   /**
@@ -396,10 +349,6 @@ function MaintenanceResponsibilityDataTab({
   const handleCloseMessageDialog = (action) => {
     if (action === "continue") {
       setWholeRoad(true);
-      if (!dataChanged) {
-        setDataChanged(!wholeRoad);
-        if (onDataChanged && !wholeRoad) onDataChanged();
-      }
       UpdateSandbox("wholeRoad", true);
 
       mapContext.onEditMapObject(null, null);
@@ -434,26 +383,30 @@ function MaintenanceResponsibilityDataTab({
   }, [wholeRoad, informationContext]);
 
   useEffect(() => {
-    if (sandboxContext.currentSandbox.sourceStreet && data && data.maintenanceResponsibilityData) {
+    if (
+      sandboxContext.currentSandbox.sourceStreet &&
+      sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility
+    ) {
       const sourceMaintenanceResponsibility =
-        sandboxContext.currentSandbox.sourceStreet.maintenanceResponsibilities.find((x) => x.pkId === data.id);
+        sandboxContext.currentSandbox.sourceStreet.maintenanceResponsibilities.find(
+          (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility.pkId
+        );
 
       if (sourceMaintenanceResponsibility) {
         setDataChanged(
-          !ObjectComparison(sourceMaintenanceResponsibility, data.maintenanceResponsibilityData, [
-            "changeType",
-            "entryDate",
-            "endDate",
-            "lastUpdated",
-            "lastUpdateDate",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ])
+          !ObjectComparison(
+            sourceMaintenanceResponsibility,
+            sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility,
+            maintenanceResponsibilityKeysToIgnore
+          )
         );
-      } else if (data.pkId < 0) setDataChanged(true);
+      } else if (sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility.pkId < 0)
+        setDataChanged(true);
     }
-  }, [sandboxContext.currentSandbox.sourceStreet, data]);
+  }, [
+    sandboxContext.currentSandbox.sourceStreet,
+    sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility,
+  ]);
 
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);

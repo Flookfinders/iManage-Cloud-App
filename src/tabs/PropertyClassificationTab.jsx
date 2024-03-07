@@ -19,6 +19,7 @@
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    007   11.01.24 Sean Flook                 Fix warnings.
 //    008   16.01.24 Sean Flook                 Changes required to fix warnings.
+//    009   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -31,7 +32,7 @@ import UserContext from "../context/userContext";
 import { Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { ConvertDate } from "../utils/HelperUtils";
-import ObjectComparison from "./../utils/ObjectComparison";
+import ObjectComparison, { classificationKeysToIgnore } from "./../utils/ObjectComparison";
 import OSGClassification from "../data/OSGClassification";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -49,12 +50,11 @@ PropertyClassificationTab.propTypes = {
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 
-function PropertyClassificationTab({ data, errors, loading, focusedField, onDataChanged, onHomeClick, onDelete }) {
+function PropertyClassificationTab({ data, errors, loading, focusedField, onHomeClick, onDelete }) {
   const theme = useTheme();
 
   const sandboxContext = useContext(SandboxContext);
@@ -95,10 +95,6 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
    */
   const handleClassificationChangeEvent = (newValue) => {
     setClassification(newValue);
-    if (!dataChanged) {
-      setDataChanged(classification !== newValue);
-      if (onDataChanged && classification !== newValue) onDataChanged();
-    }
     UpdateSandbox("classification", newValue);
   };
 
@@ -109,10 +105,6 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
    */
   const handleClassificationSchemeChangeEvent = (newValue) => {
     setClassificationScheme(newValue);
-    if (!dataChanged) {
-      setDataChanged(classificationScheme !== newValue);
-      if (onDataChanged && classificationScheme !== newValue) onDataChanged();
-    }
     UpdateSandbox("classificationScheme", newValue);
   };
 
@@ -123,10 +115,6 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
    */
   const handleStartDateChangeEvent = (newValue) => {
     setStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(startDate !== newValue);
-      if (onDataChanged && startDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("startDate", newValue);
   };
 
@@ -137,10 +125,6 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
    */
   const handleEndDateChangeEvent = (newValue) => {
     setEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(endDate !== newValue);
-      if (onDataChanged && endDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("endDate", newValue);
   };
 
@@ -154,16 +138,14 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
         : null;
 
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          dataChanged
-            ? sandboxContext.currentSandbox.currentPropertyRecords.classification
-              ? "check"
-              : "discard"
-            : "discard",
-          sourceClassification,
-          sandboxContext.currentSandbox.currentPropertyRecords.classification
-        )
+      onHomeClick(
+        dataChanged
+          ? sandboxContext.currentSandbox.currentPropertyRecords.classification
+            ? "check"
+            : "discard"
+          : "discard",
+        sourceClassification,
+        sandboxContext.currentSandbox.currentPropertyRecords.classification
       );
   };
 
@@ -178,8 +160,7 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
    * Event to handle when the OK button is clicked.
    */
   const handleOkClicked = () => {
-    if (onHomeClick)
-      setDataChanged(onHomeClick("save", null, sandboxContext.currentSandbox.currentPropertyRecords.classification));
+    if (onHomeClick) onHomeClick("save", null, sandboxContext.currentSandbox.currentPropertyRecords.classification);
   };
 
   /**
@@ -196,7 +177,6 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
         setEndDate(data.classificationData.endDate);
       }
     }
-    setDataChanged(false);
     if (onHomeClick) onHomeClick("discard", data.classificationData, null);
   };
 
@@ -265,25 +245,28 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onData
   }, [data]);
 
   useEffect(() => {
-    if (sandboxContext.currentSandbox.sourceProperty && data && data.classificationData) {
+    if (
+      sandboxContext.currentSandbox.sourceProperty &&
+      sandboxContext.currentSandbox.currentPropertyRecords.classification
+    ) {
       const sourceClassification = sandboxContext.currentSandbox.sourceProperty.classifications.find(
-        (x) => x.pkId === data.id
+        (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.classification.pkId
       );
 
       if (sourceClassification) {
         setDataChanged(
-          !ObjectComparison(sourceClassification, data.classificationData, [
-            "changeType",
-            "entryDate",
-            "pkId",
-            "id",
-            "lastUpdateDate",
-            "neverExport",
-          ])
+          !ObjectComparison(
+            sourceClassification,
+            sandboxContext.currentSandbox.currentPropertyRecords.classification,
+            classificationKeysToIgnore
+          )
         );
-      } else if (data.id < 0) setDataChanged(true);
+      } else if (sandboxContext.currentSandbox.currentPropertyRecords.classification.pkId < 0) setDataChanged(true);
     }
-  }, [data, sandboxContext.currentSandbox.sourceProperty]);
+  }, [
+    sandboxContext.currentSandbox.currentPropertyRecords.classification,
+    sandboxContext.currentSandbox.sourceProperty,
+  ]);
 
   useEffect(() => {
     if (

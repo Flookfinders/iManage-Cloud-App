@@ -28,6 +28,7 @@
 //    015   13.02.24 Sean Flook                 Set the ADSWholeRoadControl variant.
 //    016   13.02.24 Sean Flook                 Updated to new colour.
 //    017   15.02.24 Joel Benford     IMANN-299 Toolbar changes
+//    018   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -45,7 +46,7 @@ import StreetContext from "../context/streetContext";
 
 import { GetLookupLabel, filteredLookup } from "../utils/HelperUtils";
 import { filteredOperationalDistricts } from "../utils/StreetUtils";
-import ObjectComparison from "../utils/ObjectComparison";
+import ObjectComparison, { constructionKeysToIgnore } from "../utils/ObjectComparison";
 
 import { ConvertDate } from "../utils/HelperUtils";
 import { Avatar, Typography, Popper } from "@mui/material";
@@ -78,13 +79,12 @@ ConstructionDataTab.propTypes = {
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 
-function ConstructionDataTab({ data, errors, loading, focusedField, onDataChanged, onHomeClick, onAdd, onDelete }) {
+function ConstructionDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, onDelete }) {
   const theme = useTheme();
 
   const lookupContext = useContext(LookupContext);
@@ -158,10 +158,6 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
    */
   const handleConstructionTypeChangeEvent = (newValue) => {
     setConstructionType(newValue);
-    if (!dataChanged) {
-      setDataChanged(constructionType !== newValue);
-      if (onDataChanged && constructionType !== newValue) onDataChanged();
-    }
     UpdateSandbox("constructionType", newValue);
   };
 
@@ -172,10 +168,6 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
    */
   const handleReinstatementTypeChangeEvent = (newValue) => {
     setReinstatementType(newValue);
-    if (!dataChanged) {
-      setDataChanged(reinstatementType !== newValue);
-      if (onDataChanged && reinstatementType !== newValue) onDataChanged();
-    }
     UpdateSandbox("reinstatementType", newValue);
   };
 
@@ -186,10 +178,6 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
    */
   const handleAggregateAbrasionValueChangeEvent = (newValue) => {
     setAggregateAbrasionValue(newValue);
-    if (!dataChanged) {
-      setDataChanged(aggregateAbrasionValue !== newValue);
-      if (onDataChanged && aggregateAbrasionValue !== newValue) onDataChanged();
-    }
     UpdateSandbox("aggregateAbrasionValue", newValue);
   };
 
@@ -200,10 +188,6 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
    */
   const handlePolishedStoneValueChangeEvent = (newValue) => {
     setPolishedStoneValue(newValue);
-    if (!dataChanged) {
-      setDataChanged(polishedStoneValue !== newValue);
-      if (onDataChanged && polishedStoneValue !== newValue) onDataChanged();
-    }
     UpdateSandbox("polishedStoneValue", newValue);
   };
 
@@ -214,10 +198,6 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
    */
   const handleFrostHeaveSusceptibilityChangeEvent = (newValue) => {
     setFrostHeaveSusceptibility(newValue);
-    if (!dataChanged) {
-      setDataChanged(frostHeaveSusceptibility !== newValue);
-      if (onDataChanged && frostHeaveSusceptibility !== newValue) onDataChanged();
-    }
     UpdateSandbox("frostHeaveSusceptibility", newValue);
   };
 
@@ -228,10 +208,6 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
    */
   const handleSteppedJointChangeEvent = (newValue) => {
     setSteppedJoint(newValue);
-    if (!dataChanged) {
-      setDataChanged(steppedJoint !== newValue);
-      if (onDataChanged && steppedJoint !== newValue) onDataChanged();
-    }
     UpdateSandbox("steppedJoint", newValue);
   };
 
@@ -242,10 +218,6 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
    */
   const handleConstructionDescriptionChangeEvent = (newValue) => {
     setConstructionDescription(newValue);
-    if (!dataChanged) {
-      setDataChanged(constructionDescription !== newValue);
-      if (onDataChanged && constructionDescription !== newValue) onDataChanged();
-    }
     UpdateSandbox("constructionDescription", newValue);
   };
 
@@ -256,10 +228,6 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
    */
   const handleOrganisationChangeEvent = (newValue) => {
     setOrganisation(newValue);
-    if (!dataChanged) {
-      setDataChanged(organisation !== newValue);
-      if (onDataChanged && organisation !== newValue) onDataChanged();
-    }
     UpdateSandbox("organisation", newValue);
   };
 
@@ -270,10 +238,6 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
    */
   const handleDistrictChangeEvent = (newValue) => {
     setDistrict(newValue);
-    if (!dataChanged) {
-      setDataChanged(district !== newValue);
-      if (onDataChanged && district !== newValue) onDataChanged();
-    }
     UpdateSandbox("district", newValue);
   };
 
@@ -284,10 +248,6 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
    */
   const handleStartDateChangeEvent = (newValue) => {
     setStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(startDate !== newValue);
-      if (onDataChanged && startDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("startDate", newValue);
   };
 
@@ -298,10 +258,6 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
    */
   const handleEndDateChangeEvent = (newValue) => {
     setEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(endDate !== newValue);
-      if (onDataChanged && endDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("endDate", newValue);
   };
 
@@ -315,10 +271,6 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
       setShowWholeRoadWarning(true);
     } else {
       setWholeRoad(newValue);
-      if (!dataChanged) {
-        setDataChanged(wholeRoad !== newValue);
-        if (onDataChanged && wholeRoad !== newValue) onDataChanged();
-      }
       UpdateSandbox("wholeRoad", newValue);
       if (newValue) {
         mapContext.onEditMapObject(null, null);
@@ -337,10 +289,6 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
    */
   const handleSpecifyLocationChangeEvent = (newValue) => {
     setSpecifyLocation(newValue);
-    if (!dataChanged) {
-      setDataChanged(specifyLocation !== newValue);
-      if (onDataChanged && specifyLocation !== newValue) onDataChanged();
-    }
     UpdateSandbox("specifyLocation", newValue);
   };
 
@@ -354,16 +302,14 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
         : null;
 
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          dataChanged
-            ? sandboxContext.currentSandbox.currentStreetRecords.construction
-              ? "check"
-              : "discard"
-            : "discard",
-          sourceConstruction,
-          sandboxContext.currentSandbox.currentStreetRecords.construction
-        )
+      onHomeClick(
+        dataChanged
+          ? sandboxContext.currentSandbox.currentStreetRecords.construction
+            ? "check"
+            : "discard"
+          : "discard",
+        sourceConstruction,
+        sandboxContext.currentSandbox.currentStreetRecords.construction
       );
   };
 
@@ -371,8 +317,7 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
    * Event to handle when the OK button is clicked.
    */
   const handleOkClicked = () => {
-    if (onHomeClick)
-      setDataChanged(onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.construction));
+    if (onHomeClick) onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.construction);
   };
 
   /**
@@ -400,7 +345,6 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
         setConstructionEndY(data.constructionData.constructionEndY ? data.constructionData.constructionEndY : 0);
       }
     }
-    setDataChanged(false);
     if (onHomeClick) onHomeClick("discard", data.constructionData, null);
   };
 
@@ -454,7 +398,6 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
    */
   const handleAddConstruction = () => {
     if (onAdd) onAdd();
-    if (!dataChanged) setDataChanged(true);
   };
 
   /**
@@ -488,10 +431,6 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
   const handleCloseMessageDialog = (action) => {
     if (action === "continue") {
       setWholeRoad(true);
-      if (!dataChanged) {
-        setDataChanged(!wholeRoad);
-        if (onDataChanged && !wholeRoad) onDataChanged();
-      }
       UpdateSandbox("wholeRoad", true);
 
       mapContext.onEditMapObject(null, null);
@@ -533,27 +472,22 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onDataChange
   }, [wholeRoad, informationContext]);
 
   useEffect(() => {
-    if (sandboxContext.currentSandbox.sourceStreet && data && data.constructionData) {
+    if (sandboxContext.currentSandbox.sourceStreet && sandboxContext.currentSandbox.currentStreetRecords.construction) {
       const sourceConstruction = sandboxContext.currentSandbox.sourceStreet.constructions.find(
-        (x) => x.pkId === data.id
+        (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.construction.pkId
       );
 
       if (sourceConstruction) {
         setDataChanged(
-          !ObjectComparison(sourceConstruction, data.constructionData, [
-            "changeType",
-            "neverExport",
-            "endDate",
-            "lastUpdateDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ])
+          !ObjectComparison(
+            sourceConstruction,
+            sandboxContext.currentSandbox.currentStreetRecords.construction,
+            constructionKeysToIgnore
+          )
         );
-      } else if (data.pkId < 0) setDataChanged(true);
+      } else if (sandboxContext.currentSandbox.currentStreetRecords.construction.pkId < 0) setDataChanged(true);
     }
-  }, [sandboxContext.currentSandbox.sourceStreet, data]);
+  }, [sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreetRecords.construction]);
 
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);

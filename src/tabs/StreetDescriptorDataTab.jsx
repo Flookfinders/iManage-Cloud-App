@@ -18,6 +18,7 @@
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    006   10.01.24 Sean Flook                 Fix warnings.
 //    007   11.01.24 Sean Flook                 Fix warnings.
+//    008   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,7 +31,7 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
 import SettingsContext from "../context/settingsContext";
 import { streetToTitleCase } from "../utils/StreetUtils";
-import ObjectComparison from "./../utils/ObjectComparison";
+import ObjectComparison, { streetDescriptorKeysToIgnore } from "./../utils/ObjectComparison";
 import { Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
@@ -46,11 +47,10 @@ StreetDescriptorDataTab.propTypes = {
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
 };
 
-function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataChanged, onHomeClick }) {
+function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeClick }) {
   const theme = useTheme();
 
   const lookupContext = useContext(LookupContext);
@@ -94,10 +94,6 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
    */
   const handleLanguageChangeEvent = (newValue) => {
     setLanguage(newValue);
-    if (!dataChanged) {
-      setDataChanged(language !== newValue);
-      if (onDataChanged && language !== newValue) onDataChanged();
-    }
     UpdateSandbox("language", newValue);
   };
 
@@ -108,10 +104,6 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
    */
   const handleDescriptionChangeEvent = (newValue) => {
     setDescription(newValue);
-    if (!dataChanged) {
-      setDataChanged(description !== newValue);
-      if (onDataChanged && description !== newValue) onDataChanged();
-    }
     UpdateSandbox("description", newValue);
   };
 
@@ -122,10 +114,6 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
    */
   const handleLocalityChangeEvent = (newValue) => {
     setLocality(newValue);
-    if (!dataChanged) {
-      setDataChanged(locality !== newValue);
-      if (onDataChanged && locality !== newValue) onDataChanged();
-    }
     UpdateSandbox("locality", newValue);
   };
 
@@ -136,10 +124,6 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
    */
   const handleTownChangeEvent = (newValue) => {
     setTown(newValue);
-    if (!dataChanged) {
-      setDataChanged(town !== newValue);
-      if (onDataChanged && town !== newValue) onDataChanged();
-    }
     UpdateSandbox("town", newValue);
   };
 
@@ -150,10 +134,6 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
    */
   const handleIslandChangeEvent = (newValue) => {
     setIsland(newValue);
-    if (!dataChanged) {
-      setDataChanged(island !== newValue);
-      if (onDataChanged && island !== newValue) onDataChanged();
-    }
     UpdateSandbox("island", newValue);
   };
 
@@ -164,10 +144,6 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
    */
   const handleAdministrativeAreaChangeEvent = (newValue) => {
     setAdministrativeArea(newValue);
-    if (!dataChanged) {
-      setDataChanged(administrativeArea !== newValue);
-      if (onDataChanged && island !== newValue) onDataChanged();
-    }
     UpdateSandbox("administrativeArea", newValue);
   };
 
@@ -181,16 +157,14 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
         : null;
 
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          dataChanged
-            ? sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor
-              ? "check"
-              : "discard"
-            : "discard",
-          sourceDescriptor,
-          sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor
-        )
+      onHomeClick(
+        dataChanged
+          ? sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor
+            ? "check"
+            : "discard"
+          : "discard",
+        sourceDescriptor,
+        sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor
       );
   };
 
@@ -198,8 +172,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
    * Event to handle when the OK button is clicked.
    */
   const handleOkClicked = () => {
-    if (onHomeClick)
-      setDataChanged(onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor));
+    if (onHomeClick) onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor);
   };
 
   /**
@@ -216,7 +189,6 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
         setAdministrativeArea(data.sdData.adminAreaRef);
       }
     }
-    setDataChanged(false);
     if (onHomeClick) onHomeClick("discard", data.sdData, null);
   };
 
@@ -274,18 +246,25 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onDataCh
   }, [loading, data]);
 
   useEffect(() => {
-    if (sandboxContext.currentSandbox.sourceStreet && data && data.sdData) {
+    if (
+      sandboxContext.currentSandbox.sourceStreet &&
+      sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor
+    ) {
       const sourceDescriptor = sandboxContext.currentSandbox.sourceStreet.streetDescriptors.find(
-        (x) => x.pkId === data.pkId
+        (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor.pkId
       );
 
       if (sourceDescriptor) {
         setDataChanged(
-          !ObjectComparison(sourceDescriptor, data.sdData, ["changeType", "locality", "town", "administrativeArea"])
+          !ObjectComparison(
+            sourceDescriptor,
+            sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor,
+            streetDescriptorKeysToIgnore
+          )
         );
-      } else if (data.pkId < 0) setDataChanged(true);
+      } else if (sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor.pkId < 0) setDataChanged(true);
     }
-  }, [data, sandboxContext.currentSandbox.sourceStreet]);
+  }, [sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor, sandboxContext.currentSandbox.sourceStreet]);
 
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);

@@ -60,6 +60,7 @@
 //    046   05.03.24 Sean Flook       IMANN-338 If navigating back to an existing record ensure the form is setup as it was left.
 //    047   05.03.24 Sean Flook       IMANN-338 Added code to ensure the tabs are not kept open when not required any more.
 //    048   06.03.24 Sean Flook       IMANN-344 Ensure the sandbox is cleared when cancelling a new ASD record.
+//    049   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the Save button is correctly enabled.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -105,7 +106,22 @@ import {
   StreetDelete,
 } from "../utils/StreetUtils";
 import { UpdateRangeAfterSave, UpdateAfterSave, GetPropertyMapData } from "../utils/PropertyUtils";
-import ObjectComparison, { MergeEsuComparison } from "./../utils/ObjectComparison";
+import ObjectComparison, {
+  MergeEsuComparison,
+  constructionKeysToIgnore,
+  esuKeysToIgnore,
+  heightWidthWeightKeysToIgnore,
+  highwayDedicationKeysToIgnore,
+  interestKeysToIgnore,
+  maintenanceResponsibilityKeysToIgnore,
+  noteKeysToIgnore,
+  oneWayExemptionKeysToIgnore,
+  publicRightOfWayKeysToIgnore,
+  reinstatementCategoryKeysToIgnore,
+  specialDesignationKeysToIgnore,
+  streetDescriptorKeysToIgnore,
+  successorCrossRefKeysToIgnore,
+} from "./../utils/ObjectComparison";
 import { HasASD } from "../configuration/ADSConfig";
 
 import { useEditConfirmation } from "../pages/EditConfirmationPage";
@@ -385,17 +401,6 @@ function StreetDataForm({ data, loading }) {
   };
 
   /**
-   * Enables or disables the save button.
-   *
-   * @param {boolean} disabled If true the button is disabled; otherwise it is enabled.
-   */
-  const updateSaveButton = (disabled) => {
-    setSaveDisabled(disabled);
-    streetContext.onStreetModified(!disabled);
-    if (!disabled) mapContext.onSetCoordinate(null);
-  };
-
-  /**
    * Update the internal streetData variable with the new data.
    *
    * @param {object|null} newStreetData The new street data to update the streetData variable with.
@@ -403,7 +408,6 @@ function StreetDataForm({ data, loading }) {
   const updateStreetData = (newStreetData) => {
     setStreetData(newStreetData);
     sandboxContext.onSandboxChange("currentStreet", newStreetData);
-    updateSaveButton(false);
   };
 
   /**
@@ -416,7 +420,6 @@ function StreetDataForm({ data, loading }) {
     setStreetData(newStreetData);
     clearingType.current = clearType;
     sandboxContext.onUpdateAndClear("currentStreet", newStreetData, clearType);
-    updateSaveButton(false);
   };
 
   /**
@@ -4263,7 +4266,6 @@ function StreetDataForm({ data, loading }) {
               setSaveOpen(true);
             }
           } else if (result === "discard") {
-            updateSaveButton(true);
             saveResult.current = true;
             ResetContexts("street", true, mapContext, streetContext, propertyContext, sandboxContext);
             if (streetContext.currentStreet.newStreet) {
@@ -4336,7 +4338,6 @@ function StreetDataForm({ data, loading }) {
         currentStreetAsdData.current = null;
         streetContext.onEsuDividedMerged(false);
 
-        updateSaveButton(true);
         saveResult.current = true;
         setSaveOpen(true);
       } else {
@@ -4347,20 +4348,11 @@ function StreetDataForm({ data, loading }) {
   }
 
   /**
-   * Event to handle when the associated record data has been changed.
-   *
-   */
-  const handleAssociatedRecordDataChanged = () => {
-    updateSaveButton(false);
-  };
-
-  /**
    * Event to handle when the ESU record data has been changed.
    *
    */
   const handleEsuDataChanged = () => {
     esuChanged.current = true;
-    updateSaveButton(false);
   };
 
   /**
@@ -4405,18 +4397,7 @@ function StreetDataForm({ data, loading }) {
     switch (action) {
       case "check":
         const dataHasChanged =
-          currentData.pkId < 0 ||
-          !ObjectComparison(srcData, currentData, [
-            "changeType",
-            "locality",
-            "town",
-            "island",
-            "administrativeArea",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ]);
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, streetDescriptorKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -4425,7 +4406,6 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updateDescriptorData(currentData);
-                  updateSaveButton(false);
                   handleDescriptorSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -4448,7 +4428,6 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updateDescriptorData(currentData);
-          updateSaveButton(false);
           handleDescriptorSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -4475,21 +4454,7 @@ function StreetDataForm({ data, loading }) {
   const handleEsuValidateData = (srcData, currentData) => {
     if (!currentData) return true;
 
-    const dataHasChanged =
-      currentData.pkId < 0 ||
-      !ObjectComparison(srcData, currentData, [
-        "changeType",
-        "highwayDedications",
-        "oneWayExemptions",
-        "esuVersionNumber",
-        "numCoordCount",
-        "esuEntryDate",
-        "esuLastUpdateDate",
-        "esuEndDate",
-        "insertedTimestamp",
-        "insertedUser",
-        "lastUser",
-      ]);
+    const dataHasChanged = currentData.pkId < 0 || !ObjectComparison(srcData, currentData, esuKeysToIgnore);
 
     if (dataHasChanged) {
       if (streetContext.validateData()) {
@@ -4562,21 +4527,7 @@ function StreetDataForm({ data, loading }) {
 
     switch (action) {
       case "check":
-        const dataHasChanged =
-          currentData.pkId < 0 ||
-          !ObjectComparison(srcData, currentData, [
-            "changeType",
-            "highwayDedications",
-            "oneWayExemptions",
-            "esuVersionNumber",
-            "numCoordCount",
-            "esuEntryDate",
-            "esuLastUpdateDate",
-            "esuEndDate",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ]);
+        const dataHasChanged = currentData.pkId < 0 || !ObjectComparison(srcData, currentData, esuKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -4586,7 +4537,6 @@ function StreetDataForm({ data, loading }) {
                   failedValidation.current = false;
                   esuChanged.current = false;
                   updateEsuData(currentData);
-                  updateSaveButton(false);
                   handleEsuSelected(-1, null, null);
                 } else {
                   failedValidation.current = true;
@@ -4611,7 +4561,6 @@ function StreetDataForm({ data, loading }) {
           failedValidation.current = false;
           esuChanged.current = false;
           updateEsuData(currentData);
-          updateSaveButton(false);
           handleEsuSelected(-1, null, null);
         } else {
           failedValidation.current = true;
@@ -4651,14 +4600,7 @@ function StreetDataForm({ data, loading }) {
     switch (action) {
       case "check":
         const dataHasChanged =
-          currentData.pkId < 0 ||
-          !ObjectComparison(srcData, currentData, [
-            "changeType",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ]);
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, highwayDedicationKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -4667,7 +4609,6 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updateHighwayDedicationData(currentData);
-                  updateSaveButton(false);
                   if (currentEsuFormData.current) resetEsuData();
                   else handleEsuSelected(-1, null, null);
                 } else {
@@ -4693,7 +4634,6 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updateHighwayDedicationData(currentData);
-          updateSaveButton(false);
           if (currentEsuFormData.current) resetEsuData();
           else handleEsuSelected(-1, null, null);
         } else {
@@ -4734,14 +4674,7 @@ function StreetDataForm({ data, loading }) {
     switch (action) {
       case "check":
         const dataHasChanged =
-          currentData.pkId < 0 ||
-          !ObjectComparison(srcData, currentData, [
-            "changeType",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ]);
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, oneWayExemptionKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -4750,7 +4683,6 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updateOneWayExemptionData(currentData);
-                  updateSaveButton(false);
                   if (currentEsuFormData.current) resetEsuData();
                   else handleEsuSelected(-1, null, null);
                 } else {
@@ -4776,7 +4708,6 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updateOneWayExemptionData(currentData);
-          updateSaveButton(false);
           if (currentEsuFormData.current) resetEsuData();
           else handleEsuSelected(-1, null, null);
         } else {
@@ -4836,7 +4767,7 @@ function StreetDataForm({ data, loading }) {
     switch (action) {
       case "check":
         const dataHasChanged =
-          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, ["changeType", "entryDate", "id", "pkId"]);
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, successorCrossRefKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -4845,7 +4776,6 @@ function StreetDataForm({ data, loading }) {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   updateSuccessorCrossRefData(currentData);
-                  updateSaveButton(false);
                   handleSuccessorCrossRefSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -4868,7 +4798,6 @@ function StreetDataForm({ data, loading }) {
         if (propertyContext.validateData()) {
           failedValidation.current = false;
           updateSuccessorCrossRefData(currentData);
-          updateSaveButton(false);
           handleSuccessorCrossRefSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -4929,16 +4858,7 @@ function StreetDataForm({ data, loading }) {
     switch (action) {
       case "check":
         const dataHasChanged =
-          currentData.pkId < 0 ||
-          !ObjectComparison(srcData, currentData, [
-            "changeType",
-            "recordEntryDate",
-            "recordEndDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ]);
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, maintenanceResponsibilityKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -4947,7 +4867,6 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updateMaintenanceResponsibilityData(currentData);
-                  updateSaveButton(false);
                   handleAsdHomeClick();
                 } else {
                   failedValidation.current = true;
@@ -4971,7 +4890,6 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updateMaintenanceResponsibilityData(currentData);
-          updateSaveButton(false);
           handleAsdHomeClick();
         } else {
           failedValidation.current = true;
@@ -5033,17 +4951,7 @@ function StreetDataForm({ data, loading }) {
     switch (action) {
       case "check":
         const dataHasChanged =
-          currentData.pkId < 0 ||
-          !ObjectComparison(srcData, currentData, [
-            "changeType",
-            "neverExport",
-            "endDate",
-            "lastUpdateDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ]);
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, reinstatementCategoryKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -5052,7 +4960,6 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updateReinstatementCategoryData(currentData);
-                  updateSaveButton(false);
                   handleAsdHomeClick();
                 } else {
                   failedValidation.current = true;
@@ -5076,7 +4983,6 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updateReinstatementCategoryData(currentData);
-          updateSaveButton(false);
           handleAsdHomeClick();
         } else {
           failedValidation.current = true;
@@ -5136,17 +5042,7 @@ function StreetDataForm({ data, loading }) {
     switch (action) {
       case "check":
         const dataHasChanged =
-          currentData.pkId < 0 ||
-          !ObjectComparison(srcData, currentData, [
-            "changeType",
-            "neverExport",
-            "endDate",
-            "lastUpdateDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ]);
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, specialDesignationKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -5155,7 +5051,6 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updateOSSpecialDesignationData(currentData);
-                  updateSaveButton(false);
                   handleAsdHomeClick();
                 } else {
                   failedValidation.current = true;
@@ -5179,7 +5074,6 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updateOSSpecialDesignationData(currentData);
-          updateSaveButton(false);
           handleAsdHomeClick();
         } else {
           failedValidation.current = true;
@@ -5238,17 +5132,7 @@ function StreetDataForm({ data, loading }) {
 
     switch (action) {
       case "check":
-        const dataHasChanged =
-          currentData.pkId < 0 ||
-          !ObjectComparison(srcData, currentData, [
-            "changeType",
-            "recordEntryDate",
-            "recordEndDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ]);
+        const dataHasChanged = currentData.pkId < 0 || !ObjectComparison(srcData, currentData, interestKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -5257,7 +5141,6 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updateInterestData(currentData);
-                  updateSaveButton(false);
                   handleAsdHomeClick();
                 } else {
                   failedValidation.current = true;
@@ -5281,7 +5164,6 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updateInterestData(currentData);
-          updateSaveButton(false);
           handleAsdHomeClick();
         } else {
           failedValidation.current = true;
@@ -5341,17 +5223,7 @@ function StreetDataForm({ data, loading }) {
     switch (action) {
       case "check":
         const dataHasChanged =
-          currentData.pkId < 0 ||
-          !ObjectComparison(srcData, currentData, [
-            "changeType",
-            "neverExport",
-            "endDate",
-            "lastUpdateDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ]);
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, constructionKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -5360,7 +5232,6 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updateConstructionData(currentData);
-                  updateSaveButton(false);
                   handleAsdHomeClick();
                 } else {
                   failedValidation.current = true;
@@ -5384,7 +5255,6 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updateConstructionData(currentData);
-          updateSaveButton(false);
           handleAsdHomeClick();
         } else {
           failedValidation.current = true;
@@ -5444,17 +5314,7 @@ function StreetDataForm({ data, loading }) {
     switch (action) {
       case "check":
         const dataHasChanged =
-          currentData.pkId < 0 ||
-          !ObjectComparison(srcData, currentData, [
-            "changeType",
-            "neverExport",
-            "endDate",
-            "lastUpdateDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ]);
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, specialDesignationKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -5463,7 +5323,6 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updateSpecialDesignationData(currentData);
-                  updateSaveButton(false);
                   handleAsdHomeClick();
                 } else {
                   failedValidation.current = true;
@@ -5487,7 +5346,6 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updateSpecialDesignationData(currentData);
-          updateSaveButton(false);
           handleAsdHomeClick();
         } else {
           failedValidation.current = true;
@@ -5547,15 +5405,7 @@ function StreetDataForm({ data, loading }) {
     switch (action) {
       case "check":
         const dataHasChanged =
-          currentData.pkId < 0 ||
-          !ObjectComparison(srcData, currentData, [
-            "changeType",
-            "neverExport",
-            "endDate",
-            "lastUpdateDate",
-            "lastUpdated",
-            "lastUser",
-          ]);
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, heightWidthWeightKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -5564,7 +5414,6 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updateHWWData(currentData);
-                  updateSaveButton(false);
                   handleAsdHomeClick();
                 } else {
                   failedValidation.current = true;
@@ -5588,7 +5437,6 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updateHWWData(currentData);
-          updateSaveButton(false);
           handleAsdHomeClick();
         } else {
           failedValidation.current = true;
@@ -5648,17 +5496,7 @@ function StreetDataForm({ data, loading }) {
     switch (action) {
       case "check":
         const dataHasChanged =
-          currentData.pkId < 0 ||
-          !ObjectComparison(srcData, currentData, [
-            "changeType",
-            "neverExport",
-            "endDate",
-            "lastUpdateDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ]);
+          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, publicRightOfWayKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -5667,7 +5505,6 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updatePRoWData(currentData);
-                  updateSaveButton(false);
                   handleAsdHomeClick();
                 } else {
                   failedValidation.current = true;
@@ -5691,7 +5528,6 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updatePRoWData(currentData);
-          updateSaveButton(false);
           handleAsdHomeClick();
         } else {
           failedValidation.current = true;
@@ -5749,17 +5585,7 @@ function StreetDataForm({ data, loading }) {
 
     switch (action) {
       case "check":
-        const dataHasChanged =
-          currentData.pkId < 0 ||
-          !ObjectComparison(srcData, currentData, [
-            "changeType",
-            "createdDate",
-            "lastUpdatedDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ]);
+        const dataHasChanged = currentData.pkId < 0 || !ObjectComparison(srcData, currentData, noteKeysToIgnore);
 
         if (dataHasChanged) {
           confirmDialog(true)
@@ -5768,7 +5594,6 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updateNoteData(currentData);
-                  updateSaveButton(false);
                   handleNoteSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -5791,7 +5616,6 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updateNoteData(currentData);
-          updateSaveButton(false);
           handleNoteSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -7122,9 +6946,6 @@ function StreetDataForm({ data, loading }) {
       setStreetData(newStreetData);
       streetContext.onCloseStreet(false);
       sandboxContext.onSandboxChange("currentStreet", newStreetData);
-      setSaveDisabled(false);
-      streetContext.onStreetModified(true);
-      mapContext.onSetCoordinate(null);
     }
   }, [streetContext, streetData, sandboxContext, mapContext, settingsContext.isScottish]);
 
@@ -7219,8 +7040,6 @@ function StreetDataForm({ data, loading }) {
   useEffect(() => {
     const doAfterStep = async () => {
       ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
-      setSaveDisabled(true);
-      streetContext.onStreetModified(false);
       saveResult.current = true;
       switch (streetContext.leavingStreet.why) {
         case "createStreet":
@@ -8696,9 +8515,6 @@ function StreetDataForm({ data, loading }) {
           default:
             break;
         }
-
-        streetContext.onStreetModified(true);
-        setSaveDisabled(false);
       }
     }
   }, [
@@ -9127,8 +8943,6 @@ function StreetDataForm({ data, loading }) {
       setStreetData(newStreetData);
       clearingType.current = "esu";
       sandboxContext.onUpdateAndClear("currentStreet", newStreetData, "esu");
-      setSaveDisabled(false);
-      streetContext.onStreetModified(true);
     }
   }, [
     mapContext.currentStreetStart,
@@ -9397,8 +9211,6 @@ function StreetDataForm({ data, loading }) {
           setStreetData(newEsuStreetData.streetData);
           clearingType.current = "esu";
           sandboxContext.onUpdateAndClear("currentStreet", newEsuStreetData.streetData, "esu");
-          setSaveDisabled(false);
-          streetContext.onStreetModified(true);
           mapContext.onHighlightClear();
           mapContext.onEditMapObject(null, null);
 
@@ -9710,8 +9522,6 @@ function StreetDataForm({ data, loading }) {
           setStreetData(newEsuStreetData.streetData);
           clearingType.current = "esu";
           sandboxContext.onUpdateAndClear("currentStreet", newEsuStreetData.streetData, "esu");
-          setSaveDisabled(false);
-          streetContext.onStreetModified(true);
           streetContext.onMergedEsus(null, null, null);
           mapContext.onHighlightClear();
           mapContext.onEditMapObject(null, null);
@@ -9787,8 +9597,6 @@ function StreetDataForm({ data, loading }) {
         setStreetData(newEsuStreetData.streetData);
         clearingType.current = "esu";
         sandboxContext.onUpdateAndClear("currentStreet", newEsuStreetData.streetData, "esu");
-        setSaveDisabled(false);
-        streetContext.onStreetModified(true);
         streetContext.onUnassignEsus(null);
         mapContext.onHighlightClear();
         mapContext.onEditMapObject(null, null);
@@ -9862,8 +9670,6 @@ function StreetDataForm({ data, loading }) {
               setStreetData(newEsuStreetData.streetData);
               clearingType.current = "esu";
               sandboxContext.onUpdateAndClear("currentStreet", newEsuStreetData.streetData, "esu");
-              setSaveDisabled(false);
-              streetContext.onStreetModified(true);
               mapContext.onHighlightClear();
               mapContext.onEditMapObject(null, null);
 
@@ -9917,8 +9723,6 @@ function StreetDataForm({ data, loading }) {
             setStreetData(newEsuStreetData.streetData);
             clearingType.current = "esu";
             sandboxContext.onUpdateAndClear("currentStreet", newEsuStreetData.streetData, "esu");
-            setSaveDisabled(false);
-            streetContext.onStreetModified(true);
             mapContext.onHighlightClear();
 
             alertType.current = "assignEsus";
@@ -10074,6 +9878,13 @@ function StreetDataForm({ data, loading }) {
     searchContext.currentSearchData.results,
     settingsContext.isScottish,
   ]);
+
+  useEffect(() => {
+    const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
+    setSaveDisabled(!streetChanged);
+    streetContext.onStreetModified(streetChanged);
+    if (streetChanged) mapContext.onSetCoordinate(null);
+  }, [streetContext, sandboxContext.currentSandbox, mapContext]);
 
   const tabStyleFullWidth = {
     ...tabStyle,
@@ -10337,7 +10148,6 @@ function StreetDataForm({ data, loading }) {
             errors={descriptorErrors && descriptorErrors.filter((x) => x.index === descriptorFormData.index)}
             loading={loading}
             focusedField={descriptorFocusedField}
-            onDataChanged={handleAssociatedRecordDataChanged}
             onHomeClick={(action, srcData, currentData) => handleDescriptorHomeClick(action, srcData, currentData)}
           />
         ) : (
@@ -10367,7 +10177,6 @@ function StreetDataForm({ data, loading }) {
             }
             loading={loading}
             focusedField={highwayDedicationFocusedField}
-            onDataChanged={handleAssociatedRecordDataChanged}
             onHomeClick={(action, srcData, currentData) =>
               handleHighwayDedicationHomeClick(action, srcData, currentData)
             }
@@ -10383,7 +10192,6 @@ function StreetDataForm({ data, loading }) {
             }
             loading={loading}
             focusedField={oneWayExemptionFocusedField}
-            onDataChanged={handleAssociatedRecordDataChanged}
             onHomeClick={(action, srcData, currentData) => handleOneWayExemptionHomeClick(action, srcData, currentData)}
             onAdd={(esuId, esuIndex) => handleAddOneWayExemption(esuId, esuIndex)}
             onDelete={(esuId, pkId) => handleOneWayExceptionDeleted(esuId, pkId)}
@@ -10448,7 +10256,6 @@ function StreetDataForm({ data, loading }) {
               }
               loading={loading}
               focusedField={successorCrossRefFocusedField}
-              onDataChanged={handleAssociatedRecordDataChanged}
               onHomeClick={(action, srcData, currentData) =>
                 handleSuccessorCrossRefHomeClick(action, srcData, currentData)
               }
@@ -10502,7 +10309,6 @@ function StreetDataForm({ data, loading }) {
                 }
                 loading={loading}
                 focusedField={maintenanceResponsibilityFocusedField}
-                onDataChanged={handleAssociatedRecordDataChanged}
                 onHomeClick={(action, srcData, currentData) =>
                   handleMaintenanceResponsibilityHomeClick(action, srcData, currentData)
                 }
@@ -10518,7 +10324,6 @@ function StreetDataForm({ data, loading }) {
                 }
                 loading={loading}
                 focusedField={reinstatementCategoryFocusedField}
-                onDataChanged={handleAssociatedRecordDataChanged}
                 onHomeClick={(action, srcData, currentData) =>
                   handleReinstatementCategoryHomeClick(action, srcData, currentData)
                 }
@@ -10534,7 +10339,6 @@ function StreetDataForm({ data, loading }) {
                 }
                 loading={loading}
                 focusedField={osSpecialDesignationFocusedField}
-                onDataChanged={handleAssociatedRecordDataChanged}
                 onHomeClick={(action, srcData, currentData) =>
                   handleOSSpecialDesignationHomeClick(action, srcData, currentData)
                 }
@@ -10547,7 +10351,6 @@ function StreetDataForm({ data, loading }) {
                 errors={interestErrors && interestErrors.filter((x) => x.index === interestFormData.index)}
                 loading={loading}
                 focusedField={interestFocusedField}
-                onDataChanged={handleAssociatedRecordDataChanged}
                 onHomeClick={(action, srcData, currentData) => handleInterestHomeClick(action, srcData, currentData)}
                 onAdd={handleAddInterest}
                 onDelete={(pkId) => handleInterestedDeleted(pkId)}
@@ -10558,7 +10361,6 @@ function StreetDataForm({ data, loading }) {
                 errors={constructionErrors && constructionErrors.filter((x) => x.index === constructionFormData.index)}
                 loading={loading}
                 focusedField={constructionFocusedField}
-                onDataChanged={handleAssociatedRecordDataChanged}
                 onHomeClick={(action, srcData, currentData) =>
                   handleConstructionHomeClick(action, srcData, currentData)
                 }
@@ -10574,7 +10376,6 @@ function StreetDataForm({ data, loading }) {
                 }
                 loading={loading}
                 focusedField={specialDesignationFocusedField}
-                onDataChanged={handleAssociatedRecordDataChanged}
                 onHomeClick={(action, srcData, currentData) =>
                   handleSpecialDesignationHomeClick(action, srcData, currentData)
                 }
@@ -10587,7 +10388,6 @@ function StreetDataForm({ data, loading }) {
                 errors={heightWidthWeightErrors && heightWidthWeightErrors.filter((x) => x.index === hwwFormData.index)}
                 loading={loading}
                 focusedField={heightWidthWeightFocusedField}
-                onDataChanged={handleAssociatedRecordDataChanged}
                 onHomeClick={(action, srcData, currentData) => handleHWWHomeClick(action, srcData, currentData)}
                 onAdd={handleAddHeightWidthWeight}
                 onDelete={(pkId) => handleHWWDeleted(pkId)}
@@ -10598,7 +10398,6 @@ function StreetDataForm({ data, loading }) {
                 errors={publicRightOfWayErrors && publicRightOfWayErrors.filter((x) => x.index === prowFormData.index)}
                 loading={loading}
                 focusedField={publicRightOfWayFocusedField}
-                onDataChanged={handleAssociatedRecordDataChanged}
                 onHomeClick={(action, srcData, currentData) => handlePRoWHomeClick(action, srcData, currentData)}
                 onAdd={handleAddPublicRightOfWay}
                 onDelete={(pkId) => handlePRoWDeleted(pkId)}
@@ -10663,7 +10462,6 @@ function StreetDataForm({ data, loading }) {
                 errors={noteErrors && noteErrors.filter((x) => x.index === notesFormData.index)}
                 loading={loading}
                 focusedField={noteFocusedField}
-                onDataChanged={handleAssociatedRecordDataChanged}
                 onDelete={(pkId) => handleDeleteNote(pkId)}
                 onHomeClick={(action, srcData, currentData) => handleNoteHomeClick(action, srcData, currentData)}
               />
@@ -10700,7 +10498,6 @@ function StreetDataForm({ data, loading }) {
                 errors={noteErrors && noteErrors.filter((x) => x.index === notesFormData.index)}
                 loading={loading}
                 focusedField={noteFocusedField}
-                onDataChanged={handleAssociatedRecordDataChanged}
                 onHomeClick={(action, srcData, currentData) => handleNoteHomeClick(action, srcData, currentData)}
               />
             ) : (

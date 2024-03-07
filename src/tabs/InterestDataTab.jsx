@@ -31,6 +31,7 @@
 //    018   13.02.24 Sean Flook                 Updated to new colour.
 //    019   14.02.24 Joel Benford     IMANN-299 Toolbar changes
 //    020   04.03.24 Sean Flook            COL3 Changed the colour for type 51/61 ASD records.
+//    021   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -48,7 +49,7 @@ import StreetContext from "../context/streetContext";
 
 import { GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
 import { filteredOperationalDistricts } from "../utils/StreetUtils";
-import ObjectComparison from "../utils/ObjectComparison";
+import ObjectComparison, { interestKeysToIgnore } from "../utils/ObjectComparison";
 
 import { Avatar, Typography, Popper } from "@mui/material";
 import { Box, Stack } from "@mui/system";
@@ -76,13 +77,12 @@ InterestDataTab.propTypes = {
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 
-function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, onHomeClick, onAdd, onDelete }) {
+function InterestDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, onDelete }) {
   const theme = useTheme();
 
   const lookupContext = useContext(LookupContext);
@@ -148,10 +148,6 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
    */
   const handleStreetStatusChangeEvent = (newValue) => {
     setStreetStatus(newValue);
-    if (!dataChanged) {
-      setDataChanged(streetStatus !== newValue);
-      if (onDataChanged && streetStatus !== newValue) onDataChanged();
-    }
     UpdateSandbox("streetStatus", newValue);
   };
 
@@ -162,10 +158,6 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
    */
   const handleInterestedOrganisationChangeEvent = (newValue) => {
     setInterestedOrganisation(newValue);
-    if (!dataChanged) {
-      setDataChanged(interestedOrganisation !== newValue);
-      if (onDataChanged && interestedOrganisation !== newValue) onDataChanged();
-    }
     UpdateSandbox("interestedOrganisation", newValue);
   };
 
@@ -176,10 +168,6 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
    */
   const handleInterestTypeChangeEvent = (newValue) => {
     setInterestedType(newValue);
-    if (!dataChanged) {
-      setDataChanged(interestType !== newValue);
-      if (onDataChanged && interestType !== newValue) onDataChanged();
-    }
     UpdateSandbox("interestType", newValue);
   };
 
@@ -190,10 +178,6 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
    */
   const handleDistrictChangeEvent = (newValue) => {
     setDistrict(newValue);
-    if (!dataChanged) {
-      setDataChanged(district !== newValue);
-      if (onDataChanged && district !== newValue) onDataChanged();
-    }
     UpdateSandbox("district", newValue);
   };
 
@@ -204,10 +188,6 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
    */
   const handleMaintainingOrganisationChangeEvent = (newValue) => {
     setMaintainingOrganisation(newValue);
-    if (!dataChanged) {
-      setDataChanged(maintainingOrganisation !== newValue);
-      if (onDataChanged && maintainingOrganisation !== newValue) onDataChanged();
-    }
     UpdateSandbox("maintainingOrganisation", newValue);
   };
 
@@ -218,10 +198,6 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
    */
   const handleStartDateChangeEvent = (newValue) => {
     setStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(startDate !== newValue);
-      if (onDataChanged && startDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("startDate", newValue);
   };
 
@@ -232,10 +208,6 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
    */
   const handleEndDateChangeEvent = (newValue) => {
     setEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(endDate !== newValue);
-      if (onDataChanged && endDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("endDate", newValue);
   };
 
@@ -249,10 +221,6 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
       setShowWholeRoadWarning(true);
     } else {
       setWholeRoad(newValue);
-      if (!dataChanged) {
-        setDataChanged(wholeRoad !== newValue);
-        if (onDataChanged && wholeRoad !== newValue) onDataChanged();
-      }
       UpdateSandbox("wholeRoad", newValue);
       if (newValue) {
         mapContext.onEditMapObject(null, null);
@@ -271,10 +239,6 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
    */
   const handleSpecificLocationChangeEvent = (newValue) => {
     setSpecificLocation(newValue);
-    if (!dataChanged) {
-      setDataChanged(specificLocation !== newValue);
-      if (onDataChanged && specificLocation !== newValue) onDataChanged();
-    }
     UpdateSandbox("specificLocation", newValue);
   };
 
@@ -288,12 +252,10 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
         : null;
 
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          dataChanged ? (sandboxContext.currentSandbox.currentStreetRecords.interest ? "check" : "discard") : "discard",
-          sourceInterest,
-          sandboxContext.currentSandbox.currentStreetRecords.interest
-        )
+      onHomeClick(
+        dataChanged ? (sandboxContext.currentSandbox.currentStreetRecords.interest ? "check" : "discard") : "discard",
+        sourceInterest,
+        sandboxContext.currentSandbox.currentStreetRecords.interest
       );
   };
 
@@ -301,8 +263,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
    * Event to handle when the OK button is clicked.
    */
   const handleOkClicked = () => {
-    if (onHomeClick)
-      setDataChanged(onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.interest));
+    if (onHomeClick) onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.interest);
   };
 
   /**
@@ -326,7 +287,6 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
         setEndY(data.interestData.endY ? data.interestData.endY : 0);
       }
     }
-    setDataChanged(false);
     if (onHomeClick) onHomeClick("discard", data.interestData, null);
   };
 
@@ -372,7 +332,6 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
    */
   const handleAddInterest = () => {
     if (onAdd) onAdd();
-    if (!dataChanged) setDataChanged(true);
   };
 
   /**
@@ -406,10 +365,6 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
   const handleCloseMessageDialog = (action) => {
     if (action === "continue") {
       setWholeRoad(true);
-      if (!dataChanged) {
-        setDataChanged(!wholeRoad);
-        if (onDataChanged && !wholeRoad) onDataChanged();
-      }
       UpdateSandbox("wholeRoad", true);
 
       mapContext.onEditMapObject(null, null);
@@ -447,24 +402,22 @@ function InterestDataTab({ data, errors, loading, focusedField, onDataChanged, o
   }, [wholeRoad, informationContext]);
 
   useEffect(() => {
-    if (sandboxContext.currentSandbox.sourceStreet && data && data.interestData) {
-      const sourceInterest = sandboxContext.currentSandbox.sourceStreet.interests.find((x) => x.pkId === data.id);
+    if (sandboxContext.currentSandbox.sourceStreet && sandboxContext.currentSandbox.currentStreetRecords.interest) {
+      const sourceInterest = sandboxContext.currentSandbox.sourceStreet.interests.find(
+        (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.interest.pkId
+      );
 
       if (sourceInterest) {
         setDataChanged(
-          !ObjectComparison(sourceInterest, data.interestData, [
-            "changeType",
-            "recordEntryDate",
-            "recordEndDate",
-            "lastUpdated",
-            "insertedTimestamp",
-            "insertedUser",
-            "lastUser",
-          ])
+          !ObjectComparison(
+            sourceInterest,
+            sandboxContext.currentSandbox.currentStreetRecords.interest,
+            interestKeysToIgnore
+          )
         );
-      } else if (data.pkId < 0) setDataChanged(true);
+      } else if (sandboxContext.currentSandbox.currentStreetRecords.interest.pkId < 0) setDataChanged(true);
     }
-  }, [sandboxContext.currentSandbox.sourceStreet, data]);
+  }, [sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreetRecords.interest]);
 
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);

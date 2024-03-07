@@ -27,6 +27,7 @@
 //    014   07.02.24 Sean Flook                 Display a warning dialog when changing from Part Road to Whole Road.
 //    015   13.02.24 Sean Flook                 Set the ADSWholeRoadControl variant.
 //    016   20.02.24 Joel Benford     IMANN-299 Toolbar changes
+//    017   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -44,7 +45,7 @@ import StreetContext from "../context/streetContext";
 
 import { GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
 import { filteredOperationalDistricts } from "../utils/StreetUtils";
-import ObjectComparison from "../utils/ObjectComparison";
+import ObjectComparison, { heightWidthWeightKeysToIgnore } from "../utils/ObjectComparison";
 
 import SwaOrgRef from "../data/SwaOrgRef";
 import HWWDesignationCode from "./../data/HWWDesignationCode";
@@ -72,13 +73,12 @@ HWWDataTab.propTypes = {
   errors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 
-function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHomeClick, onAdd, onDelete }) {
+function HWWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, onDelete }) {
   const theme = useTheme();
 
   const lookupContext = useContext(LookupContext);
@@ -147,10 +147,6 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
    */
   const handleRestrictionCodeChangeEvent = (newValue) => {
     setRestrictionCode(newValue);
-    if (!dataChanged) {
-      setDataChanged(restrictionCode !== newValue);
-      if (onDataChanged && restrictionCode !== newValue) onDataChanged();
-    }
     UpdateSandbox("restrictionCode", newValue);
   };
 
@@ -161,10 +157,6 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
    */
   const handleValueMetricChangeEvent = (newValue) => {
     setValueMetric(newValue);
-    if (!dataChanged) {
-      setDataChanged(valueMetric !== newValue);
-      if (onDataChanged && valueMetric !== newValue) onDataChanged();
-    }
     UpdateSandbox("valueMetric", newValue);
   };
 
@@ -175,10 +167,6 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
    */
   const handleTroTextChangeEvent = (newValue) => {
     setTroText(newValue);
-    if (!dataChanged) {
-      setDataChanged(troText !== newValue);
-      if (onDataChanged && troText !== newValue) onDataChanged();
-    }
     UpdateSandbox("troText", newValue);
   };
 
@@ -189,10 +177,6 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
    */
   const handleFeatureDescriptionChangeEvent = (newValue) => {
     setFeatureDescription(newValue);
-    if (!dataChanged) {
-      setDataChanged(featureDescription !== newValue);
-      if (onDataChanged && featureDescription !== newValue) onDataChanged();
-    }
     UpdateSandbox("featureDescription", newValue);
   };
 
@@ -203,10 +187,6 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
    */
   const handleSourceChangeEvent = (newValue) => {
     setSource(newValue);
-    if (!dataChanged) {
-      setDataChanged(source !== newValue);
-      if (onDataChanged && source !== newValue) onDataChanged();
-    }
     UpdateSandbox("source", newValue);
   };
 
@@ -217,10 +197,6 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
    */
   const handleOrganisationChangeEvent = (newValue) => {
     setOrganisation(newValue);
-    if (!dataChanged) {
-      setDataChanged(organisation !== newValue);
-      if (onDataChanged && organisation !== newValue) onDataChanged();
-    }
     UpdateSandbox("organisation", newValue);
   };
 
@@ -231,10 +207,6 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
    */
   const handleDistrictChangeEvent = (newValue) => {
     setDistrict(newValue);
-    if (!dataChanged) {
-      setDataChanged(district !== newValue);
-      if (onDataChanged && district !== newValue) onDataChanged();
-    }
     UpdateSandbox("district", newValue);
   };
 
@@ -245,10 +217,6 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
    */
   const handleStartDateChangeEvent = (newValue) => {
     setStartDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(startDate !== newValue);
-      if (onDataChanged && startDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("startDate", newValue);
   };
 
@@ -259,10 +227,6 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
    */
   const handleEndDateChangeEvent = (newValue) => {
     setEndDate(newValue);
-    if (!dataChanged) {
-      setDataChanged(endDate !== newValue);
-      if (onDataChanged && endDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("endDate", newValue);
   };
 
@@ -276,10 +240,6 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
       setShowWholeRoadWarning(true);
     } else {
       setWholeRoad(newValue);
-      if (!dataChanged) {
-        setDataChanged(wholeRoad !== newValue);
-        if (onDataChanged && wholeRoad !== newValue) onDataChanged();
-      }
       UpdateSandbox("wholeRoad", newValue);
       if (newValue) {
         mapContext.onEditMapObject(null, null);
@@ -298,10 +258,6 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
    */
   const handleSpecifyLocationChangeEvent = (newValue) => {
     setSpecificLocation(newValue);
-    if (!dataChanged) {
-      setDataChanged(specificLocation !== newValue);
-      if (onDataChanged && specificLocation !== newValue) onDataChanged();
-    }
     UpdateSandbox("specificLocation", newValue);
   };
 
@@ -315,12 +271,10 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
         : null;
 
     if (onHomeClick)
-      setDataChanged(
-        onHomeClick(
-          dataChanged ? (sandboxContext.currentSandbox.currentStreetRecords.hww ? "check" : "discard") : "discard",
-          sourceHeightWidthWeight,
-          sandboxContext.currentSandbox.currentStreetRecords.hww
-        )
+      onHomeClick(
+        dataChanged ? (sandboxContext.currentSandbox.currentStreetRecords.hww ? "check" : "discard") : "discard",
+        sourceHeightWidthWeight,
+        sandboxContext.currentSandbox.currentStreetRecords.hww
       );
   };
 
@@ -328,7 +282,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
    * Event to handle when the OK button is clicked.
    */
   const handleOkClicked = () => {
-    if (onHomeClick) setDataChanged(onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.hww));
+    if (onHomeClick) onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.hww);
   };
 
   /**
@@ -354,7 +308,6 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
         setHwwEndY(data.hwwData.hwwEndY ? data.hwwData.hwwEndY : 0);
       }
     }
-    setDataChanged(false);
     if (onHomeClick) onHomeClick("discard", data.hwwData, null);
   };
 
@@ -401,7 +354,6 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
    */
   const handleAddHWW = () => {
     if (onAdd) onAdd();
-    if (!dataChanged) setDataChanged(true);
   };
 
   /**
@@ -435,10 +387,6 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
   const handleCloseMessageDialog = (action) => {
     if (action === "continue") {
       setWholeRoad(true);
-      if (!dataChanged) {
-        setDataChanged(!wholeRoad);
-        if (onDataChanged && !wholeRoad) onDataChanged();
-      }
       UpdateSandbox("wholeRoad", true);
 
       mapContext.onEditMapObject(null, null);
@@ -477,23 +425,22 @@ function HWWDataTab({ data, errors, loading, focusedField, onDataChanged, onHome
   }, [wholeRoad, informationContext]);
 
   useEffect(() => {
-    if (sandboxContext.currentSandbox.sourceStreet && data && data.hwwData) {
-      const sourceHWW = sandboxContext.currentSandbox.sourceStreet.heightWidthWeights.find((x) => x.pkId === data.id);
+    if (sandboxContext.currentSandbox.sourceStreet && sandboxContext.currentSandbox.currentStreetRecords.hww) {
+      const sourceHWW = sandboxContext.currentSandbox.sourceStreet.heightWidthWeights.find(
+        (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.hww.pkId
+      );
 
       if (sourceHWW) {
         setDataChanged(
-          !ObjectComparison(sourceHWW, data.hwwData, [
-            "changeType",
-            "neverExport",
-            "endDate",
-            "lastUpdateDate",
-            "lastUpdated",
-            "lastUser",
-          ])
+          !ObjectComparison(
+            sourceHWW,
+            sandboxContext.currentSandbox.currentStreetRecords.hww,
+            heightWidthWeightKeysToIgnore
+          )
         );
-      } else if (data.pkId < 0) setDataChanged(true);
+      } else if (sandboxContext.currentSandbox.currentStreetRecords.hww.pkId < 0) setDataChanged(true);
     }
-  }, [sandboxContext.currentSandbox.sourceStreet, data]);
+  }, [sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreetRecords.hww]);
 
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
