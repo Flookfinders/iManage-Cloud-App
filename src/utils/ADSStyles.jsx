@@ -30,6 +30,7 @@
 //    017   23.02.24 Joel Benford     IMANN-287 Correct valid-row blue
 //    018   28.02.24 Joshua McCormick IMANN-280 Removed unnecessary height in toolbarStyle 
 //    019   27.02.24 Sean Flook           MUL16 New styles used for parent child.
+//    020   07.03.24 Joshua McCormick  IMANN-280 Added tabContainerStyle to control tab container border and existing styling
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -332,7 +333,6 @@ export const toolbarStyle = {
   borderTop: `1px solid ${adsLightGreyB}`,
   pl: "4px",
   pr: "6px",
-  height: "36px",
   width: "100%",
 };
 
@@ -700,10 +700,18 @@ export const listItemButtonStyle = (selected, isGrid = false) => {
 };
 
 /**
+ * The styling used for tabs container
+ */
+export const tabContainerStyle = {
+  backgroundColor: adsWhite,
+  color: adsMidGreyA,
+  borderBottom: `2px solid ${adsLightGreyB}`,
+};
+
+/**
  * The styling used for tabs.
  */
 export const tabStyle = {
-  borderBottom: `2px solid ${adsLightGreyB}`,
   textTransform: "none",
   minWidth: "45px",
   height: "40px",
@@ -715,7 +723,6 @@ export const tabStyle = {
  * The styling used for template tabs.
  */
 export const templateTabStyle = {
-  borderBottom: `2px solid ${adsLightGreyB}`,
   bottom: "-2px",
   textTransform: "none",
   minWidth: "45px",

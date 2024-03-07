@@ -26,6 +26,7 @@
 //    013   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //    014   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //    015   14.02.24 Sean Flook                 Added a bit of error trapping.
+//    016   07.03.24 Joshua McCormick  IMANN-280 Added tabContainerStyle to tab container
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -51,7 +52,7 @@ import { Box, Stack } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 
 import { adsBlueA, adsWhite } from "../utils/ADSColours";
-import { gridRowStyle, tabStyle, tabLabelStyle, tooltipStyle } from "../utils/ADSStyles";
+import { gridRowStyle, tabContainerStyle, tabStyle, tabLabelStyle, tooltipStyle } from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 
@@ -480,7 +481,7 @@ function ADSHomepageLatestEditsControl({ data }) {
           scrollButtons="auto"
           selectionFollowsFocus
           aria-label="home-page-tabs"
-          sx={{ backgroundColor: adsWhite }}
+          sx={tabContainerStyle}
         >
           {process.env.NODE_ENV === "development" && (
             <Tab

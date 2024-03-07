@@ -46,6 +46,7 @@
 //    033   05.03.24 Sean Flook       IMANN-338 If navigating back to an existing record ensure the form is setup as it was left.
 //    034   05.03.24 Sean Flook       IMANN-338 Added code to ensure the tabs are not kept open when not required any more.
 //    035   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the Save button is correctly enabled.
+//    036   07.03.24 Joshua McCormick IMANN-280 Added tabContainerStyle to tab container, reverted old styling changes from 030
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -125,12 +126,12 @@ import {
   GetAlertSeverity,
   errorIconStyle,
   tabStyle,
+  tabContainerStyle,
   tabLabelStyle,
   getSaveButtonStyle,
   getSaveIcon,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
-
 /* #endregion imports */
 
 function TabPanel(props) {
@@ -4306,12 +4307,6 @@ function PropertyDataForm({ data, loading }) {
     if (propertyChanged) mapContext.onSetCoordinate(null);
   }, [propertyContext, sandboxContext.currentSandbox, mapContext]);
 
-  const tabStyleFullWidth = {
-    ...tabStyle,
-    minWidth: "fit-content",
-    flex: 1,
-  };
-
   return (
     <div id="property-data-form">
       <AppBar position="static" color="default">
@@ -4323,10 +4318,10 @@ function PropertyDataForm({ data, loading }) {
           scrollButtons="auto"
           selectionFollowsFocus
           aria-label="property-tabs"
-          sx={{ backgroundColor: adsWhite, color: adsMidGreyA }}
+          sx={tabContainerStyle}
         >
           <Tab
-            sx={tabStyleFullWidth}
+            sx={tabStyle}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography variant="subtitle2" sx={tabLabelStyle(value === 0)}>
@@ -4341,7 +4336,7 @@ function PropertyDataForm({ data, loading }) {
           />
           {settingsContext.isScottish && (
             <Tab
-              sx={tabStyleFullWidth}
+              sx={tabStyle}
               label={
                 <Stack direction="row" spacing={0.5} alignItems="center">
                   <Typography variant="subtitle2" sx={tabLabelStyle(value === 1)}>
@@ -4374,7 +4369,7 @@ function PropertyDataForm({ data, loading }) {
           )}
           {settingsContext.isScottish && (
             <Tab
-              sx={tabStyleFullWidth}
+              sx={tabStyle}
               label={
                 <Stack direction="row" spacing={0.5} alignItems="center">
                   <Typography variant="subtitle2" sx={tabLabelStyle(value === 2)}>
@@ -4407,7 +4402,7 @@ function PropertyDataForm({ data, loading }) {
           )}
           {settingsContext.isScottish && (
             <Tab
-              sx={tabStyleFullWidth}
+              sx={tabStyle}
               label={
                 <Stack direction="row" spacing={0.5} alignItems="center">
                   <Typography variant="subtitle2" sx={tabLabelStyle(value === 3)}>
@@ -4439,7 +4434,7 @@ function PropertyDataForm({ data, loading }) {
             />
           )}
           <Tab
-            sx={tabStyleFullWidth}
+            sx={tabStyle}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 4 : 1))}>
@@ -4470,7 +4465,7 @@ function PropertyDataForm({ data, loading }) {
             {...a11yProps(settingsContext.isScottish ? 4 : 1)}
           />
           <Tab
-            sx={tabStyleFullWidth}
+            sx={tabStyle}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 5 : 2))}>
@@ -4501,7 +4496,7 @@ function PropertyDataForm({ data, loading }) {
             {...a11yProps(settingsContext.isScottish ? 5 : 2)}
           />
           <Tab
-            sx={tabStyleFullWidth}
+            sx={tabStyle}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 6 : 3))}>
@@ -4524,7 +4519,7 @@ function PropertyDataForm({ data, loading }) {
             {...a11yProps(settingsContext.isScottish ? 6 : 3)}
           />
           <Tab
-            sx={tabStyleFullWidth}
+            sx={tabStyle}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 7 : 4))}>
@@ -4555,7 +4550,7 @@ function PropertyDataForm({ data, loading }) {
             {...a11yProps(settingsContext.isScottish ? 7 : 4)}
           />
           <Tab
-            sx={tabStyleFullWidth}
+            sx={tabStyle}
             label={
               <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 8 : 5))}>
                 History
