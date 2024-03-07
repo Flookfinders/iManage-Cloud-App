@@ -62,6 +62,10 @@
 //    048   06.03.24 Sean Flook       IMANN-344 Ensure the sandbox is cleared when cancelling a new ASD record.
 //    049   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the Save button is correctly enabled.
 //    049   07.03.24 Sean Flook       IMANN-339 Hide the ASD tab if the street type is 3 or 4 for Scottish authorities.
+//    050   07.03.24 Sean Flook       IMANN-339 Hide the ASD tab if the street type is 3 or 4 for Scottish authorities.
+//    051   07.03.24 Joshua McCormick IMANN-280 Added tabContainerStyle to tab container
+//    052   07.03.24 Joel Benford     IMANN-331 Don't default organisation if not set in template
+//    053   07.03.24 Sean Flook       IMANN-348 Further changes required for ESUs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -160,13 +164,14 @@ import { GazetteerRoute } from "../PageRouting";
 import Polyline from "@arcgis/core/geometry/Polyline";
 import * as geometryEngine from "@arcgis/core/geometry/geometryEngine";
 
-import { adsBlueA, adsMidGreyA, adsWhite } from "../utils/ADSColours";
+import { adsBlueA, adsMidGreyA } from "../utils/ADSColours";
 import {
   GetTabIconStyle,
   GetAlertStyle,
   GetAlertIcon,
   GetAlertSeverity,
   errorIconStyle,
+  tabContainerStyle,
   tabStyle,
   tabLabelStyle,
   getSaveButtonStyle,
@@ -244,7 +249,6 @@ function StreetDataForm({ data, loading }) {
   const copyDataType = useRef(null);
   const saveResult = useRef(null);
   const failedValidation = useRef(null);
-  const esuChanged = useRef(false);
   const mergedDividedEsus = useRef([]);
   const clearingType = useRef("");
 
@@ -1734,16 +1738,12 @@ function StreetDataForm({ data, loading }) {
           settingsContext.streetTemplate.scoMaintenanceResponsibilityTemplate &&
           settingsContext.streetTemplate.scoMaintenanceResponsibilityTemplate.custodianCode
             ? settingsContext.streetTemplate.scoMaintenanceResponsibilityTemplate.custodianCode
-            : settingsContext.authorityCode
-            ? settingsContext.authorityCode
             : null,
         maintainingAuthorityCode:
           settingsContext.streetTemplate &&
           settingsContext.streetTemplate.scoMaintenanceResponsibilityTemplate &&
           settingsContext.streetTemplate.scoMaintenanceResponsibilityTemplate.maintainingAuthorityCode
             ? settingsContext.streetTemplate.scoMaintenanceResponsibilityTemplate.maintainingAuthorityCode
-            : settingsContext.authorityCode
-            ? settingsContext.authorityCode
             : null,
         streetStatus:
           settingsContext.streetTemplate &&
@@ -1871,16 +1871,12 @@ function StreetDataForm({ data, loading }) {
           settingsContext.streetTemplate.scoReinstatementCategoryTemplate &&
           settingsContext.streetTemplate.scoReinstatementCategoryTemplate.custodianCode
             ? settingsContext.streetTemplate.scoReinstatementCategoryTemplate.custodianCode
-            : settingsContext.authorityCode
-            ? settingsContext.authorityCode
             : null,
         reinstatementAuthorityCode:
           settingsContext.streetTemplate &&
           settingsContext.streetTemplate.scoReinstatementCategoryTemplate &&
           settingsContext.streetTemplate.scoReinstatementCategoryTemplate.reinstatementAuthorityCode
             ? settingsContext.streetTemplate.scoReinstatementCategoryTemplate.reinstatementAuthorityCode
-            : settingsContext.authorityCode
-            ? settingsContext.authorityCode
             : null,
         reinstatementCategoryCode:
           settingsContext.streetTemplate &&
@@ -2009,16 +2005,12 @@ function StreetDataForm({ data, loading }) {
           settingsContext.streetTemplate.scoSpecialDesignationTemplate &&
           settingsContext.streetTemplate.scoSpecialDesignationTemplate.custodianCode
             ? settingsContext.streetTemplate.scoSpecialDesignationTemplate.custodianCode
-            : settingsContext.authorityCode
-            ? settingsContext.authorityCode
             : null,
         authorityCode:
           settingsContext.streetTemplate &&
           settingsContext.streetTemplate.scoSpecialDesignationTemplate &&
           settingsContext.streetTemplate.scoSpecialDesignationTemplate.authorityCode
             ? settingsContext.streetTemplate.scoSpecialDesignationTemplate.authorityCode
-            : settingsContext.authorityCode
-            ? settingsContext.authorityCode
             : null,
         specialDesig:
           settingsContext.streetTemplate &&
@@ -2143,8 +2135,6 @@ function StreetDataForm({ data, loading }) {
           settingsContext.streetTemplate.interestTemplate &&
           settingsContext.streetTemplate.interestTemplate.swaOrgRefAuthority
             ? settingsContext.streetTemplate.interestTemplate.swaOrgRefAuthority
-            : settingsContext.authorityCode
-            ? settingsContext.authorityCode
             : null,
         districtRefAuthority:
           settingsContext.streetTemplate &&
@@ -2161,8 +2151,6 @@ function StreetDataForm({ data, loading }) {
           settingsContext.streetTemplate.interestTemplate &&
           settingsContext.streetTemplate.interestTemplate.swaOrgRefMaintaining
             ? settingsContext.streetTemplate.interestTemplate.swaOrgRefMaintaining
-            : settingsContext.authorityCode
-            ? settingsContext.authorityCode
             : null,
         streetStatus:
           settingsContext.streetTemplate &&
@@ -2331,8 +2319,6 @@ function StreetDataForm({ data, loading }) {
           settingsContext.streetTemplate.constructionTemplate &&
           settingsContext.streetTemplate.constructionTemplate.swaOrgRefConsultant
             ? settingsContext.streetTemplate.constructionTemplate.swaOrgRefConsultant
-            : settingsContext.authorityCode
-            ? settingsContext.authorityCode
             : null,
         districtRefConsultant:
           settingsContext.streetTemplate &&
@@ -2483,8 +2469,6 @@ function StreetDataForm({ data, loading }) {
           settingsContext.streetTemplate.specialDesignationTemplate &&
           settingsContext.streetTemplate.specialDesignationTemplate.swaOrgRefConsultant
             ? settingsContext.streetTemplate.specialDesignationTemplate.swaOrgRefConsultant
-            : settingsContext.authorityCode
-            ? settingsContext.authorityCode
             : null,
         districtRefConsultant:
           settingsContext.streetTemplate &&
@@ -2629,8 +2613,6 @@ function StreetDataForm({ data, loading }) {
           settingsContext.streetTemplate.heightWidthWeightTemplate &&
           settingsContext.streetTemplate.heightWidthWeightTemplate.swaOrgRefConsultant
             ? settingsContext.streetTemplate.heightWidthWeightTemplate.swaOrgRefConsultant
-            : settingsContext.authorityCode
-            ? settingsContext.authorityCode
             : null,
         districtRefConsultant:
           settingsContext.streetTemplate &&
@@ -2818,8 +2800,6 @@ function StreetDataForm({ data, loading }) {
           settingsContext.streetTemplate.publicRightOfWayTemplate &&
           settingsContext.streetTemplate.publicRightOfWayTemplate.organisation
             ? settingsContext.streetTemplate.publicRightOfWayTemplate.organisation
-            : settingsContext.authorityCode
-            ? settingsContext.authorityCode
             : null,
         prowDistrictRefConsultant:
           settingsContext.streetTemplate &&
@@ -4243,7 +4223,7 @@ function StreetDataForm({ data, loading }) {
    *
    */
   function handleSaveClicked() {
-    const associatedRecords = GetChangedAssociatedRecords("street", sandboxContext, esuChanged.current);
+    const associatedRecords = GetChangedAssociatedRecords("street", sandboxContext, streetContext.esuDataChanged);
 
     const currentStreet = sandboxContext.currentSandbox.currentStreet || sandboxContext.currentSandbox.sourceStreet;
 
@@ -4311,8 +4291,6 @@ function StreetDataForm({ data, loading }) {
         })
         .catch(() => {});
     } else HandleStreetSave(currentStreet);
-
-    esuChanged.current = false;
   }
 
   /**
@@ -4347,14 +4325,6 @@ function StreetDataForm({ data, loading }) {
       }
     });
   }
-
-  /**
-   * Event to handle when the ESU record data has been changed.
-   *
-   */
-  const handleEsuDataChanged = () => {
-    esuChanged.current = true;
-  };
 
   /**
    * Event to handle when a user clicks the home button from the descriptor tab.
@@ -4517,7 +4487,6 @@ function StreetDataForm({ data, loading }) {
       }
 
       failedValidation.current = false;
-      esuChanged.current = false;
       sandboxContext.onSandboxChange("esu", null);
       handleEsuSelected(-1, null, null);
     };
@@ -4536,7 +4505,6 @@ function StreetDataForm({ data, loading }) {
               if (result === "save") {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
-                  esuChanged.current = false;
                   updateEsuData(currentData);
                   handleEsuSelected(-1, null, null);
                 } else {
@@ -4550,7 +4518,6 @@ function StreetDataForm({ data, loading }) {
             })
             .catch(() => {});
         } else {
-          esuChanged.current = false;
           clearingType.current = "esu";
           sandboxContext.onSandboxChange("esu", null);
           handleEsuSelected(-1, null, null);
@@ -4560,7 +4527,6 @@ function StreetDataForm({ data, loading }) {
       case "save":
         if (streetContext.validateData()) {
           failedValidation.current = false;
-          esuChanged.current = false;
           updateEsuData(currentData);
           handleEsuSelected(-1, null, null);
         } else {
@@ -6840,6 +6806,7 @@ function StreetDataForm({ data, loading }) {
       clearingType.current = "";
   }, [sandboxContext.currentSandbox.currentStreetRecords]);
 
+  // Closing a street
   useEffect(() => {
     if (streetContext.streetClosing && streetData && !streetData.streetEndDate) {
       const currentDate = GetCurrentDate(false);
@@ -7094,7 +7061,7 @@ function StreetDataForm({ data, loading }) {
       const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
 
       if (streetChanged) {
-        const associatedRecords = GetChangedAssociatedRecords("street", sandboxContext, esuChanged.current);
+        const associatedRecords = GetChangedAssociatedRecords("street", sandboxContext, streetContext.esuDataChanged);
 
         saveConfirmDialog(associatedRecords.length > 0 ? associatedRecords : true)
           .then((result) => {
@@ -7140,8 +7107,6 @@ function StreetDataForm({ data, loading }) {
           })
           .catch(() => {});
       } else doAfterStep();
-
-      esuChanged.current = false;
 
       streetContext.onLeavingStreet(null, null);
     }
@@ -8474,7 +8439,6 @@ function StreetDataForm({ data, loading }) {
             clearingType.current = "esu";
             sandboxContext.onUpdateAndClear("currentStreet", newStreetData, "esu");
 
-            esuChanged.current = true;
             streetContext.onEsuDataChange(true);
             break;
 
@@ -9891,12 +9855,6 @@ function StreetDataForm({ data, loading }) {
     if (streetChanged) mapContext.onSetCoordinate(null);
   }, [streetContext, sandboxContext.currentSandbox, mapContext]);
 
-  const tabStyleFullWidth = {
-    ...tabStyle,
-    minWidth: "fit-content",
-    flex: 1,
-  };
-
   return (
     <div id="street-data-form">
       <AppBar position="static" color="default">
@@ -9908,10 +9866,10 @@ function StreetDataForm({ data, loading }) {
           scrollButtons="auto"
           selectionFollowsFocus
           aria-label="street-data-tabs"
-          sx={{ backgroundColor: adsWhite, color: adsMidGreyA }}
+          sx={tabContainerStyle}
         >
           <Tab
-            sx={tabStyleFullWidth}
+            sx={tabStyle}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography variant="subtitle2" sx={tabLabelStyle(value === 0)}>
@@ -9925,7 +9883,7 @@ function StreetDataForm({ data, loading }) {
             {...a11yProps(0)}
           />
           <Tab
-            sx={tabStyleFullWidth}
+            sx={tabStyle}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography variant="subtitle2" sx={tabLabelStyle(value === 1)}>
@@ -9959,7 +9917,7 @@ function StreetDataForm({ data, loading }) {
           />
           {settingsContext.isScottish && (
             <Tab
-              sx={tabStyleFullWidth}
+              sx={tabStyle}
               label={
                 <Stack direction="row" spacing={0.5} alignItems="center">
                   <Typography variant="subtitle2" sx={tabLabelStyle(value === 2)}>
@@ -9992,7 +9950,7 @@ function StreetDataForm({ data, loading }) {
           )}
           {HasASD() && streetData && streetData.recordType < (settingsContext.isScottish ? 3 : 4) && (
             <Tab
-              sx={tabStyleFullWidth}
+              sx={tabStyle}
               label={
                 <Stack direction="row" spacing={0.5} alignItems="center">
                   <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 3 : 2))}>
@@ -10068,7 +10026,7 @@ function StreetDataForm({ data, loading }) {
             />
           )}
           <Tab
-            sx={tabStyleFullWidth}
+            sx={tabStyle}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography
@@ -10107,7 +10065,7 @@ function StreetDataForm({ data, loading }) {
             )}
           />
           <Tab
-            sx={tabStyleFullWidth}
+            sx={tabStyle}
             label={
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography
@@ -10158,7 +10116,7 @@ function StreetDataForm({ data, loading }) {
             )}
           />
           <Tab
-            sx={tabStyleFullWidth}
+            sx={tabStyle}
             label={
               <Typography
                 variant="subtitle2"
@@ -10252,7 +10210,6 @@ function StreetDataForm({ data, loading }) {
             hdErrors={highwayDedicationErrors.filter((x) => x.esuIndex === esuFormData.index)}
             loading={loading}
             focusedField={esuFocusedField}
-            onDataChanged={handleEsuDataChanged}
             onValidateData={(srcData, currentData) => handleEsuValidateData(srcData, currentData)}
             onHomeClick={(action, srcData, currentData) => handleEsuHomeClick(action, srcData, currentData)}
             onSetCopyOpen={(open, dataType) => handleCopyOpen(open, dataType)}

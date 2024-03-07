@@ -28,6 +28,7 @@
 //    015   27.02.24 Joshua McCormick IMANN-288 Added back toolbar, now hidden if esuId is negative 
 //    016   27.02.24 Joshua McCormick IMANN-286 Changed highway dedication indicator to appear diamond like, rotated 45 as mui offers no alternative
 //    017   27.02.24 Joshua McCormick IMANN-286 Using clippath instead of rotate 45 for highway dedication indicator
+//    018   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -41,6 +42,8 @@ import StreetContext from "../context/streetContext";
 import SettingsContext from "../context/settingsContext";
 import MapContext from "../context/mapContext";
 import InformationContext from "../context/informationContext";
+
+import ObjectComparison, { esuKeysToIgnore } from "../utils/ObjectComparison";
 
 import {
   Typography,
@@ -77,7 +80,7 @@ import {
   PlanningOrderIcon,
   VehiclesProhibitedIcon,
 } from "../utils/ADSIcons";
-import { copyTextToClipboard, GetLookupLabel, ConvertDate, GetCurrentDate } from "../utils/HelperUtils";
+import { copyTextToClipboard, GetLookupLabel, ConvertDate, GetCurrentDate, ArraysEqual } from "../utils/HelperUtils";
 import ESUDirectionCode from "../data/ESUDirectionCode";
 import ESUTolerance from "../data/ESUTolerance";
 import HighwayDedicationCode from "../data/HighwayDedicationCode";
@@ -110,7 +113,6 @@ EsuDataTab.propTypes = {
   hdErrors: PropTypes.array,
   loading: PropTypes.bool.isRequired,
   focusedField: PropTypes.string,
-  onDataChanged: PropTypes.func.isRequired,
   onValidateData: PropTypes.func.isRequired,
   onHomeClick: PropTypes.func.isRequired,
   onSetCopyOpen: PropTypes.func.isRequired,
@@ -132,7 +134,6 @@ function EsuDataTab({
   loading,
   focusedField,
   onHomeClick,
-  onDataChanged,
   onValidateData,
   onSetCopyOpen,
   onHighwayDedicationClicked,
@@ -215,10 +216,6 @@ function EsuDataTab({
    */
   const handleDirectionChangeEvent = (newValue) => {
     setDirection(newValue);
-    if (!streetContext.esuDataChanged) {
-      streetContext.onEsuDataChange(direction !== newValue);
-      if (onDataChanged && direction !== newValue) onDataChanged();
-    }
     UpdateSandbox("direction", newValue);
   };
 
@@ -229,10 +226,6 @@ function EsuDataTab({
    */
   const handleToleranceChangeEvent = (newValue) => {
     setTolerance(newValue);
-    if (!streetContext.esuDataChanged) {
-      streetContext.onEsuDataChange(tolerance !== newValue);
-      if (onDataChanged && tolerance !== newValue) onDataChanged();
-    }
     UpdateSandbox("tolerance", newValue);
   };
 
@@ -243,10 +236,6 @@ function EsuDataTab({
    */
   const handleStateChangeEvent = (newValue) => {
     setState(newValue);
-    if (!streetContext.esuDataChanged) {
-      streetContext.onEsuDataChange(state !== newValue);
-      if (onDataChanged && state !== newValue) onDataChanged();
-    }
     UpdateSandbox("state", newValue);
   };
 
@@ -257,10 +246,6 @@ function EsuDataTab({
    */
   const handleStateDateChangeEvent = (newValue) => {
     setStateDate(newValue);
-    if (!streetContext.esuDataChanged) {
-      streetContext.onEsuDataChange(stateDate !== newValue);
-      if (onDataChanged && stateDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("stateDate", newValue);
   };
 
@@ -271,10 +256,6 @@ function EsuDataTab({
    */
   const handleClassificationChangeEvent = (newValue) => {
     setClassification(newValue);
-    if (!streetContext.esuDataChanged) {
-      streetContext.onEsuDataChange(classification !== newValue);
-      if (onDataChanged && classification !== newValue) onDataChanged();
-    }
     UpdateSandbox("classification", newValue);
   };
 
@@ -285,10 +266,6 @@ function EsuDataTab({
    */
   const handleClassificationDateChangeEvent = (newValue) => {
     setClassificationDate(newValue);
-    if (!streetContext.esuDataChanged) {
-      streetContext.onEsuDataChange(classificationDate !== newValue);
-      if (onDataChanged && classificationDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("classificationDate", newValue);
   };
 
@@ -299,10 +276,6 @@ function EsuDataTab({
    */
   const handleStartDateChangeEvent = (newValue) => {
     setStartDate(newValue);
-    if (!streetContext.esuDataChanged) {
-      streetContext.onEsuDataChange(startDate !== newValue);
-      if (onDataChanged && startDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("startDate", newValue);
   };
 
@@ -313,10 +286,6 @@ function EsuDataTab({
    */
   const handleEndDateChangeEvent = (newValue) => {
     setEndDate(newValue);
-    if (!streetContext.esuDataChanged) {
-      streetContext.onEsuDataChange(endDate !== newValue);
-      if (onDataChanged && endDate !== newValue) onDataChanged();
-    }
     UpdateSandbox("endDate", newValue);
   };
 
@@ -379,16 +348,14 @@ function EsuDataTab({
         : null;
 
     if (onHomeClick)
-      streetContext.onEsuDataChange(
-        onHomeClick(
-          streetContext.esuDataChanged
-            ? sandboxContext.currentSandbox.currentStreetRecords.esu
-              ? "check"
-              : "discard"
-            : "discard",
-          sourceEsu,
-          sandboxContext.currentSandbox.currentStreetRecords.esu
-        )
+      onHomeClick(
+        streetContext.esuDataChanged
+          ? sandboxContext.currentSandbox.currentStreetRecords.esu
+            ? "check"
+            : "discard"
+          : "discard",
+        sourceEsu,
+        sandboxContext.currentSandbox.currentStreetRecords.esu
       );
   };
 
@@ -396,8 +363,7 @@ function EsuDataTab({
    * Event to handle when the OK button is clicked.
    */
   const handleOkClicked = () => {
-    if (onHomeClick)
-      streetContext.onEsuDataChange(onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.esu));
+    if (onHomeClick) onHomeClick("save", null, sandboxContext.currentSandbox.currentStreetRecords.esu);
   };
 
   /**
@@ -412,7 +378,6 @@ function EsuDataTab({
         setEndDate(data.esuData.esuEndDate);
       }
     }
-    streetContext.onEsuDataChange(false);
     if (onHomeClick) onHomeClick("discard", data.esuData, null);
   };
 
@@ -469,7 +434,6 @@ function EsuDataTab({
   const handleAddNewEsu = () => {
     setAnchorEl(null);
     if (onAddEsu) onAddEsu();
-    if (!streetContext.esuDataChanged) streetContext.onEsuDataChange(true);
   };
 
   /**
@@ -487,7 +451,6 @@ function EsuDataTab({
     if (onValidateData) {
       if (onValidateData(sourceEsu, sandboxContext.currentSandbox.currentStreetRecords.esu)) {
         if (onAddHighwayDedication) onAddHighwayDedication(data.esuData.esuId, data.index);
-        if (!streetContext.esuDataChanged) streetContext.onEsuDataChange(true);
       }
     }
   };
@@ -508,7 +471,6 @@ function EsuDataTab({
       if (onValidateData(sourceEsu, sandboxContext.currentSandbox.currentStreetRecords.esu)) {
         if (canAddOneWayExemption()) {
           if (onAddOneWayException) onAddOneWayException(data.esuData.esuId, data.index);
-          if (!streetContext.esuDataChanged) streetContext.onEsuDataChange(true);
         }
       }
     }
@@ -817,6 +779,35 @@ function EsuDataTab({
       }
     }
   }, [loading, data.esuData, settingsContext.isScottish]);
+
+  useEffect(() => {
+    if (sandboxContext.currentSandbox.sourceStreet && sandboxContext.currentSandbox.currentStreetRecords.esu) {
+      const sourceEsu = sandboxContext.currentSandbox.sourceStreet.esus
+        ? sandboxContext.currentSandbox.sourceStreet.esus.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.esu.pkId
+          )
+        : null;
+
+      if (sourceEsu) {
+        streetContext.onEsuDataChange(
+          !ObjectComparison(sourceEsu, sandboxContext.currentSandbox.currentStreetRecords.esu, esuKeysToIgnore) ||
+            !ArraysEqual(
+              sourceEsu.highwayDedications,
+              sandboxContext.currentSandbox.currentStreetRecords.esu.highwayDedications
+            ) ||
+            !ArraysEqual(
+              sourceEsu.oneWayExemptions,
+              sandboxContext.currentSandbox.currentStreetRecords.esu.oneWayExemptions
+            )
+        );
+      } else if (sandboxContext.currentSandbox.currentStreetRecords.esu.pkId < 0) streetContext.onEsuDataChange(true);
+    }
+  }, [
+    sandboxContext.currentSandbox.sourceStreet,
+    sandboxContext.currentSandbox.currentStreetRecords.esu,
+    streetContext,
+    settingsContext.isScottish,
+  ]);
 
   useEffect(() => {
     if (data.esuData && data.esuData.esuId < 0 && !informationContext.informationType) {
