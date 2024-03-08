@@ -42,6 +42,7 @@
 //    029   27.02.24 Sean Flook           MUL16 Hide the search control when required and reduce padding on the Add street button.
 //    030   05.03.24 Sean Flook       IMANN-338 Correctly display controls and navigate as required.
 //    031   07.03.24 Sean Flook       IMANN-338 Use the correct fields to hide the issue popper.
+//    032   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -60,7 +61,6 @@ import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
 import InformationContext from "../context/informationContext";
-import { StreetComparison, PropertyComparison } from "../utils/ObjectComparison";
 import {
   GetChangedAssociatedRecords,
   GetWktCoordinates,
@@ -68,12 +68,19 @@ import {
   ResetContexts,
   mapSelectSearchString,
 } from "../utils/HelperUtils";
-import { streetToTitleCase, GetStreetMapData, GetCurrentStreetData, SaveStreet } from "../utils/StreetUtils";
+import {
+  streetToTitleCase,
+  GetStreetMapData,
+  GetCurrentStreetData,
+  SaveStreet,
+  hasStreetChanged,
+} from "../utils/StreetUtils";
 import {
   addressToTitleCase,
   GetCurrentPropertyData,
   SavePropertyAndUpdate,
   getClassificationCode,
+  hasPropertyChanged,
 } from "../utils/PropertyUtils";
 import { HasASD } from "../configuration/ADSConfig";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
@@ -324,7 +331,7 @@ function ADSAppBar(props) {
         saveResult.current = true;
         saveType.current = "street";
         setSaveOpen(true);
-        ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+        ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
         PerformReturnAction(action, discardChanges);
       } else {
         saveResult.current = false;
@@ -358,7 +365,7 @@ function ADSAppBar(props) {
         saveResult.current = true;
         saveType.current = "property";
         setSaveOpen(true);
-        ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+        ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
         PerformReturnAction(action, discardChanges);
       } else {
         saveResult.current = false;
@@ -409,24 +416,7 @@ function ADSAppBar(props) {
     if (haveAdminSettings) {
       PerformReturnAction(postCheckAction, false);
     } else if (sandboxContext.currentSandbox.sourceStreet) {
-      const streetChanged =
-        streetContext.currentStreet.newStreet ||
-        sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor ||
-        sandboxContext.currentSandbox.currentStreetRecords.esu ||
-        sandboxContext.currentSandbox.currentStreetRecords.highwayDedication ||
-        sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption ||
-        sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef ||
-        sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility ||
-        sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory ||
-        sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation ||
-        sandboxContext.currentSandbox.currentStreetRecords.interest ||
-        sandboxContext.currentSandbox.currentStreetRecords.construction ||
-        sandboxContext.currentSandbox.currentStreetRecords.specialDesignation ||
-        sandboxContext.currentSandbox.currentStreetRecords.hww ||
-        sandboxContext.currentSandbox.currentStreetRecords.prow ||
-        sandboxContext.currentSandbox.currentStreetRecords.note ||
-        (sandboxContext.currentSandbox.currentStreet &&
-          !StreetComparison(sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreet));
+      const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
 
       if (streetChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("street", sandboxContext, streetContext.esuDataChanged);
@@ -452,35 +442,24 @@ function ADSAppBar(props) {
                 failedValidation.current = true;
                 saveResult.current = false;
                 setSaveOpen(true);
-                ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+                ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
                 PerformReturnAction(postCheckAction, result === "discard");
               }
             } else {
-              ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+              ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
               PerformReturnAction(postCheckAction, result === "discard");
             }
           })
           .catch(() => {});
       } else {
-        ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+        ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
         PerformReturnAction(postCheckAction, false);
       }
     } else if (sandboxContext.currentSandbox.sourceProperty) {
-      const propertyChanged =
-        propertyContext.currentProperty.newProperty ||
-        sandboxContext.currentSandbox.currentPropertyRecords.lpi ||
-        sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef ||
-        sandboxContext.currentSandbox.currentPropertyRecords.provenance ||
-        sandboxContext.currentSandbox.currentPropertyRecords.provenance ||
-        sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef ||
-        sandboxContext.currentSandbox.currentPropertyRecords.organisation ||
-        sandboxContext.currentSandbox.currentPropertyRecords.classification ||
-        sandboxContext.currentSandbox.currentPropertyRecords.note ||
-        (sandboxContext.currentSandbox.currentProperty &&
-          !PropertyComparison(
-            sandboxContext.currentSandbox.sourceProperty,
-            sandboxContext.currentSandbox.currentProperty
-          ));
+      const propertyChanged = hasPropertyChanged(
+        propertyContext.currentProperty.newProperty,
+        sandboxContext.currentSandbox
+      );
 
       if (propertyChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);
@@ -506,21 +485,21 @@ function ADSAppBar(props) {
                 failedValidation.current = true;
                 saveResult.current = false;
                 setSaveOpen(true);
-                ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+                ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
                 PerformReturnAction(postCheckAction, result === "discard");
               }
             } else {
-              ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+              ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
               PerformReturnAction(postCheckAction, result === "discard");
             }
           })
           .catch(() => {});
       } else {
-        ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+        ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
         PerformReturnAction(postCheckAction, false);
       }
     } else {
-      ResetContexts("all", false, mapContext, streetContext, propertyContext, sandboxContext);
+      ResetContexts("all", mapContext, streetContext, propertyContext, sandboxContext);
       PerformReturnAction(postCheckAction, false);
     }
   }

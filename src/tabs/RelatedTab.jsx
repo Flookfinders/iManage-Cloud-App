@@ -32,6 +32,7 @@
 //    017   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
 //    018   13.02.24 Joel Benford               Provide hww.usrn to map context when changing street
 //    019   13.02.24 Sean Flook                 Corrected the type 66 map data.
+//    020   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -72,10 +73,9 @@ import {
   GetRelatedStreetWithASDByUPRNUrl,
   HasASD,
 } from "../configuration/ADSConfig";
-import { StreetComparison, PropertyComparison } from "./../utils/ObjectComparison";
 import { GetWktCoordinates, GetChangedAssociatedRecords, ResetContexts } from "../utils/HelperUtils";
-import { GetStreetMapData, GetCurrentStreetData, SaveStreet } from "../utils/StreetUtils";
-import { GetCurrentPropertyData, SavePropertyAndUpdate } from "../utils/PropertyUtils";
+import { GetStreetMapData, GetCurrentStreetData, SaveStreet, hasStreetChanged } from "../utils/StreetUtils";
+import { GetCurrentPropertyData, SavePropertyAndUpdate, hasPropertyChanged } from "../utils/PropertyUtils";
 
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
 import HistoricPropertyDialog from "../dialogs/HistoricPropertyDialog";
@@ -530,19 +530,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
    */
   const handleTreeViewNodeSelect = (nodeType, nodeId) => {
     if (sandboxContext.currentSandbox.sourceStreet) {
-      const streetChanged =
-        sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor ||
-        sandboxContext.currentSandbox.currentStreetRecords.esu ||
-        sandboxContext.currentSandbox.currentStreetRecords.highwayDedication ||
-        sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption ||
-        sandboxContext.currentSandbox.currentStreetRecords.interest ||
-        sandboxContext.currentSandbox.currentStreetRecords.construction ||
-        sandboxContext.currentSandbox.currentStreetRecords.specialDesignation ||
-        sandboxContext.currentSandbox.currentStreetRecords.hww ||
-        sandboxContext.currentSandbox.currentStreetRecords.prow ||
-        sandboxContext.currentSandbox.currentStreetRecords.note ||
-        (sandboxContext.currentSandbox.currentStreet &&
-          !StreetComparison(sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreet));
+      const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
 
       if (streetChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("street", sandboxContext, streetContext.esuDataChanged);
@@ -571,7 +559,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
                   setSaveOpen(true);
                 }
               }
-              ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+              ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
               if (nodeType === "property") handlePropertyNodeSelect(nodeId);
               else handleStreetNodeSelect(nodeId);
             })
@@ -582,28 +570,22 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
               if (result === "save") {
                 HandleSaveStreet(sandboxContext.currentSandbox.currentStreet);
               }
-              ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+              ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
               if (nodeType === "property") handlePropertyNodeSelect(nodeId);
               else handleStreetNodeSelect(nodeId);
             })
             .catch(() => {});
         }
       } else {
-        ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+        ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
         if (nodeType === "property") handlePropertyNodeSelect(nodeId);
         else handleStreetNodeSelect(nodeId);
       }
     } else if (sandboxContext.currentSandbox.sourceProperty) {
-      const propertyChanged =
-        sandboxContext.currentSandbox.currentPropertyRecords.lpi ||
-        sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef ||
-        sandboxContext.currentSandbox.currentPropertyRecords.provenance ||
-        sandboxContext.currentSandbox.currentPropertyRecords.note ||
-        (sandboxContext.currentSandbox.currentProperty &&
-          !PropertyComparison(
-            sandboxContext.currentSandbox.sourceProperty,
-            sandboxContext.currentSandbox.currentProperty
-          ));
+      const propertyChanged = hasPropertyChanged(
+        propertyContext.currentProperty.newProperty,
+        sandboxContext.currentSandbox
+      );
 
       if (propertyChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);
@@ -626,7 +608,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
                     settingsContext.isScottish
                   );
                   HandleSaveProperty(currentPropertyData);
-                  ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+                  ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
                   if (nodeType === "property") handlePropertyNodeSelect(nodeId);
                   else handleStreetNodeSelect(nodeId);
                 } else {
@@ -635,7 +617,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
                   setSaveOpen(true);
                 }
               } else {
-                ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+                ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
                 if (nodeType === "property") handlePropertyNodeSelect(nodeId);
                 else handleStreetNodeSelect(nodeId);
               }
@@ -647,19 +629,19 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
               if (result === "save") {
                 HandleSaveProperty(sandboxContext.currentSandbox.currentProperty);
               }
-              ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+              ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
               if (nodeType === "property") handlePropertyNodeSelect(nodeId);
               else handleStreetNodeSelect(nodeId);
             })
             .catch(() => {});
         }
       } else {
-        ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+        ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
         if (nodeType === "property") handlePropertyNodeSelect(nodeId);
         else handleStreetNodeSelect(nodeId);
       }
     } else {
-      ResetContexts("all", false, mapContext, streetContext, propertyContext, sandboxContext);
+      ResetContexts("all", mapContext, streetContext, propertyContext, sandboxContext);
       if (nodeType === "property") handlePropertyNodeSelect(nodeId);
       else handleStreetNodeSelect(nodeId);
     }

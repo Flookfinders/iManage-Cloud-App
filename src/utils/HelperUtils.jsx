@@ -36,6 +36,7 @@
 //    023   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //    024   16.02.24 Sean Flook        ESU17_GP Added mergeArrays.
 //    025   27.02.24 Sean Flook           MUL16 Added renderErrors.
+//    026   08.03.24 Sean Flook       IMANN-348 Updated GetChangedAssociatedRecords and ResetContexts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -47,7 +48,26 @@ import proj4 from "proj4";
 import Wkt from "wicket";
 import { encode } from "iso-8859-14";
 import { GetWhoAmIUrl, HasASD } from "../configuration/ADSConfig";
-import ObjectComparison from "../utils/ObjectComparison";
+import ObjectComparison, {
+  blpuAppCrossRefKeysToIgnore,
+  classificationKeysToIgnore,
+  constructionKeysToIgnore,
+  esuKeysToIgnore,
+  heightWidthWeightKeysToIgnore,
+  highwayDedicationKeysToIgnore,
+  interestKeysToIgnore,
+  lpiKeysToIgnore,
+  maintenanceResponsibilityKeysToIgnore,
+  noteKeysToIgnore,
+  oneWayExemptionKeysToIgnore,
+  organisationKeysToIgnore,
+  provenanceKeysToIgnore,
+  publicRightOfWayKeysToIgnore,
+  reinstatementCategoryKeysToIgnore,
+  specialDesignationKeysToIgnore,
+  streetDescriptorKeysToIgnore,
+  successorCrossRefKeysToIgnore,
+} from "../utils/ObjectComparison";
 import { GetStreetMapData } from "../utils/StreetUtils";
 import { GetPropertyMapData } from "../utils/PropertyUtils";
 
@@ -919,33 +939,246 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
 
   switch (type) {
     case "street":
-      if (sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor) associatedRecords.push("Descriptor");
-      if (sandboxContext.currentSandbox.currentStreetRecords.esu || geometryTypeChanged) associatedRecords.push("ESU");
-      if (sandboxContext.currentSandbox.currentStreetRecords.highwayDedication)
+      if (
+        sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceStreet.streetDescriptors.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor.pkId
+          ),
+          sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor,
+          streetDescriptorKeysToIgnore
+        )
+      )
+        associatedRecords.push("Descriptor");
+      if (
+        (sandboxContext.currentSandbox.currentStreetRecords.esu &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceStreet.esus.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.esu.pkId
+            ),
+            sandboxContext.currentSandbox.currentStreetRecords.esu,
+            esuKeysToIgnore
+          )) ||
+        geometryTypeChanged
+      )
+        associatedRecords.push("ESU");
+      if (
+        sandboxContext.currentSandbox.currentStreetRecords.highwayDedication &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceStreet.esus
+            .find((x) => x.esuId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.esuId)
+            .highwayDedications.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.pkId
+            ),
+          sandboxContext.currentSandbox.currentStreetRecords.highwayDedication,
+          highwayDedicationKeysToIgnore
+        )
+      )
         associatedRecords.push("Highway Dedication");
-      if (sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption)
+      if (
+        sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceStreet.esus
+            .find((x) => x.esuId === sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.esuId)
+            .oneWayExemptions.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.pkId
+            ),
+          sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption,
+          oneWayExemptionKeysToIgnore
+        )
+      )
         associatedRecords.push("One-way Exemption");
-      if (sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility)
+      if (
+        sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceStreet.successorCrossRefs.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.pkId
+          ),
+          sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef,
+          successorCrossRefKeysToIgnore
+        )
+      )
+        associatedRecords.push("Successor Cross Reference");
+      if (
+        sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceStreet.maintenanceResponsibilities.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility.pkId
+          ),
+          sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility,
+          maintenanceResponsibilityKeysToIgnore
+        )
+      )
         associatedRecords.push("Maintenance Responsibility");
-      if (sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory)
+      if (
+        sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceStreet.reinstatementCategories.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory.pkId
+          ),
+          sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory,
+          reinstatementCategoryKeysToIgnore
+        )
+      )
         associatedRecords.push("Reinstatement Category");
-      if (sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation)
+      if (
+        sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceStreet.specialDesignations.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation.pkId
+          ),
+          sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation,
+          specialDesignationKeysToIgnore
+        )
+      )
         associatedRecords.push("Special Designation");
-      if (sandboxContext.currentSandbox.currentStreetRecords.interest) associatedRecords.push("Interest");
-      if (sandboxContext.currentSandbox.currentStreetRecords.construction) associatedRecords.push("Construction");
-      if (sandboxContext.currentSandbox.currentStreetRecords.specialDesignation)
+      if (
+        sandboxContext.currentSandbox.currentStreetRecords.interest &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceStreet.interests.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.interest.pkId
+          ),
+          sandboxContext.currentSandbox.currentStreetRecords.interest,
+          interestKeysToIgnore
+        )
+      )
+        associatedRecords.push("Interest");
+      if (
+        sandboxContext.currentSandbox.currentStreetRecords.construction &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceStreet.constructions.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.construction.pkId
+          ),
+          sandboxContext.currentSandbox.currentStreetRecords.construction,
+          constructionKeysToIgnore
+        )
+      )
+        associatedRecords.push("Construction");
+      if (
+        sandboxContext.currentSandbox.currentStreetRecords.specialDesignation &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceStreet.specialDesignations.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.specialDesignation.pkId
+          ),
+          sandboxContext.currentSandbox.currentStreetRecords.specialDesignation,
+          specialDesignationKeysToIgnore
+        )
+      )
         associatedRecords.push("Special Designation");
-      if (sandboxContext.currentSandbox.currentStreetRecords.hww) associatedRecords.push("Height, Width and Weight");
-      if (sandboxContext.currentSandbox.currentStreetRecords.prow) associatedRecords.push("Public Right of Way");
-      if (sandboxContext.currentSandbox.currentStreetRecords.note) associatedRecords.push("Note");
+      if (
+        sandboxContext.currentSandbox.currentStreetRecords.hww &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceStreet.heightWidthWeights.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.hww.pkId
+          ),
+          sandboxContext.currentSandbox.currentStreetRecords.hww,
+          heightWidthWeightKeysToIgnore
+        )
+      )
+        associatedRecords.push("Height, Width and Weight");
+      if (
+        sandboxContext.currentSandbox.currentStreetRecords.prow &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceStreet.publicRightOfWays.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.prow.pkId
+          ),
+          sandboxContext.currentSandbox.currentStreetRecords.prow,
+          publicRightOfWayKeysToIgnore
+        )
+      )
+        associatedRecords.push("Public Right of Way");
+      if (
+        sandboxContext.currentSandbox.currentStreetRecords.note &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceStreet.streetNotes.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.note.pkId
+          ),
+          sandboxContext.currentSandbox.currentStreetRecords.note,
+          noteKeysToIgnore
+        )
+      )
+        associatedRecords.push("Note");
       break;
 
     case "property":
-      if (sandboxContext.currentSandbox.currentPropertyRecords.lpi) associatedRecords.push("LPI");
-      if (sandboxContext.currentSandbox.currentPropertyRecords.provenance || geometryTypeChanged)
+      if (
+        sandboxContext.currentSandbox.currentPropertyRecords.lpi &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceProperty.lpis.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.lpi.pkId
+          ),
+          sandboxContext.currentSandbox.currentPropertyRecords.lpi,
+          lpiKeysToIgnore
+        )
+      )
+        associatedRecords.push("LPI");
+      if (
+        (sandboxContext.currentSandbox.currentPropertyRecords.provenance &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceProperty.blpuProvenances.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.provenance.pkId
+            ),
+            sandboxContext.currentSandbox.currentPropertyRecords.provenance,
+            provenanceKeysToIgnore
+          )) ||
+        geometryTypeChanged
+      )
         associatedRecords.push("BLPU Provenance");
-      if (sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef) associatedRecords.push("Cross Reference");
-      if (sandboxContext.currentSandbox.currentPropertyRecords.note) associatedRecords.push("Note");
+      if (
+        sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceProperty.blpuAppCrossRefs.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.pkId
+          ),
+          sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef,
+          blpuAppCrossRefKeysToIgnore
+        )
+      )
+        associatedRecords.push("Cross Reference");
+      if (
+        sandboxContext.currentSandbox.currentPropertyRecords.classification &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceProperty.classifications.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.classification.pkId
+          ),
+          sandboxContext.currentSandbox.currentPropertyRecords.classification,
+          classificationKeysToIgnore
+        )
+      )
+        associatedRecords.push("Classification");
+      if (
+        sandboxContext.currentSandbox.currentPropertyRecords.organisation &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceProperty.organisations.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.organisation.pkId
+          ),
+          sandboxContext.currentSandbox.currentPropertyRecords.organisation,
+          organisationKeysToIgnore
+        )
+      )
+        associatedRecords.push("Organisation");
+      if (
+        sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceProperty.successorCrossRefs.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.pkId
+          ),
+          sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef,
+          successorCrossRefKeysToIgnore
+        )
+      )
+        associatedRecords.push("Successor Cross Reference");
+      if (
+        sandboxContext.currentSandbox.currentPropertyRecords.note &&
+        !ObjectComparison(
+          sandboxContext.currentSandbox.sourceProperty.blpuNotes.find(
+            (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.note.pkId
+          ),
+          sandboxContext.currentSandbox.currentPropertyRecords.note,
+          noteKeysToIgnore
+        )
+      )
+        associatedRecords.push("Note");
       break;
 
     default:
@@ -1193,26 +1426,25 @@ export const GeoPlaceCrossRefSources = ["BG", "CT", "ER", "IA", "ND", "OS", "PA"
  * Reset the required context objects.
  *
  * @param {string} type The type of data to clear.
- * @param {boolean} includeErrors If true clear the errors as well;otherwise leave the errors as is.
  * @param {object} mapContext The map context object.
  * @param {object} streetContext The street context object.
  * @param {object} propertyContext The property context object.
  * @param {object} sandboxContext The sandbox context object.
  */
-export function ResetContexts(type, includeErrors, mapContext, streetContext, propertyContext, sandboxContext) {
+export function ResetContexts(type, mapContext, streetContext, propertyContext, sandboxContext) {
   mapContext.onSetCoordinate(null);
 
   switch (type) {
     case "street":
       streetContext.onStreetModified(false);
       streetContext.resetStreet();
-      if (includeErrors) streetContext.resetStreetErrors();
+      streetContext.resetStreetErrors();
       break;
 
     case "property":
       propertyContext.onPropertyModified(false);
       propertyContext.resetProperty();
-      if (includeErrors) propertyContext.resetPropertyErrors();
+      propertyContext.resetPropertyErrors();
       break;
 
     default: // All
@@ -1220,10 +1452,8 @@ export function ResetContexts(type, includeErrors, mapContext, streetContext, pr
       streetContext.resetStreet();
       propertyContext.onPropertyModified(false);
       propertyContext.resetProperty();
-      if (includeErrors) {
-        streetContext.resetStreetErrors();
-        propertyContext.resetPropertyErrors();
-      }
+      streetContext.resetStreetErrors();
+      propertyContext.resetPropertyErrors();
       break;
   }
 

@@ -27,6 +27,7 @@
 //    014   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    015   05.03.24 Sean Flook       IMANN-338 Check for changes when clicking any of the buttons which would cause to navigate away from a record.
 //    016   07.03.24 Sean Flook       IMANN-338 Always clear any errors if we are leaving the current page.
+//    017   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -45,10 +46,9 @@ import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
 import InformationContext from "../context/informationContext";
-import { StreetComparison, PropertyComparison } from "../utils/ObjectComparison";
 import { GetChangedAssociatedRecords, StringAvatar, stringToSentenceCase, ResetContexts } from "../utils/HelperUtils";
-import { GetCurrentStreetData, SaveStreet } from "../utils/StreetUtils";
-import { GetCurrentPropertyData, SavePropertyAndUpdate } from "../utils/PropertyUtils";
+import { GetCurrentStreetData, SaveStreet, hasStreetChanged } from "../utils/StreetUtils";
+import { GetCurrentPropertyData, SavePropertyAndUpdate, hasPropertyChanged } from "../utils/PropertyUtils";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
 import {
   Tooltip,
@@ -353,19 +353,7 @@ const ADSNavContent = (props) => {
   const handlePageChangeClick = (page) => {
     const resetRequired = ["gazetteer", "home"].includes(page);
     if (sandboxContext.currentSandbox.sourceStreet) {
-      const streetChanged =
-        sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor ||
-        sandboxContext.currentSandbox.currentStreetRecords.esu ||
-        sandboxContext.currentSandbox.currentStreetRecords.highwayDedication ||
-        sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption ||
-        sandboxContext.currentSandbox.currentStreetRecords.interest ||
-        sandboxContext.currentSandbox.currentStreetRecords.construction ||
-        sandboxContext.currentSandbox.currentStreetRecords.specialDesignation ||
-        sandboxContext.currentSandbox.currentStreetRecords.hww ||
-        sandboxContext.currentSandbox.currentStreetRecords.prow ||
-        sandboxContext.currentSandbox.currentStreetRecords.note ||
-        (sandboxContext.currentSandbox.currentStreet &&
-          !StreetComparison(sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreet));
+      const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
 
       if (streetChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("street", sandboxContext, streetContext.esuDataChanged);
@@ -394,8 +382,7 @@ const ADSNavContent = (props) => {
                   setSaveOpen(true);
                 }
               }
-              if (resetRequired)
-                ResetContexts("street", true, mapContext, streetContext, propertyContext, sandboxContext);
+              if (resetRequired) ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
               else streetContext.resetStreetErrors();
               GoToPage(page);
             })
@@ -406,29 +393,22 @@ const ADSNavContent = (props) => {
               if (result === "save") {
                 HandleSaveStreet(sandboxContext.currentSandbox.currentStreet);
               }
-              if (resetRequired)
-                ResetContexts("street", true, mapContext, streetContext, propertyContext, sandboxContext);
+              if (resetRequired) ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
               else streetContext.resetStreetErrors();
               GoToPage(page);
             })
             .catch(() => {});
         }
       } else {
-        if (resetRequired) ResetContexts("street", true, mapContext, streetContext, propertyContext, sandboxContext);
+        if (resetRequired) ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
         else streetContext.resetStreetErrors();
         GoToPage(page);
       }
     } else if (sandboxContext.currentSandbox.sourceProperty) {
-      const propertyChanged =
-        sandboxContext.currentSandbox.currentPropertyRecords.lpi ||
-        sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef ||
-        sandboxContext.currentSandbox.currentPropertyRecords.provenance ||
-        sandboxContext.currentSandbox.currentPropertyRecords.note ||
-        (sandboxContext.currentSandbox.currentProperty &&
-          !PropertyComparison(
-            sandboxContext.currentSandbox.sourceProperty,
-            sandboxContext.currentSandbox.currentProperty
-          ));
+      const propertyChanged = hasPropertyChanged(
+        propertyContext.currentProperty.newProperty,
+        sandboxContext.currentSandbox
+      );
 
       if (propertyChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);
@@ -452,7 +432,7 @@ const ADSNavContent = (props) => {
                   );
                   HandleSaveProperty(currentPropertyData);
                   if (resetRequired)
-                    ResetContexts("property", true, mapContext, streetContext, propertyContext, sandboxContext);
+                    ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
                   else propertyContext.resetPropertyErrors();
                   GoToPage(page);
                 } else {
@@ -462,7 +442,7 @@ const ADSNavContent = (props) => {
                 }
               } else {
                 if (resetRequired)
-                  ResetContexts("property", true, mapContext, streetContext, propertyContext, sandboxContext);
+                  ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
                 else propertyContext.resetPropertyErrors();
                 GoToPage(page);
               }
@@ -474,20 +454,19 @@ const ADSNavContent = (props) => {
               if (result === "save") {
                 HandleSaveProperty(sandboxContext.currentSandbox.currentProperty);
               }
-              if (resetRequired)
-                ResetContexts("property", true, mapContext, streetContext, propertyContext, sandboxContext);
+              if (resetRequired) ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
               else propertyContext.resetPropertyErrors();
               GoToPage(page);
             })
             .catch(() => {});
         }
       } else {
-        if (resetRequired) ResetContexts("property", true, mapContext, streetContext, propertyContext, sandboxContext);
+        if (resetRequired) ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
         else propertyContext.resetPropertyErrors();
         GoToPage(page);
       }
     } else {
-      if (resetRequired) ResetContexts("all", true, mapContext, streetContext, propertyContext, sandboxContext);
+      if (resetRequired) ResetContexts("all", mapContext, streetContext, propertyContext, sandboxContext);
       else {
         streetContext.resetStreetErrors();
         propertyContext.resetPropertyErrors();

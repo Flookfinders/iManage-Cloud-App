@@ -60,6 +60,7 @@
 //    046   16.02.24 Sean Flook        ESU16_GP Whilst assigning ESU prevent anything else from occurring with the ESUs.
 //    047   20.02.24 Sean Flook            MUL1 Changes required to selecting properties from the map.
 //    048   22.02.24 Sean Flook         ESU3_GP Set the fillOpacity on the highlight to 0.25.
+//    049   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -80,7 +81,6 @@ import SearchContext from "../context/searchContext";
 import SettingsContext from "../context/settingsContext";
 import InformationContext from "../context/informationContext";
 
-import { StreetComparison, PropertyComparison } from "../utils/ObjectComparison";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
 import { GetPropertyFromUPRNUrl, GetMapLayersUrl } from "../configuration/ADSConfig";
 import {
@@ -107,6 +107,7 @@ import {
   GetProwStatusLabel,
   GetDistrictLabel,
   DisplayStreetInStreetView,
+  hasStreetChanged,
 } from "../utils/StreetUtils";
 import {
   GetClassificationLabel,
@@ -117,6 +118,7 @@ import {
   UpdateRangeAfterSave,
   UpdateAfterSave,
   GetPropertyMapData,
+  hasPropertyChanged,
 } from "../utils/PropertyUtils";
 
 import shp from "shpjs";
@@ -6875,20 +6877,7 @@ function ADSEsriMap(startExtent) {
      */
     function CheckForUnsavedChanges(functionAfterCheck) {
       if (sandbox.current.sourceStreet) {
-        const streetChanged =
-          streetContext.currentStreet.newStreet ||
-          sandbox.current.currentStreetRecords.streetDescriptor ||
-          sandbox.current.currentStreetRecords.esu ||
-          sandbox.current.currentStreetRecords.highwayDedication ||
-          sandbox.current.currentStreetRecords.oneWayExemption ||
-          sandbox.current.currentStreetRecords.interest ||
-          sandbox.current.currentStreetRecords.construction ||
-          sandbox.current.currentStreetRecords.specialDesignation ||
-          sandbox.current.currentStreetRecords.hww ||
-          sandbox.current.currentStreetRecords.prow ||
-          sandbox.current.currentStreetRecords.note ||
-          (sandbox.current.currentStreet &&
-            !StreetComparison(sandbox.current.sourceStreet, sandbox.current.currentStreet));
+        const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
 
         if (streetChanged) {
           associatedRecords.current = GetChangedAssociatedRecords(
@@ -6947,14 +6936,10 @@ function ADSEsriMap(startExtent) {
           functionAfterCheck();
         }
       } else if (sandbox.current.sourceProperty) {
-        const propertyChanged =
-          propertyContext.currentProperty.newProperty ||
-          sandbox.current.currentPropertyRecords.lpi ||
-          sandbox.current.currentPropertyRecords.appCrossRef ||
-          sandbox.current.currentPropertyRecords.provenance ||
-          sandbox.current.currentPropertyRecords.note ||
-          (sandbox.current.currentProperty &&
-            !PropertyComparison(sandbox.current.sourceProperty, sandbox.current.currentProperty));
+        const propertyChanged = hasPropertyChanged(
+          propertyContext.currentProperty.newProperty,
+          sandboxContext.currentSandbox
+        );
 
         if (propertyChanged) {
           associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);

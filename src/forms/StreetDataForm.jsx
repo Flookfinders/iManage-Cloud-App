@@ -65,6 +65,7 @@
 //    051   07.03.24 Joshua McCormick IMANN-280 Added tabContainerStyle to tab container
 //    052   07.03.24 Joel Benford     IMANN-331 Don't default organisation if not set in template
 //    053   07.03.24 Sean Flook       IMANN-348 Further changes required for ESUs.
+//    054   08.03.24 Sean Flook       IMANN-348 Updated calls to ResetContexts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1085,7 +1086,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setEsuFormData(null);
-      streetContext.onRecordChange(11, null, null, null);
+      streetContext.onRecordChange(13, null, null, null);
       mapContext.onEditMapObject(null, null);
     } else if (pkId === 0) {
       const newIdx =
@@ -4247,7 +4248,7 @@ function StreetDataForm({ data, loading }) {
             }
           } else if (result === "discard") {
             saveResult.current = true;
-            ResetContexts("street", true, mapContext, streetContext, propertyContext, sandboxContext);
+            ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
             if (streetContext.currentStreet.newStreet) {
               streetContext.resetStreet();
               mapContext.onSearchDataChange([], [], null, null);
@@ -7006,7 +7007,7 @@ function StreetDataForm({ data, loading }) {
 
   useEffect(() => {
     const doAfterStep = async () => {
-      ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+      ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
       saveResult.current = true;
       switch (streetContext.leavingStreet.why) {
         case "createStreet":

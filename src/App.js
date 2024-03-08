@@ -45,6 +45,7 @@
 //    032   26.02.24 Joel Benford     IMANN-242 Add DbAuthority to lookups context
 //    033   27.02.24 Sean Flook           MUL16 Added ability too hide the search control.
 //    034   05.03.24 Sean Flook       IMANN-338 Store the last opened street and property tab.
+//    035   08.03.24 Sean Flook       IMANN-348 If clearing ESU from sandbox ensure highway dedication and one way exemption are also cleared.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -593,11 +594,11 @@ function App() {
             : sandbox.currentStreetRecords.streetDescriptor,
         esu: type === "esu" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentStreetRecords.esu,
         highwayDedication:
-          type === "highwayDedication"
+          type === "highwayDedication" || (type === "esu" && !updatedData)
             ? JSON.parse(JSON.stringify(updatedData))
             : sandbox.currentStreetRecords.highwayDedication,
         oneWayExemption:
-          type === "oneWayExemption"
+          type === "oneWayExemption" || (type === "esu" && !updatedData)
             ? JSON.parse(JSON.stringify(updatedData))
             : sandbox.currentStreetRecords.oneWayExemption,
         successorCrossRef:
@@ -702,13 +703,13 @@ function App() {
         highwayDedication:
           updateType === "highwayDedication"
             ? JSON.parse(JSON.stringify(updatedData))
-            : ["highwayDedication", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
+            : ["esu", "highwayDedication", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
             ? null
             : sandbox.currentStreetRecords.highwayDedication,
         oneWayExemption:
           updateType === "oneWayExemption"
             ? JSON.parse(JSON.stringify(updatedData))
-            : ["oneWayExemption", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
+            : ["esu", "oneWayExemption", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
             ? null
             : sandbox.currentStreetRecords.oneWayExemption,
         successorCrossRef:

@@ -18,6 +18,7 @@
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //    006   14.12.23 Sean Flook                 Corrected note record type.
 //    007   05.01.24 Sean Flook                 use CSS shortcuts.
+//    008   08.03.24 Sean Flook       IMANN-348 Updated method to see if a street or property has changed and added in the missing Scottish records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,7 +31,28 @@ import StreetContext from "../context/streetContext";
 import SandboxContext from "../context/sandboxContext";
 import LookupContext from "../context/lookupContext";
 import SettingsContext from "../context/settingsContext";
-import { StreetComparison, PropertyComparison } from "../utils/ObjectComparison";
+import ObjectComparison, {
+  StreetComparison,
+  PropertyComparison,
+  streetDescriptorKeysToIgnore,
+  esuKeysToIgnore,
+  highwayDedicationKeysToIgnore,
+  oneWayExemptionKeysToIgnore,
+  successorCrossRefKeysToIgnore,
+  maintenanceResponsibilityKeysToIgnore,
+  reinstatementCategoryKeysToIgnore,
+  specialDesignationKeysToIgnore,
+  interestKeysToIgnore,
+  constructionKeysToIgnore,
+  heightWidthWeightKeysToIgnore,
+  publicRightOfWayKeysToIgnore,
+  noteKeysToIgnore,
+  lpiKeysToIgnore,
+  blpuAppCrossRefKeysToIgnore,
+  provenanceKeysToIgnore,
+  classificationKeysToIgnore,
+  organisationKeysToIgnore,
+} from "../utils/ObjectComparison";
 import { HasASD } from "../configuration/ADSConfig";
 import { GetNewStreetData } from "../utils/StreetUtils";
 import { GetNewPropertyData, getBilingualSource } from "../utils/PropertyUtils";
@@ -1204,19 +1226,135 @@ function ADSErrorList({ onClose }) {
       const streetChanged =
         streetContext.currentStreet.newStreet ||
         (streetContext.currentRecord.type === 15 &&
-          sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor) ||
-        (streetContext.currentRecord.type === 13 && sandboxContext.currentSandbox.currentStreetRecords.esu) ||
+          sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceStreet.streetDescriptors.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor.pkId
+            ),
+            sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor,
+            streetDescriptorKeysToIgnore
+          )) ||
+        (streetContext.currentRecord.type === 13 &&
+          sandboxContext.currentSandbox.currentStreetRecords.esu &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceStreet.esus.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.esu.pkId
+            ),
+            sandboxContext.currentSandbox.currentStreetRecords.esu,
+            esuKeysToIgnore
+          )) ||
         (streetContext.currentRecord.type === 17 &&
-          sandboxContext.currentSandbox.currentStreetRecords.highwayDedication) ||
+          sandboxContext.currentSandbox.currentStreetRecords.highwayDedication &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceStreet.esus
+              .find((x) => x.esuId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.esuId)
+              .highwayDedications.find(
+                (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.pkId
+              ),
+            sandboxContext.currentSandbox.currentStreetRecords.highwayDedication,
+            highwayDedicationKeysToIgnore
+          )) ||
         (streetContext.currentRecord.type === 16 &&
-          sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption) ||
-        (streetContext.currentRecord.type === 61 && sandboxContext.currentSandbox.currentStreetRecords.interest) ||
-        (streetContext.currentRecord.type === 62 && sandboxContext.currentSandbox.currentStreetRecords.construction) ||
+          sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceStreet.esus
+              .find((x) => x.esuId === sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.esuId)
+              .oneWayExemptions.find(
+                (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.pkId
+              ),
+            sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption,
+            oneWayExemptionKeysToIgnore
+          )) ||
+        (streetContext.currentRecord.type === 30 &&
+          sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceStreet.successorCrossRefs.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.pkId
+            ),
+            sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef,
+            successorCrossRefKeysToIgnore
+          )) ||
+        (streetContext.currentRecord.type === 51 &&
+          sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceStreet.maintenanceResponsibilities.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility.pkId
+            ),
+            sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility,
+            maintenanceResponsibilityKeysToIgnore
+          )) ||
+        (streetContext.currentRecord.type === 52 &&
+          sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceStreet.reinstatementCategories.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory.pkId
+            ),
+            sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory,
+            reinstatementCategoryKeysToIgnore
+          )) ||
+        (streetContext.currentRecord.type === 53 &&
+          sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceStreet.specialDesignations.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation.pkId
+            ),
+            sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation,
+            specialDesignationKeysToIgnore
+          )) ||
+        (streetContext.currentRecord.type === 61 &&
+          sandboxContext.currentSandbox.currentStreetRecords.interest &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceStreet.interests.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.interest.pkId
+            ),
+            sandboxContext.currentSandbox.currentStreetRecords.interest,
+            interestKeysToIgnore
+          )) ||
+        (streetContext.currentRecord.type === 62 &&
+          sandboxContext.currentSandbox.currentStreetRecords.construction &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceStreet.constructions.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.construction.pkId
+            ),
+            sandboxContext.currentSandbox.currentStreetRecords.construction,
+            constructionKeysToIgnore
+          )) ||
         (streetContext.currentRecord.type === 63 &&
-          sandboxContext.currentSandbox.currentStreetRecords.specialDesignation) ||
-        (streetContext.currentRecord.type === 64 && sandboxContext.currentSandbox.currentStreetRecords.hww) ||
-        (streetContext.currentRecord.type === 66 && sandboxContext.currentSandbox.currentStreetRecords.prow) ||
-        (streetContext.currentRecord.type === 71 && sandboxContext.currentSandbox.currentStreetRecords.note) ||
+          sandboxContext.currentSandbox.currentStreetRecords.specialDesignation &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceStreet.specialDesignations.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.specialDesignation.pkId
+            ),
+            sandboxContext.currentSandbox.currentStreetRecords.specialDesignation,
+            specialDesignationKeysToIgnore
+          )) ||
+        (streetContext.currentRecord.type === 64 &&
+          sandboxContext.currentSandbox.currentStreetRecords.hww &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceStreet.heightWidthWeights.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.hww.pkId
+            ),
+            sandboxContext.currentSandbox.currentStreetRecords.hww,
+            heightWidthWeightKeysToIgnore
+          )) ||
+        (streetContext.currentRecord.type === 66 &&
+          sandboxContext.currentSandbox.currentStreetRecords.prow &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceStreet.publicRightOfWays.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.prow.pkId
+            ),
+            sandboxContext.currentSandbox.currentStreetRecords.prow,
+            publicRightOfWayKeysToIgnore
+          )) ||
+        (streetContext.currentRecord.type === 72 &&
+          sandboxContext.currentSandbox.currentStreetRecords.note &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceStreet.streetNotes.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.note.pkId
+            ),
+            sandboxContext.currentSandbox.currentStreetRecords.note,
+            noteKeysToIgnore
+          )) ||
         (streetContext.currentRecord.type === 11 &&
           sandboxContext.currentSandbox.currentStreet &&
           !StreetComparison(sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreet));
@@ -1240,12 +1378,69 @@ function ADSErrorList({ onClose }) {
     ) {
       const propertyChanged =
         propertyContext.currentProperty.newProperty ||
-        (propertyContext.currentRecord.type === 24 && sandboxContext.currentSandbox.currentPropertyRecords.lpi) ||
+        (propertyContext.currentRecord.type === 24 &&
+          sandboxContext.currentSandbox.currentPropertyRecords.lpi &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceProperty.lpis.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.lpi.pkId
+            ),
+            sandboxContext.currentSandbox.currentPropertyRecords.lpi,
+            lpiKeysToIgnore
+          )) ||
         (propertyContext.currentRecord.type === 23 &&
-          sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef) ||
+          sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceProperty.blpuAppCrossRefs.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.pkId
+            ),
+            sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef,
+            blpuAppCrossRefKeysToIgnore
+          )) ||
         (propertyContext.currentRecord.type === 22 &&
-          sandboxContext.currentSandbox.currentPropertyRecords.provenance) ||
-        (propertyContext.currentRecord.type === 72 && sandboxContext.currentSandbox.currentPropertyRecords.note) ||
+          sandboxContext.currentSandbox.currentPropertyRecords.provenance &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceProperty.blpuProvenances.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.provenance.pkId
+            ),
+            sandboxContext.currentSandbox.currentPropertyRecords.provenance,
+            provenanceKeysToIgnore
+          )) ||
+        (propertyContext.currentRecord.type === 32 &&
+          sandboxContext.currentSandbox.currentPropertyRecords.classification &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceProperty.classifications.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.classification.pkId
+            ),
+            sandboxContext.currentSandbox.currentPropertyRecords.classification,
+            classificationKeysToIgnore
+          )) ||
+        (propertyContext.currentRecord.type === 31 &&
+          sandboxContext.currentSandbox.currentPropertyRecords.organisation &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceProperty.organisations.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.organisation.pkId
+            ),
+            sandboxContext.currentSandbox.currentPropertyRecords.organisation,
+            organisationKeysToIgnore
+          )) ||
+        (propertyContext.currentRecord.type === 30 &&
+          sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceProperty.successorCrossRefs.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.pkId
+            ),
+            sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef,
+            successorCrossRefKeysToIgnore
+          )) ||
+        (propertyContext.currentRecord.type === 71 &&
+          sandboxContext.currentSandbox.currentPropertyRecords.note &&
+          !ObjectComparison(
+            sandboxContext.currentSandbox.sourceProperty.blpuNotes.find(
+              (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.note.pkId
+            ),
+            sandboxContext.currentSandbox.currentPropertyRecords.note,
+            noteKeysToIgnore
+          )) ||
         (propertyContext.currentRecord.type === 21 &&
           sandboxContext.currentSandbox.currentProperty &&
           !PropertyComparison(

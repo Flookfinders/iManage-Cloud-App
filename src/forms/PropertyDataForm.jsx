@@ -47,6 +47,7 @@
 //    034   05.03.24 Sean Flook       IMANN-338 Added code to ensure the tabs are not kept open when not required any more.
 //    035   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the Save button is correctly enabled.
 //    036   07.03.24 Joshua McCormick IMANN-280 Added tabContainerStyle to tab container, reverted old styling changes from 030
+//    037   08.03.24 Sean Flook       IMANN-348 Updated calls to ResetContexts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2096,12 +2097,12 @@ function PropertyDataForm({ data, loading }) {
               setSaveOpen(true);
             }
           }
-          ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+          ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
           handleAddProperty(usrn, easting, northing, parent);
         })
         .catch(() => {});
     } else {
-      ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+      ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
       handleAddProperty(usrn, easting, northing, parent);
     }
   };
@@ -2348,7 +2349,7 @@ function PropertyDataForm({ data, loading }) {
             }
           } else if (result === "discard") {
             saveResult.current = true;
-            ResetContexts("property", true, mapContext, streetContext, propertyContext, sandboxContext);
+            ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
             if (propertyContext.currentProperty.newProperty) {
               propertyContext.resetProperty();
               mapContext.onSearchDataChange([], [], null, null);

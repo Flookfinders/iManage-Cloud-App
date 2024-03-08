@@ -44,6 +44,7 @@
 //    031   14.02.24 Sean Flook        ESU14_GP Changed updateMapStreetData to exclude deleted records.
 //    032   14.02.24 Sean Flook                 Added a bit of error trapping.
 //    033   07.03.24 Sean Flook       IMANN-348 Made hasStreetChanged more robust.
+//    034   08.03.24 Sean Flook       IMANN-348 Added ESU to hasStreetChanged.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -64,6 +65,7 @@ import {
 import ObjectComparison, {
   StreetComparison,
   constructionKeysToIgnore,
+  esuKeysToIgnore,
   heightWidthWeightKeysToIgnore,
   highwayDedicationKeysToIgnore,
   interestKeysToIgnore,
@@ -3418,6 +3420,12 @@ export const hasStreetChanged = (newStreet, currentSandbox) => {
         ),
         currentSandbox.currentStreetRecords.streetDescriptor,
         streetDescriptorKeysToIgnore
+      )) ||
+    (currentSandbox.currentStreetRecords.esu &&
+      !ObjectComparison(
+        currentSandbox.sourceStreet.esus.find((x) => x.pkId === currentSandbox.currentStreetRecords.esu.pkId),
+        currentSandbox.currentStreetRecords.esu,
+        esuKeysToIgnore
       )) ||
     (currentSandbox.currentStreetRecords.highwayDedication &&
       !ObjectComparison(

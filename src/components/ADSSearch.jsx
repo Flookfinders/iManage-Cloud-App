@@ -35,6 +35,7 @@
 //    022   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //    023   16.02.24 Sean Flook        ESU27_GP Tweaked styling for new Add street button.
 //    024   27.02.24 Sean Flook           MUL16 Changes required to allow control to be used for make child of dialog.
+//    025   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -76,14 +77,14 @@ import {
   HasASD,
 } from "../configuration/ADSConfig";
 import { GetWktCoordinates, GetChangedAssociatedRecords, ResetContexts } from "../utils/HelperUtils";
-import { GetStreetMapData, GetCurrentStreetData, SaveStreet } from "../utils/StreetUtils";
+import { GetStreetMapData, GetCurrentStreetData, SaveStreet, hasStreetChanged } from "../utils/StreetUtils";
 import {
   addressToTitleCase,
   GetPropertyMapData,
   GetCurrentPropertyData,
   SavePropertyAndUpdate,
+  hasPropertyChanged,
 } from "../utils/PropertyUtils";
-import { StreetComparison, PropertyComparison } from "../utils/ObjectComparison";
 
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
 import HistoricPropertyDialog from "../dialogs/HistoricPropertyDialog";
@@ -509,19 +510,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
    */
   async function handleSearchCheck() {
     if (sandboxContext.currentSandbox.sourceStreet) {
-      const streetChanged =
-        sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor ||
-        sandboxContext.currentSandbox.currentStreetRecords.esu ||
-        sandboxContext.currentSandbox.currentStreetRecords.highwayDedication ||
-        sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption ||
-        sandboxContext.currentSandbox.currentStreetRecords.interest ||
-        sandboxContext.currentSandbox.currentStreetRecords.construction ||
-        sandboxContext.currentSandbox.currentStreetRecords.specialDesignation ||
-        sandboxContext.currentSandbox.currentStreetRecords.hww ||
-        sandboxContext.currentSandbox.currentStreetRecords.prow ||
-        sandboxContext.currentSandbox.currentStreetRecords.note ||
-        (sandboxContext.currentSandbox.currentStreet &&
-          !StreetComparison(sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreet));
+      const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
 
       if (streetChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("street", sandboxContext, streetContext.esuDataChanged);
@@ -550,7 +539,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                   setSaveOpen(true);
                 }
               }
-              ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+              ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
               handleSearchClick();
             })
             .catch(() => {});
@@ -560,26 +549,20 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
               if (result === "save") {
                 HandleSaveStreet(sandboxContext.currentSandbox.currentStreet);
               }
-              ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+              ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
               handleSearchClick();
             })
             .catch(() => {});
         }
       } else {
-        ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+        ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
         handleSearchClick();
       }
     } else if (sandboxContext.currentSandbox.sourceProperty) {
-      const propertyChanged =
-        sandboxContext.currentSandbox.currentPropertyRecords.lpi ||
-        sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef ||
-        sandboxContext.currentSandbox.currentPropertyRecords.provenance ||
-        sandboxContext.currentSandbox.currentPropertyRecords.note ||
-        (sandboxContext.currentSandbox.currentProperty &&
-          !PropertyComparison(
-            sandboxContext.currentSandbox.sourceProperty,
-            sandboxContext.currentSandbox.currentProperty
-          ));
+      const propertyChanged = hasPropertyChanged(
+        propertyContext.currentProperty.newProperty,
+        sandboxContext.currentSandbox
+      );
 
       if (propertyChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);
@@ -602,7 +585,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                     settingsContext.isScottish
                   );
                   HandleSaveProperty(currentPropertyData);
-                  ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+                  ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
                   handleSearchClick();
                 } else {
                   failedValidation.current = true;
@@ -610,7 +593,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                   setSaveOpen(true);
                 }
               } else {
-                ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+                ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
                 handleSearchClick();
               }
             })
@@ -621,17 +604,17 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
               if (result === "save") {
                 HandleSaveProperty(sandboxContext.currentSandbox.currentProperty);
               }
-              ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+              ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
               handleSearchClick();
             })
             .catch(() => {});
         }
       } else {
-        ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+        ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
         handleSearchClick();
       }
     } else {
-      ResetContexts("all", false, mapContext, streetContext, propertyContext, sandboxContext);
+      ResetContexts("all", mapContext, streetContext, propertyContext, sandboxContext);
       handleSearchClick();
     }
   }
@@ -923,19 +906,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
 
     if (variant === "appBar") {
       if (sandboxContext.currentSandbox.sourceStreet) {
-        const streetChanged =
-          sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor ||
-          sandboxContext.currentSandbox.currentStreetRecords.esu ||
-          sandboxContext.currentSandbox.currentStreetRecords.highwayDedication ||
-          sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption ||
-          sandboxContext.currentSandbox.currentStreetRecords.interest ||
-          sandboxContext.currentSandbox.currentStreetRecords.construction ||
-          sandboxContext.currentSandbox.currentStreetRecords.specialDesignation ||
-          sandboxContext.currentSandbox.currentStreetRecords.hww ||
-          sandboxContext.currentSandbox.currentStreetRecords.prow ||
-          sandboxContext.currentSandbox.currentStreetRecords.note ||
-          (sandboxContext.currentSandbox.currentStreet &&
-            !StreetComparison(sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreet));
+        const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
 
         if (streetChanged) {
           saveConfirmDialog(true)
@@ -943,22 +914,16 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
               if (result === "save") {
                 // if (process.env.NODE_ENV === "development")
               }
-              ResetContexts("street", false, mapContext, streetContext, propertyContext, sandboxContext);
+              ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
               onSelectChange(newValue);
             })
             .catch(() => {});
         }
       } else if (sandboxContext.currentSandbox.sourceProperty) {
-        const propertyChanged =
-          !!sandboxContext.currentSandbox.currentPropertyRecords.lpi ||
-          !!sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef ||
-          !!sandboxContext.currentSandbox.currentPropertyRecords.provenance ||
-          !!sandboxContext.currentSandbox.currentPropertyRecords.note ||
-          (sandboxContext.currentSandbox.currentProperty &&
-            !PropertyComparison(
-              sandboxContext.currentSandbox.sourceProperty,
-              sandboxContext.currentSandbox.currentProperty
-            ));
+        const propertyChanged = hasPropertyChanged(
+          propertyContext.currentProperty.newProperty,
+          sandboxContext.currentSandbox
+        );
 
         if (propertyChanged) {
           associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);
@@ -980,7 +945,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                   );
                   HandleSaveProperty(currentPropertyData);
                 }
-                ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+                ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
                 handleSearchClick();
               })
               .catch(() => {});
@@ -990,17 +955,17 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                 if (result === "save") {
                   HandleSaveProperty(sandboxContext.currentSandbox.currentProperty);
                 }
-                ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+                ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
                 handleSearchClick();
               })
               .catch(() => {});
           }
         } else {
-          ResetContexts("property", false, mapContext, streetContext, propertyContext, sandboxContext);
+          ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
           handleSearchClick();
         }
       } else {
-        ResetContexts("all", false, mapContext, streetContext, propertyContext, sandboxContext);
+        ResetContexts("all", mapContext, streetContext, propertyContext, sandboxContext);
         onSelectChange(newValue);
       }
     } else {
