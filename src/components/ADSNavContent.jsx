@@ -28,6 +28,7 @@
 //    015   05.03.24 Sean Flook       IMANN-338 Check for changes when clicking any of the buttons which would cause to navigate away from a record.
 //    016   07.03.24 Sean Flook       IMANN-338 Always clear any errors if we are leaving the current page.
 //    017   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
+//    018   08.03.24 Sean Flook       IMANN-338 If the save fails do not leave the current page.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -250,8 +251,10 @@ const ADSNavContent = (props) => {
    * Event to handle saving the street.
    *
    * @param {object} currentStreet The data for the current street.
+   * @param {boolean} resetRequired True if all the contexts need to be reset; otherwise false.
+   * @param {string} page The page we are changing to.
    */
-  function HandleSaveStreet(currentStreet) {
+  function HandleSaveStreet(currentStreet, resetRequired, page) {
     SaveStreet(
       currentStreet,
       streetContext,
@@ -267,6 +270,9 @@ const ADSNavContent = (props) => {
         saveResult.current = true;
         saveType.current = "street";
         setSaveOpen(true);
+        if (resetRequired) ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
+        else streetContext.resetStreetErrors();
+        GoToPage(page);
       } else {
         saveResult.current = false;
         saveType.current = "street";
@@ -279,8 +285,10 @@ const ADSNavContent = (props) => {
    * Event to handle saving the property.
    *
    * @param {object} currentProperty The data for the current property.
+   * @param {boolean} resetRequired True if all the contexts need to be reset; otherwise false.
+   * @param {string} page The page we are changing to.
    */
-  function HandleSaveProperty(currentProperty) {
+  function HandleSaveProperty(currentProperty, resetRequired, page) {
     SavePropertyAndUpdate(
       currentProperty,
       propertyContext.currentProperty.newProperty,
@@ -297,6 +305,9 @@ const ADSNavContent = (props) => {
         saveResult.current = true;
         saveType.current = "property";
         setSaveOpen(true);
+        if (resetRequired) ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
+        else propertyContext.resetPropertyErrors();
+        GoToPage(page);
       } else {
         saveResult.current = false;
         saveType.current = "property";
@@ -375,7 +386,7 @@ const ADSNavContent = (props) => {
                     settingsContext.isWelsh,
                     settingsContext.isScottish
                   );
-                  HandleSaveStreet(currentStreetData);
+                  HandleSaveStreet(currentStreetData, resetRequired, page);
                 } else {
                   failedValidation.current = true;
                   saveResult.current = false;
@@ -391,11 +402,12 @@ const ADSNavContent = (props) => {
           saveConfirmDialog(true)
             .then((result) => {
               if (result === "save") {
-                HandleSaveStreet(sandboxContext.currentSandbox.currentStreet);
+                HandleSaveStreet(sandboxContext.currentSandbox.currentStreet, resetRequired, page);
+              } else {
+                if (resetRequired) ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
+                else streetContext.resetStreetErrors();
+                GoToPage(page);
               }
-              if (resetRequired) ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
-              else streetContext.resetStreetErrors();
-              GoToPage(page);
             })
             .catch(() => {});
         }
@@ -430,11 +442,7 @@ const ADSNavContent = (props) => {
                     settingsContext.isWelsh,
                     settingsContext.isScottish
                   );
-                  HandleSaveProperty(currentPropertyData);
-                  if (resetRequired)
-                    ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
-                  else propertyContext.resetPropertyErrors();
-                  GoToPage(page);
+                  HandleSaveProperty(currentPropertyData, resetRequired, page);
                 } else {
                   failedValidation.current = true;
                   saveResult.current = false;
@@ -452,11 +460,13 @@ const ADSNavContent = (props) => {
           saveConfirmDialog(true)
             .then((result) => {
               if (result === "save") {
-                HandleSaveProperty(sandboxContext.currentSandbox.currentProperty);
+                HandleSaveProperty(sandboxContext.currentSandbox.currentProperty, resetRequired, page);
+              } else {
+                if (resetRequired)
+                  ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
+                else propertyContext.resetPropertyErrors();
+                GoToPage(page);
               }
-              if (resetRequired) ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
-              else propertyContext.resetPropertyErrors();
-              GoToPage(page);
             })
             .catch(() => {});
         }
