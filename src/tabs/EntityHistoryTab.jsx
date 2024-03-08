@@ -19,6 +19,8 @@
 //    006   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    008   25.01.24 Sean Flook                 Correctly handle status code 204.
+//    009   08.03.24 Joshua McCormick IMANN-280 Adding Padding bottom to match padding top in the stack/chips
+
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -136,7 +138,7 @@ function EntityHistoryTab({ variant }) {
           alignItems="center"
           justifyContent="flex-start"
           spacing={2}
-          sx={{ pl: theme.spacing(2), pt: theme.spacing(1) }}
+          sx={{ pl: theme.spacing(2), pt: theme.spacing(1), pb: theme.spacing(1) }}
         >
           <Chip
             icon={<UpdateIcon />}
