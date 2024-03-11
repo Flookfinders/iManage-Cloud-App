@@ -46,6 +46,7 @@
 //    033   27.02.24 Sean Flook           MUL16 Added ability too hide the search control.
 //    034   05.03.24 Sean Flook       IMANN-338 Store the last opened street and property tab.
 //    035   08.03.24 Sean Flook       IMANN-348 If clearing ESU from sandbox ensure highway dedication and one way exemption are also cleared.
+//    036   11.03.24 Sean Flook           GLB12 Use appBarHeight to set the height of the control.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -110,6 +111,7 @@ import StylesProvider from "@mui/styles/StylesProvider";
 import { SaveConfirmationServiceProvider } from "./pages/SaveConfirmationPage";
 import CssBaseline from "@mui/material/CssBaseline";
 import "./App.css";
+import { appBarHeight } from "./utils/ADSStyles";
 
 function App() {
   const theme = createTheme();
@@ -2751,7 +2753,7 @@ function App() {
                                             pr: "0px",
                                           }}
                                         >
-                                          <div style={{ height: "64px" }} />
+                                          <div style={{ height: `${appBarHeight}px` }} />
                                           <PageRouting />
                                         </main>
                                       </div>

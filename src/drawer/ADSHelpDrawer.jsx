@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    006   11.03.24 Sean Flook           GLB12 Correctly set width.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -143,11 +144,11 @@ function ADSHelpDrawer(props) {
   return (
     <Drawer
       sx={{
-        width: drawerWidth,
+        width: `${drawerWidth}px`,
         anchor: "right",
         flexShrink: 0,
         "& .MuiDrawer-paper": {
-          width: drawerWidth,
+          width: `${drawerWidth}px`,
         },
       }}
       variant="persistent"

@@ -33,6 +33,7 @@
 //    018   13.02.24 Joel Benford               Provide hww.usrn to map context when changing street
 //    019   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //    020   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
+//    021   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -899,7 +900,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
           </Tooltip>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("77.7vh")}>
+      <Box sx={dataFormStyle("79.9vh")}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : relatedType === "property" ? (

@@ -34,6 +34,7 @@
 //    021   27.02.24 Sean Flook           MUL16 Changes required to handle parent child relationships.
 //    022   04.03.24 Sean Flook           MUL16 Temporarily changed field name whilst waiting for API to be fixed.
 //    023   04.03.24 Sean Flook           MUL16 Field name has been fixed.
+//    024   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1124,7 +1125,7 @@ function PropertyDetailsTab({
           </Menu>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("77.7vh")}>
+      <Box sx={dataFormStyle("79.9vh")}>
         <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
           <Grid item xs={3}>
             <Typography variant="body2" color="textPrimary" align="left" sx={controlLabelStyle}>

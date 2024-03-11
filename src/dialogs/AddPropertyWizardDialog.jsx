@@ -28,6 +28,7 @@
 //    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    016   17.01.24 Sean Flook                 Renamed fields and included sub-locality.
 //    017   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
+//    018   11.03.24 Sean Flook           GLB12 Removed bottom margin.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2346,7 +2347,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
         onClose={handleDialogClose}
         TransitionComponent={Transition}
       >
-        <DialogTitle id="add-property-wizard-dialog" sx={dialogTitleStyle}>
+        <DialogTitle id="add-property-wizard-dialog" sx={{ ...dialogTitleStyle, mb: "0px" }}>
           <Stack
             direction="row"
             alignItems="center"

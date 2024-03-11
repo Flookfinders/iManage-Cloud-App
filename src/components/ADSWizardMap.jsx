@@ -21,6 +21,7 @@
 //    008   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    009   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    010   25.01.24 Sean Flook                 Changes required after UX review.
+//    011   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1251,7 +1252,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
       <Box
         sx={{
           flexGrow: 0,
-          height: `${displayPlaceOnMap ? "77vh" : moveBlpu ? "83vh" : "78vh"}`,
+          height: `${moveBlpu ? "83.25vh" : "79.25vh"}`,
           width: "100%",
         }}
         ref={mapRef}

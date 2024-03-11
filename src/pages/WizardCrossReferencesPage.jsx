@@ -3,7 +3,7 @@
 //
 //  Description: Edit Cross Reference Dialog
 //
-//  Copyright:    © 2023 Idox Software Limited.
+//  Copyright:    © 2023 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -18,6 +18,7 @@
 //    005   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    007   08.12.23 Sean Flook                 Migrated DataGrid to v6.
+//    008   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -285,7 +286,7 @@ function WizardCrossReferencesPage({ data, errors, templateVariant, onDataChange
               Add
             </Button>
           </Stack>
-          <Box sx={dataFormStyle("70vh")} className={classes.root}>
+          <Box sx={dataFormStyle("73vh")} className={classes.root}>
             {data && data.length > 0 ? (
               <DataGrid
                 rows={data}

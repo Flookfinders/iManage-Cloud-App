@@ -43,6 +43,7 @@
 //    030   05.03.24 Sean Flook       IMANN-338 Correctly display controls and navigate as required.
 //    031   07.03.24 Sean Flook       IMANN-338 Use the correct fields to hide the issue popper.
 //    032   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
+//    033   11.03.24 Sean Flook           GLB12 Use constants from ADSStyles to set heights and widths.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -123,6 +124,9 @@ import {
   tooltipStyle,
   SelectPropertiesIconStyle,
   blueButtonStyle,
+  drawerWidth,
+  navBarWidth,
+  appBarHeight,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -167,9 +171,6 @@ function ADSAppBar(props) {
   const associatedRecords = useRef([]);
 
   const saveConfirmDialog = useSaveConfirmation();
-
-  const navBarWidth = 60;
-  const drawerWidth = 400;
 
   const [issueAnchorEl, setIssueAnchorEl] = useState(null);
   const issueOpen = Boolean(issueAnchorEl);
@@ -825,8 +826,8 @@ function ADSAppBar(props) {
         elevation={0}
         sx={{
           width: `calc(100% - ${openHelp || openTask || openBookmark ? navBarWidth + drawerWidth : navBarWidth}px)`,
-          height: "56px",
-          ml: navBarWidth,
+          height: `${appBarHeight}px`,
+          ml: `${navBarWidth}px`,
           mr: `${openHelp || openTask || openBookmark ? drawerWidth : 0}px`,
           transition: `theme.transitions.create(["margin", "width"], {
           easing: ${

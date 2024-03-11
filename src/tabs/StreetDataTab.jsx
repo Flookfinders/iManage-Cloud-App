@@ -27,6 +27,7 @@
 //    014   15.02.24 Joel Benford     IMANN-296 Changing state to closed sets state/end dates to today.
 //    015   15.02.24 Joshua McCormick IMANN-282 Changed logic for street title change
 //    016   15.02.24 Joshua McCormick IMANN-282 Final tweaks, shortened condition
+//    017   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -974,7 +975,7 @@ function StreetDataTab({
           </Menu>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("77.7vh")}>
+      <Box sx={dataFormStyle("79.9vh")}>
         <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
           <Grid item xs={3}>
             <Typography variant="body2" color="textPrimary" align="left">

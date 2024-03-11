@@ -31,6 +31,7 @@
 //    018   28.02.24 Joshua McCormick IMANN-280 Removed unnecessary height in toolbarStyle 
 //    019   27.02.24 Sean Flook           MUL16 New styles used for parent child.
 //    020   07.03.24 Joshua McCormick  IMANN-280 Added tabContainerStyle to control tab container border and existing styling
+//    021   11.03.24 Sean Flook           GLB12 Adjusted heights to remove gaps and added appBarHeight constant.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -65,8 +66,9 @@ import {
 
 /* #endregion imports */
 
-export const drawerWidth = "400px";
-export const navBarWidth = "60px";
+export const drawerWidth = "400";
+export const navBarWidth = "60";
+export const appBarHeight = "56";
 
 /**
  * Return the styling for action icons.
@@ -357,7 +359,7 @@ export const searchDataFormStyle = {
   boxShadow: `4px 0px 7px ${adsLightGreyA50}`,
   overflowY: "auto",
   width: "100%",
-  height: "87.75vh",
+  height: "88.75vh",
 };
 
 /**
@@ -372,7 +374,7 @@ export const wizardFinaliseFormStyle = (haveMoveBlpu = false) => {
     boxShadow: `4px 0px 7px ${adsLightGreyA50}`,
     overflowY: "auto",
     width: "100%",
-    height: `${haveMoveBlpu ? "78vh" : "74vh"}`,
+    height: `${haveMoveBlpu ? "78.75vh" : "74.75vh"}`,
   };
 };
 

@@ -29,6 +29,7 @@
 //    016   20.02.24 Joel Benford     IMANN-299 Toolbar changes
 //    017   04.03.24 Sean Flook            COL3 Changed the colour for type 51/61 ASD records.
 //    018   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
+//    019   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -555,7 +556,7 @@ function MaintenanceResponsibilityDataTab({ data, errors, loading, focusedField,
           )}
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("77.7vh")}>
+      <Box sx={dataFormStyle("79.9vh")}>
         <ADSSelectControl
           label="Street status"
           isEditable={userCanEdit}

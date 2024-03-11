@@ -20,7 +20,7 @@
 //    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    008   25.01.24 Sean Flook                 Correctly handle status code 204.
 //    009   08.03.24 Joshua McCormick IMANN-280 Adding Padding bottom to match padding top in the stack/chips
-
+//    010   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ function EntityHistoryTab({ variant }) {
           <Chip icon={<EditIcon />} disabled size="small" label="Edits in progress" />
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("77.7vh")}>
+      <Box sx={dataFormStyle("79.9vh")}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : (

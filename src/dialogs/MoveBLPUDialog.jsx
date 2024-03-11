@@ -18,6 +18,7 @@
 //    005   25.01.24 Sean Flook                 Changes required after UX review.
 //    006   20.02.24 Sean Flook            MUL6 Updated title.
 //    007   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
+//    008   11.03.24 Sean Flook           GLB12 Removed bottom margin.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -633,7 +634,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
         onClose={handleDialogClose}
         TransitionComponent={Transition}
       >
-        <DialogTitle id="add-property-wizard-dialog" sx={dialogTitleStyle}>
+        <DialogTitle id="add-property-wizard-dialog" sx={{ ...dialogTitleStyle, mb: "0px" }}>
           <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Stack
               direction="row"

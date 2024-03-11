@@ -30,6 +30,7 @@
 //    017   16.02.24 Sean Flook        ESU26_GP Display information for selecting ESUs from map.
 //    018   22.02.24 Joel Benford     IMANN-287 Blue on checked and hover
 //    019   27.02.24 Sean Flook           MUL16 Updated information type.
+//    020   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -501,7 +502,7 @@ function EsuListTab({
           </Stack>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("77.7vh")}>
+      <Box sx={dataFormStyle("79.9vh")}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : data && data.length > 0 ? (

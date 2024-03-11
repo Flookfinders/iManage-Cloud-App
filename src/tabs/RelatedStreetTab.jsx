@@ -31,6 +31,7 @@
 //    018   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    019   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
 //    020   22.02.24 Joel Benford     IMANN-287 Checked items blue
+//    021   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -687,7 +688,7 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
 
   return (
     <Fragment>
-      <Box sx={dataFormStyle("77.7vh")}>
+      <Box sx={dataFormStyle("79.9vh")}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : (

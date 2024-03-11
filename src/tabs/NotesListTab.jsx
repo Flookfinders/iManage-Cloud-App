@@ -19,6 +19,7 @@
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    007   22.02.24 Joel Benford     IMANN-287 Correct blue on hover
 //    008   23.02.24 Joel Benford     IMANN-287 Tweak layout since bottom padding hid hover on row below
+//    009   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -219,7 +220,7 @@ function NotesListTab({ data, errors, loading, variant, onNoteSelected, onNoteDe
           </Tooltip>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("77.7vh")}>
+      <Box sx={dataFormStyle("79.9vh")}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : (

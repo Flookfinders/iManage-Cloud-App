@@ -61,6 +61,7 @@
 //    047   20.02.24 Sean Flook            MUL1 Changes required to selecting properties from the map.
 //    048   22.02.24 Sean Flook         ESU3_GP Set the fillOpacity on the highlight to 0.25.
 //    049   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods.
+//    050   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -7990,7 +7991,7 @@ function ADSEsriMap(startExtent) {
         sx={{
           flexGrow: 0,
           p: theme.spacing(1),
-          height: "93vh",
+          height: "94vh",
         }}
         ref={mapRef}
         id="ads-map"

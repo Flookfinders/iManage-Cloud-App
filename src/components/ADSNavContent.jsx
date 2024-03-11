@@ -29,6 +29,7 @@
 //    016   07.03.24 Sean Flook       IMANN-338 Always clear any errors if we are leaving the current page.
 //    017   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
 //    018   08.03.24 Sean Flook       IMANN-338 If the save fails do not leave the current page.
+//    019   11.03.24 Sean Flook           GLB12 Correctly set widths.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -611,7 +612,7 @@ const ADSNavContent = (props) => {
     <Fragment>
       <Drawer
         sx={{
-          width: navBarWidth,
+          width: `${navBarWidth}px`,
           borderRight: "1px",
           borderRightColor: adsLightGreyB,
           boxShadow: `4px 0px 9px ${adsLightGreyA50}`,
@@ -622,7 +623,7 @@ const ADSNavContent = (props) => {
         <Grid
           sx={{
             pt: theme.spacing(0.3),
-            width: navBarWidth,
+            width: `${navBarWidth}px`,
             height: "98vh",
           }}
           container

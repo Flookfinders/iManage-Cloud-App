@@ -38,6 +38,7 @@
 //    024   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
 //    025   22.02.24 Joel Benford     IMANN-287 Checked items blue
 //    026   01.03.24 Sean Flook           MUL16 Handle make child of.
+//    027   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -943,7 +944,7 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
           </Menu>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("73vh")}>
+      <Box sx={dataFormStyle("74vh")}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : (

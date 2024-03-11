@@ -30,6 +30,7 @@
 //    017   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
 //    018   04.03.24 Sean Flook            COL3 Changed the colour for type 51/61 ASD records.
 //    019   07.03.24 Sean Flook       IMANN-339 Only show the Add button for Scottish authorities if the street is type 1 or 2.
+//    020   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -720,7 +721,7 @@ function AsdDataTab({
           </Stack>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("77.7vh")}>
+      <Box sx={dataFormStyle("79.9vh")}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : (

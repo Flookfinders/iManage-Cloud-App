@@ -23,6 +23,7 @@
 //    010   11.01.24 Sean Flook                 Fix warnings.
 //    011   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    012   09.02.24 Sean Flook                 Added id to box so that ADSSelectionControl can use it.
+//    013   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -349,7 +350,7 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
           />
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("77.7vh")}>
+      <Box sx={dataFormStyle("79.9vh")}>
         <ADSSelectControl
           label="Provenance"
           isEditable={userCanEdit}

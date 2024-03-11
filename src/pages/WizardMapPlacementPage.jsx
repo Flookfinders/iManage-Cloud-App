@@ -3,7 +3,7 @@
 //
 //  Description: Wizard finalise page
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001            Sean Flook                 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    003   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -51,7 +52,7 @@ function WizardMapPlacementPage({ data, placeOnMapData, isChild, isRange, creati
   };
 
   return (
-    <Box id="wizard-map-placement-page" sx={{ mt: "17px", width: "100%" }}>
+    <Box id="wizard-map-placement-page" sx={{ width: "100%" }}>
       <ADSWizardMap
         data={data}
         placeOnMapData={placeOnMapData}

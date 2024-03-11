@@ -27,6 +27,7 @@
 //    014   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //    015   14.02.24 Sean Flook                 Added a bit of error trapping.
 //    016   07.03.24 Joshua McCormick  IMANN-280 Added tabContainerStyle to tab container
+//    017   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -543,8 +544,8 @@ function ADSHomepageLatestEditsControl({ data }) {
       <TabPanel value={value} index={1}>
         <Box
           sx={{
-            height: "41.1vh",
-            mb: "20px",
+            height: "44vh",
+            mb: "26px",
           }}
         >
           <DataGrid
