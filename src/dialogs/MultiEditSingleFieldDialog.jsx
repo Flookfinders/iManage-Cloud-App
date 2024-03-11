@@ -19,6 +19,7 @@
 //    006   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    007   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle and renderErrors.
 //    008   11.03.24 Sean Flook           MUL13 Changed control alignment.
+//    009   11.03.24 Sean Flook           MUL11 Reset counts when closing dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -916,7 +917,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
   useEffect(() => {
     setRepresentativePointCodeLookup(FilteredRepresentativePointCode(settingsContext.isScottish, false));
 
-    if (isOpen && !showDialog) {
+    if (isOpen) {
       switch (variant) {
         case "classification":
           setTitle("Edit classification");
@@ -951,10 +952,15 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
       setNoteOpen(false);
       setCompleted(false);
       setUpdating(false);
+    } else {
+      failedCount.current = 0;
+      updatedCount.current = 0;
+      totalUpdateCount.current = 0;
+      setRangeProcessedCount(0);
     }
 
     setShowDialog(isOpen);
-  }, [variant, settingsContext.isScottish, isOpen, completed, showDialog]);
+  }, [variant, settingsContext.isScottish, isOpen]);
 
   useEffect(() => {
     const getErrorList = (currentErrors) => {

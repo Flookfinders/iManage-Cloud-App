@@ -18,6 +18,7 @@
 //    005   11.01.24 Sean Flook                 Fix warnings.
 //    006   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle and renderErrors.
 //    007   11.03.24 Sean Flook           MUL13 Changed control alignment.
+//    008   11.03.24 Sean Flook           MUL11 Reset counts when closing dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -596,7 +597,7 @@ function MultiEditRemoveCrossReferenceDialog({ propertyUprns, isOpen, onClose })
   };
 
   useEffect(() => {
-    if (isOpen && !showDialog) {
+    if (isOpen) {
       setTitle("Remove cross reference(s)");
       setAction("source");
       setHaveErrors(false);
@@ -608,10 +609,15 @@ function MultiEditRemoveCrossReferenceDialog({ propertyUprns, isOpen, onClose })
         .filter((x) => x.enabled)
         .map((a) => a["xrefDescription"]);
       if (filteredData.length !== options.length) setOptions(filteredData);
+    } else {
+      failedCount.current = 0;
+      updatedCount.current = 0;
+      totalUpdateCount.current = 0;
+      setRangeProcessedCount(0);
     }
 
     setShowDialog(isOpen);
-  }, [isOpen, showDialog, lookupContext.currentLookups.appCrossRefs, options]);
+  }, [isOpen, lookupContext.currentLookups.appCrossRefs, options]);
 
   useEffect(() => {
     const getErrorList = (currentErrors) => {

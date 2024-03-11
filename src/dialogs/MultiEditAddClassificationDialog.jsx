@@ -20,6 +20,7 @@
 //    007   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    008   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle and renderErrors.
 //    009   11.03.24 Sean Flook           MUL13 Changed control alignment.
+//    010   11.03.24 Sean Flook           MUL11 Reset counts when closing dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -510,7 +511,7 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
   };
 
   useEffect(() => {
-    if (isOpen && !showDialog) {
+    if (isOpen) {
       setTitle("Add classification");
       setAction("add");
       setClassificationError(null);
@@ -520,10 +521,15 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
       setNoteOpen(false);
       setCompleted(false);
       setUpdating(false);
+    } else {
+      failedCount.current = 0;
+      updatedCount.current = 0;
+      totalUpdateCount.current = 0;
+      setRangeProcessedCount(0);
     }
 
     setShowDialog(isOpen);
-  }, [isOpen, showDialog]);
+  }, [isOpen]);
 
   useEffect(() => {
     const getErrorList = (currentErrors) => {
