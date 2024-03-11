@@ -45,6 +45,7 @@
 //    032   14.02.24 Sean Flook                 Added a bit of error trapping.
 //    033   07.03.24 Sean Flook       IMANN-348 Made hasStreetChanged more robust.
 //    034   08.03.24 Sean Flook       IMANN-348 Added ESU to hasStreetChanged.
+//    035   11.03.24 Sean Flook        ESU29_GP Added setASDLayerVisibility.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3521,4 +3522,22 @@ export const hasStreetChanged = (newStreet, currentSandbox) => {
       )) ||
     (currentSandbox.currentStreet && !StreetComparison(currentSandbox.sourceStreet, currentSandbox.currentStreet))
   );
+};
+
+/**
+ * Method used to set the visibility of the ASD layer.
+ *
+ * @param {number} asdType The ASD type
+ * @param {object} asdLayer The ASD feature layer
+ * @param {object} currentRecord  The current street record.
+ */
+export const setASDLayerVisibility = (asdType, asdLayer, currentRecord) => {
+  if (asdLayer) {
+    asdLayer.visible = [11, asdType].includes(currentRecord.type);
+    if (currentRecord.type === 51 && currentRecord.id) {
+      asdLayer.definitionExpression = `PkId = ${currentRecord.id}`;
+    } else {
+      asdLayer.definitionExpression = null;
+    }
+  }
 };

@@ -62,6 +62,7 @@
 //    048   22.02.24 Sean Flook         ESU3_GP Set the fillOpacity on the highlight to 0.25.
 //    049   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods.
 //    050   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    051   11.03.24 Sean Flook        ESU29_GP Set ASD visibility after creating and adding to map.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -109,6 +110,7 @@ import {
   GetDistrictLabel,
   DisplayStreetInStreetView,
   hasStreetChanged,
+  setASDLayerVisibility,
 } from "../utils/StreetUtils";
 import {
   GetClassificationLabel,
@@ -4355,6 +4357,15 @@ function ADSEsriMap(startExtent) {
     if (propertyDataRef && propertyDataRef.length > 0) mapRef.current.add(propertyLayer);
     mapRef.current.add(zoomGraphicsLayer.current);
 
+    setASDLayerVisibility(51, asd51Layer, streetContext.currentRecord);
+    setASDLayerVisibility(52, asd52Layer, streetContext.currentRecord);
+    setASDLayerVisibility(53, asd53Layer, streetContext.currentRecord);
+    setASDLayerVisibility(61, asd61Layer, streetContext.currentRecord);
+    setASDLayerVisibility(62, asd62Layer, streetContext.currentRecord);
+    setASDLayerVisibility(63, asd63Layer, streetContext.currentRecord);
+    setASDLayerVisibility(64, asd64Layer, streetContext.currentRecord);
+    setASDLayerVisibility(66, asd66Layer, streetContext.currentRecord);
+
     zoomGraphicsLayer.current.graphics.removeAll();
 
     if (mapContext.currentLayers.zoomStreet) {
@@ -6730,77 +6741,14 @@ function ADSEsriMap(startExtent) {
       const asd64Layer = mapRef.current && mapRef.current.findLayerById(asd64LayerName);
       const asd66Layer = mapRef.current && mapRef.current.findLayerById(asd66LayerName);
 
-      if (asd51Layer) {
-        asd51Layer.visible = [11, 51].includes(streetContext.currentRecord.type);
-        if (streetContext.currentRecord.type === 51 && streetContext.currentRecord.id) {
-          asd51Layer.definitionExpression = `PkId = ${streetContext.currentRecord.id}`;
-        } else {
-          asd51Layer.definitionExpression = null;
-        }
-      }
-
-      if (asd52Layer) {
-        asd52Layer.visible = [11, 52].includes(streetContext.currentRecord.type);
-        if (streetContext.currentRecord.type === 52 && streetContext.currentRecord.id) {
-          asd52Layer.definitionExpression = `PkId = ${streetContext.currentRecord.id}`;
-        } else {
-          asd52Layer.definitionExpression = null;
-        }
-      }
-
-      if (asd53Layer) {
-        asd53Layer.visible = [11, 53].includes(streetContext.currentRecord.type);
-        if (streetContext.currentRecord.type === 53 && streetContext.currentRecord.id) {
-          asd53Layer.definitionExpression = `PkId = ${streetContext.currentRecord.id}`;
-        } else {
-          asd53Layer.definitionExpression = null;
-        }
-      }
-
-      if (asd61Layer) {
-        asd61Layer.visible = [11, 61].includes(streetContext.currentRecord.type);
-        if (streetContext.currentRecord.type === 61 && streetContext.currentRecord.id) {
-          asd61Layer.definitionExpression = `PkId = ${streetContext.currentRecord.id}`;
-        } else {
-          asd61Layer.definitionExpression = null;
-        }
-      }
-
-      if (asd62Layer) {
-        asd62Layer.visible = [11, 62].includes(streetContext.currentRecord.type);
-        if (streetContext.currentRecord.type === 62 && streetContext.currentRecord.id) {
-          asd62Layer.definitionExpression = `PkId = ${streetContext.currentRecord.id}`;
-        } else {
-          asd62Layer.definitionExpression = null;
-        }
-      }
-
-      if (asd63Layer) {
-        asd63Layer.visible = [11, 63].includes(streetContext.currentRecord.type);
-        if (streetContext.currentRecord.type === 63 && streetContext.currentRecord.id) {
-          asd63Layer.definitionExpression = `PkId = ${streetContext.currentRecord.id}`;
-        } else {
-          asd63Layer.definitionExpression = null;
-        }
-      }
-
-      if (asd64Layer) {
-        asd64Layer.visible = [11, 64].includes(streetContext.currentRecord.type);
-        if (streetContext.currentRecord.type === 64 && streetContext.currentRecord.id) {
-          asd64Layer.definitionExpression = `PkId = ${streetContext.currentRecord.id}`;
-        } else {
-          asd64Layer.definitionExpression = null;
-        }
-      }
-
-      if (asd66Layer) {
-        asd66Layer.visible = [11, 66].includes(streetContext.currentRecord.type);
-        if (streetContext.currentRecord.type === 66 && streetContext.currentRecord.id) {
-          asd66Layer.definitionExpression = `PkId = ${streetContext.currentRecord.id}`;
-        } else {
-          asd66Layer.definitionExpression = null;
-        }
-      }
+      setASDLayerVisibility(51, asd51Layer, streetContext.currentRecord);
+      setASDLayerVisibility(52, asd52Layer, streetContext.currentRecord);
+      setASDLayerVisibility(53, asd53Layer, streetContext.currentRecord);
+      setASDLayerVisibility(61, asd61Layer, streetContext.currentRecord);
+      setASDLayerVisibility(62, asd62Layer, streetContext.currentRecord);
+      setASDLayerVisibility(63, asd63Layer, streetContext.currentRecord);
+      setASDLayerVisibility(64, asd64Layer, streetContext.currentRecord);
+      setASDLayerVisibility(66, asd66Layer, streetContext.currentRecord);
     }
   }, [streetContext.currentRecord]);
 
