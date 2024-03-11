@@ -18,6 +18,7 @@
 //    005   11.01.24 Sean Flook                 Fix warnings.
 //    006   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    007   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle and renderErrors.
+//    008   11.03.24 Sean Flook           MUL13 Changed control alignment.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -41,6 +42,7 @@ import {
   Grid,
   Backdrop,
   CircularProgress,
+  Tooltip,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
@@ -75,7 +77,7 @@ import {
   adsDarkGrey10,
   adsDarkGrey20,
 } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle, tooltipStyle } from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
 import { useTheme, makeStyles } from "@mui/styles";
 
@@ -368,10 +370,11 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
 
       case "level":
         return settingsContext.isScottish ? (
-          <Grid container justifyContent="center" alignItems="center">
+          <Grid container justifyContent="flex-start" alignItems="center">
             <Grid item xs={12}>
               <ADSNumberControl
                 label="Level"
+                isEditable
                 value={level}
                 errorText={null}
                 helperText="Memorandum of the vertical position of the BLPU."
@@ -380,10 +383,11 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
             </Grid>
           </Grid>
         ) : (
-          <Grid container justifyContent="center" alignItems="center">
+          <Grid container justifyContent="flex-start" alignItems="center">
             <Grid item xs={12}>
               <ADSTextControl
                 label="Level"
+                isEditable
                 value={level}
                 id="lpi_level_multi_edit"
                 maxLength={30}
@@ -417,6 +421,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                 label="Exclude from export"
                 isEditable
                 checked={excludeFromExport}
+                wideLabel
                 trueLabel="Yes"
                 falseLabel="No"
                 errorText={null}
@@ -449,6 +454,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                 label="Site visit required"
                 isEditable
                 checked={siteVisitRequired}
+                wideLabel
                 trueLabel="Yes"
                 falseLabel="No"
                 errorText={null}
@@ -1101,15 +1107,17 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
       maxWidth="xs" //"sm"
       onClose={handleDialogClose}
     >
-      <DialogTitle id="multi-edit-single-field-dialog" sx={dialogTitleStyle}>
+      <DialogTitle id="multi-edit-single-field-dialog" sx={{ ...dialogTitleStyle, ml: theme.spacing(1) }}>
         <Typography variant="h6">{`${title}`}</Typography>
-        <IconButton
-          aria-label="close"
-          onClick={handleCancelClick}
-          sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
-        >
-          <CloseIcon />
-        </IconButton>
+        <Tooltip title="close" sx={tooltipStyle}>
+          <IconButton
+            aria-label="close"
+            onClick={handleCancelClick}
+            sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Tooltip>
       </DialogTitle>
       <DialogContent sx={{ mt: theme.spacing(2) }}>
         {!completed ? (
@@ -1180,7 +1188,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
           </Fragment>
         )}
       </DialogContent>
-      <DialogActions sx={{ justifyContent: "center", mb: theme.spacing(2) }}>
+      <DialogActions sx={{ justifyContent: "flex-start", ml: theme.spacing(3), mb: theme.spacing(2) }}>
         {!completed ? (
           <Stack direction="column" spacing={3}>
             {!noteOpen && variant !== "note" && (

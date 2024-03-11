@@ -17,6 +17,7 @@
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   11.01.24 Sean Flook                 Fix warnings.
 //    006   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle and renderErrors.
+//    007   11.03.24 Sean Flook           MUL13 Changed control alignment.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -46,6 +47,7 @@ import {
   RadioGroup,
   Radio,
   FormControlLabel,
+  Tooltip,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
@@ -73,7 +75,7 @@ import {
   adsDarkGrey20,
   adsDarkPink,
 } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle, tooltipStyle } from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
 import { useTheme, makeStyles } from "@mui/styles";
 
@@ -654,20 +656,22 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
       maxWidth="sm"
       onClose={handleDialogClose}
     >
-      <DialogTitle id="multi-add-xref-dialog" sx={dialogTitleStyle}>
+      <DialogTitle id="multi-add-xref-dialog" sx={{ ...dialogTitleStyle, ml: theme.spacing(1) }}>
         <Typography variant="h6">{`${title}`}</Typography>
-        <IconButton
-          aria-label="close"
-          onClick={handleCancelClick}
-          sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
-        >
-          <CloseIcon />
-        </IconButton>
+        <Tooltip title="Close" sx={tooltipStyle}>
+          <IconButton
+            aria-label="close"
+            onClick={handleCancelClick}
+            sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Tooltip>
       </DialogTitle>
       <DialogContent sx={{ mt: theme.spacing(2) }}>
         {!completed ? (
           <Fragment>
-            <Typography variant="body1" gutterBottom>
+            <Typography variant="body1" gutterBottom sx={{ ml: theme.spacing(1.25) }}>
               Enter the details for the cross reference to add to the selected properties
             </Typography>
             <Grid container justifyContent="center" alignItems="center">
@@ -843,7 +847,7 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
           </Fragment>
         )}
       </DialogContent>
-      <DialogActions sx={{ justifyContent: "center", mb: theme.spacing(2) }}>
+      <DialogActions sx={{ justifyContent: "flex-start", ml: theme.spacing(3), mb: theme.spacing(2) }}>
         {!completed ? (
           <Stack direction="column" spacing={3}>
             {!noteOpen && (

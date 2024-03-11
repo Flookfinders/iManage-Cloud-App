@@ -15,6 +15,7 @@
 //    002   31.03.23 Sean Flook         WI40656 Correctly display control when checked changes.
 //    003   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
 //    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    005   11.03.24 Sean Flook           MUL13 Added wideLabel parameter.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -41,6 +42,7 @@ ADSSwitchControl.propTypes = {
   falseLabel: PropTypes.string.isRequired,
   helperText: PropTypes.string,
   checked: PropTypes.bool,
+  wideLabel: PropTypes.bool,
   errorText: PropTypes.array,
   onChange: PropTypes.func.isRequired,
 };
@@ -51,6 +53,7 @@ ADSSwitchControl.defaultProps = {
   isFocused: false,
   loading: false,
   checked: false,
+  wideLabel: false,
   trueLabel: "True",
   falseLabel: "False",
 };
@@ -65,6 +68,7 @@ function ADSSwitchControl({
   falseLabel,
   helperText,
   checked,
+  wideLabel,
   errorText,
   onChange,
 }) {
@@ -111,7 +115,7 @@ function ADSSwitchControl({
   return (
     <Box sx={FormBoxRowStyle(hasError.current)}>
       <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
-        <Grid item xs={3}>
+        <Grid item xs={wideLabel ? 5 : 3}>
           <Typography
             id={`ads-switch-label-${label.toLowerCase().replaceAll(" ", "-")}`}
             variant="body2"
@@ -121,7 +125,7 @@ function ADSSwitchControl({
             {`${label}${isRequired ? "*" : ""}`}
           </Typography>
         </Grid>
-        <Grid item xs={9}>
+        <Grid item xs={wideLabel ? 7 : 9}>
           {loading ? (
             <Skeleton variant="rectangular" height="46px" width="100%" />
           ) : helperText && helperText.length > 0 ? (
