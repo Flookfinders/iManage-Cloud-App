@@ -12,6 +12,7 @@
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   27.02.24 Sean Flook           MUL16 Initial Revision.
+//    002   12.03.24 Sean Flook           MUL10 Display errors in a list control.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -26,8 +27,8 @@ import PropertyContext from "../context/propertyContext";
 import SearchContext from "../context/searchContext";
 import MapContext from "../context/mapContext";
 
-import { GetPropertyMapData, SaveProperty, addressToTitleCase } from "./../utils/PropertyUtils";
-import { renderErrors } from "../utils/HelperUtils";
+import { GetPropertyMapData, SaveProperty, addressToTitleCase, getClassificationCode } from "./../utils/PropertyUtils";
+import { renderErrorListItem } from "../utils/HelperUtils";
 
 import {
   IconButton,
@@ -43,9 +44,10 @@ import {
   Radio,
   Box,
   Grid,
+  List,
+  ListItem,
 } from "@mui/material";
 import { Stack } from "@mui/system";
-import { DataGrid } from "@mui/x-data-grid";
 import ADSSearch from "../components/ADSSearch";
 import ADSTextControl from "../components/ADSTextControl";
 
@@ -56,10 +58,9 @@ import EditIcon from "@mui/icons-material/Edit";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 
-import { adsRed, adsLightGreyC, adsMidGreyA, adsGreenC } from "../utils/ADSColours";
+import { adsRed, adsLightGreyC, adsGreenC } from "../utils/ADSColours";
 import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
-import { getClassificationCode } from "./../utils/PropertyUtils";
 
 MakeChildDialog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
@@ -92,8 +93,6 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
   const [updating, setUpdating] = useState(false);
   const [finaliseErrors, setFinaliseErrors] = useState([]);
 
-  const [sortModel, setSortModel] = useState([{ field: "address", sort: "asc" }]);
-
   const properties = useRef(null);
   const savedProperty = useRef(null);
   const updateErrors = useRef([]);
@@ -101,28 +100,6 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
   const updatedCount = useRef(0);
   const failedCount = useRef(0);
   const failedIds = useRef([]);
-
-  /**
-   * Array of fields (columns) to be displayed in the error data grid.
-   */
-  const columns = [
-    { field: "id" },
-    { field: "uprn" },
-    {
-      field: "address",
-      headerName: "Address",
-      headerClassName: "idox-make-child-of-error-data-grid-header",
-      flex: 30,
-    },
-    {
-      field: "errors",
-      headerName: "Errors",
-      cellClassName: "idox-make-child-of-error-data-grid-error",
-      headerClassName: "idox-make-child-of-error-data-grid-header",
-      flex: 30,
-      renderCell: renderErrors,
-    },
-  ];
 
   /**
    * Event to handle when the continue button is clicked
@@ -687,39 +664,32 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
                 </Stack>
                 <Box
                   sx={{
-                    width: "540px",
-                    height: "300px",
-                    "& .idox-make-child-of-error-data-grid-header": {
-                      backgroundColor: adsLightGreyC,
-                      color: adsMidGreyA,
-                    },
-                    "& .idox-make-child-of-error-data-grid-error": {
-                      color: adsRed,
-                    },
+                    height: "197px",
+                    border: `1px solid ${adsLightGreyC}`,
+                    overflowY: "auto",
                   }}
                 >
-                  {finaliseErrors && finaliseErrors.length && (
-                    <DataGrid
-                      rows={finaliseErrors}
-                      columns={columns}
-                      initialState={{
-                        columns: {
-                          columnVisibilityModel: {
-                            id: false,
-                            uprn: false,
-                          },
-                        },
-                      }}
-                      autoPageSize
-                      disableColumnMenu
-                      disableRowSelectionOnClick
-                      pagination
-                      rowHeight={32}
-                      sortModel={sortModel}
-                      onSortModelChange={(model) => setSortModel(model)}
-                    />
+                  {finaliseErrors && finaliseErrors.length > 0 && (
+                    <List sx={{ width: "100%", pt: "0px", pb: "0px" }} component="nav" key="make-child-of-errors">
+                      {finaliseErrors.map((rec, index) => (
+                        <ListItem alignItems="flex-start" dense divider id={`make-child-of-error-${index}`}>
+                          {renderErrorListItem(rec)}
+                        </ListItem>
+                      ))}
+                    </List>
                   )}
                 </Box>
+                {process.env.NODE_ENV === "development" && (
+                  <Button
+                    onClick={handleAddToListClick}
+                    autoFocus
+                    variant="contained"
+                    sx={{ ...whiteButtonStyle, width: "135px" }}
+                    startIcon={<PlaylistAddIcon />}
+                  >
+                    Add to list
+                  </Button>
+                )}
               </Stack>
             )}
           </Stack>

@@ -21,6 +21,7 @@
 //    008   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle and renderErrors.
 //    009   11.03.24 Sean Flook           MUL13 Changed control alignment.
 //    010   11.03.24 Sean Flook           MUL11 Reset counts when closing dialog.
+//    011   12.03.24 Sean Flook           MUL10 Display errors in a list control.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -46,9 +47,10 @@ import {
   Backdrop,
   CircularProgress,
   Tooltip,
+  List,
+  ListItem,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { DataGrid } from "@mui/x-data-grid";
 import ADSReadOnlyControl from "../components/ADSReadOnlyControl";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSTextControl from "../components/ADSTextControl";
@@ -59,7 +61,7 @@ import {
   GetCheck,
   GetErrorMessage,
   filteredLookup,
-  renderErrors,
+  renderErrorListItem,
 } from "../utils/HelperUtils";
 import {
   FilteredBLPUState,
@@ -78,45 +80,9 @@ import DoneIcon from "@mui/icons-material/Done";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 
-import {
-  adsBlueA,
-  adsGreenC,
-  adsRed,
-  adsLightGreyC,
-  adsMidGreyA,
-  adsPaleBlueB,
-  adsDarkGrey10,
-  adsDarkGrey20,
-} from "../utils/ADSColours";
+import { adsGreenC, adsRed, adsLightGreyC } from "../utils/ADSColours";
 import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle, tooltipStyle } from "../utils/ADSStyles";
-import { createTheme } from "@mui/material/styles";
-import { useTheme, makeStyles } from "@mui/styles";
-
-const defaultTheme = createTheme();
-const useStyles = makeStyles(
-  (theme) => {
-    return {
-      root: {
-        "& .visible-row": {
-          "&:hover": {
-            backgroundColor: adsPaleBlueB,
-            color: adsBlueA,
-            // cursor: "pointer",
-          },
-        },
-        "& .hidden-row": {
-          backgroundColor: adsDarkGrey10,
-          "&:hover": {
-            backgroundColor: adsDarkGrey20,
-            color: adsBlueA,
-            // cursor: "pointer",
-          },
-        },
-      },
-    };
-  },
-  { defaultTheme }
-);
+import { useTheme } from "@mui/styles";
 
 MultiEditLogicalStatusDialog.propTypes = {
   variant: PropTypes.oneOf(["approved", "historic", "unknown"]).isRequired,
@@ -127,7 +93,7 @@ MultiEditLogicalStatusDialog.propTypes = {
 
 function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose }) {
   const theme = useTheme();
-  const classes = useStyles();
+  // const classes = useStyles();
 
   const lookupContext = useContext(LookupContext);
   const settingsContext = useContext(SettingsContext);
@@ -173,31 +139,6 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
   const updatedCount = useRef(0);
   const failedCount = useRef(0);
   const failedIds = useRef([]);
-
-  const [sortModel, setSortModel] = useState([{ field: "address", sort: "asc" }]);
-  const [selectionModel, setSelectionModel] = useState([]);
-
-  /**
-   * Array of fields (columns) to be displayed in the data grid.
-   */
-  const columns = [
-    { field: "id" },
-    { field: "uprn" },
-    {
-      field: "address",
-      headerName: "Address",
-      headerClassName: "idox-multi-edit-logical-status-error-data-grid-header",
-      flex: 30,
-    },
-    {
-      field: "errors",
-      headerName: "Errors",
-      cellClassName: "idox-multi-edit-logical-status-error-data-grid-error",
-      headerClassName: "idox-multi-edit-logical-status-error-data-grid-header",
-      flex: 30,
-      renderCell: renderErrors,
-    },
-  ];
 
   /**
    * Method to determine if the data is valid or not.
@@ -998,7 +939,13 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
         ) : (
           <Fragment>
             <Stack direction="column" spacing={1}>
-              <Stack direction="row" justifyContent="flex-start" alignItems="flex-end" spacing={1}>
+              <Stack
+                direction="row"
+                justifyContent="flex-start"
+                alignItems="flex-end"
+                spacing={1}
+                sx={{ ml: theme.spacing(1) }}
+              >
                 <Typography variant="body1" gutterBottom sx={{ fontWeight: 700, color: adsGreenC }}>
                   {updatedCount.current}
                 </Typography>
@@ -1008,7 +955,13 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
               </Stack>
               {failedCount.current > 0 && (
                 <Stack direction="column" spacing={1}>
-                  <Stack direction="row" justifyContent="flex-start" alignItems="flex-end" spacing={1}>
+                  <Stack
+                    direction="row"
+                    justifyContent="flex-start"
+                    alignItems="flex-end"
+                    spacing={1}
+                    sx={{ ml: theme.spacing(1) }}
+                  >
                     <Typography variant="body1" gutterBottom sx={{ fontWeight: 700, color: adsRed }}>
                       {failedCount.current}
                     </Typography>
@@ -1018,43 +971,41 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                   </Stack>
                   <Box
                     sx={{
-                      height: "215px",
-                      "& .idox-multi-edit-logical-status-error-data-grid-header": {
-                        backgroundColor: adsLightGreyC,
-                        color: adsMidGreyA,
-                      },
-                      "& .idox-multi-edit-logical-status-error-data-grid-error": {
-                        color: adsRed,
-                      },
+                      height: "197px",
+                      border: `1px solid ${adsLightGreyC}`,
+                      overflowY: "auto",
                     }}
-                    className={classes.root}
                   >
                     {finaliseErrors && finaliseErrors.length > 0 && (
-                      <DataGrid
-                        rows={finaliseErrors}
-                        columns={columns}
-                        initialState={{
-                          columns: {
-                            columnVisibilityModel: {
-                              id: false,
-                              uprn: false,
-                            },
-                          },
-                        }}
-                        autoPageSize
-                        disableColumnMenu
-                        disableRowSelectionOnClick
-                        pagination
-                        rowHeight={32}
-                        sortModel={sortModel}
-                        rowSelectionModel={selectionModel}
-                        onRowSelectionModelChange={(newSelectionModel) => {
-                          setSelectionModel(newSelectionModel);
-                        }}
-                        onSortModelChange={(model) => setSortModel(model)}
-                      />
+                      <List
+                        sx={{ width: "100%", pt: "0px", pb: "0px" }}
+                        component="nav"
+                        key="multi-edit-logical-status-errors"
+                      >
+                        {finaliseErrors.map((rec, index) => (
+                          <ListItem
+                            alignItems="flex-start"
+                            dense
+                            divider
+                            id={`multi-edit-logical-status-error-${index}`}
+                          >
+                            {renderErrorListItem(rec)}
+                          </ListItem>
+                        ))}
+                      </List>
                     )}
                   </Box>
+                  {process.env.NODE_ENV === "development" && (
+                    <Button
+                      onClick={handleAddToListClick}
+                      autoFocus
+                      variant="contained"
+                      sx={{ ...whiteButtonStyle, width: "135px" }}
+                      startIcon={<PlaylistAddIcon />}
+                    >
+                      Add to list
+                    </Button>
+                  )}
                 </Stack>
               )}
             </Stack>
@@ -1088,28 +1039,15 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
             </Button>
           </Stack>
         ) : (
-          <Fragment>
-            <Button
-              onClick={handleCloseClick}
-              autoFocus
-              variant="contained"
-              sx={blueButtonStyle}
-              startIcon={<DoneIcon />}
-            >
-              Close
-            </Button>
-            {failedCount.current > 0 && (
-              <Button
-                onClick={handleAddToListClick}
-                autoFocus
-                variant="contained"
-                sx={{ ...whiteButtonStyle, position: "relative", left: "-96px", top: "-68px" }}
-                startIcon={<PlaylistAddIcon />}
-              >
-                Add to list
-              </Button>
-            )}
-          </Fragment>
+          <Button
+            onClick={handleCloseClick}
+            autoFocus
+            variant="contained"
+            sx={blueButtonStyle}
+            startIcon={<DoneIcon />}
+          >
+            Close
+          </Button>
         )}
       </DialogActions>
       {updating && (

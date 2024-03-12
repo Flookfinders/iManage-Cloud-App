@@ -37,6 +37,7 @@
 //    024   16.02.24 Sean Flook        ESU17_GP Added mergeArrays.
 //    025   27.02.24 Sean Flook           MUL16 Added renderErrors.
 //    026   08.03.24 Sean Flook       IMANN-348 Updated GetChangedAssociatedRecords and ResetContexts.
+//    027   12.03.24 Sean Flook           MUL10 Replaced renderErrors with renderErrorListItem.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -78,8 +79,7 @@ import OSGClassification from "../data/OSGClassification";
 import LPILogicalStatus from "../data/LPILogicalStatus";
 import DETRCodes from "../data/DETRCodes";
 
-import { Avatar, Typography, Tooltip } from "@mui/material";
-import { Stack } from "@mui/system";
+import { Avatar, Typography, Tooltip, Divider, Stack } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 
 import {
@@ -90,6 +90,7 @@ import {
   adsLightBrown,
   adsOrange,
   adsDarkPink,
+  adsRed,
 } from "./ADSColours";
 import { tooltipStyle } from "./ADSStyles";
 
@@ -1799,12 +1800,12 @@ export const mergeArrays = (a, b, predicate = (a, b) => a === b) => {
 };
 
 /**
- * Method to render the contents of the error cell in the grid.
+ * Method to render the contents of the errors in a list.
  *
- * @param {object} params The parameters object
- * @returns {JSX.Element} The contents of the error cell in the grid.
+ * @param {object} rec The error object
+ * @returns {JSX.Element} The contents of the error in the list.
  */
-export const renderErrors = (params) => {
+export const renderErrorListItem = (rec) => {
   const formatError = (error) => {
     if (error && error.includes(": ")) {
       const errorParts = error.split(": ");
@@ -1813,13 +1814,29 @@ export const renderErrors = (params) => {
     } else return error;
   };
 
-  if (Array.isArray(params.row.errors))
+  if (Array.isArray(rec.errors)) {
     return (
-      <Stack direction="column" spacing={0}>
-        {params.row.errors.map((error) => {
-          return <Typography variant="body2">{formatError(error)}</Typography>;
-        })}
+      <Stack direction="row" spacing={1} divider={<Divider orientation="vertical" flexItem />}>
+        <Typography variant="body2">{rec.address}</Typography>
+        <Stack direction="column" spacing={0}>
+          {rec.errors.map((error) => {
+            return (
+              <Typography variant="body2" sx={{ color: adsRed }}>
+                {formatError(error)}
+              </Typography>
+            );
+          })}
+        </Stack>
       </Stack>
     );
-  else return <Typography variant="body2">{formatError(params.row.errors)}</Typography>;
+  } else {
+    return (
+      <Stack direction="row" spacing={1} divider={<Divider orientation="vertical" flexItem />}>
+        <Typography variant="body2">{rec.address}</Typography>
+        <Typography variant="body2" sx={{ color: adsRed }}>
+          {formatError(rec.errors)}
+        </Typography>
+      </Stack>
+    );
+  }
 };
