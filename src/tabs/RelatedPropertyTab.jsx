@@ -39,6 +39,7 @@
 //    025   22.02.24 Joel Benford     IMANN-287 Checked items blue
 //    026   01.03.24 Sean Flook           MUL16 Handle make child of.
 //    027   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    028   12.03.24 Sean Flook            MUL8 Display an alert if properties are successfully moved.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -65,6 +66,8 @@ import {
   Checkbox,
   Popper,
   Avatar,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { TreeView, TreeItem } from "@mui/x-tree-view";
@@ -93,6 +96,9 @@ import {
   GetTabIconStyle,
   RelatedLanguageChipStyle,
   toolbarStyle,
+  GetAlertStyle,
+  GetAlertIcon,
+  GetAlertSeverity,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -136,6 +142,9 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
 
   const [openMakeChild, setOpenMakeChild] = useState(false);
   const [makeChildUprn, setMakeChildUprn] = useState([]);
+
+  const [alertOpen, setAlertOpen] = useState(false);
+  const alertType = useRef("");
 
   /**
    * Event to handle when a node is selected.
@@ -329,6 +338,14 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
    */
   const handleSetCopyOpen = (dataType) => {
     if (onSetCopyOpen) onSetCopyOpen(true, dataType);
+  };
+
+  /**
+   * Event to handle display the alert after moving seed points.
+   */
+  const handlePropertyMoved = () => {
+    alertType.current = "propertyMoved";
+    setAlertOpen(true);
   };
 
   /**
@@ -828,6 +845,21 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
     if (property && property.length === 1)
       return { id: property[0].uprn, logical_status: property[0].primary.logicalStatus };
     else return null;
+  };
+
+  /**
+   * Event to handle when the alert closes.
+   *
+   * @param {object} event The event object.
+   * @param {string} reason The reason the alert is closing.
+   * @returns
+   */
+  const handleAlertClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setAlertOpen(false);
   };
 
   useEffect(() => {
@@ -1719,9 +1751,29 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
           }
           propertyUprns={propertyChecked}
           onSetCopyOpen={handleSetCopyOpen}
+          onPropertyMoved={handlePropertyMoved}
           onClose={handleCloseSelection}
         />
       </Popper>
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        onClose={handleAlertClose}
+      >
+        <Alert
+          sx={GetAlertStyle(alertType.current === "propertyMoved")}
+          icon={GetAlertIcon(alertType.current === "propertyMoved")}
+          onClose={handleAlertClose}
+          severity={GetAlertSeverity(alertType.current === "propertyMoved")}
+          elevation={6}
+          variant="filled"
+        >{`${
+          alertType.current === "propertyMoved"
+            ? `Changes saved successfully. Your moved seed points have been updated.`
+            : `Unknown error.`
+        }`}</Alert>
+      </Snackbar>
       <MakeChildDialog
         isOpen={openMakeChild}
         variant="multi"

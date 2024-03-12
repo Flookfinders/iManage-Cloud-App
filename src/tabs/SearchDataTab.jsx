@@ -45,6 +45,7 @@
 //    031   19.02.24 Sean Flook        ESU16_GP Do not clear the controls if we have items checked.
 //    032   20.02.24 Sean Flook            MUL1 Added removal of items from the list.
 //    033   27.02.24 Sean Flook           MUL16 Changes required to handle parent child relationships.
+//    034   12.03.24 Sean Flook            MUL8 Display an alert if properties are successfully moved.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -180,8 +181,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   const [openMakeChild, setOpenMakeChild] = useState(false);
   const [makeChildUprn, setMakeChildUprn] = useState([]);
 
-  const [errorOpen, setErrorOpen] = useState(false);
-  const errorType = useRef(null);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const alertType = useRef(null);
 
   const deleteUSRN = useRef(null);
   const deleteUPRN = useRef(null);
@@ -305,8 +306,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
         propertyWizardParent.current = rec;
         setOpenPropertyWizard(true);
       } else {
-        errorType.current = "invalidSingleState";
-        setErrorOpen(true);
+        alertType.current = "invalidSingleState";
+        setAlertOpen(true);
       }
     });
   }
@@ -329,8 +330,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
         propertyWizardParent.current = rec;
         setOpenPropertyWizard(true);
       } else {
-        errorType.current = "invalidRangeState";
-        setErrorOpen(true);
+        alertType.current = "invalidRangeState";
+        setAlertOpen(true);
       }
     });
   }
@@ -729,9 +730,17 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
    */
   const handleSelectionError = (typeOfError) => {
     if (typeOfError) {
-      errorType.current = typeOfError;
-      setErrorOpen(true);
+      alertType.current = typeOfError;
+      setAlertOpen(true);
     }
+  };
+
+  /**
+   * Event to handle display the alert after moving seed points.
+   */
+  const handlePropertyMoved = () => {
+    alertType.current = "propertyMoved";
+    setAlertOpen(true);
   };
 
   /**
@@ -1188,18 +1197,18 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   }
 
   /**
-   * Event to handle when the error dialog closes.
+   * Event to handle when the alert closes.
    *
    * @param {object} event The event object.
-   * @param {string} reason The reason the dialog is closing.
+   * @param {string} reason The reason the alert is closing.
    * @returns
    */
-  const handleErrorClose = (event, reason) => {
+  const handleAlertClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
 
-    setErrorOpen(false);
+    setAlertOpen(false);
   };
 
   useEffect(() => {
@@ -2432,28 +2441,31 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
           propertyUprns={getUprnsFromLpiKeys(checked)}
           onSetCopyOpen={handleSetCopyOpen}
           onError={handleSelectionError}
+          onPropertyMoved={handlePropertyMoved}
           onClose={handleCloseSelection}
         />
       </Popper>
       <div>
         <Snackbar
-          open={errorOpen}
+          open={alertOpen}
           autoHideDuration={6000}
           anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-          onClose={handleErrorClose}
+          onClose={handleAlertClose}
         >
           <Alert
-            sx={GetAlertStyle(false)}
-            icon={GetAlertIcon(false)}
-            onClose={handleErrorClose}
-            severity={GetAlertSeverity(false)}
+            sx={GetAlertStyle(alertType.current === "propertyMoved")}
+            icon={GetAlertIcon(alertType.current === "propertyMoved")}
+            onClose={handleAlertClose}
+            severity={GetAlertSeverity(alertType.current === "propertyMoved")}
             elevation={6}
             variant="filled"
           >{`${
-            errorType.current === "invalidSingleState"
+            alertType.current === "invalidSingleState"
               ? `You are not allowed to create a property on a closed street.`
-              : errorType.current === "invalidRangeState"
+              : alertType.current === "invalidRangeState"
               ? `You are not allowed to create properties on a closed street.`
+              : alertType.current === "propertyMoved"
+              ? `Changes saved successfully. Your moved seed points have been updated.`
               : `Unknown error.`
           }`}</Alert>
         </Snackbar>

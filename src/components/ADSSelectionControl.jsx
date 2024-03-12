@@ -32,6 +32,7 @@
 //    019   09.02.24 Sean Flook                 Removed Create street button for ESUs.
 //    020   20.02.24 Sean Flook            MUL1 Changes required to handle selecting properties from the map.
 //    021   27.02.24 Sean Flook           MUL16 Changes required to handle parent child relationships.
+//    022   12.03.24 Sean Flook            MUL8 Added onPropertyMoved.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -120,6 +121,7 @@ ADSSelectionControl.propTypes = {
   onMergeExtent: PropTypes.func,
   onDeleteCrossReference: PropTypes.func,
   onDeleteWizard: PropTypes.func,
+  onPropertyMoved: PropTypes.func,
   onClose: PropTypes.func.isRequired,
 };
 
@@ -179,6 +181,7 @@ function ADSSelectionControl({
   onMergeExtent,
   onDeleteCrossReference,
   onDeleteWizard,
+  onPropertyMoved,
   onClose,
 }) {
   const mapContext = useContext(MapContext);
@@ -444,9 +447,12 @@ function ADSSelectionControl({
 
   /**
    * event to handle when the move BLPU seed point dialog is closed.
+   *
+   * @param {boolean} saved True if the changes have been saved; otherwise false
    */
-  const handleMoveBlpuClose = () => {
+  const handleMoveBlpuClose = (saved) => {
     setOpenMoveBlpu(false);
+    if (saved && onPropertyMoved) onPropertyMoved();
   };
 
   /**

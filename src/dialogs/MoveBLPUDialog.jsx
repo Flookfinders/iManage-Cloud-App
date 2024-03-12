@@ -20,6 +20,7 @@
 //    007   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    008   11.03.24 Sean Flook           GLB12 Removed bottom margin.
 //    009   12.03.24 Sean Flook            MUL7 Handle saving when X is clicked and user chooses to save changes.
+//    010   12.03.24 Sean Flook            MUL8 Display an alert if the save fails.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -52,13 +53,14 @@ import {
   Backdrop,
   CircularProgress,
   Tooltip,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 
 import ADSWizardMap from "../components/ADSWizardMap";
 import ADSWizardAddressList from "../components/ADSWizardAddressList";
 
-import WizardFinaliseDialog from "./WizardFinaliseDialog";
 import MessageDialog from "./MessageDialog";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -66,7 +68,15 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ErrorIcon from "@mui/icons-material/Error";
 
 import { adsBlueA, adsOffWhite } from "../utils/ADSColours";
-import { blueButtonStyle, redButtonStyle, dialogTitleStyle, tooltipStyle } from "../utils/ADSStyles";
+import {
+  blueButtonStyle,
+  redButtonStyle,
+  dialogTitleStyle,
+  tooltipStyle,
+  GetAlertStyle,
+  GetAlertIcon,
+  GetAlertSeverity,
+} from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 MoveBLPUDialog.propTypes = {
@@ -89,13 +99,13 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
   const propertyContext = useContext(PropertyContext);
 
   const [showDialog, setShowDialog] = useState(false);
-  const [finaliseOpen, setFinaliseOpen] = useState(false);
   const [openMessageDialog, setOpenMessageDialog] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [finaliseErrors, setFinaliseErrors] = useState([]);
   const [haveErrors, setHaveErrors] = useState(false);
   const [viewErrors, setViewErrors] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
 
   const [data, setData] = useState([]);
   const [currentUprns, setCurrentUprns] = useState([]);
@@ -130,38 +140,6 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
   };
 
   /**
-   * Event to handle when the finalise dialog closes.
-   *
-   * @param {string} type The type of closure.
-   */
-  const handleFinaliseClose = (type) => {
-    // If anything changes here it will also need to be changed in useEffect where this code is duplicated.
-    setViewErrors(type === "error");
-    setFinaliseOpen(false);
-    if (type !== "error") {
-      const savedMapProperties = savedProperty.current.map((x) => {
-        return {
-          uprn: x.uprn.toString(),
-          address: x.lpis.filter((rec) => rec.language === "ENG")[0].address.replaceAll("\r\n", " "),
-          formattedAddress: x.lpis.filter((rec) => rec.language === "ENG")[0].address,
-          postcode: x.lpis.filter((rec) => rec.language === "ENG")[0].postcode,
-          easting: x.xcoordinate,
-          northing: x.ycoordinate,
-          logicalStatus: x.logicalStatus,
-          classificationCode: getClassificationCode(x),
-        };
-      });
-      const updatedSearchProperties = mapContext.currentSearchData.properties.map(
-        (x) => savedMapProperties.find((rec) => rec.uprn === x.uprn) || x
-      );
-      mapContext.onSearchDataChange(mapContext.currentSearchData.streets, updatedSearchProperties, null, null);
-      // mapContext.onHighlightRefresh(true);
-      if (onClose) onClose();
-      else setShowDialog(false);
-    }
-  };
-
-  /**
    * Event to handle when the message dialog closes.
    *
    * @param {string} action The action to take after closing the dialog.
@@ -171,7 +149,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
 
     switch (action) {
       case "close":
-        if (onClose) onClose();
+        if (onClose) onClose(false);
         else setShowDialog(false);
         break;
 
@@ -346,6 +324,21 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
         }
       }
     }
+  };
+
+  /**
+   * Event to handle when the alert is closed.
+   *
+   * @param {object} event The event object
+   * @param {string} reason The reason why the alert is closing.
+   * @returns
+   */
+  const handleAlertClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setAlertOpen(false);
   };
 
   useEffect(() => {
@@ -619,6 +612,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
         const errorData = data.filter((x) => errorIds.includes(x.id));
 
         setData(errorData);
+        setAlertOpen(true);
       }
     }
   }, [viewErrors, data, settingsContext.isScottish, settingsContext.isWelsh]);
@@ -627,9 +621,8 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
     if (totalUpdateCount.current > 0 && totalUpdateCount.current === updatedCount.current + failedCount.current) {
       setHaveErrors(failedCount.current > 0);
       setCompleted(true);
-      if (failedCount.current > 0) setFinaliseOpen(true);
+      if (failedCount.current > 0) setViewErrors(true);
       else {
-        // If anything changes here it will also need to be changed in handleFinaliseClose
         setViewErrors(false);
         const savedMapProperties = savedProperty.current.map((x) => {
           return {
@@ -647,7 +640,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
           (x) => savedMapProperties.find((rec) => rec.uprn === x.uprn) || x
         );
         mapContext.onSearchDataChange(mapContext.currentSearchData.streets, updatedSearchProperties, null, null);
-        if (onClose) onClose();
+        if (onClose) onClose(true);
         else setShowDialog(false);
       }
       setUpdating(false);
@@ -767,14 +760,23 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
           </Box>
         </DialogActions>
       </Dialog>
-      <WizardFinaliseDialog
-        open={finaliseOpen}
-        variant="moveBlpu"
-        errors={finaliseErrors}
-        createdCount={updatedCount.current}
-        failedCount={failedCount.current}
-        onClose={handleFinaliseClose}
-      />
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        onClose={handleAlertClose}
+      >
+        <Alert
+          sx={GetAlertStyle(failedCount.current)}
+          icon={GetAlertIcon(failedCount.current)}
+          onClose={handleAlertClose}
+          severity={GetAlertSeverity(failedCount.current)}
+          elevation={6}
+          variant="filled"
+        >
+          "The properties left have failed validation."
+        </Alert>
+      </Snackbar>
       <MessageDialog isOpen={openMessageDialog} variant="cancelMoveBlpu" onClose={handleMessageDialogClose} />
     </Fragment>
   );
