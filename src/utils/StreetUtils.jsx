@@ -46,6 +46,7 @@
 //    033   07.03.24 Sean Flook       IMANN-348 Made hasStreetChanged more robust.
 //    034   08.03.24 Sean Flook       IMANN-348 Added ESU to hasStreetChanged.
 //    035   11.03.24 Sean Flook        ESU29_GP Added setASDLayerVisibility.
+//    036   12.03.24 Sean Flook                 Improved error handling when deleting.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -555,7 +556,29 @@ export async function StreetDelete(usrn, deleteEsus, lookupContext, userToken, i
         return true;
       })
       .catch((res) => {
-        console.error("[ERROR] Deleting Street - response", res);
+        switch (res.status) {
+          case 204:
+            console.error("[204 ERROR] Street does not exist");
+            break;
+
+          case 400:
+            res.json().then((body) => {
+              console.error(`[400 ERROR] Failed to delete the street: ${body.title}`, body.errors);
+            });
+            break;
+
+          case 401:
+            console.error("[401 ERROR] You are not authorized to delete this property");
+            break;
+
+          case 403:
+            console.error("[403 ERROR] You do not have database access");
+            break;
+
+          default:
+            console.error(`[${res.status} ERROR] Deleting street - response`, res);
+            break;
+        }
         return false;
       });
   } else return false;

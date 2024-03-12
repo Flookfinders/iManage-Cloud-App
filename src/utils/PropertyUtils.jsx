@@ -37,6 +37,7 @@
 //    024   01.03.24 Sean Flook           MUL16 Added some error trapping.
 //    025   04.03.24 Sean Flook           MUL16 Try and ensure we get a new temp address when required.
 //    026   07.03.24 Sean Flook       IMANN-348 Added hasPropertyChanged.
+//    027   12.03.24 Sean Flook                 Improved error handling when deleting.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -760,7 +761,29 @@ export async function PropertyDelete(uprn, userToken) {
         return true;
       })
       .catch((res) => {
-        console.error("[ERROR] Deleting Property - response", res);
+        switch (res.status) {
+          case 204:
+            console.error("[204 ERROR] Property does not exist");
+            break;
+
+          case 400:
+            res.json().then((body) => {
+              console.error(`[400 ERROR] Failed to delete the property: ${body.title}`, body.errors);
+            });
+            break;
+
+          case 401:
+            console.error("[401 ERROR] You are not authorized to delete this property");
+            break;
+
+          case 403:
+            console.error("[403 ERROR] You do not have database access");
+            break;
+
+          default:
+            console.error(`[${res.status} ERROR] Deleting Property - response`, res);
+            break;
+        }
         return false;
       });
   } else return false;
