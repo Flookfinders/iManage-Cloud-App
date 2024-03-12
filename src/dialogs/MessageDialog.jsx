@@ -19,6 +19,7 @@
 //    006   07.02.24 Sean Flook                 Added cancelASDPartRoad and removed editASDGeometry and editESUGeometry.
 //    007   13.02.24 Sean Flook                 Added cancelASDInexact.
 //    008   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
+//    009   12.03.24 Sean Flook            MUL7 Updated for cancelMoveBlpu.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -27,13 +28,23 @@
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 
-import { IconButton, Button, Typography, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import {
+  IconButton,
+  Button,
+  Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Tooltip,
+} from "@mui/material";
 import { Stack } from "@mui/system";
 
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import SaveIcon from "@mui/icons-material/Save";
 
-import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle, tooltipStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 MessageDialog.propTypes = {
@@ -60,6 +71,13 @@ function MessageDialog({ isOpen, variant, onClose }) {
   };
 
   /**
+   * Event to handle when the save button is clicked
+   */
+  const handleSaveClick = () => {
+    if (onClose) onClose("save");
+  };
+
+  /**
    * Method to get the title for the dialog.
    *
    * @returns {string} The title of the dialog.
@@ -70,7 +88,7 @@ function MessageDialog({ isOpen, variant, onClose }) {
         return "Cancel wizard";
 
       case "cancelMoveBlpu":
-        return "Cancel move BLPU seed point";
+        return " Unsaved Changes Warning";
 
       case "cancelASDPartRoad":
         return "Whole road";
@@ -100,7 +118,7 @@ function MessageDialog({ isOpen, variant, onClose }) {
       case "cancelMoveBlpu":
         return (
           <Typography variant="body2">
-            This will close the move BLPU seed point dialog and any changes you have made will be lost.
+            You have unsaved changes. Exiting now will discard them. What would you like to do?
           </Typography>
         );
 
@@ -133,7 +151,6 @@ function MessageDialog({ isOpen, variant, onClose }) {
   const getDialogActions = () => {
     switch (variant) {
       case "cancelWizard":
-      case "cancelMoveBlpu":
         return (
           <Fragment>
             <Button
@@ -153,6 +170,38 @@ function MessageDialog({ isOpen, variant, onClose }) {
             >
               Continue
             </Button>
+          </Fragment>
+        );
+
+      case "cancelMoveBlpu":
+        return (
+          <Fragment>
+            <Tooltip title="Save changes and exit" sx={tooltipStyle}>
+              <Button
+                variant="contained"
+                onClick={handleSaveClick}
+                autoFocus
+                sx={blueButtonStyle}
+                startIcon={<SaveIcon />}
+              >
+                Save and exit
+              </Button>
+            </Tooltip>
+            <Tooltip title="Discard changes and exit" sx={tooltipStyle}>
+              <Button variant="contained" onClick={handleCloseClick} sx={whiteButtonStyle} startIcon={<CloseIcon />}>
+                Discard and exit
+              </Button>
+            </Tooltip>
+            <Tooltip title="Continue editing seed points" sx={tooltipStyle}>
+              <Button
+                variant="contained"
+                onClick={handleContinueClick}
+                sx={whiteButtonStyle}
+                startIcon={<ArrowRightIcon />}
+              >
+                Continue editing
+              </Button>
+            </Tooltip>
           </Fragment>
         );
 
@@ -196,16 +245,18 @@ function MessageDialog({ isOpen, variant, onClose }) {
   };
 
   return (
-    <Dialog open={isOpen} aria-labelledby="message-dialog" fullWidth maxWidth="xs" onClose={handleCloseClick}>
+    <Dialog open={isOpen} aria-labelledby="message-dialog" fullWidth maxWidth="sm" onClose={handleContinueClick}>
       <DialogTitle id="message-dialog" sx={dialogTitleStyle}>
         <Typography sx={{ fontSize: "20px", fontWeight: 600 }}>{getDialogTitle()}</Typography>
-        <IconButton
-          aria-label="close"
-          onClick={handleCloseClick}
-          sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
-        >
-          <CloseIcon />
-        </IconButton>
+        <Tooltip title="Cancel exiting" sx={tooltipStyle}>
+          <IconButton
+            aria-label="close"
+            onClick={handleContinueClick}
+            sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Tooltip>
       </DialogTitle>
       <DialogContent sx={{ mt: theme.spacing(2) }}>{getDialogContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: "flex-start", mb: theme.spacing(1), ml: theme.spacing(2.25) }}>

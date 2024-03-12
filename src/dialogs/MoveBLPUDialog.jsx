@@ -19,6 +19,7 @@
 //    006   20.02.24 Sean Flook            MUL6 Updated title.
 //    007   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    008   11.03.24 Sean Flook           GLB12 Removed bottom margin.
+//    009   12.03.24 Sean Flook            MUL7 Handle saving when X is clicked and user chooses to save changes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -50,6 +51,7 @@ import {
   Grid,
   Backdrop,
   CircularProgress,
+  Tooltip,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 
@@ -64,7 +66,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ErrorIcon from "@mui/icons-material/Error";
 
 import { adsBlueA, adsOffWhite } from "../utils/ADSColours";
-import { blueButtonStyle, redButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, redButtonStyle, dialogTitleStyle, tooltipStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 MoveBLPUDialog.propTypes = {
@@ -133,6 +135,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
    * @param {string} type The type of closure.
    */
   const handleFinaliseClose = (type) => {
+    // If anything changes here it will also need to be changed in useEffect where this code is duplicated.
     setViewErrors(type === "error");
     setFinaliseOpen(false);
     if (type !== "error") {
@@ -170,6 +173,10 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
       case "close":
         if (onClose) onClose();
         else setShowDialog(false);
+        break;
+
+      case "save":
+        handleFinish();
         break;
 
       default:
@@ -620,10 +627,36 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
     if (totalUpdateCount.current > 0 && totalUpdateCount.current === updatedCount.current + failedCount.current) {
       setHaveErrors(failedCount.current > 0);
       setCompleted(true);
-      setFinaliseOpen(true);
+      if (failedCount.current > 0) setFinaliseOpen(true);
+      else {
+        // If anything changes here it will also need to be changed in handleFinaliseClose
+        setViewErrors(false);
+        const savedMapProperties = savedProperty.current.map((x) => {
+          return {
+            uprn: x.uprn.toString(),
+            address: x.lpis.filter((rec) => rec.language === "ENG")[0].address.replaceAll("\r\n", " "),
+            formattedAddress: x.lpis.filter((rec) => rec.language === "ENG")[0].address,
+            postcode: x.lpis.filter((rec) => rec.language === "ENG")[0].postcode,
+            easting: x.xcoordinate,
+            northing: x.ycoordinate,
+            logicalStatus: x.logicalStatus,
+            classificationCode: getClassificationCode(x),
+          };
+        });
+        const updatedSearchProperties = mapContext.currentSearchData.properties.map(
+          (x) => savedMapProperties.find((rec) => rec.uprn === x.uprn) || x
+        );
+        mapContext.onSearchDataChange(mapContext.currentSearchData.streets, updatedSearchProperties, null, null);
+        if (onClose) onClose();
+        else setShowDialog(false);
+      }
       setUpdating(false);
+
+      totalUpdateCount.current = 0;
+      updatedCount.current = 0;
+      failedCount.current = 0;
     }
-  }, [rangeProcessedCount]);
+  }, [rangeProcessedCount, mapContext, onClose]);
 
   return (
     <Fragment>
@@ -643,9 +676,11 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
               spacing={1}
               divider={<Divider orientation="vertical" flexItem />}
             >
-              <IconButton aria-label="close" onClick={handleCancelClick}>
-                <CloseIcon />
-              </IconButton>
+              <Tooltip title="Exit editing seed points" sx={tooltipStyle}>
+                <IconButton aria-label="close" onClick={handleCancelClick}>
+                  <CloseIcon />
+                </IconButton>
+              </Tooltip>
               <Typography
                 sx={{
                   flexGrow: 1,
