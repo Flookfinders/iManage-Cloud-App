@@ -19,6 +19,7 @@
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    007   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    008   13.02.24 Sean Flook                 Corrected the type 66 map data.
+//    009   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -60,6 +61,7 @@ import ADSFilterControl from "../components/ADSFilterControl";
 import { adsBlueA } from "../utils/ADSColours";
 import {
   toolbarStyle,
+  dataTabToolBar,
   ActionIconStyle,
   GetAlertStyle,
   GetAlertIcon,
@@ -788,7 +790,7 @@ function SearchDataForm() {
   return (
     <Fragment>
       <Box sx={toolbarStyle}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ dataTabToolBar }}>
           <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
             <Tooltip title="Toggle select all / none" arrow placement="right" sx={tooltipStyle}>
               <Fragment>
