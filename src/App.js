@@ -122,7 +122,7 @@ function App() {
 
   const currentMapExtent = useRef(null);
 
-  const guiVersion = "0.0.0.11 Alpha";
+  const guiVersion = "0.0.0.12";
 
   const [lookups, setLookups] = useState({
     validationMessages: [],
