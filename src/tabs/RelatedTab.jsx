@@ -34,6 +34,7 @@
 //    019   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //    020   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
 //    021   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    022   13.03.24 Sean Flook            MUL9 Changes required to facilitate refreshing the data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -125,6 +126,9 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
   const [relatedType, setRelatedType] = useState("property");
   const [expandAll, setExpandAll] = useState("Expand all");
   const [expanded, setExpanded] = useState([]);
+
+  const [propertyChecked, setPropertyChecked] = useState([]);
+  const [streetChecked, setStreetChecked] = useState([]);
 
   const [saveOpen, setSaveOpen] = useState(false);
   const saveResult = useRef(null);
@@ -658,6 +662,24 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
   };
 
   /**
+   * Event to handle checking of the streets.
+   *
+   * @param {Array} checked The list of checked items.
+   */
+  const handleStreetChecked = (checked) => {
+    setStreetChecked(checked);
+  };
+
+  /**
+   * Event to handle checking of the properties.
+   *
+   * @param {Array} checked The list of checked items.
+   */
+  const handlePropertyChecked = (checked) => {
+    setPropertyChecked(checked);
+  };
+
+  /**
    * Event to handle the display of the property copy alert.
    *
    * @param {boolean} open True if the copy alert should be opened; otherwise false.
@@ -720,6 +742,14 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
       }
     }
   };
+
+  useEffect(() => {
+    if (sandboxContext.refreshRelated) {
+      sandboxContext.onRefreshRelated(false);
+      setStreetData(null);
+      setPropertyData(null);
+    }
+  }, [sandboxContext]);
 
   useEffect(() => {
     async function SetUpRelatedData() {
@@ -908,8 +938,10 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
             data={propertyData}
             loading={loading}
             expanded={expanded}
+            checked={propertyChecked}
             onNodeSelect={(nodeType, nodeId) => handleTreeViewNodeSelect(nodeType, nodeId)}
             onNodeToggle={(nodeIds) => handleTreeViewNodeToggle(nodeIds)}
+            onChecked={handlePropertyChecked}
             onSetCopyOpen={(open, dataType) => handlePropertySetCopyOpen(open, dataType)}
             onPropertyAdd={(usrn, parent, isRange) => handlePropertyChildAdd(usrn, parent, isRange)}
           />
@@ -918,8 +950,10 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
             data={streetData}
             loading={loading}
             expanded={expanded}
+            checked={streetChecked}
             onNodeSelect={(nodeType, nodeId) => handleTreeViewNodeSelect(nodeType, nodeId)}
             onNodeToggle={(nodeIds) => handleTreeViewNodeToggle(nodeIds)}
+            onChecked={handleStreetChecked}
             onSetCopyOpen={(open, dataType) => handleStreetSetCopyOpen(open, dataType)}
             onPropertyAdd={(usrn, parent, isRange) => handleStreetPropertyAdd(usrn, parent, isRange)}
           />

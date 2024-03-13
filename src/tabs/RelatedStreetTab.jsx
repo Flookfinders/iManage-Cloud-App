@@ -32,6 +32,7 @@
 //    019   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
 //    020   22.02.24 Joel Benford     IMANN-287 Checked items blue
 //    021   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    022   13.03.24 Sean Flook            MUL9 Added new parameters to handle the checking of records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -122,13 +123,25 @@ RelatedStreetTab.propTypes = {
   data: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   expanded: PropTypes.array.isRequired,
+  checked: PropTypes.array.isRequired,
   onNodeSelect: PropTypes.func.isRequired,
   onNodeToggle: PropTypes.func.isRequired,
+  onChecked: PropTypes.func.isRequired,
   onSetCopyOpen: PropTypes.func.isRequired,
   onPropertyAdd: PropTypes.func.isRequired,
 };
 
-function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle, onSetCopyOpen, onPropertyAdd }) {
+function RelatedStreetTab({
+  data,
+  loading,
+  expanded,
+  checked,
+  onNodeSelect,
+  onNodeToggle,
+  onChecked,
+  onSetCopyOpen,
+  onPropertyAdd,
+}) {
   const theme = useTheme();
 
   const mapContext = useContext(MapContext);
@@ -220,7 +233,8 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
     if (!streetChecked.includes(usrn)) tempArray.push(usrn);
     else tempArray.splice(streetChecked.indexOf(usrn), 1);
 
-    setStreetChecked(tempArray);
+    if (onChecked) onChecked(tempArray);
+    else setStreetChecked(tempArray);
 
     checkedAddress.current = address;
 
@@ -253,7 +267,8 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
    * Event to handle closing the selection dialog.
    */
   const handleCloseSelection = () => {
-    setStreetChecked([]);
+    if (onChecked) onChecked([]);
+    else setStreetChecked([]);
     setSelectionAnchorEl(null);
   };
 
@@ -676,6 +691,10 @@ function RelatedStreetTab({ data, loading, expanded, onNodeSelect, onNodeToggle,
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
   }, [userContext]);
+
+  useEffect(() => {
+    setStreetChecked(checked);
+  }, [checked]);
 
   useEffect(() => {
     if (

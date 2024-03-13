@@ -40,6 +40,7 @@
 //    026   01.03.24 Sean Flook           MUL16 Handle make child of.
 //    027   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    028   12.03.24 Sean Flook            MUL8 Display an alert if properties are successfully moved.
+//    029   13.03.24 Sean Flook            MUL9 Added new parameters to handle the checking of records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -106,13 +107,25 @@ RelatedPropertyTab.propTypes = {
   data: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   expanded: PropTypes.array.isRequired,
+  checked: PropTypes.array.isRequired,
   onNodeSelect: PropTypes.func.isRequired,
   onNodeToggle: PropTypes.func.isRequired,
+  onChecked: PropTypes.func.isRequired,
   onSetCopyOpen: PropTypes.func.isRequired,
   onPropertyAdd: PropTypes.func.isRequired,
 };
 
-function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggle, onSetCopyOpen, onPropertyAdd }) {
+function RelatedPropertyTab({
+  data,
+  loading,
+  expanded,
+  checked,
+  onNodeSelect,
+  onNodeToggle,
+  onChecked,
+  onSetCopyOpen,
+  onPropertyAdd,
+}) {
   const theme = useTheme();
 
   const propertyContext = useContext(PropertyContext);
@@ -233,11 +246,14 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
         }
       }
     }
-    setPropertyChecked(tempArray);
-    setAllChecked(data.properties.length === tempArray.length);
-    setPartialChecked(tempArray.length > 0 && data.properties.length > tempArray.length);
+    if (onChecked) onChecked(tempArray);
+    else {
+      setPropertyChecked(tempArray);
+      setAllChecked(data.properties.length === tempArray.length);
+      setPartialChecked(tempArray.length > 0 && data.properties.length > tempArray.length);
+      setSelectionAnchorEl(tempArray.length > 0 ? document.getElementById("ads-related-toolbar") : null);
+    }
     checkedAddress.current = address;
-    setSelectionAnchorEl(tempArray.length > 0 ? document.getElementById("ads-related-toolbar") : null);
   };
 
   /**
@@ -245,18 +261,26 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
    */
   const handleSelectCheckboxClick = () => {
     if (allChecked) {
-      setPropertyChecked([]);
-      mapContext.onHighlightClear();
-      setSelectionAnchorEl(null);
+      if (onChecked) onChecked([]);
+      else {
+        setPropertyChecked([]);
+        setSelectionAnchorEl(null);
+        setAllChecked(false);
+        setPartialChecked(false);
+        mapContext.onHighlightClear();
+      }
     } else {
       const newChecked = data.properties.map((x) => x.uprn.toString());
       const propertyHighlighted = data.properties.map((x) => x.uprn);
-      setPropertyChecked(newChecked);
+      if (onChecked) onChecked(newChecked);
+      else {
+        setPropertyChecked(newChecked);
+        setSelectionAnchorEl(document.getElementById("ads-related-toolbar"));
+        setAllChecked(true);
+        setPartialChecked(false);
+      }
       mapContext.onHighlightStreetProperty(null, propertyHighlighted);
-      setSelectionAnchorEl(document.getElementById("ads-related-toolbar"));
     }
-    setAllChecked(!allChecked);
-    setPartialChecked(false);
   };
 
   /**
@@ -281,11 +305,14 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
   const handleSelectAll = () => {
     const newChecked = data.properties.map((x) => x.uprn.toString());
     const propertyHighlighted = data.properties.map((x) => x.uprn);
-    setPropertyChecked(newChecked);
-    setAllChecked(true);
-    setPartialChecked(false);
+    if (onChecked) onChecked(newChecked);
+    else {
+      setPropertyChecked(newChecked);
+      setAllChecked(true);
+      setPartialChecked(false);
+      setSelectionAnchorEl(document.getElementById("ads-related-toolbar"));
+    }
     setAnchorSelectEl(null);
-    setSelectionAnchorEl(document.getElementById("ads-related-toolbar"));
     mapContext.onHighlightStreetProperty(null, propertyHighlighted);
   };
 
@@ -299,11 +326,14 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
     const propertyHighlighted = data.properties
       .filter((x) => x.additional[0].logicalStatus === logicalStatus)
       .map((x) => x.uprn);
-    setPropertyChecked(newChecked);
-    setAllChecked(data.properties.length === newChecked.length);
-    setPartialChecked(newChecked.length > 0 && data.properties.length > newChecked.length);
+    if (onChecked) onChecked(newChecked);
+    else {
+      setPropertyChecked(newChecked);
+      setAllChecked(data.properties.length === newChecked.length);
+      setPartialChecked(newChecked.length > 0 && data.properties.length > newChecked.length);
+      setSelectionAnchorEl(newChecked.length > 0 ? document.getElementById("ads-related-toolbar") : null);
+    }
     setAnchorSelectEl(null);
-    setSelectionAnchorEl(newChecked.length > 0 ? document.getElementById("ads-related-toolbar") : null);
     mapContext.onHighlightStreetProperty(null, propertyHighlighted);
   };
 
@@ -325,10 +355,13 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
    * Event to handle when the selection dialog closes.
    */
   const handleCloseSelection = () => {
-    setPropertyChecked([]);
-    setAllChecked(false);
-    setPartialChecked(false);
-    setSelectionAnchorEl(null);
+    if (onChecked) onChecked([]);
+    else {
+      setPropertyChecked([]);
+      setAllChecked(false);
+      setPartialChecked(false);
+      setSelectionAnchorEl(null);
+    }
   };
 
   /**
@@ -865,6 +898,15 @@ function RelatedPropertyTab({ data, loading, expanded, onNodeSelect, onNodeToggl
   useEffect(() => {
     setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
   }, [userContext]);
+
+  useEffect(() => {
+    setPropertyChecked(checked);
+    if (data && data.properties) {
+      setAllChecked(data.properties.length === checked.length);
+      setPartialChecked(checked.length > 0 && data.properties.length > checked.length);
+    }
+    setSelectionAnchorEl(checked.length > 0 ? document.getElementById("ads-related-toolbar") : null);
+  }, [checked, data]);
 
   useEffect(() => {
     if (streetContext.currentStreet.openRelated) {

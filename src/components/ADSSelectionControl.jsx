@@ -33,6 +33,7 @@
 //    020   20.02.24 Sean Flook            MUL1 Changes required to handle selecting properties from the map.
 //    021   27.02.24 Sean Flook           MUL16 Changes required to handle parent child relationships.
 //    022   12.03.24 Sean Flook            MUL8 Added onPropertyMoved.
+//    023   13.03.24 Sean Flook            MUL9 No need to do resets here.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -314,10 +315,6 @@ function ADSSelectionControl({
         searchContext
       );
     }
-
-    sandboxContext.resetSandbox();
-    propertyContext.resetProperty();
-    propertyContext.resetPropertyErrors();
   };
 
   /**
@@ -339,10 +336,6 @@ function ADSSelectionControl({
         searchContext
       );
     }
-
-    sandboxContext.resetSandbox();
-    propertyContext.resetProperty();
-    propertyContext.resetPropertyErrors();
   };
 
   /**
@@ -364,10 +357,6 @@ function ADSSelectionControl({
         searchContext
       );
     }
-
-    sandboxContext.resetSandbox();
-    propertyContext.resetProperty();
-    propertyContext.resetPropertyErrors();
   };
 
   /**
@@ -389,10 +378,6 @@ function ADSSelectionControl({
         searchContext
       );
     }
-
-    sandboxContext.resetSandbox();
-    propertyContext.resetProperty();
-    propertyContext.resetPropertyErrors();
   };
 
   /**
@@ -414,10 +399,6 @@ function ADSSelectionControl({
         searchContext
       );
     }
-
-    sandboxContext.resetSandbox();
-    propertyContext.resetProperty();
-    propertyContext.resetPropertyErrors();
   };
 
   /**
@@ -439,10 +420,6 @@ function ADSSelectionControl({
         searchContext
       );
     }
-
-    sandboxContext.resetSandbox();
-    propertyContext.resetProperty();
-    propertyContext.resetPropertyErrors();
   };
 
   /**

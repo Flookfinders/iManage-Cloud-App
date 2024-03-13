@@ -47,6 +47,7 @@
 //    034   05.03.24 Sean Flook       IMANN-338 Store the last opened street and property tab.
 //    035   08.03.24 Sean Flook       IMANN-348 If clearing ESU from sandbox ensure highway dedication and one way exemption are also cleared.
 //    036   11.03.24 Sean Flook           GLB12 Use appBarHeight to set the height of the control.
+//    037   13.03.24 Sean Flook            MUL9 Changes required to enable related refresh.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -177,6 +178,8 @@ function App() {
     streetTab: 0,
     propertyTab: 0,
   });
+
+  const [refreshRelated, setRefreshRelated] = useState(false);
 
   const [searchData, setSearchData] = useState({
     searchString: "",
@@ -899,10 +902,19 @@ function App() {
         successorCrossRef: null,
         note: null,
       },
-      streetTab: sourceType !== "street" ? 0 : sandbox.streetTab,
-      propertyTab: sourceType !== "property" ? 0 : sandbox.propertyTab,
+      streetTab: !["street", "property"].includes(sourceType) ? 0 : sandbox.streetTab,
+      propertyTab: !["street", "property"].includes(sourceType) ? 0 : sandbox.propertyTab,
     };
     setSandbox(resetSandbox);
+  }
+
+  /**
+   * Event to handle refreshing the related data.
+   *
+   * @param {boolean} refresh True if the related data needs to be refreshed; otherwise false.
+   */
+  function HandleRefreshRelated(refresh) {
+    setRefreshRelated(refresh);
   }
 
   /**
@@ -2571,10 +2583,12 @@ function App() {
             <SandboxContext.Provider
               value={{
                 currentSandbox: sandbox,
+                refreshRelated: refreshRelated,
                 onSandboxChange: HandleSandboxChange,
                 onUpdateAndClear: HandleSandboxUpdateAndClear,
                 onStreetTabChange: HandleStreetTabChange,
                 onPropertyTabChange: HandlePropertyTabChange,
+                onRefreshRelated: HandleRefreshRelated,
                 resetSandbox: HandleResetSandbox,
               }}
             >

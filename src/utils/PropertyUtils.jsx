@@ -38,6 +38,7 @@
 //    025   04.03.24 Sean Flook           MUL16 Try and ensure we get a new temp address when required.
 //    026   07.03.24 Sean Flook       IMANN-348 Added hasPropertyChanged.
 //    027   12.03.24 Sean Flook                 Improved error handling when deleting.
+//    028   13.03.24 Sean Flook            MUL9 Changes required to refresh the related tab if required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2022,6 +2023,7 @@ export async function UpdateRangeAfterSave(
   propertyContext.onPropertyModified(false);
   propertyContext.resetPropertyErrors();
   sandboxContext.resetSandbox("property");
+  sandboxContext.onRefreshRelated(true);
 
   const searchAddresses = [];
   let newSearchData = JSON.parse(JSON.stringify(searchContext.currentSearchData.results));
@@ -2117,10 +2119,10 @@ export async function UpdateRangeAfterSave(
       classificationCode: getClassificationCode(property),
     };
 
-    const i = newMapSearchProperties.findIndex((x) => x.uprn === property.uprn);
+    const i = newMapSearchProperties.findIndex((x) => Number(x.uprn) === Number(property.uprn));
     if (i > -1) {
       newMapSearchProperties = newMapSearchProperties.map(
-        (x) => [currentSearchProperty].find((rec) => rec.uprn === x.uprn) || x
+        (x) => [currentSearchProperty].find((rec) => Number(rec.uprn) === Number(x.uprn)) || x
       );
     } else {
       newMapSearchProperties.push(currentSearchProperty);
