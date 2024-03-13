@@ -30,6 +30,7 @@
 //    017   27.02.24 Joshua McCormick IMANN-286 Using clippath instead of rotate 45 for highway dedication indicator
 //    018   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    019   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    020   12.03.24 Joshua McCormick IMANN-280 Moved ADSActionButton to correct place inside Typography for toolbar
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -884,7 +885,6 @@ function EsuDataTab({
       <Box sx={toolbarStyle} id="ads-esu-data-form">
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Stack direction="row" alignItems="center" justifyContent="flex-start">
-            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
             <Typography
               sx={{
                 flexGrow: 1,
@@ -897,6 +897,7 @@ function EsuDataTab({
               noWrap
               align="left"
             >
+              <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
               {data.esuData.esuId < 0 ? `Add new ESU` : `${data.esuData.esuId}`}
             </Typography>
           </Stack>

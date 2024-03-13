@@ -33,6 +33,7 @@
 //    020   07.03.24 Joshua McCormick  IMANN-280 Added tabContainerStyle to control tab container border and existing styling
 //    021   11.03.24 Sean Flook           GLB12 Adjusted heights to remove gaps and added appBarHeight constant.
 //    022   11.03.24 Joshua McCormick  IMANN-280 toolbarStyle height set to 40px for consistency between tabs
+//    023   12.03.24 Joshua McCormick  IMANN-280 toolbarStyle overflow hidden, created dataTabToolBar styling
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -338,6 +339,14 @@ export const toolbarStyle = {
   pr: "6px",
   width: "100%",
   height: "40px",
+  overflowY: "hidden",
+};
+
+/**
+ * The styling used for data/inner tab toolbars.
+ */
+export const dataTabToolBar = {
+  mt: "-4px",
 };
 
 /**

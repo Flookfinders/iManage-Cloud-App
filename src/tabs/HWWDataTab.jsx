@@ -29,6 +29,7 @@
 //    016   20.02.24 Joel Benford     IMANN-299 Toolbar changes
 //    017   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    018   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    019   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -66,7 +67,7 @@ import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import MessageDialog from "../dialogs/MessageDialog";
 
 import { adsWhite, adsBlack, adsMidRed } from "../utils/ADSColours";
-import { toolbarStyle, dataFormStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataTabToolBar, dataFormStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 HWWDataTab.propTypes = {
@@ -523,7 +524,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, o
   return (
     <Fragment>
       <Box sx={toolbarStyle} id={"height-width-weight-data"}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={dataTabToolBar}>
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
             {streetContext.currentRecord.type === 64 && streetContext.currentRecord.newRecord ? (
               <ADSActionButton

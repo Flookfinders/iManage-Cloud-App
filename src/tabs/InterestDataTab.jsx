@@ -33,6 +33,7 @@
 //    020   04.03.24 Sean Flook            COL3 Changed the colour for type 51/61 ASD records.
 //    021   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    022   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    023   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -70,7 +71,7 @@ import RoadStatusCode from "../data/RoadStatusCode";
 
 import { People } from "@mui/icons-material";
 import { adsWhite, adsMidBlueA } from "../utils/ADSColours";
-import { toolbarStyle, dataFormStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataTabToolBar, dataFormStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 InterestDataTab.propTypes = {
@@ -490,7 +491,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onHomeClick, onA
   return (
     <Fragment>
       <Box sx={toolbarStyle} id={"interest-data"}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={dataTabToolBar}>
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
             {streetContext.currentRecord.type === 61 && streetContext.currentRecord.newRecord ? (
               <ADSActionButton

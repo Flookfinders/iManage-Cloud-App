@@ -30,6 +30,7 @@
 //    017   04.03.24 Sean Flook            COL3 Changed the colour for type 51/61 ASD records.
 //    018   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    019   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    020   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -66,7 +67,7 @@ import SwaOrgRef from "../data/SwaOrgRef";
 import { People } from "@mui/icons-material";
 
 import { adsWhite, adsMidBlueA } from "../utils/ADSColours";
-import { toolbarStyle, dataFormStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataTabToolBar, dataFormStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 MaintenanceResponsibilityDataTab.propTypes = {
@@ -477,7 +478,7 @@ function MaintenanceResponsibilityDataTab({ data, errors, loading, focusedField,
   return (
     <Fragment>
       <Box sx={toolbarStyle} id={"maintenance-responsibility-data"}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={dataTabToolBar}>
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
             {streetContext.currentRecord.type === 51 && streetContext.currentRecord.newRecord ? (
               <ADSActionButton

@@ -22,6 +22,7 @@
 //    009   11.01.24 Sean Flook                 Fix warnings.
 //    010   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    011   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    012   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -47,7 +48,7 @@ import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import ErrorIcon from "@mui/icons-material/Error";
 import { adsDarkPink } from "../utils/ADSColours";
 import { useTheme } from "@mui/styles";
-import { toolbarStyle, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataTabToolBar, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
 
 PropertyCrossRefTab.propTypes = {
   data: PropTypes.object,
@@ -327,7 +328,7 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onHomeClick,
   return (
     <Fragment>
       <Box sx={toolbarStyle}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={dataTabToolBar}>
           <Stack direction="row" spacing={0.5} justifyContent="flex-start" alignItems="center">
             <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
             <Typography

@@ -69,7 +69,7 @@ import MessageDialog from "../dialogs/MessageDialog";
 
 import { SpecialDesignationIcon } from "../utils/ADSIcons";
 import { adsBlack, adsYellow } from "../utils/ADSColours";
-import { toolbarStyle, dataFormStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataTabToolBar, dataFormStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 SpecialDesignationDataTab.propTypes = {
@@ -653,7 +653,7 @@ function SpecialDesignationDataTab({ data, errors, loading, focusedField, onHome
   return (
     <Fragment>
       <Box sx={toolbarStyle} id={"special-designation-data"}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={dataTabToolBar}>
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
             {streetContext.currentRecord.type === 63 && streetContext.currentRecord.newRecord ? (
               <ADSActionButton

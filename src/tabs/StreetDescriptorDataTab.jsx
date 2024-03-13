@@ -20,6 +20,7 @@
 //    007   11.01.24 Sean Flook                 Fix warnings.
 //    008   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    009   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    010   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -41,7 +42,7 @@ import ADSTextControl from "../components/ADSTextControl";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import { useTheme } from "@mui/styles";
-import { toolbarStyle, dataFormStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataTabToolBar, dataFormStyle } from "../utils/ADSStyles";
 
 StreetDescriptorDataTab.propTypes = {
   data: PropTypes.object,
@@ -320,7 +321,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
   return (
     <Fragment>
       <Box sx={toolbarStyle}>
-        <Stack direction="row" alignItems="center" justifyContent="flex-start">
+        <Stack direction="row" alignItems="center" justifyContent="flex-start" sx={dataTabToolBar}>
           <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
           <Typography
             sx={{

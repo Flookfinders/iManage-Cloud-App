@@ -28,6 +28,7 @@
 //    015   20.02.24 Joel Benford     IMANN-299 Toolbar changes
 //    016   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    017   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    018   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -64,7 +65,7 @@ import MessageDialog from "../dialogs/MessageDialog";
 
 import { useTheme } from "@mui/styles";
 import { adsBlack, adsYellow } from "../utils/ADSColours";
-import { toolbarStyle, dataFormStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataTabToolBar, dataFormStyle } from "../utils/ADSStyles";
 
 OSSpecialDesignationDataTab.propTypes = {
   data: PropTypes.object,
@@ -501,7 +502,7 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
   return (
     <Fragment>
       <Box sx={toolbarStyle} id={"os-special-designation-data"}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={dataTabToolBar}>
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
             {streetContext.currentRecord.type === 53 && streetContext.currentRecord.newRecord ? (
               <ADSActionButton

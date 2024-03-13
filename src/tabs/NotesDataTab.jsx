@@ -22,6 +22,7 @@
 //    009   26.01.24 Sean Flook       IMANN-257 Fix handleCloseDeleteConfirmation.
 //    010   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    011   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    012   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -40,7 +41,7 @@ import ADSTextControl from "../components/ADSTextControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import ErrorIcon from "@mui/icons-material/Error";
 import { useTheme } from "@mui/styles";
-import { toolbarStyle, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataTabToolBar, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
 
 NotesDataTab.propTypes = {
   data: PropTypes.object,
@@ -300,7 +301,7 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
   return (
     <Fragment>
       <Box sx={toolbarStyle}>
-        <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
+        <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center" sx={dataTabToolBar}>
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
             <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
             <Typography

@@ -850,7 +850,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
     <Fragment>
       <Box sx={toolbarStyle} id="ads-related-toolbar">
         <Stack
-          sx={{ pl: "8px", pr: "12px", pt: "4px" }}
+          sx={{ pl: "8px", pr: "12px", pt: "4px", mt: "-2px" }}
           direction="row"
           spacing={1}
           justifyContent="space-between"

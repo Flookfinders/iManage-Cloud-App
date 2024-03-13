@@ -22,6 +22,7 @@
 //    009   25.01.24 Sean Flook                 Changes required after UX review.
 //    010   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    011   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    012   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -58,7 +59,7 @@ import {
 
 import { useTheme } from "@mui/styles";
 import { adsBlueA, adsMidGreyA } from "../utils/ADSColours";
-import { toolbarStyle, dataFormStyle, FormRowStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataTabToolBar, dataFormStyle, FormRowStyle } from "../utils/ADSStyles";
 
 HighwayDedicationDataTab.propTypes = {
   data: PropTypes.object,
@@ -611,9 +612,8 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
   return (
     <Fragment>
       <Box sx={toolbarStyle}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={dataTabToolBar}>
           <Stack direction="row" alignItems="center" justifyContent="flex-start">
-            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
             <Typography
               sx={{
                 flexGrow: 1,
@@ -626,6 +626,7 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
               noWrap
               align="left"
             >
+              <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
               {`| ${data.hdData.esuId}: Highway dedication (${data.index + 1} of ${data.totalRecords})`}
             </Typography>
           </Stack>

@@ -24,6 +24,7 @@
 //    011   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    012   09.02.24 Sean Flook                 Added id to box so that ADSSelectionControl can use it.
 //    013   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    014   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -48,7 +49,7 @@ import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import ErrorIcon from "@mui/icons-material/Error";
 import { useTheme } from "@mui/styles";
-import { toolbarStyle, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataTabToolBar, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
 
 PropertyBLPUProvenanceTab.propTypes = {
   data: PropTypes.object,
@@ -322,7 +323,7 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
   return (
     <Fragment>
       <Box sx={toolbarStyle} id="ads-provenance-data-tab">
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={dataTabToolBar}>
           <Stack direction="row" spacing={0.5} justifyContent="flex-start" alignItems="center">
             <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
             <Typography
