@@ -31,6 +31,7 @@
 //    018   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    019   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    020   12.03.24 Joshua McCormick IMANN-280 Moved ADSActionButton to correct place inside Typography for toolbar
+//    021   14.03.24 Sean Flook        ESU19_GP Moved getHighwayDedicationIconStyle to ADSStyles.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -103,6 +104,7 @@ import {
   menuStyle,
   menuItemStyle,
   tooltipStyle,
+  getHighwayDedicationIconStyle,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 import { grey } from "@mui/material/colors";
@@ -651,17 +653,6 @@ function EsuDataTab({
 
     if (oweRecord && oweRecord.length > 0) return oweRecord[0].gpText;
     else return "";
-  }
-
-  /**
-   * Method to get the highway dedication record.
-   *
-   * @param {boolean} selected True if the record is selected.
-   * @returns {object} The style to be used for the record.
-   */
-  function getHighwayDedicationStyle(selected) {
-    if (selected) return { color: adsLightBlue };
-    else return { color: grey[300] };
   }
 
   /**
@@ -1298,24 +1289,24 @@ function EsuDataTab({
                           }
                         />
                         <ListItemAvatar sx={{ minWidth: 30 }}>
-                          <PRoWIcon fontSize="small" sx={getHighwayDedicationStyle(d.hdProw)} />
+                          <PRoWIcon fontSize="small" sx={getHighwayDedicationIconStyle(d.hdProw)} />
                         </ListItemAvatar>
                         <ListItemAvatar sx={{ minWidth: 30 }}>
-                          <DirectionsBike fontSize="small" sx={getHighwayDedicationStyle(d.hdNcr)} />
+                          <DirectionsBike fontSize="small" sx={getHighwayDedicationIconStyle(d.hdNcr)} />
                         </ListItemAvatar>
                         <ListItemAvatar sx={{ minWidth: 30 }}>
-                          <QuietRouteIcon fontSize="small" sx={getHighwayDedicationStyle(d.hdQuietRoute)} />
+                          <QuietRouteIcon fontSize="small" sx={getHighwayDedicationIconStyle(d.hdQuietRoute)} />
                         </ListItemAvatar>
                         <ListItemAvatar sx={{ minWidth: 30 }}>
-                          <ObstructionIcon fontSize="small" sx={getHighwayDedicationStyle(d.hdObstruction)} />
+                          <ObstructionIcon fontSize="small" sx={getHighwayDedicationIconStyle(d.hdObstruction)} />
                         </ListItemAvatar>
                         <ListItemAvatar sx={{ minWidth: 30 }}>
-                          <PlanningOrderIcon fontSize="small" sx={getHighwayDedicationStyle(d.hdPlanningOrder)} />
+                          <PlanningOrderIcon fontSize="small" sx={getHighwayDedicationIconStyle(d.hdPlanningOrder)} />
                         </ListItemAvatar>
                         <ListItemAvatar sx={{ minWidth: 30 }}>
                           <VehiclesProhibitedIcon
                             fontSize="small"
-                            sx={getHighwayDedicationStyle(d.hdWorksProhibited)}
+                            sx={getHighwayDedicationIconStyle(d.hdWorksProhibited)}
                           />
                         </ListItemAvatar>
                       </ListItemButton>

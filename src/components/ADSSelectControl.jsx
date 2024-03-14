@@ -28,6 +28,7 @@
 //    015   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    016   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    017   06.02.23 Sean Flook       IMANN-264 If we have no lookup data ensure the options are cleared.
+//    018   14.03.24 Sean Flook        ESU19_GP Use the lookupColour for the icon background colour.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -43,16 +44,7 @@ import ADSErrorDisplay from "./ADSErrorDisplay";
 import { SyncAlt as TwoWayIcon } from "@mui/icons-material";
 import { StartToEndIcon, EndToStartIcon } from "../utils/ADSIcons";
 import { lookupToTitleCase } from "../utils/HelperUtils";
-import {
-  adsBlueA,
-  adsRed,
-  adsDarkGrey,
-  adsWhite,
-  adsLightBlue,
-  adsLightGreyA,
-  adsBlack,
-  adsYellow,
-} from "../utils/ADSColours";
+import { adsBlueA, adsRed, adsDarkGrey, adsWhite, adsLightGreyA, adsBlack, adsYellow } from "../utils/ADSColours";
 import {
   FormBoxRowStyle,
   FormRowStyle,
@@ -156,16 +148,17 @@ function ADSSelectControl({
    * Method to get the icon.
    *
    * @param {string} iconInfo The icon information either type of URL.
+   * @param {string} backgroundColour The background colour to use for the icon.
    * @returns {JSX.Element} The icon.
    */
-  function getIcon(iconInfo) {
+  function getIcon(iconInfo, backgroundColour) {
     switch (iconInfo) {
       case "TwoWay":
         return (
           <TwoWayIcon
             sx={{
               color: adsWhite,
-              backgroundColor: adsLightBlue,
+              backgroundColor: backgroundColour,
             }}
           />
         );
@@ -175,7 +168,7 @@ function ADSSelectControl({
           <StartToEndIcon
             sx={{
               color: adsWhite,
-              backgroundColor: adsLightBlue,
+              backgroundColor: backgroundColour,
             }}
           />
         );
@@ -185,7 +178,7 @@ function ADSSelectControl({
           <EndToStartIcon
             sx={{
               color: adsWhite,
-              backgroundColor: adsLightBlue,
+              backgroundColor: backgroundColour,
             }}
           />
         );
@@ -215,7 +208,7 @@ function ADSSelectControl({
                 pb: theme.spacing(1.75),
               }}
             >
-              {getIcon(currentRow[0][lookupIcon])}
+              {getIcon(currentRow[0][lookupIcon], lookupColour ? currentRow[0][lookupColour] : adsBlueA)}
               <Typography
                 id={`${label.toLowerCase().replaceAll(" ", "-")}-lookup-info`}
                 variant="body1"
@@ -303,7 +296,7 @@ function ADSSelectControl({
           aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
         >
           {lookupIcon && selectedItem[0][lookupIcon] && selectedItem[0][lookupIcon].length > 0 ? (
-            getIcon(selectedItem[0][lookupIcon])
+            getIcon(selectedItem[0][lookupIcon], lookupColour ? selectedItem[0][lookupColour] : adsBlueA)
           ) : (
             <Typography variant="caption" sx={getAvatarTextStyle(selectedItem)}>
               {getAvatarValue(stripCodeFromValue(value))}

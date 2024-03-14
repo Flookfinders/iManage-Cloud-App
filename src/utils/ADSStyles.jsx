@@ -34,6 +34,7 @@
 //    021   11.03.24 Sean Flook           GLB12 Adjusted heights to remove gaps and added appBarHeight constant.
 //    022   11.03.24 Joshua McCormick  IMANN-280 toolbarStyle height set to 40px for consistency between tabs
 //    023   12.03.24 Joshua McCormick  IMANN-280 toolbarStyle overflow hidden, created dataTabToolBar styling
+//    024   14.03.24 Sean Flook        ESU19_GP Added getHighwayDedicationIconStyle and changed colour.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1154,4 +1155,15 @@ export const dialogTitleStyle = {
   borderBottomStyle: "solid",
   borderBottomColor: adsLightGreyC,
   mb: "8px",
+};
+
+/**
+ * Method to get the highway dedication icon styling.
+ *
+ * @param {boolean} selected True if the record is selected; otherwise false.
+ * @returns {object} The styling for the highway dedication icon.
+ */
+export const getHighwayDedicationIconStyle = (selected) => {
+  if (selected) return { color: adsBlueA };
+  else return { color: grey[300] };
 };

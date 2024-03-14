@@ -26,6 +26,7 @@
 //    013   16.02.24 Sean Flook        ESU16_GP Whilst assigning ESU prevent anything else from occurring with the ESUs.
 //    014   22.02.24 Joel Benford     IMANN-287 Blue on checked and hover
 //    015   27.02.24 Joshua McCormick IMANN-286 Using clippath for highway dedication indicator to alter appearance
+//    016   14.03.24 Sean Flook        ESU19_GP Moved getHighwayDedicationIconStyle to ADSStyles.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -96,7 +97,13 @@ import {
   adsPurple,
   adsPaleBlueA,
 } from "../utils/ADSColours";
-import { ActionIconStyle, menuStyle, menuItemStyle, tooltipStyle } from "../utils/ADSStyles";
+import {
+  ActionIconStyle,
+  menuStyle,
+  menuItemStyle,
+  tooltipStyle,
+  getHighwayDedicationIconStyle,
+} from "../utils/ADSStyles";
 import { grey } from "@mui/material/colors";
 
 ADSEsuDataListItem.propTypes = {
@@ -559,17 +566,6 @@ function ADSEsuDataListItem({
         };
       } else return defaultHighwayDedicationStyle;
     } else return defaultHighwayDedicationStyle;
-  }
-
-  /**
-   * Method to get the highway dedication icon styling.
-   *
-   * @param {boolean} selected True if the record is selected; otherwise false.
-   * @returns {object} The styling for the highway dedication icon.
-   */
-  function getHighwayDedicationIconStyle(selected) {
-    if (selected) return { color: adsLightBlue };
-    else return { color: grey[300] };
   }
 
   /**
