@@ -16,6 +16,7 @@
 //    003   20.02.24 Sean Flook            MUL1 Added createList and existingList variants.
 //    004   20.02.24 Sean Flook            MUL6 Changed the RPC icon to PushPin.
 //    005   27.02.24 Sean Flook           MUL16 Added removeFromList.
+//    006   14.03.24 Sean Flook        ESU24_GP Use correct icon for assign esu.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -36,11 +37,10 @@ import StraightIcon from "@mui/icons-material/Straight";
 import MergeIcon from "@mui/icons-material/Merge";
 import CheckIcon from "@mui/icons-material/Check";
 import NoteAddIcon from "@mui/icons-material/NoteAddOutlined";
-import InsightsIcon from "@mui/icons-material/Insights";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import ReorderIcon from "@mui/icons-material/Reorder";
 import PlaylistRemoveIcon from "@mui/icons-material/PlaylistRemove";
-import { UnassignEsuIcon, AddStreetIcon, MoveIcon } from "../utils/ADSIcons";
+import { UnassignEsuIcon, AssignEsuIcon, AddStreetIcon, MoveIcon } from "../utils/ADSIcons";
 
 import { adsMidGreyA, adsBlueA, adsLightGreyB, adsWhite, adsLightBlue } from "../utils/ADSColours";
 import { tooltipStyle } from "../utils/ADSStyles";
@@ -121,7 +121,7 @@ function ADSSelectionButton({ variant, selectionCount, menuControlId, isDisabled
         return <UnassignEsuIcon />;
 
       case "assign":
-        return <InsightsIcon />;
+        return <AssignEsuIcon />;
 
       case "createStreet":
         return <AddStreetIcon />;
