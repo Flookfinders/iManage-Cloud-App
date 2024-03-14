@@ -7,20 +7,20 @@
 //
 //  Maximum validation numbers
 //  =================================
-//  Street:                     1100051
+//  Street:                     1100059
 //  ESU:                        1300039
 //  Descriptor:                 1500040
 //  One Way Exemption:          1600023
 //  Highway Dedication:         1700022
 //  Successor Cross Reference:  3000017
-//  Maintenance Responsibility: 5100029 - 5100030
-//  Reinstatement Category:     5200026 - 5200027
-//  OS Special Designation:     5300028 - 5300029
-//  Interest:                   6100050 - 6100051
-//  Construction:               6200051 - 6200052
-//  Special Designation:        6300042 - 6300050
+//  Maintenance Responsibility: 5100030
+//  Reinstatement Category:     5200027
+//  OS Special Designation:     5300029
+//  Interest:                   6100052
+//  Construction:               6200053
+//  Special Designation:        6300051
 //  Height Width Weight:        6400048
-//  Public Right of Way:        6600058 - 6600064
+//  Public Right of Way:        6600064
 //  Note:                       7200012
 //
 //--------------------------------------------------------------------------------------------------
@@ -43,6 +43,7 @@
 //    012   02.02.24 Sean Flook       IMANN-264 Correctly call includeCheck for GeoPlace ASD records.
 //    013   07.02.24 Sean Flook       IMANN-284 Added missing OneScotland ESU checks.
 //    014   12.02.24 Sean Flook                 Added new GeoPlace special designation checks.
+//    015   14.03.24 Sean Flook                 Added new checks.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1397,6 +1398,16 @@ export function ValidateMaintenanceResponsibilityData(data, index, currentLookup
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // SWA Org Ref Authority value does not exist in the RAUCS SWA Org Ref table.
+    currentCheck = GetCheck(5100030, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.maintainingAuthorityCode &&
+      !SwaOrgRef.find((x) => x.id === data.maintainingAuthorityCode)
+    ) {
+      maintainingAuthorityErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateMaintenanceResponsibilityData - Finished checks");
 
     if (specificLocationErrors.length > 0)
@@ -1596,6 +1607,12 @@ export function ValidateReinstatementCategoryData(data, index, currentLookups) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // SWA Org Ref Consultant value does not exist in the RAUCS SWA Org Ref table.
+    currentCheck = GetCheck(5200027, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.custodianCode && !SwaOrgRef.find((x) => x.id === data.custodianCode)) {
+      custodianErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateReinstatementCategoryData - Finished checks");
 
     if (specificLocationErrors.length > 0)
@@ -1679,6 +1696,7 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
   let startDateErrors = [];
   let specificLocationErrors = [];
   let wholeRoadErrors = [];
+  let custodianCodeErrors = [];
 
   if (data) {
     // Mandatory Custodian Code is missing.
@@ -1805,6 +1823,12 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // SWA Org Ref Consultant value does not exist in the RAUCS SWA Org Ref table.
+    currentCheck = GetCheck(5300029, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.custodianCode && !SwaOrgRef.find((x) => x.id === data.custodianCode)) {
+      custodianCodeErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateOSSpecialDesignationData - Finished checks");
 
     if (custodianErrors.length > 0)
@@ -1868,6 +1892,13 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
         index: index,
         field: "WholeRoad",
         errors: wholeRoadErrors,
+      });
+
+    if (custodianCodeErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "CustodianCode",
+        errors: custodianCodeErrors,
       });
   }
 
@@ -2131,6 +2162,28 @@ export function ValidateInterestData(data, index, currentLookups) {
       ![1, 2, 3, 5].includes(data.streetStatus)
     ) {
       interestTypeErrors.push(GetErrorMessage(currentCheck, true));
+      streetStatusErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // If Whole Road is false then Location Text must not contain "WHOLE ROAD".
+    currentCheck = GetCheck(6100051, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, false) &&
+      !data.wholeRoad &&
+      data.specificLocation &&
+      data.specificLocation.toLowerCase.includes("whole road")
+    ) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // If SWA Org Ref Maintaining is 11, 16, 20 or 7093, Street Status must be 4.
+    currentCheck = GetCheck(6100052, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, false) &&
+      data.swaOrgRefAuthMaintaining &&
+      [11, 16, 20, 7093].includes(data.swaOrgRefAuthMaintaining) &&
+      data.streetStatus !== 4
+    ) {
       streetStatusErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -2498,6 +2551,28 @@ export function ValidateConstructionData(data, index, currentLookups) {
       swaOrgRefConsultantErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // Reinstatement Type Code must not be present when Construction Type is 2 or 3.
+    currentCheck = GetCheck(6200052, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, false) &&
+      data.constructionType &&
+      [2, 3].includes(data.constructionType) &&
+      data.reinstatementTypeCode
+    ) {
+      reinstatementTypeCodeErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // If Whole Road is false then Location Text must not contain "Whole Road".
+    currentCheck = GetCheck(6200053, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, false) &&
+      !data.wholeRoad &&
+      data.specificLocation &&
+      data.specificLocation.toLowerCase.includes("whole road")
+    ) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateConstructionData - Finished checks");
 
     if (reinstatementTypeCodeErrors.length > 0)
@@ -2636,6 +2711,9 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
   let specialDesigEndTimeErrors = [];
   let specificLocationErrors = [];
   let wholeRoadErrors = [];
+  let swaOrgRefConsultantCodeErrors = [];
+  let districtRefConsultantErrors = [];
+  let specialDesigSourceTextErrors = [];
 
   if (data) {
     // Start X value is invalid.
@@ -2843,6 +2921,110 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
       specialDesigPeriodicityCodeErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // SWA Org Ref Consultant value of 0011, 0012, 013, 0014, 0016, 0020 or 7093 must not be used.
+    currentCheck = GetCheck(6300043, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, false) &&
+      data.swaOrgRefConsultant &&
+      [11, 12, 13, 14, 16, 20, 7093].includes(data.swaOrgRefConsultant)
+    ) {
+      swaOrgRefConsultantCodeErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // SWA Org Ref Consultant and District Ref Consultant must either both be blank or both have a value.
+    currentCheck = GetCheck(6300044, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, false) &&
+      ((data.swaOrgRefConsultant && !data.districtRefConsultant) ||
+        (!data.swaOrgRefConsultant && data.districtRefConsultant))
+    ) {
+      swaOrgRefConsultantCodeErrors.push(GetErrorMessage(currentCheck, true));
+      districtRefConsultantErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // SWA Org Ref Consultant value does not exist in the SWA Org Ref table.
+    currentCheck = GetCheck(6300045, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, false) &&
+      data.swaOrgRefConsultant &&
+      !SwaOrgRef.find((x) => x.id === data.swaOrgRefConsultant)
+    ) {
+      swaOrgRefConsultantCodeErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // If Street Special Designation Code is 1,3,6,8,9,10,12,20,22,or 28 then the Periodicity Code must be 1.
+    currentCheck = GetCheck(6300046, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, false) &&
+      data.streetSpecialDesigCode &&
+      [1, 3, 6, 8, 9, 10, 12, 20, 22, 28].includes(data.streetSpecialDesigCode) &&
+      (!data.specialDesigPeriodicityCode || data.specialDesigPeriodicityCode !== 1)
+    ) {
+      specialDesigPeriodicityCodeErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // If Whole Road is false then Location Text must not contain "WHOLE ROAD".
+    currentCheck = GetCheck(6300047, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, false) &&
+      !data.wholeRoad &&
+      data.specificLocation &&
+      data.specificLocation.toLowerCase.includes("whole road")
+    ) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Special Designation Source Text contains invalid characters.
+    currentCheck = GetCheck(6300049, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, false) && data.specialDesigSourceText && !isIso885914(data.specialDesigSourceText)) {
+      specialDesigSourceTextErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Special Designation Periodicity code of 15 must have Special Designation Start Date and Time and End Date and Time.
+    currentCheck = GetCheck(6300050, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, false) &&
+      data.specialDesigPeriodicityCode &&
+      data.specialDesigPeriodicityCode === 15 &&
+      !data.specialDesigStartDate
+    ) {
+      specialDesigStartDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+    if (
+      includeCheck(currentCheck, false) &&
+      data.specialDesigPeriodicityCode &&
+      data.specialDesigPeriodicityCode === 15 &&
+      !data.specialDesigEndDate
+    ) {
+      specialDesigEndDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+    if (
+      includeCheck(currentCheck, false) &&
+      data.specialDesigPeriodicityCode &&
+      data.specialDesigPeriodicityCode === 15 &&
+      !data.specialDesigStartTime
+    ) {
+      specialDesigStartTimeErrors.push(GetErrorMessage(currentCheck, true));
+    }
+    if (
+      includeCheck(currentCheck, false) &&
+      data.specialDesigPeriodicityCode &&
+      data.specialDesigPeriodicityCode === 15 &&
+      !data.specialDesigEndTime
+    ) {
+      specialDesigEndTimeErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // District Ref Consultant value does not exist in the Operational District Table.
+    currentCheck = GetCheck(6300051, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, false) &&
+      data.districtRefConsultant &&
+      !currentLookups.operationalDistricts.find((x) => x.districtId === data.districtRefConsultant)
+    ) {
+      districtRefConsultantErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateSpecialDesignationData - Finished checks");
 
     if (streetSpecialDesigCodeErrors.length > 0)
@@ -2948,6 +3130,27 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
         index: index,
         field: "WholeRoad",
         errors: wholeRoadErrors,
+      });
+
+    if (swaOrgRefConsultantCodeErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "SwaOrgRefConsultantCode",
+        errors: swaOrgRefConsultantCodeErrors,
+      });
+
+    if (districtRefConsultantErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "DistrictRefConsultant",
+        errors: districtRefConsultantErrors,
+      });
+
+    if (specialDesigSourceTextErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "SpecialDesigSourceText",
+        errors: specialDesigSourceTextErrors,
       });
   }
 
