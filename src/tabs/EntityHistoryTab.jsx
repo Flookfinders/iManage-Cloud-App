@@ -21,7 +21,7 @@
 //    008   25.01.24 Sean Flook                 Correctly handle status code 204.
 //    009   08.03.24 Joshua McCormick IMANN-280 Adding Padding bottom to match padding top in the stack/chips
 //    010   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    011   16.03.24 Sean Flook            GLB6 Use individual buttons to toggle between updates and edits.
+//    011   15.03.24 Sean Flook            GLB6 Use individual buttons to toggle between updates and edits.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------

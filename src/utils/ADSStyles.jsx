@@ -35,8 +35,9 @@
 //    022   11.03.24 Joshua McCormick  IMANN-280 toolbarStyle height set to 40px for consistency between tabs
 //    023   12.03.24 Joshua McCormick  IMANN-280 toolbarStyle overflow hidden, created dataTabToolBar styling
 //    024   14.03.24 Sean Flook        ESU19_GP Added getHighwayDedicationIconStyle and changed colour.
-//    025   16.03.24 Sean Flook            GLB6 Added relatedAvatarStyle and greyButtonStyle.
-//    026   16.03.24 Sean Flook            GLB8 Added tabIconStyle.
+//    025   15.03.24 Sean Flook            GLB6 Added relatedAvatarStyle and greyButtonStyle.
+//    026   15.03.24 Sean Flook            GLB8 Added tabIconStyle.
+//    027   15.03.24 Joshua McCormick  IMANN-280 dataTabToolBar Icon styling
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -349,7 +350,10 @@ export const toolbarStyle = {
  * The styling used for data/inner tab toolbars.
  */
 export const dataTabToolBar = {
-  mt: "-4px",
+  mt: "-5px",
+  "& .MuiButtonBase-root": {
+    mt: "-5px",
+  },
 };
 
 /**

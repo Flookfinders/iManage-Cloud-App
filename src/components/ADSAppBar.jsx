@@ -44,7 +44,7 @@
 //    031   07.03.24 Sean Flook       IMANN-338 Use the correct fields to hide the issue popper.
 //    032   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
 //    033   11.03.24 Sean Flook           GLB12 Use constants from ADSStyles to set heights and widths.
-//    034   16.03.24 Sean Flook            GLB6 Removed autofocus from the add street button as not required.
+//    034   15.03.24 Sean Flook            GLB6 Removed autofocus from the add street button as not required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------

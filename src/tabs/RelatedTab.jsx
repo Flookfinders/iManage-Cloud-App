@@ -35,8 +35,8 @@
 //    020   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
 //    021   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    022   13.03.24 Sean Flook            MUL9 Changes required to facilitate refreshing the data.
-//    023   16.03.24 Sean Flook            GLB6 Use individual buttons to toggle between properties and streets.
-//    024   16.03.24 Sean Flook       PRFRM1_GP If a property is selected always open it.
+//    023   15.03.24 Sean Flook            GLB6 Use individual buttons to toggle between properties and streets.
+//    024   15.03.24 Sean Flook       PRFRM1_GP If a property is selected always open it.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
