@@ -36,6 +36,7 @@
 //    023   12.03.24 Joshua McCormick  IMANN-280 toolbarStyle overflow hidden, created dataTabToolBar styling
 //    024   14.03.24 Sean Flook        ESU19_GP Added getHighwayDedicationIconStyle and changed colour.
 //    025   16.03.24 Sean Flook            GLB6 Added relatedAvatarStyle and greyButtonStyle.
+//    026   16.03.24 Sean Flook            GLB8 Added tabIconStyle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -779,6 +780,16 @@ export const tabLabelStyle = (isActive) => {
   return isActive
     ? { display: "inline-flex", color: adsBlueA, fontWeight: 700, fontSize: "17px" }
     : { display: "inline-flex", color: adsMidGreyA, fontSize: "17px" };
+};
+
+/**
+ * Returns the styling used for tab icons.
+ *
+ * @param {boolean} isActive True if the tab is active; otherwise false.
+ * @return {object} The styling used for tab icons.
+ */
+export const tabIconStyle = (isActive) => {
+  return isActive ? { display: "inline-flex", color: adsBlueA } : { display: "inline-flex", color: adsMidGreyA };
 };
 
 /**

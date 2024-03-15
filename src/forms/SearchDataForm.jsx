@@ -20,6 +20,7 @@
 //    007   26.01.24 Sean Flook       IMANN-260 Corrected field name.
 //    008   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //    009   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
+//    010   15.03.24 Sean Flook            GLB8 Fixed highlighting of tabs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -69,6 +70,9 @@ import {
   menuStyle,
   menuItemStyle,
   tooltipStyle,
+  tabContainerStyle,
+  tabStyle,
+  tabIconStyle,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -777,19 +781,9 @@ function SearchDataForm() {
     mapContext.onHighlightClear();
   };
 
-  /**
-   * Method to get the styling for the item.
-   *
-   * @param {boolean} isActive True if item is active; otherwise false.
-   * @returns {object|null} The styling for the item.
-   */
-  const getStyle = (isActive) => {
-    return isActive ? { color: adsBlueA } : null;
-  };
-
   return (
     <Fragment>
-      <Box sx={toolbarStyle}>
+      <Box sx={{ ...toolbarStyle, height: "45px" }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ dataTabToolBar }}>
           <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
             <Tooltip title="Toggle select all / none" arrow placement="right" sx={tooltipStyle}>
@@ -861,38 +855,33 @@ function SearchDataForm() {
             <Tabs
               value={value}
               onChange={handleTabChange}
-              TabIndicatorProps={{ style: { background: adsBlueA } }}
+              TabIndicatorProps={{ style: { background: adsBlueA, height: "7px" } }}
               selectionFollowsFocus
               aria-label="search-list-tabs"
+              sx={tabContainerStyle}
             >
               <Tab
-                sx={{
-                  textTransform: "none",
-                  minWidth: "40px",
-                }}
+                sx={tabStyle}
                 icon={
                   <Tooltip title="List view" arrow placement="right" sx={tooltipStyle}>
-                    <FormatListBulletedIcon sx={ActionIconStyle()} />
+                    <FormatListBulletedIcon sx={tabIconStyle(value === 0)} />
                   </Tooltip>
                 }
                 aria-label="List view"
-                style={getStyle(value === 0)}
                 {...a11yProps(0)}
               />
-              <Tab
-                sx={{
-                  textTransform: "none",
-                  minWidth: "40px",
-                }}
-                icon={
-                  <Tooltip title="Grid view" arrow placement="right" sx={tooltipStyle}>
-                    <GridOnIcon sx={ActionIconStyle()} />
-                  </Tooltip>
-                }
-                aria-label="Grid view"
-                style={getStyle(value === 1)}
-                {...a11yProps(1)}
-              />
+              {process.env.NODE_ENV === "development" && (
+                <Tab
+                  sx={tabStyle}
+                  icon={
+                    <Tooltip title="Grid view" arrow placement="right" sx={tooltipStyle}>
+                      <GridOnIcon sx={tabIconStyle(value === 1)} />
+                    </Tooltip>
+                  }
+                  aria-label="Grid view"
+                  {...a11yProps(1)}
+                />
+              )}
             </Tabs>
           </Stack>
           <Stack
