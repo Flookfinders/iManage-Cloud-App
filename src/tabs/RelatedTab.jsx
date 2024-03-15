@@ -36,6 +36,7 @@
 //    021   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    022   13.03.24 Sean Flook            MUL9 Changes required to facilitate refreshing the data.
 //    023   16.03.24 Sean Flook            GLB6 Use individual buttons to toggle between properties and streets.
+//    024   16.03.24 Sean Flook       PRFRM1_GP If a property is selected always open it.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -408,21 +409,15 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
     const nodeData = propertyData.properties.find((x) => x.uprn.toString() === nodeId);
 
     if (nodeData) {
-      const children = propertyData.properties.filter(
-        (x) => x.parentUprn && x.parentUprn.toString() === nodeData.uprn.toString()
+      editProperty(
+        nodeData.uprn,
+        nodeData.primary.address,
+        nodeData.primary.postcode,
+        nodeData.easting,
+        nodeData.northing,
+        nodeData.primary.logicalStatus,
+        nodeData.blpuClass
       );
-
-      if (!children || children.length === 0) {
-        editProperty(
-          nodeData.uprn,
-          nodeData.primary.address,
-          nodeData.primary.postcode,
-          nodeData.easting,
-          nodeData.northing,
-          nodeData.primary.logicalStatus,
-          nodeData.blpuClass
-        );
-      }
     }
   };
 
