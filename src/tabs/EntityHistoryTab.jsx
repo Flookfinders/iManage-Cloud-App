@@ -21,6 +21,7 @@
 //    008   25.01.24 Sean Flook                 Correctly handle status code 204.
 //    009   08.03.24 Joshua McCormick IMANN-280 Adding Padding bottom to match padding top in the stack/chips
 //    010   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    011   16.03.24 Sean Flook            GLB6 Use individual buttons to toggle between updates and edits.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -35,14 +36,14 @@ import SettingsContext from "../context/settingsContext";
 
 import { GetPropertyHistoryByUPRNUrl, GetStreetHistoryByUSRNUrl } from "../configuration/ADSConfig";
 
-import { Chip, Skeleton, Stack } from "@mui/material";
+import { Button, Skeleton, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import ADSEntityHistoryList from "../components/ADSEntityHistoryList";
 
 import UpdateIcon from "@mui/icons-material/Update";
 import EditIcon from "@mui/icons-material/Edit";
 
-import { dataFormStyle, toolbarStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, dataFormStyle, greyButtonStyle, toolbarStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 function EntityHistoryTab({ variant }) {
@@ -58,16 +59,23 @@ function EntityHistoryTab({ variant }) {
   const [dataUsrn, setDataUsrn] = useState(streetContext.currentStreet.usrn);
   const [dataUprn, setDataUprn] = useState(propertyContext.currentProperty.uprn);
   const [loading, setLoading] = useState(true);
+  const [currentTab, setCurrentTab] = useState("update");
 
   /**
    * Event to handle updating the history data.
-   *
-   * @param {object} event The event object.
    */
-  const handleUpdateHistory = (event) => {
+  const handleUpdateHistory = () => {
+    if (currentTab !== "update") setCurrentTab("update");
     setData({}); // clear the display
     setLoading(true); // make render ignore null data (which would crash it)
     setData(null); // useEffect will fetch data then setLoading(false) so render will display new data
+  };
+
+  /**
+   * Event to handle viewing the edits in progress data.
+   */
+  const handleEditsInProgress = () => {
+    if (currentTab !== "edits") setCurrentTab("edits");
   };
 
   useEffect(() => {
@@ -137,17 +145,27 @@ function EntityHistoryTab({ variant }) {
           direction="row"
           alignItems="center"
           justifyContent="flex-start"
-          spacing={2}
-          sx={{ pl: theme.spacing(2), pt: theme.spacing(1), pb: theme.spacing(1) }}
+          spacing={1}
+          sx={{ pl: theme.spacing(2), pt: theme.spacing(0.55) }}
         >
-          <Chip
-            icon={<UpdateIcon />}
+          <Button
+            autoFocus
+            variant="contained"
+            startIcon={<UpdateIcon />}
             onClick={handleUpdateHistory}
-            size="small"
-            label="Update history"
-            color="primary"
-          />
-          <Chip icon={<EditIcon />} disabled size="small" label="Edits in progress" />
+            sx={currentTab === "update" ? blueButtonStyle : greyButtonStyle}
+          >
+            <Typography variant="caption">Update history</Typography>
+          </Button>
+          <Button
+            disabled
+            variant="contained"
+            startIcon={<EditIcon />}
+            onClick={handleEditsInProgress}
+            sx={currentTab === "edits" ? blueButtonStyle : greyButtonStyle}
+          >
+            <Typography variant="caption">Edits in progress</Typography>
+          </Button>
         </Stack>
       </Box>
       <Box sx={dataFormStyle("79.9vh")}>

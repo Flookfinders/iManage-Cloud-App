@@ -35,6 +35,7 @@
 //    020   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
 //    021   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    022   13.03.24 Sean Flook            MUL9 Changes required to facilitate refreshing the data.
+//    023   16.03.24 Sean Flook            GLB6 Use individual buttons to toggle between properties and streets.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -52,18 +53,7 @@ import LookupContext from "../context/lookupContext";
 import SearchContext from "../context/searchContext";
 import SettingsContext from "../context/settingsContext";
 
-import {
-  Avatar,
-  SvgIcon,
-  Skeleton,
-  ToggleButtonGroup,
-  ToggleButton,
-  Tooltip,
-  IconButton,
-  Typography,
-  Snackbar,
-  Alert,
-} from "@mui/material";
+import { Avatar, SvgIcon, Skeleton, Tooltip, IconButton, Typography, Snackbar, Alert, Button } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 
 import {
@@ -91,12 +81,14 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import {
   toolbarStyle,
   dataFormStyle,
-  GetTabIconStyle,
   GetAlertStyle,
   GetAlertIcon,
   GetAlertSeverity,
   ActionIconStyle,
   tooltipStyle,
+  blueButtonStyle,
+  greyButtonStyle,
+  relatedAvatarStyle,
 } from "../utils/ADSStyles";
 
 RelatedTab.propTypes = {
@@ -147,7 +139,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
    * @param {object} event The event object, not used.
    * @param {string} newTab The type for the new tab.
    */
-  const handleTabChange = (event, newTab) => {
+  const handleTabChange = (newTab) => {
     if (newTab !== relatedType) setRelatedType(newTab);
   };
 
@@ -880,48 +872,52 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
     <Fragment>
       <Box sx={toolbarStyle} id="ads-related-toolbar">
         <Stack
-          sx={{ pl: "8px", pr: "12px", pt: "4px", mt: "-2px" }}
+          sx={{ pl: "12px", pr: "12px", pt: "4px", mt: "-2px" }}
           direction="row"
           spacing={1}
           justifyContent="space-between"
           alignItems="center"
         >
-          <ToggleButtonGroup
-            sx={{ height: "30px" }}
-            color="primary"
-            value={relatedType}
-            exclusive
-            onChange={handleTabChange}
-            aria-label="related types"
-          >
-            <ToggleButton sx={{ textTransform: "none" }} value="property" aria-label="related properties">
-              <HomeIcon />
+          <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center" sx={{ height: "30px" }}>
+            <Button
+              autoFocus
+              variant="contained"
+              startIcon={<HomeIcon />}
+              onClick={() => handleTabChange("property")}
+              sx={relatedType === "property" ? blueButtonStyle : greyButtonStyle}
+            >
               <Typography variant="caption">Properties</Typography>
-              <Avatar variant="rounded" sx={GetTabIconStyle(propertyCount)}>
+              <Avatar variant="rounded" sx={relatedAvatarStyle(propertyCount, relatedType === "property")}>
                 <Typography variant="caption">
                   <strong>{propertyCount}</strong>
                 </Typography>
               </Avatar>
-            </ToggleButton>
-            <ToggleButton sx={{ textTransform: "none" }} value="street" aria-label="related streets">
-              <SvgIcon
-                style={{
-                  fillRule: "evenodd",
-                  clipRule: "evenodd",
-                  strokeLinejoin: "round",
-                  strokeMiterlimit: 2,
-                }}
-              >
-                <path d="M21,21L3,21L7.5,3L16.5,3L21,21ZM13,14L11,14L11,18L13,18L13,14ZM13,9L11,9L11,12L13,12L13,9ZM13,5L11,5L11,7L13,7L13,5Z" />
-              </SvgIcon>
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={
+                <SvgIcon
+                  style={{
+                    fillRule: "evenodd",
+                    clipRule: "evenodd",
+                    strokeLinejoin: "round",
+                    strokeMiterlimit: 2,
+                  }}
+                >
+                  <path d="M21,21L3,21L7.5,3L16.5,3L21,21ZM13,14L11,14L11,18L13,18L13,14ZM13,9L11,9L11,12L13,12L13,9ZM13,5L11,5L11,7L13,7L13,5Z" />
+                </SvgIcon>
+              }
+              onClick={() => handleTabChange("street")}
+              sx={relatedType === "street" ? blueButtonStyle : greyButtonStyle}
+            >
               <Typography variant="caption">Streets</Typography>
-              <Avatar variant="rounded" sx={GetTabIconStyle(streetCount)}>
+              <Avatar variant="rounded" sx={relatedAvatarStyle(streetCount, relatedType === "street")}>
                 <Typography variant="caption">
                   <strong>{streetCount}</strong>
                 </Typography>
               </Avatar>
-            </ToggleButton>
-          </ToggleButtonGroup>
+            </Button>
+          </Stack>
           <Tooltip title={`${expandAll} items in list`} arrow placement="right" sx={tooltipStyle}>
             <IconButton onClick={handleExpandAll} sx={ActionIconStyle()} aria-controls="expand-collapse" size="small">
               {expandAll === "Expand all" ? <ExpandMoreIcon /> : <ExpandLessIcon />}

@@ -35,6 +35,7 @@
 //    022   11.03.24 Joshua McCormick  IMANN-280 toolbarStyle height set to 40px for consistency between tabs
 //    023   12.03.24 Joshua McCormick  IMANN-280 toolbarStyle overflow hidden, created dataTabToolBar styling
 //    024   14.03.24 Sean Flook        ESU19_GP Added getHighwayDedicationIconStyle and changed colour.
+//    025   16.03.24 Sean Flook            GLB6 Added relatedAvatarStyle and greyButtonStyle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -424,37 +425,34 @@ export const dashboardIconStyle = { color: grey[400] };
  * @return {object} The styling used for tab icons.
  */
 export function GetTabIconStyle(dataLength) {
-  if (dataLength < 10)
-    return {
-      width: "16px",
-      height: "16px",
-      color: adsMidGreyA,
-      backgroundColor: adsLightGreyB,
-      borderRadius: "18px",
-      fontFamily: "Open Sans",
-      ml: "2px",
-    };
-  else if (dataLength < 100)
-    return {
-      width: "24px",
-      height: "16px",
-      color: adsMidGreyA,
-      backgroundColor: adsLightGreyB,
-      borderRadius: "18px",
-      fontFamily: "Open Sans",
-      ml: "2px",
-    };
-  else
-    return {
-      width: "32px",
-      height: "16px",
-      color: adsMidGreyA,
-      backgroundColor: adsLightGreyB,
-      borderRadius: "18px",
-      fontFamily: "Open Sans",
-      ml: "2px",
-    };
+  return {
+    width: `${dataLength < 10 ? "16px" : dataLength < 100 ? "24px" : "32px"}`,
+    height: "16px",
+    color: adsMidGreyA,
+    backgroundColor: adsLightGreyB,
+    borderRadius: "18px",
+    fontFamily: "Open Sans",
+    ml: "2px",
+  };
 }
+
+/**
+ * Return the styling for the button avatar.
+ *
+ * @param {number} dataLength The number of records.
+ * @return {object} The styling used for button avatar.
+ */
+export const relatedAvatarStyle = (dataLength, selected) => {
+  return {
+    width: `${dataLength < 10 ? "16px" : dataLength < 100 ? "24px" : "32px"}`,
+    height: "16px",
+    color: `${selected ? adsBlueA : adsMidGreyA}`,
+    backgroundColor: `${selected ? adsWhite : adsLightGreyB}`,
+    borderRadius: "18px",
+    fontFamily: "Open Sans",
+    ml: "8px",
+  };
+};
 
 /**
  * Returns the styling used for the alert.
@@ -558,6 +556,19 @@ export const blueButtonStyle = {
 export const whiteButtonStyle = {
   color: adsBlueA,
   backgroundColor: adsWhite,
+  textTransform: "none",
+  "&:hover": {
+    backgroundColor: adsLightBlue,
+    color: adsWhite,
+  },
+};
+
+/**
+ * The styling used for a grey button.
+ */
+export const greyButtonStyle = {
+  color: adsMidGreyA,
+  backgroundColor: adsLightGreyA,
   textTransform: "none",
   "&:hover": {
     backgroundColor: adsLightBlue,
