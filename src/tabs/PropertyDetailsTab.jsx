@@ -35,6 +35,7 @@
 //    022   04.03.24 Sean Flook           MUL16 Temporarily changed field name whilst waiting for API to be fixed.
 //    023   04.03.24 Sean Flook           MUL16 Field name has been fixed.
 //    024   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    025   15.03.24 Sean Flook       PRFRM2_GP Added display for number of children.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -191,6 +192,7 @@ function PropertyDetailsTab({
   const [parentAddress, setParentAddress] = useState(null);
   const [parentPostcode, setParentPostcode] = useState(null);
   const [hasParent, setHasParent] = useState(false);
+  const [childCount, setChildCount] = useState(0);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -872,6 +874,7 @@ function PropertyDetailsTab({
       setParentPostcode(data.parentPostcode);
 
       setHasParent(!!data.parentUprn);
+      setChildCount(data.childCount ? data.childCount : 0);
 
       setBLPULogicalStatusLookup(FilteredBLPULogicalStatus(settingsContext.isScottish));
       setRepresentativePointCodeLookup(FilteredRepresentativePointCode(settingsContext.isScottish));
@@ -1260,6 +1263,15 @@ function PropertyDetailsTab({
             loading={loading}
             label="Child of"
             value={addressToTitleCase(parentAddress, parentPostcode)}
+            buttonVariant={childCount > 0 ? "none" : "viewRelated"}
+            onButtonClick={handleViewRelatedClick}
+          />
+        )}
+        {childCount > 0 && (
+          <ADSReadOnlyControl
+            loading={loading}
+            label="Parent of"
+            value={`${childCount} ${childCount === 1 ? "child" : "children"}`}
             buttonVariant="viewRelated"
             onButtonClick={handleViewRelatedClick}
           />
