@@ -46,6 +46,7 @@
 //    032   20.02.24 Sean Flook            MUL1 Added removal of items from the list.
 //    033   27.02.24 Sean Flook           MUL16 Changes required to handle parent child relationships.
 //    034   12.03.24 Sean Flook            MUL8 Display an alert if properties are successfully moved.
+//    035   12.03.24 Sean Flook            MUL7 Use onClick rather than onChange.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1790,9 +1791,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                           checked={checked.indexOf(rec.id) !== -1}
                           color="primary"
                           tabIndex={-1}
-                          onChange={(event) => handleToggle(event, rec)}
+                          onClick={(event) => handleToggle(event, rec)}
                           id={`gazetteer_grid_checkbox_${rec.id}`}
-                          sx={{ pb: theme.spacing(3.5) }}
+                          sx={{ pb: theme.spacing(3.5), color: adsMidGreyA }}
                         />
                       )}
                       <Tooltip
