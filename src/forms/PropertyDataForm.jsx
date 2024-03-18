@@ -48,6 +48,7 @@
 //    035   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the Save button is correctly enabled.
 //    036   07.03.24 Joshua McCormick IMANN-280 Added tabContainerStyle to tab container, reverted old styling changes from 030
 //    037   08.03.24 Sean Flook       IMANN-348 Updated calls to ResetContexts.
+//    038   18.03.24 Sean Flook      STRFRM5_OS Only discard changes if a new record which has not previously been accepted.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -197,6 +198,7 @@ function PropertyDataForm({ data, loading }) {
   const associatedRecords = useRef([]);
   const provenanceChanged = useRef(false);
   const clearingType = useRef("");
+  const lastOpenedId = useRef(0);
 
   const [blpuErrors, setBlpuErrors] = useState([]);
   const [lpiErrors, setLpiErrors] = useState([]);
@@ -646,6 +648,7 @@ function PropertyDataForm({ data, loading }) {
       setLpiFormData(null);
       propertyContext.onRecordChange(21, null);
       mapContext.onEditMapObject(21, propertyData && propertyData.uprn);
+      lastOpenedId.current = 0;
     } else if (pkId === 0) {
       const newIdx =
         propertyData && propertyData.lpis ? propertyData.lpis.filter((x) => x.changeType !== "D").length : 0;
@@ -808,6 +811,7 @@ function PropertyDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("lpi", newEngRec);
       propertyContext.onRecordChange(24, newIdx, true);
+      lastOpenedId.current = 0;
     } else {
       const propertyChanged = hasPropertyChanged(
         propertyContext.currentProperty.newProperty,
@@ -827,6 +831,7 @@ function PropertyDataForm({ data, loading }) {
 
         sandboxContext.onSandboxChange("lpi", lpiData);
         propertyContext.onRecordChange(24, dataIdx);
+        lastOpenedId.current = pkId;
       } else if (propertyChanged) {
         failedValidation.current = true;
         saveResult.current = false;
@@ -848,6 +853,7 @@ function PropertyDataForm({ data, loading }) {
       setClassificationFormData(null);
       propertyContext.onRecordChange(21, null);
       mapContext.onEditMapObject(null, null);
+      lastOpenedId.current = pkId;
     } else if (pkId === 0) {
       const newIdx =
         propertyData && propertyData.classifications
@@ -913,6 +919,7 @@ function PropertyDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("classification", newRec);
       propertyContext.onRecordChange(32, newIdx, true);
       mapContext.onEditMapObject(32, newRec.pkId);
+      lastOpenedId.current = 0;
     } else {
       setClassificationFormData({
         id: pkId,
@@ -924,6 +931,7 @@ function PropertyDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("classification", classificationData);
       propertyContext.onRecordChange(32, dataIdx);
       mapContext.onEditMapObject(32, pkId);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -940,6 +948,7 @@ function PropertyDataForm({ data, loading }) {
       setOrganisationFormData(null);
       propertyContext.onRecordChange(21, null);
       mapContext.onEditMapObject(null, null);
+      lastOpenedId.current = 0;
     } else if (pkId === 0) {
       const newIdx =
         propertyData && propertyData.organisations
@@ -1003,6 +1012,7 @@ function PropertyDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("organisation", newRec);
       propertyContext.onRecordChange(31, newIdx, true);
       mapContext.onEditMapObject(31, newRec.pkId);
+      lastOpenedId.current = 0;
     } else {
       setOrganisationFormData({
         id: pkId,
@@ -1014,6 +1024,7 @@ function PropertyDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("organisation", organisationData);
       propertyContext.onRecordChange(31, dataIdx);
       mapContext.onEditMapObject(31, pkId);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -1030,6 +1041,7 @@ function PropertyDataForm({ data, loading }) {
       setSuccessorCrossRefFormData(null);
       propertyContext.onRecordChange(21, null);
       mapContext.onEditMapObject(null, null);
+      lastOpenedId.current = 0;
     } else if (pkId === 0) {
       const newIdx =
         propertyData && propertyData.successorCrossRefs
@@ -1093,6 +1105,7 @@ function PropertyDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("successorCrossRef", newRec);
       propertyContext.onRecordChange(30, newIdx, true);
       mapContext.onEditMapObject(30, newRec.pkId);
+      lastOpenedId.current = 0;
     } else {
       setSuccessorCrossRefFormData({
         id: pkId,
@@ -1104,6 +1117,7 @@ function PropertyDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("successorCrossRef", successorCrossRefData);
       propertyContext.onRecordChange(30, dataIdx);
       mapContext.onEditMapObject(30, pkId);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -1120,6 +1134,7 @@ function PropertyDataForm({ data, loading }) {
       setProvenanceFormData(null);
       propertyContext.onRecordChange(21, null);
       mapContext.onEditMapObject(null, null);
+      lastOpenedId.current = pkId;
     } else if (pkId === 0) {
       const newIdx =
         propertyData && propertyData.blpuProvenances
@@ -1186,6 +1201,7 @@ function PropertyDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("provenance", newRec);
       propertyContext.onRecordChange(22, newIdx, true);
       mapContext.onEditMapObject(22, newRec.pkId);
+      lastOpenedId.current = 0;
     } else {
       setProvenanceFormData({
         id: pkId,
@@ -1198,6 +1214,7 @@ function PropertyDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("provenance", provenanceData);
       propertyContext.onRecordChange(22, dataIdx);
       mapContext.onEditMapObject(22, pkId);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -1215,6 +1232,7 @@ function PropertyDataForm({ data, loading }) {
     if (pkId === -1) {
       setCrossRefFormData(null);
       propertyContext.onRecordChange(21, null);
+      lastOpenedId.current = 0;
     } else if (pkId === 0) {
       const newIdx =
         propertyData && propertyData.blpuAppCrossRefs
@@ -1278,6 +1296,7 @@ function PropertyDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("appCrossRef", newRec);
       propertyContext.onRecordChange(23, newIdx, true);
+      lastOpenedId.current = 0;
     } else {
       setCrossRefFormData({
         id: pkId,
@@ -1289,6 +1308,7 @@ function PropertyDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("appCrossRef", xrefData);
       propertyContext.onRecordChange(23, dataIdx);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -1305,6 +1325,7 @@ function PropertyDataForm({ data, loading }) {
     if (pkId === -1) {
       setNotesFormData(null);
       propertyContext.onRecordChange(21, null);
+      lastOpenedId.current = 0;
     } else if (pkId === 0) {
       const newIdx =
         propertyData && propertyData.blpuNotes ? propertyData.blpuNotes.filter((x) => x.changeType !== "D").length : 0;
@@ -1357,6 +1378,7 @@ function PropertyDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("propertyNote", newRec);
       propertyContext.onRecordChange(71, newIdx, true);
+      lastOpenedId.current = 0;
     } else {
       setNotesFormData({
         pkId: pkId,
@@ -1368,6 +1390,7 @@ function PropertyDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("propertyNote", noteData);
       propertyContext.onRecordChange(71, dataIdx);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -2584,7 +2607,12 @@ function PropertyDataForm({ data, loading }) {
    */
   const handleLPIHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkData) => {
-      if (checkData && checkData.pkId < 0 && !propertyContext.currentProperty.newProperty) {
+      if (
+        checkData &&
+        checkData.pkId < 0 &&
+        !propertyContext.currentProperty.newProperty &&
+        lastOpenedId.current === 0
+      ) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array if not a new property.
         let restoredLpis = propertyData.lpis.filter((x) => x.pkId !== checkData.pkId);
 
@@ -2669,7 +2697,7 @@ function PropertyDataForm({ data, loading }) {
    */
   const handleClassificationHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkPkID) => {
-      if (checkPkID < 0) {
+      if (checkPkID < 0 && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredClassifications = propertyData.classifications.filter((x) => x.pkId !== checkPkID);
 
@@ -2753,7 +2781,7 @@ function PropertyDataForm({ data, loading }) {
    */
   const handleOrganisationHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkPkID) => {
-      if (checkPkID < 0) {
+      if (checkPkID < 0 && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredOrganisations = propertyData.organisations.filter((x) => x.pkId !== checkPkID);
 
@@ -2837,7 +2865,7 @@ function PropertyDataForm({ data, loading }) {
    */
   const handleSuccessorCrossRefHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkPkID) => {
-      if (checkPkID < 0) {
+      if (checkPkID < 0 && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredSuccessorCrossRefs = propertyData.successorCrossRefs.filter((x) => x.pkId !== checkPkID);
 
@@ -2921,7 +2949,7 @@ function PropertyDataForm({ data, loading }) {
    */
   const handleProvenanceHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkPkID) => {
-      if (checkPkID < 0) {
+      if (checkPkID < 0 && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredProvenances = propertyData.blpuProvenances.filter((x) => x.pkId !== checkPkID);
 
@@ -3005,7 +3033,7 @@ function PropertyDataForm({ data, loading }) {
    */
   const handleCrossRefHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkPkId) => {
-      if (checkPkId < 0) {
+      if (checkPkId < 0 && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredAppCrossRefs = propertyData.blpuAppCrossRefs.filter((x) => x.pkId !== checkPkId);
 
@@ -3089,7 +3117,7 @@ function PropertyDataForm({ data, loading }) {
    */
   const handleNoteHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkData) => {
-      if (checkData && checkData.pkId < 0) {
+      if (checkData && checkData.pkId < 0 && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredNotes = propertyData.blpuNotes.filter((x) => x.pkId !== checkData.pkId);
 

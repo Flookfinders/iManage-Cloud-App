@@ -66,6 +66,7 @@
 //    052   07.03.24 Joel Benford     IMANN-331 Don't default organisation if not set in template
 //    053   07.03.24 Sean Flook       IMANN-348 Further changes required for ESUs.
 //    054   08.03.24 Sean Flook       IMANN-348 Updated calls to ResetContexts.
+//    055   18.03.24 Sean Flook      STRFRM5_OS Only discard changes if a new record which has not previously been accepted.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -251,6 +252,7 @@ function StreetDataForm({ data, loading }) {
   const failedValidation = useRef(null);
   const mergedDividedEsus = useRef([]);
   const clearingType = useRef("");
+  const lastOpenedId = useRef(0);
 
   const [streetErrors, setStreetErrors] = useState([]);
   const [descriptorErrors, setDescriptorErrors] = useState([]);
@@ -807,6 +809,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setDescriptorFormData(null);
       streetContext.onRecordChange(11, null, null, null);
+      lastOpenedId.current = pkId;
     } else if (pkId === 0) {
       const newIdx = streetData && streetData.streetDescriptors ? streetData.streetDescriptors.length + 1 : 1;
       const minPkId =
@@ -979,6 +982,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("streetDescriptor", newEngRec);
       streetContext.onRecordChange(15, newPkId, newIdx, null, true);
+      lastOpenedId.current = pkId;
     } else {
       const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
 
@@ -994,6 +998,7 @@ function StreetDataForm({ data, loading }) {
 
         sandboxContext.onSandboxChange("streetDescriptor", sdData);
         streetContext.onRecordChange(15, pkId, dataIdx, null);
+        lastOpenedId.current = pkId;
       } else if (streetChanged) {
         failedValidation.current = true;
         saveResult.current = false;
@@ -1088,6 +1093,7 @@ function StreetDataForm({ data, loading }) {
       setEsuFormData(null);
       streetContext.onRecordChange(13, null, null, null);
       mapContext.onEditMapObject(null, null);
+      lastOpenedId.current = 0;
     } else if (pkId === 0) {
       const newIdx =
         streetData && streetData.esus
@@ -1230,6 +1236,7 @@ function StreetDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("esu", newRec);
       streetContext.onRecordChange(13, newPkId, newIdx, null, true);
       mapContext.onEditMapObject(13, newPkId);
+      lastOpenedId.current = 0;
     } else {
       setEsuFormData({
         pkId: pkId,
@@ -1241,6 +1248,7 @@ function StreetDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("esu", esuData);
       streetContext.onRecordChange(13, pkId, dataIdx, null);
       mapContext.onEditMapObject(13, esuData.esuId);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -1403,6 +1411,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("highwayDedication", newRec);
       streetContext.onRecordChange(17, newPkId, newIdx, esuIndex, true);
+      lastOpenedId.current = 0;
     } else {
       setHdFormData({
         pkId: pkId,
@@ -1414,6 +1423,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("highwayDedication", hdData);
       streetContext.onRecordChange(17, pkId, index, esuIndex);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -1551,6 +1561,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("oneWayExemption", newRec);
       streetContext.onRecordChange(16, newPkId, newIdx, esuIndex, true);
+      lastOpenedId.current = 0;
     } else {
       setOweFormData({
         pkId: pkId,
@@ -1562,6 +1573,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("oneWayExemption", oweData);
       streetContext.onRecordChange(16, pkId, index, esuIndex);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -1578,6 +1590,7 @@ function StreetDataForm({ data, loading }) {
       setSuccessorCrossRefFormData(null);
       streetContext.onRecordChange(11, null, null);
       mapContext.onEditMapObject(null, null);
+      lastOpenedId.current = 0;
     } else if (pkId === 0) {
       const newIdx =
         streetData && streetData.successorCrossRefs
@@ -1645,6 +1658,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("successorCrossRef", newRec);
       streetContext.onRecordChange(30, newPkId, newIdx, null);
+      lastOpenedId.current = 0;
     } else {
       setSuccessorCrossRefFormData({
         id: pkId,
@@ -1656,6 +1670,7 @@ function StreetDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("successorCrossRef", successorCrossRefData);
       streetContext.onRecordChange(30, pkId, dataIdx);
       mapContext.onEditMapObject(30, pkId);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -1699,6 +1714,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setMaintenanceResponsibilityFormData(null);
       streetContext.onRecordChange(51, null, null, null);
+      lastOpenedId.current = 0;
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
         JSON.stringify({
@@ -1804,6 +1820,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("maintenanceResponsibility", newRec);
       streetContext.onRecordChange(51, newPkId, newIdx, null, true);
+      lastOpenedId.current = 0;
     } else {
       setMaintenanceResponsibilityFormData({
         pkId: pkId,
@@ -1815,6 +1832,7 @@ function StreetDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("maintenanceResponsibility", maintenanceResponsibilityData);
       streetContext.onRecordChange(51, pkId, dataIdx, null);
       if (!maintenanceResponsibilityData.wholeRoad) mapContext.onEditMapObject(51, pkId);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -1832,6 +1850,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setReinstatementCategoryFormData(null);
       streetContext.onRecordChange(52, null, null, null);
+      lastOpenedId.current = 0;
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
         JSON.stringify({
@@ -1936,6 +1955,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("reinstatementCategory", newRec);
       streetContext.onRecordChange(52, newPkId, newIdx, null, true);
+      lastOpenedId.current = 0;
     } else {
       setReinstatementCategoryFormData({
         pkId: pkId,
@@ -1947,6 +1967,7 @@ function StreetDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("reinstatementCategory", reinstatementCategoryData);
       streetContext.onRecordChange(52, pkId, dataIdx, null);
       if (!reinstatementCategoryData.wholeRoad) mapContext.onEditMapObject(52, pkId);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -1964,6 +1985,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setOSSpecialDesignationFormData(null);
       streetContext.onRecordChange(53, null, null, null);
+      lastOpenedId.current = 0;
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
         JSON.stringify({
@@ -2069,6 +2091,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("osSpecialDesignation", newRec);
       streetContext.onRecordChange(53, newPkId, newIdx, null, true);
+      lastOpenedId.current = 0;
     } else {
       setOSSpecialDesignationFormData({
         pkId: pkId,
@@ -2080,6 +2103,7 @@ function StreetDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("osSpecialDesignation", osSpecialDesignationData);
       streetContext.onRecordChange(53, pkId, dataIdx, null);
       if (!osSpecialDesignationData.wholeRoad) mapContext.onEditMapObject(53, pkId);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -2097,6 +2121,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setInterestFormData(null);
       streetContext.onRecordChange(61, null, null, null);
+      lastOpenedId.current = 0;
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
         JSON.stringify({
@@ -2216,6 +2241,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("interest", newRec);
       streetContext.onRecordChange(61, newPkId, newIdx, null, true);
+      lastOpenedId.current = 0;
     } else {
       setInterestFormData({
         pkId: pkId,
@@ -2227,6 +2253,7 @@ function StreetDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("interest", interestData);
       streetContext.onRecordChange(61, pkId, dataIdx, null);
       if (!interestData.wholeRoad) mapContext.onEditMapObject(61, pkId);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -2244,6 +2271,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setConstructionFormData(null);
       streetContext.onRecordChange(62, null, null, null);
+      lastOpenedId.current = 0;
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
         JSON.stringify({
@@ -2376,6 +2404,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("construction", newRec);
       streetContext.onRecordChange(62, newPkId, newIdx, null, true);
+      lastOpenedId.current = 0;
     } else {
       setConstructionFormData({
         pkId: pkId,
@@ -2387,6 +2416,7 @@ function StreetDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("construction", constructionData);
       streetContext.onRecordChange(62, pkId, dataIdx, null);
       if (!constructionData.wholeRoad) mapContext.onEditMapObject(62, pkId);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -2404,6 +2434,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setSpecialDesignationFormData(null);
       streetContext.onRecordChange(63, null, null, null);
+      lastOpenedId.current = 0;
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
         JSON.stringify({
@@ -2527,6 +2558,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("specialDesignation", newRec);
       streetContext.onRecordChange(63, newPkId, newIdx, null, true);
+      lastOpenedId.current = 0;
     } else {
       setSpecialDesignationFormData({
         pkId: pkId,
@@ -2538,6 +2570,7 @@ function StreetDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("specialDesignation", specialDesignationData);
       streetContext.onRecordChange(63, pkId, dataIdx, null);
       if (!specialDesignationData.wholeRoad) mapContext.onEditMapObject(63, pkId);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -2555,6 +2588,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setHwwFormData(null);
       streetContext.onRecordChange(64, null, null, null);
+      lastOpenedId.current = 0;
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
         JSON.stringify({
@@ -2670,6 +2704,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("hww", newRec);
       streetContext.onRecordChange(64, newPkId, newIdx, null, true);
+      lastOpenedId.current = 0;
     } else {
       setHwwFormData({
         pkId: pkId,
@@ -2681,6 +2716,7 @@ function StreetDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("hww", hwwData);
       streetContext.onRecordChange(64, pkId, dataIdx, null);
       if (!hwwData.wholeRoad) mapContext.onEditMapObject(64, pkId);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -2698,6 +2734,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setProwFormData(null);
       streetContext.onRecordChange(66, null, null, null);
+      lastOpenedId.current = 0;
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
         JSON.stringify({
@@ -2858,6 +2895,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("prow", newRec);
       streetContext.onRecordChange(66, newPkId, newIdx, null, true);
+      lastOpenedId.current = 0;
     } else {
       setProwFormData({
         pkId: pkId,
@@ -2869,6 +2907,7 @@ function StreetDataForm({ data, loading }) {
       sandboxContext.onSandboxChange("prow", prowData);
       streetContext.onRecordChange(66, pkId, dataIdx, null);
       if (!prowData.defMapGeometryType) mapContext.onEditMapObject(66, pkId);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -2883,6 +2922,7 @@ function StreetDataForm({ data, loading }) {
     setNotesFormData(null);
     streetContext.onRecordChange(11, null, null, null);
     mapContext.onEditMapObject(null, null);
+    lastOpenedId.current = 0;
 
     if (pkId === 0) {
       const newIdx =
@@ -2952,6 +2992,7 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("streetNote", noteData);
       streetContext.onRecordChange(72, pkId, dataIdx, null);
+      lastOpenedId.current = pkId;
     }
   };
 
@@ -4336,7 +4377,7 @@ function StreetDataForm({ data, loading }) {
    */
   const handleDescriptorHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkData) => {
-      if (checkData && checkData.pkId < 0 && !streetContext.currentStreet.newStreet) {
+      if (checkData && checkData.pkId < 0 && !streetContext.currentStreet.newStreet && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array if not a new street.
         const restoredDescriptors = streetData.streetDescriptors.filter((x) => x.pkId !== checkData.pkId);
 
@@ -4463,7 +4504,8 @@ function StreetDataForm({ data, loading }) {
         checkData &&
         checkData.pkId < 0 &&
         !mergedDividedEsus.current.length &&
-        mergedDividedEsus.current.includes(checkData.pkId)
+        mergedDividedEsus.current.includes(checkData.pkId) &&
+        lastOpenedId.current === 0
       ) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredEsus = streetData.esus.filter((x) => x.pkId !== checkData.pkId);
@@ -4702,7 +4744,7 @@ function StreetDataForm({ data, loading }) {
    */
   const handleSuccessorCrossRefHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkPkID) => {
-      if (checkPkID < 0) {
+      if (checkPkID < 0 && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredSuccessorCrossRefs = streetData.successorCrossRefs.filter((x) => x.pkId !== checkPkID);
 
@@ -4791,7 +4833,7 @@ function StreetDataForm({ data, loading }) {
    */
   const handleMaintenanceResponsibilityHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkData) => {
-      if (checkData && checkData.pkId < 0) {
+      if (checkData && checkData.pkId < 0 && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredMaintenanceResponsibilities = streetData.maintenanceResponsibilities.filter(
           (x) => x.pkId !== checkData.pkId
@@ -4883,7 +4925,7 @@ function StreetDataForm({ data, loading }) {
    */
   const handleReinstatementCategoryHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkData) => {
-      if (checkData && checkData.pkId < 0) {
+      if (checkData && checkData.pkId < 0 && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredReinstatementCategories = streetData.reinstatementCategories.filter(
           (x) => x.pkId !== checkData.pkId
@@ -4976,7 +5018,7 @@ function StreetDataForm({ data, loading }) {
    */
   const handleOSSpecialDesignationHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkData) => {
-      if (checkData && checkData.pkId < 0) {
+      if (checkData && checkData.pkId < 0 && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredSpecialDesignations = streetData.specialDesignations.filter((x) => x.pkId !== checkData.pkId);
 
@@ -5067,7 +5109,7 @@ function StreetDataForm({ data, loading }) {
    */
   const handleInterestHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkData) => {
-      if (checkData && checkData.pkId < 0) {
+      if (checkData && checkData.pkId < 0 && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredInterests = streetData.interests.filter((x) => x.pkId !== checkData.pkId);
 
@@ -5157,7 +5199,7 @@ function StreetDataForm({ data, loading }) {
    */
   const handleConstructionHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkData) => {
-      if (checkData && checkData.pkId < 0) {
+      if (checkData && checkData.pkId < 0 && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredConstructions = streetData.constructions.filter((x) => x.pkId !== checkData.pkId);
 
@@ -5248,7 +5290,7 @@ function StreetDataForm({ data, loading }) {
    */
   const handleSpecialDesignationHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkData) => {
-      if (checkData && checkData.pkId < 0) {
+      if (checkData && checkData.pkId < 0 && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredSpecialDesignations = streetData.specialDesignations.filter((x) => x.pkId !== checkData.pkId);
 
@@ -5339,7 +5381,7 @@ function StreetDataForm({ data, loading }) {
    */
   const handleHWWHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkData) => {
-      if (checkData && checkData.pkId < 0) {
+      if (checkData && checkData.pkId < 0 && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredHeightWidthWeights = streetData.heightWidthWeights.filter((x) => x.pkId !== checkData.pkId);
 
@@ -5430,7 +5472,7 @@ function StreetDataForm({ data, loading }) {
    */
   const handlePRoWHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkData) => {
-      if (checkData && checkData.pkId < 0) {
+      if (checkData && checkData.pkId < 0 && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredPublicRightOfWays = streetData.publicRightOfWays.filter((x) => x.pkId !== checkData.pkId);
 
@@ -5521,7 +5563,7 @@ function StreetDataForm({ data, loading }) {
    */
   const handleNoteHomeClick = (action, srcData, currentData) => {
     const discardChanges = (checkData) => {
-      if (checkData && checkData.pkId < 0) {
+      if (checkData && checkData.pkId < 0 && lastOpenedId.current === 0) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredNotes = streetData.streetNotes.filter((x) => x.pkId !== checkData.pkId);
 
