@@ -21,6 +21,7 @@
 //    008   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //    009   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    010   15.03.24 Sean Flook            GLB8 Fixed highlighting of tabs.
+//    011   12.03.24 Joshua McCormick  IMANN-280 toolbarStyling, added borderbottom to toolbar
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -62,7 +63,6 @@ import ADSFilterControl from "../components/ADSFilterControl";
 import { adsBlueA } from "../utils/ADSColours";
 import {
   toolbarStyle,
-  dataTabToolBar,
   ActionIconStyle,
   GetAlertStyle,
   GetAlertIcon,
@@ -783,8 +783,8 @@ function SearchDataForm() {
 
   return (
     <Fragment>
-      <Box sx={{ ...toolbarStyle, height: "45px" }}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ dataTabToolBar }}>
+      <Box sx={{ ...toolbarStyle, height: "auto", borderBottomWidth: "3px" }}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
             <Tooltip title="Toggle select all / none" arrow placement="right" sx={tooltipStyle}>
               <Fragment>
