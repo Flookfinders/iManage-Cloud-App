@@ -24,6 +24,7 @@
 //    011   23.02.24 Joel Benford     IMANN-287 Correct hover blue
 //    012   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    013   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
+//    014   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -56,7 +57,7 @@ import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectionControl from "../components/ADSSelectionControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import { AddCircleOutlineOutlined as AddCircleIcon } from "@mui/icons-material";
-import { adsBlueA, adsPaleBlueA } from "../utils/ADSColours";
+import { adsBlueA, adsLightGreyC, adsMidGreyA, adsPaleBlueA } from "../utils/ADSColours";
 import { toolbarStyle, ActionIconStyle, dataFormStyle, tooltipStyle, gridRowStyle } from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
 import { useTheme, makeStyles } from "@mui/styles";
@@ -208,6 +209,7 @@ function PropertyBLPUProvenanceListTab({
     { field: "provenanceKey" },
     {
       field: "provenanceCode",
+      headerClassName: "idox-provenance-data-grid-header",
       headerName: "Type",
       flex: 30,
       renderCell: getProvenanceAvatar,
@@ -216,6 +218,7 @@ function PropertyBLPUProvenanceListTab({
     { field: "entryDate" },
     {
       field: "startDate",
+      headerClassName: "idox-provenance-data-grid-header",
       headerName: "Start",
       flex: 10,
       type: "date",
@@ -226,6 +229,7 @@ function PropertyBLPUProvenanceListTab({
     },
     {
       field: "endDate",
+      headerClassName: "idox-provenance-data-grid-header",
       headerName: "End",
       flex: 10,
       type: "date",
@@ -235,7 +239,13 @@ function PropertyBLPUProvenanceListTab({
       renderCell: formatTableEndDate,
     },
     { field: "lastUpdateDate" },
-    { field: "", flex: 2, sortable: false, renderCell: displayActionButtons },
+    {
+      field: "",
+      headerClassName: "idox-provenance-data-grid-header",
+      flex: 2,
+      sortable: false,
+      renderCell: displayActionButtons,
+    },
   ];
 
   /**
@@ -371,7 +381,14 @@ function PropertyBLPUProvenanceListTab({
           </Tooltip>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79vh")} className={classes.root}>
+      <Box
+        sx={{
+          ...dataFormStyle("79vh"),
+          "& .idox-provenance-data-grid-header": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
+          "& .MuiDataGrid-columnHeaderCheckbox": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
+        }}
+        className={classes.root}
+      >
         {loading ? (
           <Skeleton variant="rectangular" height="60px" width="100%" />
         ) : data && data.filter((x) => x.changeType !== "D").length > 0 ? (

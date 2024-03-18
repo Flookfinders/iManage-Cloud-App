@@ -23,6 +23,7 @@
 //    010   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
 //    011   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    012   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
+//    013   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -50,7 +51,7 @@ import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectionControl from "../components/ADSSelectionControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import { AddCircleOutlineOutlined as AddCircleIcon } from "@mui/icons-material";
-import { adsBlueA, adsLightBlue10 } from "../utils/ADSColours";
+import { adsBlueA, adsLightBlue10, adsLightGreyC, adsMidGreyA } from "../utils/ADSColours";
 import { toolbarStyle, ActionIconStyle, dataFormStyle, tooltipStyle, gridRowStyle } from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
 import { useTheme, makeStyles } from "@mui/styles";
@@ -196,6 +197,7 @@ function PropertyClassificationListTab({
     { field: "classKey" },
     {
       field: "blpuClass",
+      headerClassName: "idox-classification-data-grid-header",
       headerName: "Classification",
       flex: 30,
       renderCell: getClassificationDisplay,
@@ -204,6 +206,7 @@ function PropertyClassificationListTab({
     { field: "entryDate" },
     {
       field: "startDate",
+      headerClassName: "idox-classification-data-grid-header",
       headerName: "Start",
       flex: 10,
       type: "date",
@@ -214,6 +217,7 @@ function PropertyClassificationListTab({
     },
     {
       field: "endDate",
+      headerClassName: "idox-classification-data-grid-header",
       headerName: "End",
       flex: 10,
       type: "date",
@@ -223,7 +227,13 @@ function PropertyClassificationListTab({
       renderCell: formatTableEndDate,
     },
     { field: "lastUpdateDate" },
-    { field: "", flex: 2, sortable: false, renderCell: displayActionButtons },
+    {
+      field: "",
+      headerClassName: "idox-classification-data-grid-header",
+      flex: 2,
+      sortable: false,
+      renderCell: displayActionButtons,
+    },
   ];
 
   /**
@@ -360,7 +370,14 @@ function PropertyClassificationListTab({
           </Tooltip>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79vh")} className={classes.root}>
+      <Box
+        sx={{
+          ...dataFormStyle("79vh"),
+          "& .idox-classification-data-grid-header": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
+          "& .MuiDataGrid-columnHeaderCheckbox": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
+        }}
+        className={classes.root}
+      >
         {loading ? (
           <Skeleton variant="rectangular" height="60px" width="100%" />
         ) : data && data.filter((x) => x.changeType !== "D").length > 0 ? (

@@ -22,6 +22,7 @@
 //    009   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
 //    010   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    011   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
+//    012   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -51,7 +52,7 @@ import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectionControl from "../components/ADSSelectionControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import { AddCircleOutlineOutlined as AddCircleIcon } from "@mui/icons-material";
-import { adsBlueA, adsLightBlue10 } from "../utils/ADSColours";
+import { adsBlueA, adsLightBlue10, adsLightGreyC, adsMidGreyA } from "../utils/ADSColours";
 import { toolbarStyle, ActionIconStyle, dataFormStyle, tooltipStyle, gridRowStyle } from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
 import { useTheme, makeStyles } from "@mui/styles";
@@ -200,15 +201,22 @@ function PropertyCrossRefListTab({
     { field: "source" },
     {
       field: "sourceId",
+      headerClassName: "idox-cross-ref-data-grid-header",
       headerName: "Source",
       flex: 30,
       renderCell: GetCrossRefAvatar,
     },
-    { field: "crossReference", headerName: "Cross reference", flex: 25 },
+    {
+      field: "crossReference",
+      headerClassName: "idox-cross-ref-data-grid-header",
+      headerName: "Cross reference",
+      flex: 25,
+    },
     { field: "entryDate" },
     { field: "startDate" },
     {
       field: "historic",
+      headerClassName: "idox-cross-ref-data-grid-header",
       headerName: "Historic",
       flex: 10,
       sortable: false,
@@ -218,7 +226,12 @@ function PropertyCrossRefListTab({
     },
     { field: "lastUpdateDate" },
     { field: "neverExport" },
-    { field: "", sortable: false, renderCell: displayActionButtons },
+    {
+      field: "",
+      headerClassName: "idox-cross-ref-data-grid-header",
+      sortable: false,
+      renderCell: displayActionButtons,
+    },
   ];
 
   /**
@@ -353,7 +366,14 @@ function PropertyCrossRefListTab({
           </Tooltip>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79vh")} className={classes.root}>
+      <Box
+        sx={{
+          ...dataFormStyle("79vh"),
+          "& .idox-cross-ref-data-grid-header": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
+          "& .MuiDataGrid-columnHeaderCheckbox": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
+        }}
+        className={classes.root}
+      >
         {loading ? (
           <Skeleton variant="rectangular" height="60px" width="100%" />
         ) : data && data.length > 0 ? (

@@ -19,6 +19,7 @@
 //    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    007   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    008   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    009   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -38,6 +39,7 @@ import { GetCrossRefAvatar, getMonthString } from "../utils/HelperUtils";
 
 import AddIcon from "@mui/icons-material/Add";
 
+import { adsLightGreyC, adsMidGreyA } from "../utils/ADSColours";
 import { blueButtonStyle, dataFormStyle, gridRowStyle } from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
 import { useTheme, makeStyles } from "@mui/styles";
@@ -134,13 +136,31 @@ function WizardCrossReferencesPage({ data, errors, templateVariant, onDataChange
     { field: "id" },
     {
       field: "sourceId",
+      headerClassName: "idox-wizard-cross-ref-data-grid-header",
       headerName: "Source",
       flex: 30,
       renderCell: GetCrossRefAvatar,
     },
-    { field: "crossReference", headerName: "Cross reference", flex: 25 },
-    { field: "startDate", headerName: "Start date", flex: 10, renderCell: getStartDate },
-    { field: "", sortable: false, headerName: "", renderCell: displayActionButtons },
+    {
+      field: "crossReference",
+      headerClassName: "idox-wizard-cross-ref-data-grid-header",
+      headerName: "Cross reference",
+      flex: 25,
+    },
+    {
+      field: "startDate",
+      headerClassName: "idox-wizard-cross-ref-data-grid-header",
+      headerName: "Start date",
+      flex: 10,
+      renderCell: getStartDate,
+    },
+    {
+      field: "",
+      headerClassName: "idox-wizard-cross-ref-data-grid-header",
+      sortable: false,
+      headerName: "",
+      renderCell: displayActionButtons,
+    },
   ];
 
   /**
@@ -286,7 +306,13 @@ function WizardCrossReferencesPage({ data, errors, templateVariant, onDataChange
               Add
             </Button>
           </Stack>
-          <Box sx={dataFormStyle("73vh")} className={classes.root}>
+          <Box
+            sx={{
+              ...dataFormStyle("73vh"),
+              "& .idox-wizard-cross-ref-data-grid-header": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
+            }}
+            className={classes.root}
+          >
             {data && data.length > 0 ? (
               <DataGrid
                 rows={data}
