@@ -44,6 +44,7 @@
 //    013   07.02.24 Sean Flook       IMANN-284 Added missing OneScotland ESU checks.
 //    014   12.02.24 Sean Flook                 Added new GeoPlace special designation checks.
 //    015   14.03.24 Sean Flook                 Added new checks.
+//    016   18.03.24 Sean Flook         ESU2_GP Added check for missing geometry on ESU record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -633,10 +634,17 @@ export function ValidateEsuData(data, index, currentLookups, isScottish) {
   let stateDateErrors = [];
   let toleranceErrors = [];
   let directionErrors = [];
+  let geometryErrors = [];
   let validationErrors = [];
   let currentCheck;
 
   if (data) {
+    // Mandatory geometry is missing.
+    currentCheck = GetCheck(1300002, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && !data.wktGeometry) {
+      geometryErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     // Mandatory State is missing.
     currentCheck = GetCheck(1300011, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && !data.state) {
@@ -807,6 +815,13 @@ export function ValidateEsuData(data, index, currentLookups, isScottish) {
   }
 
   if (showDebugMessages) console.log("[DEBUG] ValidateEsuData - Finished checks");
+
+  if (geometryErrors.length > 0)
+    validationErrors.push({
+      index: index,
+      field: "Geometry",
+      errors: geometryErrors,
+    });
 
   if (startDateErrors.length > 0)
     validationErrors.push({
