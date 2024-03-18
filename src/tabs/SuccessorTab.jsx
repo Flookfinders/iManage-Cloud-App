@@ -20,6 +20,7 @@
 //    007   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    008   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    009   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
+//    010   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -401,7 +402,12 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onHomeClic
           errorText={endDateError}
           onChange={handleEndDateChangeEvent}
         />
-        <ADSReadOnlyControl label="successor key" loading={loading} value={data.successorCrossRefData.succKey} />
+        <ADSReadOnlyControl
+          label="Successor key"
+          loading={loading}
+          value={data.successorCrossRefData.succKey}
+          nullString="Key set on save"
+        />
         <ADSOkCancelControl
           okDisabled={!dataChanged}
           onOkClicked={handleOkClicked}

@@ -29,6 +29,7 @@
 //    016   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    017   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    018   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
+//    019   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1242,7 +1243,12 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
             onChange={handleEndDateChangeEvent}
           />
         )}
-        <ADSReadOnlyControl label="LPI key" loading={loading} value={data.lpiData.lpiKey} />
+        <ADSReadOnlyControl
+          label="LPI key"
+          loading={loading}
+          value={data.lpiData.lpiKey}
+          nullString="Key set on save"
+        />
         <ADSOkCancelControl
           okDisabled={!dataChanged}
           onOkClicked={handleOkClicked}

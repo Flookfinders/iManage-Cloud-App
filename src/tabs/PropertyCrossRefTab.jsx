@@ -24,6 +24,7 @@
 //    011   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    012   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    013   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
+//    014   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -410,7 +411,12 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onHomeClick,
           errorText={endDateError}
           onChange={handleEndDateChangeEvent}
         />
-        <ADSReadOnlyControl label="Cross reference key" loading={loading} value={data.xrefData.xrefKey} />
+        <ADSReadOnlyControl
+          label="Cross reference key"
+          loading={loading}
+          value={data.xrefData.xrefKey}
+          nullString="Key set on save"
+        />
         <ADSOkCancelControl
           okDisabled={!dataChanged}
           onOkClicked={handleOkClicked}

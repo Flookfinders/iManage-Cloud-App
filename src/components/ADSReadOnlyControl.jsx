@@ -16,6 +16,7 @@
 //    003   14.05.21 Sean Flook         WI39345 Updated className.
 //    004   27.10.23 Sean Flook                 Updated call to FormRowStyle.
 //    005   27.02.24 Sean Flook           MUL16 Added ability to display a button.
+//    006   18.03.24 Sean Flook      STRFRM4_OS Added nullString parameter.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -47,6 +48,7 @@ ADSReadOnlyControl.propTypes = {
   boldLabel: PropTypes.bool,
   label: PropTypes.string.isRequired,
   value: PropTypes.string,
+  nullString: PropTypes.string,
   buttonVariant: PropTypes.oneOf(["none", "viewRelated"]),
   onButtonClick: PropTypes.func,
 };
@@ -55,10 +57,20 @@ ADSReadOnlyControl.defaultProps = {
   loading: false,
   noLeftPadding: false,
   boldLabel: false,
+  nullString: "",
   buttonVariant: "none",
 };
 
-function ADSReadOnlyControl({ loading, noLeftPadding, boldLabel, label, value, buttonVariant, onButtonClick }) {
+function ADSReadOnlyControl({
+  loading,
+  noLeftPadding,
+  boldLabel,
+  label,
+  value,
+  nullString,
+  buttonVariant,
+  onButtonClick,
+}) {
   const theme = useTheme();
 
   /**
@@ -139,7 +151,7 @@ function ADSReadOnlyControl({ loading, noLeftPadding, boldLabel, label, value, b
             sx={getValueStyle()}
             aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
           >
-            {loading ? <Skeleton animation="wave" /> : value}
+            {loading ? <Skeleton animation="wave" /> : value ? value : nullString}
           </Typography>
         </Grid>
       ) : (
@@ -153,7 +165,7 @@ function ADSReadOnlyControl({ loading, noLeftPadding, boldLabel, label, value, b
               sx={getValueStyle()}
               aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
             >
-              {loading ? <Skeleton animation="wave" /> : value}
+              {loading ? <Skeleton animation="wave" /> : value ? value : nullString}
             </Typography>
           </Grid>
           <Grid item xs={3} />

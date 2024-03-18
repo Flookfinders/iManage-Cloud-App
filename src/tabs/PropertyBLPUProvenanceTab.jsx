@@ -26,6 +26,7 @@
 //    013   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    014   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    015   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
+//    016   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -404,7 +405,12 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
           errorText={endDateError}
           onChange={handleEndDateChangeEvent}
         />
-        <ADSReadOnlyControl label="Provenance key" loading={loading} value={data.provenanceData.provenanceKey} />
+        <ADSReadOnlyControl
+          label="Provenance key"
+          loading={loading}
+          value={data.provenanceData.provenanceKey}
+          nullString="Key set on save"
+        />
         <ADSOkCancelControl
           okDisabled={!propertyContext.provenanceDataChanged}
           onOkClicked={handleOkClicked}

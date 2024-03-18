@@ -22,6 +22,7 @@
 //    009   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    010   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    011   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
+//    012   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -403,7 +404,12 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onHome
           errorText={endDateError}
           onChange={handleEndDateChangeEvent}
         />
-        <ADSReadOnlyControl label="Classification key" loading={loading} value={data.classificationData.classKey} />
+        <ADSReadOnlyControl
+          label="Classification key"
+          loading={loading}
+          value={data.classificationData.classKey}
+          nullString="Key set on save"
+        />
         <ADSOkCancelControl
           okDisabled={!dataChanged}
           onOkClicked={handleOkClicked}
