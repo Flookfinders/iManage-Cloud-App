@@ -41,6 +41,7 @@
 //    027   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    028   12.03.24 Sean Flook            MUL8 Display an alert if properties are successfully moved.
 //    029   13.03.24 Sean Flook            MUL9 Added new parameters to handle the checking of records.
+//    030   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -105,6 +106,7 @@ import { useTheme } from "@mui/styles";
 
 RelatedPropertyTab.propTypes = {
   data: PropTypes.object.isRequired,
+  variant: PropTypes.oneOf(["street", "property"]).isRequired,
   loading: PropTypes.bool.isRequired,
   expanded: PropTypes.array.isRequired,
   checked: PropTypes.array.isRequired,
@@ -117,6 +119,7 @@ RelatedPropertyTab.propTypes = {
 
 function RelatedPropertyTab({
   data,
+  variant,
   loading,
   expanded,
   checked,
@@ -1018,7 +1021,7 @@ function RelatedPropertyTab({
           </Menu>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("74vh")}>
+      <Box sx={dataFormStyle(`${variant === "street" ? "75.6vh" : "74.7vh"}`)}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : (

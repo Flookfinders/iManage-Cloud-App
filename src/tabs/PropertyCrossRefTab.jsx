@@ -23,6 +23,7 @@
 //    010   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    011   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    012   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
+//    013   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -356,7 +357,7 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onHomeClick,
           />
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79.9vh")}>
+      <Box sx={dataFormStyle("79vh")}>
         <ADSSelectControl
           label="Source"
           isEditable={userCanEdit}

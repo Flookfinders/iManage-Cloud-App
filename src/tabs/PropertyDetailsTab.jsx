@@ -36,6 +36,8 @@
 //    023   04.03.24 Sean Flook           MUL16 Field name has been fixed.
 //    024   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    025   15.03.24 Sean Flook       PRFRM2_GP Added display for number of children.
+//    026   12.03.24 Joshua McCormick  IMANN-280 Toolbar styling, fixed margin
+//    027   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1028,8 +1030,8 @@ function PropertyDetailsTab({
             variant="subtitle1"
             display="inline-flex"
             sx={{
-              mt: theme.spacing(0.3),
-              pl: theme.spacing(1.1),
+              mt: theme.spacing(0.5),
+              pl: theme.spacing(2),
               fontSize: "15px",
               color: adsMidGreyA,
             }}
@@ -1128,7 +1130,7 @@ function PropertyDetailsTab({
           </Menu>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79.9vh")}>
+      <Box sx={dataFormStyle("79vh")}>
         <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
           <Grid item xs={3}>
             <Typography variant="body2" color="textPrimary" align="left" sx={controlLabelStyle}>

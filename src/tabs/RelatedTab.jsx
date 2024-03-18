@@ -37,6 +37,7 @@
 //    022   13.03.24 Sean Flook            MUL9 Changes required to facilitate refreshing the data.
 //    023   15.03.24 Sean Flook            GLB6 Use individual buttons to toggle between properties and streets.
 //    024   15.03.24 Sean Flook       PRFRM1_GP If a property is selected always open it.
+//    025   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -921,12 +922,13 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
           </Tooltip>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79.9vh")}>
+      <Box sx={dataFormStyle(`${variant === "street" ? "79.9vh" : "79vh"}`)}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : relatedType === "property" ? (
           <RelatedPropertyTab
             data={propertyData}
+            variant={variant}
             loading={loading}
             expanded={expanded}
             checked={propertyChecked}
@@ -939,6 +941,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
         ) : (
           <RelatedStreetTab
             data={streetData}
+            variant={variant}
             loading={loading}
             expanded={expanded}
             checked={streetChecked}

@@ -21,6 +21,7 @@
 //    008   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    009   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
 //    010   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    011   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -333,7 +334,7 @@ function PropertyOrganisationListTab({
           </Tooltip>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79.9vh")} className={classes.root}>
+      <Box sx={dataFormStyle("79vh")} className={classes.root}>
         {loading ? (
           <Skeleton variant="rectangular" height="60px" width="100%" />
         ) : data && data.filter((x) => x.changeType !== "D").length > 0 ? (

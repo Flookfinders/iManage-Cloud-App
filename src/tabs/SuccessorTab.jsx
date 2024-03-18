@@ -19,6 +19,7 @@
 //    006   11.01.24 Sean Flook                 Fix warnings.
 //    007   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    008   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    009   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -356,7 +357,7 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onHomeClic
           />
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79.9vh")}>
+      <Box sx={dataFormStyle(`${variant === "street" ? "79.9vh" : "79vh"}`)}>
         <ADSNumberControl
           label="Successor"
           isEditable={userCanEdit}

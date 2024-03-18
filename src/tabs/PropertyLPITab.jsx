@@ -27,6 +27,8 @@
 //    014   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    015   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    016   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    017   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
+//    018   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -64,6 +66,7 @@ import { MoreVert as ActionsIcon } from "@mui/icons-material";
 import { adsMidGreyA, adsDarkGrey, adsLightGreyB } from "../utils/ADSColours";
 import {
   toolbarStyle,
+  dataTabToolBar,
   dataFormStyle,
   ActionIconStyle,
   menuStyle,
@@ -928,8 +931,8 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
   return (
     <Fragment>
       <Box sx={toolbarStyle}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Stack direction="row" spacing={0} justifyContent="flex-start" alignItems="center" sx={{ pl: "4px" }}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={dataTabToolBar}>
+          <Stack direction="row" spacing={0} justifyContent="flex-start" alignItems="center">
             <ADSActionButton
               variant="home"
               tooltipTitle="Back to property details"
@@ -1025,7 +1028,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           </Menu>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79.9vh")}>
+      <Box sx={dataFormStyle("79vh")}>
         <ADSLanguageControl
           label="Language"
           isEditable={userCanEdit}

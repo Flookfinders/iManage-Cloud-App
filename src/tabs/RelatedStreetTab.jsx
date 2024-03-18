@@ -33,6 +33,7 @@
 //    020   22.02.24 Joel Benford     IMANN-287 Checked items blue
 //    021   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    022   13.03.24 Sean Flook            MUL9 Added new parameters to handle the checking of records.
+//    023   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -121,6 +122,7 @@ import { useTheme } from "@mui/styles";
 
 RelatedStreetTab.propTypes = {
   data: PropTypes.object.isRequired,
+  variant: PropTypes.oneOf(["street", "property"]).isRequired,
   loading: PropTypes.bool.isRequired,
   expanded: PropTypes.array.isRequired,
   checked: PropTypes.array.isRequired,
@@ -133,6 +135,7 @@ RelatedStreetTab.propTypes = {
 
 function RelatedStreetTab({
   data,
+  variant,
   loading,
   expanded,
   checked,
@@ -707,7 +710,7 @@ function RelatedStreetTab({
 
   return (
     <Fragment>
-      <Box sx={dataFormStyle("79.9vh")}>
+      <Box sx={dataFormStyle(`${variant === "street" ? "79.9vh" : "79vh"}`)}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : (
