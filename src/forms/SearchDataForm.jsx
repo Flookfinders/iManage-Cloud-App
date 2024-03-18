@@ -21,7 +21,8 @@
 //    008   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //    009   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    010   15.03.24 Sean Flook            GLB8 Fixed highlighting of tabs.
-//    011   12.03.24 Joshua McCormick  IMANN-280 toolbarStyling, added borderbottom to toolbar
+//    011   15.03.24 Joshua McCormick  IMANN-280 toolbarStyling, added borderBottom to toolbar
+//    012   18.03.24 Sean Flook            GLB8 Fixed highlighting of tabs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -855,7 +856,7 @@ function SearchDataForm() {
             <Tabs
               value={value}
               onChange={handleTabChange}
-              TabIndicatorProps={{ style: { background: adsBlueA, height: "7px" } }}
+              TabIndicatorProps={{ style: { background: adsBlueA, height: "3px" } }}
               selectionFollowsFocus
               aria-label="search-list-tabs"
               sx={tabContainerStyle}
