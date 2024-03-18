@@ -38,6 +38,7 @@
 //    025   15.03.24 Sean Flook            GLB6 Added relatedAvatarStyle and greyButtonStyle.
 //    026   15.03.24 Sean Flook            GLB8 Added tabIconStyle.
 //    027   15.03.24 Joshua McCormick  IMANN-280 dataTabToolBar Icon styling
+//    028   18.03.24 Sean Flook           GLB12 Tweaked searchDataFormStyle to remove overflow.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -377,7 +378,7 @@ export const searchDataFormStyle = {
   boxShadow: `4px 0px 7px ${adsLightGreyA50}`,
   overflowY: "auto",
   width: "100%",
-  height: "88.75vh",
+  height: "88.5vh",
 };
 
 /**
