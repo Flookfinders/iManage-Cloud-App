@@ -31,6 +31,7 @@
 //    018   04.03.24 Sean Flook            COL3 Changed the colour for type 51/61 ASD records.
 //    019   07.03.24 Sean Flook       IMANN-339 Only show the Add button for Scottish authorities if the street is type 1 or 2.
 //    020   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    021   18.03.24 Sean Flook         ASD3_OS Use the description as the secondary information for Scottish special designation records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -799,7 +800,7 @@ function AsdDataTab({
                 iconBackgroundColour={adsYellow}
                 iconBorderColour={`${adsBlack}  !important`}
                 primaryCodeField="specialDesig"
-                secondaryCodeField="authorityCode"
+                secondaryCodeField="description"
                 onToggleItem={(id) => handleToggleItem(id)}
                 onItemClicked={(specialDesignationData, index) =>
                   handleOSSpecialDesignationClicked(specialDesignationData, index)

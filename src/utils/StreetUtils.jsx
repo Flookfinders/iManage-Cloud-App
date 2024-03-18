@@ -47,6 +47,7 @@
 //    034   08.03.24 Sean Flook       IMANN-348 Added ESU to hasStreetChanged.
 //    035   11.03.24 Sean Flook        ESU29_GP Added setASDLayerVisibility.
 //    036   12.03.24 Sean Flook                 Improved error handling when deleting.
+//    037   18.03.24 Sean Flook         ASD3_OS Tweaked GetAsdSecondaryText.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3209,11 +3210,11 @@ export function GetAsdSecondaryText(value, variant, isScottish) {
   switch (variant) {
     case "51":
     case "52":
-    case "53":
     case "61":
       secondaryRecord = SwaOrgRef.filter((x) => x.id === value);
       break;
 
+    case "53":
     case "62":
     case "63":
     case "64":
