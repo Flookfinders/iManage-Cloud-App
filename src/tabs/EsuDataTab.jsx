@@ -32,6 +32,7 @@
 //    019   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    020   12.03.24 Joshua McCormick IMANN-280 Moved ADSActionButton to correct place inside Typography for toolbar
 //    021   14.03.24 Sean Flook        ESU19_GP Moved getHighwayDedicationIconStyle to ADSStyles.
+//    022   12.03.24 Joshua McCormick IMANN-280 Reverted removed changes and fixed vertical toolbar alignment
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -98,6 +99,7 @@ import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import { adsBlueA, adsMidGreyA, adsRed10, adsRed20, adsWhite, adsLightBlue, adsLightBlue10 } from "../utils/ADSColours";
 import {
   toolbarStyle,
+  dataTabToolBar,
   ActionIconStyle,
   dataFormStyle,
   GetTabIconStyle,
@@ -874,142 +876,129 @@ function EsuDataTab({
   return (
     <Fragment>
       <Box sx={toolbarStyle} id="ads-esu-data-form">
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Stack direction="row" alignItems="center" justifyContent="flex-start">
-            <Typography
-              sx={{
-                flexGrow: 1,
-                display: "none",
-                [theme.breakpoints.up("sm")]: {
-                  display: "block",
-                },
-              }}
-              variant="subtitle1"
-              noWrap
-              align="left"
-            >
-              <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
-              {data.esuData.esuId < 0 ? `Add new ESU` : `${data.esuData.esuId}`}
-            </Typography>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={dataTabToolBar}>
+          <Stack direction="row" justifyContent="flex-start" alignItems="center">
+            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            <Typography>{data.esuData.esuId < 0 ? `Add new ESU` : `${data.esuData.esuId}`}</Typography>
           </Stack>
-          <Stack direction="row" alignItems="center" justifyContent="flex-end">
-            {data.esuData.esuId > 0 && (
-              <>
-                <ADSActionButton
-                  variant="copy"
-                  tooltipTitle="Copy ESU Id to clipboard"
-                  tooltipPlacement="right"
-                  disabled={informationContext.informationType && informationContext.informationType === "createESU"}
-                  onClick={handleCopyEsuId}
-                />
-                <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
-                  <IconButton
-                    onClick={handleActionsClick}
-                    sx={ActionIconStyle()}
-                    aria_controls={`actions-menu-${data.esuData.esuId}`}
-                    size="small"
-                  >
-                    <ActionsIcon />
-                  </IconButton>
-                </Tooltip>
-              </>
-            )}
-
-            <Menu
-              id={`actions-menu-${data.esuData.esuId}`}
-              elevation={2}
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              open={Boolean(anchorEl)}
-              onClose={handleActionsMenuClose}
-              TransitionComponent={Fade}
-              sx={menuStyle}
-            >
-              <MenuItem
-                dense
-                disabled={
-                  !userCanEdit ||
-                  (informationContext.informationType && informationContext.informationType === "createESU")
-                }
-                divider={settingsContext.isScottish}
-                onClick={handleAddNewEsu}
-                sx={menuItemStyle(false)}
-              >
-                <Typography variant="inherit">Add new ESU</Typography>
-              </MenuItem>
-              {!settingsContext.isScottish && (
-                <MenuItem dense onClick={handleAddHighwayDedication} sx={menuItemStyle(false)}>
-                  <Typography variant="inherit">Add highway dedication</Typography>
-                </MenuItem>
-              )}
-              {!settingsContext.isScottish && (
-                <MenuItem
-                  dense
-                  divider
-                  disabled={!canAddOneWayExemption()}
-                  onClick={handleAddOneWayExemption}
-                  sx={menuItemStyle(false)}
+        </Stack>
+        <Stack direction="row" alignItems="center" justifyContent="flex-end">
+          {data.esuData.esuId > 0 && (
+            <>
+              <ADSActionButton
+                variant="copy"
+                tooltipTitle="Copy ESU Id to clipboard"
+                tooltipPlacement="right"
+                disabled={informationContext.informationType && informationContext.informationType === "createESU"}
+                onClick={handleCopyEsuId}
+              />
+              <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
+                <IconButton
+                  onClick={handleActionsClick}
+                  sx={ActionIconStyle()}
+                  aria_controls={`actions-menu-${data.esuData.esuId}`}
+                  size="small"
                 >
-                  <Typography variant="inherit">Add one-way exemption</Typography>
-                </MenuItem>
-              )}
-              <MenuItem
-                dense
-                disabled={
-                  !userCanEdit ||
-                  (informationContext.informationType && informationContext.informationType === "createESU")
-                }
-                onClick={handleDivideEsu}
-                sx={menuItemStyle(false)}
-              >
-                <Typography variant="inherit">Divide</Typography>
+                  <ActionsIcon />
+                </IconButton>
+              </Tooltip>
+            </>
+          )}
+
+          <Menu
+            id={`actions-menu-${data.esuData.esuId}`}
+            elevation={2}
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleActionsMenuClose}
+            TransitionComponent={Fade}
+            sx={menuStyle}
+          >
+            <MenuItem
+              dense
+              disabled={
+                !userCanEdit ||
+                (informationContext.informationType && informationContext.informationType === "createESU")
+              }
+              divider={settingsContext.isScottish}
+              onClick={handleAddNewEsu}
+              sx={menuItemStyle(false)}
+            >
+              <Typography variant="inherit">Add new ESU</Typography>
+            </MenuItem>
+            {!settingsContext.isScottish && (
+              <MenuItem dense onClick={handleAddHighwayDedication} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Add highway dedication</Typography>
               </MenuItem>
+            )}
+            {!settingsContext.isScottish && (
               <MenuItem
                 dense
                 divider
+                disabled={!canAddOneWayExemption()}
+                onClick={handleAddOneWayExemption}
+                sx={menuItemStyle(false)}
+              >
+                <Typography variant="inherit">Add one-way exemption</Typography>
+              </MenuItem>
+            )}
+            <MenuItem
+              dense
+              disabled={
+                !userCanEdit ||
+                (informationContext.informationType && informationContext.informationType === "createESU")
+              }
+              onClick={handleDivideEsu}
+              sx={menuItemStyle(false)}
+            >
+              <Typography variant="inherit">Divide</Typography>
+            </MenuItem>
+            <MenuItem
+              dense
+              divider
+              disabled={
+                !userCanEdit ||
+                (informationContext.informationType && informationContext.informationType === "createESU")
+              }
+              onClick={handleUnassignFromStreet}
+              sx={menuItemStyle(false)}
+            >
+              <Typography variant="inherit">Unassign from street</Typography>
+            </MenuItem>
+            <MenuItem
+              dense
+              disabled={informationContext.informationType && informationContext.informationType === "createESU"}
+              divider={!settingsContext.isScottish}
+              onClick={handleCopyEsuId}
+              sx={menuItemStyle(false)}
+            >
+              <Typography variant="inherit">Copy ID</Typography>
+            </MenuItem>
+            {!settingsContext.isScottish && (
+              <MenuItem
+                dense
                 disabled={
                   !userCanEdit ||
                   (informationContext.informationType && informationContext.informationType === "createESU")
                 }
-                onClick={handleUnassignFromStreet}
+                onClick={handleDeleteEsu}
                 sx={menuItemStyle(false)}
               >
-                <Typography variant="inherit">Unassign from street</Typography>
+                <Typography variant="inherit" color="error">
+                  Delete
+                </Typography>
               </MenuItem>
-              <MenuItem
-                dense
-                disabled={informationContext.informationType && informationContext.informationType === "createESU"}
-                divider={!settingsContext.isScottish}
-                onClick={handleCopyEsuId}
-                sx={menuItemStyle(false)}
-              >
-                <Typography variant="inherit">Copy ID</Typography>
-              </MenuItem>
-              {!settingsContext.isScottish && (
-                <MenuItem
-                  dense
-                  disabled={
-                    !userCanEdit ||
-                    (informationContext.informationType && informationContext.informationType === "createESU")
-                  }
-                  onClick={handleDeleteEsu}
-                  sx={menuItemStyle(false)}
-                >
-                  <Typography variant="inherit" color="error">
-                    Delete
-                  </Typography>
-                </MenuItem>
-              )}
-            </Menu>
-          </Stack>
+            )}
+          </Menu>
         </Stack>
       </Box>
       <Box sx={dataFormStyle("79.9vh")}>

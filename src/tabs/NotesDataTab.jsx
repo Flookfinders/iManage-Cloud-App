@@ -24,6 +24,7 @@
 //    011   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    012   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    013   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
+//    014   19.03.24 Joshua McCormick IMANN-280 removed unneeded spacing
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -302,8 +303,8 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
   return (
     <Fragment>
       <Box sx={toolbarStyle}>
-        <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center" sx={dataTabToolBar}>
-          <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={dataTabToolBar}>
+          <Stack direction="row" justifyContent="flex-start" alignItems="center">
             <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
             <Typography
               sx={{
