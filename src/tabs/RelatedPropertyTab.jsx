@@ -42,6 +42,7 @@
 //    028   12.03.24 Sean Flook            MUL8 Display an alert if properties are successfully moved.
 //    029   13.03.24 Sean Flook            MUL9 Added new parameters to handle the checking of records.
 //    030   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
+//    031   19.03.24 Sean Flook       PRFRM2_GP Ensure onRelatedOpened is always called.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -936,8 +937,8 @@ function RelatedPropertyTab({
         document
           .getElementById(`property-related-tree-${propertyContext.currentProperty.openRelated.property.toString()}`)
           .scrollIntoView();
-        propertyContext.onRelatedOpened();
       }
+      propertyContext.onRelatedOpened();
     } else if (
       propertyContext.currentProperty.uprn &&
       propertyContext.currentProperty.uprn > 0 &&

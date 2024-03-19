@@ -49,6 +49,7 @@
 //    036   07.03.24 Joshua McCormick IMANN-280 Added tabContainerStyle to tab container, reverted old styling changes from 030
 //    037   08.03.24 Sean Flook       IMANN-348 Updated calls to ResetContexts.
 //    038   18.03.24 Sean Flook      STRFRM5_OS Only discard changes if a new record which has not previously been accepted.
+//    039   19.03.24 Sean Flook       PRFRM2_GP Ensure related object is always set in setupRelated.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2281,25 +2282,21 @@ function PropertyDataForm({ data, loading }) {
    * Method to setup the related object.
    */
   const setupRelated = () => {
-    const relatedObj = propertyData.parentUprn
-      ? {
-          parent: propertyData.parentUprn,
-          property: propertyData.uprn,
-          userToken: userContext.currentUser.token,
-        }
-      : null;
-
     propertyContext.onPropertyChange(
       propertyContext.currentProperty.uprn,
       propertyContext.currentProperty.usrn,
       propertyContext.currentProperty.address,
-      propertyContext.currentProperty.formattedAddress,
+      propertyContext.currentProperty.address,
       propertyContext.currentProperty.postcode,
       propertyContext.currentProperty.easting,
       propertyContext.currentProperty.northing,
       propertyContext.currentProperty.newProperty,
       propertyContext.currentProperty.parent,
-      relatedObj
+      {
+        parent: propertyData.parentUprn,
+        property: propertyData.uprn,
+        userToken: userContext.currentUser.token,
+      }
     );
   };
 
