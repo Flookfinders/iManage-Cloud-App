@@ -22,6 +22,7 @@
 //    009   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    010   25.01.24 Sean Flook                 Changes required after UX review.
 //    011   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    012   20.03.24 Sean Flook                 Changes required to load shape files.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -34,6 +35,8 @@ import MapContext from "../context/mapContext";
 import SettingsContext from "../context/settingsContext";
 import UserContext from "../context/userContext";
 
+import shp from "shpjs";
+
 import WMSLayer from "@arcgis/core/layers/WMSLayer";
 import WMTSLayer from "@arcgis/core/layers/WMTSLayer";
 import Map from "@arcgis/core/Map";
@@ -41,6 +44,7 @@ import MapView from "@arcgis/core/views/MapView";
 import TileInfo from "@arcgis/core/layers/support/TileInfo";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
+import GeoJSONLayer from "@arcgis/core/layers/GeoJSONLayer";
 import ScaleBar from "@arcgis/core/widgets/ScaleBar";
 import Sketch from "@arcgis/core/widgets/Sketch";
 import CoordinateConversion from "@arcgis/core/widgets/CoordinateConversion";
@@ -50,20 +54,24 @@ import Point from "@arcgis/core/geometry/Point";
 import Graphic from "@arcgis/core/Graphic";
 import * as reactiveUtils from "@arcgis/core/core/reactiveUtils";
 
-import { CircularProgress, IconButton, Divider } from "@mui/material";
+import { CircularProgress, IconButton, Divider, Backdrop, Snackbar, Alert } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSPlaceOnMapControl from "./ADSPlaceOnMapControl";
+import UploadShpFileDialog from "../dialogs/UploadShpFileDialog";
 
 import { GetMapLayersUrl } from "../configuration/ADSConfig";
+
+import { defaultMapLayerIds } from "../utils/HelperUtils";
 
 import { GetPropertyMapSymbol } from "../utils/ADSMapSymbols";
 
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import LayersIcon from "@mui/icons-material/Layers";
+import UploadIcon from "@mui/icons-material/Upload";
 
 import { adsWhite, adsLightGreyA50, adsBlack0 } from "../utils/ADSColours";
-import { ActionIconStyle } from "../utils/ADSStyles";
+import { ActionIconStyle, GetAlertStyle, GetAlertIcon, GetAlertSeverity } from "../utils/ADSStyles";
 
 const editGraphicLayerName = "editGraphicLayer";
 const labelLayerName = "labelLayer";
@@ -385,7 +393,15 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
   const settingsContext = useContext(SettingsContext);
   const userContext = useRef(useContext(UserContext));
 
+  const saveResult = useRef(null);
+  const saveType = useRef(null);
+  const saveOpenRef = useRef(false);
+  const [saveOpen, setSaveOpen] = useState(false);
+  const failedValidation = useRef(null);
+  const featuresDownloaded = useRef(0);
+
   const [loading, setLoading] = useState(true);
+  const [loadingShp, setLoadingShp] = useState(false);
 
   const [displayLayerList, setDisplayLayerList] = useState(false);
 
@@ -404,6 +420,8 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
   const baseMapLayers = useRef(settingsContext.mapLayers);
   const initialExtent = useRef(mapContext.currentExtent);
   const highlightProperty = useRef(null);
+
+  const [openUploadShpFileDialog, setOpenUploadShpFileDialog] = useState(false);
 
   const oldMapData = useRef({
     streets: [],
@@ -436,18 +454,44 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
     })
   );
 
+  /**
+   * Method to handle when the zoom in button is clicked.
+   */
   function handleZoomIn() {
     view.zoom++;
   }
 
+  /**
+   * Method to handle when the zoom out button is clicked.
+   */
   function handleZoomOut() {
     view.zoom--;
   }
 
+  /**
+   * Method to handle when the display layer list button is clicked.
+   */
   function handleDisplayLayerList() {
     setDisplayLayerList(!displayLayerList);
   }
 
+  /**
+   * Method to handle when the upload shp file button is clicked.
+   */
+  function handleUploadShpFile() {
+    setOpenUploadShpFileDialog(true);
+  }
+
+  /**
+   * Method used to create a new point graphic.
+   *
+   * @param {number} x The easting for the property.
+   * @param {number} y The northing for the property.
+   * @param {number} logicalStatus The logical status for the property.
+   * @param {string} classification The classification for the property.
+   * @param {boolean} highlighted True if the property should be highlighted; otherwise false.
+   * @returns {object} The new point graphic object.
+   */
   function createPointGraphic(x, y, id, logicalStatus, classification, highlighted = false) {
     const editPoint = new Point({
       type: "point",
@@ -496,6 +540,108 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
     setDirection(newValue);
 
     if (onPlaceOnMapDataChange) onPlaceOnMapDataChange(getPlaceOnMapData("direction", newValue));
+  };
+
+  /**
+   * Method to handle when the upload shp file dialog is closed.
+   */
+  const handleUploadShpFileDialogClose = (shpFile) => {
+    setOpenUploadShpFileDialog(false);
+
+    if (shpFile) {
+      setLoadingShp(true);
+
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        if (reader.readyState !== 2 || reader.error) {
+          console.error(`[ERROR] failed to upload ${shpFile.title}`, {
+            readyState: reader.readyState,
+            error: reader.error,
+          });
+          saveResult.current = false;
+          featuresDownloaded.current = shpFile.title;
+          saveType.current = "uploadedShpFileError";
+          saveOpenRef.current = true;
+          setSaveOpen(true);
+          setLoadingShp(false);
+          return;
+        } else {
+          shp(reader.result).then(function (geojson) {
+            mapRef.current.remove(mapRef.current.findLayerById(shpFile.layerId));
+            const blob = new Blob([JSON.stringify(geojson)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const shpLayer = new GeoJSONLayer({
+              url: url,
+              id: shpFile.layerId,
+              copyright:
+                shpFile.copyright && shpFile.copyright.includes("<<year>>")
+                  ? shpFile.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                  : shpFile.copyright,
+              title: `${shpFile.title}`,
+              listMode: shpFile.displayInList ? "show" : "hide",
+              maxScale: shpFile.maxScale,
+              minScale: shpFile.minScale,
+              opacity: shpFile.opacity,
+              spatialReference: { wkid: 27700 },
+              visible: "true",
+            });
+
+            if (shpFile.esuSnap) baseLayersSnapEsu.current = baseLayersSnapEsu.current.concat([shpFile.layerId]);
+            if (shpFile.blpuSnap) baseLayersSnapBlpu.current = baseLayersSnapBlpu.current.concat([shpFile.layerId]);
+            if (shpFile.extentSnap)
+              baseLayersSnapExtent.current = baseLayersSnapExtent.current.concat([shpFile.layerId]);
+
+            mapRef.current.add(shpLayer);
+            saveResult.current = true;
+            featuresDownloaded.current = shpFile.title;
+            saveType.current = "uploadedShpFile";
+            saveOpenRef.current = true;
+            setSaveOpen(true);
+            setLoadingShp(false);
+          });
+        }
+      };
+
+      reader.readAsArrayBuffer(shpFile.file);
+    }
+  };
+
+  /**
+   * Event to handle when the save dialog is closed.
+   *
+   * @param {object} event The event object
+   * @param {string} reason The reason the save dialog is closing.
+   * @returns
+   */
+  const handleSaveClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSaveOpen(false);
+  };
+
+  /**
+   * Method to get the required alert text.
+   *
+   * @returns {string|null} the required alert text.
+   */
+  const getAlertText = () => {
+    if (saveOpen && saveType.current) {
+      switch (saveType.current) {
+        case "uploadedShpFile":
+          return `${featuresDownloaded.current} has been successfully uploaded.`;
+
+        case "uploadedShpFileError":
+          return `${featuresDownloaded.current} failed to be uploaded.`;
+
+        default:
+          if (saveResult.current) return `The ${saveType.current} has been successfully saved.`;
+          else if (failedValidation.current) return `Failed to validate the ${saveType.current} record.`;
+          else return `Failed to save the ${saveType.current}.`;
+      }
+    }
   };
 
   useEffect(() => {
@@ -557,9 +703,10 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
                   // Create an empty GraphicsLayer as a placeholder for when the user actually gets the features
                   newBaseLayer = new GraphicsLayer({
                     id: baseLayer.layerId,
-                    copyright: baseLayer.copyright.includes("<<year>>")
-                      ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                      : baseLayer.copyright,
+                    copyright:
+                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                        : baseLayer.copyright,
                     title: baseLayer.title,
                     listMode: baseLayer.displayInList ? "show" : "hide",
                     maxScale: baseLayer.maxScale,
@@ -574,9 +721,10 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
                   // Create an empty GraphicsLayer as a placeholder for when the user actually gets the features
                   newBaseLayer = new GraphicsLayer({
                     id: baseLayer.layerId,
-                    copyright: baseLayer.copyright.includes("<<year>>")
-                      ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                      : baseLayer.copyright,
+                    copyright:
+                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                        : baseLayer.copyright,
                     title: baseLayer.title,
                     listMode: baseLayer.displayInList ? "show" : "hide",
                     maxScale: baseLayer.maxScale,
@@ -604,9 +752,10 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
                         title: baseLayer.activeLayerTitle,
                       },
                     ],
-                    copyright: baseLayer.copyright.includes("<<year>>")
-                      ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                      : baseLayer.copyright,
+                    copyright:
+                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                        : baseLayer.copyright,
                     title: baseLayer.title,
                     listMode: baseLayer.displayInList ? "show" : "hide",
                     maxScale: baseLayer.maxScale,
@@ -639,9 +788,10 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
                       key: baseLayer.layerKey,
                     },
                     id: baseLayer.layerId,
-                    copyright: baseLayer.copyright.includes("<<year>>")
-                      ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                      : baseLayer.copyright,
+                    copyright:
+                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                        : baseLayer.copyright,
                     title: baseLayer.title,
                     listMode: baseLayer.displayInList ? "show" : "hide",
                     maxScale: baseLayer.maxScale,
@@ -1273,6 +1423,9 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
             <IconButton onClick={handleDisplayLayerList} size="small" title="Show/hide layers">
               <LayersIcon sx={ActionIconStyle()} />
             </IconButton>
+            <IconButton onClick={handleUploadShpFile} size="small" title="Upload shp file">
+              <UploadIcon sx={ActionIconStyle()} />
+            </IconButton>
           </Stack>
         </Box>
         {displayPlaceOnMap && (
@@ -1303,6 +1456,35 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
           </Box>
         )}
       </Box>
+      <div>
+        <Snackbar
+          open={saveOpen}
+          autoHideDuration={6000}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          onClose={handleSaveClose}
+        >
+          <Alert
+            sx={GetAlertStyle(saveResult.current)}
+            icon={GetAlertIcon(saveResult.current)}
+            onClose={handleSaveClose}
+            severity={GetAlertSeverity(saveResult.current)}
+            elevation={6}
+            variant="filled"
+          >
+            {getAlertText()}
+          </Alert>
+        </Snackbar>
+        <UploadShpFileDialog
+          isOpen={openUploadShpFileDialog}
+          currentIds={baseMappingLayerIds.current.concat(defaultMapLayerIds)}
+          onClose={handleUploadShpFileDialogClose}
+        />
+      </div>
+      {loadingShp && (
+        <Backdrop open={loadingShp}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      )}
     </Fragment>
   );
 }
