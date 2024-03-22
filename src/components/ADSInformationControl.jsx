@@ -18,6 +18,7 @@
 //    005   20.02.24 Sean Flook            MUL1 Added selectProperties variant.
 //    006   23.02.24 Joel Benford     IMANN-287 Correct hover blue
 //    007   23.02.24 Sean Flook        ESU29_GP Updated text.
+//    008   22.03.24 Sean Flook       PRFRM5_GP Added moveSeedPoint, managePolygon & createPolygon variants.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -44,6 +45,9 @@ ADSInformationControl.propTypes = {
     "partRoadASD",
     "inexactASD",
     "selectProperties",
+    "moveSeedPoint",
+    "managePolygon",
+    "createPolygon",
     "unknown",
   ]),
   hasCancel: PropTypes.bool,
@@ -83,6 +87,7 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
         return "Divide ESU";
 
       case "moveBLPU":
+      case "moveSeedPoint":
         return "Move BLPU seed point";
 
       case "partRoadASD":
@@ -93,6 +98,12 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
 
       case "selectProperties":
         return "Select properties";
+
+      case "managePolygon":
+        return "Manage polygon";
+
+      case "createPolygon":
+        return "Create polygon";
 
       default:
         break;
@@ -130,6 +141,15 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
 
       case "selectProperties":
         return "Select the properties using the selection tools, then choose what you want to do from the toolbar above.";
+
+      case "managePolygon":
+        return "Select the polygon and amend the geometry.";
+
+      case "createPolygon":
+        return "Use the draw polygon tool to create the polygon, then fill out the form and click OK.";
+
+      case "moveSeedPoint":
+        return "Select the symbol in the map and then drag to move.";
 
       default:
         break;

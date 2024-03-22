@@ -40,6 +40,7 @@
 //    027   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    028   12.03.24 Joshua McCormick IMANN-280 Adjusted toolbar spacing
 //    029   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    030   22.03.24 Sean Flook       PRFRM5_GP Display information control for moving a BLPU.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -56,6 +57,7 @@ import UserContext from "../context/userContext";
 import MapContext from "../context/mapContext";
 import SettingsContext from "../context/settingsContext";
 import SearchContext from "../context/searchContext";
+import InformationContext from "../context/informationContext";
 
 import { copyTextToClipboard, GetLookupLabel, ConvertDate, openInStreetView } from "../utils/HelperUtils";
 import {
@@ -79,6 +81,7 @@ import {
   ListItemText,
   ListItemAvatar,
   Tooltip,
+  Popper,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -89,6 +92,7 @@ import ADSSwitchControl from "../components/ADSSwitchControl";
 import ADSCoordinateControl from "../components/ADSCoordinateControl";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSReadOnlyControl from "../components/ADSReadOnlyControl";
+import ADSInformationControl from "../components/ADSInformationControl";
 
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import MakeChildDialog from "../dialogs/MakeChildDialog";
@@ -160,6 +164,7 @@ function PropertyDetailsTab({
   const mapContext = useContext(MapContext);
   const settingsContext = useContext(SettingsContext);
   const searchContext = useContext(SearchContext);
+  const informationContext = useContext(InformationContext);
 
   const [itemSelected, setItemSelected] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -225,6 +230,10 @@ function PropertyDetailsTab({
   const [siteSurveyError, setSiteSurveyError] = useState(null);
   const [startDateError, setStartDateError] = useState(null);
   const [endDateError, setEndDateError] = useState(null);
+
+  const [informationAnchorEl, setInformationAnchorEl] = useState(null);
+  const informationOpen = Boolean(informationAnchorEl);
+  const informationId = informationOpen ? "asd-information-popper" : undefined;
 
   /**
    * Event to handle the displaying the BLPU context menu.
@@ -709,6 +718,8 @@ function PropertyDetailsTab({
    * @param {number} dataIndx The index of the LPI record that the user wants to open in the array of LPIs.
    */
   const handleOpenLpi = (pkId, dataIndx) => {
+    informationContext.onClearInformation();
+
     const lpiDataArray = data.lpis.filter((x) => x.pkId === pkId);
 
     if (lpiDataArray && lpiDataArray.length > 0 && onLpiSelected)
@@ -917,6 +928,18 @@ function PropertyDetailsTab({
   }, [userContext]);
 
   useEffect(() => {
+    if (data && data.uprn > 0 && !informationContext.informationType) {
+      informationContext.onDisplayInformation("moveSeedPoint", "PropertyDetailsTab");
+    }
+  }, [data, informationContext]);
+
+  useEffect(() => {
+    if (informationContext.informationSource && informationContext.informationSource === "PropertyDetailsTab") {
+      setInformationAnchorEl(document.getElementById("ads-property-details-tab"));
+    } else setInformationAnchorEl(null);
+  }, [informationContext.informationSource]);
+
+  useEffect(() => {
     setBLPULogicalStatusError(null);
     setRpcError(null);
     setStateError(null);
@@ -1026,7 +1049,7 @@ function PropertyDetailsTab({
 
   return (
     <Fragment>
-      <Box sx={toolbarStyle}>
+      <Box sx={toolbarStyle} id="ads-property-details-tab">
         <Stack
           direction="row"
           alignItems="center"
@@ -1513,6 +1536,9 @@ function PropertyDetailsTab({
           onClose={handleMakeChildClose}
         />
       </div>
+      <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
+        <ADSInformationControl variant={"moveSeedPoint"} />
+      </Popper>
     </Fragment>
   );
 }

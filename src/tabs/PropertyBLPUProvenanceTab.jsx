@@ -28,6 +28,7 @@
 //    015   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    016   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
 //    017   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    018   22.03.24 Sean Flook       PRFRM5_GP Display an information control for creating and modifying the geometry.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -36,20 +37,28 @@
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 import SandboxContext from "../context/sandboxContext";
+
 import UserContext from "../context/userContext";
 import PropertyContext from "../context/propertyContext";
 import SettingsContext from "../context/settingsContext";
-import { Typography } from "@mui/material";
-import { Box, Stack } from "@mui/system";
+import InformationContext from "../context/informationContext";
+
 import { GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
-import BLPUProvenance from "../data/BLPUProvenance";
+
+import { Typography, Popper } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSDateControl from "../components/ADSDateControl";
 import ADSReadOnlyControl from "../components/ADSReadOnlyControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
+import ADSInformationControl from "../components/ADSInformationControl";
+
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+
+import BLPUProvenance from "../data/BLPUProvenance";
+
 import ErrorIcon from "@mui/icons-material/Error";
 import { useTheme } from "@mui/styles";
 import { toolbarStyle, dataTabToolBar, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
@@ -71,6 +80,7 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
   const userContext = useContext(UserContext);
   const propertyContext = useContext(PropertyContext);
   const settingsContext = useContext(SettingsContext);
+  const informationContext = useContext(InformationContext);
 
   const currentId = useRef(0);
 
@@ -89,6 +99,11 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
   const [annotationError, setAnnotationError] = useState(null);
   const [startDateError, setStartDateError] = useState(null);
   const [endDateError, setEndDateError] = useState(null);
+
+  const [informationAnchorEl, setInformationAnchorEl] = useState(null);
+  const informationOpen = Boolean(informationAnchorEl);
+  const informationId = informationOpen ? "asd-information-popper" : undefined;
+  const [informationVariant, setInformationVariant] = useState("unknown");
 
   /**
    * Method used to update the current sandbox record.
@@ -292,6 +307,29 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
   }, [userContext]);
 
   useEffect(() => {
+    if (
+      data &&
+      data.provenanceData &&
+      data.provenanceData.id &&
+      (!informationContext.informationType ||
+        (informationContext.informationType === "createPolygon" && data.provenanceData.id > 0) ||
+        (informationContext.informationType === "managePolygon" && data.provenanceData.id < 0))
+    ) {
+      setInformationVariant(data.provenanceData.id < 0 ? "createPolygon" : "managePolygon");
+      informationContext.onDisplayInformation(
+        data.provenanceData.id < 0 ? "createPolygon" : "managePolygon",
+        "PropertyBLPUProvenanceTab"
+      );
+    }
+  }, [data, informationContext]);
+
+  useEffect(() => {
+    if (informationContext.informationSource && informationContext.informationSource === "PropertyBLPUProvenanceTab") {
+      setInformationAnchorEl(document.getElementById("ads-provenance-data-tab"));
+    } else setInformationAnchorEl(null);
+  }, [informationContext.informationSource]);
+
+  useEffect(() => {
     setCodeError(null);
     setAnnotationError(null);
     setStartDateError(null);
@@ -425,6 +463,9 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
           onClose={handleCloseDeleteConfirmation}
         />
       </div>
+      <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
+        <ADSInformationControl variant={informationVariant} />
+      </Popper>
     </Fragment>
   );
 }

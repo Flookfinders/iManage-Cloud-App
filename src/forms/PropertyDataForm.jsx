@@ -52,6 +52,7 @@
 //    039   19.03.24 Sean Flook       PRFRM2_GP Ensure related object is always set in setupRelated.
 //    040   22.03.24 Sean Flook           GLB12 Fixed the height of controls so rest of forms height can be calculated correctly.
 //    041   22.03.24 Sean Flook                 Show updated address correctly.
+//    042   22.03.24 Sean Flook       PRFRM5_GP Clear information control when required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -343,7 +344,7 @@ function PropertyDataForm({ data, loading }) {
             index: lpiFormData.index,
             totalRecords: lpiFormData.totalRecords,
           });
-        }
+        } else informationContext.onClearInformation();
         break;
 
       case 1: // Classifications / Provenances
@@ -394,6 +395,7 @@ function PropertyDataForm({ data, loading }) {
               index: provenanceFormData.index,
               totalRecords: provenanceFormData.totalRecords,
             });
+            informationContext.onClearInformation();
           }
         }
         break;
@@ -2979,6 +2981,7 @@ function PropertyDataForm({ data, loading }) {
     };
 
     failedValidation.current = false;
+    informationContext.onClearInformation();
 
     switch (action) {
       case "check":
