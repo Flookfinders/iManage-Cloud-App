@@ -24,6 +24,7 @@
 //    011   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    012   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    013   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
+//    014   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -354,7 +355,7 @@ function SuccessorListTab({
       </Box>
       <Box
         sx={{
-          ...dataFormStyle(`${variant === "street" ? "79.9vh" : "79vh"}`),
+          ...dataFormStyle(`${variant === "street" ? "StreetSuccessorListTab" : "PropertySuccessorListTab"}`),
           "& .idox-successor-data-grid-header": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
           "& .MuiDataGrid-columnHeaderCheckbox": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
         }}

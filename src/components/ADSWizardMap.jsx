@@ -23,6 +23,7 @@
 //    010   25.01.24 Sean Flook                 Changes required after UX review.
 //    011   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    012   20.03.24 Sean Flook                 Changes required to load shape files.
+//    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -71,7 +72,7 @@ import LayersIcon from "@mui/icons-material/Layers";
 import UploadIcon from "@mui/icons-material/Upload";
 
 import { adsWhite, adsLightGreyA50, adsBlack0 } from "../utils/ADSColours";
-import { ActionIconStyle, GetAlertStyle, GetAlertIcon, GetAlertSeverity } from "../utils/ADSStyles";
+import { ActionIconStyle, GetAlertStyle, GetAlertIcon, GetAlertSeverity, dataFormStyle } from "../utils/ADSStyles";
 
 const editGraphicLayerName = "editGraphicLayer";
 const labelLayerName = "labelLayer";
@@ -1400,11 +1401,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
         {loading && <CircularProgress sx={{ position: "absolute", top: "50%", left: "60%" }} />}
       </div>
       <Box
-        sx={{
-          flexGrow: 0,
-          height: `${moveBlpu ? "83.25vh" : "79.25vh"}`,
-          width: "100%",
-        }}
+        sx={dataFormStyle(moveBlpu ? "ADSWizardMapMoveBlpu" : "ADSWizardMapWizard")}
         ref={mapRef}
         id="ads-wizard-map-box"
       >

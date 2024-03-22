@@ -21,6 +21,7 @@
 //    008   23.02.24 Joel Benford     IMANN-287 Tweak layout since bottom padding hid hover on row below
 //    009   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    010   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
+//    011   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -221,7 +222,7 @@ function NotesListTab({ data, errors, loading, variant, onNoteSelected, onNoteDe
           </Tooltip>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle(`${variant === "street" ? "79.9vh" : "79vh"}`)}>
+      <Box sx={dataFormStyle(`${variant === "street" ? "StreetNotesListTab" : "PropertyNotesListTab"}`)}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : (

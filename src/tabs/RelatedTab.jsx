@@ -38,6 +38,7 @@
 //    023   15.03.24 Sean Flook            GLB6 Use individual buttons to toggle between properties and streets.
 //    024   15.03.24 Sean Flook       PRFRM1_GP If a property is selected always open it.
 //    025   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
+//    026   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -922,7 +923,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
           </Tooltip>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle(`${variant === "street" ? "79.9vh" : "79vh"}`)}>
+      <Box sx={dataFormStyle(`${variant === "street" ? "StreetRelatedTab" : "PropertyRelatedTab"}`)}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : relatedType === "property" ? (

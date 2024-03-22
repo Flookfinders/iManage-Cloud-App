@@ -23,6 +23,7 @@
 //    010   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    011   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    012   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
+//    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -346,7 +347,7 @@ function PropertyOrganisationListTab({
       </Box>
       <Box
         sx={{
-          ...dataFormStyle("79vh"),
+          ...dataFormStyle("PropertyOrganisationListTab"),
           "& .idox-organisation-data-grid-header": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
           "& .MuiDataGrid-columnHeaderCheckbox": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
         }}

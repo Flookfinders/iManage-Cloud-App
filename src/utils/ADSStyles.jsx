@@ -39,6 +39,7 @@
 //    026   15.03.24 Sean Flook            GLB8 Added tabIconStyle.
 //    027   15.03.24 Joshua McCormick  IMANN-280 dataTabToolBar Icon styling
 //    028   18.03.24 Sean Flook           GLB12 Tweaked searchDataFormStyle to remove overflow.
+//    029   22.03.24 Sean Flook           GLB12 Changed dataFormStyle to calculate the height for all the forms etc.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -73,9 +74,14 @@ import {
 
 /* #endregion imports */
 
-export const drawerWidth = "400";
 export const navBarWidth = "60";
+export const drawerWidth = "400";
+
+export const toolbarHeight = "40";
+export const dataFormToolbarHeight = "50";
 export const appBarHeight = "56";
+export const wizardStepperHeight = "70";
+export const doughnutHeight = "360";
 
 /**
  * Return the styling for action icons.
@@ -343,7 +349,7 @@ export const toolbarStyle = {
   pl: "4px",
   pr: "6px",
   width: "100%",
-  height: "40px",
+  height: `${toolbarHeight}px`,
   overflowY: "hidden",
 };
 
@@ -360,41 +366,173 @@ export const dataTabToolBar = {
 /**
  * The styling used for data forms.
  */
-export const dataFormStyle = (height) => {
-  return {
-    overflowY: "auto",
-    width: "100%",
-    height: height,
-    backgroundColor: adsOffWhite,
-    pl: "12px",
-  };
-};
+export const dataFormStyle = (dataForm) => {
+  const maxHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
-/**
- * The styling used for search data form.
- */
-export const searchDataFormStyle = {
-  backgroundColor: adsOffWhite,
-  boxShadow: `4px 0px 7px ${adsLightGreyA50}`,
-  overflowY: "auto",
-  width: "100%",
-  height: "88.5vh",
-};
+  let height = maxHeight;
 
-/**
- * Return the styling used for the wizard finalise form.
- *
- * @param {Boolean} [haveMoveBlpu=false] True if we are moving BLPU seed point; otherwise false;
- * @return {object} Styling used for wizard finalise form.
- */
-export const wizardFinaliseFormStyle = (haveMoveBlpu = false) => {
-  return {
-    backgroundColor: adsOffWhite,
-    boxShadow: `4px 0px 7px ${adsLightGreyA50}`,
-    overflowY: "auto",
-    width: "100%",
-    height: `${haveMoveBlpu ? "78.75vh" : "74.75vh"}`,
-  };
+  switch (dataForm) {
+    case "ADSNavContent":
+      height = maxHeight;
+      break;
+
+    case "ADSEsriMap":
+      height = maxHeight - appBarHeight;
+      break;
+
+    case "SearchDataTab":
+      height = maxHeight - appBarHeight - dataFormToolbarHeight;
+      break;
+
+    case "ADSHomepageLatestEditsControl":
+      height = maxHeight - appBarHeight - doughnutHeight - dataFormToolbarHeight - toolbarHeight - 30;
+      break;
+
+    case "PropertyTemplatesDataForm":
+      height = maxHeight - appBarHeight - toolbarHeight - 20;
+      break;
+
+    case "AsdTemplateTabBox":
+      height = maxHeight - appBarHeight;
+      break;
+
+    case "AsdTemplateTabGrid":
+      height = maxHeight - appBarHeight - toolbarHeight - 32;
+      break;
+
+    case "PropertyRelatedPropertyTab":
+      height = maxHeight - appBarHeight - dataFormToolbarHeight * 2 - toolbarHeight * 2;
+      break;
+
+    case "ADSWizardMapMoveBlpu":
+      height = maxHeight - wizardStepperHeight * 2 - 30;
+      break;
+
+    case "ADSWizardMapWizard":
+      height = maxHeight - appBarHeight - wizardStepperHeight * 2;
+      break;
+
+    case "ADSWizardAddressListMoveBlpu":
+      height = maxHeight - wizardStepperHeight * 2 - 64;
+      break;
+
+    case "ADSWizardAddressListWizard":
+      height = maxHeight - wizardStepperHeight * 2 - dataFormToolbarHeight * 2;
+      break;
+
+    case "SettingsPage":
+      height = maxHeight - appBarHeight;
+      break;
+
+    case "LookupTableGridTab":
+    case "MapLayersTab":
+      height = maxHeight - appBarHeight - dataFormToolbarHeight - toolbarHeight;
+      break;
+
+    case "WizardCrossReferencePage":
+      height = maxHeight - wizardStepperHeight * 3 - appBarHeight;
+      break;
+
+    default:
+      height = maxHeight - appBarHeight - dataFormToolbarHeight * 2 - toolbarHeight;
+      break;
+  }
+
+  switch (dataForm) {
+    case "SearchDataTab":
+      return {
+        backgroundColor: adsOffWhite,
+        boxShadow: `4px 0px 7px ${adsLightGreyA50}`,
+        overflowY: "auto",
+        width: "100%",
+        height: `${height}px`,
+      };
+
+    case "ADSHomepageLatestEditsControl":
+      return {
+        height: "43vh",
+        mb: "26px",
+        "& .idox-homepage-latest-edits-data-grid-header": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
+      };
+
+    case "PropertyTemplatesDataForm":
+      return {
+        overflowY: "auto",
+        width: "50vw",
+        height: `${height}px`,
+        mt: `${appBarHeight}px`,
+      };
+
+    case "AsdTemplateTabBox":
+      return {
+        ml: "8px",
+        mr: "32px",
+        height: `${height}px`,
+      };
+
+    case "AsdTemplateTabGrid":
+      return {
+        pr: "20px",
+        overflowY: "auto",
+        pb: "28px",
+        height: `${height}px`,
+      };
+
+    case "ADSEsriMap":
+      return {
+        flexGrow: 0,
+        p: "8px",
+        height: `${height}px`,
+      };
+
+    case "ADSNavContent":
+      return {
+        pt: "2.4px",
+        pb: "24px",
+        width: `${navBarWidth}px`,
+        height: `${height}px`,
+      };
+
+    case "ADSWizardMapMoveBlpu":
+    case "ADSWizardMapWizard":
+      return {
+        flexGrow: 0,
+        height: `${height}px`,
+        width: "100%",
+      };
+
+    case "ADSWizardAddressListMoveBlpu":
+    case "ADSWizardAddressListWizard":
+      return {
+        backgroundColor: adsOffWhite,
+        boxShadow: `4px 0px 7px ${adsLightGreyA50}`,
+        overflowY: "auto",
+        width: "100%",
+        height: `${height}px`,
+      };
+
+    case "SettingsPage":
+      return {
+        backgroundColor: adsOffWhite,
+        height: `${height}px`,
+      };
+
+    case "LookupTableGridTab":
+    case "MapLayersTab":
+      return {
+        height: `${height}px`,
+        "& .idox-data-grid-header": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
+      };
+
+    default:
+      return {
+        overflowY: "auto",
+        width: "100%",
+        height: `${height}px`,
+        backgroundColor: adsOffWhite,
+        pl: "12px",
+      };
+  }
 };
 
 /**
@@ -596,16 +734,6 @@ export const transparentButtonStyle = {
 };
 
 /**
- * The styling used for the settings forms
- */
-export const settingsFormStyle = {
-  overflowY: "auto",
-  width: "50vw",
-  height: "85vh",
-  mt: "50px",
-};
-
-/**
  * Returns the styling used for the settings cards.
  *
  * @param {BookmarkIcon} highlighted True if the card is highlighted; otherwise false.
@@ -745,7 +873,7 @@ export const tabContainerStyle = {
 export const tabStyle = {
   textTransform: "none",
   minWidth: "45px",
-  height: "40px",
+  height: `${toolbarHeight}px`,
   backgroundColor: adsWhite,
   fontWeight: 700,
 };
@@ -757,7 +885,7 @@ export const templateTabStyle = {
   bottom: "-2px",
   textTransform: "none",
   minWidth: "45px",
-  height: "40px",
+  height: `${toolbarHeight}px`,
   backgroundColor: adsWhite,
   fontWeight: 700,
 };

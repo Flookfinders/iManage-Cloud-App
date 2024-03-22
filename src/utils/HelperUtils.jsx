@@ -38,6 +38,7 @@
 //    025   27.02.24 Sean Flook           MUL16 Added renderErrors.
 //    026   08.03.24 Sean Flook       IMANN-348 Updated GetChangedAssociatedRecords and ResetContexts.
 //    027   12.03.24 Sean Flook           MUL10 Replaced renderErrors with renderErrorListItem.
+//    028   22.03.24 Sean Flook           GLB12 Added shorten.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1839,4 +1840,17 @@ export const renderErrorListItem = (rec) => {
       </Stack>
     );
   }
+};
+
+/**
+ * Method to return a shortened string.
+ *
+ * @param {string} str The string you want to shorten
+ * @param {number} maxLen The maximum length of the string required
+ * @param {string} [separator = ""] The separator used to split the string.
+ * @returns {string} The supplied string shortened to the max length.
+ */
+export const shorten = (str, maxLen, separator = " ") => {
+  if (!str || str.length <= maxLen) return str;
+  return str.substring(0, str.lastIndexOf(separator, maxLen));
 };

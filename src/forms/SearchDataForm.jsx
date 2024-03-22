@@ -21,8 +21,10 @@
 //    008   13.02.24 Sean Flook                 Corrected the type 66 map data.
 //    009   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    010   15.03.24 Sean Flook            GLB8 Fixed highlighting of tabs.
-//    011   15.03.24 Joshua McCormick  IMANN-280 toolbarStyling, added borderBottom to toolbar
+//    011   15.03.24 Joshua McCormick IMANN-280 toolbarStyling, added borderBottom to toolbar
 //    012   18.03.24 Sean Flook            GLB8 Fixed highlighting of tabs.
+//    013   21.03.24 Joshua McCormick IMANN_280 Removed unnecessary tabContainerStyle
+//    014   22.03.24 Sean Flook           GLB12 Fixed the height of the control to ensure the rest of the form can be calculated correctly.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -71,9 +73,9 @@ import {
   menuStyle,
   menuItemStyle,
   tooltipStyle,
-  tabContainerStyle,
   tabStyle,
   tabIconStyle,
+  dataFormToolbarHeight,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -784,7 +786,7 @@ function SearchDataForm() {
 
   return (
     <Fragment>
-      <Box sx={{ ...toolbarStyle, height: "auto", borderBottomWidth: "3px" }}>
+      <Box sx={{ ...toolbarStyle, height: `${dataFormToolbarHeight}px`, borderBottomWidth: "3px" }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
             <Tooltip title="Toggle select all / none" arrow placement="right" sx={tooltipStyle}>
@@ -856,10 +858,9 @@ function SearchDataForm() {
             <Tabs
               value={value}
               onChange={handleTabChange}
-              TabIndicatorProps={{ style: { background: adsBlueA, height: "3px" } }}
+              TabIndicatorProps={{ style: { background: adsBlueA, height: "4px" } }}
               selectionFollowsFocus
               aria-label="search-list-tabs"
-              sx={tabContainerStyle}
             >
               <Tab
                 sx={tabStyle}

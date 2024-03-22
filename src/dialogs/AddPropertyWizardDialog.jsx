@@ -29,6 +29,7 @@
 //    016   17.01.24 Sean Flook                 Renamed fields and included sub-locality.
 //    017   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    018   11.03.24 Sean Flook           GLB12 Removed bottom margin.
+//    019   22.03.24 Sean Flook           GLB12 Use new constant for height.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -85,7 +86,13 @@ import SkipNextIcon from "@mui/icons-material/SkipNext";
 import ErrorIcon from "@mui/icons-material/Error";
 
 import { adsBlueA, adsOffWhite } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle, redButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import {
+  blueButtonStyle,
+  whiteButtonStyle,
+  redButtonStyle,
+  dialogTitleStyle,
+  wizardStepperHeight,
+} from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 AddPropertyWizardDialog.propTypes = {
@@ -2347,7 +2354,10 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
         onClose={handleDialogClose}
         TransitionComponent={Transition}
       >
-        <DialogTitle id="add-property-wizard-dialog" sx={{ ...dialogTitleStyle, mb: "0px" }}>
+        <DialogTitle
+          id="add-property-wizard-dialog"
+          sx={{ ...dialogTitleStyle, mb: "0px", height: `${wizardStepperHeight}px` }}
+        >
           <Stack
             direction="row"
             alignItems="center"
@@ -2386,15 +2396,20 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
             mb: theme.spacing(1),
           }}
         >
-          <Box sx={{ width: "100%", height: "70px", ml: theme.spacing(2), mr: theme.spacing(2), mt: theme.spacing(1) }}>
+          <Box
+            sx={{
+              width: "100%",
+              height: `${wizardStepperHeight}px`,
+              ml: theme.spacing(2),
+              mr: theme.spacing(2),
+              mt: theme.spacing(1),
+            }}
+          >
             <Stack direction="column" spacing={2}>
               <Stepper activeStep={activeStep}>
                 {steps.map((label, index) => {
                   const stepProps = {};
                   const labelProps = {};
-                  // if (isStepOptional(index)) {
-                  //   labelProps.optional = <Typography variant="caption">Optional</Typography>;
-                  // }
                   if (isStepSkipped(index)) {
                     stepProps.completed = false;
                   }

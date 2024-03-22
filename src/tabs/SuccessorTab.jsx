@@ -21,6 +21,7 @@
 //    008   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    009   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    010   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
+//    011   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -358,7 +359,7 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onHomeClic
           />
         </Stack>
       </Box>
-      <Box sx={dataFormStyle(`${variant === "street" ? "79.9vh" : "79vh"}`)}>
+      <Box sx={dataFormStyle(`${variant === "street" ? "StreetSuccessorTab" : "PropertySuccessorTab"}`)}>
         <ADSNumberControl
           label="Successor"
           isEditable={userCanEdit}

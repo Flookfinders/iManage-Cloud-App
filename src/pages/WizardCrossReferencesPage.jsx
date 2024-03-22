@@ -20,6 +20,7 @@
 //    007   08.12.23 Sean Flook                 Migrated DataGrid to v6.
 //    008   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    009   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
+//    052   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -308,7 +309,7 @@ function WizardCrossReferencesPage({ data, errors, templateVariant, onDataChange
           </Stack>
           <Box
             sx={{
-              ...dataFormStyle("73vh"),
+              ...dataFormStyle("WizardCrossReferencePage"),
               "& .idox-wizard-cross-ref-data-grid-header": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
             }}
             className={classes.root}

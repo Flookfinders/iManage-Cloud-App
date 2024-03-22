@@ -30,6 +30,7 @@
 //    017   15.02.24 Joel Benford     IMANN-299 Toolbar changes
 //    018   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    019   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    020   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -735,7 +736,7 @@ function SpecialDesignationDataTab({ data, errors, loading, focusedField, onHome
           )}
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79.9vh")}>
+      <Box sx={dataFormStyle("SpecialDesignationDataTab")}>
         <ADSSelectControl
           label="Type"
           isEditable={userCanEdit}

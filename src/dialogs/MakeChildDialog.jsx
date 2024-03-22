@@ -13,12 +13,13 @@
 //#region Version 1.0.0.0 changes
 //    001   27.02.24 Sean Flook           MUL16 Initial Revision.
 //    002   12.03.24 Sean Flook           MUL10 Display errors in a list control.
+//    003   22.03.24 Sean Flook           MUL16 Correctly set the address data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
 
-import React, { useContext, useState, useRef, Fragment, useEffect } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import UserContext from "../context/userContext";
@@ -27,7 +28,13 @@ import PropertyContext from "../context/propertyContext";
 import SearchContext from "../context/searchContext";
 import MapContext from "../context/mapContext";
 
-import { GetPropertyMapData, SaveProperty, addressToTitleCase, getClassificationCode } from "./../utils/PropertyUtils";
+import {
+  GetParentHierarchy,
+  GetPropertyMapData,
+  SaveProperty,
+  addressToTitleCase,
+  getClassificationCode,
+} from "./../utils/PropertyUtils";
 import { renderErrorListItem } from "../utils/HelperUtils";
 
 import {
@@ -114,7 +121,113 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
   /**
    * Event to handle when the confirm button is clicked
    */
-  const handleConfirmClick = async () => {
+  const handleConfirmClick = () => {
+    const setError = (error, childProperty) => {
+      const engLpi = childProperty.lpis
+        .filter((x) => x.language === "ENG")
+        .sort((a, b) => a.logicalStatus - b.logicalStatus);
+
+      if (engLpi && engLpi.length > 0) {
+        properties.current.push({
+          id: childProperty.pkId,
+          uprn: childProperty.uprn,
+          address: addressToTitleCase(engLpi[0].address, engLpi[0].postcode),
+        });
+      }
+
+      propertyContext.onPropertyErrors(
+        [
+          {
+            field: "UPRN",
+            errors: [error],
+          },
+        ],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        childProperty.pkId
+      );
+    };
+
+    const getAddressText = (childLpi, parentLpi, parentProperties, isPao) => {
+      const grandParentLpi = parentProperties.grandParent
+        ? parentProperties.grandParent.lpis.find(
+            (p) => p.logicalStatus === parentProperties.grandParent.logicalStatus && p.language === childLpi.language
+          )
+        : null;
+
+      const greatGrandParentLpi = parentProperties.greatGrandParent
+        ? parentProperties.greatGrandParent.lpis.find(
+            (p) =>
+              p.logicalStatus === parentProperties.greatGrandParent.logicalStatus && p.language === childLpi.language
+          )
+        : null;
+
+      if (greatGrandParentLpi) {
+        if (isPao) {
+          return greatGrandParentLpi.paoText && grandParentLpi.saoText
+            ? `${grandParentLpi.saoText} ${greatGrandParentLpi.paoText}`
+            : greatGrandParentLpi.paoText && !grandParentLpi.saoText
+            ? greatGrandParentLpi.paoText
+            : !greatGrandParentLpi.paoText && grandParentLpi.saoText
+            ? grandParentLpi.saoText
+            : null;
+        } else {
+          return childLpi.paoText && parentLpi.saoText && grandParentLpi.saoText
+            ? `${childLpi.paoText} ${parentLpi.saoText.replace(grandParentLpi.saoText, "").trim()}`
+            : childLpi.paoText && parentLpi.saoText && !grandParentLpi.saoText
+            ? `${childLpi.paoText} ${parentLpi.saoText}`
+            : childLpi.paoText && !parentLpi.saoText
+            ? childLpi.paoText
+            : !childLpi.paoText && parentLpi.saoText && grandParentLpi.saoText
+            ? parentLpi.saoText.replace(grandParentLpi.saoText, "").trim()
+            : !childLpi.paoText && parentLpi.saoText && !grandParentLpi.saoText
+            ? parentLpi.saoText
+            : null;
+        }
+      } else if (grandParentLpi) {
+        if (isPao) {
+          return grandParentLpi.paoText && grandParentLpi.saoText
+            ? `${grandParentLpi.paoText} ${grandParentLpi.saoText}`
+            : grandParentLpi.paoText && !grandParentLpi.saoText
+            ? grandParentLpi.paoText
+            : !grandParentLpi.paoText && grandParentLpi.saoText
+            ? grandParentLpi.saoText
+            : null;
+        } else {
+          return childLpi.paoText && parentLpi.saoText
+            ? `${childLpi.paoText} ${parentLpi.saoText}`
+            : childLpi.paoText && !parentLpi.saoText
+            ? childLpi.paoText
+            : !childLpi.paoText && parentLpi.saoText
+            ? parentLpi.saoText
+            : null;
+        }
+      } else {
+        if (isPao) {
+          return parentLpi.paoText && parentLpi.saoText
+            ? `${parentLpi.paoText} ${parentLpi.saoText}`
+            : parentLpi.paoText && !parentLpi.saoText
+            ? parentLpi.paoText
+            : !parentLpi.paoText && parentLpi.saoText
+            ? parentLpi.saoText
+            : null;
+        } else {
+          return childLpi.paoText && childLpi.saoText
+            ? `${childLpi.paoText} ${childLpi.saoText}`
+            : childLpi.paoText && !childLpi.saoText
+            ? childLpi.paoText
+            : !childLpi.paoText && childLpi.saoText
+            ? childLpi.saoText
+            : null;
+        }
+      }
+    };
+
     if (selectedUPRNs && selectedUPRNs.length && parentUprn) {
       setUpdating(true);
       properties.current = [];
@@ -126,302 +239,283 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
       failedIds.current = [];
       setFinaliseErrors([]);
 
-      const parentProperty = await GetPropertyMapData(parentUprn, userContext.currentUser.token);
+      GetParentHierarchy(parentUprn, userContext.currentUser.token).then((parentProperties) => {
+        if (parentProperties) {
+          selectedUPRNs.forEach((childUprn) => {
+            GetPropertyMapData(childUprn, userContext.currentUser.token).then((childProperty) => {
+              if (childProperty) {
+                if (!childProperty.parentUprn || action === "replace") {
+                  if (parentProperties.parent.currentParentChildLevel === 4) {
+                    setError("Parent is already at the maximum BLPU hierarchy level.", childProperty);
+                  } else if (
+                    childProperty.existingParentChildLevels -
+                      childProperty.currentParentChildLevel +
+                      parentProperties.parent.currentParentChildLevel >
+                    3
+                  ) {
+                    setError("New relationship would exceed the maximum BLPU hierarchy level.", childProperty);
+                  } else if (childProperty.logicalStatus < parentProperties.parent.logicalStatus) {
+                    setError("Child has a lower logical status than the parent logical status.", childProperty);
+                  } else {
+                    const engLpi = childProperty.lpis
+                      .filter((x) => x.language === "ENG")
+                      .sort((a, b) => a.logicalStatus - b.logicalStatus);
 
-      if (parentProperty) {
-        selectedUPRNs.forEach((childUprn) => {
-          GetPropertyMapData(childUprn, userContext.currentUser.token).then((childProperty) => {
-            if (childProperty) {
-              if (!childProperty.parentUprn || action === "replace") {
-                if (childProperty.logicalStatus < parentProperty.logicalStatus) {
-                  // Child has a lower logical status than the parent logical status.
-                } else {
-                  const engLpi = childProperty.lpis
-                    .filter((x) => x.language === "ENG")
-                    .sort((a, b) => a.logicalStatus - b.logicalStatus);
-
-                  if (engLpi && engLpi.length > 0) {
-                    properties.current.push({
-                      id: childProperty.pkId,
-                      uprn: childProperty.uprn,
-                      address: addressToTitleCase(engLpi[0].address, engLpi[0].postcode),
-                    });
-                  }
-
-                  let updatedLpis = [...childProperty.lpis];
-
-                  if (updateAddress) {
-                    updatedLpis = childProperty.lpis.map((x) => {
-                      const parentLpi = parentProperty.lpis.find(
-                        (p) => p.logicalStatus === parentProperty.logicalStatus && p.language === x.language
-                      );
-
-                      if (parentLpi && (updateAllAddresses || x.logicalStatus === childProperty.logicalStatus)) {
-                        return settingsContext.isScottish
-                          ? {
-                              language: x.language,
-                              startDate: x.startDate,
-                              endDate: x.endDate,
-                              saoStartNumber: x.paoStartNumber,
-                              saoEndNumber: x.paoEndNumber,
-                              saoText:
-                                x.paoText && x.saoText
-                                  ? `${x.paoText} ${x.saoText}`
-                                  : x.paoText && !x.saoText
-                                  ? x.paoText
-                                  : !x.paoText && x.saoText
-                                  ? x.saoText
-                                  : null,
-                              paoStartNumber: parentLpi.paoStartNumber,
-                              paoEndNumber: parentLpi.paoEndNumber,
-                              paoText:
-                                parentLpi.paoText && parentLpi.saoText
-                                  ? `${parentLpi.paoText} ${parentLpi.saoText}`
-                                  : parentLpi.paoText && !parentLpi.saoText
-                                  ? parentLpi.paoText
-                                  : !parentLpi.paoText && parentLpi.saoText
-                                  ? parentLpi.saoText
-                                  : null,
-                              usrn: x.usrn,
-                              postcodeRef: x.postcodeRef,
-                              postTownRef: x.postTownRef,
-                              neverExport: x.neverExport,
-                              postTown: x.postTown,
-                              postcode: x.postcode,
-                              dualLanguageLink: x.dualLanguageLink,
-                              uprn: x.uprn,
-                              logicalStatus: x.logicalStatus,
-                              paoStartSuffix: parentLpi.paoStartSuffix,
-                              paoEndSuffix: parentLpi.paoEndSuffix,
-                              saoStartSuffix: x.paoStartSuffix,
-                              saoEndSuffix: x.paoEndSuffix,
-                              subLocalityRef: x.subLocalityRef,
-                              subLocality: x.subLocality,
-                              postallyAddressable: x.postallyAddressable,
-                              officialFlag: x.officialFlag,
-                              pkId: x.pkId,
-                              changeType: "U",
-                              lpiKey: x.lpiKey,
-                              address: x.address,
-                              entryDate: x.entryDate,
-                              lastUpdateDate: x.lastUpdateDate,
-                            }
-                          : {
-                              language: x.language,
-                              startDate: x.startDate,
-                              endDate: x.endDate,
-                              saoStartNumber: x.paoStartNumber,
-                              saoEndNumber: x.paoEndNumber,
-                              saoText:
-                                x.paoText && x.saoText
-                                  ? `${x.paoText} ${x.saoText}`
-                                  : x.paoText && !x.saoText
-                                  ? x.paoText
-                                  : !x.paoText && x.saoText
-                                  ? x.saoText
-                                  : null,
-                              paoStartNumber: parentLpi.paoStartNumber,
-                              paoEndNumber: parentLpi.paoEndNumber,
-                              paoText:
-                                parentLpi.paoText && parentLpi.saoText
-                                  ? `${parentLpi.paoText} ${parentLpi.saoText}`
-                                  : parentLpi.paoText && !parentLpi.saoText
-                                  ? parentLpi.paoText
-                                  : !parentLpi.paoText && parentLpi.saoText
-                                  ? parentLpi.saoText
-                                  : null,
-                              usrn: x.usrn,
-                              postcodeRef: x.postcodeRef,
-                              postTownRef: x.postTownRef,
-                              neverExport: x.neverExport,
-                              postTown: x.postTown,
-                              postcode: x.postcode,
-                              dualLanguageLink: x.dualLanguageLink,
-                              uprn: x.uprn,
-                              logicalStatus: x.logicalStatus,
-                              paoStartSuffix: parentLpi.paoStartSuffix,
-                              paoEndSuffix: parentLpi.paoEndSuffix,
-                              saoStartSuffix: x.paoStartSuffix,
-                              saoEndSuffix: x.paoEndSuffix,
-                              level: x.level,
-                              postalAddress: x.postalAddress,
-                              officialFlag: x.officialFlag,
-                              pkId: x.pkId,
-                              changeType: "U",
-                              lpiKey: x.lpiKey,
-                              address: x.address,
-                              entryDate: x.entryDate,
-                              lastUpdateDate: x.lastUpdateDate,
-                            };
-                      } else return x;
-                    });
-                  }
-
-                  const minPkIdNote =
-                    childProperty.blpuNotes && childProperty.blpuNotes.length > 0
-                      ? childProperty.blpuNotes.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
-                      : null;
-
-                  const newPkIdNote =
-                    !minPkIdNote || !minPkIdNote.pkId || minPkIdNote.pkId > -10 ? -10 : minPkIdNote.pkId - 1;
-
-                  const maxSeqNoNote =
-                    childProperty.blpuNotes && childProperty.blpuNotes.length > 0
-                      ? childProperty.blpuNotes.reduce((prev, curr) => (prev.seqNo > curr.seqNo ? prev : curr))
-                      : null;
-
-                  const newSeqNoNote = maxSeqNoNote && maxSeqNoNote.seqNo ? maxSeqNoNote.seqNo + 1 : 1;
-
-                  const updatedNotes = childProperty.blpuNotes ? [...childProperty.blpuNotes] : [];
-
-                  if (noteOpen)
-                    updatedNotes.push({
-                      uprn: childProperty.uprn,
-                      note: note,
-                      changeType: "I",
-                      pkId: newPkIdNote,
-                      seqNo: newSeqNoNote,
-                    });
-
-                  const updatedChildProperty = settingsContext.isScottish
-                    ? {
-                        blpuStateDate: childProperty.blpuStateDate,
-                        parentUprn:
-                          childProperty.parentUprn && action === "leave" ? childProperty.parentUprn : parentUprn,
-                        neverExport: childProperty.neverExport,
-                        siteSurvey: childProperty.siteSurvey,
+                    if (engLpi && engLpi.length > 0) {
+                      properties.current.push({
+                        id: childProperty.pkId,
                         uprn: childProperty.uprn,
-                        logicalStatus: childProperty.logicalStatus,
-                        endDate: childProperty.endDate,
-                        startDate: childProperty.startDate,
-                        blpuState: childProperty.blpuState,
-                        custodianCode: childProperty.custodianCode,
-                        level: childProperty.level,
-                        xcoordinate: childProperty.xcoordinate ? childProperty.xcoordinate : 0,
-                        ycoordinate: childProperty.ycoordinate ? childProperty.ycoordinate : 0,
-                        pkId: childProperty.pkId,
-                        changeType: "U",
-                        rpc: childProperty.rpc,
-                        blpuAppCrossRefs: childProperty.blpuAppCrossRefs,
-                        blpuProvenances: childProperty.blpuProvenances,
-                        blpuNotes: updatedNotes,
-                        classifications: childProperty.classifications,
-                        organisations: childProperty.organisations,
-                        successorCrossRefs: childProperty.successorCrossRefs,
-                        lpis: updatedLpis,
-                      }
-                    : {
-                        changeType: "U",
-                        blpuStateDate: childProperty.blpuStateDate,
-                        rpc: childProperty.rpc,
-                        startDate: childProperty.startDate,
-                        endDate: childProperty.endDate,
-                        parentUprn:
-                          childProperty.parentUprn && action === "leave" ? childProperty.parentUprn : parentUprn,
-                        neverExport: childProperty.neverExport,
-                        siteSurvey: childProperty.siteSurvey,
-                        uprn: childProperty.uprn,
-                        logicalStatus: childProperty.logicalStatus,
-                        blpuState: childProperty.blpuState,
-                        blpuClass: childProperty.blpuClass,
-                        localCustodianCode: childProperty.localCustodianCode,
-                        organisation: childProperty.organisation,
-                        xcoordinate: childProperty.xcoordinate ? childProperty.xcoordinate : 0,
-                        ycoordinate: childProperty.ycoordinate ? childProperty.ycoordinate : 0,
-                        wardCode: childProperty.wardCode,
-                        parishCode: childProperty.parishCode,
-                        pkId: childProperty.pkId,
-                        blpuAppCrossRefs: childProperty.blpuAppCrossRefs,
-                        blpuProvenances: childProperty.blpuProvenances,
-                        blpuNotes: updatedNotes,
-                        lpis: updatedLpis,
-                      };
-
-                  SaveProperty(
-                    updatedChildProperty,
-                    false,
-                    userContext.currentUser.token,
-                    propertyContext,
-                    settingsContext.isScottish
-                  ).then((result) => {
-                    if (result) {
-                      updatedCount.current++;
-                      savedProperty.current.push(result);
-
-                      const newSearchLpis = result.lpis.map((x) => {
-                        return {
-                          type: 24,
-                          id: x.lpiKey,
-                          uprn: x.uprn,
-                          usrn: x.usrn,
-                          logical_status: x.logicalStatus,
-                          language: x.language,
-                          classification_code: getClassificationCode(result),
-                          isParent: false,
-                          parent_uprn: result.parentUprn,
-                          country: null,
-                          authority: null,
-                          longitude: null,
-                          latitude: null,
-                          easting: result.xcoordinate,
-                          northing: result.ycoordinate,
-                          full_building_desc: null,
-                          formattedaddress: x.address,
-                          organisation: null,
-                          secondary_name: null,
-                          sao_text: null,
-                          sao_nums: null,
-                          primary_name: null,
-                          pao_text: null,
-                          pao_nums: null,
-                          street: null,
-                          locality: null,
-                          town: null,
-                          post_town: x.postTown,
-                          postcode: x.postcode,
-                          crossref: null,
-                          address: x.address,
-                          sort_code: 0,
-                        };
+                        address: addressToTitleCase(engLpi[0].address, engLpi[0].postcode),
                       });
-                      const newSearchData = searchContext.currentSearchData.results.map(
-                        (x) => newSearchLpis.find((rec) => x.type === 24 && rec.id === x.id) || x
-                      );
-                      searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newSearchData);
+                    }
 
-                      const newMapSearchLpis = result.lpis
-                        .filter((x) => x.language === "ENG")
-                        .map((x) => {
+                    let updatedLpis = [...childProperty.lpis];
+
+                    if (updateAddress) {
+                      updatedLpis = childProperty.lpis.map((x) => {
+                        const parentLpi = parentProperties.parent.lpis.find(
+                          (p) => p.logicalStatus === parentProperties.parent.logicalStatus && p.language === x.language
+                        );
+
+                        if (parentLpi && (updateAllAddresses || x.logicalStatus === childProperty.logicalStatus)) {
+                          return settingsContext.isScottish
+                            ? {
+                                language: x.language,
+                                startDate: x.startDate,
+                                endDate: x.endDate,
+                                saoStartNumber: x.paoStartNumber,
+                                saoEndNumber: x.paoEndNumber,
+                                saoText: getAddressText(x, parentLpi, parentProperties, false),
+                                paoStartNumber: parentLpi.paoStartNumber,
+                                paoEndNumber: parentLpi.paoEndNumber,
+                                paoText: getAddressText(x, parentLpi, parentProperties, true),
+                                usrn: x.usrn,
+                                postcodeRef: x.postcodeRef,
+                                postTownRef: x.postTownRef,
+                                neverExport: x.neverExport,
+                                postTown: x.postTown,
+                                postcode: x.postcode,
+                                dualLanguageLink: x.dualLanguageLink,
+                                uprn: x.uprn,
+                                logicalStatus: x.logicalStatus,
+                                paoStartSuffix: parentLpi.paoStartSuffix,
+                                paoEndSuffix: parentLpi.paoEndSuffix,
+                                saoStartSuffix: x.paoStartSuffix,
+                                saoEndSuffix: x.paoEndSuffix,
+                                subLocalityRef: x.subLocalityRef,
+                                subLocality: x.subLocality,
+                                postallyAddressable: x.postallyAddressable,
+                                officialFlag: x.officialFlag,
+                                pkId: x.pkId,
+                                changeType: "U",
+                                lpiKey: x.lpiKey,
+                                address: x.address,
+                                entryDate: x.entryDate,
+                                lastUpdateDate: x.lastUpdateDate,
+                              }
+                            : {
+                                language: x.language,
+                                startDate: x.startDate,
+                                endDate: x.endDate,
+                                saoStartNumber: x.paoStartNumber,
+                                saoEndNumber: x.paoEndNumber,
+                                saoText: getAddressText(x, parentLpi, parentProperties, false),
+                                paoStartNumber: parentLpi.paoStartNumber,
+                                paoEndNumber: parentLpi.paoEndNumber,
+                                paoText: getAddressText(x, parentLpi, parentProperties, true),
+                                usrn: x.usrn,
+                                postcodeRef: x.postcodeRef,
+                                postTownRef: x.postTownRef,
+                                neverExport: x.neverExport,
+                                postTown: x.postTown,
+                                postcode: x.postcode,
+                                dualLanguageLink: x.dualLanguageLink,
+                                uprn: x.uprn,
+                                logicalStatus: x.logicalStatus,
+                                paoStartSuffix: parentLpi.paoStartSuffix,
+                                paoEndSuffix: parentLpi.paoEndSuffix,
+                                saoStartSuffix: x.paoStartSuffix,
+                                saoEndSuffix: x.paoEndSuffix,
+                                level: x.level,
+                                postalAddress: x.postalAddress,
+                                officialFlag: x.officialFlag,
+                                pkId: x.pkId,
+                                changeType: "U",
+                                lpiKey: x.lpiKey,
+                                address: x.address,
+                                entryDate: x.entryDate,
+                                lastUpdateDate: x.lastUpdateDate,
+                              };
+                        } else return x;
+                      });
+                    }
+
+                    const minPkIdNote =
+                      childProperty.blpuNotes && childProperty.blpuNotes.length > 0
+                        ? childProperty.blpuNotes.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
+                        : null;
+
+                    const newPkIdNote =
+                      !minPkIdNote || !minPkIdNote.pkId || minPkIdNote.pkId > -10 ? -10 : minPkIdNote.pkId - 1;
+
+                    const maxSeqNoNote =
+                      childProperty.blpuNotes && childProperty.blpuNotes.length > 0
+                        ? childProperty.blpuNotes.reduce((prev, curr) => (prev.seqNo > curr.seqNo ? prev : curr))
+                        : null;
+
+                    const newSeqNoNote = maxSeqNoNote && maxSeqNoNote.seqNo ? maxSeqNoNote.seqNo + 1 : 1;
+
+                    const updatedNotes = childProperty.blpuNotes ? [...childProperty.blpuNotes] : [];
+
+                    if (noteOpen)
+                      updatedNotes.push({
+                        uprn: childProperty.uprn,
+                        note: note,
+                        changeType: "I",
+                        pkId: newPkIdNote,
+                        seqNo: newSeqNoNote,
+                      });
+
+                    const updatedChildProperty = settingsContext.isScottish
+                      ? {
+                          blpuStateDate: childProperty.blpuStateDate,
+                          parentUprn:
+                            childProperty.parentUprn && action === "leave" ? childProperty.parentUprn : parentUprn,
+                          neverExport: childProperty.neverExport,
+                          siteSurvey: childProperty.siteSurvey,
+                          uprn: childProperty.uprn,
+                          logicalStatus: childProperty.logicalStatus,
+                          endDate: childProperty.endDate,
+                          startDate: childProperty.startDate,
+                          blpuState: childProperty.blpuState,
+                          custodianCode: childProperty.custodianCode,
+                          level: childProperty.level,
+                          xcoordinate: childProperty.xcoordinate ? childProperty.xcoordinate : 0,
+                          ycoordinate: childProperty.ycoordinate ? childProperty.ycoordinate : 0,
+                          pkId: childProperty.pkId,
+                          changeType: "U",
+                          rpc: childProperty.rpc,
+                          blpuAppCrossRefs: childProperty.blpuAppCrossRefs,
+                          blpuProvenances: childProperty.blpuProvenances,
+                          blpuNotes: updatedNotes,
+                          classifications: childProperty.classifications,
+                          organisations: childProperty.organisations,
+                          successorCrossRefs: childProperty.successorCrossRefs,
+                          lpis: updatedLpis,
+                        }
+                      : {
+                          changeType: "U",
+                          blpuStateDate: childProperty.blpuStateDate,
+                          rpc: childProperty.rpc,
+                          startDate: childProperty.startDate,
+                          endDate: childProperty.endDate,
+                          parentUprn:
+                            childProperty.parentUprn && action === "leave" ? childProperty.parentUprn : parentUprn,
+                          neverExport: childProperty.neverExport,
+                          siteSurvey: childProperty.siteSurvey,
+                          uprn: childProperty.uprn,
+                          logicalStatus: childProperty.logicalStatus,
+                          blpuState: childProperty.blpuState,
+                          blpuClass: childProperty.blpuClass,
+                          localCustodianCode: childProperty.localCustodianCode,
+                          organisation: childProperty.organisation,
+                          xcoordinate: childProperty.xcoordinate ? childProperty.xcoordinate : 0,
+                          ycoordinate: childProperty.ycoordinate ? childProperty.ycoordinate : 0,
+                          wardCode: childProperty.wardCode,
+                          parishCode: childProperty.parishCode,
+                          pkId: childProperty.pkId,
+                          blpuAppCrossRefs: childProperty.blpuAppCrossRefs,
+                          blpuProvenances: childProperty.blpuProvenances,
+                          blpuNotes: updatedNotes,
+                          lpis: updatedLpis,
+                        };
+
+                    SaveProperty(
+                      updatedChildProperty,
+                      false,
+                      userContext.currentUser.token,
+                      propertyContext,
+                      settingsContext.isScottish
+                    ).then((result) => {
+                      if (result) {
+                        updatedCount.current++;
+                        savedProperty.current.push(result);
+
+                        const newSearchLpis = result.lpis.map((x) => {
                           return {
-                            uprn: x.uprn.toString(),
-                            address: x.address,
-                            formattedAddress: x.address,
-                            postcode: x.postcode,
+                            type: 24,
+                            id: x.lpiKey,
+                            uprn: x.uprn,
+                            usrn: x.usrn,
+                            logical_status: x.logicalStatus,
+                            language: x.language,
+                            classification_code: getClassificationCode(result),
+                            isParent: false,
+                            parent_uprn: result.parentUprn,
+                            country: null,
+                            authority: null,
+                            longitude: null,
+                            latitude: null,
                             easting: result.xcoordinate,
                             northing: result.ycoordinate,
-                            logicalStatus: x.logicalStatus,
-                            classificationCode: getClassificationCode(result),
+                            full_building_desc: null,
+                            formattedaddress: x.address,
+                            organisation: null,
+                            secondary_name: null,
+                            sao_text: null,
+                            sao_nums: null,
+                            primary_name: null,
+                            pao_text: null,
+                            pao_nums: null,
+                            street: null,
+                            locality: null,
+                            town: null,
+                            post_town: x.postTown,
+                            postcode: x.postcode,
+                            crossref: null,
+                            address: x.address,
+                            sort_code: 0,
                           };
                         });
-                      const newMapSearchProperties = mapContext.currentSearchData.properties.map(
-                        (x) => newMapSearchLpis.find((rec) => rec.uprn === x.uprn) || x
-                      );
-                      mapContext.onSearchDataChange(
-                        mapContext.currentSearchData.streets,
-                        newMapSearchProperties,
-                        null,
-                        null
-                      );
+                        const newSearchData = searchContext.currentSearchData.results.map(
+                          (x) => newSearchLpis.find((rec) => x.type === 24 && rec.id === x.id) || x
+                        );
+                        searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newSearchData);
 
-                      setProcessedCount(updatedCount.current + failedCount.current);
-                    }
-                  });
+                        const newMapSearchLpis = result.lpis
+                          .filter((x) => x.language === "ENG")
+                          .map((x) => {
+                            return {
+                              uprn: x.uprn.toString(),
+                              address: x.address,
+                              formattedAddress: x.address,
+                              postcode: x.postcode,
+                              easting: result.xcoordinate,
+                              northing: result.ycoordinate,
+                              logicalStatus: x.logicalStatus,
+                              classificationCode: getClassificationCode(result),
+                            };
+                          });
+                        const newMapSearchProperties = mapContext.currentSearchData.properties.map(
+                          (x) => newMapSearchLpis.find((rec) => rec.uprn === x.uprn) || x
+                        );
+                        mapContext.onSearchDataChange(
+                          mapContext.currentSearchData.streets,
+                          newMapSearchProperties,
+                          null,
+                          null
+                        );
+
+                        setProcessedCount(updatedCount.current + failedCount.current);
+                      }
+                    });
+                  }
                 }
               }
-            }
+            });
           });
-        });
-      }
+        }
+      });
     }
   };
 
@@ -599,12 +693,12 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
               >
                 <FormControlLabel
                   value="leave"
-                  control={<Radio />}
+                  control={<Radio disabled={updating} />}
                   label={<Typography variant="body2">Keep existing</Typography>}
                 />
                 <FormControlLabel
                   value="replace"
-                  control={<Radio />}
+                  control={<Radio disabled={updating} />}
                   label={<Typography variant="body2">Replace with new</Typography>}
                 />
               </RadioGroup>
@@ -754,17 +848,6 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
             <Button variant="contained" onClick={handleCancelClick} sx={blueButtonStyle} startIcon={<CloseIcon />}>
               Close
             </Button>
-            {process.env.NODE_ENV === "development" && finaliseErrors && finaliseErrors.length ? (
-              <Button
-                variant="contained"
-                onClick={handleAddToListClick}
-                autoFocus
-                sx={{ ...whiteButtonStyle, position: "relative", left: "-96px", top: "-68px" }}
-                startIcon={<PlaylistAddIcon />}
-              >
-                Add to list
-              </Button>
-            ) : null}
           </>
         );
 

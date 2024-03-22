@@ -43,6 +43,7 @@
 //    029   13.03.24 Sean Flook            MUL9 Added new parameters to handle the checking of records.
 //    030   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    031   19.03.24 Sean Flook       PRFRM2_GP Ensure onRelatedOpened is always called.
+//    032   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1022,7 +1023,7 @@ function RelatedPropertyTab({
           </Menu>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle(`${variant === "street" ? "75.6vh" : "74.7vh"}`)}>
+      <Box sx={dataFormStyle(`${variant === "street" ? "StreetRelatedPropertyTab" : "PropertyRelatedPropertyTab"}`)}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : (
@@ -1445,7 +1446,7 @@ function RelatedPropertyTab({
                                                     >
                                                       <Chip
                                                         size="small"
-                                                        label={child2.language}
+                                                        label={child2.primary.language}
                                                         sx={PropertyLanguageChipStyle(child2.primary.logicalStatus)}
                                                       />
                                                       <Typography

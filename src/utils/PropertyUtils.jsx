@@ -39,6 +39,7 @@
 //    026   07.03.24 Sean Flook       IMANN-348 Added hasPropertyChanged.
 //    027   12.03.24 Sean Flook                 Improved error handling when deleting.
 //    028   13.03.24 Sean Flook            MUL9 Changes required to refresh the related tab if required.
+//    029   22.03.24 Sean Flook           MUL16 Added GetParentHierarchy.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1696,6 +1697,28 @@ export async function GetPropertyMapData(uprn, userToken) {
       );
 
     return returnValue;
+  } else return null;
+}
+
+/**
+ * Return the parent hierarchy for use in parent child relationships.
+ *
+ * @param {number} parentUprn The UPRN of the first parent.
+ * @param {string} userToken The token for the user who is calling the endpoint.
+ * @returns {object} The parent hierarchy object.
+ */
+export async function GetParentHierarchy(parentUprn, userToken) {
+  const parent = await GetPropertyMapData(parentUprn, userToken);
+  if (parent) {
+    if (parent.parentUprn) {
+      const grandParent = await GetPropertyMapData(parent.parentUprn, userToken);
+      if (grandParent) {
+        if (grandParent.parentUprn) {
+          const greatGrandParent = await GetPropertyMapData(grandParent.parentUprn, userToken);
+          return { parent: parent, grandParent: grandParent, greatGrandParent: greatGrandParent };
+        } else return { parent: parent, grandParent: grandParent, greatGrandParent: null };
+      } else return { parent: parent, grandParent: null, greatGrandParent: null };
+    } else return { parent: parent, grandParent: null, greatGrandParent: null };
   } else return null;
 }
 

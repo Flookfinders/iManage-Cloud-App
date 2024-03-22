@@ -20,6 +20,7 @@
 //    007   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    008   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    009   10.01.24 Sean Flook                 Fix warnings.
+//    010   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -47,13 +48,11 @@ import {
   adsLightBlue,
   adsDarkGrey10,
   adsDarkGrey20,
-  adsLightGreyC,
-  adsMidGreyA,
   adsMagenta,
   adsDarkBlue,
   adsPaleBlueB,
 } from "../utils/ADSColours";
-import { blueButtonStyle, tooltipStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, dataFormStyle, tooltipStyle } from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
 import { useTheme, makeStyles } from "@mui/styles";
 
@@ -313,26 +312,26 @@ function MapLayersTab(props) {
   const mapLayerColumns = [
     {
       field: "id",
-      headerClassName: "idox-map-layer-data-grid-header",
+      headerClassName: "idox-data-grid-header",
       sortable: false,
       filterable: false,
     },
     {
       field: "layerType",
-      headerClassName: "idox-map-layer-data-grid-header",
+      headerClassName: "idox-data-grid-header",
       sortable: false,
       filterable: false,
     },
     {
       field: "layerPosition",
-      headerClassName: "idox-map-layer-data-grid-header",
+      headerClassName: "idox-data-grid-header",
       sortable: false,
       filterable: false,
     },
     {
       field: "title",
       headerName: "Layer",
-      headerClassName: "idox-map-layer-data-grid-header",
+      headerClassName: "idox-data-grid-header",
       sortable: false,
       filterable: false,
       flex: 70,
@@ -340,14 +339,14 @@ function MapLayersTab(props) {
     },
     {
       field: "visible",
-      headerClassName: "idox-map-layer-data-grid-header",
+      headerClassName: "idox-data-grid-header",
       sortable: false,
       filterable: false,
     },
     {
       field: "actions",
       type: "actions",
-      headerClassName: "idox-map-layer-data-grid-header",
+      headerClassName: "idox-data-grid-header",
       sortable: false,
       filterable: false,
       align: "left",
@@ -848,16 +847,7 @@ function MapLayersTab(props) {
             </Button>
           </Tooltip>
         </Stack>
-        <Box
-          sx={{
-            height: "84vh",
-            "& .idox-map-layer-data-grid-header": {
-              backgroundColor: adsLightGreyC,
-              color: adsMidGreyA,
-            },
-          }}
-          className={classes.root}
-        >
+        <Box sx={dataFormStyle("MapLayersTab")} className={classes.root}>
           {gridData && gridData.length > 0 && (
             <DataGrid
               rows={gridData}

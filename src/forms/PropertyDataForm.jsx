@@ -50,6 +50,7 @@
 //    037   08.03.24 Sean Flook       IMANN-348 Updated calls to ResetContexts.
 //    038   18.03.24 Sean Flook      STRFRM5_OS Only discard changes if a new record which has not previously been accepted.
 //    039   19.03.24 Sean Flook       PRFRM2_GP Ensure related object is always set in setupRelated.
+//    040   22.03.24 Sean Flook           GLB12 Fixed the height of controls so rest of forms height can be calculated correctly.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -133,6 +134,7 @@ import {
   tabLabelStyle,
   getSaveButtonStyle,
   getSaveIcon,
+  dataFormToolbarHeight,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 /* #endregion imports */
@@ -647,6 +649,7 @@ function PropertyDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setLpiFormData(null);
+      sandboxContext.onSandboxChange("lpi", null);
       propertyContext.onRecordChange(21, null);
       mapContext.onEditMapObject(21, propertyData && propertyData.uprn);
       lastOpenedId.current = 0;
@@ -852,6 +855,7 @@ function PropertyDataForm({ data, loading }) {
   const handleClassificationSelected = (pkId, classificationData, dataIdx, dataLength) => {
     if (pkId === -1) {
       setClassificationFormData(null);
+      sandboxContext.onSandboxChange("classification", null);
       propertyContext.onRecordChange(21, null);
       mapContext.onEditMapObject(null, null);
       lastOpenedId.current = pkId;
@@ -947,6 +951,7 @@ function PropertyDataForm({ data, loading }) {
   const handleOrganisationSelected = (pkId, organisationData, dataIdx, dataLength) => {
     if (pkId === -1) {
       setOrganisationFormData(null);
+      sandboxContext.onSandboxChange("organisation", null);
       propertyContext.onRecordChange(21, null);
       mapContext.onEditMapObject(null, null);
       lastOpenedId.current = 0;
@@ -1040,6 +1045,7 @@ function PropertyDataForm({ data, loading }) {
   const handleSuccessorCrossRefSelected = (pkId, successorCrossRefData, dataIdx, dataLength) => {
     if (pkId === -1) {
       setSuccessorCrossRefFormData(null);
+      sandboxContext.onSandboxChange("successorCrossRef", null);
       propertyContext.onRecordChange(21, null);
       mapContext.onEditMapObject(null, null);
       lastOpenedId.current = 0;
@@ -1133,6 +1139,7 @@ function PropertyDataForm({ data, loading }) {
   const handleProvenanceSelected = (pkId, provenanceData, dataIdx, dataLength) => {
     if (pkId === -1) {
       setProvenanceFormData(null);
+      sandboxContext.onSandboxChange("provenance", null);
       propertyContext.onRecordChange(21, null);
       mapContext.onEditMapObject(null, null);
       lastOpenedId.current = pkId;
@@ -1232,6 +1239,7 @@ function PropertyDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setCrossRefFormData(null);
+      sandboxContext.onSandboxChange("appCrossRef", null);
       propertyContext.onRecordChange(21, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -1325,6 +1333,7 @@ function PropertyDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setNotesFormData(null);
+      sandboxContext.onSandboxChange("propertyNote", null);
       propertyContext.onRecordChange(21, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -4335,7 +4344,7 @@ function PropertyDataForm({ data, loading }) {
 
   return (
     <div id="property-data-form">
-      <AppBar position="static" color="default">
+      <AppBar position="static" color="default" sx={{ height: `${dataFormToolbarHeight}px` }}>
         <Tabs
           value={value}
           onChange={handleTabChange}
@@ -4937,7 +4946,7 @@ function PropertyDataForm({ data, loading }) {
         sx={{
           top: "auto",
           bottom: 0,
-          height: "56px",
+          height: `${dataFormToolbarHeight}px`,
           backgroundColor: adsWhite,
           borderTop: `1px solid ${adsLightGreyB}`,
         }}

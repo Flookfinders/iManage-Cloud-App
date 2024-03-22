@@ -67,6 +67,7 @@
 //    053   07.03.24 Sean Flook       IMANN-348 Further changes required for ESUs.
 //    054   08.03.24 Sean Flook       IMANN-348 Updated calls to ResetContexts.
 //    055   18.03.24 Sean Flook      STRFRM5_OS Only discard changes if a new record which has not previously been accepted.
+//    056   22.03.24 Sean Flook           GLB12 Ensure the tab data forms are displayed correctly.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -177,6 +178,7 @@ import {
   tabLabelStyle,
   getSaveButtonStyle,
   getSaveIcon,
+  dataFormToolbarHeight,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -224,6 +226,7 @@ function StreetDataForm({ data, loading }) {
 
   const history = useHistory();
 
+  const [displayAsdTab, setDisplayAsdTab] = useState(false);
   const [streetData, setStreetData] = useState(data);
   const currentStreetEsuData = useRef(null);
   const currentStreetAsdData = useRef(null);
@@ -628,21 +631,24 @@ function StreetDataForm({ data, loading }) {
               totalRecords: successorCrossRefFormData.totalRecords,
             });
           }
-        } else setAsdFormData();
+        } else {
+          if (displayAsdTab) setAsdFormData();
+        }
         break;
 
       case 3: // ASD / Note
         if (settingsContext.isScottish) {
-          setAsdFormData();
+          if (displayAsdTab) setAsdFormData();
         } else setNotesForm();
         break;
 
       case 4: // Note
         if (!settingsContext.isScottish) setNotesForm();
+        else if (!displayAsdTab) setNotesForm();
         break;
 
       case 5: // Note
-        if (settingsContext.isScottish) setNotesForm();
+        if (displayAsdTab) setNotesForm();
         break;
 
       default:
@@ -679,7 +685,7 @@ function StreetDataForm({ data, loading }) {
             if (successorCrossRefFormData)
               streetContext.onRecordChange(30, successorCrossRefFormData.pkId, successorCrossRefFormData.index, null);
             else streetContext.onRecordChange(13, null, null, null);
-          } else {
+          } else if (displayAsdTab) {
             if (maintenanceResponsibilityFormData) {
               streetContext.onRecordChange(
                 51,
@@ -724,11 +730,13 @@ function StreetDataForm({ data, loading }) {
               if (!hwwFormData.hwwData.wholeRoad) mapContext.onEditMapObject(64, hwwFormData.hwwData.pkId);
             } else if (prowFormData) streetContext.onRecordChange(66, prowFormData.pkId, prowFormData.index, null);
             else streetContext.onRecordChange(11, null, null, null);
+          } else {
+            // GP Related
           }
           break;
 
         case 3:
-          if (settingsContext.isScottish) {
+          if (displayAsdTab) {
             if (maintenanceResponsibilityFormData) {
               streetContext.onRecordChange(
                 51,
@@ -773,6 +781,8 @@ function StreetDataForm({ data, loading }) {
               if (!hwwFormData.hwwData.wholeRoad) mapContext.onEditMapObject(64, hwwFormData.hwwData.pkId);
             } else if (prowFormData) streetContext.onRecordChange(66, prowFormData.pkId, prowFormData.index, null);
             else streetContext.onRecordChange(11, null, null, null);
+          } else if (settingsContext.isScottish && streetData && streetData.recordType > 2) {
+            // Related tab
           } else {
             if (notesFormData) streetContext.onRecordChange(72, notesFormData.pkId, notesFormData.index, null);
             else streetContext.onRecordChange(11, null, null, null);
@@ -808,6 +818,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setDescriptorFormData(null);
+      sandboxContext.onSandboxChange("streetDescriptor", null);
       streetContext.onRecordChange(11, null, null, null);
       lastOpenedId.current = pkId;
     } else if (pkId === 0) {
@@ -1091,6 +1102,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setEsuFormData(null);
+      sandboxContext.onSandboxChange("esu", null);
       streetContext.onRecordChange(13, null, null, null);
       mapContext.onEditMapObject(null, null);
       lastOpenedId.current = 0;
@@ -1299,6 +1311,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setHdFormData(null);
+      sandboxContext.onSandboxChange("highwayDedication", null);
       if (currentEsuFormData.current) resetEsuData();
       streetContext.onRecordChange(11, null, null, null);
     } else if (pkId === 0) {
@@ -1474,6 +1487,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setOweFormData(null);
+      sandboxContext.onSandboxChange("oneWayExemption", null);
       if (currentEsuFormData.current) resetEsuData();
       streetContext.onRecordChange(11, null, null, null);
     } else if (pkId === 0) {
@@ -1588,6 +1602,7 @@ function StreetDataForm({ data, loading }) {
   const handleSuccessorCrossRefSelected = (pkId, successorCrossRefData, dataIdx, dataLength) => {
     if (pkId === -1) {
       setSuccessorCrossRefFormData(null);
+      sandboxContext.onSandboxChange("successorCrossRef", null);
       streetContext.onRecordChange(11, null, null);
       mapContext.onEditMapObject(null, null);
       lastOpenedId.current = 0;
@@ -1713,6 +1728,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setMaintenanceResponsibilityFormData(null);
+      sandboxContext.onSandboxChange("maintenanceResponsibility", null);
       streetContext.onRecordChange(51, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -1849,6 +1865,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setReinstatementCategoryFormData(null);
+      sandboxContext.onSandboxChange("reinstatementCategory", null);
       streetContext.onRecordChange(52, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -1984,6 +2001,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setOSSpecialDesignationFormData(null);
+      sandboxContext.onSandboxChange("osSpecialDesignation", null);
       streetContext.onRecordChange(53, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -2120,6 +2138,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setInterestFormData(null);
+      sandboxContext.onSandboxChange("interest", null);
       streetContext.onRecordChange(61, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -2270,6 +2289,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setConstructionFormData(null);
+      sandboxContext.onSandboxChange("construction", null);
       streetContext.onRecordChange(62, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -2433,6 +2453,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setSpecialDesignationFormData(null);
+      sandboxContext.onSandboxChange("specialDesignation", null);
       streetContext.onRecordChange(63, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -2587,6 +2608,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setHwwFormData(null);
+      sandboxContext.onSandboxChange("hww", null);
       streetContext.onRecordChange(64, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -2733,6 +2755,7 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setProwFormData(null);
+      sandboxContext.onSandboxChange("prow", null);
       streetContext.onRecordChange(66, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -2920,6 +2943,7 @@ function StreetDataForm({ data, loading }) {
    */
   const handleNoteSelected = (pkId, noteData, dataIdx) => {
     setNotesFormData(null);
+    sandboxContext.onSandboxChange("streetNote", null);
     streetContext.onRecordChange(11, null, null, null);
     mapContext.onEditMapObject(null, null);
     lastOpenedId.current = 0;
@@ -4299,30 +4323,14 @@ function StreetDataForm({ data, loading }) {
             } else {
               updateMapStreetData(
                 streetData,
-                settingsContext.isScottish && streetData && streetData.recordType < 3
-                  ? streetData.maintenanceResponsibilities
-                  : null,
-                settingsContext.isScottish && streetData && streetData.recordType < 3
-                  ? streetData.reinstatementCategories
-                  : null,
-                settingsContext.isScottish && streetData && streetData.recordType < 3
-                  ? streetData.specialDesignations
-                  : null,
-                !settingsContext.isScottish && HasASD() && streetData && streetData.recordType < 4
-                  ? streetData.interests
-                  : null,
-                !settingsContext.isScottish && HasASD() && streetData && streetData.recordType < 4
-                  ? streetData.constructions
-                  : null,
-                !settingsContext.isScottish && HasASD() && streetData && streetData.recordType < 4
-                  ? streetData.specialDesignations
-                  : null,
-                !settingsContext.isScottish && HasASD() && streetData && streetData.recordType < 4
-                  ? streetData.heightWidthWeights
-                  : null,
-                !settingsContext.isScottish && HasASD() && streetData && streetData.recordType < 4
-                  ? streetData.publicRightOfWays
-                  : null,
+                settingsContext.isScottish && displayAsdTab ? streetData.maintenanceResponsibilities : null,
+                settingsContext.isScottish && displayAsdTab ? streetData.reinstatementCategories : null,
+                settingsContext.isScottish && displayAsdTab ? streetData.specialDesignations : null,
+                !settingsContext.isScottish && displayAsdTab ? streetData.interests : null,
+                !settingsContext.isScottish && displayAsdTab ? streetData.constructions : null,
+                !settingsContext.isScottish && displayAsdTab ? streetData.specialDesignations : null,
+                !settingsContext.isScottish && displayAsdTab ? streetData.heightWidthWeights : null,
+                !settingsContext.isScottish && displayAsdTab ? streetData.publicRightOfWays : null,
                 settingsContext.isScottish,
                 mapContext,
                 lookupContext.currentLookups
@@ -6969,10 +6977,10 @@ function StreetDataForm({ data, loading }) {
   useEffect(() => {
     if (streetContext.currentStreet.openRelated) {
       failedValidation.current = false;
-      setValue(HasASD() && streetData && streetData.recordType < (settingsContext.isScottish ? 3 : 4) ? 3 : 2);
+      setValue(displayAsdTab ? 3 : 2);
       mapContext.onEditMapObject(null, null);
     }
-  }, [streetContext.currentStreet.openRelated, mapContext, streetData, settingsContext.isScottish]);
+  }, [streetContext.currentStreet.openRelated, mapContext, displayAsdTab]);
 
   useEffect(() => {
     if (streetContext.currentErrors) {
@@ -7305,7 +7313,7 @@ function StreetDataForm({ data, loading }) {
 
         case 30:
           setSuccessorCrossRefFocusedField(streetContext.goToField.fieldName);
-          if (value !== 0) setValue(0);
+          if (value !== 2) setValue(2);
           const successorCrossRefData =
             streetData && streetData.successorCrossRefs.length > streetContext.goToField.index
               ? streetData.successorCrossRefs[streetContext.goToField.index]
@@ -7323,7 +7331,7 @@ function StreetDataForm({ data, loading }) {
 
         case 51:
           setMaintenanceResponsibilityFocusedField(streetContext.goToField.fieldName);
-          if (value !== 2) setValue(2);
+          if (value !== 3) setValue(3);
           clearAsdFormData();
           const maintenanceResponsibilityData =
             streetData && streetData.maintenanceResponsibilities.length > streetContext.goToField.index
@@ -7342,7 +7350,7 @@ function StreetDataForm({ data, loading }) {
 
         case 52:
           setReinstatementCategoryFocusedField(streetContext.goToField.fieldName);
-          if (value !== 2) setValue(2);
+          if (value !== 3) setValue(3);
           clearAsdFormData();
           const reinstatementCategoryData =
             streetData && streetData.reinstatementCategories.length > streetContext.goToField.index
@@ -7361,7 +7369,7 @@ function StreetDataForm({ data, loading }) {
 
         case 53:
           setOSSpecialDesignationFocusedField(streetContext.goToField.fieldName);
-          if (value !== 2) setValue(2);
+          if (value !== 3) setValue(3);
           clearAsdFormData();
           const osSpecialDesignationData =
             streetData && streetData.specialDesignations.length > streetContext.goToField.index
@@ -7475,7 +7483,15 @@ function StreetDataForm({ data, loading }) {
 
         case 72:
           setNoteFocusedField(streetContext.goToField.fieldName);
-          if (value !== 4) setValue(4);
+          if (
+            (HasASD() || settingsContext.isScottish) &&
+            streetData &&
+            streetData.recordType < (settingsContext.isScottish ? 3 : 4)
+          ) {
+            if (value !== (settingsContext.isScottish ? 5 : 4)) setValue(settingsContext.isScottish ? 5 : 4);
+          } else {
+            if (value !== (settingsContext.isScottish ? 4 : 3)) setValue(settingsContext.isScottish ? 4 : 3);
+          }
           const noteData =
             streetData && streetData.blpuNotes.length > streetContext.goToField.index
               ? streetData.streetNotes[streetContext.goToField.index]
@@ -7498,7 +7514,7 @@ function StreetDataForm({ data, loading }) {
 
       streetContext.onGoToField(null, null, null, null);
     }
-  }, [streetContext, streetContext.goToField, value, streetData]);
+  }, [streetContext, streetContext.goToField, value, streetData, settingsContext.isScottish]);
 
   // Update ESU/ASD geometry
   useEffect(() => {
@@ -9897,9 +9913,17 @@ function StreetDataForm({ data, loading }) {
     if (streetChanged) mapContext.onSetCoordinate(null);
   }, [streetContext, sandboxContext.currentSandbox, mapContext]);
 
+  useEffect(() => {
+    setDisplayAsdTab(
+      (HasASD() || settingsContext.isScottish) &&
+        streetData &&
+        streetData.recordType < (settingsContext.isScottish ? 3 : 4)
+    );
+  }, [settingsContext.isScottish, streetData]);
+
   return (
     <div id="street-data-form">
-      <AppBar position="static" color="default">
+      <AppBar position="static" color="default" sx={{ height: `${dataFormToolbarHeight}px` }}>
         <Tabs
           value={value}
           onChange={handleTabChange}
@@ -9990,7 +10014,7 @@ function StreetDataForm({ data, loading }) {
               {...a11yProps(2)}
             />
           )}
-          {HasASD() && streetData && streetData.recordType < (settingsContext.isScottish ? 3 : 4) && (
+          {displayAsdTab && (
             <Tab
               sx={tabStyle}
               label={
@@ -10074,14 +10098,7 @@ function StreetDataForm({ data, loading }) {
                 <Typography
                   variant="subtitle2"
                   sx={tabLabelStyle(
-                    value ===
-                      (settingsContext.isScottish
-                        ? streetData && streetData.recordType < 3
-                          ? 4
-                          : 3
-                        : HasASD() && streetData && streetData.recordType < 4
-                        ? 3
-                        : 2)
+                    value === (settingsContext.isScottish ? (displayAsdTab ? 4 : 3) : displayAsdTab ? 3 : 2)
                   )}
                 >
                   Related
@@ -10096,15 +10113,7 @@ function StreetDataForm({ data, loading }) {
                 </Avatar>
               </Stack>
             }
-            {...a11yProps(
-              settingsContext.isScottish
-                ? streetData && streetData.recordType < 3
-                  ? 4
-                  : 3
-                : HasASD() && streetData && streetData.recordType < 4
-                ? 3
-                : 2
-            )}
+            {...a11yProps(settingsContext.isScottish ? (displayAsdTab ? 4 : 3) : displayAsdTab ? 3 : 2)}
           />
           <Tab
             sx={tabStyle}
@@ -10113,14 +10122,7 @@ function StreetDataForm({ data, loading }) {
                 <Typography
                   variant="subtitle2"
                   sx={tabLabelStyle(
-                    value ===
-                      (settingsContext.isScottish
-                        ? streetData && streetData.recordType < 3
-                          ? 5
-                          : 4
-                        : HasASD() && streetData && streetData.recordType < 4
-                        ? 4
-                        : 3)
+                    value === (settingsContext.isScottish ? (displayAsdTab ? 5 : 4) : displayAsdTab ? 4 : 3)
                   )}
                 >
                   Notes
@@ -10147,15 +10149,7 @@ function StreetDataForm({ data, loading }) {
                 )}
               </Stack>
             }
-            {...a11yProps(
-              settingsContext.isScottish
-                ? streetData && streetData.recordType < 3
-                  ? 5
-                  : 4
-                : HasASD() && streetData && streetData.recordType < 4
-                ? 4
-                : 3
-            )}
+            {...a11yProps(settingsContext.isScottish ? (displayAsdTab ? 5 : 4) : displayAsdTab ? 4 : 3)}
           />
           <Tab
             sx={tabStyle}
@@ -10163,28 +10157,13 @@ function StreetDataForm({ data, loading }) {
               <Typography
                 variant="subtitle2"
                 sx={tabLabelStyle(
-                  value ===
-                    (settingsContext.isScottish
-                      ? streetData && streetData.recordType < 3
-                        ? 6
-                        : 5
-                      : HasASD() && streetData && streetData.recordType < 4
-                      ? 5
-                      : 4)
+                  value === (settingsContext.isScottish ? (displayAsdTab ? 6 : 5) : displayAsdTab ? 5 : 4)
                 )}
               >
                 History
               </Typography>
             }
-            {...a11yProps(
-              settingsContext.isScottish
-                ? streetData && streetData.recordType < 3
-                  ? 6
-                  : 5
-                : HasASD() && streetData && streetData.recordType < 4
-                ? 5
-                : 4
-            )}
+            {...a11yProps(settingsContext.isScottish ? (displayAsdTab ? 6 : 5) : displayAsdTab ? 5 : 4)}
           />
         </Tabs>
       </AppBar>
@@ -10343,7 +10322,7 @@ function StreetDataForm({ data, loading }) {
           )}
         </TabPanel>
       )}
-      {HasASD() && streetData && streetData.recordType < (settingsContext.isScottish ? 3 : 4) ? (
+      {displayAsdTab ? (
         <Fragment>
           <TabPanel value={value} index={settingsContext.isScottish ? 3 : 2}>
             {maintenanceResponsibilityFormData ? (
@@ -10492,7 +10471,7 @@ function StreetDataForm({ data, loading }) {
               />
             )}
           </TabPanel>
-          <TabPanel value={value} index={settingsContext.isScottish ? 4 : 3}>
+          <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 4 : 3) : displayAsdTab ? 3 : 2}>
             <RelatedTab
               variant="street"
               propertyCount={streetData ? streetData.relatedPropertyCount : 0}
@@ -10501,7 +10480,7 @@ function StreetDataForm({ data, loading }) {
               onPropertyAdd={(usrn, parent, isRange) => handlePropertyAdd(usrn, parent, isRange)}
             />
           </TabPanel>
-          <TabPanel value={value} index={settingsContext.isScottish ? 5 : 4}>
+          <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 5 : 4) : displayAsdTab ? 4 : 3}>
             {notesFormData ? (
               <NotesDataTab
                 data={notesFormData}
@@ -10522,13 +10501,13 @@ function StreetDataForm({ data, loading }) {
               />
             )}
           </TabPanel>
-          <TabPanel value={value} index={settingsContext.isScottish ? 6 : 5}>
+          <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 6 : 5) : displayAsdTab ? 5 : 4}>
             <EntityHistoryTab variant="street" />
           </TabPanel>
         </Fragment>
       ) : (
         <Fragment>
-          <TabPanel value={value} index={2}>
+          <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 4 : 3) : displayAsdTab ? 3 : 2}>
             <RelatedTab
               variant="street"
               propertyCount={streetData ? streetData.relatedPropertyCount : 0}
@@ -10537,7 +10516,7 @@ function StreetDataForm({ data, loading }) {
               onPropertyAdd={(usrn, parent, isRange) => handlePropertyAdd(usrn, parent, isRange)}
             />
           </TabPanel>
-          <TabPanel value={value} index={3}>
+          <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 5 : 4) : displayAsdTab ? 4 : 3}>
             {notesFormData ? (
               <NotesDataTab
                 data={notesFormData}
@@ -10557,18 +10536,7 @@ function StreetDataForm({ data, loading }) {
               />
             )}
           </TabPanel>
-          <TabPanel
-            value={value}
-            index={
-              settingsContext.isScottish
-                ? streetData && streetData.recordType < 3
-                  ? 6
-                  : 5
-                : HasASD() && streetData && streetData.recordType < 4
-                ? 5
-                : 4
-            }
-          >
+          <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 6 : 5) : displayAsdTab ? 5 : 4}>
             <EntityHistoryTab variant="street" />
           </TabPanel>
         </Fragment>
@@ -10621,6 +10589,7 @@ function StreetDataForm({ data, loading }) {
         sx={{
           top: "auto",
           bottom: 0,
+          height: `${dataFormToolbarHeight}px`,
         }}
       >
         <Toolbar

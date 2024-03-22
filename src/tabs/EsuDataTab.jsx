@@ -33,6 +33,7 @@
 //    020   12.03.24 Joshua McCormick IMANN-280 Moved ADSActionButton to correct place inside Typography for toolbar
 //    021   14.03.24 Sean Flook        ESU19_GP Moved getHighwayDedicationIconStyle to ADSStyles.
 //    022   12.03.24 Joshua McCormick IMANN-280 Reverted removed changes and fixed vertical toolbar alignment
+//    023   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1001,7 +1002,7 @@ function EsuDataTab({
           </Menu>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79.9vh")}>
+      <Box sx={dataFormStyle("EsuDataTab")}>
         {!settingsContext.isScottish && (
           <ADSSelectControl
             label="Direction"

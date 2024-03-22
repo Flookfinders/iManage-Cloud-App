@@ -25,6 +25,7 @@
 //    012   25.01.24 Sean Flook                 Changes required after UX review.
 //    013   13.02.24 Sean Flook                 Only set the data if it exists.
 //    014   01.03.24 Joel Benford               Restrict Districts to suit organisation
+//    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -73,6 +74,7 @@ import {
   tooltipStyle,
   getTitleStyle,
   getTemplateIconStyle,
+  dataFormStyle,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -888,26 +890,13 @@ function AsdTemplateTab() {
   }, [data]);
 
   return (
-    <Box
-      sx={{
-        ml: theme.spacing(1),
-        mr: theme.spacing(4),
-        // my: theme.spacing(2),
-      }}
-    >
+    <Box sx={dataFormStyle("AsdTemplateTabBox")}>
       <Stack direction="column" spacing={1}>
         <Typography sx={{ fontSize: 24, flexGrow: 1, pl: theme.spacing(3) }}>ASD template</Typography>
         <Typography variant="body2" sx={{ pl: theme.spacing(3) }}>
           Set default lookup values for ASD records
         </Typography>
-        <Grid
-          container
-          sx={{
-            pr: theme.spacing(3.5),
-            overflowY: "auto",
-          }}
-          spacing={3}
-        >
+        <Grid container sx={dataFormStyle("AsdTemplateTabGrid")} spacing={3}>
           {settingsContext.isScottish && (
             <Grid item xs={6}>
               <Card

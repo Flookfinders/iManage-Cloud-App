@@ -30,6 +30,7 @@
 //    017   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
 //    018   08.03.24 Sean Flook       IMANN-338 If the save fails do not leave the current page.
 //    019   11.03.24 Sean Flook           GLB12 Correctly set widths.
+//    020   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -88,7 +89,14 @@ import {
 } from "../PageRouting";
 
 import { adsBlueA, adsMidGreyA, adsLightGreyB, adsLightGreyA50 } from "../utils/ADSColours";
-import { navBarWidth, GetAlertStyle, GetAlertIcon, GetAlertSeverity, tooltipStyle } from "../utils/ADSStyles";
+import {
+  navBarWidth,
+  GetAlertStyle,
+  GetAlertIcon,
+  GetAlertSeverity,
+  tooltipStyle,
+  dataFormStyle,
+} from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 /* #endregion imports */
@@ -621,11 +629,7 @@ const ADSNavContent = (props) => {
         anchor="left"
       >
         <Grid
-          sx={{
-            pt: theme.spacing(0.3),
-            width: `${navBarWidth}px`,
-            height: "98vh",
-          }}
+          sx={dataFormStyle("ADSNavContent")}
           container
           direction="column"
           justifyContent="space-between"

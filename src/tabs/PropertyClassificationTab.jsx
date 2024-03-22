@@ -23,6 +23,7 @@
 //    010   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    011   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    012   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
+//    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -350,7 +351,7 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onHome
           />
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79vh")}>
+      <Box sx={dataFormStyle("PropertyClassificationTab")}>
         <ADSSelectControl
           label="Classification"
           isEditable={userCanEdit}

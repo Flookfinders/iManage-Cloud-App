@@ -34,6 +34,7 @@
 //    021   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    022   13.03.24 Sean Flook            MUL9 Added new parameters to handle the checking of records.
 //    023   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
+//    024   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -710,7 +711,7 @@ function RelatedStreetTab({
 
   return (
     <Fragment>
-      <Box sx={dataFormStyle(`${variant === "street" ? "79.9vh" : "79vh"}`)}>
+      <Box sx={dataFormStyle(`${variant === "street" ? "StreetRelatedStreetTab" : "PropertyRelatedStreetTab"}`)}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : (

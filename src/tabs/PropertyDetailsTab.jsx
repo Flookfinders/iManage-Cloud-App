@@ -38,6 +38,8 @@
 //    025   15.03.24 Sean Flook       PRFRM2_GP Added display for number of children.
 //    026   12.03.24 Joshua McCormick  IMANN-280 Toolbar styling, fixed margin
 //    027   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
+//    028   12.03.24 Joshua McCormick IMANN-280 Adjusted toolbar spacing
+//    029   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1025,19 +1027,13 @@ function PropertyDetailsTab({
   return (
     <Fragment>
       <Box sx={toolbarStyle}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Typography
-            variant="subtitle1"
-            display="inline-flex"
-            sx={{
-              mt: theme.spacing(0.5),
-              pl: theme.spacing(2),
-              fontSize: "15px",
-              color: adsMidGreyA,
-            }}
-          >
-            {propertyContext.currentProperty.uprn}
-          </Typography>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ pl: theme.spacing(2), mt: theme.spacing(0.25) }}
+        >
+          <Typography variant="subtitle1">{propertyContext.currentProperty.uprn}</Typography>
           <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
             <IconButton onClick={handleBLPUMenuClick} aria-controls="blpu-menu" aria-haspopup="true" size="small">
               <MoreVertIcon sx={ActionIconStyle()} />
@@ -1130,7 +1126,7 @@ function PropertyDetailsTab({
           </Menu>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79vh")}>
+      <Box sx={dataFormStyle("PropertyDetailsTab")}>
         <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
           <Grid item xs={3}>
             <Typography variant="body2" color="textPrimary" align="left" sx={controlLabelStyle}>

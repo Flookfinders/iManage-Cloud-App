@@ -24,7 +24,8 @@
 //    011   12.01.24 Sean Flook                 Fixed duplicate key warning.
 //    012   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    013   25.01.24 Sean Flook                 Changes required after UX review.
-//    014   08.02.24 Joel Benford     RTAB3     Supply null street state to classification icon tooltip
+//    014   08.02.24 Joel Benford         RTAB3 Supply null street state to classification icon tooltip
+//    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -68,11 +69,11 @@ import GetClassificationIcon from "../utils/ADSClassificationIcons";
 import { adsBlueA, adsMidGreyA, adsRed, adsRed10, adsOffWhite, adsPaleBlueA } from "../utils/ADSColours";
 import {
   toolbarStyle,
-  wizardFinaliseFormStyle,
   tooltipStyle,
   ActionIconStyle,
   menuStyle,
   menuItemStyle,
+  dataFormStyle,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -1049,7 +1050,7 @@ function ADSWizardAddressList({
           {haveMoveBlpu && <ADSInformationControl variant={"moveBLPU"} />}
         </Stack>
       </Box>
-      <Box sx={wizardFinaliseFormStyle(haveMoveBlpu)}>
+      <Box sx={dataFormStyle(haveMoveBlpu ? "ADSWizardAddressListMoveBlpu" : "ADSWizardAddressListWizard")}>
         <List
           id="ads-wizard-address-list"
           sx={{

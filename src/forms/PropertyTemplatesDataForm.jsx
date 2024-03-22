@@ -19,6 +19,7 @@
 //    006   10.01.24 Sean Flook                 Fix warnings.
 //    007   25.01.24 Sean Flook                 Changes required after UX review.
 //    008   25.01.24 Sean Flook                 Move description so it lines up with title in the cards.
+//    009   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -61,11 +62,11 @@ import {
 import { adsBlueA, adsLightBlue, adsMagenta, adsDarkBlue } from "../utils/ADSColours";
 import {
   blueButtonStyle,
-  settingsFormStyle,
   ActionIconStyle,
   tooltipStyle,
   settingsCardStyle,
   getTitleStyle,
+  dataFormStyle,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -272,7 +273,7 @@ function PropertyTemplatesDataForm({
             <Typography variant="body2">Template</Typography>
           </Button>
         </Stack>
-        <Box sx={settingsFormStyle}>
+        <Box sx={dataFormStyle("PropertyTemplatesDataForm")}>
           <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={{ xs: 1, sm: 2, md: 3 }}>
             {data &&
               data.length > 0 &&

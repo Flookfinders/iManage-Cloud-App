@@ -30,6 +30,8 @@
 //    017   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    018   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    019   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
+//    020   21.03.24 Joshua McCormick IMANN-280 Toolbar styling and action icons are inline with rest of app
+//    021   22.03.24 Sean Flook                 Changed the way the address is updated and displayed.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -43,12 +45,11 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
 
-import { GetTempAddressUrl } from "../configuration/ADSConfig";
-import { copyTextToClipboard, GetLookupLabel, ConvertDate, filteredLookup } from "../utils/HelperUtils";
-import { addressToTitleCase, FilteredLPILogicalStatus } from "../utils/PropertyUtils";
+import { copyTextToClipboard, GetLookupLabel, ConvertDate, filteredLookup, shorten } from "../utils/HelperUtils";
+import { addressToTitleCase, FilteredLPILogicalStatus, GetTempAddress } from "../utils/PropertyUtils";
 import ObjectComparison, { lpiKeysToIgnore } from "./../utils/ObjectComparison";
 
-import { Typography, Tooltip, IconButton, Menu, MenuItem, Fade, Divider } from "@mui/material";
+import { Typography, Tooltip, IconButton, Menu, MenuItem, Fade } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSLanguageControl from "../components/ADSLanguageControl";
@@ -64,10 +65,9 @@ import OfficialAddress from "./../data/OfficialAddress";
 import PostallyAddressable from "./../data/PostallyAddressable";
 
 import { MoreVert as ActionsIcon } from "@mui/icons-material";
-import { adsMidGreyA, adsDarkGrey, adsLightGreyB } from "../utils/ADSColours";
+import { adsMidGreyA } from "../utils/ADSColours";
 import {
   toolbarStyle,
-  dataTabToolBar,
   dataFormStyle,
   ActionIconStyle,
   menuStyle,
@@ -161,9 +161,46 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
    * @param {string} field The name of the field that is being updated.
    * @param {string|boolean|Date|number|null} newValue The value used to update the given field.
    */
-  const UpdateSandbox = (field, newValue) => {
+  const UpdateSandbox = async (field, newValue) => {
     const newLpiData = GetCurrentData(field, newValue);
     sandboxContext.onSandboxChange("lpi", newLpiData);
+    if (
+      [
+        "saoStartNumber",
+        "saoStartSuffix",
+        "saoEndNumber",
+        "saoEndSuffix",
+        "saoText",
+        "paoStartNumber",
+        "paoStartSuffix",
+        "paoEndNumber",
+        "paoEndSuffix",
+        "paoText",
+        "usrn",
+        "postTownRef",
+        "postcodeRef",
+      ].includes(field)
+    ) {
+      const updatedAddress = await GetTempAddress(
+        newLpiData,
+        data.organisation,
+        lookupContext,
+        userContext.currentUser.token,
+        settingsContext.isScottish
+      );
+      let currentPostcode = newLpiData.postcode;
+      if (field === "postcodeRef") {
+        const postcodeRec = lookupContext.currentLookups.postcodes.find((x) => x.postcodeRef === newValue);
+        if (postcodeRec) {
+          currentPostcode = postcodeRec.postcode;
+        }
+      }
+      setLpiAddress(
+        updatedAddress && updatedAddress.length > 70
+          ? `${shorten(addressToTitleCase(updatedAddress, currentPostcode), 70)} ...`
+          : updatedAddress
+      );
+    }
   };
 
   /**
@@ -670,114 +707,15 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
       setPostalAddress(settingsContext.isScottish ? data.lpiData.postallyAddressable : data.lpiData.postalAddress);
       setStartDate(data.lpiData.startDate);
       setEndDate(data.lpiData.endDate);
+      setLpiAddress(
+        data.lpiData.address && data.lpiData.address.length > 70
+          ? `${shorten(addressToTitleCase(data.lpiData.address, data.lpiData.postcode), 70)} ...`
+          : data.lpiData.address
+      );
 
       setLogicalStatusLookup(FilteredLPILogicalStatus(settingsContext.isScottish, data.blpuLogicalStatus));
     }
   }, [loading, data, settingsContext.isScottish]);
-
-  useEffect(() => {
-    async function GetTempAddress() {
-      const tempAddressUrl = GetTempAddressUrl(userContext.currentUser.token);
-
-      if (tempAddressUrl) {
-        const postTown = postTownRef
-          ? lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === postTownRef).postTown
-          : "";
-        const subLocality = subLocalityRef
-          ? lookupContext.currentLookups.subLocalities.find((x) => x.subLocalityRef === subLocalityRef).postTown
-          : "";
-        const postcode = postcodeRef
-          ? lookupContext.currentLookups.postcodes.find((x) => x.postcodeRef === postcodeRef).postcode
-          : "";
-
-        const saveData = settingsContext.isScottish
-          ? {
-              usrn: usrn,
-              language: language,
-              organisation: data.lpiData.organisation,
-              saonStartNum: saoStartNumber ? Number(saoStartNumber) : null,
-              saonStartSuffix: saoStartSuffix,
-              saonEndNum: saoEndNumber ? Number(saoEndNumber) : null,
-              saonEndSuffix: saoEndSuffix,
-              saonText: saoText,
-              paonStartNum: paoStartNumber ? Number(paoStartNumber) : null,
-              paonStartSuffix: paoStartSuffix,
-              paonEndNum: paoEndNumber ? Number(paoEndNumber) : null,
-              paonEndSuffix: paoEndSuffix,
-              paonText: paoText,
-              postTown: postTown,
-              subLocality: subLocality,
-              postcode: postcode,
-              postallyAddressable: postalAddress,
-            }
-          : {
-              usrn: usrn,
-              language: language,
-              organisation: data.lpiData.organisation,
-              saonStartNum: saoStartNumber ? Number(saoStartNumber) : null,
-              saonStartSuffix: saoStartSuffix,
-              saonEndNum: saoEndNumber ? Number(saoEndNumber) : null,
-              saonEndSuffix: saoEndSuffix,
-              saonText: saoText,
-              paonStartNum: paoStartNumber ? Number(paoStartNumber) : null,
-              paonStartSuffix: paoStartSuffix,
-              paonEndNum: paoEndNumber ? Number(paoEndNumber) : null,
-              paonEndSuffix: paoEndSuffix,
-              paonText: paoText,
-              postTown: postTown,
-              postcode: postcode,
-              postallyAddressable: postalAddress,
-            };
-
-        console.log("[DEBUG] GetTempAddress", tempAddressUrl, JSON.stringify(saveData));
-
-        return await fetch(`${tempAddressUrl.url}?AddressSeparator=%2C%20`, {
-          headers: tempAddressUrl.headers,
-          crossDomain: true,
-          method: tempAddressUrl.type,
-          body: JSON.stringify(saveData),
-        })
-          .then((res) => (res.ok ? res : Promise.reject(res)))
-          .then((res) => res.text())
-          .then(
-            (tempAddress) => {
-              return addressToTitleCase(tempAddress, postcode);
-            },
-            (error) => {
-              console.error("[ERROR] Get temp address data", error);
-            }
-          );
-      } else return "";
-    }
-
-    if (!loading && usrn && (saoStartNumber || saoText || paoStartNumber || paoText)) {
-      GetTempAddress().then((address) => {
-        setLpiAddress(address);
-      });
-    } else setLpiAddress("");
-  }, [
-    loading,
-    data,
-    language,
-    saoStartNumber,
-    saoStartSuffix,
-    saoEndNumber,
-    saoEndSuffix,
-    saoText,
-    paoStartNumber,
-    paoStartSuffix,
-    paoEndNumber,
-    paoEndSuffix,
-    paoText,
-    usrn,
-    postTownRef,
-    subLocalityRef,
-    postcodeRef,
-    postalAddress,
-    lookupContext,
-    userContext,
-    settingsContext,
-  ]);
 
   useEffect(() => {
     if (sandboxContext.currentSandbox.sourceProperty && sandboxContext.currentSandbox.currentPropertyRecords.lpi) {
@@ -932,49 +870,37 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
   return (
     <Fragment>
       <Box sx={toolbarStyle}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={dataTabToolBar}>
-          <Stack direction="row" spacing={0} justifyContent="flex-start" alignItems="center">
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ pl: theme.spacing(2), mt: theme.spacing(0.25) }}
+        >
+          <Typography variant="subtitle1">
             <ADSActionButton
               variant="home"
               tooltipTitle="Back to property details"
               tooltipPlacement="bottom"
               onClick={handleHomeClick}
             />
-            <Divider orientation="vertical" variant="middle" flexItem sx={{ color: adsLightGreyB }} />
-            <Typography
-              sx={{
-                flexGrow: 1,
-                fontSize: "15px",
-                pl: "8px",
-                color: adsDarkGrey,
-                display: "none",
-                [theme.breakpoints.up("sm")]: {
-                  display: "block",
-                },
-              }}
-              variant="subtitle1"
-              noWrap
-              align="left"
-            >
-              {`LPI ${data.index + 1} of ${data.totalRecords}: `}
-            </Typography>
-            <Typography
-              sx={{
-                flexGrow: 1,
-                fontSize: "14px",
-                color: adsMidGreyA,
-                display: "none",
-                pl: "8px",
-                pt: "2px",
-                [theme.breakpoints.up("sm")]: {
-                  display: "block",
-                },
-              }}
-              variant="subtitle1"
-              noWrap
-              align="left"
-            >{`${lpiAddress ? lpiAddress : ""}`}</Typography>
-          </Stack>
+          </Typography>
+          <Typography variant="subtitle1">{`LPI ${data.index + 1} of ${data.totalRecords}: `}</Typography>
+          <Typography
+            sx={{
+              flexGrow: 1,
+              fontSize: "14px",
+              color: adsMidGreyA,
+              display: "none",
+              pl: "8px",
+              pt: "2px",
+              [theme.breakpoints.up("sm")]: {
+                display: "block",
+              },
+            }}
+            variant="subtitle1"
+            noWrap
+            align="left"
+          >{`${lpiAddress ? lpiAddress : ""}`}</Typography>
           <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
             <IconButton
               onClick={handleActionsClick}
@@ -1029,7 +955,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           </Menu>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79vh")}>
+      <Box sx={dataFormStyle("PropertyLPITab")}>
         <ADSLanguageControl
           label="Language"
           isEditable={userCanEdit}

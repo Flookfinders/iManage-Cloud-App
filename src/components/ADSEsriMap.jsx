@@ -63,6 +63,7 @@
 //    049   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods.
 //    050   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    051   11.03.24 Sean Flook        ESU29_GP Set ASD visibility after creating and adding to map.
+//    052   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -169,9 +170,8 @@ import LayersIcon from "@mui/icons-material/Layers";
 import MergeIcon from "@mui/icons-material/Merge";
 import StraightenIcon from "@mui/icons-material/Straighten";
 import UploadIcon from "@mui/icons-material/Upload";
-import { useTheme } from "@mui/styles";
 import { adsWhite } from "../utils/ADSColours";
-import { ActionIconStyle, GetAlertStyle, GetAlertIcon, GetAlertSeverity } from "../utils/ADSStyles";
+import { ActionIconStyle, GetAlertStyle, GetAlertIcon, GetAlertSeverity, dataFormStyle } from "../utils/ADSStyles";
 
 /* #endregion imports */
 
@@ -977,8 +977,6 @@ ADSEsriMap.propTypes = {
 };
 
 function ADSEsriMap(startExtent) {
-  const theme = useTheme();
-
   const [loading, setLoading] = useState(true);
   const [loadingShp, setLoadingShp] = useState(false);
 
@@ -7935,15 +7933,7 @@ function ADSEsriMap(startExtent) {
       <div id="progress-indicator">
         {loading && <CircularProgress sx={{ position: "absolute", top: "50%", left: "60%" }} />}
       </div>
-      <Box
-        sx={{
-          flexGrow: 0,
-          p: theme.spacing(1),
-          height: "94vh",
-        }}
-        ref={mapRef}
-        id="ads-map"
-      >
+      <Box sx={dataFormStyle("ADSEsriMap")} ref={mapRef} id="ads-map">
         <Box id="ads-buttons" className="esri-widget esri-interactive" sx={{ borderRadius: "6px" }}>
           <Stack
             direction="row"

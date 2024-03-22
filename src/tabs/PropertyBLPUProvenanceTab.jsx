@@ -27,6 +27,7 @@
 //    014   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    015   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    016   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
+//    017   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -353,7 +354,7 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
           />
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79vh")}>
+      <Box sx={dataFormStyle("PropertyBLPUProvenanceTab")}>
         <ADSSelectControl
           label="Provenance"
           isEditable={userCanEdit}

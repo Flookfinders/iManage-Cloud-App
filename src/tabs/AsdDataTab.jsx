@@ -32,6 +32,7 @@
 //    019   07.03.24 Sean Flook       IMANN-339 Only show the Add button for Scottish authorities if the street is type 1 or 2.
 //    020   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    021   18.03.24 Sean Flook         ASD3_OS Use the description as the secondary information for Scottish special designation records.
+//    022   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -722,7 +723,7 @@ function AsdDataTab({
           </Stack>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79.9vh")}>
+      <Box sx={dataFormStyle("AsdDataTab")}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : (

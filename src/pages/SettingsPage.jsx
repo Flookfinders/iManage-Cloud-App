@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   30.11.23 Sean Flook                 Hide items that have not been developed yet.
 //    006   24.01.24 Joel Benford               Add scottish metadata to tree.
+//    007   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -37,8 +38,7 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import BuildOutlinedIcon from "@mui/icons-material/BuildOutlined";
 import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 
-import { adsOffWhite } from "../utils/ADSColours";
-import { TreeItemStyle } from "../utils/ADSStyles";
+import { TreeItemStyle, dataFormStyle } from "../utils/ADSStyles";
 
 function SettingsPage() {
   const settingsContext = useContext(SettingsContext);
@@ -86,12 +86,7 @@ function SettingsPage() {
         <Grid item xs={12}>
           <Grid container spacing={0} justifyContent="flex-start">
             <Grid item xs={12} sm={2}>
-              <Box
-                sx={{
-                  backgroundColor: adsOffWhite,
-                  height: "93vh",
-                }}
-              >
+              <Box sx={dataFormStyle("SettingsPage")}>
                 <TreeView
                   aria-label="settings navigator"
                   defaultCollapseIcon={<ExpandMoreIcon />}

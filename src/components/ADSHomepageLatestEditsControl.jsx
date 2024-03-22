@@ -29,6 +29,7 @@
 //    016   07.03.24 Joshua McCormick  IMANN-280 Added tabContainerStyle to tab container
 //    017   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    018   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
+//    019   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -53,8 +54,15 @@ import { AppBar, Tabs, Tab, Typography, Avatar, Tooltip } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 
-import { adsBlueA, adsLightGreyC, adsMidGreyA, adsWhite } from "../utils/ADSColours";
-import { gridRowStyle, tabContainerStyle, tabStyle, tabLabelStyle, tooltipStyle } from "../utils/ADSStyles";
+import { adsBlueA, adsWhite } from "../utils/ADSColours";
+import {
+  gridRowStyle,
+  tabContainerStyle,
+  tabStyle,
+  tabLabelStyle,
+  tooltipStyle,
+  dataFormStyle,
+} from "../utils/ADSStyles";
 import { createTheme } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 
@@ -550,14 +558,7 @@ function ADSHomepageLatestEditsControl({ data }) {
         </Typography>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <Box
-          sx={{
-            height: "44vh",
-            mb: "26px",
-            "& .idox-homepage-latest-edits-data-grid-header": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
-          }}
-          className={classes.root}
-        >
+        <Box sx={dataFormStyle("ADSHomepageLatestEditsControl")} className={classes.root}>
           <DataGrid
             getRowClassName={(params) => "valid-row"}
             getRowId={(row) => row.uprn + "_" + row.usrn}

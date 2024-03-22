@@ -28,6 +28,8 @@
 //    015   15.02.24 Joshua McCormick IMANN-282 Changed logic for street title change
 //    016   15.02.24 Joshua McCormick IMANN-282 Final tweaks, shortened condition
 //    017   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
+//    018   21.03.24 Joshua McCormick IMANN-280 Adjusted toolbar spacing
+//    019   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -891,10 +893,15 @@ function StreetDataTab({
   return (
     <Fragment>
       <Box sx={toolbarStyle}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Typography variant="subtitle1" sx={{ pl: theme.spacing(1.5) }}>{`${streetToTitleCase(
-            streetContext.currentStreet.descriptor
-          )}${streetContext.currentStreet.usrn ? ": " + streetContext.currentStreet.usrn : ""}`}</Typography>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ pl: theme.spacing(2), mt: theme.spacing(0.25) }}
+        >
+          <Typography variant="subtitle1">{`${streetToTitleCase(streetContext.currentStreet.descriptor)}${
+            streetContext.currentStreet.usrn ? ": " + streetContext.currentStreet.usrn : ""
+          }`}</Typography>
           <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
             <IconButton onClick={handleActionsClick} aria_controls="actions-menu" aria-haspopup="true" size="small">
               <ActionsIcon sx={ActionIconStyle()} />
@@ -975,7 +982,7 @@ function StreetDataTab({
           </Menu>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79.9vh")}>
+      <Box sx={dataFormStyle("StreetDataTab")}>
         <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
           <Grid item xs={3}>
             <Typography variant="body2" color="textPrimary" align="left">

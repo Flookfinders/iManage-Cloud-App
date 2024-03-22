@@ -22,6 +22,7 @@
 //    009   08.03.24 Joshua McCormick IMANN-280 Adding Padding bottom to match padding top in the stack/chips
 //    010   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    011   15.03.24 Sean Flook            GLB6 Use individual buttons to toggle between updates and edits.
+//    012   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -168,7 +169,7 @@ function EntityHistoryTab({ variant }) {
           </Button>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79.9vh")}>
+      <Box sx={dataFormStyle("EntityHistoryTab")}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : (

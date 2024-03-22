@@ -47,6 +47,7 @@
 //    033   27.02.24 Sean Flook           MUL16 Changes required to handle parent child relationships.
 //    034   12.03.24 Sean Flook            MUL8 Display an alert if properties are successfully moved.
 //    035   15.03.24 Sean Flook            GLB7 Use onClick rather than onChange.
+//    036   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -120,7 +121,6 @@ import { yellow } from "@mui/material/colors";
 import { adsLightGreyA, adsMidGreyA, adsDarkGrey, adsMidGreyC } from "../utils/ADSColours";
 import {
   ActionIconStyle,
-  searchDataFormStyle,
   menuStyle,
   menuItemStyle,
   listItemButtonStyle,
@@ -128,6 +128,7 @@ import {
   GetAlertStyle,
   GetAlertIcon,
   GetAlertSeverity,
+  dataFormStyle,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -1378,7 +1379,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   return (
     <Fragment>
       {variant === "list" ? (
-        <Box sx={searchDataFormStyle} id="ads-search-data-list">
+        <Box sx={dataFormStyle("SearchDataTab")} id="ads-search-data-list">
           <List
             sx={{
               width: "100%",
@@ -1752,7 +1753,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
           </List>
         </Box>
       ) : (
-        <Box sx={searchDataFormStyle} id="ads-search-data-grid">
+        <Box sx={dataFormStyle("SearchDataTab")} id="ads-search-data-grid">
           <List
             sx={{
               width: "100%",

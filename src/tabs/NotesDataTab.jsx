@@ -25,6 +25,7 @@
 //    012   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    013   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    014   19.03.24 Joshua McCormick IMANN-280 removed unneeded spacing
+//    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -331,7 +332,7 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
           />
         </Stack>
       </Box>
-      <Box sx={dataFormStyle(`${data.variant === "street" ? "79.9vh" : "79vh"}`)}>
+      <Box sx={dataFormStyle(`${data.variant === "street" ? "StreetNotesDataTab" : "PropertyNotesDataTab"}`)}>
         <ADSTextControl
           isEditable={userCanEdit}
           loading={loading}

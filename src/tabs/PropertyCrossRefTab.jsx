@@ -25,6 +25,7 @@
 //    012   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    013   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    014   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
+//    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -358,7 +359,7 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onHomeClick,
           />
         </Stack>
       </Box>
-      <Box sx={dataFormStyle("79vh")}>
+      <Box sx={dataFormStyle("PropertyCrossRefTab")}>
         <ADSSelectControl
           label="Source"
           isEditable={userCanEdit}
