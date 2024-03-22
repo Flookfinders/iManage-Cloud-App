@@ -51,6 +51,7 @@
 //    038   18.03.24 Sean Flook      STRFRM5_OS Only discard changes if a new record which has not previously been accepted.
 //    039   19.03.24 Sean Flook       PRFRM2_GP Ensure related object is always set in setupRelated.
 //    040   22.03.24 Sean Flook           GLB12 Fixed the height of controls so rest of forms height can be calculated correctly.
+//    041   22.03.24 Sean Flook                 Show updated address correctly.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3228,7 +3229,7 @@ function PropertyDataForm({ data, loading }) {
 
         if (newAddress === "No content found") newAddress = "";
       } else newAddress = "";
-    } else newAddress = "";
+    } else if (!newAddress) newAddress = "";
 
     const updatedData = settingsContext.isScottish
       ? {
@@ -3371,7 +3372,7 @@ function PropertyDataForm({ data, loading }) {
 
           if (newSecondAddress === "No content found") newSecondAddress = "";
         } else newSecondAddress = "";
-      } else newSecondAddress = "";
+      } else if (!newSecondAddress) newSecondAddress = "";
 
       const updatedSecondLpi = {
         language: newSecondLpi.language,

@@ -30,6 +30,7 @@
 //    017   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    018   21.03.24 Joshua McCormick IMANN-280 Adjusted toolbar spacing
 //    019   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    020   22.03.24 Sean Flook                 Sort the descriptor records so that the English one always appears first.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -993,62 +994,76 @@ function StreetDataTab({
             {loading ? (
               <Skeleton variant="rectangular" height="30px" width="100%" />
             ) : data && data.streetDescriptors && data.streetDescriptors.length > 0 ? (
-              data.streetDescriptors.map((rec, index) => (
-                <List
-                  sx={{
-                    width: "100%",
-                    pt: theme.spacing(0),
-                  }}
-                  component="nav"
-                  key={`key_${index}`}
-                >
-                  <ListItemButton
-                    dense
-                    disableGutters
-                    sx={getDescriptorStyle(index)}
-                    onClick={() => handleOpenDescriptor(rec.pkId, index)}
-                    onMouseEnter={() => handleMouseEnter(rec.pkId)}
-                    onMouseLeave={handleMouseLeave}
+              data.streetDescriptors
+                .sort((a, b) =>
+                  settingsContext.isWelsh
+                    ? b.language > a.language
+                      ? 1
+                      : a.language > b.language
+                      ? -1
+                      : 0
+                    : a.language > b.language
+                    ? 1
+                    : b.language > a.language
+                    ? -1
+                    : 0
+                )
+                .map((rec, index) => (
+                  <List
+                    sx={{
+                      width: "100%",
+                      pt: theme.spacing(0),
+                    }}
+                    component="nav"
+                    key={`key_${index}`}
                   >
-                    <ListItemIcon>
-                      <Chip size="small" label={rec.language} sx={LanguageChipStyle(rec.pkId)} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={
-                        <Typography variant="subtitle1">
-                          {GetStreetAddress(rec.streetDescriptor, rec.localityName, rec.townName, rec.islandName)}
-                        </Typography>
-                      }
-                    />
-                    <ListItemAvatar
-                      sx={{
-                        minWidth: 32,
-                      }}
+                    <ListItemButton
+                      dense
+                      disableGutters
+                      sx={getDescriptorStyle(index)}
+                      onClick={() => handleOpenDescriptor(rec.pkId, index)}
+                      onMouseEnter={() => handleMouseEnter(rec.pkId)}
+                      onMouseLeave={handleMouseLeave}
                     >
-                      {itemSelected && itemSelected.toString() === rec.pkId.toString() && (
-                        <Fragment>
-                          <Tooltip title="Copy address to clipboard" arrow placement="bottom" sx={tooltipStyle}>
-                            <IconButton onClick={(event) => handleCopyAddress(event, rec)} size="small">
-                              <CopyIcon sx={ActionIconStyle()} />
-                            </IconButton>
-                          </Tooltip>
-                          {((data && data.streetDescriptors && data.streetDescriptors.length === 0) ||
-                            ((settingsContext.isWelsh || settingsContext.isScottish) &&
-                              data &&
-                              data.streetDescriptors &&
-                              data.streetDescriptors.length === 1)) && (
-                            <Tooltip title="Add language version" arrow placement="bottom" sx={tooltipStyle}>
-                              <IconButton onClick={handleAddLanguage} disabled={!userCanEdit} size="small">
-                                <AddCircleIcon sx={ActionIconStyle()} />
+                      <ListItemIcon>
+                        <Chip size="small" label={rec.language} sx={LanguageChipStyle(rec.pkId)} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={
+                          <Typography variant="subtitle1">
+                            {GetStreetAddress(rec.streetDescriptor, rec.localityName, rec.townName, rec.islandName)}
+                          </Typography>
+                        }
+                      />
+                      <ListItemAvatar
+                        sx={{
+                          minWidth: 32,
+                        }}
+                      >
+                        {itemSelected && itemSelected.toString() === rec.pkId.toString() && (
+                          <Fragment>
+                            <Tooltip title="Copy address to clipboard" arrow placement="bottom" sx={tooltipStyle}>
+                              <IconButton onClick={(event) => handleCopyAddress(event, rec)} size="small">
+                                <CopyIcon sx={ActionIconStyle()} />
                               </IconButton>
                             </Tooltip>
-                          )}
-                        </Fragment>
-                      )}
-                    </ListItemAvatar>
-                  </ListItemButton>
-                </List>
-              ))
+                            {((data && data.streetDescriptors && data.streetDescriptors.length === 0) ||
+                              ((settingsContext.isWelsh || settingsContext.isScottish) &&
+                                data &&
+                                data.streetDescriptors &&
+                                data.streetDescriptors.length === 1)) && (
+                              <Tooltip title="Add language version" arrow placement="bottom" sx={tooltipStyle}>
+                                <IconButton onClick={handleAddLanguage} disabled={!userCanEdit} size="small">
+                                  <AddCircleIcon sx={ActionIconStyle()} />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                          </Fragment>
+                        )}
+                      </ListItemAvatar>
+                    </ListItemButton>
+                  </List>
+                ))
             ) : (
               <List
                 sx={{
