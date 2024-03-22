@@ -34,6 +34,7 @@
 //    021   14.03.24 Sean Flook        ESU19_GP Moved getHighwayDedicationIconStyle to ADSStyles.
 //    022   12.03.24 Joshua McCormick IMANN-280 Reverted removed changes and fixed vertical toolbar alignment
 //    023   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    024   22.03.24 Sean Flook       PRFRM6_GP Display information control when editing an existing ESU.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -806,8 +807,12 @@ function EsuDataTab({
   ]);
 
   useEffect(() => {
-    if (data.esuData && data.esuData.esuId < 0 && !informationContext.informationType) {
-      informationContext.onDisplayInformation("createESU", "EsuDataTab");
+    if (
+      data.esuData &&
+      data.esuData.esuId &&
+      (!informationContext.informationType || informationContext.informationSource !== "EsuDataTab")
+    ) {
+      informationContext.onDisplayInformation(data.esuData.esuId < 0 ? "createESU" : "manageESU", "EsuDataTab");
     }
   }, [data.esuData, informationContext]);
 

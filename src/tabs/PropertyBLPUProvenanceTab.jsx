@@ -315,7 +315,6 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
         (informationContext.informationType === "createPolygon" && data.provenanceData.id > 0) ||
         (informationContext.informationType === "managePolygon" && data.provenanceData.id < 0))
     ) {
-      setInformationVariant(data.provenanceData.id < 0 ? "createPolygon" : "managePolygon");
       informationContext.onDisplayInformation(
         data.provenanceData.id < 0 ? "createPolygon" : "managePolygon",
         "PropertyBLPUProvenanceTab"
@@ -324,10 +323,11 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
   }, [data, informationContext]);
 
   useEffect(() => {
+    setInformationVariant(informationContext.informationType);
     if (informationContext.informationSource && informationContext.informationSource === "PropertyBLPUProvenanceTab") {
       setInformationAnchorEl(document.getElementById("ads-provenance-data-tab"));
     } else setInformationAnchorEl(null);
-  }, [informationContext.informationSource]);
+  }, [informationContext]);
 
   useEffect(() => {
     setCodeError(null);

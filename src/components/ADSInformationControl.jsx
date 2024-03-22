@@ -19,6 +19,7 @@
 //    006   23.02.24 Joel Benford     IMANN-287 Correct hover blue
 //    007   23.02.24 Sean Flook        ESU29_GP Updated text.
 //    008   22.03.24 Sean Flook       PRFRM5_GP Added moveSeedPoint, managePolygon & createPolygon variants.
+//    009   22.03.24 Sean Flook       PRFRM6_GP Added manageESU variant.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -36,6 +37,7 @@ import { adsLightGreyA50, adsPaleBlueA, adsBlueA } from "../utils/ADSColours";
 
 ADSInformationControl.propTypes = {
   variant: PropTypes.oneOf([
+    "manageESU",
     "manageESUs",
     "createESU",
     "assignESUList",
@@ -75,6 +77,9 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
     switch (variant) {
       case "createESU":
         return "Create new ESU";
+
+      case "manageESU":
+        return "Manage ESU";
 
       case "manageESUs":
         return "Manage ESUs";
@@ -119,6 +124,9 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
     switch (variant) {
       case "createESU":
         return "Use the polyline tool to create ESU geometry, then fill out the form and click OK.";
+
+      case "manageESU":
+        return "Select the ESU in the map and amend the geometry.";
 
       case "manageESUs":
         return "Select ESUs in the list or map to divide, merge, or unassign them.";

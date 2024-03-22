@@ -32,6 +32,7 @@
 //    019   27.02.24 Sean Flook           MUL16 Updated information type.
 //    020   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    021   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    022   22.03.24 Sean Flook       PRFRM6_GP Ensure the information control is correctly displayed.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -416,7 +417,7 @@ function EsuListTab({
   }, [informationContext.informationSource]);
 
   useEffect(() => {
-    if (!informationContext.informationSource) {
+    if (!informationContext.informationSource || informationContext.informationSource !== "ESUListTab") {
       informationContext.onDisplayInformation("manageESUs", "ESUListTab");
     }
   }, [informationContext]);
