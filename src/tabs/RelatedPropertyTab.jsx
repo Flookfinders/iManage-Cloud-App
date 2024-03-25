@@ -44,6 +44,7 @@
 //    030   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    031   19.03.24 Sean Flook       PRFRM2_GP Ensure onRelatedOpened is always called.
 //    032   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    033   25.03.24 Sean Flook           MUL16 Removed option to remove from parent.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -806,11 +807,6 @@ function RelatedPropertyTab({
         <MenuItem dense onClick={(event) => handleMakeChildOf(event, record)} sx={menuItemStyle(false)}>
           <Typography variant="inherit">Make child of...</Typography>
         </MenuItem>
-        {process.env.NODE_ENV === "development" && (
-          <MenuItem dense disabled sx={menuItemStyle(false)}>
-            <Typography variant="inherit">Remove from parent</Typography>
-          </MenuItem>
-        )}
         {process.env.NODE_ENV === "development" && (
           <MenuItem dense divider disabled sx={menuItemStyle(true)}>
             <Typography variant="inherit">Move seed point</Typography>

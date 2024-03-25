@@ -48,6 +48,7 @@
 //    034   12.03.24 Sean Flook            MUL8 Display an alert if properties are successfully moved.
 //    035   15.03.24 Sean Flook            GLB7 Use onClick rather than onChange.
 //    036   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    037   25.03.24 Sean Flook           MUL16 Removed option to remove from parent.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -812,16 +813,6 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
       setOpenMakeChild(true);
       searchContext.onHideSearch(true);
     }
-  };
-
-  /**
-   * Method to remove the record from its parent property.
-   *
-   * @param {object} event The event object.
-   * @param {object} rec The search record.
-   */
-  const handleRemoveFromParent = (event, rec) => {
-    handlePropertyActionsMenuClose(event);
   };
 
   /**
@@ -1700,15 +1691,6 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                 <Typography variant="inherit">Make child of...</Typography>
                               </MenuItem>
                               {process.env.NODE_ENV === "development" && (
-                                <MenuItem
-                                  dense
-                                  sx={menuItemStyle(false)}
-                                  onClick={(event) => handleRemoveFromParent(event, rec)}
-                                >
-                                  <Typography variant="inherit">Remove from parent</Typography>
-                                </MenuItem>
-                              )}
-                              {process.env.NODE_ENV === "development" && (
                                 <MenuItem dense divider disabled sx={menuItemStyle(true)}>
                                   <Typography variant="inherit">Move seed point</Typography>
                                 </MenuItem>
@@ -2239,15 +2221,6 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                       >
                                         <Typography variant="inherit">Make child of...</Typography>
                                       </MenuItem>
-                                      {process.env.NODE_ENV === "development" && (
-                                        <MenuItem
-                                          dense
-                                          sx={menuItemStyle(false)}
-                                          onClick={(event) => handleRemoveFromParent(event, rec)}
-                                        >
-                                          <Typography variant="inherit">Remove from parent</Typography>
-                                        </MenuItem>
-                                      )}
                                       {process.env.NODE_ENV === "development" && (
                                         <MenuItem dense divider disabled sx={menuItemStyle(true)}>
                                           <Typography variant="inherit">Move seed point</Typography>

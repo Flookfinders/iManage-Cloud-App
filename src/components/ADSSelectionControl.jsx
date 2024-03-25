@@ -34,6 +34,7 @@
 //    021   27.02.24 Sean Flook           MUL16 Changes required to handle parent child relationships.
 //    022   12.03.24 Sean Flook            MUL8 Added onPropertyMoved.
 //    023   13.03.24 Sean Flook            MUL9 No need to do resets here.
+//    024   25.03.24 Sean Flook           MUL16 Removed option to remove from parent.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -229,7 +230,6 @@ function ADSSelectionControl({
   const [openMakeChild, setOpenMakeChild] = useState(false);
 
   const [makeChildUprn, setMakeChildUprn] = useState([]);
-  // const [removeParentUprn, setRemoveParentUprn] = useState([]);
 
   /**
    * Event to handle the closing.
@@ -741,19 +741,6 @@ function ADSSelectionControl({
     }
     setOpenMakeChild(true);
     searchContext.onHideSearch(true);
-  };
-
-  /**
-   * Event to handle when the remove from parent menu item is clicked.
-   */
-  const handleRemoveFromParent = () => {
-    setAnchorPropertyActionsEl(null);
-
-    if (selectionCount === 1) {
-      // setRemoveParentUprn([Number(currentUprn)]);
-    } else {
-      // setRemoveParentUprn(propertyUprns);
-    }
   };
 
   /**
@@ -1665,11 +1652,6 @@ function ADSSelectionControl({
                     <MenuItem dense onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
                       <Typography variant="inherit">Make child of...</Typography>
                     </MenuItem>
-                    {process.env.NODE_ENV === "development" && (
-                      <MenuItem dense onClick={handleRemoveFromParent} sx={menuItemStyle(false)}>
-                        <Typography variant="inherit">Remove from parent</Typography>
-                      </MenuItem>
-                    )}
                     <MenuItem
                       dense
                       divider
@@ -1841,11 +1823,6 @@ function ADSSelectionControl({
                     <MenuItem dense onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
                       <Typography variant="inherit">Make child of...</Typography>
                     </MenuItem>
-                    {process.env.NODE_ENV === "development" && (
-                      <MenuItem dense onClick={handleRemoveFromParent} sx={menuItemStyle(false)}>
-                        <Typography variant="inherit">Remove from parent</Typography>
-                      </MenuItem>
-                    )}
                   </Menu>
                 )}
               </Fragment>
