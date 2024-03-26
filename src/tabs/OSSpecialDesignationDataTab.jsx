@@ -30,6 +30,7 @@
 //    017   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    018   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    019   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    020   20.02.24 Joel Benford     IMANN-299 Finish earlier toolbar changes
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -565,7 +566,7 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
                 : `${getType(specialDesignation)} (${data.index + 1} of ${data.totalRecords})`}
             </Typography>
           </Stack>
-          {!(streetContext.currentRecord.type === 61 && streetContext.currentRecord.newRecord) && (
+          {!(streetContext.currentRecord.type === 53 && streetContext.currentRecord.newRecord) && (
             <Stack direction="row" alignItems="center" justifyContent="flex-end">
               <ADSActionButton
                 variant="delete"

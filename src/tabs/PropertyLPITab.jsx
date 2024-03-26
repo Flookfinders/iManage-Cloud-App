@@ -32,6 +32,7 @@
 //    019   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
 //    020   21.03.24 Joshua McCormick IMANN-280 Toolbar styling and action icons are inline with rest of app
 //    021   22.03.24 Sean Flook                 Changed the way the address is updated and displayed.
+//    022   26.03.24 Joshua McCormick IMANN-280 Added divider on tab between back button and title
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -876,15 +877,15 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           justifyContent="space-between"
           sx={{ pl: theme.spacing(2), mt: theme.spacing(0.25) }}
         >
-          <Typography variant="subtitle1">
-            <ADSActionButton
-              variant="home"
-              tooltipTitle="Back to property details"
-              tooltipPlacement="bottom"
-              onClick={handleHomeClick}
-            />
-          </Typography>
-          <Typography variant="subtitle1">{`LPI ${data.index + 1} of ${data.totalRecords}: `}</Typography>
+            <Typography variant="subtitle1">
+              <ADSActionButton
+                variant="home"
+                tooltipTitle="Back to property details"
+                tooltipPlacement="bottom"
+                onClick={handleHomeClick}
+              />
+            </Typography>
+          <Typography variant="subtitle1">{`| LPI ${data.index + 1} of ${data.totalRecords}: `}</Typography>
           <Typography
             sx={{
               flexGrow: 1,
