@@ -68,6 +68,7 @@
 //    054   08.03.24 Sean Flook       IMANN-348 Updated calls to ResetContexts.
 //    055   18.03.24 Sean Flook      STRFRM5_OS Only discard changes if a new record which has not previously been accepted.
 //    056   22.03.24 Sean Flook           GLB12 Ensure the tab data forms are displayed correctly.
+//    057   26.03.24 Sean Flook        ASD10_GP Only display the ASD layers when on the ASD tab.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -729,7 +730,7 @@ function StreetDataForm({ data, loading }) {
               streetContext.onRecordChange(64, hwwFormData.pkId, hwwFormData.index, null);
               if (!hwwFormData.hwwData.wholeRoad) mapContext.onEditMapObject(64, hwwFormData.hwwData.pkId);
             } else if (prowFormData) streetContext.onRecordChange(66, prowFormData.pkId, prowFormData.index, null);
-            else streetContext.onRecordChange(11, null, null, null);
+            else streetContext.onRecordChange(50, null, null, null);
           } else {
             // GP Related
           }
@@ -780,7 +781,7 @@ function StreetDataForm({ data, loading }) {
               streetContext.onRecordChange(64, hwwFormData.pkId, hwwFormData.index, null);
               if (!hwwFormData.hwwData.wholeRoad) mapContext.onEditMapObject(64, hwwFormData.hwwData.pkId);
             } else if (prowFormData) streetContext.onRecordChange(66, prowFormData.pkId, prowFormData.index, null);
-            else streetContext.onRecordChange(11, null, null, null);
+            else streetContext.onRecordChange(50, null, null, null);
           } else if (settingsContext.isScottish && streetData && streetData.recordType > 2) {
             // Related tab
           } else {
@@ -1729,7 +1730,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setMaintenanceResponsibilityFormData(null);
       sandboxContext.onSandboxChange("maintenanceResponsibility", null);
-      streetContext.onRecordChange(51, null, null, null);
+      streetContext.onRecordChange(50, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
@@ -1866,7 +1867,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setReinstatementCategoryFormData(null);
       sandboxContext.onSandboxChange("reinstatementCategory", null);
-      streetContext.onRecordChange(52, null, null, null);
+      streetContext.onRecordChange(50, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
@@ -2002,7 +2003,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setOSSpecialDesignationFormData(null);
       sandboxContext.onSandboxChange("osSpecialDesignation", null);
-      streetContext.onRecordChange(53, null, null, null);
+      streetContext.onRecordChange(50, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
@@ -2139,7 +2140,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setInterestFormData(null);
       sandboxContext.onSandboxChange("interest", null);
-      streetContext.onRecordChange(61, null, null, null);
+      streetContext.onRecordChange(50, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
@@ -2290,7 +2291,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setConstructionFormData(null);
       sandboxContext.onSandboxChange("construction", null);
-      streetContext.onRecordChange(62, null, null, null);
+      streetContext.onRecordChange(50, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
@@ -2454,7 +2455,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setSpecialDesignationFormData(null);
       sandboxContext.onSandboxChange("specialDesignation", null);
-      streetContext.onRecordChange(63, null, null, null);
+      streetContext.onRecordChange(50, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
@@ -2609,7 +2610,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setHwwFormData(null);
       sandboxContext.onSandboxChange("hww", null);
-      streetContext.onRecordChange(64, null, null, null);
+      streetContext.onRecordChange(50, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(
@@ -2756,7 +2757,7 @@ function StreetDataForm({ data, loading }) {
     if (pkId === -1) {
       setProwFormData(null);
       sandboxContext.onSandboxChange("prow", null);
-      streetContext.onRecordChange(66, null, null, null);
+      streetContext.onRecordChange(50, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
       currentStreetAsdData.current = JSON.parse(

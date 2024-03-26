@@ -48,6 +48,7 @@
 //    035   11.03.24 Sean Flook        ESU29_GP Added setASDLayerVisibility.
 //    036   12.03.24 Sean Flook                 Improved error handling when deleting.
 //    037   18.03.24 Sean Flook         ASD3_OS Tweaked GetAsdSecondaryText.
+//    038   26.03.24 Sean Flook        ASD10_GP Modified setASDLayerVisibility.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3557,8 +3558,8 @@ export const hasStreetChanged = (newStreet, currentSandbox) => {
  */
 export const setASDLayerVisibility = (asdType, asdLayer, currentRecord) => {
   if (asdLayer) {
-    asdLayer.visible = [11, asdType].includes(currentRecord.type);
-    if (currentRecord.type === 51 && currentRecord.id) {
+    asdLayer.visible = [50, asdType].includes(currentRecord.type);
+    if (currentRecord.type === asdType && currentRecord.id) {
       asdLayer.definitionExpression = `PkId = ${currentRecord.id}`;
     } else {
       asdLayer.definitionExpression = null;
