@@ -14,6 +14,7 @@
 //    001   27.02.24 Sean Flook           MUL16 Initial Revision.
 //    002   12.03.24 Sean Flook           MUL10 Display errors in a list control.
 //    003   22.03.24 Sean Flook           MUL16 Correctly set the address data.
+//    004   25.03.24 Sean Flook           MUL16 Added cascade address changes option.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -92,6 +93,7 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
   const [parentPostcode, setParentPostcode] = useState("");
   const [updateAddress, setUpdateAddress] = useState(true);
   const [updateAllAddresses, setUpdateAllAddresses] = useState(false);
+  const [cascadeUpdates, setCascadeUpdates] = useState(false);
   const [action, setAction] = useState("leave");
   const [note, setNote] = useState(null);
   const [noteOpen, setNoteOpen] = useState(false);
@@ -571,6 +573,13 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
   };
 
   /**
+   * Event to handle when the cascade updates switch is clicked.
+   */
+  const handleCascadeUpdatesChangeEvent = () => {
+    setCascadeUpdates(!cascadeUpdates);
+  };
+
+  /**
    * Event to handle when the action is changed.
    *
    * @param {object|null} event The new action.
@@ -675,6 +684,27 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
                       />
                     }
                     label={updateAllAddresses ? "Yes" : "No"}
+                    labelPlacement="end"
+                  />
+                </Grid>
+                <Grid item xs={8}>
+                  <Typography variant="body2">
+                    Cascade updates to address details to any children if present?
+                  </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <FormControlLabel
+                    value="end"
+                    control={
+                      <Switch
+                        id={"cascade-updates-make-child-switch"}
+                        disabled={updating}
+                        checked={cascadeUpdates}
+                        onChange={handleCascadeUpdatesChangeEvent}
+                        color="primary"
+                      />
+                    }
+                    label={cascadeUpdates ? "Yes" : "No"}
                     labelPlacement="end"
                   />
                 </Grid>
