@@ -53,6 +53,7 @@
 //    040   22.03.24 Sean Flook           GLB12 Fixed the height of controls so rest of forms height can be calculated correctly.
 //    041   22.03.24 Sean Flook                 Show updated address correctly.
 //    042   22.03.24 Sean Flook       PRFRM5_GP Clear information control when required.
+//    043   27.03.24 Sean Flook                 Ensure currentPointCaptureMode is not cleared when still required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4343,7 +4344,7 @@ function PropertyDataForm({ data, loading }) {
     );
     setSaveDisabled(!propertyChanged);
     propertyContext.onPropertyModified(propertyChanged);
-    if (propertyChanged) mapContext.onSetCoordinate(null);
+    if (propertyChanged && !["property"].includes(mapContext.currentPointCaptureMode)) mapContext.onSetCoordinate(null);
   }, [propertyContext, sandboxContext.currentSandbox, mapContext]);
 
   return (

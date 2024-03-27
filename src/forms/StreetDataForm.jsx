@@ -69,6 +69,7 @@
 //    055   18.03.24 Sean Flook      STRFRM5_OS Only discard changes if a new record which has not previously been accepted.
 //    056   22.03.24 Sean Flook           GLB12 Ensure the tab data forms are displayed correctly.
 //    057   26.03.24 Sean Flook        ASD10_GP Only display the ASD layers when on the ASD tab.
+//    058   27.03.24 Sean Flook                 Ensure currentPointCaptureMode is not cleared when still required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -9911,7 +9912,8 @@ function StreetDataForm({ data, loading }) {
     const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
     setSaveDisabled(!streetChanged);
     streetContext.onStreetModified(streetChanged);
-    if (streetChanged) mapContext.onSetCoordinate(null);
+    if (streetChanged && !["streetStart", "streetEnd", "divideEsu"].includes(mapContext.currentPointCaptureMode))
+      mapContext.onSetCoordinate(null);
   }, [streetContext, sandboxContext.currentSandbox, mapContext]);
 
   useEffect(() => {
