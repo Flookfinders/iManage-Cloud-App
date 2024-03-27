@@ -24,6 +24,8 @@
 //    011   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    012   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
 //    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    014   26.03.24 Joshua McCormick IMANN-336 Added xrefKey field name to displayActionButtons to give same display properties, added flex25 to historic
+//    015   27.03.24 Sean Flook       IMANN-336 Undone above changes as already done under STRFRM3_OS.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------

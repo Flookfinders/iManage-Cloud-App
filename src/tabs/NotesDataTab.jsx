@@ -26,6 +26,7 @@
 //    013   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    014   19.03.24 Joshua McCormick IMANN-280 removed unneeded spacing
 //    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    016   26.03.24 Joel Benford     IMANN-365 Changed header back/text/visibility
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -36,6 +37,8 @@ import PropTypes from "prop-types";
 import ObjectComparison, { noteKeysToIgnore } from "./../utils/ObjectComparison";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
+import StreetContext from "../context/streetContext";
+import PropertyContext from "../context/propertyContext";
 import { Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
@@ -60,6 +63,8 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
 
   const sandboxContext = useContext(SandboxContext);
   const userContext = useContext(UserContext);
+  const streetContext = useContext(StreetContext);
+  const propertyContext = useContext(PropertyContext);
 
   const [dataChanged, setDataChanged] = useState(false);
   const currentId = useRef(0);
@@ -306,7 +311,17 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
       <Box sx={toolbarStyle}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={dataTabToolBar}>
           <Stack direction="row" justifyContent="flex-start" alignItems="center">
-            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            {(data.variant === "street" && streetContext.currentRecord.newRecord) ||
+            (data.variant === "property" && propertyContext.currentRecord.newRecord) ? (
+              <ADSActionButton
+                variant="close"
+                tooltipTitle="Close"
+                tooltipPlacement="bottom"
+                onClick={handleCancelClicked}
+              />
+            ) : (
+              <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
+            )}
             <Typography
               sx={{
                 flexGrow: 1,
@@ -319,17 +334,27 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
               noWrap
               align="left"
             >
-              {`| ${data.pkId === 0 ? "New note" : "Edit note"}`}
+              {`| ${
+                (data.variant === "street" && streetContext.currentRecord.newRecord) ||
+                (data.variant === "property" && propertyContext.currentRecord.newRecord)
+                  ? "Add new note"
+                  : `Note (${data.index + 1} of ${data.totalRecords})`
+              }`}
             </Typography>
             {errors && errors.length > 0 && <ErrorIcon sx={errorIconStyle} />}
           </Stack>
-          <ADSActionButton
-            variant="delete"
-            disabled={!userCanEdit}
-            tooltipTitle="Delete"
-            tooltipPlacement="right"
-            onClick={handleDeleteClick}
-          />
+          {!(
+            (data.variant === "street" && streetContext.currentRecord.newRecord) ||
+            (data.variant === "property" && propertyContext.currentRecord.newRecord)
+          ) && (
+            <ADSActionButton
+              variant="delete"
+              disabled={!userCanEdit}
+              tooltipTitle="Delete"
+              tooltipPlacement="right"
+              onClick={handleDeleteClick}
+            />
+          )}
         </Stack>
       </Box>
       <Box sx={dataFormStyle(`${data.variant === "street" ? "StreetNotesDataTab" : "PropertyNotesDataTab"}`)}>
