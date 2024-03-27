@@ -22,6 +22,7 @@
 //    009   11.03.24 Sean Flook           MUL13 Changed control alignment.
 //    010   11.03.24 Sean Flook           MUL11 Reset counts when closing dialog.
 //    011   12.03.24 Sean Flook           MUL10 Display errors in a list control.
+//    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -39,8 +40,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
-  IconButton,
   Typography,
   Button,
   Grid,
@@ -51,7 +50,6 @@ import {
   RadioGroup,
   Radio,
   FormControlLabel,
-  Tooltip,
   List,
   ListItem,
 } from "@mui/material";
@@ -59,6 +57,7 @@ import { Box, Stack } from "@mui/system";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSDateControl from "../components/ADSDateControl";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import { GetCurrentDate, renderErrorListItem } from "../utils/HelperUtils";
 import { GetPropertyMapData, SaveProperty, addressToTitleCase } from "../utils/PropertyUtils";
@@ -66,13 +65,12 @@ import { ValidateClassificationData } from "../utils/PropertyValidation";
 
 import OSGClassification, { OSGScheme } from "../data/OSGClassification";
 
-import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 
 import { adsGreenC, adsRed, adsLightGreyC } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle, tooltipStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 MultiEditAddClassificationDialog.propTypes = {
@@ -593,18 +591,7 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
       maxWidth="sm"
       onClose={handleDialogClose}
     >
-      <DialogTitle id="multi-add-classification-dialog" sx={{ ...dialogTitleStyle, ml: theme.spacing(1) }}>
-        <Typography variant="h6">{`${title}`}</Typography>
-        <Tooltip title="Close" sx={tooltipStyle}>
-          <IconButton
-            aria-label="close"
-            onClick={handleCancelClick}
-            sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </Tooltip>
-      </DialogTitle>
+      <ADSDialogTitle title={`${title}`} closeTooltip="Close" onClose={handleCancelClick} />
       <DialogContent sx={{ mt: theme.spacing(2) }}>
         {!completed ? (
           <Fragment>

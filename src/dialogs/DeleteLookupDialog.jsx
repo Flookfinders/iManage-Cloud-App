@@ -19,6 +19,7 @@
 //    006   05.02.24 Sean Flook                 Include operational districts.
 //    007   29.02.24 Joel Benford     IMANN-242 Add DbAuthority.
 //    008   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
+//    009   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,8 +31,9 @@ import PropTypes from "prop-types";
 import LookupContext from "../context/lookupContext";
 import SettingsContext from "../context/settingsContext";
 
-import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography, Button } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, Typography, Button } from "@mui/material";
 import { Stack } from "@mui/system";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import { stringToSentenceCase } from "../utils/HelperUtils";
 
@@ -39,7 +41,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import BlockIcon from "@mui/icons-material/Block";
 import { adsRed } from "../utils/ADSColours";
-import { redButtonStyle, blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { redButtonStyle, blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 DeleteLookupDialog.propTypes = {
@@ -291,16 +293,7 @@ function DeleteLookupDialog({
       maxWidth="sm"
       onClose={handleDialogClose}
     >
-      <DialogTitle id="delete-lookup-dialog" sx={dialogTitleStyle}>
-        <Typography variant="h6">{`Delete ${lookupType}`}</Typography>
-        <IconButton
-          aria-label="close"
-          onClick={handleCancelClick}
-          sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
+      <ADSDialogTitle title={`Delete ${lookupType}`} closeTooltip="Cancel" onClose={handleCancelClick} />
       <DialogContent sx={{ mt: theme.spacing(2) }}>
         <Stack direction="column" spacing={2}>
           <Typography variant="body2" align="justify" sx={{ backgroundColor: "rgb(248, 249, 250)" }}>

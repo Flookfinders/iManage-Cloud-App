@@ -17,6 +17,7 @@
 //    004   11.01.24 Sean Flook                 Fix warnings.
 //    005   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    006   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
+//    007   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -27,10 +28,11 @@ import PropTypes from "prop-types";
 import LookupContext from "../context/lookupContext";
 import SettingsContext from "../context/settingsContext";
 
-import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography, Button } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, Button } from "@mui/material";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSDateControl from "../components/ADSDateControl";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import { ValidateCrossReference } from "../utils/WizardValidation";
 
@@ -39,7 +41,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import ErrorIcon from "@mui/icons-material/Error";
 
 import { adsDarkPink } from "../utils/ADSColours";
-import { redButtonStyle, blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { redButtonStyle, blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditCrossReferenceDialog.propTypes = {
@@ -221,16 +223,11 @@ function EditCrossReferenceDialog({ isOpen, isNew, data, onDone, onClose }) {
       maxWidth="sm"
       onClose={handleDialogClose}
     >
-      <DialogTitle id="edit-cross-reference-dialog" sx={dialogTitleStyle}>
-        <Typography sx={{ fontSize: "20px" }}>{isNew ? "Add cross reference" : "Edit cross reference"}</Typography>
-        <IconButton
-          aria-label="close"
-          onClick={handleCancelClick}
-          sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
+      <ADSDialogTitle
+        title={isNew ? "Add cross reference" : "Edit cross reference"}
+        closeTooltip="Cancel"
+        onClose={handleCancelClick}
+      />
       <DialogContent sx={{ mt: theme.spacing(2) }}>
         <ADSSelectControl
           label="Source"

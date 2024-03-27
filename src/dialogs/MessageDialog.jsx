@@ -20,6 +20,7 @@
 //    007   13.02.24 Sean Flook                 Added cancelASDInexact.
 //    008   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    009   12.03.24 Sean Flook            MUL7 Updated for cancelMoveBlpu.
+//    010   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -28,23 +29,15 @@
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 
-import {
-  IconButton,
-  Button,
-  Typography,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Tooltip,
-} from "@mui/material";
+import { Button, Typography, Dialog, DialogActions, DialogContent, Tooltip } from "@mui/material";
 import { Stack } from "@mui/system";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import SaveIcon from "@mui/icons-material/Save";
 
-import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle, tooltipStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, tooltipStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 MessageDialog.propTypes = {
@@ -246,18 +239,7 @@ function MessageDialog({ isOpen, variant, onClose }) {
 
   return (
     <Dialog open={isOpen} aria-labelledby="message-dialog" fullWidth maxWidth="sm" onClose={handleContinueClick}>
-      <DialogTitle id="message-dialog" sx={dialogTitleStyle}>
-        <Typography sx={{ fontSize: "20px", fontWeight: 600 }}>{getDialogTitle()}</Typography>
-        <Tooltip title="Cancel exiting" sx={tooltipStyle}>
-          <IconButton
-            aria-label="close"
-            onClick={handleContinueClick}
-            sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </Tooltip>
-      </DialogTitle>
+      <ADSDialogTitle title={getDialogTitle()} closeTooltip="Cancel exiting" onClose={handleContinueClick} />
       <DialogContent sx={{ mt: theme.spacing(2) }}>{getDialogContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: "flex-start", mb: theme.spacing(1), ml: theme.spacing(2.25) }}>
         {getDialogActions()}

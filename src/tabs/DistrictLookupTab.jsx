@@ -12,6 +12,7 @@
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   01.02.24 Sean Flook                 Initial Revision.
+//    002   27.03.24 Sean Flook                 Further changes to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -92,7 +93,7 @@ function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
   const [districtFaxNo, setDistrictFaxNo] = useState("");
   const [districtPostcode, setDistrictPostcode] = useState("");
   const [districtTelNo, setDistrictTelNo] = useState("");
-  const [outOfHoursArrangements, setOutOfHoursArrangements] = useState("");
+  const [outOfHoursArrangements, setOutOfHoursArrangements] = useState(false);
   const [fpnDeliveryUrl, setFpnDeliveryUrl] = useState("");
   const [fpnFaxNumber, setFpnFaxNumber] = useState("");
   const [fpnDeliveryPostcode, setFpnDeliveryPostcode] = useState("");
@@ -129,8 +130,8 @@ function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
   const [fpnDeliveryEmailAddress, setFpnDeliveryEmailAddress] = useState("");
   const [districtPermitSchemeId, setDistrictPermitSchemeId] = useState("");
 
-  const [editVariant, setEditVariant] = useState(null);
-  const [editData, setEditData] = useState(null);
+  const [editVariant, setEditVariant] = useState("unknown");
+  const [editData, setEditData] = useState({});
   const [showEditDialog, setShowEditDialog] = useState(false);
 
   /**
@@ -555,80 +556,82 @@ function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
           />
           <CardActionArea onClick={doEditDistrict}>
             <CardContent sx={settingsCardContentStyle("district")}>
-              <Grid container rowSpacing={1}>
-                <Grid item xs={3}>
-                  <Typography variant="body2">Authority</Typography>
+              <>
+                <Grid container rowSpacing={1}>
+                  <Grid item xs={3}>
+                    <Typography variant="body2">Authority</Typography>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {GetAuthorityLabel(organisationId, settingsContext.isScottish)}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography variant="body2">Name</Typography>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {lookupToTitleCase(districtName, false)}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography variant="body2">ID</Typography>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {districtId}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography variant="body2">Function</Typography>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {getFunction()}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography variant="body2">Address</Typography>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {getDistrictAddress()}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography variant="body2">Postcode</Typography>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {districtPostcode}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography variant="body2">Telephone no.</Typography>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {districtTelNo}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography variant="body2">Fax no.</Typography>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {districtFaxNo}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography variant="body2">Closed date</Typography>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {FormatDate(districtClosed)}
+                    </Typography>
+                  </Grid>
                 </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {GetAuthorityLabel(organisationId, settingsContext.isScottish)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="body2">Name</Typography>
-                </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {lookupToTitleCase(districtName, false)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="body2">ID</Typography>
-                </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {districtId}
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="body2">Function</Typography>
-                </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {getFunction()}
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="body2">Address</Typography>
-                </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {getDistrictAddress()}
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="body2">Postcode</Typography>
-                </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {districtPostcode}
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="body2">Telephone no.</Typography>
-                </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {districtTelNo}
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="body2">Fax no.</Typography>
-                </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {districtFaxNo}
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="body2">Closed date</Typography>
-                </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {FormatDate(districtClosed)}
-                  </Typography>
-                </Grid>
-              </Grid>
+              </>
             </CardContent>
           </CardActionArea>
         </Card>

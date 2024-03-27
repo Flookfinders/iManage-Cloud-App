@@ -19,6 +19,7 @@
 //    006   11.01.24 Sean Flook                 Fix warnings.
 //    007   31.01.24 Joel Benford               Changes to as save and support OS
 //    008   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
+//    009   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -27,19 +28,20 @@
 import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 
-import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Grid, Typography, Button } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, Grid, Button } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import SettingsContext from "../context/settingsContext";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSNumberControl from "../components/ADSNumberControl";
 import ADSSelectControl from "../components/ADSSelectControl";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import DETRCodes from "../data/DETRCodes";
 
 import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 
-import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditMetadataCustodianDialog.propTypes = {
@@ -228,16 +230,7 @@ function EditMetadataCustodianDialog({ isOpen, data, variant, onDone, onClose })
         maxWidth="md"
         onClose={handleDialogClose}
       >
-        <DialogTitle id="edit-metadata-custodian-dialog" sx={dialogTitleStyle}>
-          <Typography sx={{ textSize: "20px" }}>{getTitle()}</Typography>
-          <IconButton
-            aria-label="close"
-            onClick={handleCancelClick}
-            sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
+        <ADSDialogTitle title={getTitle()} closeTooltip="Cancel" onClose={handleCancelClick} />
         <DialogContent sx={{ mt: theme.spacing(2) }}>
           <Grid container justifyContent="flex-start" spacing={0} sx={{ pl: theme.spacing(3.5) }}>
             <Grid item xs={12}>

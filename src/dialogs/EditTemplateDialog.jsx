@@ -34,6 +34,7 @@
 //    021   01.03.24 Joel Benford     IMANN-330 Stop defaulting interested/maintaining auth on open.
 //    022   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    023   01.03.24 Joel Benford               Restrict Districts to suit organisation
+//    024   27.03.24 Sean Flook                 Further changes required to fix warnings and added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -48,8 +49,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
-  IconButton,
   Typography,
   Button,
   Grid,
@@ -63,6 +62,7 @@ import ADSTextControl from "../components/ADSTextControl";
 import ADSSwitchControl from "../components/ADSSwitchControl";
 import ADSProwAccessControl from "../components/ADSProwAccessControl";
 import ADSDateControl from "../components/ADSDateControl";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import { GetLookupLabel, filteredLookup } from "../utils/HelperUtils";
 import {
@@ -113,7 +113,7 @@ import {
 } from "../utils/ADSIcons";
 
 import { adsBlueA, adsMidGreyA, adsDarkPink, adsDarkGreen } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle, FormRowStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, FormRowStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditTemplateDialog.propTypes = {
@@ -2305,8 +2305,9 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               useRounded
               doNotSetTitleCase
               lookupData={
-                constructionReinstatementType &&
-                AggregateAbrasionValue.filter((x) => x.reinstatementCode === constructionReinstatementType)
+                constructionReinstatementType
+                  ? AggregateAbrasionValue.filter((x) => x.reinstatementCode === constructionReinstatementType)
+                  : AggregateAbrasionValue
               }
               lookupId="id"
               lookupLabel={GetLookupLabel(false)}
@@ -2320,8 +2321,9 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               useRounded
               doNotSetTitleCase
               lookupData={
-                constructionReinstatementType &&
-                PolishedStoneValue.filter((x) => x.reinstatementCode === constructionReinstatementType)
+                constructionReinstatementType
+                  ? PolishedStoneValue.filter((x) => x.reinstatementCode === constructionReinstatementType)
+                  : PolishedStoneValue
               }
               lookupId="id"
               lookupLabel={GetLookupLabel(false)}
@@ -3192,21 +3194,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
       maxWidth="sm"
       onClose={handleDialogClose}
     >
-      <DialogTitle id="edit-template-dialog" sx={dialogTitleStyle}>
-        <Typography sx={{ fontSize: "20px" }}>{getDialogTitle()}</Typography>
-        <IconButton
-          aria-label="close"
-          onClick={handleCancelClick}
-          sx={{
-            position: "absolute",
-            right: 12,
-            top: 12,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
+      <ADSDialogTitle title={getDialogTitle()} closeTooltip="Cancel" onClose={handleCancelClick} />
       <DialogContent sx={{ mt: theme.spacing(2) }}>{getDialogContent()}</DialogContent>
       <DialogActions
         sx={{

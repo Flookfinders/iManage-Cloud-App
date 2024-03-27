@@ -20,6 +20,7 @@
 //    007   10.01.24 Sean Flook                 Fix warnings.
 //    008   29.02.24 Joel Benford     IMANN-242 Add DbAuthority.
 //    009   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
+//    010   27.03.24 Sean Flook                 Added ADSDialogTitle and fixed some warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -35,8 +36,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
-  IconButton,
   Typography,
   Grid,
   TextField,
@@ -45,14 +44,13 @@ import {
   Switch,
 } from "@mui/material";
 import { Stack } from "@mui/system";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import { stringToSentenceCase } from "../utils/HelperUtils";
 
-import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
-// import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
-import { adsRed, adsLightGreyB } from "../utils/ADSColours";
-import { blueButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { adsRed } from "../utils/ADSColours";
+import { blueButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 AddLookupDialog.propTypes = {
@@ -68,6 +66,7 @@ AddLookupDialog.propTypes = {
     "dbAuthority",
     "ward",
     "parish",
+    "operationalDistrict",
     "unknown",
   ]).isRequired,
   isOpen: PropTypes.bool.isRequired,
@@ -88,36 +87,36 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
   const [engPlaceholder, setEngPlaceholder] = useState(null);
   const [cymPlaceholder, setCymPlaceholder] = useState(null);
   const [gaePlaceholder, setGaePlaceholder] = useState(null);
-  const [engValue, setEngValue] = useState(null);
-  const [cymValue, setCymValue] = useState(null);
-  const [gaeValue, setGaeValue] = useState(null);
-  const [crossRefDescription, setCrossRefDescription] = useState(null);
-  const [crossRefSourceAuthority, setCrossRefSourceAuthority] = useState(null);
-  const [crossRefSourceCode, setCrossRefSourceCode] = useState(null);
+  const [engValue, setEngValue] = useState("");
+  const [cymValue, setCymValue] = useState("");
+  const [gaeValue, setGaeValue] = useState("");
+  const [crossRefDescription, setCrossRefDescription] = useState("");
+  const [crossRefSourceAuthority, setCrossRefSourceAuthority] = useState("");
+  const [crossRefSourceCode, setCrossRefSourceCode] = useState("");
   const [crossRefEnabled, setCrossRefEnabled] = useState(true);
   const [crossRefExport, setCrossRefExport] = useState(false);
-  const [wardName, setWardName] = useState(null);
-  const [wardCode, setWardCode] = useState(null);
-  const [parishName, setParishName] = useState(null);
-  const [parishCode, setParishCode] = useState(null);
-  const [engError, setEngError] = useState(null);
-  const [cymError, setCymError] = useState(null);
-  const [gaeError, setGaeError] = useState(null);
-  const [crossRefDescriptionError, setCrossRefDescriptionError] = useState(null);
-  const [crossRefSourceCodeError, setCrossRefSourceCodeError] = useState(null);
-  const [wardNameError, setWardNameError] = useState(null);
-  const [wardCodeError, setWardCodeError] = useState(null);
-  const [parishNameError, setParishNameError] = useState(null);
-  const [parishCodeError, setParishCodeError] = useState(null);
+  const [wardName, setWardName] = useState("");
+  const [wardCode, setWardCode] = useState("");
+  const [parishName, setParishName] = useState("");
+  const [parishCode, setParishCode] = useState("");
+  const [engError, setEngError] = useState("");
+  const [cymError, setCymError] = useState("");
+  const [gaeError, setGaeError] = useState("");
+  const [crossRefDescriptionError, setCrossRefDescriptionError] = useState("");
+  const [crossRefSourceCodeError, setCrossRefSourceCodeError] = useState("");
+  const [wardNameError, setWardNameError] = useState("");
+  const [wardCodeError, setWardCodeError] = useState("");
+  const [parishNameError, setParishNameError] = useState("");
+  const [parishCodeError, setParishCodeError] = useState("");
 
-  const [dbAuthorityRef, setDbAuthorityRef] = useState(null);
-  const [dbAuthorityName, setDbAuthorityName] = useState(null);
-  const [dbAuthorityMinUsrn, setDbAuthorityMinUsrn] = useState(null);
-  const [dbAuthorityMaxUsrn, setDbAuthorityMaxUsrn] = useState(null);
-  const [dbAuthorityRefError, setDbAuthorityRefError] = useState(null);
-  const [dbAuthorityNameError, setDbAuthorityNameError] = useState(null);
-  const [dbAuthorityMinUsrnError, setDbAuthorityMinUsrnError] = useState(null);
-  const [dbAuthorityMaxUsrnError, setDbAuthorityMaxUsrnError] = useState(null);
+  const [dbAuthorityRef, setDbAuthorityRef] = useState("");
+  const [dbAuthorityName, setDbAuthorityName] = useState("");
+  const [dbAuthorityMinUsrn, setDbAuthorityMinUsrn] = useState(0);
+  const [dbAuthorityMaxUsrn, setDbAuthorityMaxUsrn] = useState(0);
+  const [dbAuthorityRefError, setDbAuthorityRefError] = useState("");
+  const [dbAuthorityNameError, setDbAuthorityNameError] = useState("");
+  const [dbAuthorityMinUsrnError, setDbAuthorityMinUsrnError] = useState("");
+  const [dbAuthorityMaxUsrnError, setDbAuthorityMaxUsrnError] = useState("");
 
   /**
    * Method to determine if the data is valid or not.
@@ -773,8 +772,8 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
       case "postcode":
         setLookupType("postcode");
         setEngPlaceholder("e.g. GU21 5SB");
-        setEngValue(null);
-        setEngError(null);
+        setEngValue("");
+        setEngError("");
         break;
 
       case "postTown":
@@ -782,21 +781,21 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
         if (settingsContext.isWelsh) {
           setEngPlaceholder("e.g. Cardiff");
           setCymPlaceholder("e.g. Caerdydd");
-          setEngValue(null);
-          setCymValue(null);
-          setEngError(null);
-          setCymError(null);
+          setEngValue("");
+          setCymValue("");
+          setEngError("");
+          setCymError("");
         } else if (settingsContext.isScottish) {
           setEngPlaceholder("e.g. Perth");
           setGaePlaceholder("e.g. Peairt");
-          setEngValue(null);
-          setGaeValue(null);
-          setEngError(null);
-          setGaeError(null);
+          setEngValue("");
+          setGaeValue("");
+          setEngError("");
+          setGaeError("");
         } else {
           setEngPlaceholder("e.g. Woking");
-          setEngValue(null);
-          setEngError(null);
+          setEngValue("");
+          setEngError("");
         }
         break;
 
@@ -804,21 +803,21 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
         setLookupType("sub-locality");
         setEngPlaceholder("e.g. Perth");
         setGaePlaceholder("e.g. Peairt");
-        setEngValue(null);
-        setGaeValue(null);
-        setEngError(null);
-        setGaeError(null);
+        setEngValue("");
+        setGaeValue("");
+        setEngError("");
+        setGaeError("");
         break;
 
       case "crossReference":
         setLookupType("cross reference");
         setCrossRefSourceAuthority(settingsContext ? settingsContext.authorityCode : null);
-        setCrossRefDescription(null);
-        setCrossRefSourceCode(null);
+        setCrossRefDescription("");
+        setCrossRefSourceCode("");
         setCrossRefExport(false);
         setCrossRefEnabled(true);
-        setCrossRefDescriptionError(null);
-        setCrossRefSourceCodeError(null);
+        setCrossRefDescriptionError("");
+        setCrossRefSourceCodeError("");
         break;
 
       case "locality":
@@ -826,21 +825,21 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
         if (settingsContext.isWelsh) {
           setEngPlaceholder("e.g. Cardiff");
           setCymPlaceholder("e.g. Caerdydd");
-          setEngValue(null);
-          setCymValue(null);
-          setEngError(null);
-          setCymError(null);
+          setEngValue("");
+          setCymValue("");
+          setEngError("");
+          setCymError("");
         } else if (settingsContext.isScottish) {
           setEngPlaceholder("e.g. Perth");
           setGaePlaceholder("e.g. Peairt");
-          setEngValue(null);
-          setGaeValue(null);
-          setEngError(null);
-          setGaeError(null);
+          setEngValue("");
+          setGaeValue("");
+          setEngError("");
+          setGaeError("");
         } else {
           setEngPlaceholder("e.g. Woking");
-          setEngValue(null);
-          setEngError(null);
+          setEngValue("");
+          setEngError("");
         }
         break;
 
@@ -849,21 +848,21 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
         if (settingsContext.isWelsh) {
           setEngPlaceholder("e.g. Cardiff");
           setCymPlaceholder("e.g. Caerdydd");
-          setEngValue(null);
-          setCymValue(null);
-          setEngError(null);
-          setCymError(null);
+          setEngValue("");
+          setCymValue("");
+          setEngError("");
+          setCymError("");
         } else if (settingsContext.isScottish) {
           setEngPlaceholder("e.g. Perth");
           setGaePlaceholder("e.g. Peairt");
-          setEngValue(null);
-          setGaeValue(null);
-          setEngError(null);
-          setGaeError(null);
+          setEngValue("");
+          setGaeValue("");
+          setEngError("");
+          setGaeError("");
         } else {
           setEngPlaceholder("e.g. Woking");
-          setEngValue(null);
-          setEngError(null);
+          setEngValue("");
+          setEngError("");
         }
         break;
 
@@ -871,10 +870,10 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
         setLookupType("island");
         setEngPlaceholder("e.g. Raasay");
         setGaePlaceholder("e.g. Ratharsair");
-        setEngValue(null);
-        setGaeValue(null);
-        setEngError(null);
-        setGaeError(null);
+        setEngValue("");
+        setGaeValue("");
+        setEngError("");
+        setGaeError("");
         break;
 
       case "administrativeArea":
@@ -882,50 +881,50 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
         if (settingsContext.isWelsh) {
           setEngPlaceholder("e.g. Cardiff");
           setCymPlaceholder("e.g. Caerdydd");
-          setEngValue(null);
-          setCymValue(null);
-          setEngError(null);
-          setCymError(null);
+          setEngValue("");
+          setCymValue("");
+          setEngError("");
+          setCymError("");
         } else if (settingsContext.isScottish) {
           setEngPlaceholder("e.g. Perthshire");
           setGaePlaceholder("e.g. Siorrachd Pheairt");
-          setEngValue(null);
-          setGaeValue(null);
-          setEngError(null);
-          setGaeError(null);
+          setEngValue("");
+          setGaeValue("");
+          setEngError("");
+          setGaeError("");
         } else {
           setEngPlaceholder("e.g. Woking");
-          setEngValue(null);
-          setEngError(null);
+          setEngValue("");
+          setEngError("");
         }
         break;
 
       case "ward":
         setLookupType("ward");
-        setWardName(null);
-        setWardCode(null);
-        setWardNameError(null);
-        setWardCodeError(null);
+        setWardName("");
+        setWardCode("");
+        setWardNameError("");
+        setWardCodeError("");
         break;
 
       case "parish":
         setLookupType("parish");
-        setParishName(null);
-        setParishCode(null);
-        setParishNameError(null);
-        setParishCodeError(null);
+        setParishName("");
+        setParishCode("");
+        setParishNameError("");
+        setParishCodeError("");
         break;
 
       case "dbAuthority":
         setLookupType("authority");
-        setDbAuthorityName(null);
-        setDbAuthorityRef(null);
-        setDbAuthorityMinUsrn(null);
-        setDbAuthorityMaxUsrn(null);
-        setDbAuthorityNameError(null);
-        setDbAuthorityRefError(null);
-        setDbAuthorityMinUsrnError(null);
-        setDbAuthorityMaxUsrnError(null);
+        setDbAuthorityName("");
+        setDbAuthorityRef("");
+        setDbAuthorityMinUsrn(0);
+        setDbAuthorityMaxUsrn(0);
+        setDbAuthorityNameError("");
+        setDbAuthorityRefError("");
+        setDbAuthorityMinUsrnError("");
+        setDbAuthorityMaxUsrnError("");
         break;
 
       default:
@@ -938,29 +937,20 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
 
   useEffect(() => {
     if (errorEng) setEngError(errorEng);
-    else setEngError(null);
+    else setEngError("");
 
     if (errorAltLanguage) {
       setCymError(errorAltLanguage);
       setGaeError(errorAltLanguage);
     } else {
-      setCymError(null);
-      setGaeError(null);
+      setCymError("");
+      setGaeError("");
     }
   }, [errorEng, errorAltLanguage]);
 
   return (
     <Dialog open={showDialog} aria-labelledby="add-lookup-dialog" fullWidth maxWidth="xs" onClose={handleDialogClose}>
-      <DialogTitle id="add-lookup-dialog" sx={dialogTitleStyle}>
-        <Typography variant="h6">{`Add ${lookupType}`}</Typography>
-        <IconButton
-          aria-label="close"
-          onClick={handleCancelClick}
-          sx={{ position: "absolute", right: 12, top: 12, color: adsLightGreyB }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
+      <ADSDialogTitle title={`Add ${lookupType}`} closeTooltip="Cancel" onClose={handleCancelClick} />
       <DialogContent sx={{ mt: theme.spacing(2) }}>
         {variant === "crossReference" ? (
           <Grid container alignItems="center" rowSpacing={2}>
@@ -972,7 +962,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
             <Grid item xs={8}>
               <TextField
                 variant="outlined"
-                error={crossRefDescriptionError}
+                error={!!crossRefDescriptionError}
                 helperText={
                   <Typography variant="caption" color={adsRed} align="left">
                     {crossRefDescriptionError}
@@ -1004,7 +994,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
                 </Typography>
                 <TextField
                   variant="outlined"
-                  error={crossRefSourceCodeError}
+                  error={!!crossRefSourceCodeError}
                   helperText={
                     <Typography variant="caption" color={adsRed} align="left">
                       {crossRefSourceCodeError}
@@ -1081,7 +1071,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
               <TextField
                 variant="outlined"
                 type="number"
-                error={dbAuthorityRefError}
+                error={!!dbAuthorityRefError}
                 helperText={
                   <Typography variant="caption" color={adsRed} align="left">
                     {dbAuthorityRefError}
@@ -1108,7 +1098,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
             <Grid item xs={8}>
               <TextField
                 variant="outlined"
-                error={dbAuthorityNameError}
+                error={!!dbAuthorityNameError}
                 helperText={
                   <Typography variant="caption" color={adsRed} align="left">
                     {dbAuthorityNameError}
@@ -1137,7 +1127,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
               <TextField
                 variant="outlined"
                 type="number"
-                error={dbAuthorityMinUsrnError}
+                error={!!dbAuthorityMinUsrnError}
                 helperText={
                   <Typography variant="caption" color={adsRed} align="left">
                     {dbAuthorityMinUsrnError}
@@ -1165,7 +1155,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
               <TextField
                 variant="outlined"
                 type="number"
-                error={dbAuthorityMaxUsrnError}
+                error={!!dbAuthorityMaxUsrnError}
                 helperText={
                   <Typography variant="caption" color={adsRed} align="left">
                     {dbAuthorityMaxUsrnError}
@@ -1195,7 +1185,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
             <Grid item xs={8}>
               <TextField
                 variant="outlined"
-                error={wardNameError}
+                error={!!wardNameError}
                 helperText={
                   <Typography variant="caption" color={adsRed} align="left">
                     {wardNameError}
@@ -1223,7 +1213,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
             <Grid item xs={8}>
               <TextField
                 variant="outlined"
-                error={wardCodeError}
+                error={!!wardCodeError}
                 helperText={
                   <Typography variant="caption" color={adsRed} align="left">
                     {wardCodeError}
@@ -1253,7 +1243,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
             <Grid item xs={8}>
               <TextField
                 variant="outlined"
-                error={parishNameError}
+                error={!!parishNameError}
                 helperText={
                   <Typography variant="caption" color={adsRed} align="left">
                     {parishNameError}
@@ -1281,7 +1271,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
             <Grid item xs={8}>
               <TextField
                 variant="outlined"
-                error={parishCodeError}
+                error={!!parishCodeError}
                 helperText={
                   <Typography variant="caption" color={adsRed} align="left">
                     {parishCodeError}
@@ -1317,7 +1307,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
             <Grid item xs={8}>
               <TextField
                 variant="outlined"
-                error={engError}
+                error={!!engError}
                 helperText={
                   <Typography variant="caption" color={adsRed} align="left">
                     {engError}
@@ -1347,7 +1337,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
                 <Grid item xs={8}>
                   <TextField
                     variant="outlined"
-                    error={cymError}
+                    error={!!cymError}
                     helperText={
                       <Typography variant="caption" color={adsRed} align="left">
                         {cymError}
@@ -1378,7 +1368,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
                 <Grid item xs={8}>
                   <TextField
                     variant="outlined"
-                    error={gaeError}
+                    error={!!gaeError}
                     helperText={
                       <Typography variant="caption" color={adsRed} align="left">
                         {gaeError}

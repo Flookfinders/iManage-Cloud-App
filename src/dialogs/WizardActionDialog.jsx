@@ -22,6 +22,7 @@
 //    009   11.01.24 Sean Flook                 Fix warnings.
 //    010   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    011   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle.
+//    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -36,12 +37,12 @@ import LookupContext from "../context/lookupContext";
 import { GetLookupLabel } from "../utils/HelperUtils";
 import { FilteredRepresentativePointCode } from "../utils/PropertyUtils";
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button } from "@mui/material";
-import { Box, Stack } from "@mui/system";
+import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
+import { Box } from "@mui/system";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSNumberControl from "../components/ADSNumberControl";
-import ADSActionButton from "../components/ADSActionButton";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import BLPUClassification from "../data/BLPUClassification";
 import OSGClassification from "../data/OSGClassification";
@@ -50,7 +51,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/SaveOutlined";
 
 import { adsMidGreyA } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 WizardActionDialog.propTypes = {
@@ -391,14 +392,7 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
       sx={{ p: "16px 16px 24px 16px", borderRadius: "9px" }}
       onClose={handleCancel}
     >
-      <DialogTitle id="wizard-action-dialog-title" sx={dialogTitleStyle}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ fontWeight: 600 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            {getTitle()}
-          </Typography>
-          <ADSActionButton variant="close" tooltipTitle="Cancel" tooltipPlacement="bottom" onClick={handleCancel} />
-        </Stack>
-      </DialogTitle>
+      <ADSDialogTitle title={getTitle()} closeTooltip="Cancel" onClose={handleCancel} />
       <DialogContent sx={{ backgroundColor: theme.palette.background.paper }}>{getContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: "flex-start", pl: "24px", pb: "24px" }}>
         <Button variant="contained" onClick={handleOk} sx={blueButtonStyle} startIcon={<SaveIcon />}>

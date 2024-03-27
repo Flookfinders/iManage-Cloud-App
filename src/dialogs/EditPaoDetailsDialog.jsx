@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    004   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
+//    005   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -23,13 +24,14 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography, Button } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, Button } from "@mui/material";
 import ADSAddressableObjectControl from "../components/ADSAddressableObjectControl";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 
-import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditPaoDetailsDialog.propTypes = {
@@ -156,16 +158,7 @@ function EditPaoDetailsDialog({ isOpen, data, onDone, onClose }) {
       maxWidth="sm"
       onClose={handleDialogClose}
     >
-      <DialogTitle id="edit-pao-details-dialog" sx={dialogTitleStyle}>
-        <Typography variant="h6">PAO details</Typography>
-        <IconButton
-          aria-label="close"
-          onClick={handleCancelClick}
-          sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
+      <ADSDialogTitle title="PAO details" closeTooltip="Cancel" onClose={handleCancelClick} />
       <DialogContent sx={{ mt: theme.spacing(2) }}>
         <ADSAddressableObjectControl
           variant="PAO"

@@ -20,6 +20,7 @@
 //    007   24.01.24 Joel Benford               Update names
 //    008   31.01.24 Joel Benford               Changes to as save and support OS
 //    009   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
+//    010   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,15 +31,16 @@ import PropTypes from "prop-types";
 
 import SettingsContext from "../context/settingsContext";
 
-import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Grid, Typography, Button } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, Grid, Button } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSSelectControl from "../components/ADSSelectControl";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 
-import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditMetadataGazetteerDialog.propTypes = {
@@ -281,16 +283,7 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
         maxWidth="md"
         onClose={handleDialogClose}
       >
-        <DialogTitle id="edit-metadata-gazetteer-dialog" sx={dialogTitleStyle}>
-          <Typography sx={{ textSize: "20px" }}>{getTitle()}</Typography>
-          <IconButton
-            aria-label="close"
-            onClick={handleCancelClick}
-            sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
+        <ADSDialogTitle title={getTitle()} closeTooltip="Cancel" onClose={handleCancelClick} />
         <DialogContent sx={{ mt: theme.spacing(2) }}>
           <Grid container justifyContent="flex-start" spacing={0} sx={{ pl: theme.spacing(3.5) }}>
             <Grid item xs={12}>

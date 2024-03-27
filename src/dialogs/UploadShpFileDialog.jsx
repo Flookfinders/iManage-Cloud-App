@@ -16,6 +16,7 @@
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    004   11.01.24 Sean Flook                 Fix warnings.
 //    005   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
+//    006   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,32 +25,21 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import {
-  IconButton,
-  Button,
-  Typography,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Grid,
-  Tooltip,
-} from "@mui/material";
+import { Button, Typography, Dialog, DialogActions, DialogContent, TextField, Grid, Tooltip } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSMinMaxControl from "../components/ADSMinMaxControl";
 import ADSSwitchControl from "../components/ADSSwitchControl";
 import ADSSliderControl from "../components/ADSSliderControl";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import MinMaxDialog from "../dialogs/MinMaxDialog";
 
-import CloseIcon from "@mui/icons-material/Close";
 import UploadIcon from "@mui/icons-material/Upload";
 import CancelIcon from "@mui/icons-material/Cancel";
 
 import { adsBlueA, adsDarkGrey, adsOffWhite, adsMidGreyA } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle, tooltipStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, tooltipStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 UploadShpFileDialog.propTypes = {
@@ -266,18 +256,7 @@ function UploadShpFileDialog({ isOpen, currentIds, onClose }) {
   return (
     <div>
       <Dialog open={showDialog} aria-labelledby="message-dialog" fullWidth maxWidth="md" onClose={handleCancelClick}>
-        <DialogTitle id="message-dialog" sx={dialogTitleStyle}>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Load Shape file
-          </Typography>
-          <IconButton
-            aria-label="close"
-            onClick={handleUploadClick}
-            sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
+        <ADSDialogTitle title="Load Shape file" closeTooltip="Cancel" onClose={handleCancelClick} />
         <DialogContent sx={{ mt: theme.spacing(2) }}>
           <Grid container justifyContent="flex-start" spacing={0}>
             <Grid item xs={12}>

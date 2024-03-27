@@ -17,6 +17,7 @@
 //    004   16.01.24 Joel Benford               OS/GP level split
 //    005   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    006   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
+//    007   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -25,28 +26,18 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Typography,
-  Grid,
-  Button,
-  Autocomplete,
-  TextField,
-} from "@mui/material";
+import { Dialog, DialogActions, DialogContent, Typography, Grid, Button, Autocomplete, TextField } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSTextControl from "../components/ADSTextControl";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
-import CloseIcon from "@mui/icons-material/Close";
 import HomeIcon from "@mui/icons-material/Home";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import LocationCityIcon from "@mui/icons-material/LocationCity";
 import DoneIcon from "@mui/icons-material/Done";
+
 import { adsBlueA, adsMidGreyA, adsWhite } from "../utils/ADSColours";
-import { blueButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { blueButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 AddTemplateDialog.propTypes = {
@@ -280,23 +271,13 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
 
   return (
     <Dialog open={showDialog} aria-labelledby="add-lookup-dialog" fullWidth maxWidth="xs" onClose={handleDialogClose}>
-      <DialogTitle id="add-lookup-dialog" sx={dialogTitleStyle}>
-        <Typography sx={{ sizeFont: "20px" }}>{`${
+      <ADSDialogTitle
+        title={`${
           step === 1 ? "Create new template" : duplicateId ? "Duplicate template" : "New template: name and description"
-        }`}</Typography>
-        <IconButton
-          aria-label="close"
-          onClick={handleCancelClick}
-          sx={{
-            position: "absolute",
-            right: 12,
-            top: 12,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
+        }`}
+        closeTooltip="Cancel"
+        onClose={handleCancelClick}
+      />
       <DialogContent sx={getDialogContentStyle()}>
         <Box sx={{ height: "230px", width: "380px" }}>
           {step === 1 && (

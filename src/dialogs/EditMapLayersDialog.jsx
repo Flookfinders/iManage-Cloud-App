@@ -23,6 +23,7 @@
 //    010   07.02.24 Sean Flook                 Changes required to support WFS from viaEuropa mapping for OneScotland.
 //    011   08.02.24 Sean Flook                 Correctly set additional fields.
 //    012   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
+//    013   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -34,7 +35,7 @@ import PropTypes from "prop-types";
 import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
 
-import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Grid, Typography, Button } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, Grid, Typography, Button } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -42,6 +43,7 @@ import ADSMinMaxControl from "../components/ADSMinMaxControl";
 import ADSSwitchControl from "../components/ADSSwitchControl";
 import ADSSliderControl from "../components/ADSSliderControl";
 import ADSNumberControl from "../components/ADSNumberControl";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import MinMaxDialog from "../dialogs/MinMaxDialog";
 
@@ -55,7 +57,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 import ErrorIcon from "@mui/icons-material/Error";
 
-import { redButtonStyle, blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { redButtonStyle, blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditMapLayersDialog.propTypes = {
@@ -672,16 +674,11 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
         maxWidth="md"
         onClose={handleDialogClose}
       >
-        <DialogTitle id="edit-map-layer-dialog" sx={dialogTitleStyle}>
-          <Typography sx={{ fontSize: "20px" }}>{`${isNew ? "Add" : "Edit"} map layer`}</Typography>
-          <IconButton
-            aria-label="close"
-            onClick={handleCancelClick}
-            sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
+        <ADSDialogTitle
+          title={`${isNew ? "Add" : "Edit"} map layer`}
+          closeTooltip="Cancel"
+          onClose={handleCancelClick}
+        />
         <DialogContent sx={{ mt: theme.spacing(2) }}>
           <Grid container justifyContent="flex-start" spacing={0} sx={{ pl: theme.spacing(3.5) }}>
             <Grid item xs={12}>

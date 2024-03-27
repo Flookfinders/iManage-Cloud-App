@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   01.02.24 Sean Flook                 Initial Revision.
 //    002   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
+//    003   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,13 +25,14 @@ import LookupContext from "../context/lookupContext";
 
 import { GetLookupLabel, filteredLookup, isFutureDate, isPriorTo1990 } from "../utils/HelperUtils";
 
-import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography, Button } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, Button } from "@mui/material";
 import { Stack } from "@mui/system";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSNumberControl from "../components/ADSNumberControl";
 import ADSSwitchControl from "../components/ADSSwitchControl";
 import ADSDateControl from "../components/ADSDateControl";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
@@ -38,7 +40,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import SwaOrgRef from "../data/SwaOrgRef";
 import OperationalDistrictFunction from "../data/OperationalDistrictFunction";
 
-import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditDistrictLookupDialog.propTypes = {
@@ -70,7 +72,7 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
   const [districtFaxNo, setDistrictFaxNo] = useState("");
   const [districtPostcode, setDistrictPostcode] = useState("");
   const [districtTelNo, setDistrictTelNo] = useState("");
-  const [outOfHoursArrangements, setOutOfHoursArrangements] = useState("");
+  const [outOfHoursArrangements, setOutOfHoursArrangements] = useState(false);
   const [fpnDeliveryUrl, setFpnDeliveryUrl] = useState("");
   const [fpnFaxNumber, setFpnFaxNumber] = useState("");
   const [fpnDeliveryPostcode, setFpnDeliveryPostcode] = useState("");
@@ -626,8 +628,8 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
         setFpnContactAddress3Error(fpnContactAddress3Errors.length ? fpnContactAddress3Errors : null);
         setFpnContactAddress4Error(fpnContactAddress4Errors.length ? fpnContactAddress4Errors : null);
         setFpnContactAddress5Error(fpnContactAddress5Errors.length ? fpnContactAddress5Errors : null);
-        setDistrictPermitSchemeIdError(outOfHoursArrangementsErrors.length ? outOfHoursArrangementsErrors : null);
-        setOutOfHoursArrangementsError(districtPermitSchemeIdErrors.length ? districtPermitSchemeIdErrors : null);
+        setOutOfHoursArrangementsError(outOfHoursArrangementsErrors.length ? outOfHoursArrangementsErrors : null);
+        setDistrictPermitSchemeIdError(districtPermitSchemeIdErrors.length ? districtPermitSchemeIdErrors : null);
         break;
 
       default:
@@ -1763,16 +1765,7 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
 
   return (
     <Dialog open={showDialog} aria-labelledby="edit-lookup-dialog" fullWidth maxWidth="md" onClose={handleDialogClose}>
-      <DialogTitle id="edit-operational-district-dialog" sx={dialogTitleStyle}>
-        <Typography variant="h6">{`Edit ${lookupType} information`}</Typography>
-        <IconButton
-          aria-label="close"
-          onClick={handleCancelClick}
-          sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
+      <ADSDialogTitle title={`Edit ${lookupType} information`} closeTooltip="Cancel" onClose={handleCancelClick} />
       <DialogContent sx={{ mt: theme.spacing(2) }}>{getDialogContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: "flex-start", mb: theme.spacing(1), ml: theme.spacing(3) }}>
         <Button onClick={handleDoneClick} autoFocus variant="contained" sx={blueButtonStyle} startIcon={<DoneIcon />}>

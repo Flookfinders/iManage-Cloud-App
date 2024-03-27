@@ -15,6 +15,7 @@
 //    002   12.03.24 Sean Flook           MUL10 Display errors in a list control.
 //    003   22.03.24 Sean Flook           MUL16 Correctly set the address data.
 //    004   25.03.24 Sean Flook           MUL16 Added cascade address changes option.
+//    005   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -39,13 +40,11 @@ import {
 import { renderErrorListItem } from "../utils/HelperUtils";
 
 import {
-  IconButton,
   Button,
   Typography,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   Switch,
   FormControlLabel,
   RadioGroup,
@@ -58,6 +57,7 @@ import {
 import { Stack } from "@mui/system";
 import ADSSearch from "../components/ADSSearch";
 import ADSTextControl from "../components/ADSTextControl";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -67,7 +67,7 @@ import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 
 import { adsRed, adsLightGreyC, adsGreenC } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 MakeChildDialog.propTypes = {
@@ -1026,18 +1026,13 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
       maxWidth="sm"
       onClose={handleCancelClick}
     >
-      <DialogTitle id="make-child-of-dialog" sx={dialogTitleStyle}>
-        <Typography sx={{ fontSize: "20px", fontWeight: 700 }}>{`Make selected ${
+      <ADSDialogTitle
+        title={`Make selected ${
           selectedUPRNs && selectedUPRNs.length > 1 ? "properties children" : "property child"
-        } of...`}</Typography>
-        <IconButton
-          aria-label="close"
-          onClick={handleCancelClick}
-          sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
+        } of...`}
+        closeTooltip="Cancel"
+        onClose={handleCancelClick}
+      />
       <DialogContent sx={{ mt: theme.spacing(2) }}>{getContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: "flex-start", mb: theme.spacing(1), ml: theme.spacing(2.25) }}>
         {getActions()}

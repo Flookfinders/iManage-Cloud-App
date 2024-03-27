@@ -17,6 +17,7 @@
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   09.02.24 Sean Flook                 Modified after UX review.
 //    006   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle.
+//    007   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -25,14 +26,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button } from "@mui/material";
+import { Dialog, DialogContent, DialogActions, Typography, Button } from "@mui/material";
 import { Stack } from "@mui/system";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import CancelIcon from "@mui/icons-material/Cancel";
-import ADSActionButton from "../components/ADSActionButton";
 
-import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 HistoricPropertyDialog.propTypes = {
@@ -66,19 +67,7 @@ function HistoricPropertyDialog({ open, onClose }) {
       sx={{ p: "16px 16px 24px 16px", borderRadius: "9px" }}
       onClose={handleCancel}
     >
-      <DialogTitle id="confirmation-dialog-title" sx={dialogTitleStyle}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ fontWeight: 600 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Warning: editable historic record
-          </Typography>
-          <ADSActionButton
-            variant="close"
-            tooltipTitle="Cancel open"
-            tooltipPlacement="bottom"
-            onClick={handleCancel}
-          />
-        </Stack>
-      </DialogTitle>
+      <ADSDialogTitle title="Warning: editable historic record" closeTooltip="Cancel open" onClose={handleCancel} />
       <DialogContent sx={{ backgroundColor: theme.palette.background.paper }}>
         <Stack direction="column" alignItems="flex-start" justifyContent="center" spacing={1}>
           <Typography variant="body1">This is historic, but is still editable.</Typography>

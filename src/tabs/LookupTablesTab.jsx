@@ -19,6 +19,7 @@
 //    006   01.02.24 Sean Flook                 Initial changes required for operational districts.
 //    007   05.02.24 Sean Flook                 Further changes required for operational districts.
 //    008   05.03.24 Joel Benford     IMANN-242 Stop hiding authorities tab outside debug mode.
+//    009   27.03.24 Sean Flook                 Further changes to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -56,14 +57,14 @@ function LookupTablesTab() {
   const [districtFormData, setDistrictFormData] = useState(null);
   const [showEditDistrictDialog, setShowEditDistrictDialog] = useState(false);
 
-  const [selectedNode, setSelectedNode] = useState(null);
+  const [selectedNode, setSelectedNode] = useState("POSTCODES");
 
   const newDistrictData = {
     id: 0,
-    organisationId: null,
+    organisationId: 0,
     districtName: "",
-    districtId: null,
-    districtFunction: null,
+    districtId: "",
+    districtFunction: 0,
     districtClosed: null,
     districtFaxNo: "",
     districtPostcode: "",
@@ -297,26 +298,66 @@ function LookupTablesTab() {
         fpnContactName: operationalDistrictRecord.fpnContactName,
         fpnContactPostcode: operationalDistrictRecord.fpnContactPostcode,
         fpnContactTelNo: operationalDistrictRecord.fpnContactTelNo,
-        districtPostalAddress1: operationalDistrictRecord.districtPostalAddress1,
-        districtPostalAddress2: operationalDistrictRecord.districtPostalAddress2,
-        districtPostalAddress3: operationalDistrictRecord.districtPostalAddress3,
-        districtPostalAddress4: operationalDistrictRecord.districtPostalAddress4,
-        districtPostalAddress5: operationalDistrictRecord.districtPostalAddress5,
-        fpnDeliveryAddress1: operationalDistrictRecord.fpnDeliveryAddress1,
-        fpnDeliveryAddress2: operationalDistrictRecord.fpnDeliveryAddress2,
-        fpnDeliveryAddress3: operationalDistrictRecord.fpnDeliveryAddress3,
-        fpnDeliveryAddress4: operationalDistrictRecord.fpnDeliveryAddress4,
-        fpnDeliveryAddress5: operationalDistrictRecord.fpnDeliveryAddress5,
-        fpnContactAddress1: operationalDistrictRecord.fpnContactAddress1,
-        fpnContactAddress2: operationalDistrictRecord.fpnContactAddress2,
-        fpnContactAddress3: operationalDistrictRecord.fpnContactAddress3,
-        fpnContactAddress4: operationalDistrictRecord.fpnContactAddress4,
-        fpnContactAddress5: operationalDistrictRecord.fpnContactAddress5,
-        fpnPaymentAddress1: operationalDistrictRecord.fpnPaymentAddress1,
-        fpnPaymentAddress2: operationalDistrictRecord.fpnPaymentAddress2,
-        fpnPaymentAddress3: operationalDistrictRecord.fpnPaymentAddress3,
-        fpnPaymentAddress4: operationalDistrictRecord.fpnPaymentAddress4,
-        fpnPaymentAddress5: operationalDistrictRecord.fpnPaymentAddress5,
+        districtPostalAddress1: operationalDistrictRecord.districtPostalAddress1
+          ? operationalDistrictRecord.districtPostalAddress1
+          : "",
+        districtPostalAddress2: operationalDistrictRecord.districtPostalAddress2
+          ? operationalDistrictRecord.districtPostalAddress2
+          : "",
+        districtPostalAddress3: operationalDistrictRecord.districtPostalAddress3
+          ? operationalDistrictRecord.districtPostalAddress3
+          : "",
+        districtPostalAddress4: operationalDistrictRecord.districtPostalAddress4
+          ? operationalDistrictRecord.districtPostalAddress4
+          : "",
+        districtPostalAddress5: operationalDistrictRecord.districtPostalAddress5
+          ? operationalDistrictRecord.districtPostalAddress5
+          : "",
+        fpnDeliveryAddress1: operationalDistrictRecord.fpnDeliveryAddress1
+          ? operationalDistrictRecord.fpnDeliveryAddress1
+          : "",
+        fpnDeliveryAddress2: operationalDistrictRecord.fpnDeliveryAddress2
+          ? operationalDistrictRecord.fpnDeliveryAddress2
+          : "",
+        fpnDeliveryAddress3: operationalDistrictRecord.fpnDeliveryAddress3
+          ? operationalDistrictRecord.fpnDeliveryAddress3
+          : "",
+        fpnDeliveryAddress4: operationalDistrictRecord.fpnDeliveryAddress4
+          ? operationalDistrictRecord.fpnDeliveryAddress4
+          : "",
+        fpnDeliveryAddress5: operationalDistrictRecord.fpnDeliveryAddress5
+          ? operationalDistrictRecord.fpnDeliveryAddress5
+          : "",
+        fpnContactAddress1: operationalDistrictRecord.fpnContactAddress1
+          ? operationalDistrictRecord.fpnContactAddress1
+          : "",
+        fpnContactAddress2: operationalDistrictRecord.fpnContactAddress2
+          ? operationalDistrictRecord.fpnContactAddress2
+          : "",
+        fpnContactAddress3: operationalDistrictRecord.fpnContactAddress3
+          ? operationalDistrictRecord.fpnContactAddress3
+          : "",
+        fpnContactAddress4: operationalDistrictRecord.fpnContactAddress4
+          ? operationalDistrictRecord.fpnContactAddress4
+          : "",
+        fpnContactAddress5: operationalDistrictRecord.fpnContactAddress5
+          ? operationalDistrictRecord.fpnContactAddress5
+          : "",
+        fpnPaymentAddress1: operationalDistrictRecord.fpnPaymentAddress1
+          ? operationalDistrictRecord.fpnPaymentAddress1
+          : "",
+        fpnPaymentAddress2: operationalDistrictRecord.fpnPaymentAddress2
+          ? operationalDistrictRecord.fpnPaymentAddress2
+          : "",
+        fpnPaymentAddress3: operationalDistrictRecord.fpnPaymentAddress3
+          ? operationalDistrictRecord.fpnPaymentAddress3
+          : "",
+        fpnPaymentAddress4: operationalDistrictRecord.fpnPaymentAddress4
+          ? operationalDistrictRecord.fpnPaymentAddress4
+          : "",
+        fpnPaymentAddress5: operationalDistrictRecord.fpnPaymentAddress5
+          ? operationalDistrictRecord.fpnPaymentAddress5
+          : "",
         fpnDeliveryEmailAddress: operationalDistrictRecord.fpnDeliveryEmailAddress,
         districtPermitSchemeId: operationalDistrictRecord.districtPermitSchemeId,
         historic: operationalDistrictRecord.historic,

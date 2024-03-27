@@ -21,6 +21,7 @@
 //    008   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    009   10.01.24 Sean Flook                 Fix warnings.
 //    010   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    011   27.03.24 Sean Flook                 Further changes to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -367,12 +368,12 @@ function MapLayersTab(props) {
 
     const newRecord = {
       pkId: data && data.length > 0 ? data.length + 1 : 1,
-      layerId: null,
-      layerType: null,
+      layerId: "",
+      layerType: "",
       layerPosition: data && data.length > 0 ? data.length + 1 : 1,
-      url: null,
-      title: null,
-      copyright: null,
+      url: "",
+      title: "",
+      copyright: "",
       displayInList: true,
       visible: true,
       minScale: 0,
@@ -382,14 +383,14 @@ function MapLayersTab(props) {
       blpuSnap: false,
       extentSnap: false,
       globalLayer: true,
-      serviceProvider: null,
-      geometryType: null,
-      layerKey: null,
-      layerUsername: null,
-      layerPassword: null,
-      activeLayerId: null,
-      serviceMode: null,
-      propertyName: null,
+      serviceProvider: "",
+      geometryType: "",
+      layerKey: "",
+      layerUsername: "",
+      layerPassword: "",
+      activeLayerId: "",
+      serviceMode: "",
+      propertyName: "",
       usePaging: false,
       maxBatchSize: 100,
     };

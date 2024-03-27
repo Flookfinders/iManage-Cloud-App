@@ -23,6 +23,7 @@
 //    010   01.02.24 Sean Flook                 Initial changes required for operational districts.
 //    011   05.02.24 Sean Flook                 Further changes required for operational districts.
 //    012   29.02.24 Joel Benford     IMANN-242 Add DbAuthority.
+//    013   27.03.24 Sean Flook                 Further changes to fix warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -84,7 +85,20 @@ TabPanel.propTypes = {
 };
 
 LookupTablesDataForm.propTypes = {
-  nodeId: PropTypes.number.isRequired,
+  nodeId: PropTypes.oneOf([
+    "POSTCODES",
+    "SUB_LOCALITIES",
+    "POST_TOWNS",
+    "CROSS_REFERENCES",
+    "LOCALITIES",
+    "TOWNS",
+    "ISLANDS",
+    "ADMINISTRATIVE_AREAS",
+    "AUTHORITIES",
+    "WARDS",
+    "PARISHES",
+    "OPERATIONAL_DISTRICTS",
+  ]).isRequired,
   onViewOperationalDistrict: PropTypes.func.isRequired,
   onAddOperationalDistrict: PropTypes.func.isRequired,
 };
@@ -797,7 +811,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
           }
         });
 
-      if (lookupRecord && lookupRecord.length > 0) {
+      if (lookupRecord && lookupRecord.length > 0 && variant !== "crossReference") {
         setLookupInUse(lookupRecord[0].isUsed);
       } else setLookupInUse(false);
     }
@@ -868,14 +882,16 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
   const handleEditCrossReference = (id) => {
     setLookupId(id);
     setLookupType("crossReference");
-    isLookupInUse("crossReference", id);
+    // isLookupInUse("crossReference", id);
+    setLookupInUse(false);
     setShowEditDialog(true);
   };
 
   const handleDeleteCrossReference = (id) => {
     setLookupId(id);
     setLookupType("crossReference");
-    isLookupInUse("crossReference", id);
+    // isLookupInUse("crossReference", id);
+    setLookupInUse(false);
     setShowDeleteDialog(true);
   };
 
@@ -963,14 +979,16 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
   const handleEditWard = (id) => {
     setLookupId(id);
     setLookupType("ward");
-    isLookupInUse("ward", id);
+    // isLookupInUse("ward", id);
+    setLookupInUse(false);
     setShowEditDialog(true);
   };
 
   const handleDeleteWard = (id) => {
     setLookupId(id);
     setLookupType("ward");
-    isLookupInUse("ward", id);
+    // isLookupInUse("ward", id);
+    setLookupInUse(false);
     setShowDeleteDialog(true);
   };
 
@@ -982,14 +1000,16 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
   const handleEditParish = (id) => {
     setLookupId(id);
     setLookupType("parish");
-    isLookupInUse("parish", id);
+    // isLookupInUse("parish", id);
+    setLookupInUse(false);
     setShowEditDialog(true);
   };
 
   const handleDeleteParish = (id) => {
     setLookupId(id);
     setLookupType("parish");
-    isLookupInUse("parish", id);
+    // isLookupInUse("parish", id);
+    setLookupInUse(false);
     setShowDeleteDialog(true);
   };
 
@@ -1018,14 +1038,16 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
   const handleEditOperationalDistrict = (id) => {
     setLookupId(id);
     setLookupType("operationalDistrict");
-    isLookupInUse("operationalDistrict", id);
+    // isLookupInUse("operationalDistrict", id);
+    setLookupInUse(false);
     if (onViewOperationalDistrict) onViewOperationalDistrict(id);
   };
 
   const handleDeleteOperationalDistrict = (id) => {
     setLookupId(id);
     setLookupType("operationalDistrict");
-    isLookupInUse("operationalDistrict", id);
+    // isLookupInUse("operationalDistrict", id);
+    setLookupInUse(false);
     setShowDeleteDialog(true);
   };
 

@@ -22,6 +22,7 @@
 //    009   25.01.24 Sean Flook       IMANN-253 Include historic when checking for changes.
 //    010   29.02.24 Joel Benford     IMANN-242 Add DbAuthority.
 //    011   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
+//    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -37,8 +38,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
-  IconButton,
   Typography,
   Grid,
   TextField,
@@ -47,6 +46,7 @@ import {
   Switch,
 } from "@mui/material";
 import { Stack } from "@mui/system";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import { stringToSentenceCase, GeoPlaceCrossRefSources } from "../utils/HelperUtils";
 
@@ -54,7 +54,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import DoneIcon from "@mui/icons-material/Done";
 import { adsRed, adsMagenta } from "../utils/ADSColours";
-import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 EditLookupDialog.propTypes = {
@@ -70,6 +70,7 @@ EditLookupDialog.propTypes = {
     "dbAuthority",
     "ward",
     "parish",
+    "operationalDistrict",
     "unknown",
   ]).isRequired,
   isUsed: PropTypes.bool.isRequired,
@@ -1621,16 +1622,7 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
 
   return (
     <Dialog open={showDialog} aria-labelledby="edit-lookup-dialog" fullWidth maxWidth="xs" onClose={handleDialogClose}>
-      <DialogTitle id="edit-lookup-dialog" sx={dialogTitleStyle}>
-        <Typography variant="h6">{`Edit ${lookupType}`}</Typography>
-        <IconButton
-          aria-label="close"
-          onClick={handleCancelClick}
-          sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
+      <ADSDialogTitle title={`Edit ${lookupType}`} closeTooltip="Cancel" onClose={handleCancelClick} />
       <DialogContent sx={{ mt: theme.spacing(2) }}>
         {variant === "crossReference" ? (
           <Grid container alignItems="center" rowSpacing={2}>

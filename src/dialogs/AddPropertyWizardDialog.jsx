@@ -30,6 +30,7 @@
 //    017   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    018   11.03.24 Sean Flook           GLB12 Removed bottom margin.
 //    019   22.03.24 Sean Flook           GLB12 Use new constant for height.
+//    020   27.03.24 Sean Flook                 Added a tooltip to the close button.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -60,6 +61,7 @@ import {
   Typography,
   Button,
   Divider,
+  Tooltip,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 
@@ -92,6 +94,7 @@ import {
   redButtonStyle,
   dialogTitleStyle,
   wizardStepperHeight,
+  tooltipStyle,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -2365,9 +2368,11 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
             spacing={1}
             divider={<Divider orientation="vertical" flexItem />}
           >
-            <IconButton aria-label="close" onClick={handleCancelClick}>
-              <CloseIcon />
-            </IconButton>
+            <Tooltip title="Close" sx={tooltipStyle}>
+              <IconButton aria-label="close" onClick={handleCancelClick}>
+                <CloseIcon />
+              </IconButton>
+            </Tooltip>
             <Typography
               sx={{
                 flexGrow: 1,

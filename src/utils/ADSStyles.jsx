@@ -40,6 +40,7 @@
 //    027   15.03.24 Joshua McCormick  IMANN-280 dataTabToolBar Icon styling
 //    028   18.03.24 Sean Flook           GLB12 Tweaked searchDataFormStyle to remove overflow.
 //    029   22.03.24 Sean Flook           GLB12 Changed dataFormStyle to calculate the height for all the forms etc.
+//    030   27.03.24 Sean Flook                 Added dialogTitleTextStyle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1305,11 +1306,22 @@ export const getSaveIcon = (hasError) => {
   else return <SaveIcon />;
 };
 
+/**
+ * Style used for dialog titles
+ */
 export const dialogTitleStyle = {
   borderBottomWidth: "1px",
   borderBottomStyle: "solid",
   borderBottomColor: adsLightGreyC,
   mb: "8px",
+};
+
+/**
+ * Style used for the text in dialog titles.
+ */
+export const dialogTitleTextStyle = {
+  fontSize: "20px",
+  fontWeight: 600,
 };
 
 /**

@@ -22,6 +22,7 @@
 //    009   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    010   08.01.24 Sean Flook                 Changes to fix warnings.
 //    011   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle.
+//    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -34,7 +35,6 @@ import PropTypes from "prop-types";
 
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   Typography,
@@ -44,15 +44,14 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { Box, Stack } from "@mui/system";
-import ADSActionButton from "../components/ADSActionButton";
+import { Box } from "@mui/system";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import CircleIcon from "@mui/icons-material/Circle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { adsBlueA, adsMidGreyA, adsRed, adsWhite, adsPaleBlueA, adsDarkRed } from "../utils/ADSColours";
-import { dialogTitleStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 /* #endregion imports */
@@ -1101,14 +1100,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
       sx={{ p: "16px 16px 24px 16px", borderRadius: "9px" }}
       onClose={handleCancel}
     >
-      <DialogTitle id="confirmation-dialog-title" sx={dialogTitleStyle}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ fontWeight: 600 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            {title}
-          </Typography>
-          <ADSActionButton variant="close" tooltipTitle="Cancel" tooltipPlacement="bottom" onClick={handleCancel} />
-        </Stack>
-      </DialogTitle>
+      <ADSDialogTitle title={`${title}`} closeTooltip="Cancel" onClose={handleCancel} />
       <DialogContent sx={{ backgroundColor: theme.palette.background.paper }}>
         {subtitle && (
           <Typography variant="h6" sx={{ pb: theme.spacing(2) }}>

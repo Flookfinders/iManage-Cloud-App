@@ -16,6 +16,7 @@
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    004   10.01.24 Sean Flook                 Fix warnings.
 //    005   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
+//    006   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,24 +25,15 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Typography,
-  Grid,
-  TextField,
-  Button,
-} from "@mui/material";
+import { Dialog, DialogActions, DialogContent, Typography, Grid, TextField, Button } from "@mui/material";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import CloseIcon from "@mui/icons-material/Close";
 import WidthFullIcon from "@mui/icons-material/WidthFull";
 import WidthNormalIcon from "@mui/icons-material/WidthNormal";
 import DoneIcon from "@mui/icons-material/Done";
 
-import { blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 MinMaxDialog.propTypes = {
@@ -153,16 +145,11 @@ function MinMaxDialog({ variant, minValue, maxValue, maximum, isOpen, onNewMinMa
 
   return (
     <Dialog open={showDialog} aria-labelledby="add-lookup-dialog" fullWidth maxWidth="xs" onClose={handleDialogClose}>
-      <DialogTitle id="add-lookup-dialog" sx={dialogTitleStyle}>
-        <Typography sx={{ fontSize: "20px" }}>{`Update available ${minMaxType} range`}</Typography>
-        <IconButton
-          aria-label="close"
-          onClick={handleCancelClick}
-          sx={{ position: "absolute", right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
+      <ADSDialogTitle
+        title={`Update available ${minMaxType} range`}
+        closeTooltip="Cancel"
+        onClose={handleCancelClick}
+      />
       <DialogContent sx={{ mt: theme.spacing(2) }}>
         <Grid container alignItems="center" rowSpacing={2}>
           <Grid item xs={4}>

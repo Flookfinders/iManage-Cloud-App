@@ -18,6 +18,7 @@
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    006   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    007   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle.
+//    008   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -26,9 +27,9 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button } from "@mui/material";
+import { Dialog, DialogContent, DialogActions, Typography, Button } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import ADSActionButton from "../components/ADSActionButton";
+import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import FmdBadIcon from "@mui/icons-material/FmdBad";
 import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
@@ -40,7 +41,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 
 import { adsMidGreyA, adsRed, adsGreenC } from "../utils/ADSColours";
-import { redButtonStyle, blueButtonStyle, whiteButtonStyle, dialogTitleStyle } from "../utils/ADSStyles";
+import { redButtonStyle, blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 WizardFinaliseDialog.propTypes = {
@@ -376,14 +377,7 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
       sx={{ p: "16px 16px 24px 16px", borderRadius: "9px" }}
       onClose={handleClose}
     >
-      <DialogTitle id="wizard-finalise-dialog-title" sx={dialogTitleStyle}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ fontWeight: 600 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            {title}
-          </Typography>
-          <ADSActionButton variant="close" tooltipTitle="Cancel" tooltipPlacement="bottom" onClick={handleClose} />
-        </Stack>
-      </DialogTitle>
+      <ADSDialogTitle title={`${title}`} closeTooltip="Close" onClose={handleClose} />
       <DialogContent sx={{ backgroundColor: theme.palette.background.paper }}>{content}</DialogContent>
       <DialogActions sx={{ justifyContent: "flex-start", pl: "24px", pb: "24px" }}>
         {saveFailed && isRange && (
