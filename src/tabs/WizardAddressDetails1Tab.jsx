@@ -3,7 +3,7 @@
 //
 //  Description: Wizard validation
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   24.03.23 Sean Flook         WI40608 Changes required to correctly handle changes to PAO details for child properties.
 //    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    004   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
+//    005   27.03.24 Sean Flook                 Changes required to remove warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -52,23 +53,23 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
   const lookupContext = useContext(LookupContext);
   const settingsContext = useContext(SettingsContext);
 
-  const [saoStartNumber, setSaoStartNumber] = useState(null);
-  const [saoStartSuffix, setSaoStartSuffix] = useState(null);
-  const [saoEndNumber, setSaoEndNumber] = useState(null);
-  const [saoEndSuffix, setSaoEndSuffix] = useState(null);
-  const [saoText, setSaoText] = useState(null);
-  const [paoStartNumber, setPaoStartNumber] = useState(null);
-  const [paoStartSuffix, setPaoStartSuffix] = useState(null);
-  const [paoEndNumber, setPaoEndNumber] = useState(null);
-  const [paoEndSuffix, setPaoEndSuffix] = useState(null);
-  const [paoText, setPaoText] = useState(null);
-  const [paoDetails, setPaoDetails] = useState(null);
-  const [usrn, setUsrn] = useState(null);
-  const [postTownRef, setPostTownRef] = useState(null);
-  const [subLocalityRef, setSubLocalityRef] = useState(null);
-  const [postcodeRef, setPostcodeRef] = useState(null);
+  const [saoStartNumber, setSaoStartNumber] = useState("");
+  const [saoStartSuffix, setSaoStartSuffix] = useState("");
+  const [saoEndNumber, setSaoEndNumber] = useState("");
+  const [saoEndSuffix, setSaoEndSuffix] = useState("");
+  const [saoText, setSaoText] = useState("");
+  const [paoStartNumber, setPaoStartNumber] = useState("");
+  const [paoStartSuffix, setPaoStartSuffix] = useState("");
+  const [paoEndNumber, setPaoEndNumber] = useState("");
+  const [paoEndSuffix, setPaoEndSuffix] = useState("");
+  const [paoText, setPaoText] = useState("");
+  const [paoDetails, setPaoDetails] = useState("");
+  const [usrn, setUsrn] = useState(0);
+  const [postTownRef, setPostTownRef] = useState(0);
+  const [subLocalityRef, setSubLocalityRef] = useState(0);
+  const [postcodeRef, setPostcodeRef] = useState(0);
 
-  const [addressPreview, setAddressPreview] = useState(null);
+  const [addressPreview, setAddressPreview] = useState("");
 
   const [saoStartNumError, setSaoStartNumError] = useState(null);
   const [saoStartSuffixError, setSaoStartSuffixError] = useState(null);
