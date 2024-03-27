@@ -20,6 +20,7 @@
 //    007   05.02.24 Sean Flook                 Further changes required for operational districts.
 //    008   05.03.24 Joel Benford     IMANN-242 Stop hiding authorities tab outside debug mode.
 //    009   27.03.24 Sean Flook                 Further changes to fix warnings.
+//    010   27.03.24 Sean Flook                 Make districts visible to GeoPlace authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -675,7 +676,7 @@ function LookupTablesTab() {
                         sx={TreeItemStyle(selectedNode === "PARISHES")}
                       />
                     )}
-                    {process.env.NODE_ENV === "development" && !settingsContext.isScottish && (
+                    {!settingsContext.isScottish && (
                       <TreeItem
                         nodeId="OPERATIONAL_DISTRICTS"
                         label={
