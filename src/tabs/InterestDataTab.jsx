@@ -35,6 +35,7 @@
 //    022   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    023   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    024   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    025   27.03.24 Sean Flook                 Clear specific location if going back to whole road.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -307,7 +308,12 @@ function InterestDataTab({ data, errors, loading, focusedField, onHomeClick, onA
       usrn: data.interestData.usrn,
       seqNum: data.interestData.seqNum,
       wholeRoad: field && field === "wholeRoad" ? newValue : wholeRoad,
-      specificLocation: field && field === "specificLocation" ? newValue : specificLocation,
+      specificLocation:
+        field && field === "specificLocation"
+          ? newValue
+          : field && field === "wholeRoad" && newValue
+          ? ""
+          : specificLocation,
       neverExport: data.interestData.neverExport,
       swaOrgRefAuthority: field && field === "interestedOrganisation" ? newValue : interestedOrganisation,
       districtRefAuthority: field && field === "district" ? newValue : district,
@@ -368,6 +374,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onHomeClick, onA
   const handleCloseMessageDialog = (action) => {
     if (action === "continue") {
       setWholeRoad(true);
+      setSpecificLocation("");
       UpdateSandbox("wholeRoad", true);
 
       mapContext.onEditMapObject(null, null);

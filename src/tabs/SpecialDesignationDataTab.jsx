@@ -31,6 +31,7 @@
 //    018   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    019   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    020   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    021   27.03.24 Sean Flook                 Clear specific location if going back to whole road.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -394,7 +395,12 @@ function SpecialDesignationDataTab({ data, errors, loading, focusedField, onHome
       usrn: data.specialDesignationData.usrn,
       seqNum: data.specialDesignationData.seqNum,
       wholeRoad: field && field === "wholeRoad" ? newValue : wholeRoad,
-      specificLocation: field && field === "specificLocation" ? newValue : specificLocation,
+      specificLocation:
+        field && field === "specificLocation"
+          ? newValue
+          : field && field === "wholeRoad" && newValue
+          ? ""
+          : specificLocation,
       neverExport: data.specialDesignationData.neverExport,
       streetSpecialDesigCode: field && field === "designationType" ? newValue : designationType,
       asdCoordinate: data.specialDesignationData.asdCoordinate,
@@ -479,6 +485,7 @@ function SpecialDesignationDataTab({ data, errors, loading, focusedField, onHome
   const handleCloseMessageDialog = (action) => {
     if (action === "continue") {
       setWholeRoad(true);
+      setSpecificLocation("");
       UpdateSandbox("wholeRoad", true);
 
       mapContext.onEditMapObject(null, null);

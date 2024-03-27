@@ -31,6 +31,7 @@
 //    018   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    019   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    020   20.02.24 Joel Benford     IMANN-299 Finish earlier toolbar changes
+//    021   27.03.24 Sean Flook                 Clear specific location if going back to whole road.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -145,7 +146,12 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
       usrn: data.osSpecialDesignationData.usrn,
       seqNum: data.osSpecialDesignationData.seqNum,
       wholeRoad: field && field === "wholeRoad" ? newValue : wholeRoad,
-      specificLocation: field && field === "specificLocation" ? newValue : specificLocation,
+      specificLocation:
+        field && field === "specificLocation"
+          ? newValue
+          : field && field === "wholeRoad" && newValue
+          ? ""
+          : specificLocation,
       neverExport: data.osSpecialDesignationData.neverExport,
       startDate:
         field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
@@ -362,6 +368,7 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
   const handleCloseMessageDialog = (action) => {
     if (action === "continue") {
       setWholeRoad(true);
+      setSpecificLocation("");
       UpdateSandbox("wholeRoad", true);
 
       mapContext.onEditMapObject(null, null);
