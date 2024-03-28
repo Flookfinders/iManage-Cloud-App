@@ -39,6 +39,7 @@
 //    026   08.03.24 Sean Flook       IMANN-348 Updated GetChangedAssociatedRecords and ResetContexts.
 //    027   12.03.24 Sean Flook           MUL10 Replaced renderErrors with renderErrorListItem.
 //    028   22.03.24 Sean Flook           GLB12 Added shorten.
+//    029   28.03.24 Sean Flook                 Modified GetChangedAssociatedRecords to fully check all ESUs if geometryTypeChanged is true.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -51,6 +52,7 @@ import Wkt from "wicket";
 import { encode } from "iso-8859-14";
 import { GetWhoAmIUrl, HasASD } from "../configuration/ADSConfig";
 import ObjectComparison, {
+  EsusComparison,
   blpuAppCrossRefKeysToIgnore,
   classificationKeysToIgnore,
   constructionKeysToIgnore,
@@ -961,7 +963,11 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
             sandboxContext.currentSandbox.currentStreetRecords.esu,
             esuKeysToIgnore
           )) ||
-        geometryTypeChanged
+        (geometryTypeChanged &&
+          !EsusComparison(
+            sandboxContext.currentSandbox.sourceStreet.esus,
+            sandboxContext.currentSandbox.currentStreet.esus
+          ))
       )
         associatedRecords.push("ESU");
       if (

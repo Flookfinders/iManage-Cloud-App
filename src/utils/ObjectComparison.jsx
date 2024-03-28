@@ -17,6 +17,7 @@
 //    004   13.10.23 Sean Flook                 Renamed EsuComparison to MergeEsuComparison and corrected list of ignore fields to use.
 //    005   03.11.23 Sean Flook                 Added hyphen to one-way.
 //    006   07.03.24 Sean Flook       IMANN-348 Centralised keys to ignore and added missing record types to StreetComparison and PropertyComparison.
+//    007   28.03.24 Sean Flook                 Added EsusComparison and added additional keys to streetKeysToIgnore.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -47,6 +48,9 @@ export const streetKeysToIgnore = [
   "insertedTimestamp",
   "insertedUser",
   "lastUser",
+  "highwaysAgency",
+  "streetLastUpdated",
+  "streetLastUser",
 ];
 
 export const streetDescriptorKeysToIgnore = ["changeType", "locality", "town", "administrativeArea", "island"];
@@ -77,7 +81,27 @@ export const successorCrossRefKeysToIgnore = ["changeType", "entryDate", "lastUp
 
 export const highwayDedicationKeysToIgnore = ["changeType", "entryDate", "lastUpdateDate"];
 
+export const mergeHighwayDedicationKeysToIgnore = [
+  "pkId",
+  "esuId",
+  "changeType",
+  "recordEntryDate",
+  "lastUpdateDate",
+  "recordEndDate",
+  "sequenceNumber",
+];
+
 export const oneWayExemptionKeysToIgnore = ["changeType", "recordEntryDate", "lastUpdateDate"];
+
+export const mergeOneWayExemptionKeysToIgnore = [
+  "pkId",
+  "esuId",
+  "changeType",
+  "lastUpdated",
+  "insertedTimestamp",
+  "insertedUser",
+  "lastUser",
+];
 
 export const maintenanceResponsibilityKeysToIgnore = ["changeType", "entryDate", "lastUpdateDate"];
 
@@ -236,15 +260,7 @@ export function MergeEsuComparison(source, current, isScottish) {
           let foundCurrentHighwayDedication = false;
           for (const currentHighwayDedication of current.highwayDedications) {
             if (
-              ObjectComparison(sourceHighwayDedication, currentHighwayDedication, [
-                "pkId",
-                "esuId",
-                "changeType",
-                "recordEntryDate",
-                "lastUpdateDate",
-                "recordEndDate",
-                "sequenceNumber",
-              ])
+              ObjectComparison(sourceHighwayDedication, currentHighwayDedication, mergeHighwayDedicationKeysToIgnore)
             ) {
               foundCurrentHighwayDedication = true;
               break;
@@ -272,17 +288,7 @@ export function MergeEsuComparison(source, current, isScottish) {
         for (const sourceOneWayExemption of source.oneWayExemptions) {
           let foundCurrentOneWayExemption = false;
           for (const currentOneWayExemption of current.oneWayExemptions) {
-            if (
-              ObjectComparison(sourceOneWayExemption, currentOneWayExemption[0], [
-                "pkId",
-                "esuId",
-                "changeType",
-                "lastUpdated",
-                "insertedTimestamp",
-                "insertedUser",
-                "lastUser",
-              ])
-            ) {
+            if (ObjectComparison(sourceOneWayExemption, currentOneWayExemption[0], mergeOneWayExemptionKeysToIgnore)) {
               foundCurrentOneWayExemption = true;
               break;
             }
@@ -302,6 +308,101 @@ export function MergeEsuComparison(source, current, isScottish) {
   }
 
   return true;
+}
+
+/**
+ * Method to compare 2 versions of a streets ESUs.
+ *
+ * @param {object} source The source version of the street ESUs.
+ * @param {object} current The current version of the street ESUs.
+ * @returns {boolean} True if they are the same; otherwise false.
+ */
+export function EsusComparison(source, current) {
+  if (source && current) {
+    if (source.length !== current.length) return false;
+
+    if (source.length > 0 && current.length > 0) {
+      let esuSame = true;
+      for (const sourceEsu of source) {
+        const currentEsu = current.filter((x) => x.esuId === sourceEsu.esuId);
+        if (!currentEsu || currentEsu.length !== 1) {
+          esuSame = false;
+          break;
+        }
+
+        if (!ObjectComparison(sourceEsu, currentEsu[0], esuKeysToIgnore)) {
+          esuSame = false;
+          break;
+        }
+
+        // Compare Highway Dedication records
+        if (sourceEsu.highwayDedications && currentEsu[0].highwayDedications) {
+          if (sourceEsu.highwayDedications.length !== currentEsu[0].highwayDedications.length) {
+            esuSame = false;
+            break;
+          }
+
+          if (sourceEsu.highwayDedications.length > 0 && currentEsu[0].highwayDedications.length > 0) {
+            let hdSame = true;
+            for (const sourceHighwayDedication of sourceEsu.highwayDedications) {
+              const currentHighwayDedication = currentEsu[0].highwayDedications.filter(
+                (y) => y.pkId === sourceHighwayDedication.pkId
+              );
+              if (!currentHighwayDedication || currentHighwayDedication.length !== 1) {
+                hdSame = false;
+                break;
+              }
+
+              if (
+                !ObjectComparison(sourceHighwayDedication, currentHighwayDedication[0], highwayDedicationKeysToIgnore)
+              ) {
+                hdSame = false;
+                break;
+              }
+            }
+
+            if (!hdSame) {
+              esuSame = false;
+              break;
+            }
+          }
+        }
+
+        // Compare One-way Exemption records
+        if (sourceEsu.oneWayExemptions && currentEsu[0].oneWayExemptions) {
+          if (sourceEsu.oneWayExemptions.length !== currentEsu[0].oneWayExemptions.length) {
+            esuSame = false;
+            break;
+          }
+
+          if (sourceEsu.oneWayExemptions.length > 0 && currentEsu[0].oneWayExemptions.length > 0) {
+            let oweSame = true;
+            for (const sourceOneWayExemption of sourceEsu.oneWayExemptions) {
+              const currentOneWayExemption = currentEsu[0].oneWayExemptions.filter(
+                (y) => y.pkId === sourceOneWayExemption.pkId
+              );
+              if (!currentOneWayExemption || currentOneWayExemption.length !== 1) {
+                oweSame = false;
+                break;
+              }
+
+              if (!ObjectComparison(sourceOneWayExemption, currentOneWayExemption[0], oneWayExemptionKeysToIgnore)) {
+                oweSame = false;
+                break;
+              }
+            }
+
+            if (!oweSame) {
+              esuSame = false;
+              break;
+            }
+          }
+        }
+      }
+
+      return esuSame;
+    }
+  } else return false;
 }
 
 /**
