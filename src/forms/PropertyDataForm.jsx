@@ -54,6 +54,7 @@
 //    041   22.03.24 Sean Flook                 Show updated address correctly.
 //    042   22.03.24 Sean Flook       PRFRM5_GP Clear information control when required.
 //    043   27.03.24 Sean Flook                 Ensure currentPointCaptureMode is not cleared when still required.
+//    044   27.03.24 Sean Flook                 Undone a previous change as it was causing an issue.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -653,7 +654,6 @@ function PropertyDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setLpiFormData(null);
-      sandboxContext.onSandboxChange("lpi", null);
       propertyContext.onRecordChange(21, null);
       mapContext.onEditMapObject(21, propertyData && propertyData.uprn);
       lastOpenedId.current = 0;
@@ -859,7 +859,6 @@ function PropertyDataForm({ data, loading }) {
   const handleClassificationSelected = (pkId, classificationData, dataIdx, dataLength) => {
     if (pkId === -1) {
       setClassificationFormData(null);
-      sandboxContext.onSandboxChange("classification", null);
       propertyContext.onRecordChange(21, null);
       mapContext.onEditMapObject(null, null);
       lastOpenedId.current = pkId;
@@ -955,7 +954,6 @@ function PropertyDataForm({ data, loading }) {
   const handleOrganisationSelected = (pkId, organisationData, dataIdx, dataLength) => {
     if (pkId === -1) {
       setOrganisationFormData(null);
-      sandboxContext.onSandboxChange("organisation", null);
       propertyContext.onRecordChange(21, null);
       mapContext.onEditMapObject(null, null);
       lastOpenedId.current = 0;
@@ -1049,7 +1047,6 @@ function PropertyDataForm({ data, loading }) {
   const handleSuccessorCrossRefSelected = (pkId, successorCrossRefData, dataIdx, dataLength) => {
     if (pkId === -1) {
       setSuccessorCrossRefFormData(null);
-      sandboxContext.onSandboxChange("successorCrossRef", null);
       propertyContext.onRecordChange(21, null);
       mapContext.onEditMapObject(null, null);
       lastOpenedId.current = 0;
@@ -1143,7 +1140,6 @@ function PropertyDataForm({ data, loading }) {
   const handleProvenanceSelected = (pkId, provenanceData, dataIdx, dataLength) => {
     if (pkId === -1) {
       setProvenanceFormData(null);
-      sandboxContext.onSandboxChange("provenance", null);
       propertyContext.onRecordChange(21, null);
       mapContext.onEditMapObject(null, null);
       lastOpenedId.current = pkId;
@@ -1243,7 +1239,6 @@ function PropertyDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setCrossRefFormData(null);
-      sandboxContext.onSandboxChange("appCrossRef", null);
       propertyContext.onRecordChange(21, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -1337,7 +1332,6 @@ function PropertyDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setNotesFormData(null);
-      sandboxContext.onSandboxChange("propertyNote", null);
       propertyContext.onRecordChange(21, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {

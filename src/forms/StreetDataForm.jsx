@@ -70,6 +70,7 @@
 //    056   22.03.24 Sean Flook           GLB12 Ensure the tab data forms are displayed correctly.
 //    057   26.03.24 Sean Flook        ASD10_GP Only display the ASD layers when on the ASD tab.
 //    058   27.03.24 Sean Flook                 Ensure currentPointCaptureMode is not cleared when still required.
+//    059   27.03.24 Sean Flook                 Undone a previous change as it was causing an issue.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -820,7 +821,6 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setDescriptorFormData(null);
-      sandboxContext.onSandboxChange("streetDescriptor", null);
       streetContext.onRecordChange(11, null, null, null);
       lastOpenedId.current = pkId;
     } else if (pkId === 0) {
@@ -1104,7 +1104,6 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setEsuFormData(null);
-      sandboxContext.onSandboxChange("esu", null);
       streetContext.onRecordChange(13, null, null, null);
       mapContext.onEditMapObject(null, null);
       lastOpenedId.current = 0;
@@ -1313,7 +1312,6 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setHdFormData(null);
-      sandboxContext.onSandboxChange("highwayDedication", null);
       if (currentEsuFormData.current) resetEsuData();
       streetContext.onRecordChange(11, null, null, null);
     } else if (pkId === 0) {
@@ -1489,7 +1487,6 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setOweFormData(null);
-      sandboxContext.onSandboxChange("oneWayExemption", null);
       if (currentEsuFormData.current) resetEsuData();
       streetContext.onRecordChange(11, null, null, null);
     } else if (pkId === 0) {
@@ -1604,7 +1601,6 @@ function StreetDataForm({ data, loading }) {
   const handleSuccessorCrossRefSelected = (pkId, successorCrossRefData, dataIdx, dataLength) => {
     if (pkId === -1) {
       setSuccessorCrossRefFormData(null);
-      sandboxContext.onSandboxChange("successorCrossRef", null);
       streetContext.onRecordChange(11, null, null);
       mapContext.onEditMapObject(null, null);
       lastOpenedId.current = 0;
@@ -1730,7 +1726,6 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setMaintenanceResponsibilityFormData(null);
-      sandboxContext.onSandboxChange("maintenanceResponsibility", null);
       streetContext.onRecordChange(50, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -1867,7 +1862,6 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setReinstatementCategoryFormData(null);
-      sandboxContext.onSandboxChange("reinstatementCategory", null);
       streetContext.onRecordChange(50, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -2003,7 +1997,6 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setOSSpecialDesignationFormData(null);
-      sandboxContext.onSandboxChange("osSpecialDesignation", null);
       streetContext.onRecordChange(50, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -2140,7 +2133,6 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setInterestFormData(null);
-      sandboxContext.onSandboxChange("interest", null);
       streetContext.onRecordChange(50, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -2291,7 +2283,6 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setConstructionFormData(null);
-      sandboxContext.onSandboxChange("construction", null);
       streetContext.onRecordChange(50, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -2455,7 +2446,6 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setSpecialDesignationFormData(null);
-      sandboxContext.onSandboxChange("specialDesignation", null);
       streetContext.onRecordChange(50, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -2610,7 +2600,6 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setHwwFormData(null);
-      sandboxContext.onSandboxChange("hww", null);
       streetContext.onRecordChange(50, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -2757,7 +2746,6 @@ function StreetDataForm({ data, loading }) {
 
     if (pkId === -1) {
       setProwFormData(null);
-      sandboxContext.onSandboxChange("prow", null);
       streetContext.onRecordChange(50, null, null, null);
       lastOpenedId.current = 0;
     } else if (pkId === 0) {
@@ -2945,7 +2933,6 @@ function StreetDataForm({ data, loading }) {
    */
   const handleNoteSelected = (pkId, noteData, dataIdx) => {
     setNotesFormData(null);
-    sandboxContext.onSandboxChange("streetNote", null);
     streetContext.onRecordChange(11, null, null, null);
     mapContext.onEditMapObject(null, null);
     lastOpenedId.current = 0;
@@ -4513,8 +4500,7 @@ function StreetDataForm({ data, loading }) {
       if (
         checkData &&
         checkData.pkId < 0 &&
-        !mergedDividedEsus.current.length &&
-        mergedDividedEsus.current.includes(checkData.pkId) &&
+        (!mergedDividedEsus.current.length || mergedDividedEsus.current.includes(checkData.pkId)) &&
         lastOpenedId.current === 0
       ) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
