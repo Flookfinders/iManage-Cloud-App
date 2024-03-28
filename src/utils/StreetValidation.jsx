@@ -45,6 +45,7 @@
 //    014   12.02.24 Sean Flook                 Added new GeoPlace special designation checks.
 //    015   14.03.24 Sean Flook                 Added new checks.
 //    016   18.03.24 Sean Flook         ESU2_GP Added check for missing geometry on ESU record.
+//    017   28.03.24 Sean Flook                 Fixed check 6200016.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2391,7 +2392,7 @@ export function ValidateConstructionData(data, index, currentLookups) {
 
     // Mandatory Reinstatement Type Code is missing.
     currentCheck = GetCheck(6200016, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, false) && !data.reinstatementTypeCode) {
+    if (includeCheck(currentCheck, false) && data.constructionType === 1 && !data.reinstatementTypeCode) {
       reinstatementTypeCodeErrors.push(GetErrorMessage(currentCheck, false));
     }
 
