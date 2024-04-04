@@ -41,6 +41,7 @@
 //    028   22.03.24 Sean Flook           GLB12 Added shorten.
 //    029   28.03.24 Sean Flook                 Modified GetChangedAssociatedRecords to fully check all ESUs if geometryTypeChanged is true.
 //    030   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
+//    031   04.04.24 Sean Flook       IMANN-320 Added error trapping for GetChangedAssociatedRecords.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -946,6 +947,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
     case "street":
       if (
         sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor &&
+        sandboxContext.currentSandbox.sourceStreet &&
+        sandboxContext.currentSandbox.sourceStreet.streetDescriptors &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceStreet.streetDescriptors.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor.pkId
@@ -957,6 +960,9 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("Descriptor");
       if (
         (sandboxContext.currentSandbox.currentStreetRecords.esu &&
+          sandboxContext.currentSandbox.sourceStreet &&
+          sandboxContext.currentSandbox.sourceStreet.esus &&
+          sandboxContext.currentSandbox.sourceStreet.esus.length > 0 &&
           !ObjectComparison(
             sandboxContext.currentSandbox.sourceStreet.esus.find(
               (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.esu.pkId
@@ -965,6 +971,10 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
             esuKeysToIgnore
           )) ||
         (geometryTypeChanged &&
+          sandboxContext.currentSandbox.sourceStreet &&
+          sandboxContext.currentSandbox.sourceStreet.esus &&
+          sandboxContext.currentSandbox.currentStreet &&
+          sandboxContext.currentSandbox.currentStreet.esus &&
           !EsusComparison(
             sandboxContext.currentSandbox.sourceStreet.esus,
             sandboxContext.currentSandbox.currentStreet.esus
@@ -973,6 +983,9 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("ESU");
       if (
         sandboxContext.currentSandbox.currentStreetRecords.highwayDedication &&
+        sandboxContext.currentSandbox.sourceStreet &&
+        sandboxContext.currentSandbox.sourceStreet.esus &&
+        sandboxContext.currentSandbox.sourceStreet.esus.length > 0 &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceStreet.esus
             .find((x) => x.esuId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.esuId)
@@ -986,6 +999,9 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("Highway Dedication");
       if (
         sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption &&
+        sandboxContext.currentSandbox.sourceStreet &&
+        sandboxContext.currentSandbox.sourceStreet.esus &&
+        sandboxContext.currentSandbox.sourceStreet.esus.length > 0 &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceStreet.esus
             .find((x) => x.esuId === sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.esuId)
@@ -999,6 +1015,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("One-way Exemption");
       if (
         sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef &&
+        sandboxContext.currentSandbox.sourceStreet &&
+        sandboxContext.currentSandbox.sourceStreet.successorCrossRefs &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceStreet.successorCrossRefs.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.pkId
@@ -1010,6 +1028,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("Successor Cross Reference");
       if (
         sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility &&
+        sandboxContext.currentSandbox.sourceStreet &&
+        sandboxContext.currentSandbox.sourceStreet.maintenanceResponsibilities &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceStreet.maintenanceResponsibilities.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility.pkId
@@ -1021,6 +1041,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("Maintenance Responsibility");
       if (
         sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory &&
+        sandboxContext.currentSandbox.sourceStreet &&
+        sandboxContext.currentSandbox.sourceStreet.reinstatementCategories &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceStreet.reinstatementCategories.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory.pkId
@@ -1032,6 +1054,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("Reinstatement Category");
       if (
         sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation &&
+        sandboxContext.currentSandbox.sourceStreet &&
+        sandboxContext.currentSandbox.sourceStreet.specialDesignations &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceStreet.specialDesignations.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation.pkId
@@ -1043,6 +1067,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("Special Designation");
       if (
         sandboxContext.currentSandbox.currentStreetRecords.interest &&
+        sandboxContext.currentSandbox.sourceStreet &&
+        sandboxContext.currentSandbox.sourceStreet.interests &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceStreet.interests.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.interest.pkId
@@ -1054,6 +1080,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("Interest");
       if (
         sandboxContext.currentSandbox.currentStreetRecords.construction &&
+        sandboxContext.currentSandbox.sourceStreet &&
+        sandboxContext.currentSandbox.sourceStreet.constructions &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceStreet.constructions.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.construction.pkId
@@ -1065,6 +1093,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("Construction");
       if (
         sandboxContext.currentSandbox.currentStreetRecords.specialDesignation &&
+        sandboxContext.currentSandbox.sourceStreet &&
+        sandboxContext.currentSandbox.sourceStreet.specialDesignations &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceStreet.specialDesignations.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.specialDesignation.pkId
@@ -1076,6 +1106,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("Special Designation");
       if (
         sandboxContext.currentSandbox.currentStreetRecords.hww &&
+        sandboxContext.currentSandbox.sourceStreet &&
+        sandboxContext.currentSandbox.sourceStreet.heightWidthWeights &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceStreet.heightWidthWeights.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.hww.pkId
@@ -1087,6 +1119,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("Height, Width and Weight");
       if (
         sandboxContext.currentSandbox.currentStreetRecords.prow &&
+        sandboxContext.currentSandbox.sourceStreet &&
+        sandboxContext.currentSandbox.sourceStreet.publicRightOfWays &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceStreet.publicRightOfWays.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.prow.pkId
@@ -1098,6 +1132,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("Public Right of Way");
       if (
         sandboxContext.currentSandbox.currentStreetRecords.note &&
+        sandboxContext.currentSandbox.sourceStreet &&
+        sandboxContext.currentSandbox.sourceStreet.streetNotes &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceStreet.streetNotes.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.note.pkId
@@ -1112,6 +1148,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
     case "property":
       if (
         sandboxContext.currentSandbox.currentPropertyRecords.lpi &&
+        sandboxContext.currentSandbox.sourceProperty &&
+        sandboxContext.currentSandbox.sourceProperty.lpis &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceProperty.lpis.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.lpi.pkId
@@ -1123,6 +1161,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("LPI");
       if (
         (sandboxContext.currentSandbox.currentPropertyRecords.provenance &&
+          sandboxContext.currentSandbox.sourceProperty &&
+          sandboxContext.currentSandbox.sourceProperty.blpuProvenances &&
           !ObjectComparison(
             sandboxContext.currentSandbox.sourceProperty.blpuProvenances.find(
               (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.provenance.pkId
@@ -1135,6 +1175,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("BLPU Provenance");
       if (
         sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef &&
+        sandboxContext.currentSandbox.sourceProperty &&
+        sandboxContext.currentSandbox.sourceProperty.blpuAppCrossRefs &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceProperty.blpuAppCrossRefs.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.pkId
@@ -1146,6 +1188,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("Cross Reference");
       if (
         sandboxContext.currentSandbox.currentPropertyRecords.classification &&
+        sandboxContext.currentSandbox.sourceProperty &&
+        sandboxContext.currentSandbox.sourceProperty.classifications &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceProperty.classifications.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.classification.pkId
@@ -1157,6 +1201,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("Classification");
       if (
         sandboxContext.currentSandbox.currentPropertyRecords.organisation &&
+        sandboxContext.currentSandbox.sourceProperty &&
+        sandboxContext.currentSandbox.sourceProperty.organisations &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceProperty.organisations.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.organisation.pkId
@@ -1168,6 +1214,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("Organisation");
       if (
         sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef &&
+        sandboxContext.currentSandbox.sourceProperty &&
+        sandboxContext.currentSandbox.sourceProperty.successorCrossRefs &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceProperty.successorCrossRefs.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef.pkId
@@ -1179,6 +1227,8 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         associatedRecords.push("Successor Cross Reference");
       if (
         sandboxContext.currentSandbox.currentPropertyRecords.note &&
+        sandboxContext.currentSandbox.sourceProperty &&
+        sandboxContext.currentSandbox.sourceProperty.blpuNotes &&
         !ObjectComparison(
           sandboxContext.currentSandbox.sourceProperty.blpuNotes.find(
             (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.note.pkId
