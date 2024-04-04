@@ -21,6 +21,7 @@
 //    008   11.03.24 Sean Flook           GLB12 Removed bottom margin.
 //    009   12.03.24 Sean Flook            MUL7 Handle saving when X is clicked and user chooses to save changes.
 //    010   12.03.24 Sean Flook            MUL8 Display an alert if the save fails.
+//    011   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -627,6 +628,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
         const savedMapProperties = savedProperty.current.map((x) => {
           return {
             uprn: x.uprn.toString(),
+            parentUprn: x.parentUprn.toString(),
             address: x.lpis.filter((rec) => rec.language === "ENG")[0].address.replaceAll("\r\n", " "),
             formattedAddress: x.lpis.filter((rec) => rec.language === "ENG")[0].address,
             postcode: x.lpis.filter((rec) => rec.language === "ENG")[0].postcode,

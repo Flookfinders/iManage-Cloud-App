@@ -55,6 +55,7 @@
 //    042   22.03.24 Sean Flook       PRFRM5_GP Clear information control when required.
 //    043   27.03.24 Sean Flook                 Ensure currentPointCaptureMode is not cleared when still required.
 //    044   27.03.24 Sean Flook                 Undone a previous change as it was causing an issue.
+//    045   04.04.24 Sean Flook                 Various changes required for adding a child/children, deleting and changing the logical status.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -74,6 +75,7 @@ import SearchContext from "../context/searchContext";
 import LookupContext from "./../context/lookupContext";
 import SettingsContext from "../context/settingsContext";
 import InformationContext from "../context/informationContext";
+
 import {
   FormatDateTime,
   GetUserAvatar,
@@ -82,6 +84,7 @@ import {
   GetWktCoordinates,
   PolygonsEqual,
   ResetContexts,
+  doOpenRecord,
 } from "../utils/HelperUtils";
 import {
   GetNewPropertyData,
@@ -91,7 +94,13 @@ import {
   getBilingualSource,
   getClassificationCode,
   hasPropertyChanged,
+  UpdateRangeAfterSave,
+  UpdateAfterSave,
+  GetPropertyMapData,
+  getWizardParentDetails,
+  PropertyDelete,
 } from "../utils/PropertyUtils";
+import { GetStreetMapData } from "../utils/StreetUtils";
 import ObjectComparison, {
   blpuAppCrossRefKeysToIgnore,
   classificationKeysToIgnore,
@@ -101,13 +110,14 @@ import ObjectComparison, {
   provenanceKeysToIgnore,
   successorCrossRefKeysToIgnore,
 } from "./../utils/ObjectComparison";
+import { GazetteerRoute } from "../PageRouting";
+
 import { useEditConfirmation } from "../pages/EditConfirmationPage";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
+
 import { AppBar, Tabs, Tab, Avatar, Typography, Snackbar, Alert, Toolbar, Button } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import CheckIcon from "@mui/icons-material/Check";
-import HistoryIcon from "@mui/icons-material/History";
-import ErrorIcon from "@mui/icons-material/Error";
+
 import PropertyDetailsTab from "../tabs/PropertyDetailsTab";
 import PropertyLPITab from "../tabs/PropertyLPITab";
 import PropertyClassificationListTab from "../tabs/PropertyClassificationListTab";
@@ -124,8 +134,15 @@ import RelatedTab from "../tabs/RelatedTab";
 import NotesListTab from "../tabs/NotesListTab";
 import NotesDataTab from "../tabs/NotesDataTab";
 import EntityHistoryTab from "../tabs/EntityHistoryTab";
+import AddPropertyWizardDialog from "../dialogs/AddPropertyWizardDialog";
+import HistoricPropertyDialog from "../dialogs/HistoricPropertyDialog";
+
+import CheckIcon from "@mui/icons-material/Check";
+import HistoryIcon from "@mui/icons-material/History";
+import ErrorIcon from "@mui/icons-material/Error";
+
 import { OSGScheme } from "../data/OSGClassification";
-import { GazetteerRoute } from "../PageRouting";
+
 import { adsBlueA, adsMidGreyA, adsWhite, adsLightGreyB } from "../utils/ADSColours";
 import {
   GetTabIconStyle,
@@ -218,8 +235,18 @@ function PropertyDataForm({ data, loading }) {
 
   const [saveDisabled, setSaveDisabled] = useState(true);
 
-  const confirmDialog = useEditConfirmation(false);
-  const saveConfirmDialog = useSaveConfirmation(false);
+  const confirmDialog = useEditConfirmation();
+  const saveConfirmDialog = useSaveConfirmation();
+
+  const propertyWizardType = useRef(null);
+  const propertyWizardParent = useRef(null);
+  const [openPropertyWizard, setOpenPropertyWizard] = useState(false);
+
+  const [openHistoricProperty, setOpenHistoricProperty] = useState(false);
+
+  const [alertOpen, setAlertOpen] = useState(false);
+  const alertType = useRef(null);
+  const deleteResult = useRef(null);
 
   const [blpuFocusedField, setBlpuFocusedField] = useState(null);
   const [lpiFocusedField, setLpiFocusedField] = useState(null);
@@ -229,6 +256,9 @@ function PropertyDataForm({ data, loading }) {
   const [provenanceFocusedField, setProvenanceFocusedField] = useState(null);
   const [crossRefFocusedField, setCrossRefFocusedField] = useState(null);
   const [noteFocusedField, setNoteFocusedField] = useState(null);
+
+  const wizardUprn = useRef(null);
+  const historicRec = useRef(null);
 
   /**
    * Sets the associated property data for the current property.
@@ -2104,67 +2134,12 @@ function PropertyDataForm({ data, loading }) {
   /**
    * Event to handle adding a new property.
    *
-   * @param {number} usrn The USRN of the street the property is being added to.
-   * @param {number} easting The easting to be used for the new property.
-   * @param {number} northing The northing to be used for the new property.
-   * @param {object} parent The details of the parent property if creating a child property.
+   * @param {number} usrn The USRN of the street that the property is being created on.
+   * @param {object|null} parent If this is a child property this will hold the parent information; otherwise it is null.
+   * @param {boolean} isRange True if user wants to create a range of properties; otherwise false.
    */
-  const handlePropertyAdd = (usrn, easting, northing, parent) => {
-    const propertyChanged = hasPropertyChanged(
-      propertyContext.currentProperty.newProperty,
-      sandboxContext.currentSandbox
-    );
-
-    if (propertyChanged) {
-      saveConfirmDialog(true)
-        .then((result) => {
-          if (result === "save") {
-            if (propertyContext.validateData()) {
-              failedValidation.current = false;
-              handleSaveClicked();
-            } else {
-              failedValidation.current = true;
-              saveResult.current = false;
-              setSaveOpen(true);
-            }
-          }
-          ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
-          handleAddProperty(usrn, easting, northing, parent);
-        })
-        .catch(() => {});
-    } else {
-      ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
-      handleAddProperty(usrn, easting, northing, parent);
-    }
-  };
-
-  /**
-   * Event to handle adding a new property.
-   *
-   * @param {number} usrn The USRN of the street the property is being added to.
-   * @param {number} easting The easting to be used for the new property.
-   * @param {number} northing The northing to be used for the new property.
-   * @param {object} parent The details of the parent property if creating a child property.
-   */
-  const handleAddProperty = (usrn, easting, northing, parent) => {
-    streetContext.onStreetChange(0, "", false);
-
-    propertyContext.onPropertyChange(0, usrn, null, null, null, easting, northing, true, parent);
-
-    const currentSearchProperties = [
-      {
-        uprn: 0,
-        address: null,
-        postcode: null,
-        easting: easting,
-        northing: northing,
-        logicalStatus: 6,
-        classificationCode: "U",
-      },
-    ];
-
-    mapContext.onSearchDataChange([], currentSearchProperties, null, "0");
-    mapContext.onEditMapObject(21, 0);
+  const handlePropertyAdd = (usrn, parent, isRange) => {
+    propertyContext.onLeavingProperty("createChild", { usrn: usrn, parent: parent, isRange: isRange });
   };
 
   /**
@@ -2177,101 +2152,61 @@ function PropertyDataForm({ data, loading }) {
   /**
    * Event to add a child to the existing property.
    */
-  const handleChildAdd = () => {
+  const handleChildAdd = (isRange) => {
     const engLpiData = propertyData.lpis
       .filter((x) => x.language === "ENG")
       .sort((a, b) => a.logicalStatus - b.logicalStatus);
-    const cymLpiData = propertyData.lpis
-      .filter((x) => x.language === "CYM")
-      .sort((a, b) => a.logicalStatus - b.logicalStatus);
-    const gaeLpiData = propertyData.lpis
-      .filter((x) => x.language === "GAE")
-      .sort((a, b) => a.logicalStatus - b.logicalStatus);
 
-    const parent =
-      cymLpiData && cymLpiData.length > 0 && engLpiData && engLpiData.length > 0
-        ? {
-            uprn: propertyData.uprn,
-            rpc: propertyData.rpc,
-            eng: {
-              paoStartNumber: engLpiData[0].paoStartNumber,
-              paoStartSuffix: engLpiData[0].paoStartSuffix,
-              paoEndNumber: engLpiData[0].paoEndNumber,
-              paoEndSuffix: engLpiData[0].paoEndSuffix,
-              paoText: engLpiData[0].paoText,
-              address: engLpiData[0].address,
-              postTownRef: engLpiData[0].postTownRef,
-              postcodeRef: engLpiData[0].postcodeRef,
-              postTown: engLpiData[0].postTown,
-              postcode: engLpiData[0].postcode,
-            },
-            cym: {
-              paoStartNumber: cymLpiData[0].paoStartNumber,
-              paoStartSuffix: cymLpiData[0].paoStartSuffix,
-              paoEndNumber: cymLpiData[0].paoEndNumber,
-              paoEndSuffix: cymLpiData[0].paoEndSuffix,
-              paoText: cymLpiData[0].paoText,
-              address: cymLpiData[0].address,
-              postTownRef: cymLpiData[0].postTownRef,
-              postcodeRef: cymLpiData[0].postcodeRef,
-              postTown: cymLpiData[0].postTown,
-              postcode: cymLpiData[0].postcode,
-            },
-          }
-        : gaeLpiData && gaeLpiData.length > 0 && engLpiData && engLpiData.length > 0
-        ? {
-            uprn: propertyData.uprn,
-            rpc: propertyData.rpc,
-            eng: {
-              paoStartNumber: engLpiData[0].paoStartNumber,
-              paoStartSuffix: engLpiData[0].paoStartSuffix,
-              paoEndNumber: engLpiData[0].paoEndNumber,
-              paoEndSuffix: engLpiData[0].paoEndSuffix,
-              paoText: engLpiData[0].paoText,
-              address: engLpiData[0].address,
-              postTownRef: engLpiData[0].postTownRef,
-              postcodeRef: engLpiData[0].postcodeRef,
-              postTown: engLpiData[0].postTown,
-              postcode: engLpiData[0].postcode,
-            },
-            gae: {
-              paoStartNumber: gaeLpiData[0].paoStartNumber,
-              paoStartSuffix: gaeLpiData[0].paoStartSuffix,
-              paoEndNumber: gaeLpiData[0].paoEndNumber,
-              paoEndSuffix: gaeLpiData[0].paoEndSuffix,
-              paoText: gaeLpiData[0].paoText,
-              address: gaeLpiData[0].address,
-              postTownRef: gaeLpiData[0].postTownRef,
-              postcodeRef: gaeLpiData[0].postcodeRef,
-              postTown: gaeLpiData[0].postTown,
-              postcode: gaeLpiData[0].postcode,
-            },
-          }
-        : engLpiData && engLpiData.length > 0
-        ? {
-            uprn: propertyData.uprn,
-            rpc: propertyData.rpc,
-            eng: {
-              paoStartNumber: engLpiData[0].paoStartNumber,
-              paoStartSuffix: engLpiData[0].paoStartSuffix,
-              paoEndNumber: engLpiData[0].paoEndNumber,
-              paoEndSuffix: engLpiData[0].paoEndSuffix,
-              paoText: engLpiData[0].paoText,
-              address: engLpiData[0].address,
-              postTownRef: engLpiData[0].postTownRef,
-              postcodeRef: engLpiData[0].postcodeRef,
-              postTown: engLpiData[0].postTown,
-              postcode: engLpiData[0].postcode,
-            },
-          }
-        : null;
+    const parent = getWizardParentDetails(propertyData, lookupContext.currentLookups.postcodes);
 
-    handlePropertyAdd(
-      propertyContext.currentProperty.usrn,
-      propertyContext.currentProperty.easting,
-      propertyContext.currentProperty.northing,
-      parent
-    );
+    handlePropertyAdd(engLpiData[0].usrn, parent, isRange);
+  };
+
+  /**
+   * Event to handle deleting the current property.
+   *
+   * @param {boolean} deleteChildren True if the user has confirmed to delete the child properties when deleting a parent property; otherwise false.
+   */
+  const handleDeleteProperty = async (deleteChildren) => {
+    const result = await PropertyDelete(propertyData.uprn, deleteChildren, userContext.currentUser.token);
+
+    deleteResult.current = result;
+    alertType.current = "deleteProperty";
+
+    if (result) {
+      const newPropertySearchData = deleteChildren
+        ? searchContext.currentSearchData.results.filter(
+            (x) =>
+              x.type === 15 ||
+              (x.uprn.toString() !== propertyData.uprn.toString() &&
+                (!x.parent_uprn || x.parent_uprn.toString() !== propertyData.uprn.toString()))
+          )
+        : searchContext.currentSearchData.results.filter(
+            (x) => x.type === 15 || x.uprn.toString() !== propertyData.uprn.toString()
+          );
+      searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newPropertySearchData);
+
+      const newMapBackgroundProperties = deleteChildren
+        ? mapContext.currentBackgroundData.properties.filter((x) => x.uprn.toString() !== propertyData.uprn.toString())
+        : mapContext.currentBackgroundData.properties.filter((x) => x.uprn.toString() !== propertyData.uprn.toString());
+      const newMapSearchProperties = deleteChildren
+        ? mapContext.currentSearchData.properties.filter(
+            (x) =>
+              x.uprn.toString() !== propertyData.uprn.toString() &&
+              (!x.parentUprn || x.parentUprn.toString() !== propertyData.uprn.toString())
+          )
+        : mapContext.currentSearchData.properties.filter((x) => x.uprn.toString() !== propertyData.uprn.toString());
+      mapContext.onBackgroundDataChange(
+        mapContext.currentBackgroundData.streets,
+        mapContext.currentBackgroundData.unassignedEsus,
+        newMapBackgroundProperties
+      );
+      mapContext.onSearchDataChange(mapContext.currentSearchData.streets, newMapSearchProperties, null, null);
+
+      searchContext.onNavigateBack(true);
+    }
+
+    setAlertOpen(true);
   };
 
   /**
@@ -2434,6 +2369,9 @@ function PropertyDataForm({ data, loading }) {
           parentUprn: srcData.parentUprn,
           parentAddress: srcData.parentAddress,
           parentPostcode: srcData.parentPostcode,
+          currentParentChildLevel: propertyData.currentParentChildLevel,
+          existingParentChildLevels: propertyData.existingParentChildLevels,
+          childCount: propertyData.childCount,
           neverExport: srcData.neverExport,
           siteSurvey: srcData.siteSurvey,
           uprn: propertyData.uprn,
@@ -2467,6 +2405,9 @@ function PropertyDataForm({ data, loading }) {
           parentUprn: srcData.parentUprn,
           parentAddress: srcData.parentAddress,
           parentPostcode: srcData.parentPostcode,
+          currentParentChildLevel: propertyData.currentParentChildLevel,
+          existingParentChildLevels: propertyData.existingParentChildLevels,
+          childCount: propertyData.childCount,
           neverExport: srcData.neverExport,
           siteSurvey: srcData.siteSurvey,
           uprn: propertyData.uprn,
@@ -2494,6 +2435,95 @@ function PropertyDataForm({ data, loading }) {
           successorCrossRefs: propertyData.successorCrossRefs,
           blpuNotes: propertyData.blpuNotes,
           lpis: propertyData.lpis,
+        };
+
+    updatePropertyData(newPropertyData);
+  };
+
+  /**
+   * Event to handle when the property is rejected or historicised.
+   *
+   * @param {object} newLogicalStatus The new logical status of the property.
+   */
+  const handleLogicalStatusChanged = (newLogicalStatus) => {
+    const currentDate = GetCurrentDate(false);
+
+    const newPropertyData = !settingsContext.isScottish
+      ? {
+          blpuStateDate: propertyData.blpuStateDate,
+          parentUprn: propertyData.parentUprn,
+          parentAddress: propertyData.parentAddress,
+          parentPostcode: propertyData.parentPostcode,
+          currentParentChildLevel: propertyData.currentParentChildLevel,
+          existingParentChildLevels: propertyData.existingParentChildLevels,
+          childCount: propertyData.childCount,
+          neverExport: propertyData.neverExport,
+          siteSurvey: propertyData.siteSurvey,
+          uprn: propertyData.uprn,
+          logicalStatus: newLogicalStatus,
+          endDate: currentDate,
+          blpuState: propertyData.blpuState,
+          startDate: propertyData.startDate,
+          blpuClass: propertyData.blpuClass,
+          localCustodianCode: propertyData.localCustodianCode,
+          organisation: propertyData.organisation,
+          xcoordinate: propertyData.xcoordinate,
+          ycoordinate: propertyData.ycoordinate,
+          wardCode: propertyData.wardCode,
+          parishCode: propertyData.parishCode,
+          pkId: propertyData.pkId,
+          changeType: propertyData.uprn === 0 ? "I" : "U",
+          rpc: propertyData.rpc,
+          entryDate: propertyData.entryDate,
+          lastUpdateDate: propertyData.lastUpdateDate,
+          relatedPropertyCount: propertyData.relatedPropertyCount,
+          relatedStreetCount: propertyData.relatedStreetCount,
+          propertyLastUpdated: propertyData.propertyLastUpdated,
+          propertyLastUser: propertyData.propertyLastUser,
+          blpuAppCrossRefs: propertyData.blpuAppCrossRefs,
+          blpuProvenances: propertyData.blpuProvenances,
+          blpuNotes: propertyData.blpuNotes,
+          lpis: propertyData.lpis.map((x) => {
+            return { ...x, logicalStatus: newLogicalStatus, endDate: currentDate };
+          }),
+        }
+      : {
+          blpuStateDate: propertyData.blpuStateDate,
+          parentUprn: propertyData.parentUprn,
+          parentAddress: propertyData.parentAddress,
+          parentPostcode: propertyData.parentPostcode,
+          currentParentChildLevel: propertyData.currentParentChildLevel,
+          existingParentChildLevels: propertyData.existingParentChildLevels,
+          childCount: propertyData.childCount,
+          neverExport: propertyData.neverExport,
+          siteSurvey: propertyData.siteSurvey,
+          uprn: propertyData.uprn,
+          logicalStatus: newLogicalStatus,
+          endDate: currentDate,
+          startDate: propertyData.startDate,
+          blpuState: propertyData.blpuState,
+          custodianCode: propertyData.custodianCode,
+          level: propertyData.level,
+          xcoordinate: propertyData.xcoordinate,
+          ycoordinate: propertyData.ycoordinate,
+          pkId: propertyData.pkId,
+          changeType: propertyData.uprn === 0 ? "I" : "U",
+          rpc: propertyData.rpc,
+          entryDate: propertyData.entryDate,
+          lastUpdateDate: propertyData.lastUpdateDate,
+          relatedPropertyCount: propertyData.relatedPropertyCount,
+          relatedStreetCount: propertyData.relatedStreetCount,
+          propertyLastUpdated: propertyData.propertyLastUpdated,
+          propertyLastUser: propertyData.propertyLastUser,
+          blpuAppCrossRefs: propertyData.blpuAppCrossRefs,
+          blpuProvenances: propertyData.blpuProvenances,
+          classifications: propertyData.classifications,
+          organisations: propertyData.organisations,
+          successorCrossRefs: propertyData.successorCrossRefs,
+          blpuNotes: propertyData.blpuNotes,
+          lpis: propertyData.lpis.map((x) => {
+            return { ...x, logicalStatus: newLogicalStatus, endDate: currentDate };
+          }),
         };
 
     updatePropertyData(newPropertyData);
@@ -3569,6 +3599,110 @@ function PropertyDataForm({ data, loading }) {
     );
   };
 
+  const handlePropertyWizardDone = async (wizardData) => {
+    if (wizardData && wizardData.savedProperty) {
+      const isRange = Array.isArray(wizardData.savedProperty);
+
+      if (isRange) {
+        UpdateRangeAfterSave(
+          wizardData.savedProperty,
+          lookupContext,
+          mapContext,
+          propertyContext,
+          sandboxContext,
+          settingsContext.isWelsh,
+          searchContext
+        );
+      } else {
+        UpdateAfterSave(
+          wizardData.savedProperty,
+          lookupContext,
+          mapContext,
+          propertyContext,
+          sandboxContext,
+          settingsContext.isWelsh,
+          searchContext
+        );
+      }
+
+      if (!isRange) history.goBack();
+
+      const parentData =
+        isRange && wizardData.savedProperty
+          ? await GetPropertyMapData(wizardData.savedProperty[0].parentUprn, userContext.currentUser.token)
+          : null;
+      const engLpis = parentData && parentData.lpis ? parentData.lpis.filter((x) => x.language === "ENG") : null;
+      const parent =
+        parentData && engLpis
+          ? {
+              uprn: parentData.uprn,
+              usrn: engLpis[0].usrn,
+              easting: parentData.xcoordinate,
+              northing: parentData.ycoordinate,
+              address: engLpis[0].address,
+              postcode: engLpis[0].postcode,
+            }
+          : null;
+
+      propertyContext.onWizardDone(wizardData, isRange, parent, "property");
+    } else propertyContext.onWizardDone(wizardData, false, null, "property");
+
+    if (wizardData.type !== "view") {
+      sandboxContext.resetSandbox();
+      streetContext.resetStreet();
+      streetContext.resetStreetErrors();
+      propertyContext.resetProperty();
+      propertyContext.resetPropertyErrors();
+      mapContext.onEditMapObject(null, null);
+    }
+  };
+
+  /**
+   * Event to handle when the property wizard closes.
+   */
+  const handlePropertyWizardClose = () => {
+    propertyContext.resetProperty();
+    setOpenPropertyWizard(false);
+  };
+
+  /**
+   * Event to handle when the alert closes.
+   *
+   * @param {object} event The event object
+   * @param {string} reason The reason for the alert closing
+   * @returns
+   */
+  const handleAlertClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setAlertOpen(false);
+  };
+
+  /**
+   * Event to handle when the historic property dialog is closed.
+   *
+   * @param {string} action The action taken from the dialog
+   */
+  const handleHistoricPropertyClose = (action) => {
+    setOpenHistoricProperty(false);
+    if (action === "continue") {
+      if (historicRec.current) {
+        doOpenRecord(
+          historicRec.current.property,
+          historicRec.current.related,
+          searchContext.currentSearchData.results,
+          mapContext,
+          streetContext,
+          propertyContext,
+          userContext.currentUser.token,
+          settingsContext.isScottish
+        );
+      }
+    }
+  };
+
   // Update BLPU coordinates
   useEffect(() => {
     const contextProperty =
@@ -3665,6 +3799,7 @@ function PropertyDataForm({ data, loading }) {
           const currentSearchProperties = [
             {
               uprn: newPropertyData.uprn,
+              parentUprn: newPropertyData.parentUprn,
               address: engLpi[0].address,
               postcode: engLpi[0].postcode,
               easting: newX,
@@ -4341,6 +4476,266 @@ function PropertyDataForm({ data, loading }) {
     if (propertyChanged && !["property"].includes(mapContext.currentPointCaptureMode)) mapContext.onSetCoordinate(null);
   }, [propertyContext, sandboxContext.currentSandbox, mapContext]);
 
+  useEffect(() => {
+    const doAfterStep = async () => {
+      ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
+      saveResult.current = true;
+      switch (propertyContext.leavingProperty.why) {
+        case "createChild":
+          await GetStreetMapData(
+            propertyContext.leavingProperty.information.usrn,
+            userContext.currentUser.token,
+            settingsContext.isScottish
+          ).then((result) => {
+            if (result && result.state !== 4) {
+              propertyContext.resetPropertyErrors();
+              propertyContext.onWizardDone(null, false, null, null);
+              mapContext.onWizardSetCoordinate(null);
+              propertyWizardType.current = propertyContext.leavingProperty.information.isRange
+                ? !propertyContext.leavingProperty.information.parent
+                  ? "range"
+                  : "rangeChildren"
+                : !propertyContext.leavingProperty.information.parent
+                ? "property"
+                : "child";
+              if (propertyContext.leavingProperty.information.parent)
+                propertyWizardParent.current = propertyContext.leavingProperty.information.parent;
+              else {
+                const engDescriptor = result.streetDescriptors.filter((x) => x.language === "ENG");
+                if (engDescriptor) {
+                  propertyWizardParent.current = {
+                    usrn: propertyContext.leavingProperty.information.usrn,
+                    address: engDescriptor[0].streetDescriptor,
+                  };
+                }
+              }
+              setOpenPropertyWizard(true);
+            } else {
+              alertType.current = propertyContext.leavingProperty.information.isRange
+                ? "invalidRangeState"
+                : "invalidSingleState";
+              setAlertOpen(true);
+            }
+          });
+          break;
+
+        default:
+          break;
+      }
+    };
+
+    if (propertyContext.leavingProperty) {
+      const propertyChanged = hasPropertyChanged(
+        propertyContext.currentProperty.newProperty,
+        sandboxContext.currentSandbox
+      );
+
+      if (propertyChanged) {
+        associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext, provenanceChanged.current);
+
+        saveConfirmDialog(associatedRecords.current.length > 0 ? associatedRecords.current : true)
+          .then((result) => {
+            if (result === "save") {
+              if (propertyContext.validateData()) {
+                failedValidation.current = false;
+                const currentProperty = GetCurrentPropertyData(
+                  propertyData,
+                  sandboxContext,
+                  lookupContext,
+                  settingsContext.isWelsh,
+                  settingsContext.isScottish
+                );
+
+                SavePropertyAndUpdate(
+                  currentProperty,
+                  propertyContext.currentProperty.newProperty,
+                  propertyContext,
+                  userContext.currentUser.token,
+                  lookupContext,
+                  searchContext,
+                  mapContext,
+                  sandboxContext,
+                  settingsContext.isScottish,
+                  settingsContext.isWelsh
+                ).then((result) => {
+                  if (result) {
+                    setPropertyData(result);
+
+                    saveResult.current = true;
+                    setSaveOpen(true);
+                  } else {
+                    saveResult.current = false;
+                    setSaveOpen(true);
+                  }
+                });
+              } else {
+                failedValidation.current = true;
+                saveResult.current = false;
+                setSaveOpen(true);
+              }
+            } else if (result === "discard") {
+              doAfterStep();
+            }
+          })
+          .catch(() => {});
+      } else doAfterStep();
+
+      propertyContext.onLeavingProperty(null, null);
+    }
+  }, [
+    saveConfirmDialog,
+    propertyData,
+    lookupContext,
+    searchContext,
+    mapContext,
+    propertyContext,
+    sandboxContext,
+    streetContext,
+    settingsContext.isScottish,
+    settingsContext.isWelsh,
+    userContext.currentUser.token,
+  ]);
+
+  useEffect(() => {
+    if (
+      propertyContext.wizardData &&
+      propertyContext.wizardData.source &&
+      propertyContext.wizardData.source === "property"
+    ) {
+      if (!propertyContext.wizardData.savedProperty || propertyContext.wizardData.savedProperty.length === 0) {
+        if (propertyContext.wizardData.type === "close") setOpenPropertyWizard(false);
+      } else {
+        const savedUprn = Array.isArray(propertyContext.wizardData.savedProperty)
+          ? propertyContext.wizardData.savedProperty[0].uprn
+          : propertyContext.wizardData.savedProperty.uprn;
+
+        if (savedUprn !== wizardUprn.current) {
+          wizardUprn.current = savedUprn;
+
+          switch (propertyContext.wizardData.type) {
+            case "view":
+              const rangeEngLpis = ["range", "rangeChildren"].includes(propertyContext.wizardData.variant)
+                ? propertyContext.wizardData.savedProperty[0].lpis.filter((x) => x.language === "ENG")
+                : null;
+              switch (propertyContext.wizardData.variant) {
+                case "range":
+                  doOpenRecord(
+                    {
+                      type: 15,
+                      usrn: rangeEngLpis[0].usrn,
+                    },
+                    rangeEngLpis[0].uprn,
+                    searchContext.currentSearchData.results,
+                    mapContext,
+                    streetContext,
+                    propertyContext,
+                    userContext.currentUser.token,
+                    settingsContext.isScottish
+                  );
+                  break;
+
+                case "rangeChildren":
+                  const parentRec = {
+                    type: 24,
+                    uprn: propertyContext.wizardData.parent.uprn,
+                    address: propertyContext.wizardData.parent.address,
+                    formattedAddress: propertyContext.wizardData.parent.address,
+                    postcode: propertyContext.wizardData.parent.postcode,
+                    easting: propertyContext.wizardData.parent.xcoordinate,
+                    northing: propertyContext.wizardData.parent.ycoordinate,
+                    logical_status: propertyContext.wizardData.parent.logicalStatus,
+                    classification_code: propertyContext.wizardData.parent.blpuClass,
+                  };
+                  const relatedObj = {
+                    parent: propertyContext.wizardData.parent.uprn,
+                    property: rangeEngLpis[0].uprn,
+                    userToken: userContext.currentUser.token,
+                  };
+
+                  if (parentRec.logical_status === 8) {
+                    historicRec.current = { property: parentRec, related: relatedObj };
+                    setOpenHistoricProperty(true);
+                  } else
+                    doOpenRecord(
+                      parentRec,
+                      relatedObj,
+                      searchContext.currentSearchData.results,
+                      mapContext,
+                      streetContext,
+                      propertyContext,
+                      userContext.currentUser.token,
+                      settingsContext.isScottish
+                    );
+                  break;
+
+                default:
+                  const engLpis = propertyContext.wizardData.savedProperty.lpis.filter((x) => x.language === "ENG");
+                  const savedRec = {
+                    type: 24,
+                    uprn: propertyContext.wizardData.savedProperty.uprn,
+                    address: engLpis[0].address,
+                    formattedAddress: engLpis[0].address,
+                    postcode: engLpis[0].postcode,
+                    easting: propertyContext.wizardData.savedProperty.xcoordinate,
+                    northing: propertyContext.wizardData.savedProperty.ycoordinate,
+                    logical_status: propertyContext.wizardData.savedProperty.logicalStatus,
+                    classification_code: propertyContext.wizardData.savedProperty.blpuClass,
+                  };
+
+                  if (savedRec.logical_status === 8) {
+                    historicRec.current = { property: savedRec, related: null };
+                    setOpenHistoricProperty(true);
+                  } else
+                    doOpenRecord(
+                      savedRec,
+                      null,
+                      searchContext.currentSearchData.results,
+                      mapContext,
+                      streetContext,
+                      propertyContext,
+                      userContext.currentUser.token,
+                      settingsContext.isScottish
+                    );
+                  break;
+              }
+              setOpenPropertyWizard(false);
+              break;
+
+            case "addChild":
+              propertyContext.resetPropertyErrors();
+              propertyContext.onWizardDone(null, false, null, null);
+              mapContext.onWizardSetCoordinate(null);
+              propertyWizardType.current = "child";
+              propertyWizardParent.current = propertyContext.wizardData.parent;
+              setOpenPropertyWizard(true);
+              break;
+
+            case "addChildren":
+              propertyContext.resetPropertyErrors();
+              propertyContext.onWizardDone(null, false, null, null);
+              mapContext.onWizardSetCoordinate(null);
+              propertyWizardType.current = "rangeChildren";
+              propertyWizardParent.current = propertyContext.wizardData.parent;
+              setOpenPropertyWizard(true);
+              break;
+
+            default:
+              setOpenPropertyWizard(false);
+              break;
+          }
+        }
+      }
+    }
+  }, [
+    propertyContext.wizardData,
+    mapContext,
+    propertyContext,
+    streetContext,
+    userContext.currentUser.token,
+    searchContext.currentSearchData.results,
+    settingsContext.isScottish,
+  ]);
+
   return (
     <div id="property-data-form">
       <AppBar position="static" color="default" sx={{ height: `${dataFormToolbarHeight}px` }}>
@@ -4619,11 +5014,13 @@ function PropertyDataForm({ data, loading }) {
               handleLPISelected(pkId, lpiData, dataIdx, dataLength)
             }
             onLpiDeleted={(pkId) => handleDeleteLPI(pkId)}
-            onDataChanged={(srcData) => handleBLPUDataChanged(srcData)}
+            onDataChanged={handleBLPUDataChanged}
+            onLogicalStatusChanged={handleLogicalStatusChanged}
             onOrganisationChanged={(oldValue, newValue, srcData) =>
               handleOrganisationChanged(oldValue, newValue, srcData)
             }
             onChildAdd={handleChildAdd}
+            onDeleteProperty={handleDeleteProperty}
           />
         )}
       </TabPanel>
@@ -4868,7 +5265,7 @@ function PropertyDataForm({ data, loading }) {
           propertyCount={propertyData ? propertyData.relatedPropertyCount : 0}
           streetCount={propertyData ? propertyData.relatedStreetCount : 0}
           onSetCopyOpen={(open, dataType) => handleCopyOpen(open, dataType)}
-          onPropertyAdd={(usrn, easting, northing, parent) => handlePropertyAdd(usrn, easting, northing, parent)}
+          onPropertyAdd={(usrn, parent, isRange) => handlePropertyAdd(usrn, parent, isRange)}
         />
       </TabPanel>
       <TabPanel value={value} index={settingsContext.isScottish ? 7 : 4}>
@@ -4979,6 +5376,39 @@ function PropertyDataForm({ data, loading }) {
           </Button>
         </Toolbar>
       </AppBar>
+      <AddPropertyWizardDialog
+        variant={propertyWizardType.current}
+        parent={propertyWizardParent.current}
+        isOpen={openPropertyWizard}
+        onDone={handlePropertyWizardDone}
+        onClose={handlePropertyWizardClose}
+      />
+      <HistoricPropertyDialog open={openHistoricProperty} onClose={handleHistoricPropertyClose} />
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        onClose={handleAlertClose}
+      >
+        <Alert
+          sx={GetAlertStyle(alertType.current === "deleteProperty" ? deleteResult.current : false)}
+          icon={GetAlertIcon(alertType.current === "deleteProperty" ? deleteResult.current : false)}
+          onClose={handleAlertClose}
+          severity={GetAlertSeverity(alertType.current === "deleteProperty" ? deleteResult.current : false)}
+          elevation={6}
+          variant="filled"
+        >{`${
+          alertType.current === "invalidSingleState"
+            ? `You are not allowed to create a child on a closed street.`
+            : alertType.current === "invalidRangeState"
+            ? `You are not allowed to create children on a closed street.`
+            : alertType.current === "deleteProperty"
+            ? deleteResult.current
+              ? "The property has been successfully deleted."
+              : "Failed to delete the property."
+            : `Unknown error.`
+        }`}</Alert>
+      </Snackbar>
     </div>
   );
 }

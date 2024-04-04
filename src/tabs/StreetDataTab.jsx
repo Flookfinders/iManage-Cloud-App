@@ -31,6 +31,7 @@
 //    018   21.03.24 Joshua McCormick IMANN-280 Adjusted toolbar spacing
 //    019   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    020   22.03.24 Sean Flook                 Sort the descriptor records so that the English one always appears first.
+//    021   04.04.24 Sean Flook                 Changes required to handle deleting ESUs when deleting a street.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -141,6 +142,8 @@ function StreetDataTab({
   const [excludeFromExport, setExcludeFromExport] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+
+  const [childCount, setChildCount] = useState(0);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
   const [adminUser, setAdminUser] = useState(false);
@@ -737,6 +740,7 @@ function StreetDataTab({
           count: data.streetDescriptors.length,
         });
       if (data.esus && data.esus.length > 0) {
+        setChildCount(data.esus.length);
         associatedRecords.push({
           type: "ESU",
           count: data.esus.length,
@@ -759,6 +763,8 @@ function StreetDataTab({
             type: "one-way exemption",
             count: oweCount,
           });
+      } else {
+        setChildCount(0);
       }
       if (HasASD()) {
         if (data.interests && data.interests.length > 0)
@@ -1312,6 +1318,7 @@ function StreetDataTab({
           variant="street"
           open={openDeleteConfirmation}
           associatedRecords={streetAssociatedRecords}
+          childCount={childCount}
           onClose={handleCloseDeleteConfirmation}
         />
       </div>

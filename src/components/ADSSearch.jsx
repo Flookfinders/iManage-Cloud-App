@@ -36,6 +36,7 @@
 //    023   16.02.24 Sean Flook        ESU27_GP Tweaked styling for new Add street button.
 //    024   27.02.24 Sean Flook           MUL16 Changes required to allow control to be used for make child of dialog.
 //    025   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
+//    026   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -414,6 +415,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
       .map((x) => {
         let propObj = {
           uprn: x.uprn,
+          parentUprn: x.parent_uprn,
           address: x.address,
           formattedAddress: x.formattedaddress,
           postcode: x.postcode,
@@ -689,6 +691,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
     searchProperties.current = [
       {
         uprn: rec.uprn,
+        parentUprn: rec.parent_uprn,
         address: rec.address,
         formattedAddress: rec.formattedAddress,
         postcode: rec.postcode,

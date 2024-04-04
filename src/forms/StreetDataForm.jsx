@@ -71,6 +71,7 @@
 //    057   26.03.24 Sean Flook        ASD10_GP Only display the ASD layers when on the ASD tab.
 //    058   27.03.24 Sean Flook                 Ensure currentPointCaptureMode is not cleared when still required.
 //    059   27.03.24 Sean Flook                 Undone a previous change as it was causing an issue.
+//    060   04.04.24 Sean Flook                 Fix bug.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -9774,7 +9775,9 @@ function StreetDataForm({ data, loading }) {
 
           switch (propertyContext.wizardData.type) {
             case "view":
-              const rangeEngLpis = propertyContext.wizardData.savedProperty[0].lpis.filter((x) => x.language === "ENG");
+              const rangeEngLpis = ["range", "rangeChildren"].includes(propertyContext.wizardData.variant)
+                ? propertyContext.wizardData.savedProperty[0].lpis.filter((x) => x.language === "ENG")
+                : null;
               switch (propertyContext.wizardData.variant) {
                 case "range":
                   doOpenRecord(

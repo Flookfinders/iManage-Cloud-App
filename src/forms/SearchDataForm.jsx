@@ -25,6 +25,7 @@
 //    012   18.03.24 Sean Flook            GLB8 Fixed highlighting of tabs.
 //    013   21.03.24 Joshua McCormick IMANN_280 Removed unnecessary tabContainerStyle
 //    014   22.03.24 Sean Flook           GLB12 Fixed the height of the control to ensure the rest of the form can be calculated correctly.
+//    015   04.04.24 Sean Flook                 Handle deleting of ESUs on streets and child properties from parent properties. Added parentUprn to mapContext search data for properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -384,6 +385,7 @@ function SearchDataForm() {
       .map((x) => {
         let propObj = {
           uprn: x.uprn,
+          parentUprn: x.parent_uprn,
           address: x.address,
           formattedAddress: x.formattedaddress,
           postcode: x.postcode,
@@ -558,6 +560,7 @@ function SearchDataForm() {
       .map((x) => {
         let propObj = {
           uprn: x.uprn,
+          parentUprn: x.parent_uprn,
           address: x.address,
           formattedAddress: x.formattedaddress,
           postcode: x.postcode,
@@ -694,17 +697,22 @@ function SearchDataForm() {
    * @param {string} dataType The type of data.
    * @param {boolean} result The result of the deletion
    * @param {number} entityId The id of the record that was deleted.
+   * @param {boolean} deleteChildren True if the user has confirmed to delete the child ESUs or properties when deleting a street or parent property; otherwise false.
    */
-  const handleDeleteOpen = (open, dataType, result, entityId) => {
+  const handleDeleteOpen = (open, dataType, result, entityId, deleteChildren) => {
     deleteDataType.current = dataType;
     deleteResult.current = result;
 
     if (result) {
       if (searchFilteredData) {
         if (dataType === "Property") {
-          const newPropertyFilteredData = searchFilteredData.filter(
-            (x) => x.type === 15 || x.uprn.toString() !== entityId.toString()
-          );
+          const newPropertyFilteredData = deleteChildren
+            ? searchFilteredData.filter(
+                (x) =>
+                  x.type === 15 ||
+                  (x.uprn.toString() !== entityId.toString() && x.parent_uprn.toString() !== entityId.toString())
+              )
+            : searchFilteredData.filter((x) => x.type === 15 || x.uprn.toString() !== entityId.toString());
           setSearchFilteredData(newPropertyFilteredData);
         } else {
           const newStreetFilteredData = searchFilteredData.filter(
@@ -714,9 +722,16 @@ function SearchDataForm() {
         }
       } else {
         if (dataType === "Property") {
-          const newPropertySearchData = searchContext.currentSearchData.results.filter(
-            (x) => x.type === 15 || x.uprn.toString() !== entityId.toString()
-          );
+          const newPropertySearchData = deleteChildren
+            ? searchContext.currentSearchData.results.filter(
+                (x) =>
+                  x.type === 15 ||
+                  (x.uprn.toString() !== entityId.toString() &&
+                    (!x.parent_uprn || x.parent_uprn.toString() !== entityId.toString()))
+              )
+            : searchContext.currentSearchData.results.filter(
+                (x) => x.type === 15 || x.uprn.toString() !== entityId.toString()
+              );
           searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newPropertySearchData);
         } else {
           const newStreetSearchData = searchContext.currentSearchData.results.filter(
@@ -727,12 +742,16 @@ function SearchDataForm() {
       }
 
       if (dataType === "Property") {
-        const newMapBackgroundProperties = mapContext.currentBackgroundData.properties.filter(
-          (x) => x.uprn.toString() !== entityId.toString()
-        );
-        const newMapSearchProperties = mapContext.currentSearchData.properties.filter(
-          (x) => x.uprn.toString() !== entityId.toString()
-        );
+        const newMapBackgroundProperties = deleteChildren
+          ? mapContext.currentBackgroundData.properties.filter((x) => x.uprn.toString() !== entityId.toString())
+          : mapContext.currentBackgroundData.properties.filter((x) => x.uprn.toString() !== entityId.toString());
+        const newMapSearchProperties = deleteChildren
+          ? mapContext.currentSearchData.properties.filter(
+              (x) =>
+                x.uprn.toString() !== entityId.toString() &&
+                (!x.parentUprn || x.parentUprn.toString() !== entityId.toString())
+            )
+          : mapContext.currentSearchData.properties.filter((x) => x.uprn.toString() !== entityId.toString());
         mapContext.onBackgroundDataChange(
           mapContext.currentBackgroundData.streets,
           mapContext.currentBackgroundData.unassignedEsus,

@@ -40,6 +40,7 @@
 //    027   12.03.24 Sean Flook                 Improved error handling when deleting.
 //    028   13.03.24 Sean Flook            MUL9 Changes required to refresh the related tab if required.
 //    029   22.03.24 Sean Flook           MUL16 Added GetParentHierarchy.
+//    030   04.04.24 Sean Flook                 Various changes for deleting and adding new properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -745,14 +746,15 @@ export function GetNewProperty(isWelsh, isScottish, authorityCode, usrn, parent,
  * Calls the API endpoint used to delete the given property.
  *
  * @param {number} uprn The UPRN of the property being deleted.
+ * @param {boolean} deleteChildProperties True if child properties should also be deleted; otherwise false.
  * @param {string} userToken The token for the user who is calling the endpoint.
  * @return {boolean} True if the property was deleted successfully; otherwise false.
  */
-export async function PropertyDelete(uprn, userToken) {
+export async function PropertyDelete(uprn, deleteChildProperties, userToken) {
   const deleteUrl = GetDeletePropertyUrl(userToken);
 
   if (deleteUrl) {
-    return await fetch(`${deleteUrl.url}/${uprn}/false`, {
+    return await fetch(`${deleteUrl.url}/${uprn}/${deleteChildProperties ? "true" : "false"}`, {
       headers: deleteUrl.headers,
       crossDomain: true,
       method: deleteUrl.type,
@@ -1685,7 +1687,32 @@ export async function GetPropertyMapData(uprn, userToken) {
       method: "GET",
     })
       .then((res) => (res.ok ? res : Promise.reject(res)))
-      .then((res) => res.json())
+      .then((res) => {
+        switch (res.status) {
+          case 200:
+            return res.json();
+
+          case 204:
+            console.log("[DEBUG] GetPropertyMapData: No content found");
+            return null;
+
+          case 401:
+            console.error("[401 ERROR] GetPropertyMapData: Authorization details are not valid or have expired.", res);
+            return null;
+
+          case 403:
+            console.error("[402 ERROR] GetPropertyMapData: You do not have database access.", res);
+            return null;
+
+          case 500:
+            console.error("[500 ERROR] GetPropertyMapData: Unexpected server error.", res);
+            return null;
+
+          default:
+            console.error(`[${res.status} ERROR] GetPropertyMapData: Unexpected error.`, res);
+            return null;
+        }
+      })
       .then(
         (result) => {
           return result;
@@ -2007,6 +2034,7 @@ export async function UpdateAfterSave(
   const currentSearchProperties = [
     {
       uprn: `${result.uprn}`,
+      parentUprn: `${result.parentUprn}`,
       address: engLpi[0].address.replaceAll("\r\n", " "),
       formattedAddress: engLpi[0].address,
       postcode: engLpi[0].postcode,
@@ -2133,6 +2161,7 @@ export async function UpdateRangeAfterSave(
 
     const currentSearchProperty = {
       uprn: `${property.uprn}`,
+      parentUprn: `${property.parentUprn}`,
       address: engLpi[0].address.replaceAll("\r\n", " "),
       formattedAddress: engLpi[0].address,
       postcode: engLpi[0].postcode,
@@ -2442,4 +2471,34 @@ export const hasPropertyChanged = (newProperty, currentSandbox) => {
     (currentSandbox.currentProperty &&
       !PropertyComparison(currentSandbox.sourceProperty, currentSandbox.currentProperty))
   );
+};
+
+/**
+ * Method to get the parent details required for the wizard.
+ *
+ * @param {object} propertyData The current property data
+ * @param {Array} postcodes The array of postcode lookups
+ * @returns {object|null} The parent details required by the wizard
+ */
+export const getWizardParentDetails = (propertyData, postcodes) => {
+  const engLpiData = propertyData.lpis
+    .filter((x) => x.language === "ENG")
+    .sort((a, b) => a.logicalStatus - b.logicalStatus);
+
+  const postcodeRecord =
+    engLpiData && engLpiData.length > 0 ? postcodes.find((x) => x.postcodeRef === engLpiData[0].postcodeRef) : null;
+
+  const parent =
+    engLpiData && engLpiData.length > 0
+      ? {
+          uprn: propertyData.uprn,
+          usrn: engLpiData[0].usrn,
+          easting: propertyData.xcoordinate,
+          northing: propertyData.ycoordinate,
+          address: engLpiData[0].address,
+          postcode: postcodeRecord ? postcodeRecord.postcode : "",
+        }
+      : null;
+
+  return parent;
 };

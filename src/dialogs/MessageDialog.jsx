@@ -21,12 +21,13 @@
 //    008   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    009   12.03.24 Sean Flook            MUL7 Updated for cancelMoveBlpu.
 //    010   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    011   04.04.24 Sean Flook                 Added cascadeLogicalStatus.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import React, { Fragment } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 
 import { Button, Typography, Dialog, DialogActions, DialogContent, Tooltip } from "@mui/material";
@@ -42,7 +43,13 @@ import { useTheme } from "@mui/styles";
 
 MessageDialog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
-  variant: PropTypes.oneOf(["cancelWizard", "cancelMoveBlpu", "cancelASDPartRoad", "cancelASDInexact"]).isRequired,
+  variant: PropTypes.oneOf([
+    "cancelWizard",
+    "cancelMoveBlpu",
+    "cancelASDPartRoad",
+    "cancelASDInexact",
+    "cascadeLogicalStatus",
+  ]).isRequired,
   onClose: PropTypes.func.isRequired,
 };
 
@@ -89,8 +96,28 @@ function MessageDialog({ isOpen, variant, onClose }) {
       case "cancelASDInexact":
         return "Exact match to street";
 
+      case "cascadeLogicalStatus":
+        return "Logical status change";
+
       default:
         return `Unknown variant: ${variant}`;
+    }
+  };
+
+  /**
+   * Method to get the title close button tooltip.
+   *
+   * @returns {string} The title of the tooltip.
+   */
+  const getTooltipText = () => {
+    switch (variant) {
+      case "cancelASDPartRoad":
+      case "cancelASDInexact":
+      case "cascadeLogicalStatus":
+        return "Cancel change";
+
+      default:
+        return "Cancel exiting";
     }
   };
 
@@ -131,6 +158,16 @@ function MessageDialog({ isOpen, variant, onClose }) {
           </Stack>
         );
 
+      case "cascadeLogicalStatus":
+        return (
+          <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={1}>
+            <Typography variant="body2">
+              This is a parent property so changing the logical status will also change the children's logical status.
+            </Typography>
+            <Typography variant="body2">Are you sure you want to continue?</Typography>
+          </Stack>
+        );
+
       default:
         return null;
     }
@@ -145,7 +182,7 @@ function MessageDialog({ isOpen, variant, onClose }) {
     switch (variant) {
       case "cancelWizard":
         return (
-          <Fragment>
+          <>
             <Button
               variant="contained"
               onClick={handleCloseClick}
@@ -163,12 +200,12 @@ function MessageDialog({ isOpen, variant, onClose }) {
             >
               Continue
             </Button>
-          </Fragment>
+          </>
         );
 
       case "cancelMoveBlpu":
         return (
-          <Fragment>
+          <>
             <Tooltip title="Save changes and exit" sx={tooltipStyle}>
               <Button
                 variant="contained"
@@ -195,13 +232,14 @@ function MessageDialog({ isOpen, variant, onClose }) {
                 Continue editing
               </Button>
             </Tooltip>
-          </Fragment>
+          </>
         );
 
       case "cancelASDPartRoad":
       case "cancelASDInexact":
+      case "cascadeLogicalStatus":
         return (
-          <Fragment>
+          <>
             <Button
               variant="contained"
               onClick={handleContinueClick}
@@ -219,7 +257,7 @@ function MessageDialog({ isOpen, variant, onClose }) {
             >
               Cancel
             </Button>
-          </Fragment>
+          </>
         );
 
       default:
@@ -239,7 +277,7 @@ function MessageDialog({ isOpen, variant, onClose }) {
 
   return (
     <Dialog open={isOpen} aria-labelledby="message-dialog" fullWidth maxWidth="sm" onClose={handleContinueClick}>
-      <ADSDialogTitle title={getDialogTitle()} closeTooltip="Cancel exiting" onClose={handleContinueClick} />
+      <ADSDialogTitle title={getDialogTitle()} closeTooltip={getTooltipText()} onClose={handleContinueClick} />
       <DialogContent sx={{ mt: theme.spacing(2) }}>{getDialogContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: "flex-start", mb: theme.spacing(1), ml: theme.spacing(2.25) }}>
         {getDialogActions()}

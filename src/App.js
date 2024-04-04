@@ -48,6 +48,7 @@
 //    035   08.03.24 Sean Flook       IMANN-348 If clearing ESU from sandbox ensure highway dedication and one way exemption are also cleared.
 //    036   11.03.24 Sean Flook           GLB12 Use appBarHeight to set the height of the control.
 //    037   13.03.24 Sean Flook            MUL9 Changes required to enable related refresh.
+//    038   04.04.24 Sean Flook                 Added navigate back and leaving a property.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -193,6 +194,7 @@ function App() {
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [hideSearch, setHideSearch] = useState(false);
+  const [navigateBack, setNavigateBack] = useState(false);
 
   const [searchFilter, setSearchFilter] = useState({});
 
@@ -341,6 +343,8 @@ function App() {
   });
 
   const [propertyHasErrors, setPropertyHasErrors] = useState(false);
+
+  const [leavingProperty, setLeavingProperty] = useState(null);
 
   const [propertyModified, setPropertyModified] = useState(false);
 
@@ -992,6 +996,15 @@ function App() {
    */
   function HandleHideSearch(hide) {
     setHideSearch(hide);
+  }
+
+  /**
+   * Event to handle when we need to navigate back a page.
+   *
+   * @param {boolean} goBack True if we need to navigate back a page; otherwise false.
+   */
+  function HandleNavigateBack(goBack) {
+    setNavigateBack(goBack);
   }
 
   /**
@@ -1792,6 +1805,17 @@ function App() {
         (successorCrossRefErrors && successorCrossRefErrors.length > 0) ||
         (noteErrors && noteErrors.length > 0)
     );
+  }
+
+  /**
+   * Method used to handle when we are leaving the current property to go to a new street or property.
+   *
+   * @param {string|null} why The reason why we are leaving the current property.
+   * @param {object|null} information The information required to use when leaving the property.
+   */
+  function HandleLeavingProperty(why, information) {
+    if (why) setLeavingProperty({ why: why, information: information });
+    else setLeavingProperty(null);
   }
 
   /**
@@ -2598,10 +2622,12 @@ function App() {
                   previousSearchData: previousSearchData,
                   searchPopupOpen: searchOpen,
                   hideSearch: hideSearch,
+                  navigateBack: navigateBack,
                   onSearchDataChange: HandleSearchDataChange,
                   onPropertiesSelected: HandlePropertiesSelected,
                   onSearchOpen: HandleSearchOpenChange,
                   onHideSearch: HandleHideSearch,
+                  onNavigateBack: HandleNavigateBack,
                 }}
               >
                 <FilterContext.Provider
@@ -2681,6 +2707,7 @@ function App() {
                           currentErrors: propertyErrors,
                           currentPropertyModified: propertyModified,
                           currentPropertyHasErrors: propertyHasErrors,
+                          leavingProperty: leavingProperty,
                           goToField: propertyGoToField,
                           currentRecord: propertyRecord,
                           provenanceDataChanged: provenanceDataChanged,
@@ -2689,6 +2716,7 @@ function App() {
                           onLogicalStatusChange: HandleLogicalStatusChange,
                           onPropertyModified: HandlePropertyModified,
                           onPropertyErrors: HandlePropertyErrors,
+                          onLeavingProperty: HandleLeavingProperty,
                           onGoToField: HandlePropertyGoToField,
                           onRecordChange: HandlePropertyRecordChange,
                           onProvenanceDataChange: HandleProvenanceDataChange,

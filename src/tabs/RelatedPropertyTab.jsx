@@ -45,6 +45,7 @@
 //    031   19.03.24 Sean Flook       PRFRM2_GP Ensure onRelatedOpened is always called.
 //    032   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    033   25.03.24 Sean Flook           MUL16 Removed option to remove from parent.
+//    034   04.04.24 Sean Flook                 Use the new getWizardParentDetails method.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -59,6 +60,7 @@ import UserContext from "../context/userContext";
 import StreetContext from "../context/streetContext";
 import SettingsContext from "../context/settingsContext";
 import SearchContext from "../context/searchContext";
+import LookupContext from "../context/lookupContext";
 
 import {
   Typography,
@@ -80,7 +82,7 @@ import ADSSelectionControl from "../components/ADSSelectionControl";
 import MakeChildDialog from "../dialogs/MakeChildDialog";
 
 import { GetAvatarColour, GetAvatarTooltip, copyTextToClipboard, openInStreetView } from "./../utils/HelperUtils";
-import { addressToTitleCase, GetPropertyMapData } from "./../utils/PropertyUtils";
+import { addressToTitleCase, GetPropertyMapData, getWizardParentDetails } from "./../utils/PropertyUtils";
 
 import LPILogicalStatus from "./../data/LPILogicalStatus";
 
@@ -140,6 +142,7 @@ function RelatedPropertyTab({
   const streetContext = useContext(StreetContext);
   const settingsContext = useContext(SettingsContext);
   const searchContext = useContext(SearchContext);
+  const lookupContext = useContext(LookupContext);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -445,104 +448,6 @@ function RelatedPropertyTab({
   };
 
   /**
-   * Method to get the required parent property data used when creating a child property.
-   *
-   * @param {object} propertyData The parent property data.
-   * @returns {object} The parent property data required for creating a child property.
-   */
-  const getParentRecord = (propertyData) => {
-    const engLpiData = propertyData.lpis
-      .filter((x) => x.language === "ENG")
-      .sort((a, b) => a.logicalStatus - b.logicalStatus);
-    const cymLpiData = propertyData.lpis
-      .filter((x) => x.language === "CYM")
-      .sort((a, b) => a.logicalStatus - b.logicalStatus);
-    const gaeLpiData = propertyData.lpis
-      .filter((x) => x.language === "GAE")
-      .sort((a, b) => a.logicalStatus - b.logicalStatus);
-
-    const parent =
-      cymLpiData && cymLpiData.length > 0 && engLpiData && engLpiData.length > 0
-        ? {
-            uprn: propertyData.uprn,
-            rpc: propertyData.rpc,
-            eng: {
-              paoStartNumber: engLpiData[0].paoStartNumber,
-              paoStartSuffix: engLpiData[0].paoStartSuffix,
-              paoEndNumber: engLpiData[0].paoEndNumber,
-              paoEndSuffix: engLpiData[0].paoEndSuffix,
-              paoText: engLpiData[0].paoText,
-              address: engLpiData[0].address,
-              postTownRef: engLpiData[0].postTownRef,
-              postcodeRef: engLpiData[0].postcodeRef,
-              postTown: engLpiData[0].postTown,
-              postcode: engLpiData[0].postcode,
-            },
-            cym: {
-              paoStartNumber: cymLpiData[0].paoStartNumber,
-              paoStartSuffix: cymLpiData[0].paoStartSuffix,
-              paoEndNumber: cymLpiData[0].paoEndNumber,
-              paoEndSuffix: cymLpiData[0].paoEndSuffix,
-              paoText: cymLpiData[0].paoText,
-              address: cymLpiData[0].address,
-              postTownRef: cymLpiData[0].postTownRef,
-              postcodeRef: cymLpiData[0].postcodeRef,
-              postTown: cymLpiData[0].postTown,
-              postcode: cymLpiData[0].postcode,
-            },
-          }
-        : gaeLpiData && gaeLpiData.length > 0 && engLpiData && engLpiData.length > 0
-        ? {
-            uprn: propertyData.uprn,
-            rpc: propertyData.rpc,
-            eng: {
-              paoStartNumber: engLpiData[0].paoStartNumber,
-              paoStartSuffix: engLpiData[0].paoStartSuffix,
-              paoEndNumber: engLpiData[0].paoEndNumber,
-              paoEndSuffix: engLpiData[0].paoEndSuffix,
-              paoText: engLpiData[0].paoText,
-              address: engLpiData[0].address,
-              postTownRef: engLpiData[0].postTownRef,
-              postcodeRef: engLpiData[0].postcodeRef,
-              postTown: engLpiData[0].postTown,
-              postcode: engLpiData[0].postcode,
-            },
-            gae: {
-              paoStartNumber: gaeLpiData[0].paoStartNumber,
-              paoStartSuffix: gaeLpiData[0].paoStartSuffix,
-              paoEndNumber: gaeLpiData[0].paoEndNumber,
-              paoEndSuffix: gaeLpiData[0].paoEndSuffix,
-              paoText: gaeLpiData[0].paoText,
-              address: gaeLpiData[0].address,
-              postTownRef: gaeLpiData[0].postTownRef,
-              postcodeRef: gaeLpiData[0].postcodeRef,
-              postTown: gaeLpiData[0].postTown,
-              postcode: gaeLpiData[0].postcode,
-            },
-          }
-        : engLpiData && engLpiData.length > 0
-        ? {
-            uprn: propertyData.uprn,
-            rpc: propertyData.rpc,
-            eng: {
-              paoStartNumber: engLpiData[0].paoStartNumber,
-              paoStartSuffix: engLpiData[0].paoStartSuffix,
-              paoEndNumber: engLpiData[0].paoEndNumber,
-              paoEndSuffix: engLpiData[0].paoEndSuffix,
-              paoText: engLpiData[0].paoText,
-              address: engLpiData[0].address,
-              postTownRef: engLpiData[0].postTownRef,
-              postcodeRef: engLpiData[0].postcodeRef,
-              postTown: engLpiData[0].postTown,
-              postcode: engLpiData[0].postcode,
-            },
-          }
-        : null;
-
-    return parent;
-  };
-
-  /**
    * Event to handle creating a child property.
    *
    * @param {object} event The event object.
@@ -557,7 +462,7 @@ function RelatedPropertyTab({
     const propertyData = await GetPropertyMapData(uprn, userContext.currentUser.token);
 
     if (propertyData) {
-      const parent = getParentRecord(propertyData);
+      const parent = getWizardParentDetails(propertyData, lookupContext.currentLookups.postcodes);
 
       if (onPropertyAdd && parent) onPropertyAdd(propertyData.usrn, parent, false);
     }
@@ -578,7 +483,7 @@ function RelatedPropertyTab({
     const propertyData = await GetPropertyMapData(uprn, userContext.currentUser.token);
 
     if (propertyData) {
-      const parent = getParentRecord(propertyData);
+      const parent = getWizardParentDetails(propertyData, lookupContext.currentLookups.postcodes);
 
       if (onPropertyAdd && parent) onPropertyAdd(propertyData.usrn, parent, true);
     }
@@ -740,31 +645,22 @@ function RelatedPropertyTab({
         onClose={handleClose}
         sx={menuStyle}
       >
-        {process.env.NODE_ENV === "development" && (
-          <MenuItem
-            dense
-            disabled={!userCanEdit}
-            onClick={(event) => HandleAddChild(event, record.uprn)}
-            sx={menuItemStyle(false)}
-          >
-            <Typography variant="inherit">Add child</Typography>
-          </MenuItem>
-        )}
-        {process.env.NODE_ENV === "development" && (
-          <MenuItem
-            dense
-            disabled={!userCanEdit}
-            onClick={(event) => handleAddChildren(event, record.uprn)}
-            sx={menuItemStyle(false)}
-          >
-            <Typography variant="inherit">Add children</Typography>
-          </MenuItem>
-        )}
-        {process.env.NODE_ENV === "development" && (
-          <MenuItem dense divider disabled sx={menuItemStyle(true)}>
-            <Typography variant="inherit">Add children</Typography>
-          </MenuItem>
-        )}
+        <MenuItem
+          dense
+          disabled={!userCanEdit}
+          onClick={(event) => HandleAddChild(event, record.uprn)}
+          sx={menuItemStyle(false)}
+        >
+          <Typography variant="inherit">Add child</Typography>
+        </MenuItem>
+        <MenuItem
+          dense
+          disabled={!userCanEdit}
+          onClick={(event) => handleAddChildren(event, record.uprn)}
+          sx={menuItemStyle(false)}
+        >
+          <Typography variant="inherit">Add children</Typography>
+        </MenuItem>
         <MenuItem dense onClick={(event) => handleStreetViewClick(event, record)} sx={menuItemStyle(false)}>
           <Typography variant="inherit">Open in Street View</Typography>
         </MenuItem>
@@ -804,7 +700,12 @@ function RelatedPropertyTab({
             <Typography variant="inherit">Move street</Typography>
           </MenuItem>
         )}
-        <MenuItem dense onClick={(event) => handleMakeChildOf(event, record)} sx={menuItemStyle(false)}>
+        <MenuItem
+          dense
+          disabled={!userCanEdit}
+          onClick={(event) => handleMakeChildOf(event, record)}
+          sx={menuItemStyle(false)}
+        >
           <Typography variant="inherit">Make child of...</Typography>
         </MenuItem>
         {process.env.NODE_ENV === "development" && (
@@ -820,13 +721,6 @@ function RelatedPropertyTab({
         {process.env.NODE_ENV === "development" && (
           <MenuItem dense disabled sx={menuItemStyle(false)}>
             <Typography variant="inherit">Historicise</Typography>
-          </MenuItem>
-        )}
-        {process.env.NODE_ENV === "development" && (
-          <MenuItem dense disabled sx={menuItemStyle(false)}>
-            <Typography variant="inherit" color="secondary">
-              Delete
-            </Typography>
           </MenuItem>
         )}
       </Menu>

@@ -49,6 +49,7 @@
 //    035   15.03.24 Sean Flook            GLB7 Use onClick rather than onChange.
 //    036   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    037   25.03.24 Sean Flook           MUL16 Removed option to remove from parent.
+//    038   04.04.24 Sean Flook                 Changes required to handle deleting ESUs from streets and child properties from parent properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -172,6 +173,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   const [userCanEdit, setUserCanEdit] = useState(false);
 
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
+  const [childCount, setChildCount] = useState(0);
 
   const [associatedRecords, setAssociatedRecords] = useState(null);
 
@@ -448,6 +450,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
     if (!foundProperty) {
       currentSearchProperties.push({
         uprn: rec.uprn,
+        parentUprn: rec.parent_uprn,
         address: rec.formattedaddress,
         postcode: rec.postcode,
         easting: rec.easting,
@@ -838,6 +841,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
     deleteUSRN.current = usrn;
     deleteUPRN.current = null;
     await GetAssociatedRecords();
+    const deleteStreet = await GetStreetMapData(usrn, userContext.currentUser.token, settingsContext.isScottish);
+    setChildCount(deleteStreet && deleteStreet.esus ? deleteStreet.esus.length : 0);
     setOpenDeleteConfirmation(true);
   }
 
@@ -907,6 +912,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
     if (found) {
       const updatedProperty = {
         uprn: found.uprn,
+        parentUprn: found.parentUprn,
         address: found.address,
         postcode: found.postcode,
         easting: found.easting,
@@ -939,6 +945,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
     if (found) {
       const updatedProperty = {
         uprn: found.uprn,
+        parentUprn: found.parentUprn,
         address: found.address,
         postcode: found.postcode,
         easting: found.easting,
@@ -966,6 +973,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
     deleteUSRN.current = null;
     deleteUPRN.current = uprn;
     await GetAssociatedRecords();
+    const deleteProperty = await GetPropertyMapData(uprn, userContext.currentUser.token);
+    setChildCount(deleteProperty ? deleteProperty.childCount : 0);
     setOpenDeleteConfirmation(true);
   }
 
@@ -1057,25 +1066,26 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
    * Event to handle when the delete confirmation dialog is closed.
    *
    * @param {boolean} deleteConfirmed True if the user has confirmed the delete; otherwise false.
+   * @param {boolean} deleteChildren True if the user has confirmed to delete the child ESUs or properties when deleting a street or parent property; otherwise false.
    */
-  async function HandleCloseDeleteConfirmation(deleteConfirmed) {
+  async function HandleCloseDeleteConfirmation(deleteConfirmed, deleteChildren) {
     setOpenDeleteConfirmation(false);
 
     if (deleteConfirmed) {
       if (deleteUSRN.current) {
         const result = await StreetDelete(
           deleteUSRN.current,
-          true,
+          deleteChildren,
           lookupContext,
           userContext.currentUser.token,
           settingsContext.isScottish
         );
 
-        if (onSetDeleteOpen) onSetDeleteOpen(true, "Street", result, deleteUSRN.current);
+        if (onSetDeleteOpen) onSetDeleteOpen(true, "Street", result, deleteUSRN.current, deleteChildren);
       } else if (deleteUPRN.current) {
-        const result = await PropertyDelete(deleteUPRN.current, userContext.currentUser.token);
+        const result = await PropertyDelete(deleteUPRN.current, deleteChildren, userContext.currentUser.token);
 
-        if (onSetDeleteOpen) onSetDeleteOpen(true, "Property", result, deleteUPRN.current);
+        if (onSetDeleteOpen) onSetDeleteOpen(true, "Property", result, deleteUPRN.current, deleteChildren);
       }
     }
 
@@ -1127,6 +1137,21 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
               count: oweCount,
             });
         }
+        if (streetData.successorCrossRefs && streetData.successorCrossRefs.length > 0)
+          associatedRecords.push({
+            type: "successor",
+            count: streetData.successorCrossRefs.length,
+          });
+        if (streetData.maintenanceResponsibilities && streetData.maintenanceResponsibilities.length > 0)
+          associatedRecords.push({
+            type: "maintenance responsibility",
+            count: streetData.maintenanceResponsibilities.length,
+          });
+        if (streetData.reinstatementCategories && streetData.reinstatementCategories.length > 0)
+          associatedRecords.push({
+            type: "reinstatement category",
+            count: streetData.reinstatementCategories.length,
+          });
         if (streetData.interests && streetData.interests.length > 0)
           associatedRecords.push({
             type: "interested organisation",
@@ -1166,6 +1191,21 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
           associatedRecords.push({
             type: "lpi",
             count: propertyData.lpis.length,
+          });
+        if (propertyData.classifications && propertyData.classifications.length > 0)
+          associatedRecords.push({
+            type: "classification",
+            count: propertyData.classifications.length,
+          });
+        if (propertyData.organisations && propertyData.organisations.length > 0)
+          associatedRecords.push({
+            type: "organisation",
+            count: propertyData.organisations.length,
+          });
+        if (propertyData.successorCrossRefs && propertyData.successorCrossRefs.length > 0)
+          associatedRecords.push({
+            type: "successor",
+            count: propertyData.successorCrossRefs.length,
           });
         if (propertyData.blpuAppCrossRefs && propertyData.blpuAppCrossRefs.length > 0)
           associatedRecords.push({
@@ -1321,15 +1361,54 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                     );
                   break;
               }
+              propertyContext.onWizardDone(null, false, null, null);
               setOpenPropertyWizard(false);
               break;
 
             case "addChild":
+              const engLpi = propertyContext.wizardData.savedProperty.lpis.filter((x) => x.language === "ENG");
               propertyContext.resetPropertyErrors();
               propertyContext.onWizardDone(null, false, null, null);
               mapContext.onWizardSetCoordinate(null);
               propertyWizardType.current = "child";
-              propertyWizardParent.current = propertyContext.wizardData.parent;
+              propertyWizardParent.current = {
+                type: 24,
+                id: engLpi[0].lpi_key,
+                uprn: propertyContext.wizardData.savedProperty.uprn,
+                usrn: engLpi[0].usrn,
+                logical_status: propertyContext.wizardData.savedProperty.logicalStatus,
+                language: "ENG",
+                classification_code: settingsContext.isScottish
+                  ? propertyContext.wizardData.savedProperty.classifications[0].blpuClass
+                  : propertyContext.wizardData.savedProperty.blpuClass,
+                isParent: true,
+                parent_uprn: propertyContext.wizardData.savedProperty.parentUprn,
+                country: "",
+                authority: "",
+                longitude: 0,
+                latitude: 0,
+                easting: propertyContext.wizardData.savedProperty.xcoordinate,
+                northing: propertyContext.wizardData.savedProperty.ycoordinate,
+                full_building_desc: "",
+                formattedAddress: engLpi[0].address,
+                organisation: "",
+                secondary_name: "",
+                sao_text: "",
+                sao_nums: "",
+                primary_name: "",
+                pao_text: engLpi[0].paoText,
+                pao_nums: `${engLpi[0].paoStartNumber && engLpi[0].paoStartNumber > 0 ? engLpi[0].paoStartNumber : ""}${
+                  engLpi[0].paoEndNumber && engLpi[0].paoEndNumber > 0 ? " - " : ""
+                }${engLpi[0].paoEndNumber && engLpi[0].paoEndNumber > 0 ? engLpi[0].paoEndNumber : ""}`,
+                street: "",
+                locality: "",
+                town: "",
+                post_town: "",
+                postcode: "",
+                crossref: "",
+                address: engLpi[0].address,
+                sort_score: 0,
+              };
               setOpenPropertyWizard(true);
               break;
 
@@ -1338,11 +1417,49 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
               propertyContext.onWizardDone(null, false, null, null);
               mapContext.onWizardSetCoordinate(null);
               propertyWizardType.current = "rangeChildren";
-              propertyWizardParent.current = propertyContext.wizardData.parent;
+              propertyWizardParent.current = {
+                type: 24,
+                id: engLpi[0].lpi_key,
+                uprn: propertyContext.wizardData.savedProperty.uprn,
+                usrn: engLpi[0].usrn,
+                logical_status: propertyContext.wizardData.savedProperty.logicalStatus,
+                language: "ENG",
+                classification_code: settingsContext.isScottish
+                  ? propertyContext.wizardData.savedProperty.classifications[0].blpuClass
+                  : propertyContext.wizardData.savedProperty.blpuClass,
+                isParent: true,
+                parent_uprn: propertyContext.wizardData.savedProperty.parentUprn,
+                country: "",
+                authority: "",
+                longitude: 0,
+                latitude: 0,
+                easting: propertyContext.wizardData.savedProperty.xcoordinate,
+                northing: propertyContext.wizardData.savedProperty.ycoordinate,
+                full_building_desc: "",
+                formattedAddress: engLpi[0].address,
+                organisation: "",
+                secondary_name: "",
+                sao_text: "",
+                sao_nums: "",
+                primary_name: "",
+                pao_text: engLpi[0].paoText,
+                pao_nums: `${engLpi[0].paoStartNumber && engLpi[0].paoStartNumber > 0 ? engLpi[0].paoStartNumber : ""}${
+                  engLpi[0].paoEndNumber && engLpi[0].paoEndNumber > 0 ? " - " : ""
+                }${engLpi[0].paoEndNumber && engLpi[0].paoEndNumber > 0 ? engLpi[0].paoEndNumber : ""}`,
+                street: "",
+                locality: "",
+                town: "",
+                post_town: "",
+                postcode: "",
+                crossref: "",
+                address: engLpi[0].address,
+                sort_score: 0,
+              };
               setOpenPropertyWizard(true);
               break;
 
             default:
+              propertyContext.onWizardDone(null, false, null, null);
               setOpenPropertyWizard(false);
               break;
           }
@@ -2448,6 +2565,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
           variant={`${deleteUSRN.current ? "street" : "property"}`}
           open={openDeleteConfirmation}
           associatedRecords={associatedRecords}
+          childCount={childCount}
           onClose={HandleCloseDeleteConfirmation}
         />
         <AddPropertyWizardDialog

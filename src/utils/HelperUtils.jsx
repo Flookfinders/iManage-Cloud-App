@@ -40,6 +40,7 @@
 //    027   12.03.24 Sean Flook           MUL10 Replaced renderErrors with renderErrorListItem.
 //    028   22.03.24 Sean Flook           GLB12 Added shorten.
 //    029   28.03.24 Sean Flook                 Modified GetChangedAssociatedRecords to fully check all ESUs if geometryTypeChanged is true.
+//    030   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1712,6 +1713,7 @@ export async function doOpenRecord(
     if (!foundProperty) {
       currentSearchProperties.push({
         uprn: rec.uprn,
+        parentUprn: rec.parent_uprn,
         address: rec.formattedaddress,
         postcode: rec.postcode,
         easting: rec.easting,

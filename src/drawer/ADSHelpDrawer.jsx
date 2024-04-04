@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    006   11.03.24 Sean Flook           GLB12 Correctly set width.
+//    007   02.04.24 Sean Flook                 Keep title in view when overflowing.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -26,17 +27,22 @@
 
 import React, { useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
+
 import LookupContext from "../context/lookupContext";
+
 import { copyTextToClipboard } from "../utils/HelperUtils";
+
 import { Drawer, Typography, Link, Grid, IconButton } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
+
 import ForumIcon from "@mui/icons-material/ForumOutlined";
 import EmailIcon from "@mui/icons-material/EmailOutlined";
 import CallIcon from "@mui/icons-material/CallOutlined";
 import CircleIcon from "@mui/icons-material/Circle";
-import { CopyIcon } from "../utils/ADSIcons";
-import { adsMidGreyA } from "../utils/ADSColours";
+
+import { CopyIcon, SupportAgentIcon } from "../utils/ADSIcons";
+import { adsMidGreyA, adsOffWhite } from "../utils/ADSColours";
 import {
   drawerWidth,
   ActionIconStyle,
@@ -51,10 +57,11 @@ import { useTheme } from "@mui/styles";
 /* #endregion imports */
 
 ADSHelpDrawer.propTypes = {
+  open: PropTypes.bool.isRequired,
   handleDrawerClose: PropTypes.func.isRequired,
 };
 
-function ADSHelpDrawer(props) {
+function ADSHelpDrawer({ open, handleDrawerClose }) {
   const theme = useTheme();
 
   const lookupContext = useContext(LookupContext);
@@ -153,13 +160,12 @@ function ADSHelpDrawer(props) {
       }}
       variant="persistent"
       anchor="right"
-      open={props.open}
+      open={open}
     >
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
-          // p: theme.spacing(0, 1),
           // necessary for content to be below app bar
           ...theme.mixins.toolbar,
           justifyContent: "flex-start",
@@ -176,12 +182,12 @@ function ADSHelpDrawer(props) {
               variant="close"
               tooltipTitle="Close help"
               tooltipPlacement="left"
-              onClick={props.handleDrawerClose}
+              onClick={handleDrawerClose}
             />
           </Grid>
         </Grid>
       </Box>
-      <Box>
+      <Box sx={{ overflowY: "auto", backgroundColor: adsOffWhite }}>
         <Grid
           container
           direction="column"
@@ -239,9 +245,7 @@ function ADSHelpDrawer(props) {
             }}
           >
             <Grid item xs={1}>
-              <img
-                src="/images/SupportAgent.svg"
-                alt=""
+              <SupportAgentIcon
                 sx={{
                   color: adsMidGreyA,
                   display: "inline-flex",

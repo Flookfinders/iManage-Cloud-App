@@ -39,6 +39,7 @@
 //    024   15.03.24 Sean Flook       PRFRM1_GP If a property is selected always open it.
 //    025   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    026   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    027   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -169,6 +170,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
    * Method to handle editing the given property.
    *
    * @param {number} uprn The UPRN of the property
+   * @param {number} parentUprn The parent UPRN of the property
    * @param {string} address The address for the property
    * @param {string} postcode The properties postcode
    * @param {number} easting The easting for the property
@@ -176,7 +178,16 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
    * @param {number} logicalStatus The logical status of the property
    * @param {string} classificationCode The classification code of the property
    */
-  const doEditProperty = (uprn, address, postcode, easting, northing, logicalStatus, classificationCode) => {
+  const doEditProperty = (
+    uprn,
+    parentUprn,
+    address,
+    postcode,
+    easting,
+    northing,
+    logicalStatus,
+    classificationCode
+  ) => {
     propertyContext.onPropertyChange(uprn, 0, address, address, postcode, null, null, false, null);
 
     const foundProperty = mapContext.currentSearchData.properties.find((x) => x.uprn === uprn.toString());
@@ -192,6 +203,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
       const searchProperties = [
         {
           uprn: uprn,
+          parentUprn: parentUprn,
           address: address,
           postcode: postcode,
           easting: easting,
@@ -209,6 +221,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
    * Method to handle editing of a property if it is not historic.
    *
    * @param {number} uprn The UPRN of the property
+   * @param {number} parentUprn The parent UPRN of the property
    * @param {string} address The address for the property
    * @param {string} postcode The properties postcode
    * @param {number} easting The easting for the property
@@ -216,10 +229,11 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
    * @param {number} logicalStatus The logical status of the property
    * @param {string} classificationCode The classification code of the property
    */
-  const editProperty = (uprn, address, postcode, easting, northing, logicalStatus, classificationCode) => {
+  const editProperty = (uprn, parentUprn, address, postcode, easting, northing, logicalStatus, classificationCode) => {
     if (logicalStatus && logicalStatus === 8) {
       historicRec.current = {
         uprn: uprn,
+        parentUprn: parentUprn,
         address: address,
         postcode: postcode,
         easting: easting,
@@ -228,7 +242,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
         classificationCode: classificationCode,
       };
       setOpenHistoricProperty(true);
-    } else doEditProperty(uprn, address, postcode, easting, northing, logicalStatus, classificationCode);
+    } else doEditProperty(uprn, parentUprn, address, postcode, easting, northing, logicalStatus, classificationCode);
   };
 
   /**
@@ -413,6 +427,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
     if (nodeData) {
       editProperty(
         nodeData.uprn,
+        nodeData.parentUprn,
         nodeData.primary.address,
         nodeData.primary.postcode,
         nodeData.easting,
@@ -721,6 +736,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
       if (historicRec.current) {
         doEditProperty(
           historicRec.current.uprn,
+          historicRec.current.parentUprn,
           historicRec.current.address,
           historicRec.current.postcode,
           historicRec.current.easting,

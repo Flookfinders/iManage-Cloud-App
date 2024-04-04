@@ -16,6 +16,7 @@
 //    003   22.03.24 Sean Flook           MUL16 Correctly set the address data.
 //    004   25.03.24 Sean Flook           MUL16 Added cascade address changes option.
 //    005   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    006   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -489,6 +490,7 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
                           .map((x) => {
                             return {
                               uprn: x.uprn.toString(),
+                              parentUprn: result.parentUprn,
                               address: x.address,
                               formattedAddress: x.address,
                               postcode: x.postcode,

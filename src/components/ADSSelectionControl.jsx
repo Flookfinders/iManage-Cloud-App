@@ -35,6 +35,7 @@
 //    022   12.03.24 Sean Flook            MUL8 Added onPropertyMoved.
 //    023   13.03.24 Sean Flook            MUL9 No need to do resets here.
 //    024   25.03.24 Sean Flook           MUL16 Removed option to remove from parent.
+//    025   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -683,6 +684,7 @@ function ADSSelectionControl({
       if (!foundProperty) {
         currentSearchProperties.push({
           uprn: propertyData.uprn,
+          parentUprn: propertyData.parentUprn,
           address: propertyData.address,
           postcode: propertyData.postcode,
           easting: propertyData.easting,
@@ -777,6 +779,7 @@ function ADSSelectionControl({
       if (found) {
         const updatedProperty = {
           uprn: found.uprn,
+          parentUprn: found.parentUprn,
           address: found.address,
           postcode: found.postcode,
           easting: found.easting,
@@ -813,6 +816,7 @@ function ADSSelectionControl({
       if (found) {
         const updatedProperty = {
           uprn: found.uprn,
+          parentUprn: found.parentUprn,
           address: found.address,
           postcode: found.postcode,
           easting: found.easting,

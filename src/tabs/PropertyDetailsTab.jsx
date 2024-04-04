@@ -41,6 +41,7 @@
 //    028   12.03.24 Joshua McCormick IMANN-280 Adjusted toolbar spacing
 //    029   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    030   22.03.24 Sean Flook       PRFRM5_GP Display information control for moving a BLPU.
+//    031   04.04.24 Sean Flook                 Various changes for action menu items.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -126,6 +127,7 @@ import {
   tooltipStyle,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
+import MessageDialog from "../dialogs/MessageDialog";
 
 PropertyDetailsTab.propTypes = {
   data: PropTypes.object,
@@ -138,8 +140,10 @@ PropertyDetailsTab.propTypes = {
   onLpiSelected: PropTypes.func.isRequired,
   onLpiDeleted: PropTypes.func.isRequired,
   onDataChanged: PropTypes.func.isRequired,
+  onLogicalStatusChanged: PropTypes.func.isRequired,
   onOrganisationChanged: PropTypes.func.isRequired,
   onChildAdd: PropTypes.func.isRequired,
+  onDeleteProperty: PropTypes.func.isRequired,
 };
 
 function PropertyDetailsTab({
@@ -153,8 +157,10 @@ function PropertyDetailsTab({
   onLpiSelected,
   onLpiDeleted,
   onDataChanged,
+  onLogicalStatusChanged,
   onOrganisationChanged,
   onChildAdd,
+  onDeleteProperty,
 }) {
   const theme = useTheme();
 
@@ -206,6 +212,9 @@ function PropertyDetailsTab({
   const [userCanEdit, setUserCanEdit] = useState(false);
 
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
+
+  const [openMessage, setOpenMessage] = useState(false);
+  const updatedLogicalStatus = useRef(0);
 
   const [propertyAssociatedRecords, setPropertyAssociatedRecords] = useState(null);
   const [lpiAssociatedRecords, setLpiAssociatedRecords] = useState(null);
@@ -516,7 +525,17 @@ function PropertyDetailsTab({
    */
   const handleAddChild = (event) => {
     handleBLPUMenuClose(event);
-    if (onChildAdd) onChildAdd();
+    if (onChildAdd) onChildAdd(false);
+  };
+
+  /**
+   * Event to handle when the user selects to add new child properties.
+   *
+   * @param {object} event The event object
+   */
+  const handleAddChildren = (event) => {
+    handleBLPUMenuClose(event);
+    if (onChildAdd) onChildAdd(true);
   };
 
   /**
@@ -641,6 +660,12 @@ function PropertyDetailsTab({
    */
   const handleReject = () => {
     setAnchorEl(null);
+    if (childCount > 0) {
+      updatedLogicalStatus.current = 9;
+      setOpenMessage(true);
+    } else {
+      if (onLogicalStatusChanged) onLogicalStatusChanged(9);
+    }
   };
 
   /**
@@ -648,6 +673,12 @@ function PropertyDetailsTab({
    */
   const handleHistoricise = () => {
     setAnchorEl(null);
+    if (childCount > 0) {
+      updatedLogicalStatus.current = 8;
+      setOpenMessage(true);
+    } else {
+      if (onLogicalStatusChanged) onLogicalStatusChanged(8);
+    }
   };
 
   /**
@@ -663,8 +694,9 @@ function PropertyDetailsTab({
    * Event to handle when the delete confirmation dialog is closed.
    *
    * @param {boolean} deleteConfirmed True if the user has confirmed the delete; otherwise false.
+   * @param {boolean} deleteChildren True if the user has confirmed to delete the child properties when deleting a parent property; otherwise false.
    */
-  const handleCloseDeleteConfirmation = (deleteConfirmed) => {
+  const handleCloseDeleteConfirmation = (deleteConfirmed, deleteChildren) => {
     setOpenDeleteConfirmation(false);
     if (deleteConfirmed) {
       switch (deleteVariant) {
@@ -673,11 +705,14 @@ function PropertyDetailsTab({
           deleteLpiId.current = null;
           break;
 
+        case "property":
+          if (onDeleteProperty) onDeleteProperty(deleteChildren);
+          break;
+
         default:
           // property
           break;
       }
-      // onDeleteClick(pkId);
     }
     setDeleteVariant(null);
   };
@@ -696,6 +731,18 @@ function PropertyDetailsTab({
       setHasParent(true);
       updateCurrentData("parentUprn", parent);
     }
+  };
+
+  /**
+   * Event to handle when the message dialog closes.
+   *
+   * @param {string} action The action returned from the message dialog.
+   */
+  const handleCloseMessage = (action) => {
+    if (action === "continue" && updatedLogicalStatus.current !== 0 && onLogicalStatusChanged)
+      onLogicalStatusChanged(updatedLogicalStatus.current);
+    updatedLogicalStatus.current = 0;
+    setOpenMessage(false);
   };
 
   /**
@@ -1076,16 +1123,12 @@ function PropertyDetailsTab({
             <MenuItem dense disabled={!userCanEdit} onClick={handleAddLpi} sx={menuItemStyle(false)}>
               <Typography variant="inherit">Add new LPI</Typography>
             </MenuItem>
-            {process.env.NODE_ENV === "development" && (
-              <MenuItem dense disabled={!userCanEdit} onClick={handleAddChild} sx={menuItemStyle(false)}>
-                <Typography variant="inherit">Add child</Typography>
-              </MenuItem>
-            )}
-            {process.env.NODE_ENV === "development" && (
-              <MenuItem dense disabled divider sx={menuItemStyle(true)}>
-                <Typography variant="inherit">Add children</Typography>
-              </MenuItem>
-            )}
+            <MenuItem dense disabled={!userCanEdit} onClick={handleAddChild} sx={menuItemStyle(false)}>
+              <Typography variant="inherit">Add child</Typography>
+            </MenuItem>
+            <MenuItem dense disabled={!userCanEdit} divider onClick={handleAddChildren} sx={menuItemStyle(true)}>
+              <Typography variant="inherit">Add children</Typography>
+            </MenuItem>
             <MenuItem dense onClick={handleZoomToProperty} sx={menuItemStyle(false)}>
               <Typography variant="inherit">Zoom to this</Typography>
             </MenuItem>
@@ -1128,11 +1171,9 @@ function PropertyDetailsTab({
             <MenuItem dense onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
               <Typography variant="inherit">Make child of...</Typography>
             </MenuItem>
-            {process.env.NODE_ENV === "development" && (
-              <MenuItem dense onClick={handleRemoveFromParent} divider sx={menuItemStyle(true)}>
-                <Typography variant="inherit">Remove from parent</Typography>
-              </MenuItem>
-            )}
+            <MenuItem dense disabled={!userCanEdit} onClick={handleRemoveFromParent} divider sx={menuItemStyle(true)}>
+              <Typography variant="inherit">Remove from parent</Typography>
+            </MenuItem>
             <MenuItem dense disabled={!userCanEdit} onClick={handleReject} sx={menuItemStyle(false)}>
               <Typography variant="inherit">Reject</Typography>
             </MenuItem>
@@ -1527,6 +1568,7 @@ function PropertyDetailsTab({
           variant={deleteVariant}
           open={openDeleteConfirmation}
           associatedRecords={deleteVariant === "lpi" ? lpiAssociatedRecords : propertyAssociatedRecords}
+          childCount={childCount}
           onClose={handleCloseDeleteConfirmation}
         />
         <MakeChildDialog
@@ -1535,6 +1577,7 @@ function PropertyDetailsTab({
           selectedUPRNs={makeChildUprn}
           onClose={handleMakeChildClose}
         />
+        <MessageDialog isOpen={openMessage} variant="cascadeLogicalStatus" onClose={handleCloseMessage} />
       </div>
       <Popper id={informationId} open={informationOpen} anchorEl={informationAnchorEl} placement="top-start">
         <ADSInformationControl variant={"moveSeedPoint"} />

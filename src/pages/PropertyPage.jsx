@@ -14,6 +14,7 @@
 //    001   20.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   07.09.23 Sean Flook                 Cleaned the code.
 //    003   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
+//    004   04.04.24 Sean Flook                 Added better handling of API return status.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -27,8 +28,10 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
 import MapContext from "../context/mapContext";
 import SettingsContext from "../context/settingsContext";
+
 import { GetPropertyFromUPRNUrl } from "../configuration/ADSConfig";
 import { GetNewProperty } from "../utils/PropertyUtils";
+
 import { Grid } from "@mui/material";
 import PropertyDataForm from "../forms/PropertyDataForm";
 import ADSEsriMap from "../components/ADSEsriMap";
@@ -65,7 +68,35 @@ function PropertyPage() {
               method: apiUrl.type,
             })
               .then((res) => (res.ok ? res : Promise.reject(res)))
-              .then((res) => res.json())
+              .then((res) => {
+                switch (res.status) {
+                  case 200:
+                    return res.json();
+
+                  case 204:
+                    console.log("[DEBUG] GetPropertyMapData: No content found");
+                    return null;
+
+                  case 401:
+                    console.error(
+                      "[401 ERROR] GetPropertyMapData: Authorization details are not valid or have expired.",
+                      res
+                    );
+                    return null;
+
+                  case 403:
+                    console.error("[402 ERROR] GetPropertyMapData: You do not have database access.", res);
+                    return null;
+
+                  case 500:
+                    console.error("[500 ERROR] GetPropertyMapData: Unexpected server error.", res);
+                    return null;
+
+                  default:
+                    console.error(`[${res.status} ERROR] GetPropertyMapData: Unexpected error.`, res);
+                    return null;
+                }
+              })
               .then(
                 (result) => {
                   setData(result);

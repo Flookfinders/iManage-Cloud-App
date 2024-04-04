@@ -23,6 +23,7 @@
 //    010   08.01.24 Sean Flook                 Changes to fix warnings.
 //    011   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle.
 //    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    013   04.04.24 Sean Flook                 Changes to allow for the user to decide to also delete ESUs for streets and child properties for parent properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -43,6 +44,8 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import ADSDialogTitle from "../components/ADSDialogTitle";
@@ -51,8 +54,9 @@ import CircleIcon from "@mui/icons-material/Circle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { adsBlueA, adsMidGreyA, adsRed, adsWhite, adsPaleBlueA, adsDarkRed } from "../utils/ADSColours";
+import { adsBlueA, adsRed, adsWhite, adsPaleBlueA, adsDarkRed } from "../utils/ADSColours";
 import { useTheme } from "@mui/styles";
+import { deleteDialogContentStyle } from "../utils/ADSStyles";
 
 /* #endregion imports */
 
@@ -90,36 +94,43 @@ ConfirmDeleteDialog.propTypes = {
     "map layer",
   ]),
   recordCount: PropTypes.number,
+  childCount: PropTypes.number,
   associatedRecords: PropTypes.array,
   onClose: PropTypes.func.isRequired,
 };
 
 ConfirmDeleteDialog.defaultProps = {
   recordCount: 1,
+  childCount: 0,
 };
 
-function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, onClose }) {
+function ConfirmDeleteDialog({ open, variant, recordCount, childCount, associatedRecords, onClose }) {
   const theme = useTheme();
   const [title, setTitle] = useState("Delete record");
   const [subtitle, setSubtitle] = useState(null);
   const [content, setContent] = useState(null);
-  const maxContentHeight = "240px";
+
+  const [deleteChildChecked, setDeleteChildChecked] = useState(false);
 
   /**
    * Event to handle when the cancel button is clicked.
    */
   const handleCancel = () => {
-    onClose(false);
+    onClose(false, false);
   };
 
   /**
    * Event to handle when the OK button is clicked.
    */
   const handleOk = () => {
-    onClose(true);
+    onClose(true, deleteChildChecked);
   };
 
   useEffect(() => {
+    const handleDeleteChildChanged = () => {
+      setDeleteChildChecked(!deleteChildChecked);
+    };
+
     const recordText = recordCount && recordCount > 1 ? "records" : "record";
 
     switch (variant) {
@@ -127,7 +138,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         setTitle(`Delete ${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}street ${recordText}`);
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -159,13 +170,42 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
               {associatedRecords &&
                 associatedRecords.length > 0 &&
                 associatedRecords.map((rec, index) => (
-                  <ListItem key={`deleteLine${index + 3}`}>
+                  <ListItem key={`deleteLine3_${index}`}>
                     <ListItemText
                       inset
                       primary={`${index + 1}) ${rec.count} ${rec.type} record${rec.count > 1 ? "s" : ""}`}
                     />
                   </ListItem>
                 ))}
+              {childCount > 0 && (
+                <ListItem
+                  key="deleteLine4"
+                  secondaryAction={
+                    <FormControlLabel
+                      value="end"
+                      control={
+                        <Switch
+                          id="deleteLine4_switch"
+                          checked={deleteChildChecked}
+                          onChange={handleDeleteChildChanged}
+                          color="primary"
+                        />
+                      }
+                      label={deleteChildChecked ? "Yes" : "No"}
+                      labelPlacement="end"
+                    />
+                  }
+                >
+                  <ListItemIcon>
+                    <CircleIcon sx={{ width: "12px", height: "12px" }} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={`do you want to also delete the ${childCount > 1 ? childCount : ""} ESU record${
+                      associatedRecords.length > 1 ? "s" : ""
+                    }?`}
+                  />
+                </ListItem>
+              )}
             </List>
           </Box>
         );
@@ -175,7 +215,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         setTitle(`Delete ${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}ESU ${recordText}`);
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -233,7 +273,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         );
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -267,7 +307,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         );
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -301,7 +341,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         );
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -337,7 +377,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
           }Maintenance responsibility ${recordText}`
         );
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -371,7 +411,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
           `${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}Reinstatement category ${recordText}`
         );
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -405,7 +445,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
           `${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}Special designation ${recordText}`
         );
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -439,7 +479,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
           `${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}Interested organisation ${recordText}`
         );
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -471,7 +511,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         setTitle(`Delete ASD ${recordText}`);
         setSubtitle(`${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}Construction ${recordText}`);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -505,7 +545,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
           `${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}Special designation ${recordText}`
         );
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -541,7 +581,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
           }Height, width and weight restrictions ${recordText}`
         );
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -575,7 +615,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
           `${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}Public right of way ${recordText}`
         );
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -607,7 +647,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         setTitle(`Delete ${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}note ${recordText}`);
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -639,7 +679,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         setTitle(`Delete ${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}property ${recordText}`);
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -671,13 +711,42 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
               {associatedRecords &&
                 associatedRecords.length > 0 &&
                 associatedRecords.map((rec, index) => (
-                  <ListItem key={`deleteLine${index + 3}`}>
+                  <ListItem key={`deleteLine3_${index}`}>
                     <ListItemText
                       inset
                       primary={`${index + 1}) ${rec.count} ${rec.type} record${rec.count > 1 ? "s" : ""}`}
                     />
                   </ListItem>
                 ))}
+              {childCount > 0 && (
+                <ListItem
+                  key="deleteLine4"
+                  secondaryAction={
+                    <FormControlLabel
+                      value="end"
+                      control={
+                        <Switch
+                          id="deleteLine4_switch"
+                          checked={deleteChildChecked}
+                          onChange={handleDeleteChildChanged}
+                          color="primary"
+                        />
+                      }
+                      label={deleteChildChecked ? "Yes" : "No"}
+                      labelPlacement="end"
+                    />
+                  }
+                >
+                  <ListItemIcon>
+                    <CircleIcon sx={{ width: "12px", height: "12px" }} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={`do you want to also delete the ${childCount > 1 ? childCount : ""} child record${
+                      childCount > 1 ? "s" : ""
+                    }?`}
+                  />
+                </ListItem>
+              )}
             </List>
           </Box>
         );
@@ -687,7 +756,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         setTitle(`Delete ${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}LPI ${recordText}`);
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -744,7 +813,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         );
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -802,7 +871,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         );
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -858,7 +927,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         );
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -917,7 +986,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         );
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">On deletion this record</Typography>
             <List dense>
               <ListItem key="deleteLine1">
@@ -947,7 +1016,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         );
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -979,7 +1048,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         setTitle(`Delete ${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}note ${recordText}`);
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -1011,7 +1080,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         setTitle(`Delete ${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}address ${recordText}`);
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -1037,7 +1106,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         setTitle("Delete template record");
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{"On deletion this record"}</Typography>
             <List dense>
               <ListItem key="deleteLine1">
@@ -1055,7 +1124,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         setTitle("Delete map layer record");
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{"On deletion this record"}</Typography>
             <List dense>
               <ListItem key="deleteLine1">
@@ -1073,7 +1142,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         setTitle(`Delete ${recordCount && recordCount > 1 ? recordCount.toString() + " " : ""}${recordText}`);
         setSubtitle(null);
         setContent(
-          <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+          <Box sx={deleteDialogContentStyle}>
             <Typography variant="body1">{`On deletion ${
               recordCount && recordCount > 1 ? "these records" : "this record"
             }`}</Typography>
@@ -1089,7 +1158,11 @@ function ConfirmDeleteDialog({ open, variant, recordCount, associatedRecords, on
         );
         break;
     }
-  }, [variant, recordCount, associatedRecords]);
+  }, [variant, recordCount, childCount, associatedRecords, deleteChildChecked]);
+
+  useEffect(() => {
+    setDeleteChildChecked(variant === "street");
+  }, [variant]);
 
   return (
     <Dialog

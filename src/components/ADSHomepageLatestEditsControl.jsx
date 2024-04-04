@@ -30,6 +30,7 @@
 //    017   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    018   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
 //    019   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    020   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -375,6 +376,7 @@ function ADSHomepageLatestEditsControl({ data }) {
    * Event to handle editing a property.
    *
    * @param {number} uprn The UPRN of the property to be edited.
+   * @param {number} parentUprn The UPRN of the parent property of the property to be edited.
    * @param {string} address The address of the property to be edited.
    * @param {string} postcode The postcode of the property to be edited.
    * @param {number} easting The easting of the property to be edited.
@@ -382,7 +384,16 @@ function ADSHomepageLatestEditsControl({ data }) {
    * @param {number} logicalStatus The logical status of the property to be edited.
    * @param {string} classificationCode The classification code of the property to be edited.
    */
-  const doEditProperty = (uprn, address, postcode, easting, northing, logicalStatus, classificationCode) => {
+  const doEditProperty = (
+    uprn,
+    parentUprn,
+    address,
+    postcode,
+    easting,
+    northing,
+    logicalStatus,
+    classificationCode
+  ) => {
     propertyContext.onPropertyChange(uprn, 0, address, address, postcode, null, null, false, null);
 
     const foundProperty = mapContext.currentSearchData.properties.find((x) => x.uprn === uprn.toString());
@@ -397,6 +408,7 @@ function ADSHomepageLatestEditsControl({ data }) {
       const searchProperties = [
         {
           uprn: uprn,
+          parentUprn: parentUprn,
           address: address,
           postcode: postcode,
           easting: easting,
@@ -424,6 +436,7 @@ function ADSHomepageLatestEditsControl({ data }) {
     if (lpi.logicalStatus && lpi.logicalStatus === 8) {
       historicRec.current = {
         uprn: uprn,
+        parentUprn: propertyData.parentUprn,
         address: lpi.address,
         postcode: lpi.postcode,
         easting: propertyData.xcoordinate,
@@ -435,6 +448,7 @@ function ADSHomepageLatestEditsControl({ data }) {
     } else
       doEditProperty(
         uprn,
+        propertyData.parentUprn,
         lpi.address,
         lpi.postcode,
         propertyData.xcoordinate,
@@ -455,6 +469,7 @@ function ADSHomepageLatestEditsControl({ data }) {
       if (historicRec.current) {
         doEditProperty(
           historicRec.current.uprn,
+          historicRec.current.parentUprn,
           historicRec.current.address,
           historicRec.current.postcode,
           historicRec.current.easting,

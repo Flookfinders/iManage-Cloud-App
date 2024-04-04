@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    004   10.01.24 Sean Flook                 Fix warnings.
+//    005   04.04.24 Sean Flook                 Added propType for missing parameter.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -75,6 +76,7 @@ ADSActionButton.propTypes = {
   buttonLabel: PropTypes.string,
   disabled: PropTypes.bool,
   hidden: PropTypes.bool,
+  inheritBackground: PropTypes.bool,
   tooltipTitle: PropTypes.string,
   tooltipPlacement: PropTypes.string,
   fontSize: PropTypes.string,

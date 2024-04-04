@@ -41,6 +41,7 @@
 //    028   18.03.24 Sean Flook           GLB12 Tweaked searchDataFormStyle to remove overflow.
 //    029   22.03.24 Sean Flook           GLB12 Changed dataFormStyle to calculate the height for all the forms etc.
 //    030   27.03.24 Sean Flook                 Added dialogTitleTextStyle.
+//    031   04.04.24 Sean Flook                 Added deleteDialogContentStyle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -82,6 +83,7 @@ export const toolbarHeight = "40";
 export const dataFormToolbarHeight = "50";
 export const appBarHeight = "56";
 export const wizardStepperHeight = "70";
+const maxContentHeight = "400px";
 export const doughnutHeight = "360";
 
 /**
@@ -1333,4 +1335,14 @@ export const dialogTitleTextStyle = {
 export const getHighwayDedicationIconStyle = (selected) => {
   if (selected) return { color: adsBlueA };
   else return { color: grey[300] };
+};
+
+/**
+ * Style used for delete confirmation dialog content box
+ */
+export const deleteDialogContentStyle = {
+  maxHeight: maxContentHeight,
+  fontSize: "16px",
+  color: adsMidGreyA,
+  lineHeight: "22px",
 };
