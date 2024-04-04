@@ -14,6 +14,7 @@
 //    001   07.07.21 Sean Flook                 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    003   10.01.24 Sean Flook                 Fix warnings.
+//    004   04.04.24 Sean Flook       IMANN-319 Do not allow coordinates to be changed outside the allowable limits.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -21,13 +22,18 @@
 
 /* #region imports */
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useContext, useEffect } from "react";
 import PropTypes from "prop-types";
+
+import SettingsContext from "../context/settingsContext";
+
 import { Grid, TextField, Typography, Tooltip, Button, Skeleton } from "@mui/material";
 import { Box } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
+
 import { PinDrop } from "@mui/icons-material";
 import { MoveBLPUIcon } from "../utils/ADSIcons";
+
 import {
   FormBoxRowStyle,
   FormRowStyle,
@@ -94,7 +100,13 @@ function ADSCoordinateControl({
   onNorthChange,
   onButtonClick,
 }) {
+  const settingsContext = useContext(SettingsContext);
+
   const hasCoordError = useRef(false);
+  const minEasting = useRef(0);
+  const maxEasting = useRef(0);
+  const minNorthing = useRef(0);
+  const maxNorthing = useRef(0);
   const [valueEast, setValueEast] = useState(0);
   const [valueNorth, setValueNorth] = useState(0);
   const [displayError, setDisplayError] = useState("");
@@ -105,10 +117,13 @@ function ADSCoordinateControl({
    * @param {object} event The event object.
    */
   const handleEastChange = (event) => {
-    setValueEast(event.target.value);
-    if (onEastChange) {
-      if (event.target.value.length > 0) onEastChange(event.target.value);
-      else onEastChange(0);
+    const newValue = Number(event.target.value);
+    if (newValue >= minEasting.current && newValue <= maxEasting.current) {
+      setValueEast(newValue);
+      if (onEastChange) {
+        if (event.target.value.length > 0) onEastChange(newValue);
+        else onEastChange(0);
+      }
     }
   };
 
@@ -118,10 +133,13 @@ function ADSCoordinateControl({
    * @param {object} event The event object.
    */
   const handleNorthChange = (event) => {
-    setValueNorth(event.target.value);
-    if (onNorthChange) {
-      if (event.target.value.length > 0) onNorthChange(event.target.value);
-      else onNorthChange(0);
+    const newValue = Number(event.target.value);
+    if (newValue >= minNorthing.current && newValue <= maxNorthing.current) {
+      setValueNorth(newValue);
+      if (onNorthChange) {
+        if (event.target.value.length > 0) onNorthChange(newValue);
+        else onNorthChange(0);
+      }
     }
   };
 
@@ -139,6 +157,20 @@ function ADSCoordinateControl({
         return <PinDrop />;
     }
   }
+
+  useEffect(() => {
+    if (settingsContext.isScottish) {
+      minEasting.current = 1;
+      maxEasting.current = 660000;
+      minNorthing.current = 1;
+      maxNorthing.current = 1300000;
+    } else {
+      minEasting.current = 80000;
+      maxEasting.current = 656100;
+      minNorthing.current = 5000;
+      maxNorthing.current = 657700;
+    }
+  }, [settingsContext.isScottish]);
 
   useEffect(() => {
     const hasEastError = eastErrorText && eastErrorText.length > 0;
