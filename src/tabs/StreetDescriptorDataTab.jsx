@@ -22,6 +22,7 @@
 //    009   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    010   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    011   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    012   02.04.24 Joshua McCormick IMANN-277 Show displayCharactersLeft on descriptor input
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -371,6 +372,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
           helperText="This is the name/descriptor for this street."
           maxLength={100}
           onChange={handleDescriptionChangeEvent}
+          displayCharactersLeft
         />
         <ADSSelectControl
           label="Locality"

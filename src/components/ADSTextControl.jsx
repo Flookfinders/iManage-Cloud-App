@@ -28,6 +28,7 @@
 //    016   01.02.24 Sean Flook                 Correctly handle when no label is supplied.
 //    017   13.02.24 Sean Flook                 For multi-line controls display the characters left at the same level as the label.
 //    018   21.02.24 Sean Flook           MUL16 Added noLeftPadding parameter.
+//    019   02.04.24 Joshua McCormick IMANN-277 Removed not multiline check for displayCharactersLeft
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -442,7 +443,7 @@ function ADSTextControl({
             />
           )}
         </Grid>
-        {displayCharactersLeft && !multiline.current && value && value.length > 0 ? (
+        {displayCharactersLeft && value && value.length > 0 ? (
           <Grid item xs={12}>
             <Typography
               id={`ads-text-${label ? label.toLowerCase().replaceAll(" ", "-") : id}-characters-left`}

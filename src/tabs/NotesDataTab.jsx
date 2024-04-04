@@ -27,6 +27,7 @@
 //    014   19.03.24 Joshua McCormick IMANN-280 removed unneeded spacing
 //    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    016   26.03.24 Joel Benford     IMANN-365 Changed header back/text/visibility
+//    017   02.04.24 Joshua McCormick IMANN-277 Show displayCharactersLeft on note input
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -368,6 +369,7 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
           maxLines={data.variant === "street" ? 4 : 10}
           errorText={noteError}
           onChange={handleNoteChangeEvent}
+          displayCharactersLeft
         />
         <ADSOkCancelControl
           okLabel={data.pkId === 0 ? "Add" : "Ok"}
