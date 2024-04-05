@@ -56,6 +56,7 @@
 //    043   27.03.24 Sean Flook                 Ensure currentPointCaptureMode is not cleared when still required.
 //    044   27.03.24 Sean Flook                 Undone a previous change as it was causing an issue.
 //    045   04.04.24 Sean Flook                 Various changes required for adding a child/children, deleting and changing the logical status.
+//    046   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -85,6 +86,7 @@ import {
   PolygonsEqual,
   ResetContexts,
   doOpenRecord,
+  mergeArrays,
 } from "../utils/HelperUtils";
 import {
   GetNewPropertyData,
@@ -2168,34 +2170,53 @@ function PropertyDataForm({ data, loading }) {
    * @param {boolean} deleteChildren True if the user has confirmed to delete the child properties when deleting a parent property; otherwise false.
    */
   const handleDeleteProperty = async (deleteChildren) => {
-    const result = await PropertyDelete(propertyData.uprn, deleteChildren, userContext.currentUser.token);
+    const result = await PropertyDelete(
+      propertyData.uprn,
+      deleteChildren,
+      userContext.currentUser.token,
+      propertyContext
+    );
 
     deleteResult.current = result;
     alertType.current = "deleteProperty";
 
     if (result) {
-      const newPropertySearchData = deleteChildren
-        ? searchContext.currentSearchData.results.filter(
-            (x) =>
-              x.type === 15 ||
-              (x.uprn.toString() !== propertyData.uprn.toString() &&
-                (!x.parent_uprn || x.parent_uprn.toString() !== propertyData.uprn.toString()))
-          )
-        : searchContext.currentSearchData.results.filter(
-            (x) => x.type === 15 || x.uprn.toString() !== propertyData.uprn.toString()
-          );
+      let deletedUprns = [propertyData.uprn.toString()];
+      if (deleteChildren) {
+        const childUprns = searchContext.currentSearchData.results
+          .filter((x) => x.type === 24 && x.parent_uprn && x.parent_uprn.toString() === propertyData.uprn.toString())
+          .map((x) => x.uprn.toString());
+        let grandChildUprns = [];
+        let greatGrandChildUprns = [];
+
+        if (childUprns && childUprns.length) {
+          grandChildUprns = searchContext.currentSearchData.results
+            .filter((x) => x.type === 24 && x.parent_uprn && childUprns.includes(x.parent_uprn.toString()))
+            .map((x) => x.uprn.toString());
+
+          if (grandChildUprns && grandChildUprns.length) {
+            greatGrandChildUprns = searchContext.currentSearchData.results
+              .filter((x) => x.type === 24 && x.parent_uprn && grandChildUprns.includes(x.parent_uprn.toString()))
+              .map((x) => x.uprn.toString());
+          }
+        }
+
+        deletedUprns = mergeArrays(
+          mergeArrays(mergeArrays([propertyData.uprn.toString()], childUprns), grandChildUprns),
+          greatGrandChildUprns
+        );
+      }
+      const newPropertySearchData = searchContext.currentSearchData.results.filter(
+        (x) => x.type === 15 || !deletedUprns.includes(x.uprn.toString())
+      );
       searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newPropertySearchData);
 
-      const newMapBackgroundProperties = deleteChildren
-        ? mapContext.currentBackgroundData.properties.filter((x) => x.uprn.toString() !== propertyData.uprn.toString())
-        : mapContext.currentBackgroundData.properties.filter((x) => x.uprn.toString() !== propertyData.uprn.toString());
-      const newMapSearchProperties = deleteChildren
-        ? mapContext.currentSearchData.properties.filter(
-            (x) =>
-              x.uprn.toString() !== propertyData.uprn.toString() &&
-              (!x.parentUprn || x.parentUprn.toString() !== propertyData.uprn.toString())
-          )
-        : mapContext.currentSearchData.properties.filter((x) => x.uprn.toString() !== propertyData.uprn.toString());
+      const newMapBackgroundProperties = mapContext.currentBackgroundData.properties.filter(
+        (x) => !deletedUprns.includes(x.uprn.toString())
+      );
+      const newMapSearchProperties = mapContext.currentSearchData.properties.filter(
+        (x) => !deletedUprns.includes(x.uprn.toString())
+      );
       mapContext.onBackgroundDataChange(
         mapContext.currentBackgroundData.streets,
         mapContext.currentBackgroundData.unassignedEsus,

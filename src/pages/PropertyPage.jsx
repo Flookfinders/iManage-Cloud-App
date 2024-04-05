@@ -15,6 +15,7 @@
 //    002   07.09.23 Sean Flook                 Cleaned the code.
 //    003   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    004   04.04.24 Sean Flook                 Added better handling of API return status.
+//    005   05.04.24 Sean Flook                 Correctly handle errors when getting a property.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -74,25 +75,99 @@ function PropertyPage() {
                     return res.json();
 
                   case 204:
-                    console.log("[DEBUG] GetPropertyMapData: No content found");
+                    propertyContext.onPropertyErrors(
+                      [
+                        {
+                          field: "UPRN",
+                          errors: ["This property no longer exists in the database."],
+                        },
+                      ],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      0
+                    );
                     return null;
 
                   case 401:
-                    console.error(
-                      "[401 ERROR] GetPropertyMapData: Authorization details are not valid or have expired.",
-                      res
+                    propertyContext.onPropertyErrors(
+                      [
+                        {
+                          field: "UPRN",
+                          errors: ["Authorization details are not valid or have expired."],
+                        },
+                      ],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      0
                     );
                     return null;
 
                   case 403:
-                    console.error("[402 ERROR] GetPropertyMapData: You do not have database access.", res);
+                    propertyContext.onPropertyErrors(
+                      [
+                        {
+                          field: "UPRN",
+                          errors: ["You do not have database access."],
+                        },
+                      ],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      0
+                    );
                     return null;
 
                   case 500:
+                    propertyContext.onPropertyErrors(
+                      [
+                        {
+                          field: "UPRN",
+                          errors: ["Unexpected server error, please report to support."],
+                        },
+                      ],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      0
+                    );
                     console.error("[500 ERROR] GetPropertyMapData: Unexpected server error.", res);
                     return null;
 
                   default:
+                    propertyContext.onPropertyErrors(
+                      [
+                        {
+                          field: "UPRN",
+                          errors: ["Unexpected error, please report to support."],
+                        },
+                      ],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      0
+                    );
                     console.error(`[${res.status} ERROR] GetPropertyMapData: Unexpected error.`, res);
                     return null;
                 }

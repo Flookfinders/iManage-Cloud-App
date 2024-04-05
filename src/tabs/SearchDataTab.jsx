@@ -50,6 +50,7 @@
 //    036   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    037   25.03.24 Sean Flook           MUL16 Removed option to remove from parent.
 //    038   04.04.24 Sean Flook                 Changes required to handle deleting ESUs from streets and child properties from parent properties.
+//    039   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1077,13 +1078,19 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
           deleteUSRN.current,
           deleteChildren,
           lookupContext,
+          streetContext,
           userContext.currentUser.token,
           settingsContext.isScottish
         );
 
         if (onSetDeleteOpen) onSetDeleteOpen(true, "Street", result, deleteUSRN.current, deleteChildren);
       } else if (deleteUPRN.current) {
-        const result = await PropertyDelete(deleteUPRN.current, deleteChildren, userContext.currentUser.token);
+        const result = await PropertyDelete(
+          deleteUPRN.current,
+          deleteChildren,
+          userContext.currentUser.token,
+          propertyContext
+        );
 
         if (onSetDeleteOpen) onSetDeleteOpen(true, "Property", result, deleteUPRN.current, deleteChildren);
       }

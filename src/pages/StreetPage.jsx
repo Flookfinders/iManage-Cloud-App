@@ -19,6 +19,7 @@
 //    006   25.01.24 Sean Flook                 Changes required after UX review.
 //    007   26.01.24 Sean Flook       IMANN-232 Correctly initialise loadingRef.
 //    008   14.02.24 Sean Flook                 Added a bit of error trapping.
+//    009   05.04.24 Sean Flook                 Correctly handle errors when getting a street.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -85,25 +86,129 @@ function StreetPage() {
                     return res.json();
 
                   case 204:
-                    console.log("[DEBUG] SetUpStreetData: No content found");
+                    streetContext.onStreetErrors(
+                      [
+                        {
+                          field: "USRN",
+                          errors: ["This street no longer exists in the database."],
+                        },
+                      ],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      []
+                    );
                     return null;
 
                   case 401:
-                    console.error(
-                      "[401 ERROR] SetUpStreetData: Authorization details are not valid or have expired.",
-                      res
+                    streetContext.onStreetErrors(
+                      [
+                        {
+                          field: "USRN",
+                          errors: ["Authorization details are not valid or have expired."],
+                        },
+                      ],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      []
                     );
                     return null;
 
                   case 403:
-                    console.error("[402 ERROR] SetUpStreetData: You do not have database access.", res);
+                    streetContext.onStreetErrors(
+                      [
+                        {
+                          field: "USRN",
+                          errors: ["You do not have database access."],
+                        },
+                      ],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      []
+                    );
                     return null;
 
                   case 500:
+                    streetContext.onStreetErrors(
+                      [
+                        {
+                          field: "USRN",
+                          errors: ["Unexpected server error, please report to support."],
+                        },
+                      ],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      []
+                    );
                     console.error("[500 ERROR] SetUpStreetData: Unexpected server error.", res);
                     return null;
 
                   default:
+                    streetContext.onStreetErrors(
+                      [
+                        {
+                          field: "USRN",
+                          errors: ["Unexpected error, please report to support."],
+                        },
+                      ],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      []
+                    );
                     console.error("[ERROR] SetUpStreetData: Unexpected error.", res);
                     return null;
                 }

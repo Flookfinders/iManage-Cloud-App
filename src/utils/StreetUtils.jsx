@@ -49,6 +49,7 @@
 //    036   12.03.24 Sean Flook                 Improved error handling when deleting.
 //    037   18.03.24 Sean Flook         ASD3_OS Tweaked GetAsdSecondaryText.
 //    038   26.03.24 Sean Flook        ASD10_GP Modified setASDLayerVisibility.
+//    039   05.04.24 Sean Flook                 Correctly handle errors when creating, updating and deleting.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -534,11 +535,12 @@ export function GetNewStreet(
  * @param {number} usrn The USRN of the street that is being deleted.
  * @param {boolean} deleteEsus If true then the ESUs will also be deleted; otherwise they are left.
  * @param {object} lookupContext The lookup context object.
+ * @param {object} streetContext The street context object.
  * @param {string} userToken The token for the user who is calling the endpoint.
  * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
  * @return {boolean} True if the street was deleted successfully; otherwise false.
  */
-export async function StreetDelete(usrn, deleteEsus, lookupContext, userToken, isScottish) {
+export async function StreetDelete(usrn, deleteEsus, lookupContext, streetContext, userToken, isScottish) {
   const deleteUrl = GetDeleteStreetUrl(userToken, isScottish);
 
   if (deleteUrl) {
@@ -560,25 +562,128 @@ export async function StreetDelete(usrn, deleteEsus, lookupContext, userToken, i
       .catch((res) => {
         switch (res.status) {
           case 204:
-            console.error("[204 ERROR] Street does not exist");
+            streetContext.onStreetErrors(
+              [
+                {
+                  field: "USRN",
+                  errors: ["The street may have already been deleted."],
+                },
+              ],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              []
+            );
             break;
 
           case 400:
             res.json().then((body) => {
-              console.error(`[400 ERROR] Failed to delete the street: ${body.title}`, body.errors);
+              const streetErrors = GetStreetValidationErrors(body, streetContext.currentStreet.newStreet);
+
+              streetContext.onStreetErrors(
+                streetErrors.street,
+                streetErrors.descriptor,
+                streetErrors.esu,
+                streetErrors.successorCrossRef,
+                streetErrors.highwayDedication,
+                streetErrors.oneWayException,
+                streetErrors.maintenanceResponsibility,
+                streetErrors.reinstatementCategory,
+                isScottish ? streetErrors.specialDesignation : null,
+                streetErrors.interest,
+                streetErrors.construction,
+                !isScottish ? streetErrors.specialDesignation : null,
+                streetErrors.hww,
+                streetErrors.prow,
+                streetErrors.note
+              );
             });
             break;
 
           case 401:
-            console.error("[401 ERROR] You are not authorized to delete this property");
+            streetContext.onStreetErrors(
+              [
+                {
+                  field: "USRN",
+                  errors: ["You are not authorized to delete this street."],
+                },
+              ],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              []
+            );
             break;
 
           case 403:
-            console.error("[403 ERROR] You do not have database access");
+            streetContext.onStreetErrors(
+              [
+                {
+                  field: "USRN",
+                  errors: ["You do not have database access."],
+                },
+              ],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              []
+            );
             break;
 
           default:
             console.error(`[${res.status} ERROR] Deleting street - response`, res);
+            streetContext.onStreetErrors(
+              [
+                {
+                  field: "USRN",
+                  errors: [`Unknown error deleting street, please report to support [${res.status}]`],
+                },
+              ],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              []
+            );
             break;
         }
         return false;
@@ -2950,16 +3055,57 @@ export async function SaveStreet(
             break;
 
           case 401:
-            res.json().then((body) => {
-              console.error(
-                `[401 ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} street`,
-                body
-              );
-            });
+            streetContext.onStreetErrors(
+              [
+                {
+                  field: "USRN",
+                  errors: [
+                    `You are not authorised to ${
+                      streetContext.currentStreet.newStreet ? "create" : "update"
+                    } this street.`,
+                  ],
+                },
+              ],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              []
+            );
             break;
 
-          case 500:
-            console.error(`[500 ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} street`, res);
+          case 403:
+            streetContext.onStreetErrors(
+              [
+                {
+                  field: "USRN",
+                  errors: ["You do not have access to the database."],
+                },
+              ],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              []
+            );
             break;
 
           default:

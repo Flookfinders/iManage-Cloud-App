@@ -26,6 +26,7 @@
 //    013   21.03.24 Joshua McCormick IMANN_280 Removed unnecessary tabContainerStyle
 //    014   22.03.24 Sean Flook           GLB12 Fixed the height of the control to ensure the rest of the form can be calculated correctly.
 //    015   04.04.24 Sean Flook                 Handle deleting of ESUs on streets and child properties from parent properties. Added parentUprn to mapContext search data for properties.
+//    016   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -38,7 +39,7 @@ import MapContext from "../context/mapContext";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
 import PropTypes from "prop-types";
-import { GetWktCoordinates } from "../utils/HelperUtils";
+import { GetWktCoordinates, mergeArrays } from "../utils/HelperUtils";
 import { GetStreetMapData } from "../utils/StreetUtils";
 import { HasASD } from "../configuration/ADSConfig";
 import {
@@ -704,15 +705,37 @@ function SearchDataForm() {
     deleteResult.current = result;
 
     if (result) {
+      let deletedIds = [entityId.toString()];
+      if (dataType === "Property" && deleteChildren) {
+        const childUprns = searchContext.currentSearchData.results
+          .filter((x) => x.type === 24 && x.parent_uprn && x.parent_uprn.toString() === entityId.toString())
+          .map((x) => x.uprn.toString());
+        let grandChildUprns = [];
+        let greatGrandChildUprns = [];
+
+        if (childUprns && childUprns.length) {
+          grandChildUprns = searchContext.currentSearchData.results
+            .filter((x) => x.type === 24 && x.parent_uprn && childUprns.includes(x.parent_uprn.toString()))
+            .map((x) => x.uprn.toString());
+
+          if (grandChildUprns && grandChildUprns.length) {
+            greatGrandChildUprns = searchContext.currentSearchData.results
+              .filter((x) => x.type === 24 && x.parent_uprn && grandChildUprns.includes(x.parent_uprn.toString()))
+              .map((x) => x.uprn.toString());
+          }
+        }
+
+        deletedIds = mergeArrays(
+          mergeArrays(mergeArrays([entityId.toString()], childUprns), grandChildUprns),
+          greatGrandChildUprns
+        );
+      }
+
       if (searchFilteredData) {
         if (dataType === "Property") {
-          const newPropertyFilteredData = deleteChildren
-            ? searchFilteredData.filter(
-                (x) =>
-                  x.type === 15 ||
-                  (x.uprn.toString() !== entityId.toString() && x.parent_uprn.toString() !== entityId.toString())
-              )
-            : searchFilteredData.filter((x) => x.type === 15 || x.uprn.toString() !== entityId.toString());
+          const newPropertyFilteredData = searchFilteredData.filter(
+            (x) => x.type === 15 || !deletedIds.includes(x.uprn.toString())
+          );
           setSearchFilteredData(newPropertyFilteredData);
         } else {
           const newStreetFilteredData = searchFilteredData.filter(
@@ -722,16 +745,9 @@ function SearchDataForm() {
         }
       } else {
         if (dataType === "Property") {
-          const newPropertySearchData = deleteChildren
-            ? searchContext.currentSearchData.results.filter(
-                (x) =>
-                  x.type === 15 ||
-                  (x.uprn.toString() !== entityId.toString() &&
-                    (!x.parent_uprn || x.parent_uprn.toString() !== entityId.toString()))
-              )
-            : searchContext.currentSearchData.results.filter(
-                (x) => x.type === 15 || x.uprn.toString() !== entityId.toString()
-              );
+          const newPropertySearchData = searchContext.currentSearchData.results.filter(
+            (x) => x.type === 15 || !deletedIds.includes(x.uprn.toString())
+          );
           searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newPropertySearchData);
         } else {
           const newStreetSearchData = searchContext.currentSearchData.results.filter(
@@ -742,16 +758,12 @@ function SearchDataForm() {
       }
 
       if (dataType === "Property") {
-        const newMapBackgroundProperties = deleteChildren
-          ? mapContext.currentBackgroundData.properties.filter((x) => x.uprn.toString() !== entityId.toString())
-          : mapContext.currentBackgroundData.properties.filter((x) => x.uprn.toString() !== entityId.toString());
-        const newMapSearchProperties = deleteChildren
-          ? mapContext.currentSearchData.properties.filter(
-              (x) =>
-                x.uprn.toString() !== entityId.toString() &&
-                (!x.parentUprn || x.parentUprn.toString() !== entityId.toString())
-            )
-          : mapContext.currentSearchData.properties.filter((x) => x.uprn.toString() !== entityId.toString());
+        const newMapBackgroundProperties = mapContext.currentBackgroundData.properties.filter(
+          (x) => !deletedIds.includes(x.uprn.toString())
+        );
+        const newMapSearchProperties = mapContext.currentSearchData.properties.filter(
+          (x) => !deletedIds.includes(x.uprn.toString())
+        );
         mapContext.onBackgroundDataChange(
           mapContext.currentBackgroundData.streets,
           mapContext.currentBackgroundData.unassignedEsus,
@@ -965,7 +977,7 @@ function SearchDataForm() {
           checked={checked}
           onToggleItem={(value) => ToggleItem(value)}
           onSetCopyOpen={(open, dataType) => handleCopyOpen(open, dataType)}
-          onSetDeleteOpen={(open, dataType, result, entityId) => handleDeleteOpen(open, dataType, result, entityId)}
+          onSetDeleteOpen={handleDeleteOpen}
           onClearSelection={handleClearSelection}
         />
       </TabPanel>
@@ -976,7 +988,7 @@ function SearchDataForm() {
           checked={checked}
           onToggleItem={(value) => ToggleItem(value)}
           onSetCopyOpen={(open, dataType) => handleCopyOpen(open, dataType)}
-          onSetDeleteOpen={(open, dataType, result, entityId) => handleDeleteOpen(open, dataType, result, entityId)}
+          onSetDeleteOpen={handleDeleteOpen}
           onClearSelection={handleClearSelection}
         />
       </TabPanel>

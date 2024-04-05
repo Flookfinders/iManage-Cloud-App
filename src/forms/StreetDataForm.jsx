@@ -72,6 +72,7 @@
 //    058   27.03.24 Sean Flook                 Ensure currentPointCaptureMode is not cleared when still required.
 //    059   27.03.24 Sean Flook                 Undone a previous change as it was causing an issue.
 //    060   04.04.24 Sean Flook                 Fix bug.
+//    061   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3124,6 +3125,7 @@ function StreetDataForm({ data, loading }) {
         streetData.usrn,
         true,
         lookupContext,
+        streetContext,
         userContext.currentUser.token,
         settingsContext.isScottish
       );

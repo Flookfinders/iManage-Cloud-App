@@ -41,6 +41,7 @@
 //    028   13.03.24 Sean Flook            MUL9 Changes required to refresh the related tab if required.
 //    029   22.03.24 Sean Flook           MUL16 Added GetParentHierarchy.
 //    030   04.04.24 Sean Flook                 Various changes for deleting and adding new properties.
+//    031   05.04.24 Sean Flook                 Correctly handle errors when creating, updating and deleting.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -748,9 +749,10 @@ export function GetNewProperty(isWelsh, isScottish, authorityCode, usrn, parent,
  * @param {number} uprn The UPRN of the property being deleted.
  * @param {boolean} deleteChildProperties True if child properties should also be deleted; otherwise false.
  * @param {string} userToken The token for the user who is calling the endpoint.
+ * @param {object} propertyContext The property context object.
  * @return {boolean} True if the property was deleted successfully; otherwise false.
  */
-export async function PropertyDelete(uprn, deleteChildProperties, userToken) {
+export async function PropertyDelete(uprn, deleteChildProperties, userToken, propertyContext) {
   const deleteUrl = GetDeletePropertyUrl(userToken);
 
   if (deleteUrl) {
@@ -767,25 +769,98 @@ export async function PropertyDelete(uprn, deleteChildProperties, userToken) {
       .catch((res) => {
         switch (res.status) {
           case 204:
-            console.error("[204 ERROR] Property does not exist");
+            propertyContext.onPropertyErrors(
+              [
+                {
+                  field: "UPRN",
+                  errors: ["The property may have already been deleted"],
+                },
+              ],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              0
+            );
             break;
 
           case 400:
             res.json().then((body) => {
-              console.error(`[400 ERROR] Failed to delete the property: ${body.title}`, body.errors);
+              const propertyErrors = GetPropertyValidationErrors(body, false);
+
+              propertyContext.onPropertyErrors(
+                propertyErrors.blpu,
+                propertyErrors.lpi,
+                propertyErrors.provenance,
+                propertyErrors.crossRef,
+                propertyErrors.classification,
+                propertyErrors.organisation,
+                propertyErrors.successorCrossRef,
+                propertyErrors.note,
+                0
+              );
             });
             break;
 
           case 401:
-            console.error("[401 ERROR] You are not authorized to delete this property");
+            propertyContext.onPropertyErrors(
+              [
+                {
+                  field: "UPRN",
+                  errors: ["You are not authorized to delete this property"],
+                },
+              ],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              0
+            );
             break;
 
           case 403:
-            console.error("[403 ERROR] You do not have database access");
+            propertyContext.onPropertyErrors(
+              [
+                {
+                  field: "UPRN",
+                  errors: ["You do not have database access"],
+                },
+              ],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              0
+            );
             break;
 
           default:
             console.error(`[${res.status} ERROR] Deleting Property - response`, res);
+            propertyContext.onPropertyErrors(
+              [
+                {
+                  field: "UPRN",
+                  errors: [`Unknown error deleting property, please report to support [${res.status}]`],
+                },
+              ],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              0
+            );
             break;
         }
         return false;
@@ -1755,7 +1830,7 @@ export async function GetParentHierarchy(parentUprn, userToken) {
  * @param {object} currentProperty The current property data.
  * @param {boolean} newProperty True if this is a new property; otherwise false.
  * @param {string} userToken The token for the user who is calling the endpoint.
- * @param {object} propertyContext The sandbox property object.
+ * @param {object} propertyContext The property context object.
  * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
  * @return {object|null} If the save was successful the updated property; otherwise null.
  */
@@ -1804,9 +1879,41 @@ export async function SaveProperty(currentProperty, newProperty, userToken, prop
             break;
 
           case 401:
-            res.json().then((body) => {
-              console.error(`[401 ERROR] ${newProperty ? "Creating" : "Updating"} property`, body);
-            });
+            propertyContext.onPropertyErrors(
+              [
+                {
+                  field: "UPRN",
+                  errors: [`You are not authorised to ${newProperty ? "create" : "update"} this property.`],
+                },
+              ],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              currentProperty.pkId
+            );
+            break;
+
+          case 403:
+            propertyContext.onPropertyErrors(
+              [
+                {
+                  field: "UPRN",
+                  errors: ["You do not have access to the database."],
+                },
+              ],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              currentProperty.pkId
+            );
             break;
 
           default:

@@ -46,6 +46,7 @@
 //    033   11.03.24 Sean Flook           GLB12 Use constants from ADSStyles to set heights and widths.
 //    034   15.03.24 Sean Flook            GLB6 Removed autofocus from the add street button as not required.
 //    035   04.04.24 Sean Flook                 Changes required to navigate back after deleting a property.
+//    036   05.04.24 Sean Flook                 Changes required to display errors even when records have not been edited (Delete and Get).
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -955,6 +956,22 @@ function ADSAppBar(props) {
                       </Link>
                     </Stack>
                   )}
+                  {!streetContext.currentStreetModified && haveStreetError && (
+                    <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={1}>
+                      <ErrorIcon sx={{ color: adsRed, paddingLeft: 1 }} />
+                      <Link
+                        sx={{ color: adsRed, fontWeight: 600, paddingRight: 1 }}
+                        color={adsRed}
+                        variant="body2"
+                        noWrap
+                        align="left"
+                        component="button"
+                        onClick={handleViewIssueClick}
+                      >
+                        View issue(s)
+                      </Link>
+                    </Stack>
+                  )}
                 </>
               ) : haveProperty ? (
                 <>
@@ -1008,6 +1025,28 @@ function ADSAppBar(props) {
                       </Link>
                     </Stack>
                   )}
+                  {!propertyContext.currentPropertyModified && havePropertyError && (
+                    <Stack
+                      direction="row"
+                      justifyContent="flex-start"
+                      alignItems="center"
+                      spacing={1}
+                      sx={{ pl: "8px" }}
+                    >
+                      <ErrorIcon sx={{ color: adsRed }} />
+                      <Link
+                        sx={{ color: adsRed, fontWeight: 600 }}
+                        color={adsRed}
+                        variant="body2"
+                        noWrap
+                        align="left"
+                        component="button"
+                        onClick={handleViewIssueClick}
+                      >
+                        View issue(s)
+                      </Link>
+                    </Stack>
+                  )}
                 </>
               ) : haveSearch ? (
                 <>
@@ -1021,6 +1060,28 @@ function ADSAppBar(props) {
                       <strong>{searchContext.currentSearchData.searchString}</strong>
                     )}
                   </Typography>
+                  {(haveStreetError || havePropertyError) && (
+                    <Stack
+                      direction="row"
+                      justifyContent="flex-start"
+                      alignItems="center"
+                      spacing={1}
+                      sx={{ pl: "8px" }}
+                    >
+                      <ErrorIcon sx={{ color: adsRed }} />
+                      <Link
+                        sx={{ color: adsRed, fontWeight: 600 }}
+                        color={adsRed}
+                        variant="body2"
+                        noWrap
+                        align="left"
+                        component="button"
+                        onClick={handleViewIssueClick}
+                      >
+                        View issue(s)
+                      </Link>
+                    </Stack>
+                  )}
                 </>
               ) : (
                 <Typography sx={titleStyle()} variant="subtitle1" noWrap align="left">
