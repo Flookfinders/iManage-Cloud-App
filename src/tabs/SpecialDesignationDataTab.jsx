@@ -32,6 +32,7 @@
 //    019   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    020   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    021   27.03.24 Sean Flook                 Clear specific location if going back to whole road.
+//    022   05.04.24 Sean Flook       IMANN-372 Corrected typo.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -544,26 +545,25 @@ function SpecialDesignationDataTab({ data, errors, loading, focusedField, onHome
   useEffect(() => {
     if (
       sandboxContext.currentSandbox.sourceStreet &&
-      sandboxContext.currentSandbox.currentStreetRecords.specialDesigDescription
+      sandboxContext.currentSandbox.currentStreetRecords.specialDesignation
     ) {
       const sourceSpecialDesignation = sandboxContext.currentSandbox.sourceStreet.specialDesignations.find(
-        (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.specialDesigDescription.pkId
+        (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.specialDesignation.pkId
       );
 
       if (sourceSpecialDesignation) {
         setDataChanged(
           !ObjectComparison(
             sourceSpecialDesignation,
-            sandboxContext.currentSandbox.currentStreetRecords.specialDesigDescription,
+            sandboxContext.currentSandbox.currentStreetRecords.specialDesignation,
             specialDesignationKeysToIgnore
           )
         );
-      } else if (sandboxContext.currentSandbox.currentStreetRecords.specialDesigDescription.pkId < 0)
-        setDataChanged(true);
+      } else if (sandboxContext.currentSandbox.currentStreetRecords.specialDesignation.pkId < 0) setDataChanged(true);
     }
   }, [
     sandboxContext.currentSandbox.sourceStreet,
-    sandboxContext.currentSandbox.currentStreetRecords.specialDesigDescription,
+    sandboxContext.currentSandbox.currentStreetRecords.specialDesignation,
   ]);
 
   useEffect(() => {
