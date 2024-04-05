@@ -32,6 +32,7 @@
 //    019   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    020   22.03.24 Sean Flook                 Sort the descriptor records so that the English one always appears first.
 //    021   04.04.24 Sean Flook                 Changes required to handle deleting ESUs when deleting a street.
+//    022   05.04.24 Sean Flook       IMANN-326 If state is changed to 4 set the surface to 2.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -237,7 +238,8 @@ function StreetDataTab({
       usrn: updatedField === "usrn" ? newValue : usrn,
       recordType: updatedField === "recordType" ? newValue : streetType,
       swaOrgRefNaming: updatedField === "swaOrgRefNaming" ? newValue : authority,
-      streetSurface: updatedField === "streetSurface" ? newValue : surface,
+      streetSurface:
+        updatedField === "state" && newValue === 4 ? 2 : updatedField === "streetSurface" ? newValue : surface,
       streetStartDate:
         updatedField === "streetStartDate"
           ? newValue

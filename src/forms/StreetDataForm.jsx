@@ -73,6 +73,7 @@
 //    059   27.03.24 Sean Flook                 Undone a previous change as it was causing an issue.
 //    060   04.04.24 Sean Flook                 Fix bug.
 //    061   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
+//    062   05.04.24 Sean Flook       IMANN-326 Delete all type 63, 64 & 66 records if the street state is 4.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -6322,6 +6323,7 @@ function StreetDataForm({ data, loading }) {
    * @param {object} srcData The original state of the data.
    */
   const handleStreetDataChanged = (srcData) => {
+    const currentDate = GetCurrentDate(false);
     const newStreetData = settingsContext.isScottish
       ? {
           pkId: streetData.pkId,
@@ -6417,9 +6419,36 @@ function StreetDataForm({ data, loading }) {
           streetNotes: streetData.streetNotes,
           interests: streetData.recordType < 4 ? streetData.interests : null,
           constructions: streetData.recordType < 4 ? streetData.constructions : null,
-          specialDesignations: streetData.recordType < 4 ? streetData.specialDesignations : null,
-          publicRightOfWays: streetData.recordType < 4 ? streetData.publicRightOfWays : null,
-          heightWidthWeights: streetData.recordType < 4 ? streetData.heightWidthWeights : null,
+          specialDesignations:
+            streetData.recordType < 4
+              ? streetData.state === 4
+                ? streetData.specialDesignations && streetData.specialDesignations.length > 0
+                  ? streetData.specialDesignations.map((x) => {
+                      return { ...x, changeType: "D", recordEndDate: currentDate };
+                    })
+                  : null
+                : streetData.specialDesignations
+              : null,
+          publicRightOfWays:
+            streetData.recordType < 4
+              ? streetData.state === 4
+                ? streetData.publicRightOfWays && streetData.publicRightOfWays.length > 0
+                  ? streetData.publicRightOfWays.map((x) => {
+                      return { ...x, changeType: "D", recordEndDate: currentDate };
+                    })
+                  : null
+                : streetData.publicRightOfWays
+              : null,
+          heightWidthWeights:
+            streetData.recordType < 4
+              ? streetData.state === 4
+                ? streetData.heightWidthWeights && streetData.heightWidthWeights.length > 0
+                  ? streetData.heightWidthWeights.map((x) => {
+                      return { ...x, changeType: "D", recordEndDate: currentDate };
+                    })
+                  : null
+                : streetData.heightWidthWeights
+              : null,
         };
 
     updateStreetData(newStreetData);
