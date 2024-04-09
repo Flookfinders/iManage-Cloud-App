@@ -16,6 +16,7 @@
 //    003   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    004   04.04.24 Sean Flook                 Added better handling of API return status.
 //    005   05.04.24 Sean Flook                 Correctly handle errors when getting a property.
+//    006   05.04.24 Sean Flook       IMANN-351 Changes to handle browser navigation.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,6 +25,8 @@
 /* #region imports */
 
 import React, { useContext, useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router";
+
 import PropertyContext from "../context/propertyContext";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
@@ -32,6 +35,7 @@ import SettingsContext from "../context/settingsContext";
 
 import { GetPropertyFromUPRNUrl } from "../configuration/ADSConfig";
 import { GetNewProperty } from "../utils/PropertyUtils";
+import { PropertyRoute } from "../PageRouting";
 
 import { Grid } from "@mui/material";
 import PropertyDataForm from "../forms/PropertyDataForm";
@@ -47,23 +51,21 @@ function PropertyPage() {
   const mapContext = useContext(MapContext);
   const settingsContext = useContext(SettingsContext);
 
+  const location = useLocation();
+
   const [apiUrl, setApiUrl] = useState(null);
   const [data, setData] = useState();
   const dataUprn = useRef(-1);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    function SetUpPropertyData() {
-      if (
-        !propertyContext.currentProperty.newProperty &&
-        propertyContext.currentProperty.uprn &&
-        propertyContext.currentProperty.uprn > 0
-      ) {
+    function SetUpPropertyData(urlUprn) {
+      if (urlUprn && urlUprn !== "0") {
         if (apiUrl) {
-          if (propertyContext.currentProperty.uprn.toString() !== dataUprn.current.toString()) {
-            dataUprn.current = propertyContext.currentProperty.uprn;
+          if (urlUprn !== dataUprn.current) {
+            dataUprn.current = urlUprn;
             setLoading(true);
-            fetch(`${apiUrl.url}/${propertyContext.currentProperty.uprn}`, {
+            fetch(`${apiUrl.url}/${urlUprn}`, {
               headers: apiUrl.headers,
               crossDomain: true,
               method: apiUrl.type,
@@ -175,6 +177,27 @@ function PropertyPage() {
               .then(
                 (result) => {
                   setData(result);
+                  if (
+                    urlUprn &&
+                    (!propertyContext.currentProperty || propertyContext.currentProperty.uprn.toString() !== urlUprn)
+                  ) {
+                    propertyContext.onUpdateCurrentProperty(
+                      result.uprn,
+                      result.lpis && result.lpis.length ? result.lpis[0].usrn : 0,
+                      result.lpis && result.lpis.length
+                        ? result.lpis.filter((x) => x.language === "ENG")[0].address
+                        : "",
+                      result.lpis && result.lpis.length
+                        ? result.lpis.filter((x) => x.language === "ENG")[0].address
+                        : "",
+                      result.lpis && result.lpis.length
+                        ? result.lpis.filter((x) => x.language === "ENG")[0].postcode
+                        : "",
+                      result.xcoordinate,
+                      result.ycoordinate,
+                      false
+                    );
+                  }
                   sandboxContext.onUpdateAndClear("sourceProperty", result, "allProperty");
                 },
                 (error) => {
@@ -187,7 +210,7 @@ function PropertyPage() {
           }
         }
       } else {
-        if (propertyContext.currentProperty.newProperty && dataUprn.current.toString() !== "0") {
+        if (urlUprn && urlUprn === "0" && dataUprn.current.toString() !== "0") {
           setLoading(true);
 
           if (sandboxContext && sandboxContext.currentSandbox.sourceProperty) {
@@ -203,6 +226,20 @@ function PropertyPage() {
               propertyContext.currentProperty.northing
             );
             setData(newProperty);
+            if (
+              urlUprn &&
+              (!propertyContext.currentProperty || propertyContext.currentProperty.uprn.toString() !== urlUprn)
+            )
+              propertyContext.onUpdateCurrentProperty(
+                0,
+                propertyContext.currentProperty.usrn,
+                newProperty.lpis.filter((x) => x.language === "ENG")[0].address,
+                newProperty.lpis.filter((x) => x.language === "ENG")[0].address,
+                newProperty.lpis.filter((x) => x.language === "ENG")[0].postcode,
+                newProperty.xcoordinate,
+                newProperty.ycoordinate,
+                true
+              );
             sandboxContext.onUpdateAndClear("sourceProperty", newProperty, "allProperty");
           }
           dataUprn.current = 0;
@@ -216,10 +253,11 @@ function PropertyPage() {
       setApiUrl(propertyUrl);
     }
 
-    SetUpPropertyData();
+    if (location.pathname.includes(PropertyRoute))
+      SetUpPropertyData(location.pathname.replace(`${PropertyRoute}/`, ""));
 
     return () => {};
-  }, [propertyContext, sandboxContext, userContext, settingsContext, apiUrl]);
+  }, [propertyContext, sandboxContext, userContext, settingsContext, apiUrl, location]);
 
   return (
     <EditConfirmationServiceProvider>

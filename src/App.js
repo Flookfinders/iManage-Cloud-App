@@ -49,6 +49,7 @@
 //    036   11.03.24 Sean Flook           GLB12 Use appBarHeight to set the height of the control.
 //    037   13.03.24 Sean Flook            MUL9 Changes required to enable related refresh.
 //    038   04.04.24 Sean Flook                 Added navigate back and leaving a property.
+//    039   05.04.24 Sean Flook       IMANN-351 Changes to handle browser navigation.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1107,6 +1108,23 @@ function App() {
   }
 
   /**
+   * Event to handle when the current street data has been updated.
+   *
+   * @param {number} usrn The USRN of the street.
+   * @param {string} descriptor The descriptor for the street.
+   * @param {boolean} newStreet True if this is a new street; otherwise false.
+   * @param {number|null} [openRelated=null] If present it contains the USRN of the street that we need the the related tab opened.
+   */
+  function HandleUpdateCurrentStreet(usrn, descriptor, newStreet, openRelated = null) {
+    setStreet({
+      usrn: usrn,
+      descriptor: descriptor,
+      newStreet: newStreet,
+      openRelated: openRelated ? openRelated : street.openRelated,
+    });
+  }
+
+  /**
    * Method to clear the street creating flag.
    */
   function HandleStreetCreated() {
@@ -1740,6 +1758,44 @@ function App() {
 
     if (uprn && uprn > 0) history.push(`/property/${uprn}`);
     else if (newProperty) history.push("/property/0");
+  }
+
+  /**
+   * Event to handle the changing of a property.
+   *
+   * @param {number} uprn The UPRN of the property.
+   * @param {number} usrn The USRN of the street the property is on.
+   * @param {string} address The address of the property.
+   * @param {string} formattedAddress The formatted address for the property.
+   * @param {string} postcode The postcode for the address.
+   * @param {number} easting The easting of the property.
+   * @param {number} northing The northing of the property.
+   * @param {boolean} newProperty True if this is a new property; otherwise false.
+   * @param {object|null} parent The parent object for the property.
+   */
+  function HandleUpdateCurrentProperty(
+    uprn,
+    usrn,
+    address,
+    formattedAddress,
+    postcode,
+    easting,
+    northing,
+    newProperty,
+    parent
+  ) {
+    setProperty({
+      uprn: uprn,
+      usrn: usrn,
+      address: address,
+      formattedAddress: formattedAddress,
+      postcode: postcode,
+      easting: easting,
+      northing: northing,
+      newProperty: newProperty,
+      parent: parent,
+      openRelated: property.openRelated,
+    });
   }
 
   /**
@@ -2676,6 +2732,7 @@ function App() {
                         expandedEsu: expandedEsu,
                         expandedAsd: expandedAsd,
                         onStreetChange: HandleStreetChange,
+                        onUpdateCurrentStreet: HandleUpdateCurrentStreet,
                         onStreetCreated: HandleStreetCreated,
                         onCloseStreet: HandleCloseStreet,
                         onStreetModified: HandleStreetModified,
@@ -2713,6 +2770,7 @@ function App() {
                           provenanceDataChanged: provenanceDataChanged,
                           wizardData: wizardData,
                           onPropertyChange: HandlePropertyChange,
+                          onUpdateCurrentProperty: HandleUpdateCurrentProperty,
                           onLogicalStatusChange: HandleLogicalStatusChange,
                           onPropertyModified: HandlePropertyModified,
                           onPropertyErrors: HandlePropertyErrors,

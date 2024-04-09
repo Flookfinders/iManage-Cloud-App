@@ -20,6 +20,7 @@
 //    007   26.01.24 Sean Flook       IMANN-232 Correctly initialise loadingRef.
 //    008   14.02.24 Sean Flook                 Added a bit of error trapping.
 //    009   05.04.24 Sean Flook                 Correctly handle errors when getting a street.
+//    010   05.04.24 Sean Flook       IMANN-351 Changes to handle browser navigation.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -28,14 +29,19 @@
 /* #region imports */
 
 import React, { useContext, useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router";
+
 import StreetContext from "../context/streetContext";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
 import MapContext from "../context/mapContext";
 import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
+
 import { GetStreetByUSRNUrl } from "../configuration/ADSConfig";
 import { GetNewStreet, GetMultipleEsusData } from "../utils/StreetUtils";
+import { StreetRoute } from "../PageRouting";
+
 import { Grid } from "@mui/material";
 import { EditConfirmationServiceProvider } from "./EditConfirmationPage";
 import StreetDataForm from "../forms/StreetDataForm";
@@ -51,6 +57,8 @@ function StreetPage() {
   const settingsContext = useContext(SettingsContext);
   const lookupContext = useContext(LookupContext);
 
+  const location = useLocation();
+
   const [apiUrl, setApiUrl] = useState(null);
   const [data, setData] = useState();
   const dataUsrn = useRef(-1);
@@ -58,23 +66,15 @@ function StreetPage() {
   const loadingRef = useRef(false);
 
   useEffect(() => {
-    async function SetUpStreetData() {
-      if (
-        !streetContext.currentStreet.newStreet &&
-        streetContext.currentStreet.usrn &&
-        streetContext.currentStreet.usrn > 0
-      ) {
+    async function SetUpStreetData(urlUsrn) {
+      if (urlUsrn && urlUsrn !== "0") {
         if (apiUrl) {
-          if (streetContext.currentStreet.usrn.toString() !== dataUsrn.current.toString()) {
-            dataUsrn.current = streetContext.currentStreet.usrn;
+          if (urlUsrn !== dataUsrn.current) {
+            dataUsrn.current = urlUsrn;
             setLoading(true);
             loadingRef.current = true;
-            console.log(
-              "[DEBUG] fetching Street data",
-              dataUsrn.current,
-              `${apiUrl.url}/${streetContext.currentStreet.usrn}`
-            );
-            fetch(`${apiUrl.url}/${streetContext.currentStreet.usrn}`, {
+            console.log("[DEBUG] fetching Street data", dataUsrn.current, `${apiUrl.url}/${urlUsrn}`);
+            fetch(`${apiUrl.url}/${urlUsrn}`, {
               headers: apiUrl.headers,
               crossDomain: true,
               method: apiUrl.type,
@@ -216,6 +216,17 @@ function StreetPage() {
               .then(
                 (result) => {
                   setData(result);
+                  if (
+                    urlUsrn &&
+                    (!streetContext.currentStreet || streetContext.currentStreet.usrn.toString() !== urlUsrn)
+                  )
+                    streetContext.onUpdateCurrentStreet(
+                      Number(urlUsrn),
+                      result.streetDescriptors && result.streetDescriptors.length
+                        ? result.streetDescriptors.filter((x) => x.language === "ENG")[0].streetDescriptor
+                        : "",
+                      false
+                    );
                   sandboxContext.onUpdateAndClear("sourceStreet", result, "allStreet");
                 },
                 (error) => {
@@ -229,7 +240,7 @@ function StreetPage() {
           }
         }
       } else {
-        if (streetContext.currentStreet.newStreet && dataUsrn.current.toString() !== "0" && !loadingRef.current) {
+        if (urlUsrn && urlUsrn === "0" && dataUsrn.current !== "0" && !loadingRef.current) {
           setLoading(true);
           loadingRef.current = true;
           let newEsus = null;
@@ -247,6 +258,9 @@ function StreetPage() {
           } else {
             generateNewStreet(newEsus);
           }
+
+          if (urlUsrn && (!streetContext.currentStreet || streetContext.currentStreet.usrn.toString() !== urlUsrn))
+            streetContext.onUpdateCurrentStreet(Number(urlUsrn), "Add new Street", true);
         }
       }
     }
@@ -315,10 +329,10 @@ function StreetPage() {
       setApiUrl(streetUrl);
     }
 
-    SetUpStreetData();
+    if (location.pathname.includes(StreetRoute)) SetUpStreetData(location.pathname.replace(`${StreetRoute}/`, ""));
 
     return () => {};
-  }, [streetContext, sandboxContext, userContext, settingsContext, lookupContext, apiUrl]);
+  }, [streetContext, sandboxContext, userContext, settingsContext, lookupContext, apiUrl, location]);
 
   return (
     <EditConfirmationServiceProvider>
