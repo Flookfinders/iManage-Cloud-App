@@ -50,6 +50,7 @@
 //    037   13.03.24 Sean Flook            MUL9 Changes required to enable related refresh.
 //    038   04.04.24 Sean Flook                 Added navigate back and leaving a property.
 //    039   05.04.24 Sean Flook       IMANN-351 Changes to handle browser navigation.
+//    040   09.04.24 Sean Flook                 If we do not have user information do not close the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -447,11 +448,11 @@ function App() {
       };
 
       setCurrentUser(user);
+      if (loginOpen) setLoginOpen(false);
     } else {
       setCurrentUser(null);
+      setLoginOpen(true);
     }
-
-    if (loginOpen) setLoginOpen(false);
   }
 
   /**

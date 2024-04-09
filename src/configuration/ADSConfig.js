@@ -18,6 +18,7 @@
 //    005   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
 //    006   05.01.24 Sean Flook                 Correctly call GetApiSite.
 //    007   25.01.24 Sean Flook                 Changes required after UX review.
+//    008   09.04.24 Sean Flook                 Changes required for updated security API.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -122,7 +123,7 @@ const getUrl = (url, endPointType, contentType, userToken) => {
  * @return {object} The URL object used in FETCH calls.
  */
 export function PostUserLoginUrl() {
-  const url = GetApiSite("security", "/api/Authority/Login");
+  const url = GetApiSite("security", "/api/v1/Authority/Login");
   return getUrl(url, "POST", "application/json", null);
 }
 
@@ -133,7 +134,7 @@ export function PostUserLoginUrl() {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetWhoAmIUrl(userToken) {
-  const url = GetApiSite("security", "/api/Authority/WhoAmI");
+  const url = GetApiSite("security", "/api/v1/Authority/WhoAmI");
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -144,7 +145,7 @@ export function GetWhoAmIUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetUserUrl(userToken) {
-  const url = GetApiSite("security", "/api/User");
+  const url = GetApiSite("security", "/api/v1/User");
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -155,7 +156,7 @@ export function GetUserUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetUsersUrl(userToken) {
-  const url = GetApiSite("security", "/api/User");
+  const url = GetApiSite("security", "/api/v1/User");
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -166,7 +167,7 @@ export function GetUsersUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function UpdateMyPasswordUrl(userToken) {
-  const url = GetApiSite("security", "/api/Authority/UpdateMyPassword");
+  const url = GetApiSite("security", "/api/v1/Authority/UpdateMyPassword");
   return getUrl(url, "PUT", "application/json", userToken);
 }
 
@@ -177,7 +178,7 @@ export function UpdateMyPasswordUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function UpdateAnyUserPasswordUrl(userToken) {
-  const url = GetApiSite("security", "/api/Authority/UpdateAnyUserPassword");
+  const url = GetApiSite("security", "/api/v1/Authority/UpdateAnyUserPassword");
   return getUrl(url, "PUT", "application/json", userToken);
 }
 

@@ -17,6 +17,7 @@
 //    004   06.10.23 Sean Flook                 Use colour variables.
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    006   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    007   09.04.24 Sean Flook                 Changed to use auditname for new security.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -104,7 +105,7 @@ function LoginDialog({ isOpen, title, message }) {
    */
   const handleLoginClick = async () => {
     const loginDetails = {
-      email: username,
+      auditName: username,
       password: password,
     };
 
@@ -119,12 +120,9 @@ function LoginDialog({ isOpen, title, message }) {
         .then((res) => (res.ok ? res : Promise.reject(res)))
         .then((res) => res.json())
         .then((result) => {
-          // userContext.onUserChange(result);
-          // setShowDialog(false);
           return result;
         })
         .catch((error) => {
-          // userContext.onUserChange(null);
           switch (error.status) {
             case 400:
               setLoginError("You need to enter a valid username and password.");
@@ -136,12 +134,10 @@ function LoginDialog({ isOpen, title, message }) {
 
             default:
               setLoginError("An unknown error occurred, please report to support.");
-              // console.error("ERROR failed to log in", error);
               break;
           }
           setUsername("");
           setPassword("");
-          // console.error("ERROR failed to log in", e);
           return null;
         });
 
@@ -173,31 +169,26 @@ function LoginDialog({ isOpen, title, message }) {
                 ...userInfo,
               };
               userContext.onUserChange(loggedInUser);
-              // setShowDialog(false);
             } else {
               userContext.onUserChange(null);
               if (!userInfo.active) setLoginError("You are not an active user on this system.");
               else setLoginError("This user has been deleted.");
               setUsername("");
               setPassword("");
-              // setShowDialog(true);
             }
           } else {
             userContext.onUserChange(null);
             setLoginError("Unable to get user information.");
-            // setShowDialog(true);
           }
         } else {
           userContext.onUserChange(null);
           setLoginError("Unable to get user information URL.");
-          // setShowDialog(true);
         }
       } else {
         userContext.onUserChange(null);
         setLoginError("Unable to login with the supplied credentials.");
         setUsername("");
         setPassword("");
-        // setShowDialog(true);
       }
     } else console.error("[ERROR] Security apiUrl is null");
   };

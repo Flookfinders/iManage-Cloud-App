@@ -24,6 +24,7 @@
 //    011   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    012   02.04.24 Joshua McCormick IMANN-277 Show displayCharactersLeft on descriptor input
 //    013   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
+//    014   09.04.24 Sean Flook       IMANN-376 Removed for administrative area.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -188,14 +189,6 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
   const handleAdministrativeAreaChangeEvent = (newValue) => {
     setAdministrativeArea(newValue);
     UpdateSandbox("administrativeArea", newValue);
-  };
-
-  /**
-   * Event to handle when a new administrative area is added.
-   */
-  const handleAddAdministrativeAreaEvent = () => {
-    setLookupType("administrativeArea");
-    setShowAddDialog(true);
   };
 
   /**
@@ -557,7 +550,6 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
           isFocused={focusedField ? focusedField === "AdminAreaRef" || focusedField === "AdministrativeArea" : false}
           loading={loading}
           useRounded
-          allowAddLookup
           lookupData={lookupContext.currentLookups.adminAuthorities
             .filter((x) => x.language === language && !x.historic)
             .sort(function (a, b) {
@@ -571,7 +563,6 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
           value={administrativeArea}
           errorText={administrativeAreaError}
           onChange={handleAdministrativeAreaChangeEvent}
-          onAddLookup={handleAddAdministrativeAreaEvent}
           helperText="Administrative area name."
         />
         <ADSOkCancelControl

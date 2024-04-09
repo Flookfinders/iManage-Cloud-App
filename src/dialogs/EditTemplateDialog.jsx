@@ -36,6 +36,7 @@
 //    023   01.03.24 Joel Benford               Restrict Districts to suit organisation
 //    024   27.03.24 Sean Flook                 Further changes required to fix warnings and added ADSDialogTitle.
 //    025   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
+//    026   09.04.24 Sean Flook       IMANN-376 Removed for administrative area.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -868,14 +869,6 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleAdministrativeAreaChangeEvent = (newValue) => {
     setStreetAdminArea(newValue);
-  };
-
-  /**
-   * Event to handle when a new administrative area is added.
-   */
-  const handleAddAdministrativeAreaEvent = () => {
-    setLookupType("administrativeArea");
-    setShowAddDialog(true);
   };
 
   /**
@@ -1850,7 +1843,6 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               label="Admin area"
               isEditable
               useRounded
-              allowAddLookup
               lookupData={lookupContext.currentLookups.adminAuthorities
                 .filter((x) => x.language === "ENG" && !x.historic)
                 .sort(function (a, b) {
@@ -1863,7 +1855,6 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               lookupLabel="administrativeArea"
               value={streetAdminArea}
               onChange={handleAdministrativeAreaChangeEvent}
-              onAddLookup={handleAddAdministrativeAreaEvent}
               helperText="Administrative area name."
             />
             {!settingsContext.isScottish && (
