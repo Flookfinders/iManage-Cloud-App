@@ -35,15 +35,17 @@
 //    022   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    023   01.03.24 Joel Benford               Restrict Districts to suit organisation
 //    024   27.03.24 Sean Flook                 Further changes required to fix warnings and added ADSDialogTitle.
+//    025   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import LookupContext from "../context/lookupContext";
 import SettingsContext from "../context/settingsContext";
+import UserContext from "../context/userContext";
 
 import {
   Dialog,
@@ -64,7 +66,9 @@ import ADSProwAccessControl from "../components/ADSProwAccessControl";
 import ADSDateControl from "../components/ADSDateControl";
 import ADSDialogTitle from "../components/ADSDialogTitle";
 
-import { GetLookupLabel, filteredLookup } from "../utils/HelperUtils";
+import AddLookupDialog from "../dialogs/AddLookupDialog";
+
+import { GetLookupLabel, addLookup, filteredLookup, getLookupVariantString } from "../utils/HelperUtils";
 import {
   FilteredBLPULogicalStatus,
   FilteredRepresentativePointCode,
@@ -152,6 +156,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
 
   const lookupContext = useContext(LookupContext);
   const settingsContext = useContext(SettingsContext);
+  const userContext = useContext(UserContext);
 
   const [showDialog, setShowDialog] = useState(false);
   const [templateType, setTemplateType] = useState("unknown");
@@ -261,6 +266,14 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [otherProvenanceError, setOtherProvenanceError] = useState(null);
   const [otherProvenanceStartDateError, setOtherProvenanceStartDateError] = useState(null);
   const [otherNoteError, setOtherNoteError] = useState(null);
+
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [lookupType, setLookupType] = useState("unknown");
+  const [engError, setEngError] = useState(null);
+  const [altLanguageError, setAltLanguageError] = useState(null);
+
+  const addResult = useRef(null);
+  const currentVariant = useRef(null);
 
   /**
    * Event to handle the closing of the dialog.
@@ -628,12 +641,28 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   };
 
   /**
+   * Event to handle when a new post town is added.
+   */
+  const handleAddPostTownEvent = () => {
+    setLookupType("postTown");
+    setShowAddDialog(true);
+  };
+
+  /**
    * Event to handle when the sub-locality is changed.
    *
    * @param {number} newValue The new sub-locality.
    */
   const handleLpiSubLocalityChangeEvent = (newValue) => {
     setLpiSubLocality(newValue);
+  };
+
+  /**
+   * Event to handle when a new sub-locality is added.
+   */
+  const handleAddSubLocalityEvent = () => {
+    setLookupType("subLocality");
+    setShowAddDialog(true);
   };
 
   /**
@@ -791,12 +820,28 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   };
 
   /**
+   * Event to handle when a new locality is added.
+   */
+  const handleAddLocalityEvent = () => {
+    setLookupType("locality");
+    setShowAddDialog(true);
+  };
+
+  /**
    * Event to handle when the town is changed.
    *
    * @param {number} newValue The new town.
    */
   const handleTownChangeEvent = (newValue) => {
     setStreetTown(newValue);
+  };
+
+  /**
+   * Event to handle when a new town is added.
+   */
+  const handleAddTownEvent = () => {
+    setLookupType("town");
+    setShowAddDialog(true);
   };
 
   /**
@@ -809,12 +854,28 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   };
 
   /**
+   * Event to handle when a new island is added.
+   */
+  const handleAddIslandEvent = () => {
+    setLookupType("island");
+    setShowAddDialog(true);
+  };
+
+  /**
    * Event to handle when the administrative area is changed.
    *
    * @param {number} newValue The new administrative area.
    */
   const handleAdministrativeAreaChangeEvent = (newValue) => {
     setStreetAdminArea(newValue);
+  };
+
+  /**
+   * Event to handle when a new administrative area is added.
+   */
+  const handleAddAdministrativeAreaEvent = () => {
+    setLookupType("administrativeArea");
+    setShowAddDialog(true);
   };
 
   /**
@@ -1542,6 +1603,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 label="Sub-locality"
                 isEditable
                 useRounded
+                allowAddLookup
                 lookupData={lookupContext.currentLookups.subLocalities
                   .filter((x) => x.language === "ENG" && !x.historic)
                   .sort(function (a, b) {
@@ -1554,6 +1616,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 lookupLabel="subLocality"
                 value={lpiSubLocality}
                 onChange={handleLpiSubLocalityChangeEvent}
+                onAddLookup={handleAddSubLocalityEvent}
                 helperText="Third level of geographic area name. e.g. to record an island name or property group."
               />
             )}
@@ -1561,6 +1624,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               label="Post town"
               isEditable
               useRounded
+              allowAddLookup
               lookupData={lookupContext.currentLookups.postTowns
                 .filter((x) => x.language === "ENG" && !x.historic)
                 .sort(function (a, b) {
@@ -1573,6 +1637,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               lookupLabel="postTown"
               value={lpiPostTown}
               onChange={handleLpiPostTownChangeEvent}
+              onAddLookup={handleAddPostTownEvent}
               helperText="Allocated by the Royal Mail to assist in delivery of mail."
             />
             {!settingsContext.isScottish && (
@@ -1723,6 +1788,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               label="Locality"
               isEditable
               useRounded
+              allowAddLookup
               lookupData={lookupContext.currentLookups.localities
                 .filter((x) => x.language === "ENG" && !x.historic)
                 .sort(function (a, b) {
@@ -1735,12 +1801,14 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               lookupLabel="locality"
               value={streetLocality}
               onChange={handleLocalityChangeEvent}
+              onAddLookup={handleAddLocalityEvent}
               helperText="Locality name."
             />
             <ADSSelectControl
               label="Town"
               isEditable
               useRounded
+              allowAddLookup
               lookupData={lookupContext.currentLookups.towns
                 .filter((x) => x.language === "ENG" && !x.historic)
                 .sort(function (a, b) {
@@ -1753,6 +1821,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               lookupLabel="town"
               value={streetTown}
               onChange={handleTownChangeEvent}
+              onAddLookup={handleAddTownEvent}
               helperText="Town name."
             />
             {settingsContext.isScottish && (
@@ -1760,6 +1829,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 label="Island"
                 isEditable
                 useRounded
+                allowAddLookup
                 lookupData={lookupContext.currentLookups.islands
                   .filter((x) => x.language === "ENG" && !x.historic)
                   .sort(function (a, b) {
@@ -1772,6 +1842,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 lookupLabel="island"
                 value={streetIsland}
                 onChange={handleIslandChangeEvent}
+                onAddLookup={handleAddIslandEvent}
                 helperText="Island name."
               />
             )}
@@ -1779,6 +1850,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               label="Admin area"
               isEditable
               useRounded
+              allowAddLookup
               lookupData={lookupContext.currentLookups.adminAuthorities
                 .filter((x) => x.language === "ENG" && !x.historic)
                 .sort(function (a, b) {
@@ -1791,6 +1863,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               lookupLabel="administrativeArea"
               value={streetAdminArea}
               onChange={handleAdministrativeAreaChangeEvent}
+              onAddLookup={handleAddAdministrativeAreaEvent}
               helperText="Administrative area name."
             />
             {!settingsContext.isScottish && (
@@ -2884,6 +2957,71 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
       };
   }
 
+  /**
+   * Method used to add the new lookup.
+   *
+   * @param {object} data The data returned from the add lookup dialog.
+   */
+  const handleDoneAddLookup = async (data) => {
+    currentVariant.current = getLookupVariantString(data.variant);
+
+    const addResults = await addLookup(
+      data,
+      settingsContext.authorityCode,
+      userContext.currentUser.token,
+      settingsContext.isWelsh,
+      settingsContext.isScottish,
+      lookupContext.currentLookups
+    );
+
+    if (addResults && addResults.result) {
+      if (addResults.updatedLookups && addResults.updatedLookups.length > 0)
+        lookupContext.onUpdateLookup(data.variant, addResults.updatedLookups);
+
+      switch (data.variant) {
+        case "postTown":
+          setLpiPostTown(addResults.newLookup.postTownRef);
+          break;
+
+        case "subLocality":
+          setLpiSubLocality(addResults.newLookup.subLocalityRef);
+          break;
+
+        case "locality":
+          setStreetLocality(addResults.newLookup.localityRef);
+          break;
+
+        case "town":
+          setStreetTown(addResults.newLookup.townRef);
+          break;
+
+        case "island":
+          setStreetIsland(addResults.newLookup.islandRef);
+          break;
+
+        case "administrativeArea":
+          setStreetAdminArea(addResults.newLookup.adminAreaRef);
+          break;
+
+        default:
+          break;
+      }
+
+      addResult.current = true;
+    } else addResult.current = false;
+    setEngError(addResults ? addResults.engError : null);
+    setAltLanguageError(addResults ? addResults.altLanguageError : null);
+
+    setShowAddDialog(!addResult.current);
+  };
+
+  /**
+   * Event to handle when the add lookup dialog is closed.
+   */
+  const handleCloseAddLookup = () => {
+    setShowAddDialog(false);
+  };
+
   useEffect(() => {
     if (data) {
       switch (variant) {
@@ -3187,30 +3325,40 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   }, [variant, data, isOpen, settingsContext.isScottish]);
 
   return (
-    <Dialog
-      open={showDialog}
-      aria-labelledby="edit-template-dialog"
-      fullWidth
-      maxWidth="sm"
-      onClose={handleDialogClose}
-    >
-      <ADSDialogTitle title={getDialogTitle()} closeTooltip="Cancel" onClose={handleCancelClick} />
-      <DialogContent sx={{ mt: theme.spacing(2) }}>{getDialogContent()}</DialogContent>
-      <DialogActions
-        sx={{
-          justifyContent: "flex-start",
-          mb: theme.spacing(1),
-          ml: theme.spacing(3),
-        }}
+    <>
+      <Dialog
+        open={showDialog}
+        aria-labelledby="edit-template-dialog"
+        fullWidth
+        maxWidth="sm"
+        onClose={handleDialogClose}
       >
-        <Button onClick={handleDoneClick} autoFocus variant="contained" sx={blueButtonStyle} startIcon={<DoneIcon />}>
-          Done
-        </Button>
-        <Button onClick={handleCancelClick} variant="contained" sx={whiteButtonStyle} startIcon={<CloseIcon />}>
-          Cancel
-        </Button>
-      </DialogActions>
-    </Dialog>
+        <ADSDialogTitle title={getDialogTitle()} closeTooltip="Cancel" onClose={handleCancelClick} />
+        <DialogContent sx={{ mt: theme.spacing(2) }}>{getDialogContent()}</DialogContent>
+        <DialogActions
+          sx={{
+            justifyContent: "flex-start",
+            mb: theme.spacing(1),
+            ml: theme.spacing(3),
+          }}
+        >
+          <Button onClick={handleDoneClick} autoFocus variant="contained" sx={blueButtonStyle} startIcon={<DoneIcon />}>
+            Done
+          </Button>
+          <Button onClick={handleCancelClick} variant="contained" sx={whiteButtonStyle} startIcon={<CloseIcon />}>
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <AddLookupDialog
+        isOpen={showAddDialog}
+        variant={lookupType}
+        errorEng={engError}
+        errorAltLanguage={altLanguageError}
+        onDone={(data) => handleDoneAddLookup(data)}
+        onClose={handleCloseAddLookup}
+      />
+    </>
   );
 }
 

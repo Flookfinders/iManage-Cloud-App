@@ -23,19 +23,24 @@
 //    010   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    011   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    012   02.04.24 Joshua McCormick IMANN-277 Show displayCharactersLeft on descriptor input
+//    013   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import React, { useContext, useState, useEffect, Fragment } from "react";
+import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
+
 import LookupContext from "../context/lookupContext";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
 import SettingsContext from "../context/settingsContext";
+
+import { addLookup, getLookupVariantString } from "../utils/HelperUtils";
 import { streetToTitleCase } from "../utils/StreetUtils";
 import ObjectComparison, { streetDescriptorKeysToIgnore } from "./../utils/ObjectComparison";
+
 import { Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
@@ -43,8 +48,10 @@ import ADSLanguageControl from "../components/ADSLanguageControl";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
-import { useTheme } from "@mui/styles";
+import AddLookupDialog from "../dialogs/AddLookupDialog";
+
 import { toolbarStyle, dataTabToolBar, dataFormStyle } from "../utils/ADSStyles";
+import { useTheme } from "@mui/styles";
 
 StreetDescriptorDataTab.propTypes = {
   data: PropTypes.object,
@@ -79,6 +86,14 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
   const [townError, setTownError] = useState(null);
   const [islandError, setIslandError] = useState(null);
   const [administrativeAreaError, setAdministrativeAreaError] = useState(null);
+
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [lookupType, setLookupType] = useState("unknown");
+  const [engError, setEngError] = useState(null);
+  const [altLanguageError, setAltLanguageError] = useState(null);
+
+  const addResult = useRef(null);
+  const currentVariant = useRef(null);
 
   /**
    * Update the sandbox street descriptor record.
@@ -122,6 +137,14 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
   };
 
   /**
+   * Event to handle when a new locality is added.
+   */
+  const handleAddLocalityEvent = () => {
+    setLookupType("locality");
+    setShowAddDialog(true);
+  };
+
+  /**
    * Event to handle the town changes.
    *
    * @param {number|null} newValue The new town reference.
@@ -129,6 +152,14 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
   const handleTownChangeEvent = (newValue) => {
     setTown(newValue);
     UpdateSandbox("town", newValue);
+  };
+
+  /**
+   * Event to handle when a new town is added.
+   */
+  const handleAddTownEvent = () => {
+    setLookupType("town");
+    setShowAddDialog(true);
   };
 
   /**
@@ -142,6 +173,14 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
   };
 
   /**
+   * Event to handle when a new island is added.
+   */
+  const handleAddIslandEvent = () => {
+    setLookupType("island");
+    setShowAddDialog(true);
+  };
+
+  /**
    * Event to handle the administrative area changes.
    *
    * @param {number|null} newValue The new administrative area reference.
@@ -149,6 +188,14 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
   const handleAdministrativeAreaChangeEvent = (newValue) => {
     setAdministrativeArea(newValue);
     UpdateSandbox("administrativeArea", newValue);
+  };
+
+  /**
+   * Event to handle when a new administrative area is added.
+   */
+  const handleAddAdministrativeAreaEvent = () => {
+    setLookupType("administrativeArea");
+    setShowAddDialog(true);
   };
 
   /**
@@ -237,6 +284,63 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
         neverExport: data.sdData.neverExport,
       };
   }
+
+  /**
+   * Method used to add the new lookup.
+   *
+   * @param {object} data The data returned from the add lookup dialog.
+   */
+  const handleDoneAddLookup = async (data) => {
+    currentVariant.current = getLookupVariantString(data.variant);
+
+    const addResults = await addLookup(
+      data,
+      settingsContext.authorityCode,
+      userContext.currentUser.token,
+      settingsContext.isWelsh,
+      settingsContext.isScottish,
+      lookupContext.currentLookups
+    );
+
+    if (addResults && addResults.result) {
+      if (addResults.updatedLookups && addResults.updatedLookups.length > 0)
+        lookupContext.onUpdateLookup(data.variant, addResults.updatedLookups);
+
+      switch (data.variant) {
+        case "locality":
+          setLocality(addResults.newLookup.localityRef);
+          break;
+
+        case "town":
+          setTown(addResults.newLookup.townRef);
+          break;
+
+        case "island":
+          setIsland(addResults.newLookup.islandRef);
+          break;
+
+        case "administrativeArea":
+          setAdministrativeArea(addResults.newLookup.adminAreaRef);
+          break;
+
+        default:
+          break;
+      }
+
+      addResult.current = true;
+    } else addResult.current = false;
+    setEngError(addResults ? addResults.engError : null);
+    setAltLanguageError(addResults ? addResults.altLanguageError : null);
+
+    setShowAddDialog(!addResult.current);
+  };
+
+  /**
+   * Event to handle when the add lookup dialog is closed.
+   */
+  const handleCloseAddLookup = () => {
+    setShowAddDialog(false);
+  };
 
   useEffect(() => {
     if (!loading && data && data.sdData) {
@@ -380,12 +484,21 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
           isFocused={focusedField ? focusedField === "LocRef" || focusedField === "Locality" : false}
           loading={loading}
           useRounded
-          lookupData={lookupContext.currentLookups.localities.filter((x) => x.language === language && !x.historic)}
+          allowAddLookup
+          lookupData={lookupContext.currentLookups.localities
+            .filter((x) => x.language === language && !x.historic)
+            .sort(function (a, b) {
+              return a.locality.localeCompare(b.locality, undefined, {
+                numeric: true,
+                sensitivity: "base",
+              });
+            })}
           lookupId="localityRef"
           lookupLabel="locality"
           value={locality}
           errorText={localityError}
           onChange={handleLocalityChangeEvent}
+          onAddLookup={handleAddLocalityEvent}
           helperText="Locality name."
         />
         <ADSSelectControl
@@ -395,12 +508,21 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
           isFocused={focusedField ? focusedField === "TownRef" || focusedField === "Town" : false}
           loading={loading}
           useRounded
-          lookupData={lookupContext.currentLookups.towns.filter((x) => x.language === language && !x.historic)}
+          allowAddLookup
+          lookupData={lookupContext.currentLookups.towns
+            .filter((x) => x.language === language && !x.historic)
+            .sort(function (a, b) {
+              return a.town.localeCompare(b.town, undefined, {
+                numeric: true,
+                sensitivity: "base",
+              });
+            })}
           lookupId="townRef"
           lookupLabel="town"
           value={town}
           errorText={townError}
           onChange={handleTownChangeEvent}
+          onAddLookup={handleAddTownEvent}
           helperText="Town name."
         />
         {settingsContext.isScottish && (
@@ -410,12 +532,21 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
             isFocused={focusedField ? focusedField === "IslandRef" || focusedField === "Island" : false}
             loading={loading}
             useRounded
-            lookupData={lookupContext.currentLookups.islands.filter((x) => x.language === language && !x.historic)}
+            allowAddLookup
+            lookupData={lookupContext.currentLookups.islands
+              .filter((x) => x.language === language && !x.historic)
+              .sort(function (a, b) {
+                return a.island.localeCompare(b.island, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+              })}
             lookupId="islandRef"
             lookupLabel="island"
             value={island}
             errorText={islandError}
             onChange={handleIslandChangeEvent}
+            onAddLookup={handleAddIslandEvent}
             helperText="Island name."
           />
         )}
@@ -426,14 +557,21 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
           isFocused={focusedField ? focusedField === "AdminAreaRef" || focusedField === "AdministrativeArea" : false}
           loading={loading}
           useRounded
-          lookupData={lookupContext.currentLookups.adminAuthorities.filter(
-            (x) => x.language === language && !x.historic
-          )}
+          allowAddLookup
+          lookupData={lookupContext.currentLookups.adminAuthorities
+            .filter((x) => x.language === language && !x.historic)
+            .sort(function (a, b) {
+              return a.administrativeArea.localeCompare(b.administrativeArea, undefined, {
+                numeric: true,
+                sensitivity: "base",
+              });
+            })}
           lookupId="administrativeAreaRef"
           lookupLabel="administrativeArea"
           value={administrativeArea}
           errorText={administrativeAreaError}
           onChange={handleAdministrativeAreaChangeEvent}
+          onAddLookup={handleAddAdministrativeAreaEvent}
           helperText="Administrative area name."
         />
         <ADSOkCancelControl
@@ -442,6 +580,14 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
           onCancelClicked={handleCancelClicked}
         />
       </Box>
+      <AddLookupDialog
+        isOpen={showAddDialog}
+        variant={lookupType}
+        errorEng={engError}
+        errorAltLanguage={altLanguageError}
+        onDone={(data) => handleDoneAddLookup(data)}
+        onClose={handleCloseAddLookup}
+      />
     </Fragment>
   );
 }

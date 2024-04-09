@@ -23,18 +23,22 @@
 //    010   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    011   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle.
 //    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    013   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
+import UserContext from "../context/userContext";
 
-import { GetLookupLabel } from "../utils/HelperUtils";
+import AddLookupDialog from "../dialogs/AddLookupDialog";
+
+import { addLookup, getLookupVariantString, GetLookupLabel } from "../utils/HelperUtils";
 import { FilteredRepresentativePointCode } from "../utils/PropertyUtils";
 
 import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
@@ -72,10 +76,19 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
 
   const settingsContext = useContext(SettingsContext);
   const lookupContext = useContext(LookupContext);
+  const userContext = useContext(UserContext);
 
   const [representativePointCodeLookup, setRepresentativePointCodeLookup] = useState(
     FilteredRepresentativePointCode(settingsContext.isScottish)
   );
+
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [lookupType, setLookupType] = useState("unknown");
+  const [engError, setEngError] = useState(null);
+  const [altLanguageError, setAltLanguageError] = useState(null);
+
+  const addResult = useRef(null);
+  const currentVariant = useRef(null);
 
   const [actionData, setActionData] = useState("");
   const maxContentHeight = "240px";
@@ -93,6 +106,14 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
    */
   const handleOk = () => {
     onClose(actionData);
+  };
+
+  /**
+   * Event to handle when a new postcode is added.
+   */
+  const handleAddPostcodeEvent = () => {
+    setLookupType("postcode");
+    setShowAddDialog(true);
   };
 
   /**
@@ -122,6 +143,14 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
   };
 
   /**
+   * Event to handle when a new post town is added.
+   */
+  const handleAddPostTownEvent = () => {
+    setLookupType("postTown");
+    setShowAddDialog(true);
+  };
+
+  /**
    * Method to handle when the English sub-locality is changed.
    *
    * @param {number} newValue The reference for the English sub-locality.
@@ -143,6 +172,14 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
     if (selectedRecord && selectedRecord.linkedRef !== newValue)
       setActionData({ eng: selectedRecord.linkedRef, alt: newValue });
     else setActionData({ eng: actionData.eng, alt: newValue });
+  };
+
+  /**
+   * Event to handle when a new sub-locality is added.
+   */
+  const handleAddSubLocalityEvent = () => {
+    setLookupType("subLocality");
+    setShowAddDialog(true);
   };
 
   /**
@@ -253,11 +290,20 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
               isFocused
               useRounded
               doNotSetTitleCase
-              lookupData={lookupContext.currentLookups.postcodes}
+              allowAddLookup
+              lookupData={lookupContext.currentLookups.postcodes
+                .filter((x) => !x.historic)
+                .sort(function (a, b) {
+                  return a.postcode.localeCompare(b.postcode, undefined, {
+                    numeric: true,
+                    sensitivity: "base",
+                  });
+                })}
               lookupId="postcodeRef"
               lookupLabel="postcode"
               value={actionData}
               onChange={(newValue) => setActionData(newValue)}
+              onAddLookup={handleAddPostcodeEvent}
               helperText="Allocated by the Royal Mail to assist in delivery of mail."
             />
           </Box>
@@ -271,11 +317,20 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
               isEditable
               isFocused
               useRounded
-              lookupData={lookupContext.currentLookups.postTowns.filter((x) => x.language === "ENG")}
+              allowAddLookup
+              lookupData={lookupContext.currentLookups.postTowns
+                .filter((x) => x.language === "ENG" && !x.historic)
+                .sort(function (a, b) {
+                  return a.postTown.localeCompare(b.postTown, undefined, {
+                    numeric: true,
+                    sensitivity: "base",
+                  });
+                })}
               lookupId="postTownRef"
               lookupLabel="postTown"
               value={actionData ? actionData.eng : null}
               onChange={handleEngPostTownChanged}
+              onAddLookup={handleAddPostTownEvent}
               helperText="Allocated by the Royal Mail to assist in delivery of mail."
             />
             {settingsContext.isScottish && (
@@ -283,11 +338,20 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
                 label="Gaelic post town"
                 isEditable
                 useRounded
-                lookupData={lookupContext.currentLookups.postTowns.filter((x) => x.language === "GAE")}
+                allowAddLookup
+                lookupData={lookupContext.currentLookups.postTowns
+                  .filter((x) => x.language === "GAE" && !x.historic)
+                  .sort(function (a, b) {
+                    return a.postTown.localeCompare(b.postTown, undefined, {
+                      numeric: true,
+                      sensitivity: "base",
+                    });
+                  })}
                 lookupId="postTownRef"
                 lookupLabel="postTown"
                 value={actionData ? actionData.alt : null}
                 onChange={handleAltPostTownChanged}
+                onAddLookup={handleAddPostTownEvent}
                 helperText="Allocated by the Royal Mail to assist in delivery of mail."
               />
             )}
@@ -296,11 +360,20 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
                 label="Welsh post town"
                 isEditable
                 useRounded
-                lookupData={lookupContext.currentLookups.postTowns.filter((x) => x.language === "CYM")}
+                allowAddLookup
+                lookupData={lookupContext.currentLookups.postTowns
+                  .filter((x) => x.language === "CYM" && !x.historic)
+                  .sort(function (a, b) {
+                    return a.postTown.localeCompare(b.postTown, undefined, {
+                      numeric: true,
+                      sensitivity: "base",
+                    });
+                  })}
                 lookupId="postTownRef"
                 lookupLabel="postTown"
                 value={actionData ? actionData.alt : null}
                 onChange={handleAltPostTownChanged}
+                onAddLookup={handleAddPostTownEvent}
                 helperText="Allocated by the Royal Mail to assist in delivery of mail."
               />
             )}
@@ -315,22 +388,26 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
               isEditable
               isFocused
               useRounded
+              allowAddLookup
               lookupData={lookupContext.currentLookups.subLocalities.filter((x) => x.language === "ENG")}
               lookupId="subLocalityRef"
               lookupLabel="subLocality"
               value={actionData ? actionData.eng : null}
               onChange={handleEngSubLocalityChanged}
+              onAddLookup={handleAddSubLocalityEvent}
               helperText="Third level of geographic area name. e.g. to record an island name or property group."
             />
             <ADSSelectControl
               label="Gaelic sub-locality"
               isEditable
               useRounded
+              allowAddLookup
               lookupData={lookupContext.currentLookups.subLocalities.filter((x) => x.language === "GAE")}
               lookupId="subLocalityRef"
               lookupLabel="subLocality"
               value={actionData ? actionData.alt : null}
               onChange={handleAltSubLocalityChanged}
+              onAddLookup={handleAddSubLocalityEvent}
               helperText="Third level of geographic area name. e.g. to record an island name or property group."
             />
           </Box>
@@ -376,6 +453,59 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
     }
   };
 
+  /**
+   * Method used to add the new lookup.
+   *
+   * @param {object} data The data returned from the add lookup dialog.
+   */
+  const handleDoneAddLookup = async (data) => {
+    currentVariant.current = getLookupVariantString(data.variant);
+
+    const addResults = await addLookup(
+      data,
+      settingsContext.authorityCode,
+      userContext.currentUser.token,
+      settingsContext.isWelsh,
+      settingsContext.isScottish,
+      lookupContext.currentLookups
+    );
+
+    if (addResults && addResults.result) {
+      if (addResults.updatedLookups && addResults.updatedLookups.length > 0)
+        lookupContext.onUpdateLookup(data.variant, addResults.updatedLookups);
+
+      switch (data.variant) {
+        case "postcode":
+          setActionData(addResults.newLookup.postcodeRef);
+          break;
+
+        case "postTown":
+          handleEngPostTownChanged(addResults.newLookup.postTownRef);
+          break;
+
+        case "subLocality":
+          handleEngSubLocalityChanged(addResults.newLookup.subLocalityRef);
+          break;
+
+        default:
+          break;
+      }
+
+      addResult.current = true;
+    } else addResult.current = false;
+    setEngError(addResults ? addResults.engError : null);
+    setAltLanguageError(addResults ? addResults.altLanguageError : null);
+
+    setShowAddDialog(!addResult.current);
+  };
+
+  /**
+   * Event to handle when the add lookup dialog is closed.
+   */
+  const handleCloseAddLookup = () => {
+    setShowAddDialog(false);
+  };
+
   useEffect(() => {
     setActionData(
       data ? data : variant === "level" ? (settingsContext.isScottish ? 0 : "") : variant === "note" ? "" : null
@@ -384,25 +514,35 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
   }, [data, variant, settingsContext.isScottish]);
 
   return (
-    <Dialog
-      fullWidth
-      maxWidth="sm"
-      open={open}
-      aria-labelledby="wizard-action-dialog-title"
-      sx={{ p: "16px 16px 24px 16px", borderRadius: "9px" }}
-      onClose={handleCancel}
-    >
-      <ADSDialogTitle title={getTitle()} closeTooltip="Cancel" onClose={handleCancel} />
-      <DialogContent sx={{ backgroundColor: theme.palette.background.paper }}>{getContent()}</DialogContent>
-      <DialogActions sx={{ justifyContent: "flex-start", pl: "24px", pb: "24px" }}>
-        <Button variant="contained" onClick={handleOk} sx={blueButtonStyle} startIcon={<SaveIcon />}>
-          Save
-        </Button>
-        <Button variant="contained" autoFocus sx={whiteButtonStyle} onClick={handleCancel} startIcon={<CloseIcon />}>
-          Cancel
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <>
+      <Dialog
+        fullWidth
+        maxWidth="sm"
+        open={open}
+        aria-labelledby="wizard-action-dialog-title"
+        sx={{ p: "16px 16px 24px 16px", borderRadius: "9px" }}
+        onClose={handleCancel}
+      >
+        <ADSDialogTitle title={getTitle()} closeTooltip="Cancel" onClose={handleCancel} />
+        <DialogContent sx={{ backgroundColor: theme.palette.background.paper }}>{getContent()}</DialogContent>
+        <DialogActions sx={{ justifyContent: "flex-start", pl: "24px", pb: "24px" }}>
+          <Button variant="contained" onClick={handleOk} sx={blueButtonStyle} startIcon={<SaveIcon />}>
+            Save
+          </Button>
+          <Button variant="contained" autoFocus sx={whiteButtonStyle} onClick={handleCancel} startIcon={<CloseIcon />}>
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <AddLookupDialog
+        isOpen={showAddDialog}
+        variant={lookupType}
+        errorEng={engError}
+        errorAltLanguage={altLanguageError}
+        onDone={(data) => handleDoneAddLookup(data)}
+        onClose={handleCloseAddLookup}
+      />
+    </>
   );
 }
 

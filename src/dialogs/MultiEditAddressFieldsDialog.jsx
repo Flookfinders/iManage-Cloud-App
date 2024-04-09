@@ -22,6 +22,7 @@
 //    009   11.03.24 Sean Flook           MUL11 Reset counts when closing dialog.
 //    010   12.03.24 Sean Flook           MUL10 Display errors in a list control.
 //    011   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    012   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -52,7 +53,15 @@ import ADSSelectControl from "../components/ADSSelectControl";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSDialogTitle from "../components/ADSDialogTitle";
 
-import { GetLookupLabel, filteredLookup, renderErrorListItem } from "../utils/HelperUtils";
+import AddLookupDialog from "../dialogs/AddLookupDialog";
+
+import {
+  GetLookupLabel,
+  addLookup,
+  filteredLookup,
+  getLookupVariantString,
+  renderErrorListItem,
+} from "../utils/HelperUtils";
 import { GetPropertyMapData, SaveProperty, addressToTitleCase } from "../utils/PropertyUtils";
 
 import OfficialAddress from "./../data/OfficialAddress";
@@ -83,6 +92,7 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
   const [showDialog, setShowDialog] = useState(false);
   const [street, setStreet] = useState(null);
   const [postTown, setPostTown] = useState(null);
+  const [subLocality, setSubLocality] = useState(null);
   const [postcode, setPostcode] = useState(null);
   const [officialFlag, setOfficialFlag] = useState(null);
   const [postalAddress, setPostalAddress] = useState(null);
@@ -90,6 +100,11 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
   const [noteOpen, setNoteOpen] = useState(false);
 
   const [title, setTitle] = useState("Edit address");
+
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [lookupType, setLookupType] = useState("unknown");
+  const [engError, setEngError] = useState(null);
+  const [altLanguageError, setAltLanguageError] = useState(null);
 
   const [updating, setUpdating] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -104,6 +119,8 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
   const updatedCount = useRef(0);
   const failedCount = useRef(0);
   const failedIds = useRef([]);
+  const addResult = useRef(null);
+  const currentVariant = useRef(null);
 
   /**
    * Event to handle when the dialog is closing.
@@ -173,12 +190,45 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
   };
 
   /**
+   * Event to handle when a new post town is added.
+   */
+  const handleAddPostTownEvent = () => {
+    setLookupType("postTown");
+    setShowAddDialog(true);
+  };
+
+  /**
+   * Event to handle when the sub-locality is changed.
+   *
+   * @param {number|null} newValue The new sub-locality.
+   */
+  const handleSubLocalityChangeEvent = (newValue) => {
+    setSubLocality(newValue);
+  };
+
+  /**
+   * Event to handle when a new sub-locality is added.
+   */
+  const handleAddSubLocalityEvent = () => {
+    setLookupType("subLocality");
+    setShowAddDialog(true);
+  };
+
+  /**
    * Event to handle when the postcode is changed.
    *
    * @param {number|null} newValue The new postcode.
    */
   const handlePostcodeChangeEvent = (newValue) => {
     setPostcode(newValue);
+  };
+
+  /**
+   * Event to handle when a new postcode is added.
+   */
+  const handleAddPostcodeEvent = () => {
+    setLookupType("postcode");
+    setShowAddDialog(true);
   };
 
   /**
@@ -309,6 +359,12 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                   .postTownRef
               : null;
 
+            const gaeSubLocalityRef = subLocality
+              ? lookupContext.currentLookups.subLocalities.find(
+                  (x) => x.linkedRef === subLocality && x.language === "GAE"
+                ).subLocalityRef
+              : null;
+
             updatedProperty = {
               changeType: property.changeType,
               blpuStateDate: property.blpuStateDate,
@@ -342,6 +398,11 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                   usrn: street ? street : lpi.usrn,
                   postcodeRef: postcode ? postcode : lpi.postcodeRef,
                   postTownRef: postTown ? (lpi.language === "ENG" ? postTown : gaePostTownRef) : lpi.postTownRef,
+                  subLocalityRef: subLocality
+                    ? lpi.language === "ENG"
+                      ? subLocality
+                      : gaeSubLocalityRef
+                    : lpi.subLocalityRef,
                 };
               }),
             };
@@ -403,6 +464,59 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
         }
       }
     }
+  };
+
+  /**
+   * Method used to add the new lookup.
+   *
+   * @param {object} data The data returned from the add lookup dialog.
+   */
+  const handleDoneAddLookup = async (data) => {
+    currentVariant.current = getLookupVariantString(data.variant);
+
+    const addResults = await addLookup(
+      data,
+      settingsContext.authorityCode,
+      userContext.currentUser.token,
+      settingsContext.isWelsh,
+      settingsContext.isScottish,
+      lookupContext.currentLookups
+    );
+
+    if (addResults && addResults.result) {
+      if (addResults.updatedLookups && addResults.updatedLookups.length > 0)
+        lookupContext.onUpdateLookup(data.variant, addResults.updatedLookups);
+
+      switch (data.variant) {
+        case "postcode":
+          setPostcode(addResults.newLookup.postcodeRef);
+          break;
+
+        case "postTown":
+          setPostTown(addResults.newLookup.postTownRef);
+          break;
+
+        case "subLocality":
+          setSubLocality(addResults.newLookup.subLocalityRef);
+          break;
+
+        default:
+          break;
+      }
+
+      addResult.current = true;
+    } else addResult.current = false;
+    setEngError(addResults ? addResults.engError : null);
+    setAltLanguageError(addResults ? addResults.altLanguageError : null);
+
+    setShowAddDialog(!addResult.current);
+  };
+
+  /**
+   * Event to handle when the add lookup dialog is closed.
+   */
+  const handleCloseAddLookup = () => {
+    setShowAddDialog(false);
   };
 
   useEffect(() => {
@@ -537,228 +651,283 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
   }, [rangeProcessedCount]);
 
   return (
-    <Dialog
-      open={showDialog}
-      aria-labelledby="multi-edit-address-fields-dialog"
-      fullWidth
-      maxWidth="sm"
-      onClose={handleDialogClose}
-    >
-      <ADSDialogTitle title={`${title}`} closeTooltip="Close" onClose={handleCancelClick} />
-      <DialogContent sx={{ mt: theme.spacing(2) }}>
-        {!completed ? (
-          <Fragment>
-            <Typography variant="body1" gutterBottom sx={{ ml: theme.spacing(1.25) }}>
-              Choose the updates that you wish to apply to the selected properties
-            </Typography>
-            <Grid container justifyContent="center" alignItems="center">
-              <Grid item xs={12}>
-                <ADSSelectControl
-                  label="Street"
-                  isEditable
-                  useRounded
-                  disabled={updating}
-                  displayNoChange
-                  lookupData={lookupContext.currentLookups.streetDescriptors.filter((x) => x.language === "ENG")}
-                  lookupId="usrn"
-                  lookupLabel="address"
-                  value={street}
-                  errorText={null}
-                  onChange={handleStreetChangeEvent}
-                  helperText="Unique Street reference number."
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <ADSSelectControl
-                  label="Post town"
-                  isEditable
-                  useRounded
-                  disabled={updating}
-                  displayNoChange
-                  lookupData={lookupContext.currentLookups.postTowns.filter((x) => x.language === "ENG" && !x.historic)}
-                  lookupId="postTownRef"
-                  lookupLabel="postTown"
-                  value={postTown}
-                  errorText={null}
-                  onChange={handlePostTownChangeEvent}
-                  helperText="Allocated by the Royal Mail to assist in delivery of mail."
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <ADSSelectControl
-                  label="Postcode"
-                  isEditable
-                  useRounded
-                  disabled={updating}
-                  doNotSetTitleCase
-                  displayNoChange
-                  lookupData={lookupContext.currentLookups.postcodes.filter((x) => !x.historic)}
-                  lookupId="postcodeRef"
-                  lookupLabel="postcode"
-                  value={postcode}
-                  errorText={null}
-                  onChange={handlePostcodeChangeEvent}
-                  helperText="Allocated by the Royal Mail to assist in delivery of mail."
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <ADSSelectControl
-                  label="Official address"
-                  isEditable
-                  useRounded
-                  disabled={updating}
-                  doNotSetTitleCase
-                  displayNoChange
-                  lookupData={filteredLookup(OfficialAddress, settingsContext.isScottish)}
-                  lookupId="id"
-                  lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-                  value={officialFlag}
-                  errorText={null}
-                  onChange={handleOfficialFlagChangeEvent}
-                  helperText="Status of address."
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <ADSSelectControl
-                  label="Postal address"
-                  isEditable
-                  useRounded
-                  disabled={updating}
-                  doNotSetTitleCase
-                  displayNoChange
-                  lookupData={filteredLookup(PostallyAddressable, settingsContext.isScottish)}
-                  lookupId="id"
-                  lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-                  value={postalAddress}
-                  errorText={null}
-                  onChange={handlePostalAddressChangeEvent}
-                  helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
-                />
-              </Grid>
-              {noteOpen && (
+    <>
+      <Dialog
+        open={showDialog}
+        aria-labelledby="multi-edit-address-fields-dialog"
+        fullWidth
+        maxWidth="sm"
+        onClose={handleDialogClose}
+      >
+        <ADSDialogTitle title={`${title}`} closeTooltip="Close" onClose={handleCancelClick} />
+        <DialogContent sx={{ mt: theme.spacing(2) }}>
+          {!completed ? (
+            <Fragment>
+              <Typography variant="body1" gutterBottom sx={{ ml: theme.spacing(1.25) }}>
+                Choose the updates that you wish to apply to the selected properties
+              </Typography>
+              <Grid container justifyContent="center" alignItems="center">
                 <Grid item xs={12}>
-                  <ADSTextControl
+                  <ADSSelectControl
+                    label="Street"
                     isEditable
+                    useRounded
                     disabled={updating}
-                    value={note}
-                    id="property_note"
-                    maxLength={4000}
-                    minLines={2}
-                    maxLines={10}
-                    onChange={handleNoteChangeEvent}
+                    displayNoChange
+                    lookupData={lookupContext.currentLookups.streetDescriptors.filter((x) => x.language === "ENG")}
+                    lookupId="usrn"
+                    lookupLabel="address"
+                    value={street}
+                    errorText={null}
+                    onChange={handleStreetChangeEvent}
+                    helperText="Unique Street reference number."
                   />
                 </Grid>
-              )}
-            </Grid>
-          </Fragment>
-        ) : (
-          <Fragment>
-            <Stack direction="column" spacing={1}>
-              <Stack direction="row" justifyContent="flex-start" alignItems="flex-end" spacing={1}>
-                <Typography variant="body1" gutterBottom sx={{ fontWeight: 700, color: adsGreenC }}>
-                  {updatedCount.current}
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  properties were successfully updated
-                </Typography>
-              </Stack>
-              {failedCount.current > 0 && (
-                <Stack direction="column" spacing={1}>
-                  <Stack direction="row" justifyContent="flex-start" alignItems="flex-end" spacing={1}>
-                    <Typography variant="body1" gutterBottom sx={{ fontWeight: 700, color: adsRed }}>
-                      {failedCount.current}
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
-                      properties were not updated:
-                    </Typography>
-                  </Stack>
-                  <Box
-                    sx={{
-                      height: "197px",
-                      border: `1px solid ${adsLightGreyC}`,
-                      overflowY: "auto",
-                    }}
-                  >
-                    {finaliseErrors && finaliseErrors.length > 0 && (
-                      <List
-                        sx={{ width: "100%", pt: "0px", pb: "0px" }}
-                        component="nav"
-                        key="multi-edit-address-fields-errors"
-                      >
-                        {finaliseErrors.map((rec, index) => (
-                          <ListItem
-                            alignItems="flex-start"
-                            dense
-                            divider
-                            id={`multi-edit-address-fields-error-${index}`}
-                          >
-                            {renderErrorListItem(rec)}
-                          </ListItem>
-                        ))}
-                      </List>
-                    )}
-                  </Box>
-                  {process.env.NODE_ENV === "development" && (
-                    <Button
-                      onClick={handleAddToListClick}
-                      autoFocus
-                      variant="contained"
-                      sx={{ ...whiteButtonStyle, width: "135px" }}
-                      startIcon={<PlaylistAddIcon />}
-                    >
-                      Add to list
-                    </Button>
-                  )}
+                <Grid item xs={12}>
+                  <ADSSelectControl
+                    label="Post town"
+                    isEditable
+                    useRounded
+                    disabled={updating}
+                    displayNoChange
+                    allowAddLookup
+                    lookupData={lookupContext.currentLookups.postTowns
+                      .filter((x) => x.language === "ENG" && !x.historic)
+                      .sort(function (a, b) {
+                        return a.postTown.localeCompare(b.postTown, undefined, {
+                          numeric: true,
+                          sensitivity: "base",
+                        });
+                      })}
+                    lookupId="postTownRef"
+                    lookupLabel="postTown"
+                    value={postTown}
+                    errorText={null}
+                    onChange={handlePostTownChangeEvent}
+                    onAddLookup={handleAddPostTownEvent}
+                    helperText="Allocated by the Royal Mail to assist in delivery of mail."
+                  />
+                </Grid>
+                {settingsContext.isScottish && (
+                  <Grid item xs={12}>
+                    <ADSSelectControl
+                      label="Sub-locality"
+                      isEditable
+                      useRounded
+                      disabled={updating}
+                      displayNoChange
+                      allowAddLookup
+                      lookupData={lookupContext.currentLookups.subLocalities
+                        .filter((x) => x.language === "ENG" && !x.historic)
+                        .sort(function (a, b) {
+                          return a.subLocality.localeCompare(b.subLocality, undefined, {
+                            numeric: true,
+                            sensitivity: "base",
+                          });
+                        })}
+                      lookupId="subLocalityRef"
+                      lookupLabel="subLocality"
+                      value={subLocality}
+                      errorText={null}
+                      onChange={handleSubLocalityChangeEvent}
+                      onAddLookup={handleAddSubLocalityEvent}
+                      helperText="Third level of geographic area name. e.g. to record an island name or property group."
+                    />
+                  </Grid>
+                )}
+                <Grid item xs={12}>
+                  <ADSSelectControl
+                    label="Postcode"
+                    isEditable
+                    useRounded
+                    disabled={updating}
+                    doNotSetTitleCase
+                    displayNoChange
+                    allowAddLookup
+                    lookupData={lookupContext.currentLookups.postcodes
+                      .filter((x) => !x.historic)
+                      .sort(function (a, b) {
+                        return a.postcode.localeCompare(b.postcode, undefined, {
+                          numeric: true,
+                          sensitivity: "base",
+                        });
+                      })}
+                    lookupId="postcodeRef"
+                    lookupLabel="postcode"
+                    value={postcode}
+                    errorText={null}
+                    onChange={handlePostcodeChangeEvent}
+                    onAddLookup={handleAddPostcodeEvent}
+                    helperText="Allocated by the Royal Mail to assist in delivery of mail."
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <ADSSelectControl
+                    label="Official address"
+                    isEditable
+                    useRounded
+                    disabled={updating}
+                    doNotSetTitleCase
+                    displayNoChange
+                    lookupData={filteredLookup(OfficialAddress, settingsContext.isScottish)}
+                    lookupId="id"
+                    lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                    value={officialFlag}
+                    errorText={null}
+                    onChange={handleOfficialFlagChangeEvent}
+                    helperText="Status of address."
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <ADSSelectControl
+                    label="Postal address"
+                    isEditable
+                    useRounded
+                    disabled={updating}
+                    doNotSetTitleCase
+                    displayNoChange
+                    lookupData={filteredLookup(PostallyAddressable, settingsContext.isScottish)}
+                    lookupId="id"
+                    lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                    value={postalAddress}
+                    errorText={null}
+                    onChange={handlePostalAddressChangeEvent}
+                    helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
+                  />
+                </Grid>
+                {noteOpen && (
+                  <Grid item xs={12}>
+                    <ADSTextControl
+                      isEditable
+                      disabled={updating}
+                      value={note}
+                      id="property_note"
+                      maxLength={4000}
+                      minLines={2}
+                      maxLines={10}
+                      onChange={handleNoteChangeEvent}
+                    />
+                  </Grid>
+                )}
+              </Grid>
+            </Fragment>
+          ) : (
+            <Fragment>
+              <Stack direction="column" spacing={1}>
+                <Stack direction="row" justifyContent="flex-start" alignItems="flex-end" spacing={1}>
+                  <Typography variant="body1" gutterBottom sx={{ fontWeight: 700, color: adsGreenC }}>
+                    {updatedCount.current}
+                  </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    properties were successfully updated
+                  </Typography>
                 </Stack>
+                {failedCount.current > 0 && (
+                  <Stack direction="column" spacing={1}>
+                    <Stack direction="row" justifyContent="flex-start" alignItems="flex-end" spacing={1}>
+                      <Typography variant="body1" gutterBottom sx={{ fontWeight: 700, color: adsRed }}>
+                        {failedCount.current}
+                      </Typography>
+                      <Typography variant="body1" gutterBottom>
+                        properties were not updated:
+                      </Typography>
+                    </Stack>
+                    <Box
+                      sx={{
+                        height: "197px",
+                        border: `1px solid ${adsLightGreyC}`,
+                        overflowY: "auto",
+                      }}
+                    >
+                      {finaliseErrors && finaliseErrors.length > 0 && (
+                        <List
+                          sx={{ width: "100%", pt: "0px", pb: "0px" }}
+                          component="nav"
+                          key="multi-edit-address-fields-errors"
+                        >
+                          {finaliseErrors.map((rec, index) => (
+                            <ListItem
+                              alignItems="flex-start"
+                              dense
+                              divider
+                              id={`multi-edit-address-fields-error-${index}`}
+                            >
+                              {renderErrorListItem(rec)}
+                            </ListItem>
+                          ))}
+                        </List>
+                      )}
+                    </Box>
+                    {process.env.NODE_ENV === "development" && (
+                      <Button
+                        onClick={handleAddToListClick}
+                        autoFocus
+                        variant="contained"
+                        sx={{ ...whiteButtonStyle, width: "135px" }}
+                        startIcon={<PlaylistAddIcon />}
+                      >
+                        Add to list
+                      </Button>
+                    )}
+                  </Stack>
+                )}
+              </Stack>
+            </Fragment>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "flex-start", ml: theme.spacing(3), mb: theme.spacing(2) }}>
+          {!completed ? (
+            <Stack direction="column" spacing={3}>
+              {!noteOpen && (
+                <Button
+                  onClick={handleAddNoteClick}
+                  autoFocus
+                  disabled={updating}
+                  variant="contained"
+                  sx={whiteButtonStyle}
+                  startIcon={<NoteAddIcon />}
+                >
+                  Add note
+                </Button>
               )}
-            </Stack>
-          </Fragment>
-        )}
-      </DialogContent>
-      <DialogActions sx={{ justifyContent: "flex-start", ml: theme.spacing(3), mb: theme.spacing(2) }}>
-        {!completed ? (
-          <Stack direction="column" spacing={3}>
-            {!noteOpen && (
               <Button
-                onClick={handleAddNoteClick}
+                onClick={handleConfirmClick}
                 autoFocus
                 disabled={updating}
                 variant="contained"
-                sx={whiteButtonStyle}
-                startIcon={<NoteAddIcon />}
+                sx={blueButtonStyle}
+                startIcon={<DoneIcon />}
               >
-                Add note
+                Confirm
               </Button>
-            )}
+            </Stack>
+          ) : (
             <Button
-              onClick={handleConfirmClick}
+              onClick={handleCloseClick}
               autoFocus
-              disabled={updating}
               variant="contained"
               sx={blueButtonStyle}
               startIcon={<DoneIcon />}
             >
-              Confirm
+              Close
             </Button>
-          </Stack>
-        ) : (
-          <Button
-            onClick={handleCloseClick}
-            autoFocus
-            variant="contained"
-            sx={blueButtonStyle}
-            startIcon={<DoneIcon />}
-          >
-            Close
-          </Button>
+          )}
+        </DialogActions>
+        {updating && (
+          <Backdrop open={updating}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
         )}
-      </DialogActions>
-      {updating && (
-        <Backdrop open={updating}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      )}
-    </Dialog>
+      </Dialog>
+      <AddLookupDialog
+        isOpen={showAddDialog}
+        variant={lookupType}
+        errorEng={engError}
+        errorAltLanguage={altLanguageError}
+        onDone={(data) => handleDoneAddLookup(data)}
+        onClose={handleCloseAddLookup}
+      />
+    </>
   );
 }
 

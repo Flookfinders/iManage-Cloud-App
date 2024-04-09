@@ -24,6 +24,7 @@
 //    011   05.02.24 Sean Flook                 Further changes required for operational districts.
 //    012   29.02.24 Joel Benford     IMANN-242 Add DbAuthority.
 //    013   27.03.24 Sean Flook                 Further changes to fix warnings.
+//    014   09.04.24 Sean Flook       IMANN-376 Changes required to allow lookups to be added on the fly.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -35,21 +36,7 @@ import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
 
-import {
-  GetPostcodeUrl,
-  GetPostTownUrl,
-  GetSubLocalityUrl,
-  GetAppCrossRefUrl,
-  GetLocalityUrl,
-  GetTownUrl,
-  GetIslandUrl,
-  GetAdministrativeAreaUrl,
-  GetDbAuthorityUrl,
-  GetWardsForAuthorityUrl,
-  GetParishesForAuthorityUrl,
-  GetOperationalDistrictUrl,
-} from "../configuration/ADSConfig";
-import { GetCurrentDate } from "../utils/HelperUtils";
+import { GetCurrentDate, GetLookupUrl, GetOldLookups, addLookup, getLookupVariantString } from "../utils/HelperUtils";
 
 import { Snackbar, Alert } from "@mui/material";
 import { Box } from "@mui/system";
@@ -772,7 +759,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
   };
 
   const isLookupInUse = async (variant, id) => {
-    const lookupUrl = GetLookupUrl(variant, "GET");
+    const lookupUrl = GetLookupUrl(variant, "GET", userContext.currentUser.token, settingsContext.authorityCode);
 
     if (lookupUrl) {
       let lookupRecord = null;
@@ -791,22 +778,22 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
           switch (res.status) {
             case 400:
               res.json().then((body) => {
-                console.error(`[400 ERROR] Getting ${GetVariantString(variant)} object`, body.errors);
+                console.error(`[400 ERROR] Getting ${getLookupVariantString(variant)} object`, body.errors);
               });
               break;
 
             case 401:
               res.json().then((body) => {
-                console.error(`[401 ERROR] Getting ${GetVariantString(variant)} object`, body);
+                console.error(`[401 ERROR] Getting ${getLookupVariantString(variant)} object`, body);
               });
               break;
 
             case 500:
-              console.error(`[500 ERROR] Getting ${GetVariantString(variant)} object`, res);
+              console.error(`[500 ERROR] Getting ${getLookupVariantString(variant)} object`, res);
               break;
 
             default:
-              console.error(`[${res.status} ERROR] Getting ${GetVariantString(variant)} object`, res);
+              console.error(`[${res.status} ERROR] Getting ${getLookupVariantString(variant)} object`, res);
               break;
           }
         });
@@ -1051,118 +1038,6 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
     setShowDeleteDialog(true);
   };
 
-  function GetLookupUrl(variant, endPointType) {
-    switch (variant) {
-      case "postcode":
-        return GetPostcodeUrl(endPointType, userContext.currentUser.token);
-
-      case "postTown":
-        return GetPostTownUrl(endPointType, userContext.currentUser.token);
-
-      case "subLocality":
-        return GetSubLocalityUrl(endPointType, userContext.currentUser.token);
-
-      case "crossReference":
-        return GetAppCrossRefUrl(endPointType, userContext.currentUser.token);
-
-      case "locality":
-        return GetLocalityUrl(endPointType, userContext.currentUser.token);
-
-      case "town":
-        return GetTownUrl(endPointType, userContext.currentUser.token);
-
-      case "island":
-        return GetIslandUrl(endPointType, userContext.currentUser.token);
-
-      case "administrativeArea":
-        return GetAdministrativeAreaUrl(endPointType, userContext.currentUser.token);
-
-      case "dbAuthority":
-        return GetDbAuthorityUrl(endPointType, userContext.currentUser.token);
-
-      case "ward":
-        return GetWardsForAuthorityUrl(endPointType, userContext.currentUser.token, settingsContext.authorityCode);
-
-      case "parish":
-        return GetParishesForAuthorityUrl(endPointType, userContext.currentUser.token, settingsContext.authorityCode);
-
-      case "operationalDistrict":
-        return GetOperationalDistrictUrl(endPointType, userContext.currentUser.token);
-
-      default:
-        return null;
-    }
-  }
-
-  function GetVariantString(variant) {
-    switch (variant) {
-      case "postTown":
-        return "post town";
-
-      case "subLocality":
-        return "sub-locality";
-
-      case "crossReference":
-        return "cross reference";
-
-      case "administrativeArea":
-        return "administrative area";
-
-      case "operationalDistrict":
-        return "operational district";
-
-      default:
-        return variant;
-    }
-  }
-
-  function GetOldLookups(variant) {
-    switch (variant) {
-      case "postcode":
-        return JSON.parse(JSON.stringify(lookupContext.currentLookups.postcodes));
-
-      case "postTown":
-        return JSON.parse(JSON.stringify(lookupContext.currentLookups.postTowns));
-
-      case "subLocality":
-        return JSON.parse(JSON.stringify(lookupContext.currentLookups.subLocalities));
-
-      case "crossReference":
-        return JSON.parse(JSON.stringify(lookupContext.currentLookups.appCrossRefs));
-
-      case "locality":
-        return JSON.parse(JSON.stringify(lookupContext.currentLookups.localities));
-
-      case "town":
-        return JSON.parse(JSON.stringify(lookupContext.currentLookups.towns));
-
-      case "island":
-        return JSON.parse(JSON.stringify(lookupContext.currentLookups.islands));
-
-      case "administrativeArea":
-        return JSON.parse(JSON.stringify(lookupContext.currentLookups.adminAuthorities));
-
-      case "ward":
-        return JSON.parse(JSON.stringify(lookupContext.currentLookups.wards));
-
-      case "parish":
-        return JSON.parse(JSON.stringify(lookupContext.currentLookups.parishes));
-
-      case "dbAuthority":
-        return JSON.parse(JSON.stringify(lookupContext.currentLookups.dbAuthorities));
-
-      case "operationalDistrict":
-        return JSON.parse(JSON.stringify(lookupContext.currentLookups.operationalDistricts));
-
-      default:
-        return null;
-    }
-  }
-
-  function UpdateLookups(variant, newLookups) {
-    lookupContext.onUpdateLookup(variant, newLookups);
-  }
-
   function GetLinkedRef(variant, lookupId) {
     if (settingsContext.isWelsh || settingsContext.isScottish) {
       switch (variant) {
@@ -1206,483 +1081,30 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
     } else return null;
   }
 
+  /**
+   * Method to handle adding lookups.
+   *
+   * @param {object} data The data returned from the add lookup dialog.
+   */
   const handleDoneAddLookup = async (data) => {
-    let lookupAdded = false;
+    currentVariant.current = getLookupVariantString(data.variant);
 
-    currentVariant.current = GetVariantString(data.variant);
+    const addResults = await addLookup(
+      data,
+      settingsContext.authorityCode,
+      userContext.currentUser.token,
+      settingsContext.isWelsh,
+      settingsContext.isScottish,
+      lookupContext.currentLookups
+    );
 
-    const getEngPostData = () => {
-      if (data.lookupData) {
-        switch (data.variant) {
-          case "postcode":
-            return { postcode: data.lookupData.postcode, historic: data.lookupData.historic };
-
-          case "postTown":
-            return {
-              postTown: data.lookupData.english,
-              historic: data.lookupData.historic,
-              language: "ENG",
-              linkedRef: -1,
-            };
-
-          case "subLocality":
-            return {
-              subLocality: data.lookupData.english,
-              historic: data.lookupData.historic,
-              language: "ENG",
-              linkedRef: -1,
-            };
-
-          case "crossReference":
-            return {
-              xrefSourceRef: null,
-              altXrefSourceRef: null,
-              xrefSourceRef73: data.lookupData.xrefSourceRef73,
-              iSearchWebLinkUrl: null,
-              enabled: data.lookupData.enabled,
-              historic: data.lookupData.historic,
-              showSourceiSearchWeb: null,
-              showXrefiSearchWeb: null,
-              export: data.lookupData.export,
-            };
-
-          case "locality":
-            return {
-              locality: data.lookupData.english,
-              historic: data.lookupData.historic,
-              language: "ENG",
-              linkedRef: -1,
-            };
-
-          case "town":
-            return {
-              town: data.lookupData.english,
-              historic: data.lookupData.historic,
-              language: "ENG",
-              linkedRef: -1,
-            };
-
-          case "island":
-            return {
-              island: data.lookupData.english,
-              historic: data.lookupData.historic,
-              language: "ENG",
-              linkedRef: -1,
-            };
-
-          case "administrativeArea":
-            return {
-              administrativeArea: data.lookupData.english,
-              historic: data.lookupData.historic,
-              language: "ENG",
-              linkedRef: -1,
-            };
-
-          case "ward":
-            return {
-              wardCode: data.lookupData.wardCode,
-              ward: data.lookupData.ward,
-              detrCode: settingsContext ? settingsContext.authorityCode : null,
-              historic: data.lookupData.historic,
-            };
-
-          case "parish":
-            return {
-              parishCode: data.lookupData.parishCode,
-              parish: data.lookupData.parish,
-              detrCode: settingsContext ? settingsContext.authorityCode : null,
-              historic: data.lookupData.historic,
-            };
-
-          case "dbAuthority":
-            return {
-              authorityRef: data.lookupData.dbAuthorityRef,
-              authorityName: data.lookupData.dbAuthorityName,
-              minUsrn: data.lookupData.dbAuthorityMinUsrn,
-              maxUsrn: data.lookupData.dbAuthorityMaxUsrn,
-            };
-
-          case "operationalDistrict":
-            return {
-              organisationId: data.lookupData.organisationId,
-              districtName: data.lookupData.districtName,
-              lastUpdateDate: data.lookupData.lastUpdateDate,
-              districtId: data.lookupData.districtId,
-              districtFunction: data.lookupData.districtFunction,
-              districtClosed: data.lookupData.districtClosed,
-              districtFtpServerName: data.lookupData.districtFtpServerName,
-              districtServerIpAddress: data.lookupData.districtServerIpAddress,
-              districtFtpDirectory: data.lookupData.districtFtpDirectory,
-              districtNotificationsUrl: data.lookupData.districtNotificationsUrl,
-              attachmentUrlPrefix: data.lookupData.attachmentUrlPrefix,
-              districtFaxNo: data.lookupData.districtFaxNo,
-              districtPostcode: data.lookupData.districtPostcode,
-              districtTelNo: data.lookupData.districtTelNo,
-              outOfHoursArrangements: data.lookupData.outOfHoursArrangements,
-              fpnDeliveryUrl: data.lookupData.fpnDeliveryUrl,
-              fpnFaxNumber: data.lookupData.fpnFaxNumber,
-              fpnDeliveryPostcode: data.lookupData.fpnDeliveryPostcode,
-              fpnPaymentUrl: data.lookupData.fpnPaymentUrl,
-              fpnPaymentTelNo: data.lookupData.fpnPaymentTelNo,
-              fpnPaymentBankName: data.lookupData.fpnPaymentBankName,
-              fpnPaymentSortCode: data.lookupData.fpnPaymentSortCode,
-              fpnPaymentAccountNo: data.lookupData.fpnPaymentAccountNo,
-              fpnPaymentAccountName: data.lookupData.fpnPaymentAccountName,
-              fpnPaymentPostcode: data.lookupData.fpnPaymentPostcode,
-              fpnContactName: data.lookupData.fpnContactName,
-              fpnContactPostcode: data.lookupData.fpnContactPostcode,
-              fpnContactTelNo: data.lookupData.fpnContactTelNo,
-              districtPostalAddress1: data.lookupData.districtPostalAddress1,
-              districtPostalAddress2: data.lookupData.districtPostalAddress2,
-              districtPostalAddress3: data.lookupData.districtPostalAddress3,
-              districtPostalAddress4: data.lookupData.districtPostalAddress4,
-              districtPostalAddress5: data.lookupData.districtPostalAddress5,
-              fpnDeliveryAddress1: data.lookupData.fpnDeliveryAddress1,
-              fpnDeliveryAddress2: data.lookupData.fpnDeliveryAddress2,
-              fpnDeliveryAddress3: data.lookupData.fpnDeliveryAddress3,
-              fpnDeliveryAddress4: data.lookupData.fpnDeliveryAddress4,
-              fpnDeliveryAddress5: data.lookupData.fpnDeliveryAddress5,
-              fpnContactAddress1: data.lookupData.fpnContactAddress1,
-              fpnContactAddress2: data.lookupData.fpnContactAddress2,
-              fpnContactAddress3: data.lookupData.fpnContactAddress3,
-              fpnContactAddress4: data.lookupData.fpnContactAddress4,
-              fpnContactAddress5: data.lookupData.fpnContactAddress5,
-              fpnPaymentAddress1: data.lookupData.fpnPaymentAddress1,
-              fpnPaymentAddress2: data.lookupData.fpnPaymentAddress2,
-              fpnPaymentAddress3: data.lookupData.fpnPaymentAddress3,
-              fpnPaymentAddress4: data.lookupData.fpnPaymentAddress4,
-              fpnPaymentAddress5: data.lookupData.fpnPaymentAddress5,
-              fpnDeliveryEmailAddress: data.lookupData.fpnDeliveryEmailAddress,
-              districtPermitSchemeId: data.lookupData.districtPermitSchemeId,
-              historic: data.lookupData.historic,
-            };
-
-          default:
-            return null;
-        }
-      } else return null;
-    };
-
-    const getCymPostData = (newEngLookup) => {
-      if (data.lookupData && data.lookupData.welsh) {
-        switch (data.variant) {
-          case "postTown":
-            return {
-              postTown: data.lookupData.welsh,
-              historic: data.lookupData.historic,
-              language: "CYM",
-              linkedRef: newEngLookup && newEngLookup.postTownRef ? newEngLookup.postTownRef : -1,
-            };
-
-          case "locality":
-            return {
-              locality: data.lookupData.welsh,
-              historic: data.lookupData.historic,
-              language: "CYM",
-              linkedRef: newEngLookup && newEngLookup.localityRef ? newEngLookup.localityRef : -1,
-            };
-
-          case "town":
-            return {
-              town: data.lookupData.welsh,
-              historic: data.lookupData.historic,
-              language: "CYM",
-              linkedRef: newEngLookup && newEngLookup.townRef ? newEngLookup.townRef : -1,
-            };
-
-          case "administrativeArea":
-            return {
-              administrativeArea: data.lookupData.welsh,
-              historic: data.lookupData.historic,
-              language: "CYM",
-              linkedRef: newEngLookup && newEngLookup.administrativeAreaRef ? newEngLookup.administrativeAreaRef : -1,
-            };
-
-          default:
-            return null;
-        }
-      } else return null;
-    };
-
-    const getGaePostData = (newEngLookup) => {
-      if (data.lookupData && data.lookupData.gaelic) {
-        switch (data.variant) {
-          case "postTown":
-            return {
-              postTown: data.lookupData.gaelic,
-              historic: data.lookupData.historic,
-              language: "GAE",
-              linkedRef: newEngLookup && newEngLookup.postTownRef ? newEngLookup.postTownRef : -1,
-            };
-
-          case "subLocality":
-            return {
-              subLocality: data.lookupData.gaelic,
-              historic: data.lookupData.historic,
-              language: "GAE",
-              linkedRef: newEngLookup && newEngLookup.subLocalityRef ? newEngLookup.subLocalityRef : -1,
-            };
-
-          case "locality":
-            return {
-              locality: data.lookupData.gaelic,
-              historic: data.lookupData.historic,
-              language: "GAE",
-              linkedRef: newEngLookup && newEngLookup.localityRef ? newEngLookup.localityRef : -1,
-            };
-
-          case "town":
-            return {
-              town: data.lookupData.gaelic,
-              historic: data.lookupData.historic,
-              language: "GAE",
-              linkedRef: newEngLookup && newEngLookup.townRef ? newEngLookup.townRef : -1,
-            };
-
-          case "island":
-            return {
-              island: data.lookupData.gaelic,
-              historic: data.lookupData.historic,
-              language: "GAE",
-              linkedRef: newEngLookup && newEngLookup.islandRef ? newEngLookup.islandRef : -1,
-            };
-
-          case "administrativeArea":
-            return {
-              administrativeArea: data.lookupData.gaelic,
-              historic: data.lookupData.historic,
-              language: "GAE",
-              linkedRef: newEngLookup && newEngLookup.administrativeAreaRef ? newEngLookup.administrativeAreaRef : -1,
-            };
-
-          default:
-            return null;
-        }
-      } else return null;
-    };
-
-    function UpdateEngLinkedRef(engLookup, linkedLookup) {
-      if (engLookup && linkedLookup) {
-        switch (data.variant) {
-          case "postTown":
-            return { ...engLookup, linkedRef: linkedLookup.postTownRef };
-
-          case "subLocality":
-            return { ...engLookup, linkedRef: linkedLookup.subLocalityRef };
-
-          case "locality":
-            return { ...engLookup, linkedRef: linkedLookup.localityRef };
-
-          case "town":
-            return { ...engLookup, linkedRef: linkedLookup.townRef };
-
-          case "island":
-            return { ...engLookup, linkedRef: linkedLookup.islandRef };
-
-          case "administrativeArea":
-            return { ...engLookup, linkedRef: linkedLookup.administrativeAreaRef };
-
-          default:
-            return engLookup;
-        }
-      } else return engLookup;
-    }
-
-    if (data) {
-      const lookupUrl = GetLookupUrl(data.variant, "POST");
-
-      // if (process.env.NODE_ENV === "development")
-      console.log("[DEBUG] handleDoneAddLookup", {
-        lookupUrl: lookupUrl,
-        language: "ENG",
-        JSON: JSON.stringify(getEngPostData()),
-      });
-      let newEngLookup = null;
-      let newCymLookup = null;
-      let newGaeLookup = null;
-
-      if (lookupUrl) {
-        await fetch(lookupUrl.url, {
-          headers: lookupUrl.headers,
-          crossDomain: true,
-          method: lookupUrl.type,
-          body: JSON.stringify(getEngPostData()),
-        })
-          .then((res) => (res.ok ? res : Promise.reject(res)))
-          .then((res) => res.json())
-          .then((result) => {
-            newEngLookup = result;
-            lookupAdded = true;
-          })
-          .catch((res) => {
-            switch (res.status) {
-              case 400:
-                res.json().then((body) => {
-                  console.error(`[400 ERROR] Creating ${GetVariantString(data.variant)} object`, body.errors);
-                  let lookupEngErrors = [];
-                  for (const [key, value] of Object.entries(body.errors)) {
-                    lookupEngErrors.push({ key: key, value: value });
-                  }
-
-                  if (lookupEngErrors.length > 0) setEngError(lookupEngErrors[0].value);
-                  else setEngError(null);
-                });
-                break;
-
-              case 401:
-                res.json().then((body) => {
-                  console.error(`[401 ERROR] Creating ${GetVariantString(data.variant)} object`, body);
-                });
-                break;
-
-              case 500:
-                console.error(`[500 ERROR] Creating ${GetVariantString(data.variant)} object`, res);
-                break;
-
-              default:
-                console.error(`[${res.status} ERROR] Creating ${GetVariantString(data.variant)} object`, res);
-                break;
-            }
-          });
-
-        if (newEngLookup) {
-          const canHaveMultiLanguage = [
-            "postTown",
-            "subLocality",
-            "locality",
-            "town",
-            "island",
-            "administrativeArea",
-          ].includes(data.variant);
-          if (canHaveMultiLanguage && settingsContext.isWelsh) {
-            lookupAdded = false;
-            const cymData = getCymPostData(newEngLookup);
-            // if (process.env.NODE_ENV === "development")
-            console.log("[DEBUG] handleDoneAddLookup", {
-              lookupUrl: lookupUrl,
-              language: "CYM",
-              JSON: JSON.stringify(cymData),
-            });
-            if (cymData) {
-              await fetch(lookupUrl.url, {
-                headers: lookupUrl.headers,
-                crossDomain: true,
-                method: lookupUrl.type,
-                body: JSON.stringify(cymData),
-              })
-                .then((res) => (res.ok ? res : Promise.reject(res)))
-                .then((res) => res.json())
-                .then((result) => {
-                  newCymLookup = result;
-                  lookupAdded = true;
-                })
-                .catch((res) => {
-                  switch (res.status) {
-                    case 400:
-                      res.json().then((body) => {
-                        console.error(`[400 ERROR] Creating ${GetVariantString(data.variant)} object`, body.errors);
-                        let lookupCymErrors = [];
-                        for (const [key, value] of Object.entries(body.errors)) {
-                          lookupCymErrors.push({ key: key, value: value });
-                        }
-
-                        if (lookupCymErrors.length > 0) setAltLanguageError(lookupCymErrors[0].value);
-                        else setAltLanguageError(null);
-                      });
-                      break;
-
-                    case 401:
-                      res.json().then((body) => {
-                        console.error(`[401 ERROR] Creating ${GetVariantString(data.variant)} object`, body);
-                      });
-                      break;
-
-                    case 500:
-                      console.error(`[500 ERROR] Creating ${GetVariantString(data.variant)} object`, res);
-                      break;
-
-                    default:
-                      console.error(`[${res.status} ERROR] Creating ${GetVariantString(data.variant)} object`, res);
-                      break;
-                  }
-                });
-            }
-
-            if (newCymLookup) newEngLookup = UpdateEngLinkedRef(newEngLookup, newCymLookup);
-          }
-
-          if (canHaveMultiLanguage && settingsContext.isScottish) {
-            lookupAdded = false;
-            const gaeData = getGaePostData(newEngLookup);
-            // if (process.env.NODE_ENV === "development")
-            console.log("[DEBUG] handleDoneAddLookup", {
-              lookupUrl: lookupUrl,
-              language: "GAE",
-              JSON: JSON.stringify(gaeData),
-            });
-            if (gaeData) {
-              await fetch(lookupUrl.url, {
-                headers: lookupUrl.headers,
-                crossDomain: true,
-                method: lookupUrl.type,
-                body: JSON.stringify(gaeData),
-              })
-                .then((res) => (res.ok ? res : Promise.reject(res)))
-                .then((res) => res.json())
-                .then((result) => {
-                  newGaeLookup = result;
-                  lookupAdded = true;
-                })
-                .catch((res) => {
-                  switch (res.status) {
-                    case 400:
-                      res.json().then((body) => {
-                        console.error(`[400 ERROR] Creating ${GetVariantString(data.variant)} object`, body.errors);
-                        let lookupGaeErrors = [];
-                        for (const [key, value] of Object.entries(body.errors)) {
-                          lookupGaeErrors.push({ key: key, value: value });
-                        }
-
-                        if (lookupGaeErrors.length > 0) setAltLanguageError(lookupGaeErrors[0].value);
-                        else setAltLanguageError(null);
-                      });
-                      break;
-
-                    case 401:
-                      res.json().then((body) => {
-                        console.error(`[401 ERROR] Creating ${GetVariantString(data.variant)} object`, body);
-                      });
-                      break;
-
-                    case 500:
-                      console.error(`[500 ERROR] Creating ${GetVariantString(data.variant)} object`, res);
-                      break;
-
-                    default:
-                      console.error(`[${res.status} ERROR] Creating ${GetVariantString(data.variant)} object`, res);
-                      break;
-                  }
-                });
-            }
-
-            if (newGaeLookup) newEngLookup = UpdateEngLinkedRef(newEngLookup, newGaeLookup);
-          }
-
-          if (lookupAdded) {
-            const updatedLookups = GetOldLookups(data.variant);
-
-            if (updatedLookups) {
-              if (newEngLookup) updatedLookups.push(newEngLookup);
-              if (newCymLookup) updatedLookups.push(newCymLookup);
-              if (newGaeLookup) updatedLookups.push(newGaeLookup);
-
-              if (updatedLookups.length > 0) UpdateLookups(data.variant, updatedLookups);
-            }
-            addResult.current = true;
-          } else addResult.current = false;
-        }
-      }
-    }
+    if (addResults && addResults.result) {
+      if (addResults.updatedLookups && addResults.updatedLookups.length > 0)
+        lookupContext.onUpdateLookup(data.variant, addResults.updatedLookups);
+      addResult.current = true;
+    } else addResult.current = false;
+    setEngError(addResults ? addResults.engError : null);
+    setAltLanguageError(addResults ? addResults.altLanguageError : null);
 
     setAddOpen(addResult.current);
     setShowAddDialog(!addResult.current);
@@ -2731,10 +2153,10 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
   const handleDoneEditLookup = async (data) => {
     const linkedRef = GetLinkedRef(data.variant, data.lookupData.lookupId);
-    const lookupUrl = GetLookupUrl(data.variant, "PUT");
+    const lookupUrl = GetLookupUrl(data.variant, "PUT", userContext.currentUser.token, settingsContext.authorityCode);
     let lookupEdited = false;
 
-    currentVariant.current = GetVariantString(data.variant);
+    currentVariant.current = getLookupVariantString(data.variant);
 
     const getEngPutData = () => {
       if (data.lookupData) {
@@ -3288,7 +2710,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.error(`[400 ERROR] Updating ${GetVariantString(data.variant)} object`, body.errors);
+                  console.error(`[400 ERROR] Updating ${getLookupVariantString(data.variant)} object`, body.errors);
                   let lookupEngErrors = [];
                   for (const [key, value] of Object.entries(body.errors)) {
                     lookupEngErrors.push({ key: key, value: value });
@@ -3301,16 +2723,16 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
               case 401:
                 res.json().then((body) => {
-                  console.error(`[401 ERROR] Updating ${GetVariantString(data.variant)} object`, body);
+                  console.error(`[401 ERROR] Updating ${getLookupVariantString(data.variant)} object`, body);
                 });
                 break;
 
               case 500:
-                console.error(`[500 ERROR] Updating ${GetVariantString(data.variant)} object`, res);
+                console.error(`[500 ERROR] Updating ${getLookupVariantString(data.variant)} object`, res);
                 break;
 
               default:
-                console.error(`[${res.status} ERROR] Updating ${GetVariantString(data.variant)} object`, res);
+                console.error(`[${res.status} ERROR] Updating ${getLookupVariantString(data.variant)} object`, res);
                 break;
             }
           });
@@ -3346,7 +2768,10 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                   switch (res.status) {
                     case 400:
                       res.json().then((body) => {
-                        console.error(`[400 ERROR] Updating ${GetVariantString(data.variant)} object`, body.errors);
+                        console.error(
+                          `[400 ERROR] Updating ${getLookupVariantString(data.variant)} object`,
+                          body.errors
+                        );
                         let lookupCymErrors = [];
                         for (const [key, value] of Object.entries(body.errors)) {
                           lookupCymErrors.push({ key: key, value: value });
@@ -3359,16 +2784,19 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
                     case 401:
                       res.json().then((body) => {
-                        console.error(`[401 ERROR] Updating ${GetVariantString(data.variant)} object`, body);
+                        console.error(`[401 ERROR] Updating ${getLookupVariantString(data.variant)} object`, body);
                       });
                       break;
 
                     case 500:
-                      console.error(`[500 ERROR] Updating ${GetVariantString(data.variant)} object`, res);
+                      console.error(`[500 ERROR] Updating ${getLookupVariantString(data.variant)} object`, res);
                       break;
 
                     default:
-                      console.error(`[${res.status} ERROR] Updating ${GetVariantString(data.variant)} object`, res);
+                      console.error(
+                        `[${res.status} ERROR] Updating ${getLookupVariantString(data.variant)} object`,
+                        res
+                      );
                       break;
                   }
                 });
@@ -3396,7 +2824,10 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                   switch (res.status) {
                     case 400:
                       res.json().then((body) => {
-                        console.error(`[400 ERROR] Updating ${GetVariantString(data.variant)} object`, body.errors);
+                        console.error(
+                          `[400 ERROR] Updating ${getLookupVariantString(data.variant)} object`,
+                          body.errors
+                        );
                         let lookupGaeErrors = [];
                         for (const [key, value] of Object.entries(body.errors)) {
                           lookupGaeErrors.push({ key: key, value: value });
@@ -3409,16 +2840,19 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
                     case 401:
                       res.json().then((body) => {
-                        console.error(`[401 ERROR] Updating ${GetVariantString(data.variant)} object`, body);
+                        console.error(`[401 ERROR] Updating ${getLookupVariantString(data.variant)} object`, body);
                       });
                       break;
 
                     case 500:
-                      console.error(`[500 ERROR] Updating ${GetVariantString(data.variant)} object`, res);
+                      console.error(`[500 ERROR] Updating ${getLookupVariantString(data.variant)} object`, res);
                       break;
 
                     default:
-                      console.error(`[${res.status} ERROR] Updating ${GetVariantString(data.variant)} object`, res);
+                      console.error(
+                        `[${res.status} ERROR] Updating ${getLookupVariantString(data.variant)} object`,
+                        res
+                      );
                       break;
                   }
                 });
@@ -3427,7 +2861,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
           if (lookupEdited) {
             if (data.variant !== "dbAuthority") {
-              const oldLookups = GetOldLookups(data.variant);
+              const oldLookups = GetOldLookups(data.variant, lookupContext.currentLookups);
               let updatedLookups = null;
 
               if (oldLookups) {
@@ -3439,13 +2873,14 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                   updatedLookups = updateSingleLookups(data.variant, data.lookupData.lookupId, newEngLookup);
                 }
 
-                if (updatedLookups && updatedLookups.length > 0) UpdateLookups(data.variant, updatedLookups);
+                if (updatedLookups && updatedLookups.length > 0)
+                  lookupContext.onUpdateLookup(data.variant, updatedLookups);
               }
               editResult.current = true;
             }
             //dbAuthority can edit the Id so handle separately
             else {
-              const oldLookups = GetOldLookups(data.variant);
+              const oldLookups = GetOldLookups(data.variant, lookupContext.currentLookups);
               const updatedLookups = oldLookups.filter((x) => x.authorityRef !== data.lookupData.lookupId);
               updatedLookups.push({
                 authorityRef: data.lookupData.dbAuthorityRefCurrent,
@@ -3453,7 +2888,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 minUsrn: data.lookupData.dbAuthorityMinUsrn,
                 maxUsrn: data.lookupData.dbAuthorityMaxUsrn,
               });
-              UpdateLookups(data.variant, updatedLookups);
+              lookupContext.onUpdateLookup(data.variant, updatedLookups);
               editResult.current = true;
             }
           } else editResult.current = false;
@@ -3471,10 +2906,10 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
   const handleDeleteLookup = async (variant, lookupId) => {
     const linkedRef = GetLinkedRef(variant, lookupId);
-    const lookupUrl = GetLookupUrl(variant, "DELETE");
+    const lookupUrl = GetLookupUrl(variant, "DELETE", userContext.currentUser.token, settingsContext.authorityCode);
     let lookupDeleted = false;
 
-    currentVariant.current = GetVariantString(variant);
+    currentVariant.current = getLookupVariantString(variant);
 
     if (lookupUrl) {
       await fetch(`${lookupUrl.url}/${lookupId}`, {
@@ -3564,14 +2999,14 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 break;
 
               default:
-                console.error(`[${res.status} ERROR] Deleting ${GetVariantString(variant)} object`, res);
+                console.error(`[${res.status} ERROR] Deleting ${getLookupVariantString(variant)} object`, res);
                 break;
             }
           });
       }
 
       if (lookupDeleted) {
-        const oldLookups = GetOldLookups(variant);
+        const oldLookups = GetOldLookups(variant, lookupContext.currentLookups);
         let updatedLookups;
 
         if (oldLookups) {
@@ -3665,7 +3100,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
             }
           }
 
-          if (updatedLookups.length > 0) UpdateLookups(variant, updatedLookups);
+          if (updatedLookups.length > 0) lookupContext.onUpdateLookup(variant, updatedLookups);
         }
         deleteResult.current = true;
       } else deleteResult.current = false;
@@ -3677,10 +3112,10 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
   const handleHistoricLookup = async (variant, lookupId) => {
     const linkedRef = GetLinkedRef(variant, lookupId);
-    const lookupUrl = GetLookupUrl(variant, "PUT");
+    const lookupUrl = GetLookupUrl(variant, "PUT", userContext.currentUser.token, settingsContext.authorityCode);
     let lookupEdited = false;
 
-    currentVariant.current = GetVariantString(variant);
+    currentVariant.current = getLookupVariantString(variant);
 
     const getEngPutData = () => {
       switch (variant) {
@@ -4274,7 +3709,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
           switch (res.status) {
             case 400:
               res.json().then((body) => {
-                console.error(`[400 ERROR] Updating ${GetVariantString(variant)} object`, body.errors);
+                console.error(`[400 ERROR] Updating ${getLookupVariantString(variant)} object`, body.errors);
                 let lookupEngErrors = [];
                 for (const [key, value] of Object.entries(body.errors)) {
                   lookupEngErrors.push({ key: key, value: value });
@@ -4287,16 +3722,16 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
             case 401:
               res.json().then((body) => {
-                console.error(`[401 ERROR] Updating ${GetVariantString(variant)} object`, body);
+                console.error(`[401 ERROR] Updating ${getLookupVariantString(variant)} object`, body);
               });
               break;
 
             case 500:
-              console.error(`[500 ERROR] Updating ${GetVariantString(variant)} object`, res);
+              console.error(`[500 ERROR] Updating ${getLookupVariantString(variant)} object`, res);
               break;
 
             default:
-              console.error(`[${res.status} ERROR] Updating ${GetVariantString(variant)} object`, res);
+              console.error(`[${res.status} ERROR] Updating ${getLookupVariantString(variant)} object`, res);
               break;
           }
         });
@@ -4332,7 +3767,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 switch (res.status) {
                   case 400:
                     res.json().then((body) => {
-                      console.error(`[400 ERROR] Updating ${GetVariantString(variant)} object`, body.errors);
+                      console.error(`[400 ERROR] Updating ${getLookupVariantString(variant)} object`, body.errors);
                       let lookupCymErrors = [];
                       for (const [key, value] of Object.entries(body.errors)) {
                         lookupCymErrors.push({ key: key, value: value });
@@ -4345,16 +3780,16 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
                   case 401:
                     res.json().then((body) => {
-                      console.error(`[401 ERROR] Updating ${GetVariantString(variant)} object`, body);
+                      console.error(`[401 ERROR] Updating ${getLookupVariantString(variant)} object`, body);
                     });
                     break;
 
                   case 500:
-                    console.error(`[500 ERROR] Updating ${GetVariantString(variant)} object`, res);
+                    console.error(`[500 ERROR] Updating ${getLookupVariantString(variant)} object`, res);
                     break;
 
                   default:
-                    console.error(`[${res.status} ERROR] Updating ${GetVariantString(variant)} object`, res);
+                    console.error(`[${res.status} ERROR] Updating ${getLookupVariantString(variant)} object`, res);
                     break;
                 }
               });
@@ -4382,7 +3817,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 switch (res.status) {
                   case 400:
                     res.json().then((body) => {
-                      console.error(`[400 ERROR] Updating ${GetVariantString(variant)} object`, body.errors);
+                      console.error(`[400 ERROR] Updating ${getLookupVariantString(variant)} object`, body.errors);
                       let lookupGaeErrors = [];
                       for (const [key, value] of Object.entries(body.errors)) {
                         lookupGaeErrors.push({ key: key, value: value });
@@ -4395,16 +3830,16 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
                   case 401:
                     res.json().then((body) => {
-                      console.error(`[401 ERROR] Updating ${GetVariantString(variant)} object`, body);
+                      console.error(`[401 ERROR] Updating ${getLookupVariantString(variant)} object`, body);
                     });
                     break;
 
                   case 500:
-                    console.error(`[500 ERROR] Updating ${GetVariantString(variant)} object`, res);
+                    console.error(`[500 ERROR] Updating ${getLookupVariantString(variant)} object`, res);
                     break;
 
                   default:
-                    console.error(`[${res.status} ERROR] Updating ${GetVariantString(variant)} object`, res);
+                    console.error(`[${res.status} ERROR] Updating ${getLookupVariantString(variant)} object`, res);
                     break;
                 }
               });
@@ -4412,7 +3847,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
         }
 
         if (lookupEdited) {
-          const oldLookups = GetOldLookups(variant);
+          const oldLookups = GetOldLookups(variant, lookupContext.currentLookups);
           let updatedLookups = null;
 
           if (oldLookups) {
@@ -4424,7 +3859,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
               updatedLookups = updateSingleLookups(variant, lookupId, newEngLookup);
             }
 
-            if (updatedLookups && updatedLookups.length > 0) UpdateLookups(variant, updatedLookups);
+            if (updatedLookups && updatedLookups.length > 0) lookupContext.onUpdateLookup(variant, updatedLookups);
           }
           editResult.current = true;
         } else editResult.current = false;

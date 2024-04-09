@@ -42,6 +42,7 @@
 //    029   28.03.24 Sean Flook                 Modified GetChangedAssociatedRecords to fully check all ESUs if geometryTypeChanged is true.
 //    030   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //    031   04.04.24 Sean Flook       IMANN-320 Added error trapping for GetChangedAssociatedRecords.
+//    032   09.04.24 Sean Flook       IMANN-376 Added new methods to allow for adding lookups on the fly.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -52,7 +53,22 @@ import LookupContext from "../context/lookupContext";
 import proj4 from "proj4";
 import Wkt from "wicket";
 import { encode } from "iso-8859-14";
-import { GetWhoAmIUrl, HasASD } from "../configuration/ADSConfig";
+import {
+  GetAdministrativeAreaUrl,
+  GetAppCrossRefUrl,
+  GetDbAuthorityUrl,
+  GetIslandUrl,
+  GetLocalityUrl,
+  GetOperationalDistrictUrl,
+  GetParishesForAuthorityUrl,
+  GetPostTownUrl,
+  GetPostcodeUrl,
+  GetSubLocalityUrl,
+  GetTownUrl,
+  GetWardsForAuthorityUrl,
+  GetWhoAmIUrl,
+  HasASD,
+} from "../configuration/ADSConfig";
 import ObjectComparison, {
   EsusComparison,
   blpuAppCrossRefKeysToIgnore,
@@ -1911,4 +1927,646 @@ export const renderErrorListItem = (rec) => {
 export const shorten = (str, maxLen, separator = " ") => {
   if (!str || str.length <= maxLen) return str;
   return str.substring(0, str.lastIndexOf(separator, maxLen));
+};
+
+/**
+ * Method used to return a readable form of the variant string.
+ *
+ * @param {string} variant The lookup variant to return the string for.
+ * @returns {string} The readable form of the variant.
+ */
+export const getLookupVariantString = (variant) => {
+  switch (variant) {
+    case "postTown":
+      return "post town";
+
+    case "subLocality":
+      return "sub-locality";
+
+    case "crossReference":
+      return "cross reference";
+
+    case "administrativeArea":
+      return "administrative area";
+
+    case "operationalDistrict":
+      return "operational district";
+
+    default:
+      return variant;
+  }
+};
+
+/**
+ * Method to return the URL data for a specific lookup type and endpoint.
+ *
+ * @param {string} variant The type of lookup that we need the URL data for.
+ * @param {string} endPointType The type of end point we need the URL data for.
+ * @param {string} userToken The token for the user who is calling the function.
+ * @param {number} authorityCode The DETR code for the authority.
+ * @returns {object} The required URL data for the required lookup endpoint.
+ */
+export function GetLookupUrl(variant, endPointType, userToken, authorityCode) {
+  switch (variant) {
+    case "postcode":
+      return GetPostcodeUrl(endPointType, userToken);
+
+    case "postTown":
+      return GetPostTownUrl(endPointType, userToken);
+
+    case "subLocality":
+      return GetSubLocalityUrl(endPointType, userToken);
+
+    case "crossReference":
+      return GetAppCrossRefUrl(endPointType, userToken);
+
+    case "locality":
+      return GetLocalityUrl(endPointType, userToken);
+
+    case "town":
+      return GetTownUrl(endPointType, userToken);
+
+    case "island":
+      return GetIslandUrl(endPointType, userToken);
+
+    case "administrativeArea":
+      return GetAdministrativeAreaUrl(endPointType, userToken);
+
+    case "dbAuthority":
+      return GetDbAuthorityUrl(endPointType, userToken);
+
+    case "ward":
+      return GetWardsForAuthorityUrl(endPointType, userToken, authorityCode);
+
+    case "parish":
+      return GetParishesForAuthorityUrl(endPointType, userToken, authorityCode);
+
+    case "operationalDistrict":
+      return GetOperationalDistrictUrl(endPointType, userToken);
+
+    default:
+      return null;
+  }
+}
+
+/**
+ * Method to get the current lookups.
+ *
+ * @param {string} variant The type of lookup that we need to old data for.
+ * @param {object} currentLookups The list of current lookups to get.
+ * @returns {array} The list of current lookups.
+ */
+export function GetOldLookups(variant, currentLookups) {
+  switch (variant) {
+    case "postcode":
+      return JSON.parse(JSON.stringify(currentLookups.postcodes));
+
+    case "postTown":
+      return JSON.parse(JSON.stringify(currentLookups.postTowns));
+
+    case "subLocality":
+      return JSON.parse(JSON.stringify(currentLookups.subLocalities));
+
+    case "crossReference":
+      return JSON.parse(JSON.stringify(currentLookups.appCrossRefs));
+
+    case "locality":
+      return JSON.parse(JSON.stringify(currentLookups.localities));
+
+    case "town":
+      return JSON.parse(JSON.stringify(currentLookups.towns));
+
+    case "island":
+      return JSON.parse(JSON.stringify(currentLookups.islands));
+
+    case "administrativeArea":
+      return JSON.parse(JSON.stringify(currentLookups.adminAuthorities));
+
+    case "ward":
+      return JSON.parse(JSON.stringify(currentLookups.wards));
+
+    case "parish":
+      return JSON.parse(JSON.stringify(currentLookups.parishes));
+
+    case "dbAuthority":
+      return JSON.parse(JSON.stringify(currentLookups.dbAuthorities));
+
+    case "operationalDistrict":
+      return JSON.parse(JSON.stringify(currentLookups.operationalDistricts));
+
+    default:
+      return null;
+  }
+}
+
+export const addLookup = async (data, authorityCode, userToken, isWelsh, isScottish, currentLookups) => {
+  let lookupAdded = false;
+  let engError = null;
+  let altLanguageError = null;
+
+  const getEngPostData = () => {
+    if (data.lookupData) {
+      switch (data.variant) {
+        case "postcode":
+          return { postcode: data.lookupData.postcode, historic: data.lookupData.historic };
+
+        case "postTown":
+          return {
+            postTown: data.lookupData.english,
+            historic: data.lookupData.historic,
+            language: "ENG",
+            linkedRef: -1,
+          };
+
+        case "subLocality":
+          return {
+            subLocality: data.lookupData.english,
+            historic: data.lookupData.historic,
+            language: "ENG",
+            linkedRef: -1,
+          };
+
+        case "crossReference":
+          return {
+            xrefSourceRef: null,
+            altXrefSourceRef: null,
+            xrefSourceRef73: data.lookupData.xrefSourceRef73,
+            iSearchWebLinkUrl: null,
+            enabled: data.lookupData.enabled,
+            historic: data.lookupData.historic,
+            showSourceiSearchWeb: null,
+            showXrefiSearchWeb: null,
+            export: data.lookupData.export,
+          };
+
+        case "locality":
+          return {
+            locality: data.lookupData.english,
+            historic: data.lookupData.historic,
+            language: "ENG",
+            linkedRef: -1,
+          };
+
+        case "town":
+          return {
+            town: data.lookupData.english,
+            historic: data.lookupData.historic,
+            language: "ENG",
+            linkedRef: -1,
+          };
+
+        case "island":
+          return {
+            island: data.lookupData.english,
+            historic: data.lookupData.historic,
+            language: "ENG",
+            linkedRef: -1,
+          };
+
+        case "administrativeArea":
+          return {
+            administrativeArea: data.lookupData.english,
+            historic: data.lookupData.historic,
+            language: "ENG",
+            linkedRef: -1,
+          };
+
+        case "ward":
+          return {
+            wardCode: data.lookupData.wardCode,
+            ward: data.lookupData.ward,
+            detrCode: authorityCode ? authorityCode : null,
+            historic: data.lookupData.historic,
+          };
+
+        case "parish":
+          return {
+            parishCode: data.lookupData.parishCode,
+            parish: data.lookupData.parish,
+            detrCode: authorityCode ? authorityCode : null,
+            historic: data.lookupData.historic,
+          };
+
+        case "dbAuthority":
+          return {
+            authorityRef: data.lookupData.dbAuthorityRef,
+            authorityName: data.lookupData.dbAuthorityName,
+            minUsrn: data.lookupData.dbAuthorityMinUsrn,
+            maxUsrn: data.lookupData.dbAuthorityMaxUsrn,
+          };
+
+        case "operationalDistrict":
+          return {
+            organisationId: data.lookupData.organisationId,
+            districtName: data.lookupData.districtName,
+            lastUpdateDate: data.lookupData.lastUpdateDate,
+            districtId: data.lookupData.districtId,
+            districtFunction: data.lookupData.districtFunction,
+            districtClosed: data.lookupData.districtClosed,
+            districtFtpServerName: data.lookupData.districtFtpServerName,
+            districtServerIpAddress: data.lookupData.districtServerIpAddress,
+            districtFtpDirectory: data.lookupData.districtFtpDirectory,
+            districtNotificationsUrl: data.lookupData.districtNotificationsUrl,
+            attachmentUrlPrefix: data.lookupData.attachmentUrlPrefix,
+            districtFaxNo: data.lookupData.districtFaxNo,
+            districtPostcode: data.lookupData.districtPostcode,
+            districtTelNo: data.lookupData.districtTelNo,
+            outOfHoursArrangements: data.lookupData.outOfHoursArrangements,
+            fpnDeliveryUrl: data.lookupData.fpnDeliveryUrl,
+            fpnFaxNumber: data.lookupData.fpnFaxNumber,
+            fpnDeliveryPostcode: data.lookupData.fpnDeliveryPostcode,
+            fpnPaymentUrl: data.lookupData.fpnPaymentUrl,
+            fpnPaymentTelNo: data.lookupData.fpnPaymentTelNo,
+            fpnPaymentBankName: data.lookupData.fpnPaymentBankName,
+            fpnPaymentSortCode: data.lookupData.fpnPaymentSortCode,
+            fpnPaymentAccountNo: data.lookupData.fpnPaymentAccountNo,
+            fpnPaymentAccountName: data.lookupData.fpnPaymentAccountName,
+            fpnPaymentPostcode: data.lookupData.fpnPaymentPostcode,
+            fpnContactName: data.lookupData.fpnContactName,
+            fpnContactPostcode: data.lookupData.fpnContactPostcode,
+            fpnContactTelNo: data.lookupData.fpnContactTelNo,
+            districtPostalAddress1: data.lookupData.districtPostalAddress1,
+            districtPostalAddress2: data.lookupData.districtPostalAddress2,
+            districtPostalAddress3: data.lookupData.districtPostalAddress3,
+            districtPostalAddress4: data.lookupData.districtPostalAddress4,
+            districtPostalAddress5: data.lookupData.districtPostalAddress5,
+            fpnDeliveryAddress1: data.lookupData.fpnDeliveryAddress1,
+            fpnDeliveryAddress2: data.lookupData.fpnDeliveryAddress2,
+            fpnDeliveryAddress3: data.lookupData.fpnDeliveryAddress3,
+            fpnDeliveryAddress4: data.lookupData.fpnDeliveryAddress4,
+            fpnDeliveryAddress5: data.lookupData.fpnDeliveryAddress5,
+            fpnContactAddress1: data.lookupData.fpnContactAddress1,
+            fpnContactAddress2: data.lookupData.fpnContactAddress2,
+            fpnContactAddress3: data.lookupData.fpnContactAddress3,
+            fpnContactAddress4: data.lookupData.fpnContactAddress4,
+            fpnContactAddress5: data.lookupData.fpnContactAddress5,
+            fpnPaymentAddress1: data.lookupData.fpnPaymentAddress1,
+            fpnPaymentAddress2: data.lookupData.fpnPaymentAddress2,
+            fpnPaymentAddress3: data.lookupData.fpnPaymentAddress3,
+            fpnPaymentAddress4: data.lookupData.fpnPaymentAddress4,
+            fpnPaymentAddress5: data.lookupData.fpnPaymentAddress5,
+            fpnDeliveryEmailAddress: data.lookupData.fpnDeliveryEmailAddress,
+            districtPermitSchemeId: data.lookupData.districtPermitSchemeId,
+            historic: data.lookupData.historic,
+          };
+
+        default:
+          return null;
+      }
+    } else return null;
+  };
+
+  const getCymPostData = (newEngLookup) => {
+    if (data.lookupData && data.lookupData.welsh) {
+      switch (data.variant) {
+        case "postTown":
+          return {
+            postTown: data.lookupData.welsh,
+            historic: data.lookupData.historic,
+            language: "CYM",
+            linkedRef: newEngLookup && newEngLookup.postTownRef ? newEngLookup.postTownRef : -1,
+          };
+
+        case "locality":
+          return {
+            locality: data.lookupData.welsh,
+            historic: data.lookupData.historic,
+            language: "CYM",
+            linkedRef: newEngLookup && newEngLookup.localityRef ? newEngLookup.localityRef : -1,
+          };
+
+        case "town":
+          return {
+            town: data.lookupData.welsh,
+            historic: data.lookupData.historic,
+            language: "CYM",
+            linkedRef: newEngLookup && newEngLookup.townRef ? newEngLookup.townRef : -1,
+          };
+
+        case "administrativeArea":
+          return {
+            administrativeArea: data.lookupData.welsh,
+            historic: data.lookupData.historic,
+            language: "CYM",
+            linkedRef: newEngLookup && newEngLookup.administrativeAreaRef ? newEngLookup.administrativeAreaRef : -1,
+          };
+
+        default:
+          return null;
+      }
+    } else return null;
+  };
+
+  const getGaePostData = (newEngLookup) => {
+    if (data.lookupData && data.lookupData.gaelic) {
+      switch (data.variant) {
+        case "postTown":
+          return {
+            postTown: data.lookupData.gaelic,
+            historic: data.lookupData.historic,
+            language: "GAE",
+            linkedRef: newEngLookup && newEngLookup.postTownRef ? newEngLookup.postTownRef : -1,
+          };
+
+        case "subLocality":
+          return {
+            subLocality: data.lookupData.gaelic,
+            historic: data.lookupData.historic,
+            language: "GAE",
+            linkedRef: newEngLookup && newEngLookup.subLocalityRef ? newEngLookup.subLocalityRef : -1,
+          };
+
+        case "locality":
+          return {
+            locality: data.lookupData.gaelic,
+            historic: data.lookupData.historic,
+            language: "GAE",
+            linkedRef: newEngLookup && newEngLookup.localityRef ? newEngLookup.localityRef : -1,
+          };
+
+        case "town":
+          return {
+            town: data.lookupData.gaelic,
+            historic: data.lookupData.historic,
+            language: "GAE",
+            linkedRef: newEngLookup && newEngLookup.townRef ? newEngLookup.townRef : -1,
+          };
+
+        case "island":
+          return {
+            island: data.lookupData.gaelic,
+            historic: data.lookupData.historic,
+            language: "GAE",
+            linkedRef: newEngLookup && newEngLookup.islandRef ? newEngLookup.islandRef : -1,
+          };
+
+        case "administrativeArea":
+          return {
+            administrativeArea: data.lookupData.gaelic,
+            historic: data.lookupData.historic,
+            language: "GAE",
+            linkedRef: newEngLookup && newEngLookup.administrativeAreaRef ? newEngLookup.administrativeAreaRef : -1,
+          };
+
+        default:
+          return null;
+      }
+    } else return null;
+  };
+
+  function UpdateEngLinkedRef(engLookup, linkedLookup) {
+    if (engLookup && linkedLookup) {
+      switch (data.variant) {
+        case "postTown":
+          return { ...engLookup, linkedRef: linkedLookup.postTownRef };
+
+        case "subLocality":
+          return { ...engLookup, linkedRef: linkedLookup.subLocalityRef };
+
+        case "locality":
+          return { ...engLookup, linkedRef: linkedLookup.localityRef };
+
+        case "town":
+          return { ...engLookup, linkedRef: linkedLookup.townRef };
+
+        case "island":
+          return { ...engLookup, linkedRef: linkedLookup.islandRef };
+
+        case "administrativeArea":
+          return { ...engLookup, linkedRef: linkedLookup.administrativeAreaRef };
+
+        default:
+          return engLookup;
+      }
+    } else return engLookup;
+  }
+
+  if (data) {
+    const lookupUrl = GetLookupUrl(data.variant, "POST", userToken, authorityCode);
+
+    // if (process.env.NODE_ENV === "development")
+    console.log("[DEBUG] handleDoneAddLookup", {
+      lookupUrl: lookupUrl,
+      language: "ENG",
+      JSON: JSON.stringify(getEngPostData()),
+    });
+    let newEngLookup = null;
+    let newCymLookup = null;
+    let newGaeLookup = null;
+
+    if (lookupUrl) {
+      await fetch(lookupUrl.url, {
+        headers: lookupUrl.headers,
+        crossDomain: true,
+        method: lookupUrl.type,
+        body: JSON.stringify(getEngPostData()),
+      })
+        .then((res) => (res.ok ? res : Promise.reject(res)))
+        .then((res) => res.json())
+        .then((result) => {
+          newEngLookup = result;
+          lookupAdded = true;
+        })
+        .catch((res) => {
+          switch (res.status) {
+            case 400:
+              res.json().then((body) => {
+                console.error(`[400 ERROR] Creating ${getLookupVariantString(data.variant)} object`, body.errors);
+                let lookupEngErrors = [];
+                for (const [key, value] of Object.entries(body.errors)) {
+                  lookupEngErrors.push({ key: key, value: value });
+                }
+
+                if (lookupEngErrors.length > 0) engError = lookupEngErrors[0].value;
+                else engError = null;
+              });
+              break;
+
+            case 401:
+              res.json().then((body) => {
+                console.error(`[401 ERROR] Creating ${getLookupVariantString(data.variant)} object`, body);
+              });
+              break;
+
+            case 500:
+              console.error(`[500 ERROR] Creating ${getLookupVariantString(data.variant)} object`, res);
+              break;
+
+            default:
+              console.error(`[${res.status} ERROR] Creating ${getLookupVariantString(data.variant)} object`, res);
+              break;
+          }
+        });
+
+      if (newEngLookup) {
+        const canHaveMultiLanguage = [
+          "postTown",
+          "subLocality",
+          "locality",
+          "town",
+          "island",
+          "administrativeArea",
+        ].includes(data.variant);
+        if (canHaveMultiLanguage && isWelsh) {
+          lookupAdded = false;
+          const cymData = getCymPostData(newEngLookup);
+          // if (process.env.NODE_ENV === "development")
+          console.log("[DEBUG] handleDoneAddLookup", {
+            lookupUrl: lookupUrl,
+            language: "CYM",
+            JSON: JSON.stringify(cymData),
+          });
+          if (cymData) {
+            await fetch(lookupUrl.url, {
+              headers: lookupUrl.headers,
+              crossDomain: true,
+              method: lookupUrl.type,
+              body: JSON.stringify(cymData),
+            })
+              .then((res) => (res.ok ? res : Promise.reject(res)))
+              .then((res) => res.json())
+              .then((result) => {
+                newCymLookup = result;
+                lookupAdded = true;
+              })
+              .catch((res) => {
+                switch (res.status) {
+                  case 400:
+                    res.json().then((body) => {
+                      console.error(`[400 ERROR] Creating ${getLookupVariantString(data.variant)} object`, body.errors);
+                      let lookupCymErrors = [];
+                      for (const [key, value] of Object.entries(body.errors)) {
+                        lookupCymErrors.push({ key: key, value: value });
+                      }
+
+                      if (lookupCymErrors.length > 0) altLanguageError = lookupCymErrors[0].value;
+                      else altLanguageError = null;
+                    });
+                    break;
+
+                  case 401:
+                    res.json().then((body) => {
+                      console.error(`[401 ERROR] Creating ${getLookupVariantString(data.variant)} object`, body);
+                    });
+                    break;
+
+                  case 500:
+                    console.error(`[500 ERROR] Creating ${getLookupVariantString(data.variant)} object`, res);
+                    break;
+
+                  default:
+                    console.error(`[${res.status} ERROR] Creating ${getLookupVariantString(data.variant)} object`, res);
+                    break;
+                }
+              });
+          }
+
+          if (newCymLookup) newEngLookup = UpdateEngLinkedRef(newEngLookup, newCymLookup);
+        }
+
+        if (canHaveMultiLanguage && isScottish) {
+          lookupAdded = false;
+          const gaeData = getGaePostData(newEngLookup);
+          // if (process.env.NODE_ENV === "development")
+          console.log("[DEBUG] handleDoneAddLookup", {
+            lookupUrl: lookupUrl,
+            language: "GAE",
+            JSON: JSON.stringify(gaeData),
+          });
+          if (gaeData) {
+            await fetch(lookupUrl.url, {
+              headers: lookupUrl.headers,
+              crossDomain: true,
+              method: lookupUrl.type,
+              body: JSON.stringify(gaeData),
+            })
+              .then((res) => (res.ok ? res : Promise.reject(res)))
+              .then((res) => res.json())
+              .then((result) => {
+                newGaeLookup = result;
+                lookupAdded = true;
+              })
+              .catch((res) => {
+                switch (res.status) {
+                  case 400:
+                    res.json().then((body) => {
+                      console.error(`[400 ERROR] Creating ${getLookupVariantString(data.variant)} object`, body.errors);
+                      let lookupGaeErrors = [];
+                      for (const [key, value] of Object.entries(body.errors)) {
+                        lookupGaeErrors.push({ key: key, value: value });
+                      }
+
+                      if (lookupGaeErrors.length > 0) altLanguageError = lookupGaeErrors[0].value;
+                      else altLanguageError = null;
+                    });
+                    break;
+
+                  case 401:
+                    res.json().then((body) => {
+                      console.error(`[401 ERROR] Creating ${getLookupVariantString(data.variant)} object`, body);
+                    });
+                    break;
+
+                  case 500:
+                    console.error(`[500 ERROR] Creating ${getLookupVariantString(data.variant)} object`, res);
+                    break;
+
+                  default:
+                    console.error(`[${res.status} ERROR] Creating ${getLookupVariantString(data.variant)} object`, res);
+                    break;
+                }
+              });
+          }
+
+          if (newGaeLookup) newEngLookup = UpdateEngLinkedRef(newEngLookup, newGaeLookup);
+        }
+
+        const updatedLookups = GetOldLookups(data.variant, currentLookups);
+
+        if (lookupAdded) {
+          if (updatedLookups) {
+            if (newEngLookup) updatedLookups.push(newEngLookup);
+            if (newCymLookup) updatedLookups.push(newCymLookup);
+            if (newGaeLookup) updatedLookups.push(newGaeLookup);
+          }
+
+          return {
+            newLookup: newEngLookup,
+            updatedLookups: updatedLookups,
+            engError: engError,
+            altLanguageError: altLanguageError,
+            result: true,
+          };
+        } else
+          return {
+            newLookup: newEngLookup,
+            updatedLookups: updatedLookups,
+            engError: engError,
+            altLanguageError: altLanguageError,
+            result: false,
+          };
+      } else
+        return {
+          newLookup: newEngLookup,
+          updatedLookups: null,
+          engError: engError,
+          altLanguageError: altLanguageError,
+          result: false,
+        };
+    } else
+      return {
+        newLookup: newEngLookup,
+        updatedLookups: null,
+        engError: engError,
+        altLanguageError: altLanguageError,
+        result: false,
+      };
+  } else
+    return {
+      newLookup: null,
+      updatedLookups: null,
+      engError: engError,
+      altLanguageError: altLanguageError,
+      result: false,
+    };
 };

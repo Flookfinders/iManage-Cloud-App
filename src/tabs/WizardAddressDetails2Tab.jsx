@@ -21,6 +21,7 @@
 //    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    009   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
 //    010   23.02.24 Joel Benford     IMANN-287 Correct hover blue
+//    011   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,6 +31,7 @@ import React, { useContext, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import LookupContext from "../context/lookupContext";
+import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
 
 import {
@@ -47,8 +49,9 @@ import { Box, Stack } from "@mui/system";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSPaoDetailsControl from "../components/ADSPaoDetailsControl";
 import ADSErrorDisplay from "../components/ADSErrorDisplay";
+import AddLookupDialog from "../dialogs/AddLookupDialog";
 
-import { stringToSentenceCase } from "../utils/HelperUtils";
+import { addLookup, getLookupVariantString, stringToSentenceCase } from "../utils/HelperUtils";
 import { streetDescriptorToTitleCase } from "../utils/StreetUtils";
 
 import CheckBoxRoundedIcon from "@mui/icons-material/CheckBoxRounded";
@@ -91,6 +94,7 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
 
   const lookupContext = useContext(LookupContext);
   const settingsContext = useContext(SettingsContext);
+  const userContext = useContext(UserContext);
 
   const [rangeType, setRangeType] = useState(null);
   const [rangeText, setRangeText] = useState(null);
@@ -136,7 +140,14 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
 
   const [addressList, setAddressList] = useState([]);
 
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [lookupType, setLookupType] = useState("unknown");
+  const [engError, setEngError] = useState(null);
+  const [altLanguageError, setAltLanguageError] = useState(null);
+
   const updatedDataRef = useRef(null);
+  const addResult = useRef(null);
+  const currentVariant = useRef(null);
 
   /**
    * Method to get the updated data object after a change.
@@ -1256,6 +1267,14 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
   };
 
   /**
+   * Event to handle when a new post town is added.
+   */
+  const handleAddPostTownEvent = () => {
+    setLookupType("postTown");
+    setShowAddDialog(true);
+  };
+
+  /**
    * Event to handle when the sub-locality is changed.
    *
    * @param {number|null} newValue The new sub-locality.
@@ -1267,6 +1286,14 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
   };
 
   /**
+   * Event to handle when a new sub-locality is added.
+   */
+  const handleAddSubLocalityEvent = () => {
+    setLookupType("subLocality");
+    setShowAddDialog(true);
+  };
+
+  /**
    * Event to handle when the postcode reference is changed.
    *
    * @param {number|null} newValue The new postcode reference.
@@ -1275,6 +1302,14 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
     setPostcodeRef(newValue);
     if (onDataChanged && postcodeRef !== newValue) onDataChanged(getUpdatedData("postcodeRef", newValue));
     if (onErrorChanged) onErrorChanged(getUpdatedErrors("postcodeRef"));
+  };
+
+  /**
+   * Event to handle when a new postcode is added.
+   */
+  const handleAddPostcodeEvent = () => {
+    setLookupType("postcode");
+    setShowAddDialog(true);
   };
 
   /**
@@ -1332,6 +1367,59 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
       if (onDataChanged && paoDetails !== data.details) onDataChanged(getUpdatedData("paoDetails", data.details));
       if (onErrorChanged) onErrorChanged(getUpdatedErrors("paoDetails"));
     }
+  };
+
+  /**
+   * Method used to add the new lookup.
+   *
+   * @param {object} data The data returned from the add lookup dialog.
+   */
+  const handleDoneAddLookup = async (data) => {
+    currentVariant.current = getLookupVariantString(data.variant);
+
+    const addResults = await addLookup(
+      data,
+      settingsContext.authorityCode,
+      userContext.currentUser.token,
+      settingsContext.isWelsh,
+      settingsContext.isScottish,
+      lookupContext.currentLookups
+    );
+
+    if (addResults && addResults.result) {
+      if (addResults.updatedLookups && addResults.updatedLookups.length > 0)
+        lookupContext.onUpdateLookup(data.variant, addResults.updatedLookups);
+
+      switch (data.variant) {
+        case "postcode":
+          setPostcodeRef(addResults.newLookup.postcodeRef);
+          break;
+
+        case "postTown":
+          setPostTownRef(addResults.newLookup.postTownRef);
+          break;
+
+        case "subLocality":
+          setSubLocalityRef(addResults.newLookup.subLocalityRef);
+          break;
+
+        default:
+          break;
+      }
+
+      addResult.current = true;
+    } else addResult.current = false;
+    setEngError(addResults ? addResults.engError : null);
+    setAltLanguageError(addResults ? addResults.altLanguageError : null);
+
+    setShowAddDialog(!addResult.current);
+  };
+
+  /**
+   * Event to handle when the add lookup dialog is closed.
+   */
+  const handleCloseAddLookup = () => {
+    setShowAddDialog(false);
   };
 
   /**
@@ -1540,633 +1628,672 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
   ]);
 
   return (
-    <Box id="wizard-address-settings-2-tab" sx={{ width: "100%" }}>
-      <Box sx={FormBoxRowStyle(rangeTypeError && rangeTypeError.length > 0)}>
-        <Grid
-          container
-          justifyContent="flex-start"
-          alignItems="center"
-          sx={FormRowStyle(rangeTypeError && rangeTypeError.length > 0)}
-        >
-          <Grid item xs={3}>
-            <Typography id="create-range-using-label" variant="body2" align="left" sx={controlLabelStyle}>
-              Create range using
-            </Typography>
-          </Grid>
-          <Grid item xs={9}>
-            <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
-              <Button
-                id="number-suffix-button"
-                variant="outlined"
-                sx={getStateButtonStyle(rangeType === 1, 185)}
-                onClick={handleNumberSuffixClick}
-                aria-labelledby={"create-range-using-label"}
-              >
-                <Typography
-                  id="aon-number-suffix-button"
-                  variant="body2"
-                  align="left"
-                  sx={getStateButtonTextStyle(rangeType === 1)}
-                >
-                  {`${isChild ? "SAO" : "PAO"} numbering / suffix`}
-                </Typography>
-              </Button>
-              <Button
-                id="text-button"
-                variant="outlined"
-                sx={getStateButtonStyle(rangeType === 2, 185)}
-                onClick={handleTextClick}
-                aria-labelledby={"create-range-using-label"}
-              >
-                <Typography
-                  id="aon-text-button"
-                  variant="body2"
-                  align="left"
-                  sx={getStateButtonTextStyle(rangeType === 2)}
-                >
-                  {`${isChild ? "SAO" : "PAO"} text`}
-                </Typography>
-              </Button>
-            </Stack>
-          </Grid>
-          <ADSErrorDisplay errorText={rangeTypeError} id="create-range-using-label-error" />
-        </Grid>
-      </Box>
-      {rangeType && rangeType === 1 && (
-        <Box sx={FormBoxRowStyle(rangeType1HasErrors.current)}>
+    <>
+      <Box id="wizard-address-settings-2-tab" sx={{ width: "100%" }}>
+        <Box sx={FormBoxRowStyle(rangeTypeError && rangeTypeError.length > 0)}>
           <Grid
             container
             justifyContent="flex-start"
             alignItems="center"
-            sx={FormRowStyle(rangeType1HasErrors.current)}
-          >
-            <Grid item xs={3} />
-            <Grid item xs={9}>
-              <Grid container justifyContent="flex-start" alignItems="center" columns={13} columnSpacing={1}>
-                <Grid item xs={3}>
-                  <Typography
-                    id="range-start-number-label"
-                    variant="body2"
-                    align="left"
-                    sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
-                  >
-                    Number
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography
-                    id="range-start-suffix-label"
-                    variant="body2"
-                    align="left"
-                    sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
-                  >
-                    Suffix
-                  </Typography>
-                </Grid>
-                <Grid item xs={1} />
-                <Grid item xs={3}>
-                  <Typography
-                    id="range-end-number-label"
-                    variant="body2"
-                    align="left"
-                    sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
-                  >
-                    Number
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography
-                    id="range-end-suffix-label"
-                    variant="body2"
-                    align="left"
-                    sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
-                  >
-                    Suffix
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={3}>
-              <Typography
-                id="range-label"
-                variant="body2"
-                align="left"
-                sx={{ fontSize: "14px", color: adsMidGreyA, pt: "12px" }}
-              >
-                Range*
-              </Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <Grid container justifyContent="flex-start" alignItems="center" columns={13} columnSpacing={1}>
-                <Grid item xs={3}>
-                  <TextField
-                    id="range-start-number-control"
-                    sx={FormInputStyle(rangeType1HasErrors.current)}
-                    type="number"
-                    error={rangeType1HasErrors.current}
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    size="small"
-                    inputProps={{ min: 0, max: 9999 }}
-                    placeholder="e.g. 1"
-                    value={rangeStartNumber ? rangeStartNumber : ""}
-                    onChange={handleRangeStartNumberChangeEvent}
-                    aria-labelledby="range-start-number-label"
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    id="range-start-suffix-control"
-                    sx={FormInputStyle(rangeType1HasErrors.current)}
-                    error={rangeType1HasErrors.current}
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    size="small"
-                    inputProps={{ maxLength: 1 }}
-                    placeholder="e.g. A"
-                    value={rangeStartSuffix ? rangeStartSuffix : ""}
-                    onChange={handleRangeStartSuffixChangeEvent}
-                  />
-                </Grid>
-                <Grid item xs={1}>
-                  <Typography
-                    id="range-to-label"
-                    variant="body2"
-                    align="left"
-                    sx={{ fontSize: "14px", color: adsMidGreyA, pt: "12px" }}
-                  >
-                    to
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    id="range-end-number-control"
-                    sx={FormInputStyle(rangeType1HasErrors.current)}
-                    type="number"
-                    error={rangeType1HasErrors.current}
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    size="small"
-                    inputProps={{ min: 0, max: 9999 }}
-                    placeholder="e.g. 1"
-                    value={rangeEndNumber ? rangeEndNumber : ""}
-                    onChange={handleRangeEndNumberChangeEvent}
-                    aria-labelledby="range-end-number-label"
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    id="range-end-suffix-control"
-                    sx={FormInputStyle(rangeType1HasErrors.current)}
-                    error={rangeType1HasErrors.current}
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    size="small"
-                    inputProps={{ maxLength: 1 }}
-                    placeholder="e.g. A"
-                    value={rangeEndSuffix ? rangeEndSuffix : ""}
-                    onChange={handleRangeEndSuffixChangeEvent}
-                  />
-                </Grid>
-              </Grid>
-            </Grid>
-            <ADSErrorDisplay errorText={displayRange1Error} id="range-1-label-error" />
-          </Grid>
-        </Box>
-      )}
-      {rangeType && rangeType === 2 && (
-        <Box sx={FormBoxRowStyle(rangeType2HasErrors.current)}>
-          <Grid
-            container
-            justifyContent="flex-start"
-            alignItems="center"
-            sx={FormRowStyle(rangeType2HasErrors.current)}
-          >
-            <Grid item xs={3} />
-            <Grid item xs={9}>
-              <Grid container justifyContent="flex-start" alignItems="center" columns={19} columnSpacing={1}>
-                <Grid item xs={4}>
-                  <Typography
-                    id="range-text-label"
-                    variant="body2"
-                    align="left"
-                    sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
-                  >
-                    Text*
-                  </Typography>
-                </Grid>
-                <Grid item xs={2}>
-                  <Typography
-                    id="range-start-prefix-label"
-                    variant="body2"
-                    align="left"
-                    sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
-                  >
-                    Prefix
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography
-                    id="range-start-number-label"
-                    variant="body2"
-                    align="left"
-                    sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
-                  >
-                    Number
-                  </Typography>
-                </Grid>
-                <Grid item xs={2}>
-                  <Typography
-                    id="range-start-suffix-label"
-                    variant="body2"
-                    align="left"
-                    sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
-                  >
-                    Suffix
-                  </Typography>
-                </Grid>
-                <Grid item xs={1} />
-                <Grid item xs={2}>
-                  <Typography
-                    id="range-end-prefix-label"
-                    variant="body2"
-                    align="left"
-                    sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
-                  >
-                    Prefix
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography
-                    id="range-end-number-label"
-                    variant="body2"
-                    align="left"
-                    sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
-                  >
-                    Number
-                  </Typography>
-                </Grid>
-                <Grid item xs={2}>
-                  <Typography
-                    id="range-end-suffix-label"
-                    variant="body2"
-                    align="left"
-                    sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
-                  >
-                    Suffix
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={3}>
-              <Typography
-                id="range-label"
-                variant="body2"
-                align="left"
-                sx={{ fontSize: "14px", color: adsMidGreyA, pt: "12px" }}
-              >
-                Range*
-              </Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <Grid container justifyContent="flex-start" alignItems="center" columns={19} columnSpacing={1}>
-                <Grid item xs={4}>
-                  <TextField
-                    id="range-text-control"
-                    sx={FormInputStyle(rangeType2HasErrors.current)}
-                    error={rangeType2HasErrors.current}
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    size="small"
-                    inputProps={{ maxLength: 80 }}
-                    placeholder="e.g. Plot"
-                    value={rangeText ? rangeText : ""}
-                    onChange={handleRangeTextChangeEvent}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    id="range-start-prefix-control"
-                    sx={FormInputStyle(rangeType2HasErrors.current)}
-                    error={rangeType2HasErrors.current}
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    size="small"
-                    inputProps={{ maxLength: 1 }}
-                    placeholder="e.g. A"
-                    value={rangeStartPrefix ? rangeStartPrefix : ""}
-                    onChange={handleRangeStartPrefixChangeEvent}
-                    aria-labelledby="range-start-prefix-label"
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    id="range-start-number-control"
-                    sx={FormInputStyle(rangeType2HasErrors.current)}
-                    type="number"
-                    error={rangeType2HasErrors.current}
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    size="small"
-                    inputProps={{ min: 0, max: 9999 }}
-                    placeholder="e.g. 1"
-                    value={rangeStartNumber ? rangeStartNumber : ""}
-                    onChange={handleRangeStartNumberChangeEvent}
-                    aria-labelledby="range-start-number-label"
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    id="range-start-suffix-control"
-                    sx={FormInputStyle(rangeType2HasErrors.current)}
-                    error={rangeType2HasErrors.current}
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    size="small"
-                    inputProps={{ maxLength: 1 }}
-                    placeholder="e.g. A"
-                    value={rangeStartSuffix ? rangeStartSuffix : ""}
-                    onChange={handleRangeStartSuffixChangeEvent}
-                    aria-labelledby="range-start-suffix-label"
-                  />
-                </Grid>
-                <Grid item xs={1}>
-                  <Typography
-                    id="range-to-label"
-                    variant="body2"
-                    align="left"
-                    sx={{ fontSize: "14px", color: adsMidGreyA, pt: "12px" }}
-                  >
-                    to
-                  </Typography>
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    id="range-end-prefix-control"
-                    sx={FormInputStyle(rangeType2HasErrors.current)}
-                    error={rangeType2HasErrors.current}
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    size="small"
-                    inputProps={{ maxLength: 1 }}
-                    placeholder="e.g. A"
-                    value={rangeEndPrefix ? rangeEndPrefix : ""}
-                    onChange={handleRangeEndPrefixChangeEvent}
-                    aria-labelledby="range-end-prefix-label"
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    id="range-end-number-control"
-                    sx={FormInputStyle(rangeType2HasErrors.current)}
-                    type="number"
-                    error={rangeType2HasErrors.current}
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    size="small"
-                    inputProps={{ min: 0, max: 9999 }}
-                    placeholder="e.g. 1"
-                    value={rangeEndNumber ? rangeEndNumber : ""}
-                    onChange={handleRangeEndNumberChangeEvent}
-                    aria-labelledby="range-end-number-label"
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    id="range-end-suffix-control"
-                    sx={FormInputStyle(rangeType2HasErrors.current)}
-                    error={rangeType2HasErrors.current}
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    size="small"
-                    inputProps={{ maxLength: 1 }}
-                    placeholder="e.g. A"
-                    value={rangeEndSuffix ? rangeEndSuffix : ""}
-                    onChange={handleRangeEndSuffixChangeEvent}
-                    aria-labelledby="range-end-suffix-label"
-                  />
-                </Grid>
-              </Grid>
-            </Grid>
-            <ADSErrorDisplay errorText={displayRange2Error} id="range-2-label-error" />
-          </Grid>
-        </Box>
-      )}
-      {rangeType && isChild && (
-        <ADSPaoDetailsControl
-          label="PAO details"
-          isRequired
-          data={{
-            startNumber: paoStartNumber,
-            startSuffix: paoStartSuffix,
-            endNumber: paoEndNumber,
-            endSuffix: paoEndSuffix,
-            text: paoText,
-            details: paoDetails,
-          }}
-          errorText={paoDetailsError}
-          onDetailsChanged={handlePaoDetailsChanged}
-        />
-      )}
-      {rangeType && (
-        <ADSSelectControl
-          label="Street"
-          isEditable
-          isRequired
-          useRounded
-          lookupData={lookupContext.currentLookups.streetDescriptors.filter((x) => x.language === language)}
-          lookupId="usrn"
-          lookupLabel="address"
-          value={usrn}
-          errorText={usrnError}
-          onChange={handleUsrnChangeEvent}
-          helperText="Unique Street reference number."
-        />
-      )}
-      {rangeType && (
-        <ADSSelectControl
-          label="Post town"
-          isEditable
-          useRounded
-          lookupData={lookupContext.currentLookups.postTowns.filter((x) => x.language === language)}
-          lookupId="postTownRef"
-          lookupLabel="postTown"
-          value={postTownRef}
-          errorText={postTownRefError}
-          onChange={handlePostTownRefChangeEvent}
-          helperText="Allocated by the Royal Mail to assist in delivery of mail."
-        />
-      )}
-      {settingsContext.isScottish && rangeType && (
-        <ADSSelectControl
-          label="Sub-locality"
-          isEditable
-          useRounded
-          lookupData={lookupContext.currentLookups.subLocalities.filter((x) => x.language === language && !x.historic)}
-          lookupId="subLocalityRef"
-          lookupLabel="subLocality"
-          value={subLocalityRef}
-          errorText={subLocalityRefError}
-          onChange={handleSubLocalityRefChangeEvent}
-          helperText="Third level of geographic area name. e.g. to record an island name or property group."
-        />
-      )}
-      {rangeType && (
-        <ADSSelectControl
-          label="Postcode"
-          isEditable
-          useRounded
-          doNotSetTitleCase
-          lookupData={lookupContext.currentLookups.postcodes}
-          lookupId="postcodeRef"
-          lookupLabel="postcode"
-          value={postcodeRef}
-          errorText={postcodeRefError}
-          onChange={handlePostcodeRefChangeEvent}
-          helperText="Allocated by the Royal Mail to assist in delivery of mail."
-        />
-      )}
-      {rangeType && (
-        <Box sx={FormBoxRowStyle(numberingError && numberingError.length > 0)}>
-          <Grid
-            container
-            justifyContent="flex-start"
-            alignItems="center"
-            sx={FormRowStyle(numberingError && numberingError.length > 0)}
+            sx={FormRowStyle(rangeTypeError && rangeTypeError.length > 0)}
           >
             <Grid item xs={3}>
-              <Typography id="numbering-label" variant="body2" align="left" sx={controlLabelStyle}>
-                Numbering
+              <Typography id="create-range-using-label" variant="body2" align="left" sx={controlLabelStyle}>
+                Create range using
               </Typography>
             </Grid>
             <Grid item xs={9}>
               <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
                 <Button
-                  id="odds-and-evens-button"
+                  id="number-suffix-button"
                   variant="outlined"
-                  sx={getStateButtonStyle(numbering === 1, 137)}
-                  onClick={handleOddsAndEvensClick}
-                  aria-labelledby={"numbering-label"}
+                  sx={getStateButtonStyle(rangeType === 1, 185)}
+                  onClick={handleNumberSuffixClick}
+                  aria-labelledby={"create-range-using-label"}
                 >
                   <Typography
-                    id="odds-and-evens-button"
+                    id="aon-number-suffix-button"
                     variant="body2"
                     align="left"
-                    sx={getStateButtonTextStyle(numbering === 1)}
+                    sx={getStateButtonTextStyle(rangeType === 1)}
                   >
-                    Odds and evens
+                    {`${isChild ? "SAO" : "PAO"} numbering / suffix`}
                   </Typography>
                 </Button>
                 <Button
-                  id="odds-only-button"
+                  id="text-button"
                   variant="outlined"
-                  sx={getStateButtonStyle(numbering === 2, 137)}
-                  onClick={handleOddsOnlyClick}
-                  aria-labelledby={"numbering-label"}
+                  sx={getStateButtonStyle(rangeType === 2, 185)}
+                  onClick={handleTextClick}
+                  aria-labelledby={"create-range-using-label"}
                 >
                   <Typography
-                    id="odds-only-button"
+                    id="aon-text-button"
                     variant="body2"
                     align="left"
-                    sx={getStateButtonTextStyle(numbering === 2)}
+                    sx={getStateButtonTextStyle(rangeType === 2)}
                   >
-                    Odds only
-                  </Typography>
-                </Button>
-                <Button
-                  id="evens-only-button"
-                  variant="outlined"
-                  sx={getStateButtonStyle(numbering === 3, 137)}
-                  onClick={handleEvensOnlyClick}
-                  aria-labelledby={"numbering-label"}
-                >
-                  <Typography
-                    id="evens-only-button"
-                    variant="body2"
-                    align="left"
-                    sx={getStateButtonTextStyle(numbering === 3)}
-                  >
-                    Evens only
+                    {`${isChild ? "SAO" : "PAO"} text`}
                   </Typography>
                 </Button>
               </Stack>
             </Grid>
-            <ADSErrorDisplay errorText={displayNumberingError} id="numbering-label-error" />
+            <ADSErrorDisplay errorText={rangeTypeError} id="create-range-using-label-error" />
           </Grid>
         </Box>
-      )}
-      {rangeType && addressList.length > 0 && (
-        <Box sx={{ mt: `${isChild ? "6px" : "24px"}` }}>
-          <Stack direction="row" alignItems="center" justifyContent="space-between">
-            <Typography id="create-count-label" variant="body2" align="left" sx={controlLabelStyle}>
-              <b>{`Create ${addressList.filter((x) => x.included).length} ${
-                addressList.filter((x) => x.included).length === 1 ? "property" : "properties"
-              }`}</b>
-            </Typography>
-            <Typography
-              id="include-label"
-              variant="body2"
-              align="left"
-              sx={{ fontSize: "14px", color: adsMidGreyA, pr: theme.spacing(2) }}
+        {rangeType && rangeType === 1 && (
+          <Box sx={FormBoxRowStyle(rangeType1HasErrors.current)}>
+            <Grid
+              container
+              justifyContent="flex-start"
+              alignItems="center"
+              sx={FormRowStyle(rangeType1HasErrors.current)}
             >
-              Include
-            </Typography>
-          </Stack>
-          {addressListError && addressListError.length > 0 && (
-            <ADSErrorDisplay errorText={addressListError.join(", ")} id={`address-list-error`} />
-          )}
-          <List
-            sx={{
-              width: "100%",
-              pt: theme.spacing(0),
-              height: "176px",
-              overflowY: "auto",
-            }}
-            component="nav"
-            key="key_no_records"
-          >
-            {addressList.map((rec, index) => (
-              <ListItem
-                id={`address-${index}`}
-                key={`address-${index}`}
-                alignItems="flex-start"
-                dense
-                disableGutters
-                sx={getAddressListItemStyle(rec.included)}
-              >
-                <ListItemText
-                  primary={
-                    <Typography id={`address-${index}`} variant="body2" align="left" sx={controlLabelStyle}>
-                      {rec.address}
+              <Grid item xs={3} />
+              <Grid item xs={9}>
+                <Grid container justifyContent="flex-start" alignItems="center" columns={13} columnSpacing={1}>
+                  <Grid item xs={3}>
+                    <Typography
+                      id="range-start-number-label"
+                      variant="body2"
+                      align="left"
+                      sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
+                    >
+                      Number
                     </Typography>
-                  }
-                />
-                <ListItemAvatar sx={getListItemAvatarStyle()}>
-                  <IconButton onClick={() => handleAddressClick(rec)} size="small">
-                    {rec.included ? (
-                      <CheckBoxRoundedIcon sx={{ color: adsBlueA }} />
-                    ) : (
-                      <CheckBoxOutlineBlankRoundedIcon sx={{ backgroundColor: adsLightGreyC, color: adsLightGreyB }} />
-                    )}
-                  </IconButton>
-                </ListItemAvatar>
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      )}
-    </Box>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography
+                      id="range-start-suffix-label"
+                      variant="body2"
+                      align="left"
+                      sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
+                    >
+                      Suffix
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={1} />
+                  <Grid item xs={3}>
+                    <Typography
+                      id="range-end-number-label"
+                      variant="body2"
+                      align="left"
+                      sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
+                    >
+                      Number
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography
+                      id="range-end-suffix-label"
+                      variant="body2"
+                      align="left"
+                      sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
+                    >
+                      Suffix
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography
+                  id="range-label"
+                  variant="body2"
+                  align="left"
+                  sx={{ fontSize: "14px", color: adsMidGreyA, pt: "12px" }}
+                >
+                  Range*
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Grid container justifyContent="flex-start" alignItems="center" columns={13} columnSpacing={1}>
+                  <Grid item xs={3}>
+                    <TextField
+                      id="range-start-number-control"
+                      sx={FormInputStyle(rangeType1HasErrors.current)}
+                      type="number"
+                      error={rangeType1HasErrors.current}
+                      fullWidth
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      inputProps={{ min: 0, max: 9999 }}
+                      placeholder="e.g. 1"
+                      value={rangeStartNumber ? rangeStartNumber : ""}
+                      onChange={handleRangeStartNumberChangeEvent}
+                      aria-labelledby="range-start-number-label"
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <TextField
+                      id="range-start-suffix-control"
+                      sx={FormInputStyle(rangeType1HasErrors.current)}
+                      error={rangeType1HasErrors.current}
+                      fullWidth
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      inputProps={{ maxLength: 1 }}
+                      placeholder="e.g. A"
+                      value={rangeStartSuffix ? rangeStartSuffix : ""}
+                      onChange={handleRangeStartSuffixChangeEvent}
+                    />
+                  </Grid>
+                  <Grid item xs={1}>
+                    <Typography
+                      id="range-to-label"
+                      variant="body2"
+                      align="left"
+                      sx={{ fontSize: "14px", color: adsMidGreyA, pt: "12px" }}
+                    >
+                      to
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <TextField
+                      id="range-end-number-control"
+                      sx={FormInputStyle(rangeType1HasErrors.current)}
+                      type="number"
+                      error={rangeType1HasErrors.current}
+                      fullWidth
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      inputProps={{ min: 0, max: 9999 }}
+                      placeholder="e.g. 1"
+                      value={rangeEndNumber ? rangeEndNumber : ""}
+                      onChange={handleRangeEndNumberChangeEvent}
+                      aria-labelledby="range-end-number-label"
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <TextField
+                      id="range-end-suffix-control"
+                      sx={FormInputStyle(rangeType1HasErrors.current)}
+                      error={rangeType1HasErrors.current}
+                      fullWidth
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      inputProps={{ maxLength: 1 }}
+                      placeholder="e.g. A"
+                      value={rangeEndSuffix ? rangeEndSuffix : ""}
+                      onChange={handleRangeEndSuffixChangeEvent}
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+              <ADSErrorDisplay errorText={displayRange1Error} id="range-1-label-error" />
+            </Grid>
+          </Box>
+        )}
+        {rangeType && rangeType === 2 && (
+          <Box sx={FormBoxRowStyle(rangeType2HasErrors.current)}>
+            <Grid
+              container
+              justifyContent="flex-start"
+              alignItems="center"
+              sx={FormRowStyle(rangeType2HasErrors.current)}
+            >
+              <Grid item xs={3} />
+              <Grid item xs={9}>
+                <Grid container justifyContent="flex-start" alignItems="center" columns={19} columnSpacing={1}>
+                  <Grid item xs={4}>
+                    <Typography
+                      id="range-text-label"
+                      variant="body2"
+                      align="left"
+                      sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
+                    >
+                      Text*
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Typography
+                      id="range-start-prefix-label"
+                      variant="body2"
+                      align="left"
+                      sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
+                    >
+                      Prefix
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography
+                      id="range-start-number-label"
+                      variant="body2"
+                      align="left"
+                      sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
+                    >
+                      Number
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Typography
+                      id="range-start-suffix-label"
+                      variant="body2"
+                      align="left"
+                      sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
+                    >
+                      Suffix
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={1} />
+                  <Grid item xs={2}>
+                    <Typography
+                      id="range-end-prefix-label"
+                      variant="body2"
+                      align="left"
+                      sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
+                    >
+                      Prefix
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography
+                      id="range-end-number-label"
+                      variant="body2"
+                      align="left"
+                      sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
+                    >
+                      Number
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Typography
+                      id="range-end-suffix-label"
+                      variant="body2"
+                      align="left"
+                      sx={{ fontSize: "12px", color: adsMidGreyA, pt: "6px" }}
+                    >
+                      Suffix
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography
+                  id="range-label"
+                  variant="body2"
+                  align="left"
+                  sx={{ fontSize: "14px", color: adsMidGreyA, pt: "12px" }}
+                >
+                  Range*
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Grid container justifyContent="flex-start" alignItems="center" columns={19} columnSpacing={1}>
+                  <Grid item xs={4}>
+                    <TextField
+                      id="range-text-control"
+                      sx={FormInputStyle(rangeType2HasErrors.current)}
+                      error={rangeType2HasErrors.current}
+                      fullWidth
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      inputProps={{ maxLength: 80 }}
+                      placeholder="e.g. Plot"
+                      value={rangeText ? rangeText : ""}
+                      onChange={handleRangeTextChangeEvent}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <TextField
+                      id="range-start-prefix-control"
+                      sx={FormInputStyle(rangeType2HasErrors.current)}
+                      error={rangeType2HasErrors.current}
+                      fullWidth
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      inputProps={{ maxLength: 1 }}
+                      placeholder="e.g. A"
+                      value={rangeStartPrefix ? rangeStartPrefix : ""}
+                      onChange={handleRangeStartPrefixChangeEvent}
+                      aria-labelledby="range-start-prefix-label"
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <TextField
+                      id="range-start-number-control"
+                      sx={FormInputStyle(rangeType2HasErrors.current)}
+                      type="number"
+                      error={rangeType2HasErrors.current}
+                      fullWidth
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      inputProps={{ min: 0, max: 9999 }}
+                      placeholder="e.g. 1"
+                      value={rangeStartNumber ? rangeStartNumber : ""}
+                      onChange={handleRangeStartNumberChangeEvent}
+                      aria-labelledby="range-start-number-label"
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <TextField
+                      id="range-start-suffix-control"
+                      sx={FormInputStyle(rangeType2HasErrors.current)}
+                      error={rangeType2HasErrors.current}
+                      fullWidth
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      inputProps={{ maxLength: 1 }}
+                      placeholder="e.g. A"
+                      value={rangeStartSuffix ? rangeStartSuffix : ""}
+                      onChange={handleRangeStartSuffixChangeEvent}
+                      aria-labelledby="range-start-suffix-label"
+                    />
+                  </Grid>
+                  <Grid item xs={1}>
+                    <Typography
+                      id="range-to-label"
+                      variant="body2"
+                      align="left"
+                      sx={{ fontSize: "14px", color: adsMidGreyA, pt: "12px" }}
+                    >
+                      to
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <TextField
+                      id="range-end-prefix-control"
+                      sx={FormInputStyle(rangeType2HasErrors.current)}
+                      error={rangeType2HasErrors.current}
+                      fullWidth
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      inputProps={{ maxLength: 1 }}
+                      placeholder="e.g. A"
+                      value={rangeEndPrefix ? rangeEndPrefix : ""}
+                      onChange={handleRangeEndPrefixChangeEvent}
+                      aria-labelledby="range-end-prefix-label"
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <TextField
+                      id="range-end-number-control"
+                      sx={FormInputStyle(rangeType2HasErrors.current)}
+                      type="number"
+                      error={rangeType2HasErrors.current}
+                      fullWidth
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      inputProps={{ min: 0, max: 9999 }}
+                      placeholder="e.g. 1"
+                      value={rangeEndNumber ? rangeEndNumber : ""}
+                      onChange={handleRangeEndNumberChangeEvent}
+                      aria-labelledby="range-end-number-label"
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <TextField
+                      id="range-end-suffix-control"
+                      sx={FormInputStyle(rangeType2HasErrors.current)}
+                      error={rangeType2HasErrors.current}
+                      fullWidth
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      inputProps={{ maxLength: 1 }}
+                      placeholder="e.g. A"
+                      value={rangeEndSuffix ? rangeEndSuffix : ""}
+                      onChange={handleRangeEndSuffixChangeEvent}
+                      aria-labelledby="range-end-suffix-label"
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+              <ADSErrorDisplay errorText={displayRange2Error} id="range-2-label-error" />
+            </Grid>
+          </Box>
+        )}
+        {rangeType && isChild && (
+          <ADSPaoDetailsControl
+            label="PAO details"
+            isRequired
+            data={{
+              startNumber: paoStartNumber,
+              startSuffix: paoStartSuffix,
+              endNumber: paoEndNumber,
+              endSuffix: paoEndSuffix,
+              text: paoText,
+              details: paoDetails,
+            }}
+            errorText={paoDetailsError}
+            onDetailsChanged={handlePaoDetailsChanged}
+          />
+        )}
+        {rangeType && (
+          <ADSSelectControl
+            label="Street"
+            isEditable
+            isRequired
+            useRounded
+            lookupData={lookupContext.currentLookups.streetDescriptors.filter((x) => x.language === language)}
+            lookupId="usrn"
+            lookupLabel="address"
+            value={usrn}
+            errorText={usrnError}
+            onChange={handleUsrnChangeEvent}
+            helperText="Unique Street reference number."
+          />
+        )}
+        {rangeType && (
+          <ADSSelectControl
+            label="Post town"
+            isEditable
+            useRounded
+            allowAddLookup
+            lookupData={lookupContext.currentLookups.postTowns
+              .filter((x) => x.language === language && !x.historic)
+              .sort(function (a, b) {
+                return a.postTown.localeCompare(b.postTown, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+              })}
+            lookupId="postTownRef"
+            lookupLabel="postTown"
+            value={postTownRef}
+            errorText={postTownRefError}
+            onChange={handlePostTownRefChangeEvent}
+            onAddLookup={handleAddPostTownEvent}
+            helperText="Allocated by the Royal Mail to assist in delivery of mail."
+          />
+        )}
+        {settingsContext.isScottish && rangeType && (
+          <ADSSelectControl
+            label="Sub-locality"
+            isEditable
+            useRounded
+            allowAddLookup
+            lookupData={lookupContext.currentLookups.subLocalities
+              .filter((x) => x.language === language && !x.historic)
+              .sort(function (a, b) {
+                return a.subLocality.localeCompare(b.subLocality, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+              })}
+            lookupId="subLocalityRef"
+            lookupLabel="subLocality"
+            value={subLocalityRef}
+            errorText={subLocalityRefError}
+            onChange={handleSubLocalityRefChangeEvent}
+            onAddLookup={handleAddSubLocalityEvent}
+            helperText="Third level of geographic area name. e.g. to record an island name or property group."
+          />
+        )}
+        {rangeType && (
+          <ADSSelectControl
+            label="Postcode"
+            isEditable
+            useRounded
+            doNotSetTitleCase
+            allowAddLookup
+            lookupData={lookupContext.currentLookups.postcodes
+              .filter((x) => !x.historic)
+              .sort(function (a, b) {
+                return a.postcode.localeCompare(b.postcode, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+              })}
+            lookupId="postcodeRef"
+            lookupLabel="postcode"
+            value={postcodeRef}
+            errorText={postcodeRefError}
+            onChange={handlePostcodeRefChangeEvent}
+            onAddLookup={handleAddPostcodeEvent}
+            helperText="Allocated by the Royal Mail to assist in delivery of mail."
+          />
+        )}
+        {rangeType && (
+          <Box sx={FormBoxRowStyle(numberingError && numberingError.length > 0)}>
+            <Grid
+              container
+              justifyContent="flex-start"
+              alignItems="center"
+              sx={FormRowStyle(numberingError && numberingError.length > 0)}
+            >
+              <Grid item xs={3}>
+                <Typography id="numbering-label" variant="body2" align="left" sx={controlLabelStyle}>
+                  Numbering
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
+                  <Button
+                    id="odds-and-evens-button"
+                    variant="outlined"
+                    sx={getStateButtonStyle(numbering === 1, 137)}
+                    onClick={handleOddsAndEvensClick}
+                    aria-labelledby={"numbering-label"}
+                  >
+                    <Typography
+                      id="odds-and-evens-button"
+                      variant="body2"
+                      align="left"
+                      sx={getStateButtonTextStyle(numbering === 1)}
+                    >
+                      Odds and evens
+                    </Typography>
+                  </Button>
+                  <Button
+                    id="odds-only-button"
+                    variant="outlined"
+                    sx={getStateButtonStyle(numbering === 2, 137)}
+                    onClick={handleOddsOnlyClick}
+                    aria-labelledby={"numbering-label"}
+                  >
+                    <Typography
+                      id="odds-only-button"
+                      variant="body2"
+                      align="left"
+                      sx={getStateButtonTextStyle(numbering === 2)}
+                    >
+                      Odds only
+                    </Typography>
+                  </Button>
+                  <Button
+                    id="evens-only-button"
+                    variant="outlined"
+                    sx={getStateButtonStyle(numbering === 3, 137)}
+                    onClick={handleEvensOnlyClick}
+                    aria-labelledby={"numbering-label"}
+                  >
+                    <Typography
+                      id="evens-only-button"
+                      variant="body2"
+                      align="left"
+                      sx={getStateButtonTextStyle(numbering === 3)}
+                    >
+                      Evens only
+                    </Typography>
+                  </Button>
+                </Stack>
+              </Grid>
+              <ADSErrorDisplay errorText={displayNumberingError} id="numbering-label-error" />
+            </Grid>
+          </Box>
+        )}
+        {rangeType && addressList.length > 0 && (
+          <Box sx={{ mt: `${isChild ? "6px" : "24px"}` }}>
+            <Stack direction="row" alignItems="center" justifyContent="space-between">
+              <Typography id="create-count-label" variant="body2" align="left" sx={controlLabelStyle}>
+                <b>{`Create ${addressList.filter((x) => x.included).length} ${
+                  addressList.filter((x) => x.included).length === 1 ? "property" : "properties"
+                }`}</b>
+              </Typography>
+              <Typography
+                id="include-label"
+                variant="body2"
+                align="left"
+                sx={{ fontSize: "14px", color: adsMidGreyA, pr: theme.spacing(2) }}
+              >
+                Include
+              </Typography>
+            </Stack>
+            {addressListError && addressListError.length > 0 && (
+              <ADSErrorDisplay errorText={addressListError.join(", ")} id={`address-list-error`} />
+            )}
+            <List
+              sx={{
+                width: "100%",
+                pt: theme.spacing(0),
+                height: "176px",
+                overflowY: "auto",
+              }}
+              component="nav"
+              key="key_no_records"
+            >
+              {addressList.map((rec, index) => (
+                <ListItem
+                  id={`address-${index}`}
+                  key={`address-${index}`}
+                  alignItems="flex-start"
+                  dense
+                  disableGutters
+                  sx={getAddressListItemStyle(rec.included)}
+                >
+                  <ListItemText
+                    primary={
+                      <Typography id={`address-${index}`} variant="body2" align="left" sx={controlLabelStyle}>
+                        {rec.address}
+                      </Typography>
+                    }
+                  />
+                  <ListItemAvatar sx={getListItemAvatarStyle()}>
+                    <IconButton onClick={() => handleAddressClick(rec)} size="small">
+                      {rec.included ? (
+                        <CheckBoxRoundedIcon sx={{ color: adsBlueA }} />
+                      ) : (
+                        <CheckBoxOutlineBlankRoundedIcon
+                          sx={{ backgroundColor: adsLightGreyC, color: adsLightGreyB }}
+                        />
+                      )}
+                    </IconButton>
+                  </ListItemAvatar>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        )}
+      </Box>
+      <AddLookupDialog
+        isOpen={showAddDialog}
+        variant={lookupType}
+        errorEng={engError}
+        errorAltLanguage={altLanguageError}
+        onDone={(data) => handleDoneAddLookup(data)}
+        onClose={handleCloseAddLookup}
+      />
+    </>
   );
 }
 

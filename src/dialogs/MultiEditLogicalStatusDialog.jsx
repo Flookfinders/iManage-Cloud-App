@@ -23,6 +23,7 @@
 //    010   11.03.24 Sean Flook           MUL11 Reset counts when closing dialog.
 //    011   12.03.24 Sean Flook           MUL10 Display errors in a list control.
 //    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    013   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -54,13 +55,17 @@ import ADSSelectControl from "../components/ADSSelectControl";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSDialogTitle from "../components/ADSDialogTitle";
 
+import AddLookupDialog from "../dialogs/AddLookupDialog";
+
 import {
   GetLookupLabel,
+  addLookup,
   GetCurrentDate,
   GetCheck,
   GetErrorMessage,
   filteredLookup,
   renderErrorListItem,
+  getLookupVariantString,
 } from "../utils/HelperUtils";
 import {
   FilteredBLPUState,
@@ -104,6 +109,7 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
   const [officialFlag, setOfficialFlag] = useState(null);
   const [postalAddress, setPostalAddress] = useState(null);
   const [postTown, setPostTown] = useState(null);
+  const [subLocality, setSubLocality] = useState(null);
   const [postcode, setPostcode] = useState(null);
   const [note, setNote] = useState(null);
   const [noteOpen, setNoteOpen] = useState(false);
@@ -113,6 +119,7 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
   const [officialFlagError, setOfficialFlagError] = useState(null);
   const [postalAddressError, setPostalAddressError] = useState(null);
   const [postTownRefError, setPostTownRefError] = useState(null);
+  const [subLocalityError, setSubLocalityError] = useState(null);
   const [postcodeRefError, setPostcodeRefError] = useState(null);
 
   const [titleLogicalStatus, setTitleLogicalStatus] = useState(null);
@@ -130,6 +137,11 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
   const [haveErrors, setHaveErrors] = useState(false);
   const [rangeProcessedCount, setRangeProcessedCount] = useState(0);
 
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [lookupType, setLookupType] = useState("unknown");
+  const [engError, setEngError] = useState(null);
+  const [altLanguageError, setAltLanguageError] = useState(null);
+
   const properties = useRef(null);
   const savedProperty = useRef(null);
   const updateErrors = useRef([]);
@@ -137,6 +149,8 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
   const updatedCount = useRef(0);
   const failedCount = useRef(0);
   const failedIds = useRef([]);
+  const addResult = useRef(null);
+  const currentVariant = useRef(null);
 
   /**
    * Method to determine if the data is valid or not.
@@ -165,6 +179,7 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
     setOfficialFlagError(null);
     setPostalAddressError(null);
     setPostTownRefError(null);
+    setSubLocalityError(null);
     setPostcodeRefError(null);
 
     if (validationErrors && validationErrors.length > 0) {
@@ -189,6 +204,11 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
           case "posttown":
           case "posttownref":
             setPostTownRefError(error.errors);
+            break;
+
+          case "sublocality":
+          case "sublocalityref":
+            setSubLocalityError(error.errors);
             break;
 
           case "postcode":
@@ -300,12 +320,45 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
   };
 
   /**
+   * Event to handle when a new post town is added.
+   */
+  const handleAddPostTownEvent = () => {
+    setLookupType("postTown");
+    setShowAddDialog(true);
+  };
+
+  /**
+   * Event to handle when the sub-locality is changed.
+   *
+   * @param {number|null} newValue The new sub-locality.
+   */
+  const handleSubLocalityChangeEvent = (newValue) => {
+    setSubLocality(newValue);
+  };
+
+  /**
+   * Event to handle when a new sub-locality is added.
+   */
+  const handleAddSubLocalityEvent = () => {
+    setLookupType("subLocality");
+    setShowAddDialog(true);
+  };
+
+  /**
    * Event to handle when the postcode is changed.
    *
    * @param {number|null} newValue The new postcode.
    */
   const handlePostcodeChangeEvent = (newValue) => {
     setPostcode(newValue);
+  };
+
+  /**
+   * Event to handle when a new postcode is added.
+   */
+  const handleAddPostcodeEvent = () => {
+    setLookupType("postcode");
+    setShowAddDialog(true);
   };
 
   /**
@@ -623,6 +676,59 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
     } else setUpdating(false);
   };
 
+  /**
+   * Method used to add the new lookup.
+   *
+   * @param {object} data The data returned from the add lookup dialog.
+   */
+  const handleDoneAddLookup = async (data) => {
+    currentVariant.current = getLookupVariantString(data.variant);
+
+    const addResults = await addLookup(
+      data,
+      settingsContext.authorityCode,
+      userContext.currentUser.token,
+      settingsContext.isWelsh,
+      settingsContext.isScottish,
+      lookupContext.currentLookups
+    );
+
+    if (addResults && addResults.result) {
+      if (addResults.updatedLookups && addResults.updatedLookups.length > 0)
+        lookupContext.onUpdateLookup(data.variant, addResults.updatedLookups);
+
+      switch (data.variant) {
+        case "postcode":
+          setPostcode(addResults.newLookup.postcodeRef);
+          break;
+
+        case "postTown":
+          setPostTown(addResults.newLookup.postTownRef);
+          break;
+
+        case "subLocality":
+          setSubLocality(addResults.newLookup.subLocalityRef);
+          break;
+
+        default:
+          break;
+      }
+
+      addResult.current = true;
+    } else addResult.current = false;
+    setEngError(addResults ? addResults.engError : null);
+    setAltLanguageError(addResults ? addResults.altLanguageError : null);
+
+    setShowAddDialog(!addResult.current);
+  };
+
+  /**
+   * Event to handle when the add lookup dialog is closed.
+   */
+  const handleCloseAddLookup = () => {
+    setShowAddDialog(false);
+  };
+
   useEffect(() => {
     setRepresentativePointCodeLookup(FilteredRepresentativePointCode(settingsContext.isScottish, true));
 
@@ -781,268 +887,323 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
   }, [rangeProcessedCount, variant]);
 
   return (
-    <Dialog
-      open={showDialog}
-      aria-labelledby="multi-edit-logical-status-dialog"
-      fullWidth
-      maxWidth="sm"
-      onClose={handleDialogClose}
-    >
-      <ADSDialogTitle title={`Set ${titleLogicalStatus}`} closeTooltip="Close" onClose={handleCancelClick} />
-      <DialogContent sx={{ mt: theme.spacing(2) }}>
-        {!completed ? (
-          <Fragment>
-            <Typography variant="body1" gutterBottom sx={{ ml: theme.spacing(1.25) }}>
-              {`Set the selected properties to ${titleLogicalStatus} with the following settings`}
-            </Typography>
-            <Grid container justifyContent="center" alignItems="center">
-              <Grid item xs={12}>
-                <ADSReadOnlyControl label="BLPU logical status" value={blpuLogicalStatus} />
-              </Grid>
-              <Grid item xs={12}>
-                <ADSReadOnlyControl label="LPI logical status" value={lpiLogicalStatus} />
-              </Grid>
-              {!settingsContext.isScottish && (
+    <>
+      <Dialog
+        open={showDialog}
+        aria-labelledby="multi-edit-logical-status-dialog"
+        fullWidth
+        maxWidth="sm"
+        onClose={handleDialogClose}
+      >
+        <ADSDialogTitle title={`Set ${titleLogicalStatus}`} closeTooltip="Close" onClose={handleCancelClick} />
+        <DialogContent sx={{ mt: theme.spacing(2) }}>
+          {!completed ? (
+            <Fragment>
+              <Typography variant="body1" gutterBottom sx={{ ml: theme.spacing(1.25) }}>
+                {`Set the selected properties to ${titleLogicalStatus} with the following settings`}
+              </Typography>
+              <Grid container justifyContent="center" alignItems="center">
+                <Grid item xs={12}>
+                  <ADSReadOnlyControl label="BLPU logical status" value={blpuLogicalStatus} />
+                </Grid>
+                <Grid item xs={12}>
+                  <ADSReadOnlyControl label="LPI logical status" value={lpiLogicalStatus} />
+                </Grid>
+                {!settingsContext.isScottish && (
+                  <Grid item xs={12}>
+                    <ADSSelectControl
+                      label="State"
+                      isEditable
+                      useRounded
+                      disabled={updating}
+                      doNotSetTitleCase
+                      displayNoChange
+                      lookupData={blpuStateLookup}
+                      lookupId="id"
+                      lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                      lookupColour="colour"
+                      value={state}
+                      errorText={stateError}
+                      onChange={handleStateChangeEvent}
+                      helperText="A code identifying the current state of a BLPU."
+                    />
+                  </Grid>
+                )}
                 <Grid item xs={12}>
                   <ADSSelectControl
-                    label="State"
+                    label="RPC"
                     isEditable
                     useRounded
                     disabled={updating}
                     doNotSetTitleCase
                     displayNoChange
-                    lookupData={blpuStateLookup}
+                    lookupData={representativePointCodeLookup}
                     lookupId="id"
                     lookupLabel={GetLookupLabel(settingsContext.isScottish)}
                     lookupColour="colour"
-                    value={state}
-                    errorText={stateError}
-                    onChange={handleStateChangeEvent}
-                    helperText="A code identifying the current state of a BLPU."
+                    value={rpc}
+                    errorText={rpcError}
+                    onChange={handleRpcChangeEvent}
+                    helperText="Representative Point Code."
                   />
                 </Grid>
-              )}
-              <Grid item xs={12}>
-                <ADSSelectControl
-                  label="RPC"
-                  isEditable
-                  useRounded
-                  disabled={updating}
-                  doNotSetTitleCase
-                  displayNoChange
-                  lookupData={representativePointCodeLookup}
-                  lookupId="id"
-                  lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-                  lookupColour="colour"
-                  value={rpc}
-                  errorText={rpcError}
-                  onChange={handleRpcChangeEvent}
-                  helperText="Representative Point Code."
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <ADSSelectControl
-                  label="Official address"
-                  isEditable
-                  useRounded
-                  disabled={updating}
-                  doNotSetTitleCase
-                  displayNoChange
-                  lookupData={filteredLookup(OfficialAddress, settingsContext.isScottish)}
-                  lookupId="id"
-                  lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-                  value={officialFlag}
-                  errorText={officialFlagError}
-                  onChange={handleOfficialFlagChangeEvent}
-                  helperText="Status of address."
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <ADSSelectControl
-                  label="Postal address"
-                  isEditable
-                  useRounded
-                  disabled={updating}
-                  doNotSetTitleCase
-                  displayNoChange
-                  lookupData={filteredLookup(PostallyAddressable, settingsContext.isScottish)}
-                  lookupId="id"
-                  lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-                  value={postalAddress}
-                  errorText={postalAddressError}
-                  onChange={handlePostalAddressChangeEvent}
-                  helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <ADSSelectControl
-                  label="Post town"
-                  isEditable
-                  useRounded
-                  disabled={updating}
-                  displayNoChange
-                  lookupData={lookupContext.currentLookups.postTowns.filter((x) => x.language === "ENG" && !x.historic)}
-                  lookupId="postTownRef"
-                  lookupLabel="postTown"
-                  value={postTown}
-                  errorText={postTownRefError}
-                  onChange={handlePostTownChangeEvent}
-                  helperText="Allocated by the Royal Mail to assist in delivery of mail."
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <ADSSelectControl
-                  label="Postcode"
-                  isEditable
-                  useRounded
-                  disabled={updating}
-                  doNotSetTitleCase
-                  displayNoChange
-                  lookupData={lookupContext.currentLookups.postcodes.filter((x) => !x.historic)}
-                  lookupId="postcodeRef"
-                  lookupLabel="postcode"
-                  value={postcode}
-                  errorText={postcodeRefError}
-                  onChange={handlePostcodeChangeEvent}
-                  helperText="Allocated by the Royal Mail to assist in delivery of mail."
-                />
-              </Grid>
-              {noteOpen && (
                 <Grid item xs={12}>
-                  <ADSTextControl
+                  <ADSSelectControl
+                    label="Official address"
                     isEditable
+                    useRounded
                     disabled={updating}
-                    value={note}
-                    id="logical_status_note"
-                    maxLength={4000}
-                    minLines={2}
-                    maxLines={10}
-                    onChange={handleNoteChangeEvent}
+                    doNotSetTitleCase
+                    displayNoChange
+                    lookupData={filteredLookup(OfficialAddress, settingsContext.isScottish)}
+                    lookupId="id"
+                    lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                    value={officialFlag}
+                    errorText={officialFlagError}
+                    onChange={handleOfficialFlagChangeEvent}
+                    helperText="Status of address."
                   />
                 </Grid>
-              )}
-            </Grid>
-          </Fragment>
-        ) : (
-          <Fragment>
-            <Stack direction="column" spacing={1}>
-              <Stack
-                direction="row"
-                justifyContent="flex-start"
-                alignItems="flex-end"
-                spacing={1}
-                sx={{ ml: theme.spacing(1) }}
-              >
-                <Typography variant="body1" gutterBottom sx={{ fontWeight: 700, color: adsGreenC }}>
-                  {updatedCount.current}
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  properties were successfully updated
-                </Typography>
-              </Stack>
-              {failedCount.current > 0 && (
-                <Stack direction="column" spacing={1}>
-                  <Stack
-                    direction="row"
-                    justifyContent="flex-start"
-                    alignItems="flex-end"
-                    spacing={1}
-                    sx={{ ml: theme.spacing(1) }}
-                  >
-                    <Typography variant="body1" gutterBottom sx={{ fontWeight: 700, color: adsRed }}>
-                      {failedCount.current}
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
-                      properties were not updated:
-                    </Typography>
-                  </Stack>
-                  <Box
-                    sx={{
-                      height: "197px",
-                      border: `1px solid ${adsLightGreyC}`,
-                      overflowY: "auto",
-                    }}
-                  >
-                    {finaliseErrors && finaliseErrors.length > 0 && (
-                      <List
-                        sx={{ width: "100%", pt: "0px", pb: "0px" }}
-                        component="nav"
-                        key="multi-edit-logical-status-errors"
-                      >
-                        {finaliseErrors.map((rec, index) => (
-                          <ListItem
-                            alignItems="flex-start"
-                            dense
-                            divider
-                            id={`multi-edit-logical-status-error-${index}`}
-                          >
-                            {renderErrorListItem(rec)}
-                          </ListItem>
-                        ))}
-                      </List>
-                    )}
-                  </Box>
-                  {process.env.NODE_ENV === "development" && (
-                    <Button
-                      onClick={handleAddToListClick}
-                      autoFocus
-                      variant="contained"
-                      sx={{ ...whiteButtonStyle, width: "135px" }}
-                      startIcon={<PlaylistAddIcon />}
-                    >
-                      Add to list
-                    </Button>
-                  )}
+                <Grid item xs={12}>
+                  <ADSSelectControl
+                    label="Postal address"
+                    isEditable
+                    useRounded
+                    disabled={updating}
+                    doNotSetTitleCase
+                    displayNoChange
+                    lookupData={filteredLookup(PostallyAddressable, settingsContext.isScottish)}
+                    lookupId="id"
+                    lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                    value={postalAddress}
+                    errorText={postalAddressError}
+                    onChange={handlePostalAddressChangeEvent}
+                    helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <ADSSelectControl
+                    label="Post town"
+                    isEditable
+                    useRounded
+                    disabled={updating}
+                    displayNoChange
+                    allowAddLookup
+                    lookupData={lookupContext.currentLookups.postTowns
+                      .filter((x) => x.language === "ENG" && !x.historic)
+                      .sort(function (a, b) {
+                        return a.postTown.localeCompare(b.postTown, undefined, {
+                          numeric: true,
+                          sensitivity: "base",
+                        });
+                      })}
+                    lookupId="postTownRef"
+                    lookupLabel="postTown"
+                    value={postTown}
+                    errorText={postTownRefError}
+                    onChange={handlePostTownChangeEvent}
+                    onAddLookup={handleAddPostTownEvent}
+                    helperText="Allocated by the Royal Mail to assist in delivery of mail."
+                  />
+                </Grid>
+                {settingsContext.isScottish && (
+                  <Grid item xs={12}>
+                    <ADSSelectControl
+                      label="Sub-locality"
+                      isEditable
+                      useRounded
+                      disabled={updating}
+                      displayNoChange
+                      allowAddLookup
+                      lookupData={lookupContext.currentLookups.subLocalities
+                        .filter((x) => x.language === "ENG" && !x.historic)
+                        .sort(function (a, b) {
+                          return a.subLocality.localeCompare(b.subLocality, undefined, {
+                            numeric: true,
+                            sensitivity: "base",
+                          });
+                        })}
+                      lookupId="subLocalityRef"
+                      lookupLabel="subLocality"
+                      value={subLocality}
+                      errorText={subLocalityError}
+                      onChange={handleSubLocalityChangeEvent}
+                      onAddLookup={handleAddSubLocalityEvent}
+                      helperText="Third level of geographic area name. e.g. to record an island name or property group."
+                    />
+                  </Grid>
+                )}
+                <Grid item xs={12}>
+                  <ADSSelectControl
+                    label="Postcode"
+                    isEditable
+                    useRounded
+                    disabled={updating}
+                    doNotSetTitleCase
+                    displayNoChange
+                    allowAddLookup
+                    lookupData={lookupContext.currentLookups.postcodes
+                      .filter((x) => !x.historic)
+                      .sort(function (a, b) {
+                        return a.postcode.localeCompare(b.postcode, undefined, {
+                          numeric: true,
+                          sensitivity: "base",
+                        });
+                      })}
+                    lookupId="postcodeRef"
+                    lookupLabel="postcode"
+                    value={postcode}
+                    errorText={postcodeRefError}
+                    onChange={handlePostcodeChangeEvent}
+                    onAddLookup={handleAddPostcodeEvent}
+                    helperText="Allocated by the Royal Mail to assist in delivery of mail."
+                  />
+                </Grid>
+                {noteOpen && (
+                  <Grid item xs={12}>
+                    <ADSTextControl
+                      isEditable
+                      disabled={updating}
+                      value={note}
+                      id="logical_status_note"
+                      maxLength={4000}
+                      minLines={2}
+                      maxLines={10}
+                      onChange={handleNoteChangeEvent}
+                    />
+                  </Grid>
+                )}
+              </Grid>
+            </Fragment>
+          ) : (
+            <Fragment>
+              <Stack direction="column" spacing={1}>
+                <Stack
+                  direction="row"
+                  justifyContent="flex-start"
+                  alignItems="flex-end"
+                  spacing={1}
+                  sx={{ ml: theme.spacing(1) }}
+                >
+                  <Typography variant="body1" gutterBottom sx={{ fontWeight: 700, color: adsGreenC }}>
+                    {updatedCount.current}
+                  </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    properties were successfully updated
+                  </Typography>
                 </Stack>
+                {failedCount.current > 0 && (
+                  <Stack direction="column" spacing={1}>
+                    <Stack
+                      direction="row"
+                      justifyContent="flex-start"
+                      alignItems="flex-end"
+                      spacing={1}
+                      sx={{ ml: theme.spacing(1) }}
+                    >
+                      <Typography variant="body1" gutterBottom sx={{ fontWeight: 700, color: adsRed }}>
+                        {failedCount.current}
+                      </Typography>
+                      <Typography variant="body1" gutterBottom>
+                        properties were not updated:
+                      </Typography>
+                    </Stack>
+                    <Box
+                      sx={{
+                        height: "197px",
+                        border: `1px solid ${adsLightGreyC}`,
+                        overflowY: "auto",
+                      }}
+                    >
+                      {finaliseErrors && finaliseErrors.length > 0 && (
+                        <List
+                          sx={{ width: "100%", pt: "0px", pb: "0px" }}
+                          component="nav"
+                          key="multi-edit-logical-status-errors"
+                        >
+                          {finaliseErrors.map((rec, index) => (
+                            <ListItem
+                              alignItems="flex-start"
+                              dense
+                              divider
+                              id={`multi-edit-logical-status-error-${index}`}
+                            >
+                              {renderErrorListItem(rec)}
+                            </ListItem>
+                          ))}
+                        </List>
+                      )}
+                    </Box>
+                    {process.env.NODE_ENV === "development" && (
+                      <Button
+                        onClick={handleAddToListClick}
+                        autoFocus
+                        variant="contained"
+                        sx={{ ...whiteButtonStyle, width: "135px" }}
+                        startIcon={<PlaylistAddIcon />}
+                      >
+                        Add to list
+                      </Button>
+                    )}
+                  </Stack>
+                )}
+              </Stack>
+            </Fragment>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "flex-start", ml: theme.spacing(3), mb: theme.spacing(2) }}>
+          {!completed ? (
+            <Stack direction="column" spacing={3}>
+              {!noteOpen && (
+                <Button
+                  onClick={handleAddNoteClick}
+                  autoFocus
+                  disabled={updating}
+                  variant="contained"
+                  sx={whiteButtonStyle}
+                  startIcon={<NoteAddIcon />}
+                >
+                  Add note
+                </Button>
               )}
-            </Stack>
-          </Fragment>
-        )}
-      </DialogContent>
-      <DialogActions sx={{ justifyContent: "flex-start", ml: theme.spacing(3), mb: theme.spacing(2) }}>
-        {!completed ? (
-          <Stack direction="column" spacing={3}>
-            {!noteOpen && (
               <Button
-                onClick={handleAddNoteClick}
+                onClick={handleConfirmClick}
                 autoFocus
                 disabled={updating}
                 variant="contained"
-                sx={whiteButtonStyle}
-                startIcon={<NoteAddIcon />}
+                sx={blueButtonStyle}
+                startIcon={<DoneIcon />}
               >
-                Add note
+                Confirm
               </Button>
-            )}
+            </Stack>
+          ) : (
             <Button
-              onClick={handleConfirmClick}
+              onClick={handleCloseClick}
               autoFocus
-              disabled={updating}
               variant="contained"
               sx={blueButtonStyle}
               startIcon={<DoneIcon />}
             >
-              Confirm
+              Close
             </Button>
-          </Stack>
-        ) : (
-          <Button
-            onClick={handleCloseClick}
-            autoFocus
-            variant="contained"
-            sx={blueButtonStyle}
-            startIcon={<DoneIcon />}
-          >
-            Close
-          </Button>
+          )}
+        </DialogActions>
+        {updating && (
+          <Backdrop open={updating}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
         )}
-      </DialogActions>
-      {updating && (
-        <Backdrop open={updating}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      )}
-    </Dialog>
+      </Dialog>
+      <AddLookupDialog
+        isOpen={showAddDialog}
+        variant={lookupType}
+        errorEng={engError}
+        errorAltLanguage={altLanguageError}
+        onDone={(data) => handleDoneAddLookup(data)}
+        onClose={handleCloseAddLookup}
+      />
+    </>
   );
 }
 

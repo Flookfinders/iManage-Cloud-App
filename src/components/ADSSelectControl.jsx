@@ -29,6 +29,7 @@
 //    016   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    017   06.02.23 Sean Flook       IMANN-264 If we have no lookup data ensure the options are cleared.
 //    018   14.03.24 Sean Flook        ESU19_GP Use the lookupColour for the icon background colour.
+//    019   09.04.24 Sean Flook       IMANN-376 Modified to show an add button if required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -38,14 +39,30 @@
 
 import React, { useRef, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Grid, TextField, Typography, Tooltip, Avatar, InputAdornment, Autocomplete, Skeleton } from "@mui/material";
+
+import {
+  Grid,
+  TextField,
+  Typography,
+  Tooltip,
+  Avatar,
+  InputAdornment,
+  Autocomplete,
+  Skeleton,
+  IconButton,
+} from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
-import { SyncAlt as TwoWayIcon } from "@mui/icons-material";
-import { StartToEndIcon, EndToStartIcon } from "../utils/ADSIcons";
+
 import { lookupToTitleCase } from "../utils/HelperUtils";
+
+import { SyncAlt as TwoWayIcon } from "@mui/icons-material";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { StartToEndIcon, EndToStartIcon } from "../utils/ADSIcons";
+
 import { adsBlueA, adsRed, adsDarkGrey, adsWhite, adsLightGreyA, adsBlack, adsYellow } from "../utils/ADSColours";
 import {
+  ActionIconStyle,
   FormBoxRowStyle,
   FormRowStyle,
   FormSelectInputStyle,
@@ -69,6 +86,7 @@ ADSSelectControl.propTypes = {
   isClassification: PropTypes.bool,
   includeHiddenCode: PropTypes.bool,
   displayNoChange: PropTypes.bool,
+  allowAddLookup: PropTypes.bool,
   lookupData: PropTypes.array.isRequired,
   lookupId: PropTypes.string.isRequired,
   lookupLabel: PropTypes.string.isRequired,
@@ -79,6 +97,7 @@ ADSSelectControl.propTypes = {
   value: PropTypes.any,
   errorText: PropTypes.array,
   onChange: PropTypes.func.isRequired,
+  onAddLookup: PropTypes.func,
 };
 
 ADSSelectControl.defaultProps = {
@@ -93,6 +112,7 @@ ADSSelectControl.defaultProps = {
   isClassification: false,
   includeHiddenCode: false,
   displayNoChange: false,
+  allowAddLookup: false,
 };
 
 function ADSSelectControl({
@@ -108,6 +128,7 @@ function ADSSelectControl({
   isClassification,
   includeHiddenCode,
   displayNoChange,
+  allowAddLookup,
   lookupData,
   lookupId,
   lookupLabel,
@@ -118,6 +139,7 @@ function ADSSelectControl({
   value,
   errorText,
   onChange,
+  onAddLookup,
 }) {
   const theme = useTheme();
   const [displayError, setDisplayError] = useState("");
@@ -125,6 +147,7 @@ function ADSSelectControl({
   const [options, setOptions] = useState([]);
   const [controlValue, setControlValue] = useState("");
   const [currentValue, setCurrentValue] = useState("");
+  const [controlFocused, setControlFocused] = useState(false);
 
   /**
    * Event to handle when the control value changes.
@@ -142,6 +165,27 @@ function ADSSelectControl({
       if (selectedItem && selectedItem.length > 0) onChange(selectedItem[0][lookupId]);
       else onChange(null);
     }
+  };
+
+  /**
+   * Event to handle when the control is focused.
+   */
+  const handleFocus = () => {
+    setControlFocused(true);
+  };
+
+  /**
+   * Event to handle when the control looses focus.
+   */
+  const handleBlur = () => {
+    setControlFocused(false);
+  };
+
+  /**
+   * Event to handle when the add lookup button is clicked.
+   */
+  const handleAddLookup = () => {
+    if (onAddLookup) onAddLookup();
   };
 
   /**
@@ -472,6 +516,8 @@ function ADSSelectControl({
                       autoHighlight
                       autoSelect
                       onChange={handleChangeEvent}
+                      onFocus={handleFocus}
+                      onBlur={handleBlur}
                       renderOption={(props, option) => {
                         return (
                           <li {...props}>
@@ -534,6 +580,101 @@ function ADSSelectControl({
                       aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
                     />
                   </Tooltip>
+                ) : allowAddLookup && controlFocused ? (
+                  <Tooltip
+                    title={isRequired ? helperText + " This is a required field." : helperText}
+                    arrow
+                    placement="right"
+                    sx={tooltipStyle}
+                  >
+                    <Autocomplete
+                      id={`ads-select-${label.toLowerCase().replaceAll(" ", "-")}`}
+                      sx={{
+                        color: "inherit",
+                      }}
+                      getOptionLabel={(option) => lookupToTitleCase(option, doNotSetTitleCase)}
+                      noOptionsText={`No ${label} records`}
+                      options={options}
+                      value={controlValue}
+                      autoHighlight
+                      autoSelect
+                      onChange={handleChangeEvent}
+                      onFocus={handleFocus}
+                      onBlur={handleBlur}
+                      renderOption={(props, option) => {
+                        return (
+                          <li {...props}>
+                            <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
+                              {lookupColour && getItemAvatar(option)}
+                              {includeHiddenCode ? (
+                                <Fragment>
+                                  <Typography
+                                    variant="body2"
+                                    color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                                    align="left"
+                                  >
+                                    {lookupToTitleCase(
+                                      option ? option.substring(0, option.indexOf("|")) : option,
+                                      doNotSetTitleCase
+                                    )}
+                                  </Typography>
+                                  <Typography
+                                    variant="caption"
+                                    sx={{ visibility: "hidden" }}
+                                    color={includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}
+                                    align="left"
+                                  >
+                                    {option ? option.substring(option.indexOf("|") + 1) : option}
+                                  </Typography>
+                                </Fragment>
+                              ) : (
+                                <Typography
+                                  variant="body2"
+                                  color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                                  align="left"
+                                >
+                                  {lookupToTitleCase(option, doNotSetTitleCase)}
+                                </Typography>
+                              )}
+                            </Stack>
+                          </li>
+                        );
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          sx={FormSelectInputStyle(hasError.current)}
+                          error={hasError.current}
+                          fullWidth
+                          disabled={!isEditable}
+                          required={isRequired}
+                          placeholder={displayNoChange ? "No change" : null}
+                          variant="outlined"
+                          margin="dense"
+                          size="small"
+                          InputProps={{
+                            ...params.InputProps,
+                            startAdornment: (
+                              <InputAdornment position="start">{getItemAvatar(controlValue)}</InputAdornment>
+                            ),
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <IconButton
+                                  id="btnClear"
+                                  onClick={handleAddLookup}
+                                  aria-label="add button"
+                                  size="small"
+                                >
+                                  <AddCircleOutlineIcon sx={ActionIconStyle()} />
+                                </IconButton>
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                      )}
+                      aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+                    />
+                  </Tooltip>
                 ) : (
                   <Tooltip
                     title={isRequired ? helperText + " This is a required field." : helperText}
@@ -553,6 +694,8 @@ function ADSSelectControl({
                       autoHighlight
                       autoSelect
                       onChange={handleChangeEvent}
+                      onFocus={handleFocus}
+                      onBlur={handleBlur}
                       renderOption={(props, option) => {
                         return (
                           <li {...props}>
@@ -636,6 +779,8 @@ function ADSSelectControl({
                     autoHighlight
                     autoSelect
                     onChange={handleChangeEvent}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                     renderOption={(props, option) => {
                       return (
                         <li {...props}>
@@ -695,6 +840,93 @@ function ADSSelectControl({
                     aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
                   />
                 </Tooltip>
+              ) : allowAddLookup && controlFocused ? (
+                <Tooltip
+                  title={isRequired ? helperText + " This is a required field." : helperText}
+                  arrow
+                  placement="right"
+                  sx={tooltipStyle}
+                >
+                  <Autocomplete
+                    id={`ads-select-${label.toLowerCase().replaceAll(" ", "-")}`}
+                    sx={{
+                      color: "inherit",
+                    }}
+                    getOptionLabel={(option) => lookupToTitleCase(option, doNotSetTitleCase)}
+                    noOptionsText={`No ${label} records`}
+                    options={options}
+                    value={controlValue}
+                    autoHighlight
+                    autoSelect
+                    onChange={handleChangeEvent}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                    renderOption={(props, option) => {
+                      return (
+                        <li {...props}>
+                          <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
+                            {lookupColour && getItemAvatar(option)}
+                            {includeHiddenCode ? (
+                              <Fragment>
+                                <Typography
+                                  variant="body2"
+                                  color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                                  align="left"
+                                >
+                                  {lookupToTitleCase(
+                                    option ? option.substring(0, option.indexOf("|")) : option,
+                                    doNotSetTitleCase
+                                  )}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  sx={{ visibility: "hidden" }}
+                                  color={includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}
+                                  align="left"
+                                >
+                                  {option ? option.substring(option.indexOf("|") + 1) : option}
+                                </Typography>
+                              </Fragment>
+                            ) : (
+                              <Typography
+                                variant="body2"
+                                color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                                align="left"
+                              >
+                                {lookupToTitleCase(option, doNotSetTitleCase)}
+                              </Typography>
+                            )}
+                          </Stack>
+                        </li>
+                      );
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        sx={FormSelectInputStyle(hasError.current)}
+                        error={hasError.current}
+                        fullWidth
+                        disabled={!isEditable}
+                        required={isRequired}
+                        placeholder={displayNoChange ? "No change" : null}
+                        variant="outlined"
+                        margin="dense"
+                        size="small"
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton id="btnClear" onClick={handleAddLookup} aria-label="add button" size="small">
+                                <AddCircleOutlineIcon sx={ActionIconStyle()} />
+                              </IconButton>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
+                    aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+                  />
+                </Tooltip>
               ) : (
                 <Tooltip
                   title={isRequired ? helperText + " This is a required field." : helperText}
@@ -714,6 +946,8 @@ function ADSSelectControl({
                     autoHighlight
                     autoSelect
                     onChange={handleChangeEvent}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                     renderOption={(props, option) => {
                       return (
                         <li {...props}>
@@ -789,6 +1023,8 @@ function ADSSelectControl({
                   autoSelect
                   value={controlValue}
                   onChange={handleChangeEvent}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
                   renderOption={(props, option) => {
                     return (
                       <li {...props}>
@@ -845,6 +1081,84 @@ function ADSSelectControl({
                   )}
                   aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
                 />
+              ) : allowAddLookup && controlFocused ? (
+                <Autocomplete
+                  id={`ads-select-${label.toLowerCase().replaceAll(" ", "-")}`}
+                  sx={{
+                    color: "inherit",
+                  }}
+                  getOptionLabel={(option) => lookupToTitleCase(option, doNotSetTitleCase)}
+                  noOptionsText={`No ${label} records`}
+                  options={options}
+                  autoHighlight
+                  autoSelect
+                  value={controlValue}
+                  onChange={handleChangeEvent}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
+                  renderOption={(props, option) => {
+                    return (
+                      <li {...props}>
+                        {includeHiddenCode ? (
+                          <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
+                            <Typography
+                              variant="body2"
+                              color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                              align="left"
+                            >
+                              {lookupToTitleCase(
+                                option ? option.substring(0, option.indexOf("|")) : option,
+                                doNotSetTitleCase
+                              )}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              sx={{ visibility: "hidden" }}
+                              color={includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}
+                              align="left"
+                            >
+                              {option ? option.substring(option.indexOf("|") + 1) : option}
+                            </Typography>
+                          </Stack>
+                        ) : (
+                          <Typography
+                            variant="body2"
+                            color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                            align="left"
+                          >
+                            {lookupToTitleCase(option, doNotSetTitleCase)}
+                          </Typography>
+                        )}
+                      </li>
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      sx={FormSelectInputStyle(hasError.current)}
+                      error={hasError.current}
+                      fullWidth
+                      disabled={!isEditable}
+                      required={isRequired}
+                      placeholder={displayNoChange ? "No change" : null}
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: <InputAdornment position="start">{getItemAvatar(controlValue)}</InputAdornment>,
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton id="btnClear" onClick={handleAddLookup} aria-label="add button" size="small">
+                              <AddCircleOutlineIcon sx={ActionIconStyle()} />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
+                  aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+                />
               ) : (
                 <Autocomplete
                   id={`ads-select-${label.toLowerCase().replaceAll(" ", "-")}`}
@@ -858,6 +1172,8 @@ function ADSSelectControl({
                   autoSelect
                   value={controlValue}
                   onChange={handleChangeEvent}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
                   renderOption={(props, option) => {
                     return (
                       <li {...props}>
@@ -929,6 +1245,8 @@ function ADSSelectControl({
                 autoSelect
                 value={controlValue}
                 onChange={handleChangeEvent}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
                 renderOption={(props, option) => {
                   return (
                     <li {...props}>
@@ -984,6 +1302,83 @@ function ADSSelectControl({
                 )}
                 aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
               />
+            ) : allowAddLookup && controlFocused ? (
+              <Autocomplete
+                id={`ads-select-${label.toLowerCase().replaceAll(" ", "-")}`}
+                sx={{
+                  color: "inherit",
+                }}
+                getOptionLabel={(option) => lookupToTitleCase(option, doNotSetTitleCase)}
+                noOptionsText={`No ${label} records`}
+                options={options}
+                autoHighlight
+                autoSelect
+                value={controlValue}
+                onChange={handleChangeEvent}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                renderOption={(props, option) => {
+                  return (
+                    <li {...props}>
+                      {includeHiddenCode ? (
+                        <Stack direction="row">
+                          <Typography
+                            variant="body2"
+                            color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                            align="left"
+                          >
+                            {lookupToTitleCase(
+                              option ? option.substring(0, option.indexOf("|")) : option,
+                              doNotSetTitleCase
+                            )}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ visibility: "hidden" }}
+                            color={includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}
+                            align="left"
+                          >
+                            {option ? option.substring(option.indexOf("|") + 1) : option}
+                          </Typography>
+                        </Stack>
+                      ) : (
+                        <Typography
+                          variant="body2"
+                          color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                          align="left"
+                        >
+                          {lookupToTitleCase(option, doNotSetTitleCase)}
+                        </Typography>
+                      )}
+                    </li>
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    sx={FormSelectInputStyle(hasError.current)}
+                    error={hasError.current}
+                    fullWidth
+                    disabled={!isEditable}
+                    required={isRequired}
+                    placeholder={displayNoChange ? "No change" : null}
+                    variant="outlined"
+                    margin="dense"
+                    size="small"
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton id="btnClear" onClick={handleAddLookup} aria-label="add button" size="small">
+                            <AddCircleOutlineIcon sx={ActionIconStyle()} />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                )}
+                aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+              />
             ) : (
               <Autocomplete
                 id={`ads-select-${label.toLowerCase().replaceAll(" ", "-")}`}
@@ -997,6 +1392,8 @@ function ADSSelectControl({
                 autoSelect
                 value={controlValue}
                 onChange={handleChangeEvent}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
                 renderOption={(props, option) => {
                   return (
                     <li {...props}>

@@ -33,6 +33,7 @@
 //    020   21.03.24 Joshua McCormick IMANN-280 Toolbar styling and action icons are inline with rest of app
 //    021   22.03.24 Sean Flook                 Changed the way the address is updated and displayed.
 //    022   26.03.24 Joshua McCormick IMANN-280 Added divider on tab between back button and title
+//    023   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -46,7 +47,15 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
 
-import { copyTextToClipboard, GetLookupLabel, ConvertDate, filteredLookup, shorten } from "../utils/HelperUtils";
+import {
+  addLookup,
+  copyTextToClipboard,
+  getLookupVariantString,
+  GetLookupLabel,
+  ConvertDate,
+  filteredLookup,
+  shorten,
+} from "../utils/HelperUtils";
 import { addressToTitleCase, FilteredLPILogicalStatus, GetTempAddress } from "../utils/PropertyUtils";
 import ObjectComparison, { lpiKeysToIgnore } from "./../utils/ObjectComparison";
 
@@ -61,6 +70,7 @@ import ADSDateControl from "../components/ADSDateControl";
 import ADSReadOnlyControl from "../components/ADSReadOnlyControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+import AddLookupDialog from "../dialogs/AddLookupDialog";
 
 import OfficialAddress from "./../data/OfficialAddress";
 import PostallyAddressable from "./../data/PostallyAddressable";
@@ -155,6 +165,14 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
   const [postalAddressError, setPostalAddressError] = useState(null);
   const [startDateError, setStartDateError] = useState(null);
   const [endDateError, setEndDateError] = useState(null);
+
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [lookupType, setLookupType] = useState("unknown");
+  const [engError, setEngError] = useState(null);
+  const [altLanguageError, setAltLanguageError] = useState(null);
+
+  const addResult = useRef(null);
+  const currentVariant = useRef(null);
 
   /**
    * Method used to update the current sandbox record.
@@ -345,6 +363,14 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
   };
 
   /**
+   * Event to handle when a new post town is added.
+   */
+  const handleAddPostTownEvent = () => {
+    setLookupType("postTown");
+    setShowAddDialog(true);
+  };
+
+  /**
    * Event to handle when the sub-locality is changed.
    *
    * @param {number|null} newValue The new sub-locality.
@@ -355,6 +381,14 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
   };
 
   /**
+   * Event to handle when a new sub-locality is added.
+   */
+  const handleAddSubLocalityEvent = () => {
+    setLookupType("subLocality");
+    setShowAddDialog(true);
+  };
+
+  /**
    * Event to handle when the postcode is changed.
    *
    * @param {number|null} newValue The new postcode.
@@ -362,6 +396,14 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
   const handlePostcodeRefChangeEvent = (newValue) => {
     setPostcodeRef(newValue);
     UpdateSandbox("postcodeRef", newValue);
+  };
+
+  /**
+   * Event to handle when a new postcode is added.
+   */
+  const handleAddPostcodeEvent = () => {
+    setLookupType("postcode");
+    setShowAddDialog(true);
   };
 
   /**
@@ -685,6 +727,59 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
     if (onHomeClick) onHomeClick("discard", data.lpiData, null);
   };
 
+  /**
+   * Method used to add the new lookup.
+   *
+   * @param {object} data The data returned from the add lookup dialog.
+   */
+  const handleDoneAddLookup = async (data) => {
+    currentVariant.current = getLookupVariantString(data.variant);
+
+    const addResults = await addLookup(
+      data,
+      settingsContext.authorityCode,
+      userContext.currentUser.token,
+      settingsContext.isWelsh,
+      settingsContext.isScottish,
+      lookupContext.currentLookups
+    );
+
+    if (addResults && addResults.result) {
+      if (addResults.updatedLookups && addResults.updatedLookups.length > 0)
+        lookupContext.onUpdateLookup(data.variant, addResults.updatedLookups);
+
+      switch (data.variant) {
+        case "postcode":
+          setPostcodeRef(addResults.newLookup.postcodeRef);
+          break;
+
+        case "postTown":
+          setPostTownRef(addResults.newLookup.postTownRef);
+          break;
+
+        case "subLocality":
+          setSubLocalityRef(addResults.newLookup.subLocalityRef);
+          break;
+
+        default:
+          break;
+      }
+
+      addResult.current = true;
+    } else addResult.current = false;
+    setEngError(addResults ? addResults.engError : null);
+    setAltLanguageError(addResults ? addResults.altLanguageError : null);
+
+    setShowAddDialog(!addResult.current);
+  };
+
+  /**
+   * Event to handle when the add lookup dialog is closed.
+   */
+  const handleCloseAddLookup = () => {
+    setShowAddDialog(false);
+  };
+
   useEffect(() => {
     if (!loading && data && data.lpiData) {
       setLanguage(data.lpiData.language);
@@ -877,14 +972,14 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           justifyContent="space-between"
           sx={{ pl: theme.spacing(2), mt: theme.spacing(0.25) }}
         >
-            <Typography variant="subtitle1">
-              <ADSActionButton
-                variant="home"
-                tooltipTitle="Back to property details"
-                tooltipPlacement="bottom"
-                onClick={handleHomeClick}
-              />
-            </Typography>
+          <Typography variant="subtitle1">
+            <ADSActionButton
+              variant="home"
+              tooltipTitle="Back to property details"
+              tooltipPlacement="bottom"
+              onClick={handleHomeClick}
+            />
+          </Typography>
           <Typography variant="subtitle1">{`| LPI ${data.index + 1} of ${data.totalRecords}: `}</Typography>
           <Typography
             sx={{
@@ -1060,12 +1155,21 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           isFocused={focusedField ? focusedField === "PostTown" || focusedField === "PostTownRef" : false}
           loading={loading}
           useRounded
-          lookupData={lookupContext.currentLookups.postTowns.filter((x) => x.language === language && !x.historic)}
+          allowAddLookup
+          lookupData={lookupContext.currentLookups.postTowns
+            .filter((x) => x.language === language && !x.historic)
+            .sort(function (a, b) {
+              return a.postTown.localeCompare(b.postTown, undefined, {
+                numeric: true,
+                sensitivity: "base",
+              });
+            })}
           lookupId="postTownRef"
           lookupLabel="postTown"
           value={postTownRef}
           errorText={postTownRefError}
           onChange={handlePostTownRefChangeEvent}
+          onAddLookup={handleAddPostTownEvent}
           helperText="Allocated by the Royal Mail to assist in delivery of mail."
         />
         {settingsContext.isScottish && (
@@ -1075,14 +1179,21 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
             isFocused={focusedField ? focusedField === "SubLocality" || focusedField === "SubLocalityRef" : false}
             loading={loading}
             useRounded
-            lookupData={lookupContext.currentLookups.subLocalities.filter(
-              (x) => x.language === language && !x.historic
-            )}
+            allowAddLookup
+            lookupData={lookupContext.currentLookups.subLocalities
+              .filter((x) => x.language === language && !x.historic)
+              .sort(function (a, b) {
+                return a.subLocality.localeCompare(b.subLocality, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+              })}
             lookupId="subLocalityRef"
             lookupLabel="subLocality"
             value={subLocalityRef}
             errorText={subLocalityRefError}
             onChange={handleSubLocalityRefChangeEvent}
+            onAddLookup={handleAddSubLocalityEvent}
             helperText="Third level of geographic area name. e.g. to record an island name or property group."
           />
         )}
@@ -1093,12 +1204,21 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           loading={loading}
           useRounded
           doNotSetTitleCase
-          lookupData={lookupContext.currentLookups.postcodes.filter((x) => !x.historic)}
+          allowAddLookup
+          lookupData={lookupContext.currentLookups.postcodes
+            .filter((x) => !x.historic)
+            .sort(function (a, b) {
+              return a.postcode.localeCompare(b.postcode, undefined, {
+                numeric: true,
+                sensitivity: "base",
+              });
+            })}
           lookupId="postcodeRef"
           lookupLabel="postcode"
           value={postcodeRef}
           errorText={postcodeRefError}
           onChange={handlePostcodeRefChangeEvent}
+          onAddLookup={handleAddPostcodeEvent}
           helperText="Allocated by the Royal Mail to assist in delivery of mail."
         />
         {!settingsContext.isScottish && (
@@ -1188,6 +1308,14 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           open={openDeleteConfirmation}
           associatedRecords={associatedRecords}
           onClose={handleCloseDeleteConfirmation}
+        />
+        <AddLookupDialog
+          isOpen={showAddDialog}
+          variant={lookupType}
+          errorEng={engError}
+          errorAltLanguage={altLanguageError}
+          onDone={(data) => handleDoneAddLookup(data)}
+          onClose={handleCloseAddLookup}
         />
       </div>
     </Fragment>

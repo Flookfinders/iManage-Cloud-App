@@ -16,6 +16,7 @@
 //    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    004   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
 //    005   27.03.24 Sean Flook                 Changes required to remove warnings.
+//    006   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -26,14 +27,16 @@ import PropTypes from "prop-types";
 
 import LookupContext from "../context/lookupContext";
 import SettingsContext from "../context/settingsContext";
+import UserContext from "../context/userContext";
 
 import { Box } from "@mui/system";
 import ADSAddressableObjectControl from "../components/ADSAddressableObjectControl";
 import ADSPaoDetailsControl from "../components/ADSPaoDetailsControl";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSReadOnlyControl from "../components/ADSReadOnlyControl";
+import AddLookupDialog from "../dialogs/AddLookupDialog";
 
-import { stringToSentenceCase } from "../utils/HelperUtils";
+import { addLookup, getLookupVariantString, stringToSentenceCase } from "../utils/HelperUtils";
 import { streetDescriptorToTitleCase } from "../utils/StreetUtils";
 
 WizardAddressDetails1Tab.propTypes = {
@@ -52,6 +55,7 @@ WizardAddressDetails1Tab.defaultProps = {
 function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChanged, onErrorChanged }) {
   const lookupContext = useContext(LookupContext);
   const settingsContext = useContext(SettingsContext);
+  const userContext = useContext(UserContext);
 
   const [saoStartNumber, setSaoStartNumber] = useState("");
   const [saoStartSuffix, setSaoStartSuffix] = useState("");
@@ -87,7 +91,14 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
   const [subLocalityRefError, setSubLocalityRefError] = useState(null);
   const [postcodeRefError, setPostcodeRefError] = useState(null);
 
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [lookupType, setLookupType] = useState("unknown");
+  const [engError, setEngError] = useState(null);
+  const [altLanguageError, setAltLanguageError] = useState(null);
+
   const updatedDataRef = useRef(null);
+  const addResult = useRef(null);
+  const currentVariant = useRef(null);
 
   /**
    * Method to get the updated data object after a change.
@@ -410,6 +421,14 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
   };
 
   /**
+   * Event to handle when a new post town is added.
+   */
+  const handleAddPostTownEvent = () => {
+    setLookupType("postTown");
+    setShowAddDialog(true);
+  };
+
+  /**
    * Event to handle when the sub-locality is changed.
    *
    * @param {number|null} newValue The new sub-locality.
@@ -421,6 +440,14 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
   };
 
   /**
+   * Event to handle when a new sub-locality is added.
+   */
+  const handleAddSubLocalityEvent = () => {
+    setLookupType("subLocality");
+    setShowAddDialog(true);
+  };
+
+  /**
    * Event to handle when the postcode reference is changed.
    *
    * @param {number|null} newValue The new postcode reference.
@@ -429,6 +456,14 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
     setPostcodeRef(newValue);
     if (onDataChanged && postcodeRef !== newValue) onDataChanged(getUpdatedData("postcodeRef", newValue));
     if (onErrorChanged) onErrorChanged(getUpdatedErrors("postcodeRef"));
+  };
+
+  /**
+   * Event to handle when a new postcode is added.
+   */
+  const handleAddPostcodeEvent = () => {
+    setLookupType("postcode");
+    setShowAddDialog(true);
   };
 
   /**
@@ -456,6 +491,59 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
       if (onDataChanged && paoDetails !== data.details) onDataChanged(getUpdatedData("paoDetails", data.details));
       if (onErrorChanged) onErrorChanged(getUpdatedErrors("paoDetails"));
     }
+  };
+
+  /**
+   * Method used to add the new lookup.
+   *
+   * @param {object} data The data returned from the add lookup dialog.
+   */
+  const handleDoneAddLookup = async (data) => {
+    currentVariant.current = getLookupVariantString(data.variant);
+
+    const addResults = await addLookup(
+      data,
+      settingsContext.authorityCode,
+      userContext.currentUser.token,
+      settingsContext.isWelsh,
+      settingsContext.isScottish,
+      lookupContext.currentLookups
+    );
+
+    if (addResults && addResults.result) {
+      if (addResults.updatedLookups && addResults.updatedLookups.length > 0)
+        lookupContext.onUpdateLookup(data.variant, addResults.updatedLookups);
+
+      switch (data.variant) {
+        case "postcode":
+          setPostcodeRef(addResults.newLookup.postcodeRef);
+          break;
+
+        case "postTown":
+          setPostTownRef(addResults.newLookup.postTownRef);
+          break;
+
+        case "subLocality":
+          setSubLocalityRef(addResults.newLookup.subLocalityRef);
+          break;
+
+        default:
+          break;
+      }
+
+      addResult.current = true;
+    } else addResult.current = false;
+    setEngError(addResults ? addResults.engError : null);
+    setAltLanguageError(addResults ? addResults.altLanguageError : null);
+
+    setShowAddDialog(!addResult.current);
+  };
+
+  /**
+   * Event to handle when the add lookup dialog is closed.
+   */
+  const handleCloseAddLookup = () => {
+    setShowAddDialog(false);
   };
 
   useEffect(() => {
@@ -622,123 +710,162 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
   }, [errors]);
 
   return (
-    <Box id="wizard-address-settings-1-tab" sx={{ width: "100%" }}>
-      {isChild && (
-        <ADSAddressableObjectControl
-          variant="SAO"
-          isEditable
-          isRequired
-          helperText="The secondary addressable object."
-          startNumberValue={saoStartNumber}
-          startSuffixValue={saoStartSuffix}
-          endNumberValue={saoEndNumber}
-          endSuffixValue={saoEndSuffix}
-          textValue={saoText}
-          startNumberErrorText={saoStartNumError}
-          startSuffixErrorText={saoStartSuffixError}
-          endNumberErrorText={saoEndNumError}
-          endSuffixErrorText={saoEndSuffixError}
-          textErrorText={saoTextError}
-          onStartNumberChange={handleSaoStartNumberChangeEvent}
-          onStartSuffixChange={handleSaoStartSuffixChangeEvent}
-          onEndNumberChange={handleSaoEndNumberChangeEvent}
-          onEndSuffixChange={handleSaoEndSuffixChangeEvent}
-          onTextChange={handleSaoTextChangeEvent}
-        />
-      )}
-      {isChild && (
-        <ADSPaoDetailsControl
-          label="PAO details"
-          isRequired
-          data={{
-            startNumber: paoStartNumber,
-            startSuffix: paoStartSuffix,
-            endNumber: paoEndNumber,
-            endSuffix: paoEndSuffix,
-            text: paoText,
-            details: paoDetails,
-          }}
-          errorText={paoDetailsError}
-          onDetailsChanged={handlePaoDetailsChanged}
-        />
-      )}
-      {!isChild && (
-        <ADSAddressableObjectControl
-          variant="PAO"
-          isEditable
-          isRequired
-          helperText="The primary addressable object."
-          startNumberValue={paoStartNumber}
-          startSuffixValue={paoStartSuffix}
-          endNumberValue={paoEndNumber}
-          endSuffixValue={paoEndSuffix}
-          textValue={paoText}
-          startNumberErrorText={paoStartNumError}
-          startSuffixErrorText={paoStartSuffixError}
-          endNumberErrorText={paoEndNumError}
-          endSuffixErrorText={paoEndSuffixError}
-          textErrorText={paoTextError}
-          onStartNumberChange={handlePaoStartNumberChangeEvent}
-          onStartSuffixChange={handlePaoStartSuffixChangeEvent}
-          onEndNumberChange={handlePaoEndNumberChangeEvent}
-          onEndSuffixChange={handlePaoEndSuffixChangeEvent}
-          onTextChange={handlePaoTextChangeEvent}
-        />
-      )}
-      <ADSSelectControl
-        label="Street"
-        isEditable
-        isRequired
-        useRounded
-        lookupData={lookupContext.currentLookups.streetDescriptors.filter((x) => x.language === language)}
-        lookupId="usrn"
-        lookupLabel="address"
-        value={usrn}
-        errorText={usrnError}
-        onChange={handleUsrnChangeEvent}
-        helperText="Unique Street reference number."
-      />
-      <ADSSelectControl
-        label="Post town"
-        isEditable
-        useRounded
-        lookupData={lookupContext.currentLookups.postTowns.filter((x) => x.language === language)}
-        lookupId="postTownRef"
-        lookupLabel="postTown"
-        value={postTownRef}
-        errorText={postTownRefError}
-        onChange={handlePostTownRefChangeEvent}
-        helperText="Allocated by the Royal Mail to assist in delivery of mail."
-      />
-      {settingsContext.isScottish && (
+    <>
+      <Box id="wizard-address-settings-1-tab" sx={{ width: "100%" }}>
+        {isChild && (
+          <ADSAddressableObjectControl
+            variant="SAO"
+            isEditable
+            isRequired
+            helperText="The secondary addressable object."
+            startNumberValue={saoStartNumber}
+            startSuffixValue={saoStartSuffix}
+            endNumberValue={saoEndNumber}
+            endSuffixValue={saoEndSuffix}
+            textValue={saoText}
+            startNumberErrorText={saoStartNumError}
+            startSuffixErrorText={saoStartSuffixError}
+            endNumberErrorText={saoEndNumError}
+            endSuffixErrorText={saoEndSuffixError}
+            textErrorText={saoTextError}
+            onStartNumberChange={handleSaoStartNumberChangeEvent}
+            onStartSuffixChange={handleSaoStartSuffixChangeEvent}
+            onEndNumberChange={handleSaoEndNumberChangeEvent}
+            onEndSuffixChange={handleSaoEndSuffixChangeEvent}
+            onTextChange={handleSaoTextChangeEvent}
+          />
+        )}
+        {isChild && (
+          <ADSPaoDetailsControl
+            label="PAO details"
+            isRequired
+            data={{
+              startNumber: paoStartNumber,
+              startSuffix: paoStartSuffix,
+              endNumber: paoEndNumber,
+              endSuffix: paoEndSuffix,
+              text: paoText,
+              details: paoDetails,
+            }}
+            errorText={paoDetailsError}
+            onDetailsChanged={handlePaoDetailsChanged}
+          />
+        )}
+        {!isChild && (
+          <ADSAddressableObjectControl
+            variant="PAO"
+            isEditable
+            isRequired
+            helperText="The primary addressable object."
+            startNumberValue={paoStartNumber}
+            startSuffixValue={paoStartSuffix}
+            endNumberValue={paoEndNumber}
+            endSuffixValue={paoEndSuffix}
+            textValue={paoText}
+            startNumberErrorText={paoStartNumError}
+            startSuffixErrorText={paoStartSuffixError}
+            endNumberErrorText={paoEndNumError}
+            endSuffixErrorText={paoEndSuffixError}
+            textErrorText={paoTextError}
+            onStartNumberChange={handlePaoStartNumberChangeEvent}
+            onStartSuffixChange={handlePaoStartSuffixChangeEvent}
+            onEndNumberChange={handlePaoEndNumberChangeEvent}
+            onEndSuffixChange={handlePaoEndSuffixChangeEvent}
+            onTextChange={handlePaoTextChangeEvent}
+          />
+        )}
         <ADSSelectControl
-          label="Sub-locality"
+          label="Street"
+          isEditable
+          isRequired
+          useRounded
+          lookupData={lookupContext.currentLookups.streetDescriptors.filter((x) => x.language === language)}
+          lookupId="usrn"
+          lookupLabel="address"
+          value={usrn}
+          errorText={usrnError}
+          onChange={handleUsrnChangeEvent}
+          helperText="Unique Street reference number."
+        />
+        <ADSSelectControl
+          label="Post town"
           isEditable
           useRounded
-          lookupData={lookupContext.currentLookups.subLocalities.filter((x) => x.language === language && !x.historic)}
-          lookupId="subLocalityRef"
-          lookupLabel="subLocality"
-          value={subLocalityRef}
-          errorText={subLocalityRefError}
-          onChange={handleSubLocalityRefChangeEvent}
-          helperText="Third level of geographic area name. e.g. to record an island name or property group."
+          allowAddLookup
+          lookupData={lookupContext.currentLookups.postTowns
+            .filter((x) => x.language === language && !x.historic)
+            .sort(function (a, b) {
+              return a.postTown.localeCompare(b.postTown, undefined, {
+                numeric: true,
+                sensitivity: "base",
+              });
+            })}
+          lookupId="postTownRef"
+          lookupLabel="postTown"
+          value={postTownRef}
+          errorText={postTownRefError}
+          onChange={handlePostTownRefChangeEvent}
+          onAddLookup={handleAddPostTownEvent}
+          helperText="Allocated by the Royal Mail to assist in delivery of mail."
         />
-      )}
-      <ADSSelectControl
-        label="Postcode"
-        isEditable
-        useRounded
-        doNotSetTitleCase
-        lookupData={lookupContext.currentLookups.postcodes}
-        lookupId="postcodeRef"
-        lookupLabel="postcode"
-        value={postcodeRef}
-        errorText={postcodeRefError}
-        onChange={handlePostcodeRefChangeEvent}
-        helperText="Allocated by the Royal Mail to assist in delivery of mail."
+        {settingsContext.isScottish && (
+          <ADSSelectControl
+            label="Sub-locality"
+            isEditable
+            useRounded
+            allowAddLookup
+            lookupData={lookupContext.currentLookups.subLocalities
+              .filter((x) => x.language === language && !x.historic)
+              .sort(function (a, b) {
+                return a.subLocality.localeCompare(b.subLocality, undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+              })}
+            lookupId="subLocalityRef"
+            lookupLabel="subLocality"
+            value={subLocalityRef}
+            errorText={subLocalityRefError}
+            onChange={handleSubLocalityRefChangeEvent}
+            onAddLookup={handleAddSubLocalityEvent}
+            helperText="Third level of geographic area name. e.g. to record an island name or property group."
+          />
+        )}
+        <ADSSelectControl
+          label="Postcode"
+          isEditable
+          useRounded
+          doNotSetTitleCase
+          allowAddLookup
+          lookupData={lookupContext.currentLookups.postcodes
+            .filter((x) => !x.historic)
+            .sort(function (a, b) {
+              return a.postcode.localeCompare(b.postcode, undefined, {
+                numeric: true,
+                sensitivity: "base",
+              });
+            })}
+          lookupId="postcodeRef"
+          lookupLabel="postcode"
+          value={postcodeRef}
+          errorText={postcodeRefError}
+          onChange={handlePostcodeRefChangeEvent}
+          onAddLookup={handleAddPostcodeEvent}
+          helperText="Allocated by the Royal Mail to assist in delivery of mail."
+        />
+        {addressPreview && (
+          <ADSReadOnlyControl label="Address preview" value={addressPreview} noLeftPadding boldLabel />
+        )}
+      </Box>
+      <AddLookupDialog
+        isOpen={showAddDialog}
+        variant={lookupType}
+        errorEng={engError}
+        errorAltLanguage={altLanguageError}
+        onDone={(data) => handleDoneAddLookup(data)}
+        onClose={handleCloseAddLookup}
       />
-      {addressPreview && <ADSReadOnlyControl label="Address preview" value={addressPreview} noLeftPadding boldLabel />}
-    </Box>
+    </>
   );
 }
 
