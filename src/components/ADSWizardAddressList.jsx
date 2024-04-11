@@ -26,6 +26,7 @@
 //    013   25.01.24 Sean Flook                 Changes required after UX review.
 //    014   08.02.24 Joel Benford         RTAB3 Supply null street state to classification icon tooltip
 //    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    016   11.04.24 Sean Flook       IMANN-384 Hide information and selection control when updating.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -82,6 +83,7 @@ ADSWizardAddressList.propTypes = {
   checked: PropTypes.array.isRequired,
   errors: PropTypes.array,
   haveMoveBlpu: PropTypes.bool,
+  updating: PropTypes.bool,
   onCheckedChanged: PropTypes.func.isRequired,
   onDataChanged: PropTypes.func.isRequired,
   onErrorChanged: PropTypes.func.isRequired,
@@ -89,6 +91,7 @@ ADSWizardAddressList.propTypes = {
 
 ADSWizardAddressList.defaultProps = {
   haveMoveBlpu: false,
+  updating: false,
 };
 
 function ADSWizardAddressList({
@@ -96,6 +99,7 @@ function ADSWizardAddressList({
   checked,
   errors,
   haveMoveBlpu,
+  updating,
   onCheckedChanged,
   onDataChanged,
   onErrorChanged,
@@ -1029,6 +1033,7 @@ function ADSWizardAddressList({
           </Tooltip>
           {checked &&
             checked.length > 0 &&
+            !updating &&
             (haveMoveBlpu ? (
               <ADSSelectionControl
                 selectionCount={checked && checked.length > 0 ? checked.length : 0}
@@ -1047,7 +1052,7 @@ function ADSWizardAddressList({
                 onClose={handleCloseSelection}
               />
             ))}
-          {haveMoveBlpu && <ADSInformationControl variant={"moveBLPU"} />}
+          {haveMoveBlpu && !updating && <ADSInformationControl variant={"moveBLPU"} />}
         </Stack>
       </Box>
       <Box sx={dataFormStyle(haveMoveBlpu ? "ADSWizardAddressListMoveBlpu" : "ADSWizardAddressListWizard")}>

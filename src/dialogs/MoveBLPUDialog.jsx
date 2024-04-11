@@ -22,6 +22,7 @@
 //    009   12.03.24 Sean Flook            MUL7 Handle saving when X is clicked and user chooses to save changes.
 //    010   12.03.24 Sean Flook            MUL8 Display an alert if the save fails.
 //    011   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
+//    012   11.04.24 Sean Flook       IMANN-384 Check we have a parent UPRN before changing it to a string.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -603,14 +604,10 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
 
   useEffect(() => {
     if (viewErrors && updateErrors.current && updateErrors.current.length > 0) {
-      const errorIds = settingsContext.isScottish
-        ? [...updateErrors.current.map((x) => x.id), ...updateErrors.current.map((x) => x.id.replace("ENG", "GAE"))]
-        : settingsContext.isWelsh
-        ? [...updateErrors.current.map((x) => x.id), ...updateErrors.current.map((x) => x.id.replace("ENG", "CYM"))]
-        : updateErrors.current.map((x) => x.id);
+      const errorIds = updateErrors.current.map((x) => x.uprn.toString());
 
       if (errorIds && data && errorIds.length > 0 && errorIds.length !== data.length) {
-        const errorData = data.filter((x) => errorIds.includes(x.id));
+        const errorData = data.filter((x) => errorIds.includes(x.uprn));
 
         setData(errorData);
         setAlertOpen(true);
@@ -628,7 +625,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
         const savedMapProperties = savedProperty.current.map((x) => {
           return {
             uprn: x.uprn.toString(),
-            parentUprn: x.parentUprn.toString(),
+            parentUprn: x.parentUprn ? x.parentUprn.toString() : "",
             address: x.lpis.filter((rec) => rec.language === "ENG")[0].address.replaceAll("\r\n", " "),
             formattedAddress: x.lpis.filter((rec) => rec.language === "ENG")[0].address,
             postcode: x.lpis.filter((rec) => rec.language === "ENG")[0].postcode,
@@ -718,6 +715,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
                       checked={checked}
                       errors={finaliseErrors}
                       haveMoveBlpu
+                      updating={updating}
                       onCheckedChanged={handleCheckedChanged}
                       onDataChanged={handleDataChanged}
                       onErrorChanged={handleErrorChanged}
