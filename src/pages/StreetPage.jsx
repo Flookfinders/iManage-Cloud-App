@@ -21,6 +21,7 @@
 //    008   14.02.24 Sean Flook                 Added a bit of error trapping.
 //    009   05.04.24 Sean Flook                 Correctly handle errors when getting a street.
 //    010   05.04.24 Sean Flook       IMANN-351 Changes to handle browser navigation.
+//    011   11.04.24 Sean Flook       IMANN-351 Prevent infinite loops when creating a new record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -259,8 +260,8 @@ function StreetPage() {
             generateNewStreet(newEsus);
           }
 
-          if (urlUsrn && (!streetContext.currentStreet || streetContext.currentStreet.usrn.toString() !== urlUsrn))
-            streetContext.onUpdateCurrentStreet(Number(urlUsrn), "Add new Street", true);
+          if (urlUsrn && (!streetContext.currentStreet || streetContext.currentStreet.usrn.toString() !== "0"))
+            streetContext.onUpdateCurrentStreet(0, "Add new Street", true);
         }
       }
     }
@@ -319,7 +320,7 @@ function StreetPage() {
       );
       setData(newStreet);
       sandboxContext.onUpdateAndClear("sourceStreet", newStreet, "allStreet");
-      dataUsrn.current = 0;
+      dataUsrn.current = "0";
       setLoading(false);
       loadingRef.current = false;
     };
@@ -329,7 +330,10 @@ function StreetPage() {
       setApiUrl(streetUrl);
     }
 
-    if (location.pathname.includes(StreetRoute)) SetUpStreetData(location.pathname.replace(`${StreetRoute}/`, ""));
+    if (location.pathname.includes(StreetRoute)) {
+      const urlUsrn = location.pathname.replace(`${StreetRoute}/`, "");
+      if (urlUsrn !== dataUsrn.current) SetUpStreetData(urlUsrn);
+    }
 
     return () => {};
   }, [streetContext, sandboxContext, userContext, settingsContext, lookupContext, apiUrl, location]);

@@ -51,6 +51,7 @@
 //    038   04.04.24 Sean Flook                 Added navigate back and leaving a property.
 //    039   05.04.24 Sean Flook       IMANN-351 Changes to handle browser navigation.
 //    040   09.04.24 Sean Flook                 If we do not have user information do not close the login dialog.
+//    041   11.04.24 Sean Flook                 Use title case for authority name rather than sentence case.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -79,7 +80,7 @@ import {
   GetBackgroundPropertiesUrl,
   GetPropertyFromUPRNUrl,
 } from "./configuration/ADSConfig";
-import { stringToSentenceCase, mapSelectSearchString, mergeArrays } from "./utils/HelperUtils";
+import { mapSelectSearchString, mergeArrays, StringToTitleCase } from "./utils/HelperUtils";
 import {
   ValidateStreetData,
   ValidateDescriptorData,
@@ -1039,14 +1040,18 @@ function App() {
       const authority = Number(details.dataProviderCode);
       setAuthorityCode(authority);
       const authorityRecord = DETRCodes.find((x) => x.id === authority);
-      if (authorityRecord) setAuthorityName(stringToSentenceCase(authorityRecord.text));
+      if (authorityRecord)
+        setAuthorityName(StringToTitleCase(authorityRecord.text).replace("Of", "of").replace("And", "and"));
       else setAuthorityName("");
       setIsScottish(authority >= 9000 && authority <= 9999 && authority !== 9904);
       setIsWelsh(authority >= 6000 && authority <= 6999);
       if (details.tabText) {
         if (details.tabText !== document.title) document.title = details.tabText;
       } else {
-        if (authorityRecord) document.title = `iManage Cloud (${stringToSentenceCase(authorityRecord.text)})`;
+        if (authorityRecord)
+          document.title = `iManage Cloud (${StringToTitleCase(authorityRecord.text)
+            .replace("Of", "of")
+            .replace("And", "and")})`;
         else document.title = "iManage Cloud";
       }
     } else {

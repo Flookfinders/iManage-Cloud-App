@@ -17,6 +17,7 @@
 //    004   04.04.24 Sean Flook                 Added better handling of API return status.
 //    005   05.04.24 Sean Flook                 Correctly handle errors when getting a property.
 //    006   05.04.24 Sean Flook       IMANN-351 Changes to handle browser navigation.
+//    007   11.04.24 Sean Flook       IMANN-351 Prevent infinite loops when creating a new record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -210,7 +211,7 @@ function PropertyPage() {
           }
         }
       } else {
-        if (urlUprn && urlUprn === "0" && dataUprn.current.toString() !== "0") {
+        if (urlUprn && urlUprn === "0" && dataUprn.current !== "0") {
           setLoading(true);
 
           if (sandboxContext && sandboxContext.currentSandbox.sourceProperty) {
@@ -242,7 +243,7 @@ function PropertyPage() {
               );
             sandboxContext.onUpdateAndClear("sourceProperty", newProperty, "allProperty");
           }
-          dataUprn.current = 0;
+          dataUprn.current = "0";
           setLoading(false);
         }
       }
@@ -253,8 +254,10 @@ function PropertyPage() {
       setApiUrl(propertyUrl);
     }
 
-    if (location.pathname.includes(PropertyRoute))
-      SetUpPropertyData(location.pathname.replace(`${PropertyRoute}/`, ""));
+    if (location.pathname.includes(PropertyRoute)) {
+      const urlUprn = location.pathname.replace(`${PropertyRoute}/`, "");
+      if (urlUprn !== dataUprn.current) SetUpPropertyData(urlUprn);
+    }
 
     return () => {};
   }, [propertyContext, sandboxContext, userContext, settingsContext, apiUrl, location]);
