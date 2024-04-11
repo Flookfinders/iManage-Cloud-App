@@ -26,6 +26,7 @@
 //    013   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    014   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
 //    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    016   09.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -387,6 +388,7 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onHomeClick,
           value={crossReference}
           id="cross_reference"
           maxLength={50}
+          displayCharactersLeft
           errorText={crossReferenceError}
           helperText="Primary key of corresponding Record in an external data-set."
           onChange={handleCrossReferenceChangeEvent}

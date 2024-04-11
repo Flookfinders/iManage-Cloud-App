@@ -18,6 +18,7 @@
 //    005   03.11.23 Sean Flook                 Added hyphen to one-way.
 //    006   07.03.24 Sean Flook       IMANN-348 Centralised keys to ignore and added missing record types to StreetComparison and PropertyComparison.
 //    007   28.03.24 Sean Flook                 Added EsusComparison and added additional keys to streetKeysToIgnore.
+//    008   09.04.24 Joel Benford     IMANN-363 Ignore neverExport on successor cross refs
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -77,7 +78,7 @@ export const mergeEsuKeysToIgnore = [
   "wktGeometry",
 ];
 
-export const successorCrossRefKeysToIgnore = ["changeType", "entryDate", "lastUpdateDate"];
+export const successorCrossRefKeysToIgnore = ["changeType", "entryDate", "lastUpdateDate", "neverExport"];
 
 export const highwayDedicationKeysToIgnore = ["changeType", "entryDate", "lastUpdateDate"];
 

@@ -29,6 +29,7 @@
 //    016   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
 //    017   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    018   22.03.24 Sean Flook       PRFRM5_GP Display an information control for creating and modifying the geometry.
+//    019   09.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -419,6 +420,7 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
           value={annotation}
           id="annotation"
           maxLength={30}
+          displayCharactersLeft
           errorText={annotationError}
           helperText="Supplementary information to support the provenance."
           onChange={handleAnnotationChangeEvent}

@@ -22,6 +22,7 @@
 //    009   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    010   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
 //    011   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    012   11.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -336,6 +337,7 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onHomeCl
           value={organisation}
           id="organisation"
           maxLength={60}
+          displayCharactersLeft
           errorText={organisationError}
           helperText="Trading name used by organisation at the property."
           onChange={handleOrganisationChangeEvent}
@@ -348,6 +350,7 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onHomeCl
           value={legalName}
           id="legal_name"
           maxLength={60}
+          displayCharactersLeft
           errorText={legalNameError}
           helperText="Registered legal name of organisation."
           onChange={handleLegalNameChangeEvent}

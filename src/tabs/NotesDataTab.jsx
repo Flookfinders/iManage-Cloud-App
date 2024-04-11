@@ -28,6 +28,7 @@
 //    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    016   26.03.24 Joel Benford     IMANN-365 Changed header back/text/visibility
 //    017   02.04.24 Joshua McCormick IMANN-277 Show displayCharactersLeft on note input
+//    018   10.04.24 Joel Benford     IMANN-379 Enable OK button when edited
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -35,7 +36,6 @@
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
-import ObjectComparison, { noteKeysToIgnore } from "./../utils/ObjectComparison";
 import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
 import StreetContext from "../context/streetContext";
@@ -83,9 +83,10 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
    *
    * @param {string} field The name of the field that is being updated.
    * @param {string|null} newValue The value used to update the given field.
+   * @param {boolean} different The note is changed from before opening it (false if changed and changed back).
    */
-  const UpdateSandbox = (field, newValue) => {
-    const newNote = GetCurrentData(field, newValue);
+  const UpdateSandbox = (field, newValue, different) => {
+    const newNote = GetCurrentData(field, newValue, different);
     sandboxContext.onSandboxChange(data.variant === "street" ? "streetNote" : "propertyNote", newNote);
   };
 
@@ -95,8 +96,14 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
    * @param {string|null} newValue The new note.
    */
   const handleNoteChangeEvent = (newValue) => {
+    const noteBeforeOpening =
+      data.variant === "street"
+        ? sandboxContext.currentSandbox.sourceStreet.streetNotes.find((x) => x.pkId === data.noteData.pkId)
+        : sandboxContext.currentSandbox.sourceProperty.blpuNotes.find((x) => x.pkId === data.noteData.pkId);
+    const different = noteBeforeOpening && noteBeforeOpening.note !== newValue;
+    setDataChanged(different);
     setNote(newValue);
-    UpdateSandbox("note", newValue);
+    UpdateSandbox("note", newValue, different);
   };
 
   /**
@@ -145,7 +152,7 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
 
     if (deleteConfirmed && id && id !== 0) {
       if (id > 0) {
-        const currentData = GetCurrentData("changeType", "D");
+        const currentData = GetCurrentData("changeType", "D", false);
         if (onHomeClick) onHomeClick("save", null, currentData);
       } else {
         if (dataChanged) {
@@ -190,11 +197,12 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
    *
    * @param {string} field The name of the field that is being updated.
    * @param {string|null} newValue The value used to update the given field.
+   * @param {boolean} different The note is changed from before opening it (false if changed and changed back).
    * @returns {object} The current interest record.
    */
-  function GetCurrentData(field, newValue) {
+  function GetCurrentData(field, newValue, different) {
     if (data.variant === "street") {
-      if (dataChanged)
+      if (different)
         return {
           pkId: data.noteData.pkId,
           seqNo: data.noteData.seqNo,
@@ -213,7 +221,7 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
           lastUser: userContext ? userContext.currentUser.auditName : data.lastUser,
         };
     } else {
-      if (dataChanged)
+      if (different)
         return {
           pkId: data.noteData.pkId,
           seqNo: data.noteData.seqNo,
@@ -239,34 +247,6 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
       setNote(data.noteData.note ? data.noteData.note : "");
     }
   }, [loading, data]);
-
-  useEffect(() => {
-    const currentNote =
-      data.variant === "street"
-        ? sandboxContext.currentSandbox.currentStreetRecords.note
-        : sandboxContext.currentSandbox.currentPropertyRecords.note;
-
-    if (
-      currentNote &&
-      ((data.variant === "street" && sandboxContext.currentSandbox.sourceStreet) ||
-        (data.variant === "property" && sandboxContext.currentSandbox.sourceProperty))
-    ) {
-      const sourceNote =
-        data.variant === "street"
-          ? sandboxContext.currentSandbox.sourceStreet.streetNotes.find((x) => x.pkId === currentNote.pkId)
-          : sandboxContext.currentSandbox.sourceProperty.blpuNotes.find((x) => x.pkId === currentNote.pkId);
-
-      if (sourceNote) {
-        setDataChanged(!ObjectComparison(sourceNote, currentNote, noteKeysToIgnore));
-      } else if (currentNote.pkId < 0) setDataChanged(true);
-    }
-  }, [
-    data.variant,
-    sandboxContext.currentSandbox.currentPropertyRecords.note,
-    sandboxContext.currentSandbox.currentStreetRecords.note,
-    sandboxContext.currentSandbox.sourceStreet,
-    sandboxContext.currentSandbox.sourceProperty,
-  ]);
 
   useEffect(() => {
     if (

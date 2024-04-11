@@ -42,6 +42,7 @@
 //    029   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    030   22.03.24 Sean Flook       PRFRM5_GP Display information control for moving a BLPU.
 //    031   04.04.24 Sean Flook                 Various changes for action menu items.
+//    032   09.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1428,6 +1429,7 @@ function PropertyDetailsTab({
             isFocused={focusedField ? focusedField === "Organisation" : false}
             loading={loading}
             maxLength={100}
+            displayCharactersLeft
             value={organisation}
             id="property_organisation"
             errorText={organisationError}
