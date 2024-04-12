@@ -74,6 +74,7 @@
 //    060   04.04.24 Sean Flook                 Fix bug.
 //    061   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
 //    062   05.04.24 Sean Flook       IMANN-326 Delete all type 63, 64 & 66 records if the street state is 4.
+//    063   12.04.24 Sean Flook       IMANN-385 When creating an ESU when selecting the start and end coordinates of the street, also try and create the highway dedication record if have template values.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -6589,6 +6590,8 @@ function StreetDataForm({ data, loading }) {
       });
     } else if (
       sandboxContext.currentSandbox.currentStreetRecords.esu &&
+      data.esus &&
+      data.esus.length &&
       !esuFormData &&
       !["esu", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
     ) {
@@ -6600,6 +6603,8 @@ function StreetDataForm({ data, loading }) {
       });
     } else if (
       sandboxContext.currentSandbox.currentStreetRecords.highwayDedication &&
+      data.esus &&
+      data.esus.length &&
       !hdFormData &&
       !["highwayDedication", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
     ) {
@@ -6620,6 +6625,8 @@ function StreetDataForm({ data, loading }) {
       });
     } else if (
       sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption &&
+      data.esus &&
+      data.esus.length &&
       !oweFormData &&
       !["oneWayExemption", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
     ) {
@@ -6640,6 +6647,8 @@ function StreetDataForm({ data, loading }) {
       });
     } else if (
       sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef &&
+      data.successorCrossRefs &&
+      data.successorCrossRefs.length &&
       !successorCrossRefFormData &&
       !["successorCrossRef", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
     ) {
@@ -6665,6 +6674,8 @@ function StreetDataForm({ data, loading }) {
       });
     } else if (
       sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility &&
+      data.maintenanceResponsibilities &&
+      data.maintenanceResponsibilities.length &&
       !maintenanceResponsibilityFormData &&
       !["maintenanceResponsibility", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
     ) {
@@ -6678,6 +6689,8 @@ function StreetDataForm({ data, loading }) {
       });
     } else if (
       sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory &&
+      data.reinstatementCategories &&
+      data.reinstatementCategories.length &&
       !reinstatementCategoryFormData &&
       !["reinstatementCategory", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
     ) {
@@ -6691,6 +6704,8 @@ function StreetDataForm({ data, loading }) {
       });
     } else if (
       sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation &&
+      data.specialDesignations &&
+      data.specialDesignations.length &&
       !osSpecialDesignationFormData &&
       !["osSpecialDesignation", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
     ) {
@@ -6704,6 +6719,8 @@ function StreetDataForm({ data, loading }) {
       });
     } else if (
       sandboxContext.currentSandbox.currentStreetRecords.interest &&
+      data.interests &&
+      data.interests.length &&
       !interestFormData &&
       !["interest", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
     ) {
@@ -6717,6 +6734,8 @@ function StreetDataForm({ data, loading }) {
       });
     } else if (
       sandboxContext.currentSandbox.currentStreetRecords.construction &&
+      data.constructions &&
+      data.constructions.length &&
       !constructionFormData &&
       !["construction", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
     ) {
@@ -6730,6 +6749,8 @@ function StreetDataForm({ data, loading }) {
       });
     } else if (
       sandboxContext.currentSandbox.currentStreetRecords.specialDesignation &&
+      data.specialDesignations &&
+      data.specialDesignations.length &&
       !specialDesignationFormData &&
       !["specialDesignation", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
     ) {
@@ -6743,6 +6764,8 @@ function StreetDataForm({ data, loading }) {
       });
     } else if (
       sandboxContext.currentSandbox.currentStreetRecords.hww &&
+      data.heightWidthWeights &&
+      data.heightWidthWeights.length &&
       !hwwFormData &&
       !["hww", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
     ) {
@@ -6756,6 +6779,8 @@ function StreetDataForm({ data, loading }) {
       });
     } else if (
       sandboxContext.currentSandbox.currentStreetRecords.prow &&
+      data.publicRightOfWays &&
+      data.publicRightOfWays.length &&
       !prowFormData &&
       !["prow", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
     ) {
@@ -6769,6 +6794,8 @@ function StreetDataForm({ data, loading }) {
       });
     } else if (
       sandboxContext.currentSandbox.currentStreetRecords.note &&
+      data.streetNotes &&
+      data.streetNotes.length &&
       !notesFormData &&
       !["streetNote", "allAssociatedStreet", "allStreet"].includes(clearingType.current)
     ) {
@@ -8587,24 +8614,115 @@ function StreetDataForm({ data, loading }) {
           contextStreet.streetEndX &&
           contextStreet.streetEndY
         ) {
-          esuData = [
-            {
-              changeType: "I",
-              esuVersionNumber: 1,
-              numCoordCount: 2,
-              esuTolerance: 10,
-              esuStartDate: currentDate,
-              esuEndDate: null,
-              esuDirection: 1,
-              wktGeometry: `LINESTRING (${mapContext.currentStreetStart.x} ${mapContext.currentStreetStart.y}, ${contextStreet.streetEndX} ${contextStreet.streetEndY})`,
-              assignUnassign: 0,
-              highwayDedications: [],
-              oneWayExemptions: [],
-              pkId: -10,
-              esuId: -10,
-              entryDate: currentDate,
-            },
-          ];
+          esuData = settingsContext.isScottish
+            ? [
+                {
+                  esuId: -10,
+                  changeType: "I",
+                  esuVersionNumber: 1,
+                  numCoordCount: 2,
+                  state:
+                    settingsContext.streetTemplate &&
+                    settingsContext.streetTemplate.scoEsuTemplate &&
+                    settingsContext.streetTemplate.scoEsuTemplate.state
+                      ? settingsContext.streetTemplate.scoEsuTemplate.state
+                      : null,
+                  stateDate:
+                    settingsContext.streetTemplate &&
+                    settingsContext.streetTemplate.scoEsuTemplate &&
+                    settingsContext.streetTemplate.scoEsuTemplate.state
+                      ? currentDate
+                      : null,
+                  classification:
+                    settingsContext.streetTemplate &&
+                    settingsContext.streetTemplate.scoEsuTemplate &&
+                    settingsContext.streetTemplate.scoEsuTemplate.classification
+                      ? settingsContext.streetTemplate.scoEsuTemplate.classification
+                      : null,
+                  classificationDate:
+                    settingsContext.streetTemplate &&
+                    settingsContext.streetTemplate.scoEsuTemplate &&
+                    settingsContext.streetTemplate.scoEsuTemplate.classification
+                      ? currentDate
+                      : null,
+                  esuStartDate: currentDate,
+                  esuEndDate: null,
+                  esuDirection: 1,
+                  wktGeometry: `LINESTRING (${mapContext.currentStreetStart.x} ${mapContext.currentStreetStart.y}, ${contextStreet.streetEndX} ${contextStreet.streetEndY})`,
+                  assignUnassign: 0,
+                  pkId: -10,
+                },
+              ]
+            : [
+                {
+                  entryDate: currentDate,
+                  pkId: -10,
+                  esuId: -10,
+                  changeType: "I",
+                  esuVersionNumber: 1,
+                  numCoordCount: 0,
+                  esuTolerance: 10,
+                  esuStartDate: currentDate,
+                  esuEndDate: null,
+                  esuDirection:
+                    settingsContext.streetTemplate &&
+                    settingsContext.streetTemplate.esuTemplate &&
+                    settingsContext.streetTemplate.esuTemplate.esuDirection
+                      ? settingsContext.streetTemplate.esuTemplate.esuDirection
+                      : 1,
+                  wktGeometry: `LINESTRING (${mapContext.currentStreetStart.x} ${mapContext.currentStreetStart.y}, ${contextStreet.streetEndX} ${contextStreet.streetEndY})`,
+                  assignUnassign: 0,
+                  highwayDedications:
+                    settingsContext.streetTemplate &&
+                    settingsContext.streetTemplate.esuTemplate &&
+                    settingsContext.streetTemplate.esuTemplate.highwayDedicationCode
+                      ? [
+                          {
+                            pkId: -10,
+                            changeType: "I",
+                            esuId: -10,
+                            seqNum: 1,
+                            highwayDedicationCode:
+                              settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
+                                ? settingsContext.streetTemplate.esuTemplate.highwayDedicationCode
+                                : null,
+                            recordEndDate: null,
+                            hdStartDate: currentDate,
+                            hdEndDate: null,
+                            hdSeasonalStartDate: null,
+                            hdSeasonalEndDate: null,
+                            hdStartTime: null,
+                            hdEndTime: null,
+                            hdProw:
+                              settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
+                                ? settingsContext.streetTemplate.esuTemplate.hdPRoW
+                                : false,
+                            hdNcr:
+                              settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
+                                ? settingsContext.streetTemplate.esuTemplate.hdNcr
+                                : false,
+                            hdQuietRoute:
+                              settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
+                                ? settingsContext.streetTemplate.esuTemplate.hdQuietRoute
+                                : false,
+                            hdObstruction:
+                              settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
+                                ? settingsContext.streetTemplate.esuTemplate.hdObstruction
+                                : false,
+                            hdPlanningOrder:
+                              settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
+                                ? settingsContext.streetTemplate.esuTemplate.hdPlanningOrder
+                                : false,
+                            hdVehiclesProhibited:
+                              settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
+                                ? settingsContext.streetTemplate.esuTemplate.hdVehiclesProhibited
+                                : false,
+                          },
+                        ]
+                      : [],
+                  oneWayExemptions: [],
+                },
+              ];
         }
 
         newStreetData =
@@ -8719,24 +8837,115 @@ function StreetDataForm({ data, loading }) {
           contextStreet.streetStartX &&
           contextStreet.streetStartY
         ) {
-          esuData = [
-            {
-              changeType: "I",
-              esuVersionNumber: 1,
-              numCoordCount: 2,
-              esuTolerance: 10,
-              esuStartDate: currentDate,
-              esuEndDate: null,
-              esuDirection: 1,
-              wktGeometry: `LINESTRING (${contextStreet.streetStartX} ${contextStreet.streetStartY}, ${mapContext.currentStreetEnd.x} ${mapContext.currentStreetEnd.y})`,
-              assignUnassign: 0,
-              highwayDedications: [],
-              oneWayExemptions: [],
-              pkId: -10,
-              esuId: -10,
-              entryDate: currentDate,
-            },
-          ];
+          esuData = settingsContext.isScottish
+            ? [
+                {
+                  esuId: -10,
+                  changeType: "I",
+                  esuVersionNumber: 1,
+                  numCoordCount: 2,
+                  state:
+                    settingsContext.streetTemplate &&
+                    settingsContext.streetTemplate.scoEsuTemplate &&
+                    settingsContext.streetTemplate.scoEsuTemplate.state
+                      ? settingsContext.streetTemplate.scoEsuTemplate.state
+                      : null,
+                  stateDate:
+                    settingsContext.streetTemplate &&
+                    settingsContext.streetTemplate.scoEsuTemplate &&
+                    settingsContext.streetTemplate.scoEsuTemplate.state
+                      ? currentDate
+                      : null,
+                  classification:
+                    settingsContext.streetTemplate &&
+                    settingsContext.streetTemplate.scoEsuTemplate &&
+                    settingsContext.streetTemplate.scoEsuTemplate.classification
+                      ? settingsContext.streetTemplate.scoEsuTemplate.classification
+                      : null,
+                  classificationDate:
+                    settingsContext.streetTemplate &&
+                    settingsContext.streetTemplate.scoEsuTemplate &&
+                    settingsContext.streetTemplate.scoEsuTemplate.classification
+                      ? currentDate
+                      : null,
+                  esuStartDate: currentDate,
+                  esuEndDate: null,
+                  esuDirection: 1,
+                  wktGeometry: `LINESTRING (${contextStreet.streetStartX} ${contextStreet.streetStartY}, ${mapContext.currentStreetEnd.x} ${mapContext.currentStreetEnd.y})`,
+                  assignUnassign: 0,
+                  pkId: -10,
+                },
+              ]
+            : [
+                {
+                  entryDate: currentDate,
+                  pkId: -10,
+                  esuId: -10,
+                  changeType: "I",
+                  esuVersionNumber: 1,
+                  numCoordCount: 0,
+                  esuTolerance: 10,
+                  esuStartDate: currentDate,
+                  esuEndDate: null,
+                  esuDirection:
+                    settingsContext.streetTemplate &&
+                    settingsContext.streetTemplate.esuTemplate &&
+                    settingsContext.streetTemplate.esuTemplate.esuDirection
+                      ? settingsContext.streetTemplate.esuTemplate.esuDirection
+                      : 1,
+                  wktGeometry: `LINESTRING (${contextStreet.streetStartX} ${contextStreet.streetStartY}, ${mapContext.currentStreetEnd.x} ${mapContext.currentStreetEnd.y})`,
+                  assignUnassign: 0,
+                  highwayDedications:
+                    settingsContext.streetTemplate &&
+                    settingsContext.streetTemplate.esuTemplate &&
+                    settingsContext.streetTemplate.esuTemplate.highwayDedicationCode
+                      ? [
+                          {
+                            pkId: -10,
+                            changeType: "I",
+                            esuId: -10,
+                            seqNum: 1,
+                            highwayDedicationCode:
+                              settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
+                                ? settingsContext.streetTemplate.esuTemplate.highwayDedicationCode
+                                : null,
+                            recordEndDate: null,
+                            hdStartDate: currentDate,
+                            hdEndDate: null,
+                            hdSeasonalStartDate: null,
+                            hdSeasonalEndDate: null,
+                            hdStartTime: null,
+                            hdEndTime: null,
+                            hdProw:
+                              settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
+                                ? settingsContext.streetTemplate.esuTemplate.hdPRoW
+                                : false,
+                            hdNcr:
+                              settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
+                                ? settingsContext.streetTemplate.esuTemplate.hdNcr
+                                : false,
+                            hdQuietRoute:
+                              settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
+                                ? settingsContext.streetTemplate.esuTemplate.hdQuietRoute
+                                : false,
+                            hdObstruction:
+                              settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
+                                ? settingsContext.streetTemplate.esuTemplate.hdObstruction
+                                : false,
+                            hdPlanningOrder:
+                              settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
+                                ? settingsContext.streetTemplate.esuTemplate.hdPlanningOrder
+                                : false,
+                            hdVehiclesProhibited:
+                              settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
+                                ? settingsContext.streetTemplate.esuTemplate.hdVehiclesProhibited
+                                : false,
+                          },
+                        ]
+                      : [],
+                  oneWayExemptions: [],
+                },
+              ];
         }
 
         newStreetData =
