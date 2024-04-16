@@ -24,6 +24,7 @@
 //    011   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    012   20.03.24 Sean Flook                 Changes required to load shape files.
 //    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    014   16.04.24 Sean Flook       IMANN-377 Added background properties and streets.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -62,9 +63,14 @@ import UploadShpFileDialog from "../dialogs/UploadShpFileDialog";
 
 import { GetMapLayersUrl } from "../configuration/ADSConfig";
 
-import { defaultMapLayerIds } from "../utils/HelperUtils";
+import { ArraysEqual, GetWktCoordinates, defaultMapLayerIds } from "../utils/HelperUtils";
 
-import { GetPropertyMapSymbol } from "../utils/ADSMapSymbols";
+import {
+  GetPropertyMapSymbol,
+  GetBackgroundPropertyMapSymbol,
+  GetStreetMapSymbol,
+  GetESUMapSymbol,
+} from "../utils/ADSMapSymbols";
 
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -73,9 +79,14 @@ import UploadIcon from "@mui/icons-material/Upload";
 
 import { adsWhite, adsLightGreyA50, adsBlack0 } from "../utils/ADSColours";
 import { ActionIconStyle, GetAlertStyle, GetAlertIcon, GetAlertSeverity, dataFormStyle } from "../utils/ADSStyles";
+import { GetStreetStateLabel, GetStreetTypeLabel, streetToTitleCase } from "../utils/StreetUtils";
+import { GetClassificationLabel, GetLPILogicalStatusLabel, addressToTitleCase } from "../utils/PropertyUtils";
 
 const editGraphicLayerName = "editGraphicLayer";
 const labelLayerName = "labelLayer";
+const backgroundPropertyLayerName = "backgroundPropertyLayer";
+const backgroundStreetLayerName = "backgroundStreetLayer";
+const unassignedEsusLayerName = "unassignedEsusLayer";
 
 const propertyRenderer = {
   type: "unique-value",
@@ -372,6 +383,222 @@ const propertyRenderer = {
   ],
 };
 
+const backgroundPropertyRenderer = {
+  type: "unique-value",
+  field: "LogicalStatus",
+  uniqueValueInfos: [
+    {
+      value: "1",
+      symbol: GetBackgroundPropertyMapSymbol(1),
+      label: "Approved Preferred",
+    },
+    {
+      value: "3",
+      symbol: GetBackgroundPropertyMapSymbol(3),
+      label: "Alternative",
+    },
+    {
+      value: "5",
+      symbol: GetBackgroundPropertyMapSymbol(5),
+      label: "Candidate",
+    },
+    {
+      value: "6",
+      symbol: GetBackgroundPropertyMapSymbol(6),
+      label: "Provisional",
+    },
+    {
+      value: "7",
+      symbol: GetBackgroundPropertyMapSymbol(7),
+      label: "Rejected",
+    },
+    {
+      value: "8",
+      symbol: GetBackgroundPropertyMapSymbol(8),
+      label: "Historical",
+    },
+    {
+      value: "9",
+      symbol: GetBackgroundPropertyMapSymbol(9),
+      label: "Rejected",
+    },
+  ],
+};
+
+const streetRenderer = {
+  type: "unique-value",
+  field: "SymbolCode",
+  uniqueValueInfos: [
+    {
+      value: "0, 0",
+      symbol: GetESUMapSymbol(),
+      label: "Unassigned ESU",
+    },
+    {
+      value: "0, 1",
+      symbol: GetESUMapSymbol(),
+      label: "Unassigned ESU, Under construction",
+    },
+    {
+      value: "0, 2",
+      symbol: GetESUMapSymbol(),
+      label: "Unassigned ESU, Open",
+    },
+    {
+      value: "0, 3",
+      symbol: GetESUMapSymbol(),
+      label: "Unassigned ESU, Permanently closed",
+    },
+    {
+      value: "0, 4",
+      symbol: GetESUMapSymbol(),
+      label: "Unassigned ESU, Street for addressing purposes only",
+    },
+    {
+      value: "1, 1",
+      symbol: GetStreetMapSymbol(),
+      label: "Official Designated Street Name, Under construction",
+    },
+    {
+      value: "1, 2",
+      symbol: GetStreetMapSymbol(),
+      label: "Official Designated Street Name, Open",
+    },
+    {
+      value: "1, 3",
+      symbol: GetStreetMapSymbol(),
+      label: "Official Designated Street Name, Permanently closed",
+    },
+    {
+      value: "1, 4",
+      symbol: GetStreetMapSymbol(),
+      label: "Official Designated Street Name, Street for addressing purposes only",
+    },
+    {
+      value: "2, 1",
+      symbol: GetStreetMapSymbol(),
+      label: "Street Description, Under construction",
+    },
+    {
+      value: "2, 2",
+      symbol: GetStreetMapSymbol(),
+      label: "Street Description, Open",
+    },
+    {
+      value: "2, 3",
+      symbol: GetStreetMapSymbol(),
+      label: "Street Description, Permanently closed",
+    },
+    {
+      value: "2, 4",
+      symbol: GetStreetMapSymbol(),
+      label: "Street Description, Street for addressing purposes only",
+    },
+    {
+      value: "3, 1",
+      symbol: GetStreetMapSymbol(),
+      label: "Numbered Street, Under construction",
+    },
+    {
+      value: "3, 2",
+      symbol: GetStreetMapSymbol(),
+      label: "Numbered Street, Open",
+    },
+    {
+      value: "3, 3",
+      symbol: GetStreetMapSymbol(),
+      label: "Numbered Street, Permanently closed",
+    },
+    {
+      value: "3, 4",
+      symbol: GetStreetMapSymbol(),
+      label: "Numbered Street, Street for addressing purposes only",
+    },
+    {
+      value: "4, 1",
+      symbol: GetStreetMapSymbol(),
+      label: "Unofficial Street Description, Under construction",
+    },
+    {
+      value: "4, 2",
+      symbol: GetStreetMapSymbol(),
+      label: "Unofficial Street Description, Open",
+    },
+    {
+      value: "4, 3",
+      symbol: GetStreetMapSymbol(),
+      label: "Unofficial Street Description, Permanently closed",
+    },
+    {
+      value: "4, 4",
+      symbol: GetStreetMapSymbol(),
+      label: "Unofficial Street Description, Street for addressing purposes only",
+    },
+    {
+      value: "9, 1",
+      symbol: GetStreetMapSymbol(),
+      label: "Description used for LLPG Access, Under construction",
+    },
+    {
+      value: "9, 2",
+      symbol: GetStreetMapSymbol(),
+      label: "Description used for LLPG Access, Open",
+    },
+    {
+      value: "9, 3",
+      symbol: GetStreetMapSymbol(),
+      label: "Description used for LLPG Access, Permanently closed",
+    },
+    {
+      value: "9, 4",
+      symbol: GetStreetMapSymbol(),
+      label: "Description used for LLPG Access, Street for addressing purposes only",
+    },
+  ],
+};
+
+function PropertyFeatureReduction(radius, minSize, maxSize, yOffset) {
+  return {
+    type: "cluster",
+    clusterRadius: radius,
+    clusterMinSize: minSize, //15,
+    clusterMaxSize: maxSize, //15,
+    labelingInfo: [
+      {
+        labelExpressionInfo: {
+          expression: "Text($feature.cluster_count, '#,###')",
+        },
+        deconflictionStrategy: "none",
+        labelPlacement: "center-center",
+        symbol: {
+          type: "text",
+          color: adsWhite,
+          font: {
+            weight: "bold",
+            size: "10px",
+          },
+          yoffset: yOffset,
+          haloSize: 0.5,
+          haloColor: "black",
+        },
+      },
+    ],
+    popupTemplate: {
+      title: "Multiple properties",
+      content: "This cluster represents <b>{cluster_count}</b> addresses.",
+      fieldInfos: [
+        {
+          fieldName: "cluster_count",
+          format: {
+            digitSeparator: true,
+            places: 0,
+          },
+        },
+      ],
+    },
+  };
+}
+
 ADSWizardMap.propTypes = {
   data: PropTypes.array.isRequired,
   placeOnMapData: PropTypes.object,
@@ -419,6 +646,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
   const coordinateConversionRef = useRef(null);
 
   const baseMapLayers = useRef(settingsContext.mapLayers);
+  const isScottish = useRef(settingsContext.isScottish);
   const initialExtent = useRef(mapContext.currentExtent);
   const highlightProperty = useRef(null);
 
@@ -434,6 +662,10 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
     zoomProperty: null,
     mapProperty: null,
   });
+
+  const backgroundStreetData = useRef(null);
+  const unassignedEsusData = useRef(null);
+  const backgroundPropertyData = useRef(null);
 
   // [point, area]
   const [placeStyle, setPlaceStyle] = useState(null);
@@ -454,6 +686,10 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
       listMode: "hide",
     })
   );
+
+  const backgroundStreetLayerRef = useRef(null);
+  const unassignedEsusLayerRef = useRef(null);
+  const backgroundPropertyLayerRef = useRef(null);
 
   /**
    * Method to handle when the zoom in button is clicked.
@@ -952,6 +1188,452 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
     };
   }, []);
 
+  // Background streets Layer
+  useEffect(() => {
+    // console.log("[SF] Background streets layer");
+    const haveStreets =
+      mapContext.currentBackgroundData &&
+      mapContext.currentBackgroundData.streets &&
+      mapContext.currentBackgroundData.streets.length > 0;
+
+    const oldAndNewSame = haveStreets
+      ? ArraysEqual(oldMapData.current.backgroundStreets, mapContext.currentBackgroundData.streets)
+      : false;
+
+    if (!mapRef.current || !haveStreets || oldAndNewSame) return;
+
+    oldMapData.current = {
+      streets: oldMapData.current.streets,
+      properties: oldMapData.current.properties,
+      extents: oldMapData.current.extents,
+      backgroundStreets: mapContext.currentBackgroundData.streets,
+      unassignedEsus: oldMapData.current.unassignedEsus,
+      backgroundProperties: oldMapData.current.backgroundProperties,
+      editStreet: oldMapData.current.editStreet,
+      editProperty: oldMapData.current.editProperty,
+      zoomStreet: oldMapData.current.zoomStreet,
+      zoomProperty: oldMapData.current.zoomProperty,
+      mapProperty: oldMapData.current.mapProperty,
+    };
+
+    if (haveStreets) {
+      backgroundStreetData.current = mapContext.currentBackgroundData.streets;
+    } else backgroundStreetData.current = null;
+
+    const backgroundStreetFeatures =
+      backgroundStreetData.current &&
+      backgroundStreetData.current.map((rec, index) => ({
+        geometry: {
+          type: "polyline",
+          paths: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
+          spatialReference: { wkid: 27700 },
+        },
+        attributes: {
+          ObjectID: index,
+          USRN: rec.usrn.toString(),
+          EsuId: rec.esuId ? rec.esuId.toString() : "",
+          Description: streetToTitleCase(rec.address),
+          State: rec.state,
+          Type: rec.type ? rec.type : 1,
+          StateLabel: GetStreetStateLabel(rec.state),
+          TypeLabel: GetStreetTypeLabel(rec.type ? rec.type : 1, isScottish.current),
+          SymbolCode: `${rec.type ? rec.type.toString() : "1"}, ${rec.state.toString()}`,
+        },
+      }));
+
+    const backgroundStreetLayer = new FeatureLayer({
+      id: backgroundStreetLayerName,
+      copyright: `© Copyright Idox Software Ltd. ${new Date().getFullYear()}`,
+      source: backgroundStreetFeatures,
+      fields: [
+        {
+          name: "ObjectID",
+          alias: "ObjectID",
+          type: "oid",
+        },
+        {
+          name: "USRN",
+          alias: "USRN",
+          type: "string",
+        },
+        {
+          name: "EsuId",
+          alias: "EsuId",
+          type: "string",
+        },
+        {
+          name: "Description",
+          alias: "Description",
+          type: "string",
+        },
+        {
+          name: "State",
+          alias: "State",
+          type: "integer",
+        },
+        {
+          name: "Type",
+          alias: "Type",
+          type: "integer",
+        },
+        {
+          name: "StateLabel",
+          alias: "StateLabel",
+          type: "string",
+        },
+        {
+          name: "TypeLabel",
+          alias: "TypeLabel",
+          type: "string",
+        },
+        {
+          name: "SymbolCode",
+          alias: "SymbolCode",
+          type: "string",
+        },
+        {
+          name: "Geometry",
+          alias: "Geometry",
+          type: "string",
+        },
+      ],
+      outFields: ["*"],
+      objectIdField: "ObjectID",
+      popupTemplate: {
+        title: "{Description}",
+        lastEditInfoEnabled: false,
+        content: [
+          {
+            type: "fields",
+            fieldInfos: [
+              {
+                fieldName: "EsuId",
+                label: "ESU Id",
+              },
+              {
+                fieldName: "USRN",
+              },
+              {
+                fieldName: "StateLabel",
+                label: "Status",
+              },
+              {
+                fieldName: "TypeLabel",
+                label: "Type",
+              },
+            ],
+          },
+        ],
+        actions: [],
+      },
+      renderer: streetRenderer,
+      opacity: 0.4,
+      spatialReference: { wkid: 27700 },
+      title: "Background Street layer",
+    });
+
+    mapRef.current.remove(mapRef.current.findLayerById(backgroundStreetLayerName));
+
+    if (backgroundStreetData && backgroundStreetData.current && backgroundStreetData.current.length > 0)
+      mapRef.current.add(backgroundStreetLayer);
+
+    backgroundStreetLayerRef.current = backgroundStreetLayer;
+  }, [mapContext.currentBackgroundData]);
+
+  // Unassigned ESUs layer
+  useEffect(() => {
+    // console.log("[SF] Unassigned ESUs layer");
+    const haveEsus =
+      mapContext.currentBackgroundData &&
+      mapContext.currentBackgroundData.unassignedEsus &&
+      mapContext.currentBackgroundData.unassignedEsus.length > 0;
+
+    const oldAndNewSame = haveEsus
+      ? ArraysEqual(oldMapData.current.unassignedEsus, mapContext.currentBackgroundData.unassignedEsus)
+      : false;
+
+    if (!mapRef.current || !haveEsus || oldAndNewSame) return;
+
+    oldMapData.current = {
+      streets: oldMapData.current.streets,
+      properties: oldMapData.current.properties,
+      extents: oldMapData.current.extents,
+      backgroundStreets: oldMapData.current.streets,
+      unassignedEsus: mapContext.currentBackgroundData.unassignedEsus,
+      backgroundProperties: oldMapData.current.backgroundProperties,
+      editStreet: oldMapData.current.editStreet,
+      editProperty: oldMapData.current.editProperty,
+      zoomStreet: oldMapData.current.zoomStreet,
+      zoomProperty: oldMapData.current.zoomProperty,
+      mapProperty: oldMapData.current.mapProperty,
+    };
+
+    if (haveEsus) {
+      unassignedEsusData.current = mapContext.currentBackgroundData.unassignedEsus;
+    } else unassignedEsusData.current = null;
+
+    const unassignedEsusFeatures =
+      unassignedEsusData.current &&
+      unassignedEsusData.current.map((rec, index) => ({
+        geometry: {
+          type: "polyline",
+          paths: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
+          spatialReference: { wkid: 27700 },
+        },
+        attributes: {
+          ObjectID: index,
+          USRN: "",
+          EsuId: rec.esuId ? rec.esuId.toString() : "",
+          Description: "",
+          State: rec.state ? rec.state : 0,
+          Type: 0,
+          StateLabel: GetStreetStateLabel(rec.state ? rec.state : 0),
+          TypeLabel: GetStreetTypeLabel(0, isScottish.current),
+          SymbolCode: `0, ${rec.state ? rec.state.toString() : "0"}`,
+        },
+      }));
+
+    const unassignedEsusLayer = new FeatureLayer({
+      id: unassignedEsusLayerName,
+      copyright: `© Copyright Idox Software Ltd. ${new Date().getFullYear()}`,
+      source: unassignedEsusFeatures,
+      fields: [
+        {
+          name: "ObjectID",
+          alias: "ObjectID",
+          type: "oid",
+        },
+        {
+          name: "USRN",
+          alias: "USRN",
+          type: "string",
+        },
+        {
+          name: "EsuId",
+          alias: "EsuId",
+          type: "string",
+        },
+        {
+          name: "Description",
+          alias: "Description",
+          type: "string",
+        },
+        {
+          name: "State",
+          alias: "State",
+          type: "integer",
+        },
+        {
+          name: "Type",
+          alias: "Type",
+          type: "integer",
+        },
+        {
+          name: "StateLabel",
+          alias: "StateLabel",
+          type: "string",
+        },
+        {
+          name: "TypeLabel",
+          alias: "TypeLabel",
+          type: "string",
+        },
+        {
+          name: "SymbolCode",
+          alias: "SymbolCode",
+          type: "string",
+        },
+        {
+          name: "Geometry",
+          alias: "Geometry",
+          type: "string",
+        },
+      ],
+      outFields: ["*"],
+      objectIdField: "ObjectID",
+      popupTemplate: {
+        title: "Unassigned ESU",
+        lastEditInfoEnabled: false,
+        content: [
+          {
+            type: "fields",
+            fieldInfos: [
+              {
+                fieldName: "EsuId",
+                label: "ESU Id",
+              },
+            ],
+          },
+        ],
+        // actions: [streetAssignAction],
+        actions: [],
+      },
+      renderer: streetRenderer,
+      opacity: 0.75,
+      spatialReference: { wkid: 27700 },
+      title: "Unassigned ESU layer",
+      visible: process.env.NODE_ENV === "development" ? true : false,
+    });
+
+    mapRef.current.remove(mapRef.current.findLayerById(unassignedEsusLayerName));
+
+    if (unassignedEsusData && unassignedEsusData.current && unassignedEsusData.current.length > 0)
+      mapRef.current.add(unassignedEsusLayer);
+
+    unassignedEsusLayerRef.current = unassignedEsusLayer;
+  }, [mapContext.currentBackgroundData]);
+
+  // Background property layer
+  useEffect(() => {
+    // console.log("[SF] Background property layer");
+    const haveProperties =
+      mapContext.currentBackgroundData &&
+      mapContext.currentBackgroundData.properties &&
+      mapContext.currentBackgroundData.properties.length > 0;
+
+    const oldAndNewSame = haveProperties
+      ? ArraysEqual(oldMapData.current.backgroundProperties, mapContext.currentBackgroundData.properties)
+      : false;
+
+    if (!mapRef.current || !haveProperties || oldAndNewSame) return;
+
+    oldMapData.current = {
+      streets: oldMapData.current.streets,
+      properties: oldMapData.current.properties,
+      extents: oldMapData.current.extents,
+      backgroundStreets: oldMapData.current.backgroundStreets,
+      unassignedEsus: oldMapData.current.unassignedEsus,
+      backgroundProperties: mapContext.currentBackgroundData.properties,
+      editStreet: oldMapData.current.editStreet,
+      editProperty: oldMapData.current.editProperty,
+      zoomStreet: oldMapData.current.zoomStreet,
+      zoomProperty: oldMapData.current.zoomProperty,
+      mapProperty: oldMapData.current.mapProperty,
+    };
+
+    if (haveProperties) {
+      backgroundPropertyData.current = mapContext.currentBackgroundData.properties;
+    } else backgroundPropertyData.current = null;
+
+    const backgroundPropertyFeatures =
+      backgroundPropertyData.current &&
+      backgroundPropertyData.current.map((rec, index) => ({
+        geometry: {
+          type: "point",
+          x: rec.easting,
+          y: rec.northing,
+          spatialReference: { wkid: 27700 },
+        },
+        attributes: {
+          ObjectID: index,
+          UPRN: rec.uprn ? rec.uprn.toString() : "",
+          Address: addressToTitleCase(rec.address, rec.postcode),
+          Postcode: rec.postcode,
+          Easting: rec.easting,
+          Northing: rec.northing,
+          LogicalStatus: rec.logicalStatus,
+          LogicalStatusLabel: GetLPILogicalStatusLabel(rec.logicalStatus, isScottish.current),
+          Classification: rec.blpuClass,
+          ClassificationLabel: GetClassificationLabel(rec.blpuClass, isScottish.current),
+        },
+      }));
+
+    const backgroundPropertyLayer = new FeatureLayer({
+      id: backgroundPropertyLayerName,
+      copyright: `© Copyright Idox Software Ltd. ${new Date().getFullYear()}`,
+      source: backgroundPropertyFeatures,
+      featureReduction: PropertyFeatureReduction(8, 15, 15, 0),
+      fields: [
+        {
+          name: "ObjectID",
+          alias: "ObjectID",
+          type: "oid",
+        },
+        {
+          name: "UPRN",
+          alias: "UPRN",
+          type: "string",
+        },
+        {
+          name: "Address",
+          alias: "Address",
+          type: "string",
+        },
+        {
+          name: "Postcode",
+          alias: "Postcode",
+          type: "string",
+        },
+        {
+          name: "Easting",
+          alias: "Easting",
+          type: "double",
+        },
+        {
+          name: "Northing",
+          alias: "Northing",
+          type: "double",
+        },
+        {
+          name: "LogicalStatus",
+          alias: "LogicalStatus",
+          type: "integer",
+        },
+        {
+          name: "LogicalStatusLabel",
+          alias: "LogicalStatusLabel",
+          type: "string",
+        },
+        {
+          name: "Classification",
+          alias: "Classification",
+          type: "string",
+        },
+        {
+          name: "ClassificationLabel",
+          alias: "ClassificationLabel",
+          type: "string",
+        },
+      ],
+      outFields: ["*"],
+      objectIdField: "ObjectID",
+      popupTemplate: {
+        title: "{Address}",
+        lastEditInfoEnabled: false,
+        content: [
+          {
+            type: "fields",
+            fieldInfos: [
+              {
+                fieldName: "UPRN",
+              },
+              {
+                fieldName: "LogicalStatusLabel",
+                label: "Logical status",
+              },
+              {
+                fieldName: "ClassificationLabel",
+                label: "Classification",
+              },
+            ],
+          },
+        ],
+        actions: [],
+      },
+      renderer: backgroundPropertyRenderer,
+      opacity: 0.5,
+      spatialReference: { wkid: 27700 },
+      title: "Background Property layer",
+    });
+
+    mapRef.current.remove(mapRef.current.findLayerById(backgroundPropertyLayerName));
+
+    if (backgroundPropertyData && backgroundPropertyData.current && backgroundPropertyData.current.length > 0)
+      mapRef.current.add(backgroundPropertyLayer);
+
+    backgroundPropertyLayerRef.current = backgroundPropertyLayer;
+  }, [mapContext.currentBackgroundData]);
+
   // view events
   useEffect(() => {
     if (
@@ -1093,6 +1775,22 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
         }
       }
     });
+
+    reactiveUtils.when(
+      () => view?.stationary === true,
+      () => {
+        if (view.extent && mapContext) {
+          mapContext.onExtentChange({
+            xmin: view.extent.xmin,
+            ymin: view.extent.ymin,
+            xmax: view.extent.xmax,
+            ymax: view.extent.ymax,
+            spatialReference: { wkid: 27700 },
+            zoomLevel: view.zoom,
+          });
+        }
+      }
+    );
 
     oldMapData.current = {
       streets: mapContext.currentSearchData.streets,
