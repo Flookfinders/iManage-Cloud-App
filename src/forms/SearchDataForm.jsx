@@ -28,6 +28,7 @@
 //    015   04.04.24 Sean Flook                 Handle deleting of ESUs on streets and child properties from parent properties. Added parentUprn to mapContext search data for properties.
 //    016   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
 //    017   16.04.24 Sean Flook                 Added a sub menu on the properties menu item so that we can select properties by logical status as well.
+//    018   16.04.24 Sean Flook                 Added ability to select historic properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -925,6 +926,16 @@ function SearchDataForm() {
                     }}
                   >
                     Provisional
+                  </Typography>
+                </MenuItem>
+                <MenuItem dense onClick={() => handleSelectPropertiesByLogicalStatus(8)} sx={menuItemStyle(false)}>
+                  <Typography
+                    variant="inherit"
+                    sx={{
+                      pl: theme.spacing(1),
+                    }}
+                  >
+                    Historic
                   </Typography>
                 </MenuItem>
               </NestedMenuItem>
