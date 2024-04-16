@@ -27,21 +27,25 @@
 //    014   22.03.24 Sean Flook           GLB12 Fixed the height of the control to ensure the rest of the form can be calculated correctly.
 //    015   04.04.24 Sean Flook                 Handle deleting of ESUs on streets and child properties from parent properties. Added parentUprn to mapContext search data for properties.
 //    016   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
+//    017   16.04.24 Sean Flook                 Added a sub menu on the properties menu item so that we can select properties by logical status as well.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
 import React, { useContext, useState, useRef, Fragment } from "react";
+import PropTypes from "prop-types";
+
 import SearchContext from "../context/searchContext";
 import FilterContext from "../context/filterContext";
 import MapContext from "../context/mapContext";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
-import PropTypes from "prop-types";
+
 import { GetWktCoordinates, mergeArrays } from "../utils/HelperUtils";
 import { GetStreetMapData } from "../utils/StreetUtils";
 import { HasASD } from "../configuration/ADSConfig";
+
 import {
   Checkbox,
   Tabs,
@@ -56,6 +60,10 @@ import {
   Popper,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
+import { NestedMenuItem } from "mui-nested-menu";
+import SearchDataTab from "../tabs/SearchDataTab";
+import ADSFilterControl from "../components/ADSFilterControl";
+
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import GridOnIcon from "@mui/icons-material/GridOn";
@@ -63,8 +71,8 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import ImportExportIcon from "@mui/icons-material/ImportExport";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CheckIcon from "@mui/icons-material/Check";
-import SearchDataTab from "../tabs/SearchDataTab";
-import ADSFilterControl from "../components/ADSFilterControl";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+
 import { adsBlueA } from "../utils/ADSColours";
 import {
   toolbarStyle,
@@ -621,8 +629,25 @@ function SearchDataForm() {
       .filter((x) => x.type === 24)
       .map((x) => x.uprn);
     setChecked(newChecked);
-    setAllChecked(false);
-    setPartialChecked(true);
+    setAllChecked(newChecked.length === currentData().length);
+    setPartialChecked(newChecked.length > 0 && newChecked.length !== currentData().length);
+    setAnchorSelectEl(null);
+    mapContext.onHighlightStreetProperty(null, propertyHighlighted);
+  };
+
+  /**
+   * Event to handle selecting all the properties by logical status.
+   */
+  const handleSelectPropertiesByLogicalStatus = (logicalStatus) => {
+    const newChecked = currentData()
+      .filter((x) => x.type === 24 && x.logical_status === logicalStatus)
+      .map((x) => x.id);
+    const propertyHighlighted = currentData()
+      .filter((x) => x.type === 24 && x.logical_status === logicalStatus)
+      .map((x) => x.uprn);
+    setChecked(newChecked);
+    setAllChecked(newChecked.length === currentData().length);
+    setPartialChecked(newChecked.length > 0 && newChecked.length !== currentData().length);
     setAnchorSelectEl(null);
     mapContext.onHighlightStreetProperty(null, propertyHighlighted);
   };
@@ -638,8 +663,8 @@ function SearchDataForm() {
       .filter((x) => x.type === 15)
       .map((x) => x.usrn);
     setChecked(newChecked);
-    setAllChecked(false);
-    setPartialChecked(true);
+    setAllChecked(newChecked.length === currentData().length);
+    setPartialChecked(newChecked.length > 0 && newChecked.length !== currentData().length);
     setAnchorSelectEl(null);
     mapContext.onHighlightStreetProperty(streetHighlighted, null);
   };
@@ -865,16 +890,44 @@ function SearchDataForm() {
                   All
                 </Typography>
               </MenuItem>
-              <MenuItem dense onClick={handleSelectProperties} sx={menuItemStyle(false)}>
-                <Typography
-                  variant="inherit"
-                  sx={{
-                    pl: theme.spacing(1),
-                  }}
-                >
-                  Properties
-                </Typography>
-              </MenuItem>
+              <NestedMenuItem
+                dense
+                className="nestedMenuItemSelect"
+                rightIcon={<KeyboardArrowRightIcon />}
+                label={<Typography variant="body2">Properties</Typography>}
+                parentMenuOpen={Boolean(anchorSelectEl)}
+              >
+                <MenuItem dense onClick={handleSelectProperties} sx={menuItemStyle(false)}>
+                  <Typography
+                    variant="inherit"
+                    sx={{
+                      pl: theme.spacing(1),
+                    }}
+                  >
+                    All
+                  </Typography>
+                </MenuItem>
+                <MenuItem dense onClick={() => handleSelectPropertiesByLogicalStatus(1)} sx={menuItemStyle(false)}>
+                  <Typography
+                    variant="inherit"
+                    sx={{
+                      pl: theme.spacing(1),
+                    }}
+                  >
+                    Approved
+                  </Typography>
+                </MenuItem>
+                <MenuItem dense onClick={() => handleSelectPropertiesByLogicalStatus(6)} sx={menuItemStyle(false)}>
+                  <Typography
+                    variant="inherit"
+                    sx={{
+                      pl: theme.spacing(1),
+                    }}
+                  >
+                    Provisional
+                  </Typography>
+                </MenuItem>
+              </NestedMenuItem>
               <MenuItem dense onClick={handleSelectStreets} sx={menuItemStyle(false)}>
                 <Typography
                   variant="inherit"
