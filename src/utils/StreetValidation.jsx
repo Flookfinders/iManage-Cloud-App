@@ -46,6 +46,7 @@
 //    015   14.03.24 Sean Flook                 Added new checks.
 //    016   18.03.24 Sean Flook         ESU2_GP Added check for missing geometry on ESU record.
 //    017   28.03.24 Sean Flook                 Fixed check 6200016.
+//    018   16.04.24 Sean Flook       IMANN-388 Corrected bug.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2187,7 +2188,7 @@ export function ValidateInterestData(data, index, currentLookups) {
       includeCheck(currentCheck, false) &&
       !data.wholeRoad &&
       data.specificLocation &&
-      data.specificLocation.toLowerCase.includes("whole road")
+      data.specificLocation.toLowerCase().includes("whole road")
     ) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
@@ -2584,7 +2585,7 @@ export function ValidateConstructionData(data, index, currentLookups) {
       includeCheck(currentCheck, false) &&
       !data.wholeRoad &&
       data.specificLocation &&
-      data.specificLocation.toLowerCase.includes("whole road")
+      data.specificLocation.toLowerCase().includes("whole road")
     ) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
@@ -2985,7 +2986,7 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
       includeCheck(currentCheck, false) &&
       !data.wholeRoad &&
       data.specificLocation &&
-      data.specificLocation.toLowerCase.includes("whole road")
+      data.specificLocation.toLowerCase().includes("whole road")
     ) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
