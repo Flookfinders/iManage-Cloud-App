@@ -65,6 +65,7 @@
 //    051   11.03.24 Sean Flook        ESU29_GP Set ASD visibility after creating and adding to map.
 //    052   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    053   08.04.24 Sean Flook           STRT4 Changes to allow for authority extent defaults. Changes required to prevent crash when refreshing page.
+//    054   16.04.24 Sean Flook                 When loading a SHP file use the mapContext to retain the information and display the layer in the map.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1006,6 +1007,8 @@ function ADSEsriMap(startExtent) {
   const coordinateConversionRef = useRef(null);
   const currentPointCaptureModeRef = useRef(null);
   const selectingProperties = useRef(false);
+  const loadedShpFileTitles = useRef([]);
+  const loadedShpFileIds = useRef([]);
 
   const mapContext = useContext(MapContext);
   const sandboxContext = useContext(SandboxContext);
@@ -1535,6 +1538,18 @@ function ADSEsriMap(startExtent) {
       ];
     }
 
+    if (loadedShpFileTitles.current.includes(item.title)) {
+      item.actionsSections = [
+        [
+          {
+            title: "Remove layer",
+            className: "esri-icon-close-circled",
+            id: "close-shp-file",
+          },
+        ],
+      ];
+    }
+
     if (baseLayersFeature.current.find((x) => x.layer.title === item.title && x.layer.usePaging && x.layer.esuSnap)) {
       item.actionsSections = [
         [
@@ -1681,31 +1696,7 @@ function ADSEsriMap(startExtent) {
           return;
         } else {
           shp(reader.result).then(function (geojson) {
-            mapRef.current.remove(mapRef.current.findLayerById(shpFile.layerId));
-            const blob = new Blob([JSON.stringify(geojson)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const shpLayer = new GeoJSONLayer({
-              url: url,
-              id: shpFile.layerId,
-              copyright:
-                shpFile.copyright && shpFile.copyright.includes("<<year>>")
-                  ? shpFile.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                  : shpFile.copyright,
-              title: `${shpFile.title}`,
-              listMode: shpFile.displayInList ? "show" : "hide",
-              maxScale: shpFile.maxScale,
-              minScale: shpFile.minScale,
-              opacity: shpFile.opacity,
-              spatialReference: { wkid: 27700 },
-              visible: true,
-            });
-
-            if (shpFile.esuSnap) baseLayersSnapEsu.current = baseLayersSnapEsu.current.concat([shpFile.layerId]);
-            if (shpFile.blpuSnap) baseLayersSnapBlpu.current = baseLayersSnapBlpu.current.concat([shpFile.layerId]);
-            if (shpFile.extentSnap)
-              baseLayersSnapExtent.current = baseLayersSnapExtent.current.concat([shpFile.layerId]);
-
-            mapRef.current.add(shpLayer);
+            mapContext.onLoadShpFile(JSON.stringify(geojson), shpFile);
             saveResult.current = true;
             featuresDownloaded.current = shpFile.title;
             saveType.current = "uploadedShpFile";
@@ -2748,6 +2739,50 @@ function ADSEsriMap(startExtent) {
 
     backgroundPropertyLayerRef.current = backgroundPropertyLayer;
   }, [mapContext.currentBackgroundData, propertyData, zoomPropertyData]);
+
+  // Display loaded SHP files
+  useEffect(() => {
+    // First unload all the shpFiles previously loaded
+    if (loadedShpFileIds.current && loadedShpFileIds.current.length) {
+      loadedShpFileIds.current.forEach((shpId) => {
+        mapRef.current.remove(mapRef.current.findLayerById(shpId));
+      });
+    }
+
+    if (mapContext.loadedShpFiles && mapContext.loadedShpFiles.length) {
+      mapContext.loadedShpFiles.forEach((shp) => {
+        const blob = new Blob([shp.geojson], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const shpLayer = new GeoJSONLayer({
+          url: url,
+          id: shp.id,
+          copyright:
+            shp.shpFile.copyright && shp.shpFile.copyright.includes("<<year>>")
+              ? shp.shpFile.copyright.replace("<<year>>", new Date().getFullYear().toString())
+              : shp.shpFile.copyright,
+          title: `${shp.shpFile.title}`,
+          listMode: shp.shpFile.displayInList ? "show" : "hide",
+          maxScale: shp.shpFile.maxScale,
+          minScale: shp.shpFile.minScale,
+          opacity: shp.shpFile.opacity,
+          spatialReference: { wkid: 27700 },
+          visible: true,
+        });
+
+        if (shp.shpFile.esuSnap) baseLayersSnapEsu.current = baseLayersSnapEsu.current.concat([shp.id]);
+        if (shp.shpFile.blpuSnap) baseLayersSnapBlpu.current = baseLayersSnapBlpu.current.concat([shp.id]);
+        if (shp.shpFile.extentSnap) baseLayersSnapExtent.current = baseLayersSnapExtent.current.concat([shp.id]);
+
+        mapRef.current.add(shpLayer);
+      });
+
+      loadedShpFileTitles.current = mapContext.loadedShpFiles.map((x) => x.shpFile.title);
+      loadedShpFileIds.current = mapContext.loadedShpFiles.map((x) => x.id);
+    } else {
+      loadedShpFileTitles.current = [];
+      loadedShpFileIds.current = [];
+    }
+  }, [mapContext.loadedShpFiles]);
 
   // Edit, street & property layers
   useEffect(() => {
@@ -5165,6 +5200,10 @@ function ADSEsriMap(startExtent) {
 
         case "decrease-property-opacity":
           if (propertyLayer.opacity > 0) propertyLayer.opacity -= 0.25;
+          break;
+
+        case "close-shp-file":
+          mapContext.onUnloadShpFile(event.item.layer.id);
           break;
 
         case "download-features":

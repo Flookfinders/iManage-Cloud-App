@@ -25,6 +25,7 @@
 //    012   20.03.24 Sean Flook                 Changes required to load shape files.
 //    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    014   16.04.24 Sean Flook       IMANN-377 Added background properties and streets.
+//    015   16.04.24 Sean Flook                 When loading a SHP file use the mapContext to retain the information and display the layer in the map.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -644,6 +645,8 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
   const sketchRef = useRef(null);
   const layerListRef = useRef(null);
   const coordinateConversionRef = useRef(null);
+  const loadedShpFileTitles = useRef([]);
+  const loadedShpFileIds = useRef([]);
 
   const baseMapLayers = useRef(settingsContext.mapLayers);
   const isScottish = useRef(settingsContext.isScottish);
@@ -746,6 +749,78 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
     return editPointGraphic;
   }
 
+  /**
+   * Method used to define the actions available for the feature layers.
+   *
+   * @param {object} event The event object.
+   */
+  function defineActions(event) {
+    const item = event.item;
+
+    if (item.title === "Background Street layer") {
+      item.actionsSections = [
+        [
+          {
+            title: "Increase opacity",
+            className: "esri-icon-up",
+            id: "increase-background-street-opacity",
+          },
+          {
+            title: "Decrease opacity",
+            className: "esri-icon-down",
+            id: "decrease-background-street-opacity",
+          },
+        ],
+      ];
+    }
+
+    if (item.title === "Unassigned ESU layer") {
+      item.actionsSections = [
+        [
+          {
+            title: "Increase opacity",
+            className: "esri-icon-up",
+            id: "increase-unassigned-esu-opacity",
+          },
+          {
+            title: "Decrease opacity",
+            className: "esri-icon-down",
+            id: "decrease-unassigned-esu-opacity",
+          },
+        ],
+      ];
+    }
+
+    if (item.title === "Background Properties layer") {
+      item.actionsSections = [
+        [
+          {
+            title: "Increase opacity",
+            className: "esri-icon-up",
+            id: "increase-background-property-opacity",
+          },
+          {
+            title: "Decrease opacity",
+            className: "esri-icon-down",
+            id: "decrease-background-property-opacity",
+          },
+        ],
+      ];
+    }
+
+    if (loadedShpFileTitles.current.includes(item.title)) {
+      item.actionsSections = [
+        [
+          {
+            title: "Remove layer",
+            className: "esri-icon-close-circled",
+            id: "close-shp-file",
+          },
+        ],
+      ];
+    }
+  }
+
   const getPlaceOnMapData = (updatedField, newValue) => {
     return {
       placeStyle: updatedField === "placeStyle" ? newValue : placeStyle,
@@ -805,31 +880,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
           return;
         } else {
           shp(reader.result).then(function (geojson) {
-            mapRef.current.remove(mapRef.current.findLayerById(shpFile.layerId));
-            const blob = new Blob([JSON.stringify(geojson)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const shpLayer = new GeoJSONLayer({
-              url: url,
-              id: shpFile.layerId,
-              copyright:
-                shpFile.copyright && shpFile.copyright.includes("<<year>>")
-                  ? shpFile.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                  : shpFile.copyright,
-              title: `${shpFile.title}`,
-              listMode: shpFile.displayInList ? "show" : "hide",
-              maxScale: shpFile.maxScale,
-              minScale: shpFile.minScale,
-              opacity: shpFile.opacity,
-              spatialReference: { wkid: 27700 },
-              visible: "true",
-            });
-
-            if (shpFile.esuSnap) baseLayersSnapEsu.current = baseLayersSnapEsu.current.concat([shpFile.layerId]);
-            if (shpFile.blpuSnap) baseLayersSnapBlpu.current = baseLayersSnapBlpu.current.concat([shpFile.layerId]);
-            if (shpFile.extentSnap)
-              baseLayersSnapExtent.current = baseLayersSnapExtent.current.concat([shpFile.layerId]);
-
-            mapRef.current.add(shpLayer);
+            mapContext.onLoadShpFile(JSON.stringify(geojson), shpFile);
             saveResult.current = true;
             featuresDownloaded.current = shpFile.title;
             saveType.current = "uploadedShpFile";
@@ -1136,6 +1187,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
       view: baseView,
       label: "Current layers",
       visible: false,
+      listItemCreatedFunction: defineActions,
     });
 
     baseView.ui.add(baseSketch, {
@@ -1634,6 +1686,50 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
     backgroundPropertyLayerRef.current = backgroundPropertyLayer;
   }, [mapContext.currentBackgroundData]);
 
+  // Display loaded SHP files
+  useEffect(() => {
+    // First unload all the shpFiles previously loaded
+    if (loadedShpFileIds.current && loadedShpFileIds.current.length) {
+      loadedShpFileIds.current.forEach((shpId) => {
+        mapRef.current.remove(mapRef.current.findLayerById(shpId));
+      });
+    }
+
+    if (mapContext.loadedShpFiles && mapContext.loadedShpFiles.length) {
+      mapContext.loadedShpFiles.forEach((shp) => {
+        const blob = new Blob([shp.geojson], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const shpLayer = new GeoJSONLayer({
+          url: url,
+          id: shp.id,
+          copyright:
+            shp.shpFile.copyright && shp.shpFile.copyright.includes("<<year>>")
+              ? shp.shpFile.copyright.replace("<<year>>", new Date().getFullYear().toString())
+              : shp.shpFile.copyright,
+          title: `${shp.shpFile.title}`,
+          listMode: shp.shpFile.displayInList ? "show" : "hide",
+          maxScale: shp.shpFile.maxScale,
+          minScale: shp.shpFile.minScale,
+          opacity: shp.shpFile.opacity,
+          spatialReference: { wkid: 27700 },
+          visible: true,
+        });
+
+        if (shp.shpFile.esuSnap) baseLayersSnapEsu.current = baseLayersSnapEsu.current.concat([shp.id]);
+        if (shp.shpFile.blpuSnap) baseLayersSnapBlpu.current = baseLayersSnapBlpu.current.concat([shp.id]);
+        if (shp.shpFile.extentSnap) baseLayersSnapExtent.current = baseLayersSnapExtent.current.concat([shp.id]);
+
+        mapRef.current.add(shpLayer);
+      });
+
+      loadedShpFileTitles.current = mapContext.loadedShpFiles.map((x) => x.shpFile.title);
+      loadedShpFileIds.current = mapContext.loadedShpFiles.map((x) => x.id);
+    } else {
+      loadedShpFileTitles.current = [];
+      loadedShpFileIds.current = [];
+    }
+  }, [mapContext.loadedShpFiles]);
+
   // view events
   useEffect(() => {
     if (
@@ -1721,6 +1817,41 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
           }
         });
       });
+    });
+
+    layerListRef.current.on("trigger-action", (event) => {
+      switch (event.action.id) {
+        case "increase-background-street-opacity":
+          if (backgroundStreetLayerRef.current.opacity < 1) backgroundStreetLayerRef.current.opacity += 0.25;
+          break;
+
+        case "decrease-background-street-opacity":
+          if (backgroundStreetLayerRef.current.opacity > 0) backgroundStreetLayerRef.current.opacity -= 0.25;
+          break;
+
+        case "increase-unassigned-esu-opacity":
+          if (unassignedEsusLayerRef.current.opacity < 1) unassignedEsusLayerRef.current.opacity += 0.25;
+          break;
+
+        case "decrease-unassigned-esu-opacity":
+          if (unassignedEsusLayerRef.current.opacity > 0) unassignedEsusLayerRef.current.opacity -= 0.25;
+          break;
+
+        case "increase-background-property-opacity":
+          if (backgroundPropertyLayerRef.current.opacity < 1) backgroundPropertyLayerRef.current.opacity += 0.25;
+          break;
+
+        case "decrease-background-property-opacity":
+          if (backgroundPropertyLayerRef.current.opacity > 0) backgroundPropertyLayerRef.current.opacity -= 0.25;
+          break;
+
+        case "close-shp-file":
+          mapContext.onUnloadShpFile(event.item.layer.id);
+          break;
+
+        default:
+          break;
+      }
     });
 
     reactiveUtils

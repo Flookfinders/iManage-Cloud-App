@@ -52,6 +52,7 @@
 //    039   05.04.24 Sean Flook       IMANN-351 Changes to handle browser navigation.
 //    040   09.04.24 Sean Flook                 If we do not have user information do not close the login dialog.
 //    041   11.04.24 Sean Flook                 Use title case for authority name rather than sentence case.
+//    042   16.04.24 Sean Flook                 Changes required to handle loading and displaying SHP files.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -426,6 +427,7 @@ function App() {
   const [mapPolygonGeometry, setMapPolygonGeometry] = useState(null);
   const [wizardPoint, setWizardPoint] = useState(null);
   const [selectingProperties, setSelectingProperties] = useState(false);
+  const [loadedShpFiles, setLoadedShpFiles] = useState([]);
 
   const [pointCaptureMode, setPointCaptureMode] = useState(null);
   const [selectedPin, setSelectedPin] = useState(null);
@@ -2615,11 +2617,44 @@ function App() {
   }
 
   /**
+   * Method to handle when the user wants to select properties from the map.
    *
    * @param {Boolean} selecting If true user wants to select properties from the map; otherwise false.
    */
   function HandleSelectPropertiesChange(selecting) {
     setSelectingProperties(selecting);
+  }
+
+  /**
+   * Method to handle when a shape file is loaded.
+   *
+   * @param {string} geojson The string representation of the geojson data from the SHP file.
+   * @param {object} shpFile The object containing the information for the shp file that has just been loaded.
+   */
+  function HandleLoadShpFile(geojson, shpFile) {
+    if (geojson && shpFile) {
+      let newLoadedShpFiles = loadedShpFiles.map((x) => x);
+      if (!loadedShpFiles.find((x) => x.id === shpFile.layerId)) {
+        newLoadedShpFiles.push({ id: shpFile.layerId, geojson: geojson, shpFile: shpFile });
+      } else {
+        newLoadedShpFiles = loadedShpFiles.map(
+          (x) => [{ id: shpFile.layerId, geojson: geojson, shpFile: shpFile }].find((rec) => rec.id === x.id) || x
+        );
+      }
+      setLoadedShpFiles(newLoadedShpFiles);
+    }
+  }
+
+  /**
+   * Method to handle when a shape file is unloaded.
+   *
+   * @param {string} id The id of for the shp file that we want to unload.
+   */
+  function HandleUnloadShpFile(id) {
+    if (id) {
+      const newLoadedShpFiles = loadedShpFiles.filter((x) => x.id !== id);
+      setLoadedShpFiles(newLoadedShpFiles);
+    }
   }
 
   /**
@@ -2813,6 +2848,7 @@ function App() {
                             currentPolygonGeometry: mapPolygonGeometry,
                             currentPinSelected: selectedPin,
                             selectingProperties: selectingProperties,
+                            loadedShpFiles: loadedShpFiles,
                             onBackgroundDataChange: HandleBackgroundDataChange,
                             onSearchDataChange: HandleMapSearchDataChange,
                             onMapChange: HandleMapChange,
@@ -2833,6 +2869,8 @@ function App() {
                             onEsuDivided: HandleEsuDivided,
                             onSelectEsus: HandleSelectEsus,
                             onSelectPropertiesChange: HandleSelectPropertiesChange,
+                            onLoadShpFile: HandleLoadShpFile,
+                            onUnloadShpFile: HandleUnloadShpFile,
                           }}
                         >
                           <InformationContext.Provider
