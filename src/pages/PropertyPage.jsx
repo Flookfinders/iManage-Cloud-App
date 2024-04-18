@@ -19,6 +19,7 @@
 //    006   05.04.24 Sean Flook       IMANN-351 Changes to handle browser navigation.
 //    007   11.04.24 Sean Flook       IMANN-351 Prevent infinite loops when creating a new record.
 //    008   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
+//    009   18.04.24 Sean Flook       IMANN-351 Corrected typo.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -57,7 +58,7 @@ function PropertyPage() {
   const mapContext = useContext(MapContext);
   const settingsContext = useContext(SettingsContext);
   const streetContext = useContext(StreetContext);
-  const lookupContext = useRef(useContext(LookupContext));
+  const lookupContext = useContext(LookupContext);
   const searchContext = useContext(SearchContext);
   const informationContext = useContext(InformationContext);
 
