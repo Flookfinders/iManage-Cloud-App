@@ -40,6 +40,9 @@
 //    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    006   05.12.23 Sean Flook       IMANN-198 Only allow characters A-Z for suffixes.
 //    007   10.01.24 Sean Flook                 Fix warnings.
+//    008   16.04.24 Joshua McCormick IMAN-277  Changed TextField out for ADSTextControl
+//    009   16.04.24 Joshua McCormick IMAN-277  Revert 008 &   added props for setting displayCharactersLeft and maxLength
+//    010   17.04.24 Joshua McCormick IMAN-277  Removed maxLength and set to hardcoded 90
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -64,6 +67,7 @@ ADSAddressableObjectControl.propTypes = {
   isEndSuffixFocused: PropTypes.bool,
   isTextFocused: PropTypes.bool,
   loading: PropTypes.bool,
+  displayCharactersLeft: PropTypes.bool,
   helperText: PropTypes.string,
   startNumberValue: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   startSuffixValue: PropTypes.string,
@@ -91,6 +95,7 @@ ADSAddressableObjectControl.defaultProps = {
   isEndNumberFocused: false,
   isEndSuffixFocused: false,
   isTextFocused: false,
+  displayCharactersLeft: false,
   loading: false,
 };
 
@@ -104,6 +109,7 @@ function ADSAddressableObjectControl({
   isEndSuffixFocused,
   isTextFocused,
   loading,
+  displayCharactersLeft,
   helperText,
   startNumberValue,
   startSuffixValue,
@@ -504,6 +510,20 @@ function ADSAddressableObjectControl({
             />
           )}
         </Grid>
+        {displayCharactersLeft && displayText && displayText.length > 0 ? (
+          <Grid item xs={12}>
+            <Typography
+              id={`${variant === "PAO" ? "pao" : "sao"}-characters-left`}
+              variant="body2"
+              align="right"
+              aria-labelledby={`${variant === "PAO" ? "pao" : "sao"}-description-label`}
+            >
+              {90 - displayText.length} characters left
+            </Typography>
+          </Grid>
+        ) : (
+          ""
+        )}
         <ADSErrorDisplay errorText={displayError} id={`${variant === "PAO" ? "pao" : "sao"}-error`} />
       </Grid>
     </Box>

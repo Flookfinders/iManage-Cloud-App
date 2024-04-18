@@ -37,6 +37,7 @@
 //    024   27.03.24 Sean Flook                 Further changes required to fix warnings and added ADSDialogTitle.
 //    025   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //    026   09.04.24 Sean Flook       IMANN-376 Removed for administrative area.
+//    027   17.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft to Scheme field.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1695,6 +1696,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               value={classificationScheme}
               id="classification_scheme"
               maxLength={60}
+              displayCharactersLeft
               minLines={1}
               maxLines={1}
               onChange={handleClassificationSchemeChangeEvent}

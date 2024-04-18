@@ -34,6 +34,10 @@
 //    021   22.03.24 Sean Flook                 Changed the way the address is updated and displayed.
 //    022   26.03.24 Joshua McCormick IMANN-280 Added divider on tab between back button and title
 //    023   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
+//    024   16.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft and maxLength props to ADSAddressableObjectControl
+//    025   17.04.24 Joshua McCormick IMANN-277 Removed maxLength from ADSAddressableObjectControl, as it is hardcoded inside ADSAddressableObjectControl
+//    026   17.04.24 Joshua McCormick IMANN-207 endDate set to null if logical status is less than 7
+//    027   17.04.24 Joshua McCormick IMANN-277 remaining unnecessary maxLength removed from ADSAddressableObjectControl
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -469,7 +473,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           language: field && field === "language" ? newValue : language,
           startDate:
             field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
-          endDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
+            endDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : field && field === "logicalStatus" && newValue < 7 ? null : endDate && ConvertDate(endDate),
           saoStartNumber:
             field && field === "saoStartNumber"
               ? newValue && Number(newValue)
@@ -511,7 +515,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           language: field && field === "language" ? newValue : language,
           startDate:
             field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
-          endDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : endDate && ConvertDate(endDate),
+          endDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : field && field === "logicalStatus" && newValue < 7 ? null : endDate && ConvertDate(endDate),
           saoStartNumber:
             field && field === "saoStartNumber"
               ? newValue && Number(newValue)
@@ -1081,6 +1085,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           helperText="Logical status of this Record."
         />
         <ADSAddressableObjectControl
+          displayCharactersLeft
           variant="SAO"
           isEditable={userCanEdit}
           isStartNumberFocused={focusedField ? focusedField === "SaoStartNumber" : false}
@@ -1107,6 +1112,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           onTextChange={handleSaoTextChangeEvent}
         />
         <ADSAddressableObjectControl
+          displayCharactersLeft
           variant="PAO"
           isEditable={userCanEdit}
           isRequired

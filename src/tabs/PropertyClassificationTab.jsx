@@ -24,7 +24,7 @@
 //    011   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    012   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
 //    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//#endregion Version 1.0.0.0 changes
+//    014   17.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for the classification Scheme 
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -380,6 +380,7 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onHome
           value={classificationScheme}
           id="scheme"
           maxLength={40}
+          displayCharactersLeft
           errorText={classificationSchemeError}
           helperText="The classification scheme used for this record."
           onChange={handleClassificationSchemeChangeEvent}

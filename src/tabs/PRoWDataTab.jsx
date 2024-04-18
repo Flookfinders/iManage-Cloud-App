@@ -27,6 +27,7 @@
 //    014   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
 //    015   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    016   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    017   16.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft to consultation and appeal refs and details input
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1272,6 +1273,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
               loading={loading}
               value={consultationReference}
               maxLength={16}
+              displayCharactersLeft
               id="prow_consult_ref"
               errorText={consultationReferenceError}
               helperText="Any formal reference for the consultation."
@@ -1285,6 +1287,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
               loading={loading}
               value={consultationDetails}
               maxLength={30}
+              displayCharactersLeft
               id="prow_consult_details"
               characterSet="GeoPlaceStreet1"
               errorText={consultationDetailsError}
@@ -1400,6 +1403,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
               loading={loading}
               value={appealReference}
               maxLength={16}
+              displayCharactersLeft
               id="prow_appeal_ref"
               errorText={appealReferenceError}
               helperText="Any formal reference for the appeal."
@@ -1413,6 +1417,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
               loading={loading}
               value={appealDetails}
               maxLength={30}
+              displayCharactersLeft
               id="prow_appeal_details"
               characterSet="GeoPlaceStreet1"
               errorText={appealDetailsError}
