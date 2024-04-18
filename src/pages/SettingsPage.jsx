@@ -3,7 +3,7 @@
 //
 //  Description: Settings page
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -18,6 +18,7 @@
 //    005   30.11.23 Sean Flook                 Hide items that have not been developed yet.
 //    006   24.01.24 Joel Benford               Add scottish metadata to tree.
 //    007   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    008   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -47,6 +48,7 @@ function SettingsPage() {
   const [expandedNodes, setExpandedNodes] = useState([]);
   const [defaultExpandedNode, setDefaultExpandedNode] = useState([]);
   const [defaultSelectedNode, setDefaultSelectedNode] = useState(null);
+  const [reloadContexts, setReloadContexts] = useState(false);
 
   /**
    * Event to handle when a node is selected.
@@ -68,6 +70,21 @@ function SettingsPage() {
   const handleNodeToggle = (event, nodeIds) => {
     setExpandedNodes(nodeIds);
   };
+
+  useEffect(() => {
+    if (sessionStorage.getItem("SettingsPage_firstLoadDone") === null) {
+      sessionStorage.setItem("SettingsPage_firstLoadDone", 1);
+    } else {
+      setReloadContexts(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (reloadContexts) {
+      setReloadContexts(false);
+      settingsContext.onReload();
+    }
+  }, [reloadContexts, settingsContext]);
 
   useEffect(() => {
     if (settingsContext.currentSettingsNode && !selectedNode) {

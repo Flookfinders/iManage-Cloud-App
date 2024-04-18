@@ -22,6 +22,7 @@
 //    009   05.04.24 Sean Flook                 Correctly handle errors when getting a street.
 //    010   05.04.24 Sean Flook       IMANN-351 Changes to handle browser navigation.
 //    011   11.04.24 Sean Flook       IMANN-351 Prevent infinite loops when creating a new record.
+//    012   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -38,6 +39,9 @@ import UserContext from "../context/userContext";
 import MapContext from "../context/mapContext";
 import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
+import PropertyContext from "../context/propertyContext";
+import SearchContext from "../context/searchContext";
+import InformationContext from "../context/informationContext";
 
 import { GetStreetByUSRNUrl } from "../configuration/ADSConfig";
 import { GetNewStreet, GetMultipleEsusData } from "../utils/StreetUtils";
@@ -57,6 +61,9 @@ function StreetPage() {
   const mapContext = useContext(MapContext);
   const settingsContext = useContext(SettingsContext);
   const lookupContext = useContext(LookupContext);
+  const propertyContext = useContext(PropertyContext);
+  const searchContext = useContext(SearchContext);
+  const informationContext = useContext(InformationContext);
 
   const location = useLocation();
 
@@ -65,6 +72,39 @@ function StreetPage() {
   const dataUsrn = useRef(-1);
   const [loading, setLoading] = useState(true);
   const loadingRef = useRef(false);
+  const [reloadContexts, setReloadContexts] = useState(false);
+
+  useEffect(() => {
+    if (sessionStorage.getItem("StreetPage_firstLoadDone") === null) {
+      sessionStorage.setItem("StreetPage_firstLoadDone", 1);
+    } else {
+      setReloadContexts(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (reloadContexts) {
+      setReloadContexts(false);
+      propertyContext.onReload();
+      sandboxContext.onReload();
+      mapContext.onReload();
+      settingsContext.onReload();
+      streetContext.onReload();
+      lookupContext.onReload();
+      searchContext.onReload();
+      informationContext.onReload();
+    }
+  }, [
+    reloadContexts,
+    propertyContext,
+    sandboxContext,
+    mapContext,
+    settingsContext,
+    streetContext,
+    lookupContext,
+    searchContext,
+    informationContext,
+  ]);
 
   useEffect(() => {
     async function SetUpStreetData(urlUsrn) {

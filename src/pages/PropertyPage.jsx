@@ -18,6 +18,7 @@
 //    005   05.04.24 Sean Flook                 Correctly handle errors when getting a property.
 //    006   05.04.24 Sean Flook       IMANN-351 Changes to handle browser navigation.
 //    007   11.04.24 Sean Flook       IMANN-351 Prevent infinite loops when creating a new record.
+//    008   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -33,6 +34,10 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
 import MapContext from "../context/mapContext";
 import SettingsContext from "../context/settingsContext";
+import StreetContext from "../context/streetContext";
+import LookupContext from "../context/lookupContext";
+import SearchContext from "../context/searchContext";
+import InformationContext from "../context/informationContext";
 
 import { GetPropertyFromUPRNUrl } from "../configuration/ADSConfig";
 import { GetNewProperty } from "../utils/PropertyUtils";
@@ -51,6 +56,10 @@ function PropertyPage() {
   const userContext = useContext(UserContext);
   const mapContext = useContext(MapContext);
   const settingsContext = useContext(SettingsContext);
+  const streetContext = useContext(StreetContext);
+  const lookupContext = useRef(useContext(LookupContext));
+  const searchContext = useContext(SearchContext);
+  const informationContext = useContext(InformationContext);
 
   const location = useLocation();
 
@@ -58,6 +67,39 @@ function PropertyPage() {
   const [data, setData] = useState();
   const dataUprn = useRef(-1);
   const [loading, setLoading] = useState(false);
+  const [reloadContexts, setReloadContexts] = useState(false);
+
+  useEffect(() => {
+    if (sessionStorage.getItem("PropertyPage_firstLoadDone") === null) {
+      sessionStorage.setItem("PropertyPage_firstLoadDone", 1);
+    } else {
+      setReloadContexts(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (reloadContexts) {
+      setReloadContexts(false);
+      propertyContext.onReload();
+      sandboxContext.onReload();
+      mapContext.onReload();
+      settingsContext.onReload();
+      streetContext.onReload();
+      lookupContext.onReload();
+      searchContext.onReload();
+      informationContext.onReload();
+    }
+  }, [
+    reloadContexts,
+    propertyContext,
+    sandboxContext,
+    mapContext,
+    settingsContext,
+    streetContext,
+    lookupContext,
+    searchContext,
+    informationContext,
+  ]);
 
   useEffect(() => {
     function SetUpPropertyData(urlUprn) {

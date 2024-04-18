@@ -29,12 +29,13 @@
 //    016   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
 //    017   16.04.24 Sean Flook                 Added a sub menu on the properties menu item so that we can select properties by logical status as well.
 //    018   16.04.24 Sean Flook                 Added ability to select historic properties.
+//    019   18.04.24 Sean Flook       IMANN-351 Changes required to prevent crashes when refreshing the page.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import React, { useContext, useState, useRef, Fragment } from "react";
+import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 
 import SearchContext from "../context/searchContext";
@@ -128,6 +129,7 @@ function SearchDataForm() {
   const userContext = useContext(UserContext);
   const settingsContext = useContext(SettingsContext);
 
+  const [currentData, setCurrentData] = useState([]);
   const [searchFilteredData, setSearchFilteredData] = useState(null);
 
   const [checked, setChecked] = useState([]);
@@ -161,17 +163,6 @@ function SearchDataForm() {
   };
 
   /**
-   * Method to get the current search data.
-   *
-   * @returns {array} A list of the current search results.
-   */
-  const currentData = () => {
-    const currentData = searchFilteredData ? searchFilteredData : searchContext.currentSearchData.results;
-
-    return currentData;
-  };
-
-  /**
    * Event to handle when the select checkbox is clicked.
    */
   const handleSelectCheckboxClick = () => {
@@ -179,13 +170,9 @@ function SearchDataForm() {
       setChecked([]);
       mapContext.onHighlightClear();
     } else {
-      const newChecked = currentData().map((x) => x.id);
-      const streetHighlighted = currentData()
-        .filter((x) => x.type === 15)
-        .map((x) => x.usrn);
-      const propertyHighlighted = currentData()
-        .filter((x) => x.type === 24)
-        .map((x) => x.uprn);
+      const newChecked = currentData.map((x) => x.id);
+      const streetHighlighted = currentData.filter((x) => x.type === 15).map((x) => x.usrn);
+      const propertyHighlighted = currentData.filter((x) => x.type === 24).map((x) => x.uprn);
       setChecked(newChecked);
       mapContext.onHighlightStreetProperty(streetHighlighted, propertyHighlighted);
     }
@@ -605,13 +592,9 @@ function SearchDataForm() {
    * Event to handle selecting all the records.
    */
   const handleSelectAll = () => {
-    const newChecked = currentData().map((x) => x.id);
-    const streetHighlighted = currentData()
-      .filter((x) => x.type === 15)
-      .map((x) => x.usrn);
-    const propertyHighlighted = currentData()
-      .filter((x) => x.type === 24)
-      .map((x) => x.uprn);
+    const newChecked = currentData.map((x) => x.id);
+    const streetHighlighted = currentData.filter((x) => x.type === 15).map((x) => x.usrn);
+    const propertyHighlighted = currentData.filter((x) => x.type === 24).map((x) => x.uprn);
     setChecked(newChecked);
     setAllChecked(true);
     setPartialChecked(false);
@@ -623,15 +606,11 @@ function SearchDataForm() {
    * Event to handle selecting all the properties.
    */
   const handleSelectProperties = () => {
-    const newChecked = currentData()
-      .filter((x) => x.type === 24)
-      .map((x) => x.id);
-    const propertyHighlighted = currentData()
-      .filter((x) => x.type === 24)
-      .map((x) => x.uprn);
+    const newChecked = currentData.filter((x) => x.type === 24).map((x) => x.id);
+    const propertyHighlighted = currentData.filter((x) => x.type === 24).map((x) => x.uprn);
     setChecked(newChecked);
-    setAllChecked(newChecked.length === currentData().length);
-    setPartialChecked(newChecked.length > 0 && newChecked.length !== currentData().length);
+    setAllChecked(newChecked.length === currentData.length);
+    setPartialChecked(newChecked.length > 0 && newChecked.length !== currentData.length);
     setAnchorSelectEl(null);
     mapContext.onHighlightStreetProperty(null, propertyHighlighted);
   };
@@ -640,15 +619,13 @@ function SearchDataForm() {
    * Event to handle selecting all the properties by logical status.
    */
   const handleSelectPropertiesByLogicalStatus = (logicalStatus) => {
-    const newChecked = currentData()
-      .filter((x) => x.type === 24 && x.logical_status === logicalStatus)
-      .map((x) => x.id);
-    const propertyHighlighted = currentData()
+    const newChecked = currentData.filter((x) => x.type === 24 && x.logical_status === logicalStatus).map((x) => x.id);
+    const propertyHighlighted = currentData
       .filter((x) => x.type === 24 && x.logical_status === logicalStatus)
       .map((x) => x.uprn);
     setChecked(newChecked);
-    setAllChecked(newChecked.length === currentData().length);
-    setPartialChecked(newChecked.length > 0 && newChecked.length !== currentData().length);
+    setAllChecked(newChecked.length === currentData.length);
+    setPartialChecked(newChecked.length > 0 && newChecked.length !== currentData.length);
     setAnchorSelectEl(null);
     mapContext.onHighlightStreetProperty(null, propertyHighlighted);
   };
@@ -657,15 +634,11 @@ function SearchDataForm() {
    * Event to handle selecting all the streets.
    */
   const handleSelectStreets = () => {
-    const newChecked = currentData()
-      .filter((x) => x.type === 15)
-      .map((x) => x.id);
-    const streetHighlighted = currentData()
-      .filter((x) => x.type === 15)
-      .map((x) => x.usrn);
+    const newChecked = currentData.filter((x) => x.type === 15).map((x) => x.id);
+    const streetHighlighted = currentData.filter((x) => x.type === 15).map((x) => x.usrn);
     setChecked(newChecked);
-    setAllChecked(newChecked.length === currentData().length);
-    setPartialChecked(newChecked.length > 0 && newChecked.length !== currentData().length);
+    setAllChecked(newChecked.length === currentData.length);
+    setPartialChecked(newChecked.length > 0 && newChecked.length !== currentData.length);
     setAnchorSelectEl(null);
     mapContext.onHighlightStreetProperty(streetHighlighted, null);
   };
@@ -687,8 +660,8 @@ function SearchDataForm() {
 
     setChecked(newChecked);
 
-    setAllChecked(newChecked.length === currentData().length);
-    setPartialChecked(newChecked.length > 0 && newChecked.length !== currentData().length);
+    setAllChecked(newChecked.length === currentData.length);
+    setPartialChecked(newChecked.length > 0 && newChecked.length !== currentData.length);
   }
 
   /**
@@ -840,6 +813,29 @@ function SearchDataForm() {
     setAnchorSelectEl(null);
     mapContext.onHighlightClear();
   };
+
+  useEffect(() => {
+    if (localStorage.getItem("SearchDataForm_firstLoadDone") === null) {
+      localStorage.setItem("SearchDataForm_firstLoadDone", 1);
+    } else {
+      setCurrentData(JSON.parse(sessionStorage.getItem("currentData")));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (
+      (searchFilteredData && searchFilteredData.length) ||
+      (searchContext.currentSearchData &&
+        searchContext.currentSearchData.results &&
+        searchContext.currentSearchData.results.length)
+    ) {
+      setCurrentData(searchFilteredData ? searchFilteredData : searchContext.currentSearchData.results);
+      sessionStorage.setItem(
+        "currentData",
+        JSON.stringify(searchFilteredData ? searchFilteredData : searchContext.currentSearchData.results)
+      );
+    }
+  }, [searchContext.currentSearchData, searchFilteredData]);
 
   return (
     <Fragment>
@@ -1036,7 +1032,7 @@ function SearchDataForm() {
       </Box>
       <TabPanel value={value} index={0}>
         <SearchDataTab
-          data={currentData()}
+          data={currentData}
           variant="list"
           checked={checked}
           onToggleItem={(value) => ToggleItem(value)}
@@ -1047,7 +1043,7 @@ function SearchDataForm() {
       </TabPanel>
       <TabPanel value={value} index={1}>
         <SearchDataTab
-          data={currentData()}
+          data={currentData}
           variant="grid"
           checked={checked}
           onToggleItem={(value) => ToggleItem(value)}

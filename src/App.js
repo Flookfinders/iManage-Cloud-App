@@ -53,6 +53,7 @@
 //    040   09.04.24 Sean Flook                 If we do not have user information do not close the login dialog.
 //    041   11.04.24 Sean Flook                 Use title case for authority name rather than sentence case.
 //    042   16.04.24 Sean Flook                 Changes required to handle loading and displaying SHP files.
+//    043   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -452,6 +453,7 @@ function App() {
 
       setCurrentUser(user);
       if (loginOpen) setLoginOpen(false);
+      sessionStorage.setItem("currentUser", JSON.stringify(userInfo));
     } else {
       setCurrentUser(null);
       setLoginOpen(true);
@@ -515,6 +517,26 @@ function App() {
       parishes: parishes,
       dbAuthorities: dbAuthorities,
     });
+
+    sessionStorage.setItem(
+      "lookups",
+      JSON.stringify({
+        validationMessages: validationMessages,
+        localities: localities,
+        towns: towns,
+        islands: islands,
+        adminAuthorities: adminAuthorities,
+        operationalDistricts: operationalDistricts,
+        appCrossRefs: appCrossRefs,
+        subLocalities: subLocalities,
+        streetDescriptors: streetDescriptors,
+        postTowns: postTowns,
+        postcodes: postcodes,
+        wards: wards,
+        parishes: parishes,
+        dbAuthorities: dbAuthorities,
+      })
+    );
   }
 
   /**
@@ -540,6 +562,26 @@ function App() {
       parishes: variant === "parish" ? newLookups : lookups.parishes,
       dbAuthorities: variant === "dbAuthority" ? newLookups : lookups.dbAuthorities,
     });
+
+    sessionStorage.setItem(
+      "lookups",
+      JSON.stringify({
+        validationMessages: variant === "validationMessage" ? newLookups : lookups.validationMessages,
+        localities: variant === "locality" ? newLookups : lookups.localities,
+        towns: variant === "town" ? newLookups : lookups.towns,
+        islands: variant === "island" ? newLookups : lookups.islands,
+        adminAuthorities: variant === "administrativeArea" ? newLookups : lookups.adminAuthorities,
+        operationalDistricts: variant === "operationalDistrict" ? newLookups : lookups.operationalDistricts,
+        appCrossRefs: variant === "crossReference" ? newLookups : lookups.appCrossRefs,
+        subLocalities: variant === "subLocality" ? newLookups : lookups.subLocalities,
+        streetDescriptors: variant === "streetDescriptor" ? newLookups : lookups.streetDescriptors,
+        postTowns: variant === "postTown" ? newLookups : lookups.postTowns,
+        postcodes: variant === "postcode" ? newLookups : lookups.postcodes,
+        wards: variant === "ward" ? newLookups : lookups.wards,
+        parishes: variant === "parish" ? newLookups : lookups.parishes,
+        dbAuthorities: variant === "dbAuthority" ? newLookups : lookups.dbAuthorities,
+      })
+    );
   }
 
   /**
@@ -578,6 +620,24 @@ function App() {
       indexBuiltOn: iManageIndexMeta ? iManageIndexMeta.builton : "unknown",
       indexElasticVersion: iManageIndexMeta ? iManageIndexMeta.elasticnugetversion : "unknown",
     });
+
+    sessionStorage.setItem(
+      "metadata",
+      JSON.stringify({
+        guiVersion: guiVersion,
+        apiVersion: apiVersion ? apiVersion : "unknown",
+        coreVersion: coreVersion ? coreVersion : "unknown",
+        lookupVersion: lookupVersion ? lookupVersion : "unknown",
+        settingsVersion: settingsVersion ? settingsVersion : "unknown",
+        iManageDbVersion: iManageDbVersion ? iManageDbVersion : "unknown",
+        iExchangeDbVersion: iExchangeDbVersion ? iExchangeDbVersion : "unknown",
+        iValidateDbVersion: iValidateDbVersion ? iValidateDbVersion : "unknown",
+        indexDBServer: iManageIndexMeta ? iManageIndexMeta.dbserver : "unknown",
+        indexDBName: iManageIndexMeta ? iManageIndexMeta.dbname : "unknown",
+        indexBuiltOn: iManageIndexMeta ? iManageIndexMeta.builton : "unknown",
+        indexElasticVersion: iManageIndexMeta ? iManageIndexMeta.elasticnugetversion : "unknown",
+      })
+    );
   }
 
   /**
@@ -587,6 +647,51 @@ function App() {
    */
   function HandleDistrictUpdated(updated) {
     setDistrictUpdated(updated);
+  }
+
+  /**
+   * Event to handle reloading the lookup context data from storage
+   */
+  function HandleLookupReload() {
+    if (sessionStorage.getItem("lookups") !== null) {
+      const savedLookups = JSON.parse(sessionStorage.getItem("lookups"));
+      setLookups({
+        validationMessages: savedLookups.validationMessages,
+        localities: savedLookups.localities,
+        towns: savedLookups.towns,
+        islands: savedLookups.islands,
+        adminAuthorities: savedLookups.adminAuthorities,
+        operationalDistricts: savedLookups.operationalDistricts,
+        appCrossRefs: savedLookups.appCrossRefs,
+        subLocalities: savedLookups.subLocalities,
+        streetDescriptors: savedLookups.streetDescriptors,
+        postTowns: savedLookups.postTowns,
+        postcodes: savedLookups.postcodes,
+        wards: savedLookups.wards,
+        parishes: savedLookups.parishes,
+        dbAuthorities: savedLookups.dbAuthorities,
+      });
+    }
+
+    if (sessionStorage.getItem("metadata") !== null) {
+      const savedMetadata = JSON.parse(sessionStorage.getItem("metadata"));
+      setMetadata({
+        guiVersion: savedMetadata.guiVersion,
+        apiVersion: savedMetadata.apiVersion ? savedMetadata.apiVersion : "unknown",
+        coreVersion: savedMetadata.coreVersion ? savedMetadata.coreVersion : "unknown",
+        lookupVersion: savedMetadata.lookupVersion ? savedMetadata.lookupVersion : "unknown",
+        settingsVersion: savedMetadata.settingsVersion ? savedMetadata.settingsVersion : "unknown",
+        iManageDbVersion: savedMetadata.iManageDbVersion ? savedMetadata.iManageDbVersion : "unknown",
+        iExchangeDbVersion: savedMetadata.iExchangeDbVersion ? savedMetadata.iExchangeDbVersion : "unknown",
+        iValidateDbVersion: savedMetadata.iValidateDbVersion ? savedMetadata.iValidateDbVersion : "unknown",
+        indexDBServer: savedMetadata.iManageIndexMeta ? savedMetadata.iManageIndexMeta.dbserver : "unknown",
+        indexDBName: savedMetadata.iManageIndexMeta ? savedMetadata.iManageIndexMeta.dbname : "unknown",
+        indexBuiltOn: savedMetadata.iManageIndexMeta ? savedMetadata.iManageIndexMeta.builton : "unknown",
+        indexElasticVersion: savedMetadata.iManageIndexMeta
+          ? savedMetadata.iManageIndexMeta.elasticnugetversion
+          : "unknown",
+      });
+    }
   }
 
   /**
@@ -666,6 +771,7 @@ function App() {
       propertyTab: sandbox.propertyTab,
     };
     setSandbox(newSandbox);
+    sessionStorage.setItem("sandbox", JSON.stringify(newSandbox));
   }
 
   /**
@@ -835,6 +941,7 @@ function App() {
       propertyTab: sandbox.propertyTab,
     };
     setSandbox(newSandbox);
+    sessionStorage.setItem("sandbox", JSON.stringify(newSandbox));
   }
 
   /**
@@ -854,6 +961,7 @@ function App() {
       propertyTab: sandbox.propertyTab,
     };
     setSandbox(updatedSandbox);
+    sessionStorage.setItem("sandbox", JSON.stringify(updatedSandbox));
   }
 
   /**
@@ -873,6 +981,7 @@ function App() {
       propertyTab: newValue,
     };
     setSandbox(updatedSandbox);
+    sessionStorage.setItem("sandbox", JSON.stringify(updatedSandbox));
   }
 
   /**
@@ -915,6 +1024,16 @@ function App() {
       propertyTab: !["street", "property"].includes(sourceType) ? 0 : sandbox.propertyTab,
     };
     setSandbox(resetSandbox);
+    sessionStorage.setItem("sandbox", JSON.stringify(resetSandbox));
+  }
+
+  /**
+   * Event to handle reloading the sandbox context data from storage
+   */
+  function HandleSandboxReload() {
+    if (sessionStorage.getItem("sandbox") !== null) {
+      setSandbox(JSON.parse(sessionStorage.getItem("sandbox")));
+    }
   }
 
   /**
@@ -931,13 +1050,19 @@ function App() {
    *
    * @param {string} searchString The search string that was used to perform the search.
    * @param {array} data The data that has been returned by the search.
+   * @param {boolean} [reloading=false] True if this is called from the reloading method; otherwise false.
    */
-  function HandleSearchDataChange(searchString, data) {
+  function HandleSearchDataChange(searchString, data, reloading = false) {
     setPreviousSearchData({
       searchString: searchData.searchString,
       results: searchData.results,
     });
+
     setSearchData({ searchString: searchString, results: data });
+
+    if (!reloading) {
+      sessionStorage.setItem("search", JSON.stringify({ searchString: searchString, results: data }));
+    }
   }
 
   /**
@@ -1013,12 +1138,32 @@ function App() {
   }
 
   /**
+   * Event to handle reloading the search context data from storage
+   */
+  function HandleSearchReload() {
+    if (sessionStorage.getItem("search") !== null) {
+      const searchData = JSON.parse(sessionStorage.getItem("search"));
+      HandleSearchDataChange(searchData.searchString, searchData.results, true);
+    }
+  }
+
+  /**
    * Event to handle when the search filter data changes.
    *
    * @param {object} filterData The data used to filter the search.
    */
   function HandleSearchFilterChange(filterData) {
     setSearchFilter(filterData);
+    sessionStorage.setItem("searchFilter", JSON.stringify(filterData));
+  }
+
+  /**
+   * Event to handle reloading the filter context data from storage
+   */
+  function HandleFilterReload() {
+    if (sessionStorage.getItem("searchFilter") !== null) {
+      setSearchFilter(JSON.parse(sessionStorage.getItem("searchFilter")));
+    }
   }
 
   /**
@@ -1034,8 +1179,9 @@ function App() {
    * Event to handle when the authority details change.
    *
    * @param {object} details The authority details.
+   * @param {boolean} [reloading=false] True if this is called from the reloading method; otherwise false.
    */
-  function HandleAuthorityDetailsChange(details) {
+  function HandleAuthorityDetailsChange(details, reloading = false) {
     setAuthorityDetails(details);
 
     if (details) {
@@ -1063,6 +1209,10 @@ function App() {
       setIsWelsh(false);
       document.title = "iManage Cloud";
     }
+
+    if (!reloading) {
+      sessionStorage.setItem("authorityDetails", JSON.stringify(details));
+    }
   }
 
   /**
@@ -1072,6 +1222,7 @@ function App() {
    */
   function HandlePropertyTemplatesChange(templates) {
     setPropertyTemplates(templates);
+    sessionStorage.setItem("propertyTemplates", JSON.stringify(templates));
   }
 
   /**
@@ -1081,6 +1232,7 @@ function App() {
    */
   function HandleStreetTemplateChange(template) {
     setStreetTemplate(template);
+    sessionStorage.setItem("streetTemplate", JSON.stringify(template));
   }
 
   /**
@@ -1090,6 +1242,28 @@ function App() {
    */
   function HandleMapLayersChange(data) {
     setMapLayers(data);
+    sessionStorage.setItem("mapLayers", JSON.stringify(data));
+  }
+
+  /**
+   * Event to handle reloading the settings context data from storage
+   */
+  function HandleSettingsReload() {
+    if (sessionStorage.getItem("authorityDetails") !== null) {
+      HandleAuthorityDetailsChange(JSON.parse(sessionStorage.getItem("authorityDetails")), true);
+    }
+
+    if (sessionStorage.getItem("propertyTemplates") !== null) {
+      setPropertyTemplates(JSON.parse(sessionStorage.getItem("propertyTemplates")));
+    }
+
+    if (sessionStorage.getItem("streetTemplate") !== null) {
+      setStreetTemplate(JSON.parse(sessionStorage.getItem("streetTemplate")));
+    }
+
+    if (sessionStorage.getItem("mapLayers") !== null) {
+      setMapLayers(JSON.parse(sessionStorage.getItem("mapLayers")));
+    }
   }
 
   /**
@@ -1107,6 +1281,16 @@ function App() {
       newStreet: newStreet,
       openRelated: openRelated ? openRelated : street.openRelated,
     });
+
+    sessionStorage.setItem(
+      "street",
+      JSON.stringify({
+        usrn: usrn,
+        descriptor: descriptor,
+        newStreet: newStreet,
+        openRelated: openRelated ? openRelated : street.openRelated,
+      })
+    );
 
     if (usrn && usrn > 0) history.push(`/street/${usrn}`);
     else if (newStreet) {
@@ -1130,6 +1314,16 @@ function App() {
       newStreet: newStreet,
       openRelated: openRelated ? openRelated : street.openRelated,
     });
+
+    sessionStorage.setItem(
+      "street",
+      JSON.stringify({
+        usrn: usrn,
+        descriptor: descriptor,
+        newStreet: newStreet,
+        openRelated: openRelated ? openRelated : street.openRelated,
+      })
+    );
   }
 
   /**
@@ -1176,6 +1370,7 @@ function App() {
    * @param {array|null} heightWidthWeightErrors The list of height, width & weight errors (GeoPlace only).
    * @param {array|null} publicRightOfWayErrors The list of public rights of way errors (GeoPlace only).
    * @param {array|null} noteErrors The list of note errors.
+   * @param {boolean} [reloading=false] True if this is called from the reloading method; otherwise false.
    */
   function HandleStreetErrors(
     streetErrors,
@@ -1192,7 +1387,8 @@ function App() {
     specialDesignationErrors,
     heightWidthWeightErrors,
     publicRightOfWayErrors,
-    noteErrors
+    noteErrors,
+    reloading = false
   ) {
     setStreetErrors({
       street: streetErrors && streetErrors.length > 0 ? streetErrors : [],
@@ -1234,6 +1430,38 @@ function App() {
         (publicRightOfWayErrors && publicRightOfWayErrors.length > 0) ||
         (noteErrors && noteErrors.length > 0)
     );
+
+    if (!reloading) {
+      sessionStorage.setItem(
+        "streetErrors",
+        JSON.stringify({
+          street: streetErrors && streetErrors.length > 0 ? streetErrors : [],
+          descriptor: descriptorErrors && descriptorErrors.length > 0 ? descriptorErrors : [],
+          esu: esuErrors && esuErrors.length > 0 ? esuErrors : [],
+          highwayDedication:
+            highwayDedicationErrors && highwayDedicationErrors.length > 0 ? highwayDedicationErrors : [],
+          oneWayExemption: oneWayExemptionErrors && oneWayExemptionErrors.length > 0 ? oneWayExemptionErrors : [],
+          successorCrossRef:
+            successorCrossRefErrors && successorCrossRefErrors.length > 0 ? successorCrossRefErrors : [],
+          maintenanceResponsibility:
+            maintenanceResponsibilityErrors && maintenanceResponsibilityErrors.length > 0
+              ? maintenanceResponsibilityErrors
+              : [],
+          reinstatementCategory:
+            reinstatementCategoryErrors && reinstatementCategoryErrors.length > 0 ? reinstatementCategoryErrors : [],
+          osSpecialDesignation:
+            osSpecialDesignationErrors && osSpecialDesignationErrors.length > 0 ? osSpecialDesignationErrors : [],
+          interest: interestErrors && interestErrors.length > 0 ? interestErrors : [],
+          construction: constructionErrors && constructionErrors.length > 0 ? constructionErrors : [],
+          specialDesignation:
+            specialDesignationErrors && specialDesignationErrors.length > 0 ? specialDesignationErrors : [],
+          heightWidthWeight:
+            heightWidthWeightErrors && heightWidthWeightErrors.length > 0 ? heightWidthWeightErrors : [],
+          publicRightOfWay: publicRightOfWayErrors && publicRightOfWayErrors.length > 0 ? publicRightOfWayErrors : [],
+          note: noteErrors && noteErrors.length > 0 ? noteErrors : [],
+        })
+      );
+    }
   }
 
   /**
@@ -1277,6 +1505,10 @@ function App() {
    */
   function HandleStreetRecordChange(type, id, index, parentIndex, newRecord = false) {
     setStreetRecord({ type: type, id: id, index: index, parentIndex: parentIndex, newRecord: newRecord });
+    sessionStorage.setItem(
+      "streetRecord",
+      JSON.stringify({ type: type, id: id, index: index, parentIndex: parentIndex, newRecord: newRecord })
+    );
   }
 
   /**
@@ -1324,6 +1556,7 @@ function App() {
    */
   function HandleEsuSelected(esuId) {
     setSelectedMapEsuId(esuId);
+    sessionStorage.setItem("esu", esuId);
   }
 
   /**
@@ -1403,6 +1636,7 @@ function App() {
     else newList.push(title);
 
     setExpandedEsu(newList);
+    sessionStorage.setItem("expandedEsu", JSON.stringify(newList));
   }
 
   /**
@@ -1417,6 +1651,7 @@ function App() {
     else newList.push(title);
 
     setExpandedAsd(newList);
+    sessionStorage.setItem("expandedAsd", JSON.stringify(newList));
   }
 
   /**
@@ -1671,6 +1906,66 @@ function App() {
   }
 
   /**
+   * Event to handle reloading the street context data from storage
+   */
+  function HandleStreetReload() {
+    if (sessionStorage.getItem("street") !== null) {
+      const savedStreet = JSON.parse(sessionStorage.getItem("street"));
+      setStreet({
+        usrn: savedStreet.usrn,
+        descriptor: savedStreet.descriptor,
+        newStreet: savedStreet.newStreet,
+        openRelated: savedStreet.openRelated ? savedStreet.openRelated : street.openRelated,
+      });
+    }
+
+    if (sessionStorage.getItem("streetErrors") !== null) {
+      const savedStreetErrors = JSON.parse(sessionStorage.getItem("streetErrors"));
+      HandleStreetErrors(
+        savedStreetErrors.streetErrors,
+        savedStreetErrors.descriptorErrors,
+        savedStreetErrors.esuErrors,
+        savedStreetErrors.successorCrossRefErrors,
+        savedStreetErrors.highwayDedicationErrors,
+        savedStreetErrors.oneWayExemptionErrors,
+        savedStreetErrors.maintenanceResponsibilityErrors,
+        savedStreetErrors.reinstatementCategoryErrors,
+        savedStreetErrors.osSpecialDesignationErrors,
+        savedStreetErrors.interestErrors,
+        savedStreetErrors.constructionErrors,
+        savedStreetErrors.specialDesignationErrors,
+        savedStreetErrors.heightWidthWeightErrors,
+        savedStreetErrors.publicRightOfWayErrors,
+        savedStreetErrors.noteErrors,
+        true
+      );
+    }
+
+    if (sessionStorage.getItem("streetRecord") !== null) {
+      const savedStreetRecord = JSON.parse(sessionStorage.getItem("streetRecord"));
+      setStreetRecord({
+        type: savedStreetRecord.type,
+        id: savedStreetRecord.id,
+        index: savedStreetRecord.index,
+        parentIndex: savedStreetRecord.parentIndex,
+        newRecord: savedStreetRecord.newRecord,
+      });
+    }
+
+    if (sessionStorage.getItem("esu") !== null) {
+      setSelectedMapEsuId(Number(sessionStorage.getItem("esu")));
+    }
+
+    if (sessionStorage.getItem("expandedEsu") !== null) {
+      setExpandedEsu(JSON.parse(sessionStorage.getItem("expandedEsu")));
+    }
+
+    if (sessionStorage.getItem("expandedAsd") !== null) {
+      setExpandedAsd(JSON.parse(sessionStorage.getItem("expandedAsd")));
+    }
+  }
+
+  /**
    * Event to handle the changing of a property.
    *
    * @param {number} uprn The UPRN of the property.
@@ -1683,6 +1978,7 @@ function App() {
    * @param {boolean} newProperty True if this is a new property; otherwise false.
    * @param {object|null} parent The parent object for the property.
    * @param {object|null} [openRelated=null] If present it contains the UPRN of the property that we need the the related tab opened.
+   * @param {boolean} [reloading=false] True if this is called from the reloading method; otherwise false.
    */
   async function HandlePropertyChange(
     uprn,
@@ -1694,7 +1990,8 @@ function App() {
     northing,
     newProperty,
     parent,
-    openRelated = null
+    openRelated = null,
+    reloading = false
   ) {
     async function GetParentUprn(uprn) {
       const propertyUrl = GetPropertyFromUPRNUrl(openRelated.userToken);
@@ -1764,6 +2061,24 @@ function App() {
       openRelated: openRelated ? relatedProperty : property.openRelated,
     });
 
+    if (!reloading) {
+      sessionStorage.setItem(
+        "property",
+        JSON.stringify({
+          uprn: uprn,
+          usrn: usrn,
+          address: address,
+          formattedAddress: formattedAddress,
+          postcode: postcode,
+          easting: easting,
+          northing: northing,
+          newProperty: newProperty,
+          parent: parent,
+          openRelated: openRelated ? relatedProperty : property.openRelated,
+        })
+      );
+    }
+
     if (uprn && uprn > 0) history.push(`/property/${uprn}`);
     else if (newProperty) history.push("/property/0");
   }
@@ -1804,6 +2119,22 @@ function App() {
       parent: parent,
       openRelated: property.openRelated,
     });
+
+    sessionStorage.setItem(
+      "property",
+      JSON.stringify({
+        uprn: uprn,
+        usrn: usrn,
+        address: address,
+        formattedAddress: formattedAddress,
+        postcode: postcode,
+        easting: easting,
+        northing: northing,
+        newProperty: newProperty,
+        parent: parent,
+        openRelated: property.openRelated,
+      })
+    );
   }
 
   /**
@@ -1836,6 +2167,7 @@ function App() {
    * @param {array|null} successorCrossRefErrors The list of successor cross reference errors (OneScotland only).
    * @param {array|null} noteErrors The list of note errors.
    * @param {number} pkId The id of the current property.
+   * @param {boolean} [reloading=false] True if this is called from the reloading method; otherwise false.
    */
   function HandlePropertyErrors(
     blpuErrors,
@@ -1846,7 +2178,8 @@ function App() {
     organisationErrors,
     successorCrossRefErrors,
     noteErrors,
-    pkId
+    pkId,
+    reloading = false
   ) {
     setPropertyErrors({
       pkId: pkId,
@@ -1869,6 +2202,24 @@ function App() {
         (successorCrossRefErrors && successorCrossRefErrors.length > 0) ||
         (noteErrors && noteErrors.length > 0)
     );
+
+    if (!reloading) {
+      sessionStorage.setItem(
+        "propertyErrors",
+        JSON.stringify({
+          pkId: pkId,
+          blpu: blpuErrors && blpuErrors.length > 0 ? blpuErrors : [],
+          lpi: lpiErrors && lpiErrors.length > 0 ? lpiErrors : [],
+          provenance: provenanceErrors && provenanceErrors.length > 0 ? provenanceErrors : [],
+          crossRef: crossRefErrors && crossRefErrors.length > 0 ? crossRefErrors : [],
+          classification: classificationErrors && classificationErrors.length > 0 ? classificationErrors : [],
+          organisation: organisationErrors && organisationErrors.length > 0 ? organisationErrors : [],
+          successorCrossRef:
+            successorCrossRefErrors && successorCrossRefErrors.length > 0 ? successorCrossRefErrors : [],
+          note: noteErrors && noteErrors.length > 0 ? noteErrors : [],
+        })
+      );
+    }
   }
 
   /**
@@ -1903,6 +2254,8 @@ function App() {
    */
   function HandlePropertyRecordChange(type, index, newRecord = false) {
     setPropertyRecord({ type: type, index: index, newRecord: newRecord });
+
+    sessionStorage.setItem("propertyRecord", JSON.stringify({ type: type, index: index, newRecord: newRecord }));
   }
 
   /**
@@ -1924,6 +2277,8 @@ function App() {
    */
   function HandleWizardDone(data, isRange, parent, source) {
     setWizardData({ ...data, isRange: isRange, parent: parent, source: source });
+
+    sessionStorage.setItem("wizardData", JSON.stringify({ ...data, isRange: isRange, parent: parent, source: source }));
   }
 
   /**
@@ -1940,6 +2295,7 @@ function App() {
    */
   function HandleRestoreProperty() {
     setProperty(previousProperty.current);
+    sessionStorage.setItem("property", JSON.stringify(previousProperty.current));
   }
 
   /**
@@ -1958,6 +2314,22 @@ function App() {
       parent: property.parent,
       openRelated: null,
     });
+
+    sessionStorage.setItem(
+      "property",
+      JSON.stringify({
+        uprn: property.uprn,
+        usrn: property.usrn,
+        address: property.address,
+        formattedAddress: property.formattedAddress,
+        postcode: property.postcode,
+        easting: property.easting,
+        northing: property.northing,
+        newProperty: property.newProperty,
+        parent: property.parent,
+        openRelated: null,
+      })
+    );
   }
 
   /**
@@ -1975,6 +2347,20 @@ function App() {
       note: [],
     });
     setPropertyHasErrors(false);
+
+    sessionStorage.setItem(
+      "propertyErrors",
+      JSON.stringify({
+        blpu: [],
+        lpi: [],
+        provenance: [],
+        crossRef: [],
+        classification: [],
+        organisation: [],
+        successorCrossRef: [],
+        note: [],
+      })
+    );
   }
 
   /**
@@ -2124,6 +2510,57 @@ function App() {
   }
 
   /**
+   * Event to handle reloading the property context data from storage
+   */
+  function HandlePropertyReload() {
+    if (sessionStorage.getItem("property") !== null) {
+      const savedProperty = JSON.parse(sessionStorage.getItem("property"));
+      HandlePropertyChange(
+        savedProperty.uprn,
+        savedProperty.usrn,
+        savedProperty.address,
+        savedProperty.formattedAddress,
+        savedProperty.postcode,
+        savedProperty.easting,
+        savedProperty.northing,
+        savedProperty.newProperty,
+        savedProperty.parent,
+        savedProperty.openRelated,
+        true
+      );
+    }
+
+    if (sessionStorage.getItem("propertyErrors") !== null) {
+      const savedPropertyErrors = JSON.parse(sessionStorage.getItem("propertyErrors"));
+      HandlePropertyErrors(
+        savedPropertyErrors.blpu,
+        savedPropertyErrors.lpi,
+        savedPropertyErrors.provenance,
+        savedPropertyErrors.crossRef,
+        savedPropertyErrors.classification,
+        savedPropertyErrors.organisation,
+        savedPropertyErrors.successorCrossRef,
+        savedPropertyErrors.note,
+        savedPropertyErrors.pkId,
+        true
+      );
+    }
+
+    if (sessionStorage.getItem("propertyRecord") !== null) {
+      const savedPropertRecord = JSON.parse(sessionStorage.getItem("propertyRecord"));
+      setPropertyRecord({
+        type: savedPropertRecord.type,
+        index: savedPropertRecord.index,
+        newRecord: savedPropertRecord.newRecord,
+      });
+    }
+
+    if (sessionStorage.getItem("wizardData") !== null) {
+      setWizardData(JSON.parse(sessionStorage.getItem("wizardData")));
+    }
+  }
+
+  /**
    * Event to handle when background mapping data changes.
    *
    * @param {Array} streets The list of background streets.
@@ -2132,6 +2569,11 @@ function App() {
    */
   function HandleBackgroundDataChange(streets, unassignedEsus, properties) {
     setBackgroundData({ streets: streets, unassignedEsus: unassignedEsus, properties: properties });
+
+    sessionStorage.setItem(
+      "backgroundData",
+      JSON.stringify({ streets: streets, unassignedEsus: unassignedEsus, properties: properties })
+    );
   }
 
   /**
@@ -2142,13 +2584,25 @@ function App() {
    * @param {number|null} editStreet The USRN of the street that is being edited.
    * @param {number|null} editProperty The UPRN of the property that is being edited.
    */
-  function HandleMapSearchDataChange(streets, properties, editStreet, editProperty) {
+  function HandleMapSearchDataChange(streets, properties, editStreet, editProperty, reloading = false) {
     setMapSearchData({
       streets: streets,
       properties: properties,
       editStreet: editStreet,
       editProperty: editProperty,
     });
+
+    if (!reloading) {
+      sessionStorage.setItem(
+        "mapSearch",
+        JSON.stringify({
+          streets: streets,
+          properties: properties,
+          editStreet: editStreet,
+          editProperty: editProperty,
+        })
+      );
+    }
 
     if (!editStreet && editStreet !== 0 && !editProperty && editProperty !== 0) {
       setSourceMapSearchData({ streets: streets, properties: properties });
@@ -2168,6 +2622,15 @@ function App() {
       zoomStreet: zoomStreet,
       zoomProperty: zoomProperty,
     });
+
+    sessionStorage.setItem(
+      "map",
+      JSON.stringify({
+        extents: extents,
+        zoomStreet: zoomStreet,
+        zoomProperty: zoomProperty,
+      })
+    );
   }
 
   /**
@@ -2177,6 +2640,8 @@ function App() {
    */
   function HandleMapPropertyChange(property) {
     setMapProperty(property);
+
+    sessionStorage.setItem("mapProperty", JSON.stringify(property));
   }
 
   /**
@@ -2186,6 +2651,8 @@ function App() {
    */
   function HandleMapStreetChange(street) {
     setMapStreet(street);
+
+    sessionStorage.setItem("mapStreet", JSON.stringify(property));
   }
 
   /**
@@ -2194,13 +2661,17 @@ function App() {
    * @param {number} objectType The type of map object being edited.
    * @param {number} objectId The id of the object being edited.
    */
-  function HandleEditMapObject(objectType, objectId) {
+  function HandleEditMapObject(objectType, objectId, reloading = false) {
     if (!objectType) {
       setEditObject(null);
       editObjectRef.current = null;
     } else {
       setEditObject({ objectType: objectType, objectId: objectId });
       editObjectRef.current = { objectType: objectType, objectId: objectId };
+    }
+
+    if (!reloading) {
+      sessionStorage.setItem("editObject", JSON.stringify({ objectType: objectType, objectId: objectId }));
     }
   }
 
@@ -2378,10 +2849,14 @@ function App() {
    * @param {object} extent The extent for the map
    * @returns
    */
-  async function HandleExtentChange(extent) {
+  async function HandleExtentChange(extent, reloading = false) {
     if (!extent) return;
 
     setMapExtent(extent);
+
+    if (!reloading) {
+      sessionStorage.setItem("mapExtent", JSON.stringify(extent));
+    }
 
     let backgroundStreetData = null;
     let unassignedEsuData = null;
@@ -2408,12 +2883,22 @@ function App() {
         backgroundPropertyData = await GetBackgroundPropertyData(extent);
       } else backgroundPropertyData = [];
 
-      if (backgroundStreetData || backgroundPropertyData)
+      if (backgroundStreetData || backgroundPropertyData) {
         setBackgroundData({
           streets: backgroundStreetData,
           unassignedEsus: unassignedEsuData,
           properties: backgroundPropertyData,
         });
+
+        sessionStorage.setItem(
+          "backgroundData",
+          JSON.stringify({
+            streets: backgroundStreetData,
+            unassignedEsus: unassignedEsuData,
+            properties: backgroundPropertyData,
+          })
+        );
+      }
 
       currentMapExtent.current = {
         xmin: extent.xmin,
@@ -2432,7 +2917,7 @@ function App() {
    * @param {object|null} property Th property to highlight
    */
   function HandleStreetPropertyHighlight(street, property) {
-    if (!selectingProperties)
+    if (!selectingProperties) {
       setHighlight({
         street: street,
         esu: null,
@@ -2448,6 +2933,26 @@ function App() {
         selectProperties: null,
         extent: null,
       });
+
+      sessionStorage.setItem(
+        "highlight",
+        JSON.stringify({
+          street: street,
+          esu: null,
+          asd51: null,
+          asd52: null,
+          asd53: null,
+          asd61: null,
+          asd62: null,
+          asd63: null,
+          asd64: null,
+          asd66: null,
+          property: property,
+          selectProperties: null,
+          extent: null,
+        })
+      );
+    }
   }
 
   /**
@@ -2472,6 +2977,25 @@ function App() {
       selectProperties: type === "selectProperties" ? array : null,
       extent: type === "extent" ? array : null,
     });
+
+    sessionStorage.setItem(
+      "highlight",
+      JSON.stringify({
+        street: null,
+        esu: type === "esu" ? array : null,
+        asd51: type === "asd51" ? array : null,
+        asd52: type === "asd52" ? array : null,
+        asd53: type === "asd53" ? array : null,
+        asd61: type === "asd61" ? array : null,
+        asd62: type === "asd62" ? array : null,
+        asd63: type === "asd63" ? array : null,
+        asd64: type === "asd64" ? array : null,
+        asd66: type === "asd66" ? array : null,
+        property: null,
+        selectProperties: type === "selectProperties" ? array : null,
+        extent: type === "extent" ? array : null,
+      })
+    );
   }
 
   /**
@@ -2493,6 +3017,25 @@ function App() {
       selectProperties: null,
       extent: null,
     });
+
+    sessionStorage.setItem(
+      "highlight",
+      JSON.stringify({
+        street: null,
+        esu: null,
+        asd51: null,
+        asd52: null,
+        asd53: null,
+        asd61: null,
+        asd62: null,
+        asd63: null,
+        asd64: null,
+        asd66: null,
+        property: null,
+        selectProperties: null,
+        extent: null,
+      })
+    );
   }
 
   /**
@@ -2658,14 +3201,69 @@ function App() {
   }
 
   /**
+   * Event to handle reloading the map context data from storage
+   */
+  function HandleMapReload() {
+    if (sessionStorage.getItem("backgroundData") !== null) {
+      setBackgroundData(JSON.parse(sessionStorage.getItem("backgroundData")));
+    }
+
+    if (sessionStorage.getItem("mapSearch") !== null) {
+      const savedMapSearch = JSON.parse(sessionStorage.getItem("mapSearch"));
+      HandleMapSearchDataChange(
+        savedMapSearch.streets,
+        savedMapSearch.properties,
+        savedMapSearch.editStreet,
+        savedMapSearch.editProperty,
+        true
+      );
+    }
+
+    if (sessionStorage.getItem("map") !== null) {
+      setMap(JSON.parse(sessionStorage.getItem("map")));
+    }
+
+    if (sessionStorage.getItem("editObject") !== null) {
+      const savedEditObject = JSON.parse(sessionStorage.getItem("editObject"));
+      HandleEditMapObject(savedEditObject.objectType, savedEditObject.objectId, true);
+    }
+
+    if (sessionStorage.getItem("mapProperty") !== null) {
+      setMapProperty(JSON.parse(sessionStorage.getItem("mapProperty")));
+    }
+
+    if (sessionStorage.getItem("mapStreet") !== null) {
+      setMapStreet(JSON.parse(sessionStorage.getItem("mapStreet")));
+    }
+
+    if (sessionStorage.getItem("mapExtent") !== null) {
+      HandleExtentChange(JSON.parse(sessionStorage.getItem("mapExtent")), true);
+    }
+
+    if (sessionStorage.getItem("highlight") !== null) {
+      setHighlight(JSON.parse(sessionStorage.getItem("highlight")));
+    }
+  }
+
+  /**
    * Method to handle when the display information should be shown.
    *
    * @param {string} type The type of information being displayed.
    * @param {string} source The source that is displaying the information.
    */
-  function HandleDisplayInformation(type, source) {
+  function HandleDisplayInformation(type, source, reloading = false) {
     setInformationType(type);
     setInformationSource(source);
+
+    if (!reloading) {
+      sessionStorage.setItem(
+        "displayInformation",
+        JSON.stringify({
+          type: type,
+          source: source,
+        })
+      );
+    }
   }
 
   /**
@@ -2684,6 +3282,16 @@ function App() {
     HandleDisplayInformation(null, null);
   }
 
+  /**
+   * Event to handle reloading the information context data from storage
+   */
+  function HandleInformationReload() {
+    if (sessionStorage.getItem("displayInformation") !== null) {
+      const savedDisplayInformation = JSON.parse(sessionStorage.getItem("displayInformation"));
+      HandleDisplayInformation(savedDisplayInformation.type, savedDisplayInformation.source, true);
+    }
+  }
+
   return (
     <StylesProvider injectFirst>
       <Router history={history}>
@@ -2699,6 +3307,7 @@ function App() {
               onUpdateLookup: HandleUpdateLookup,
               onMetadataChange: HandleMetadataChange,
               onDistrictUpdated: HandleDistrictUpdated,
+              onReload: HandleLookupReload,
             }}
           >
             <SandboxContext.Provider
@@ -2711,6 +3320,7 @@ function App() {
                 onPropertyTabChange: HandlePropertyTabChange,
                 onRefreshRelated: HandleRefreshRelated,
                 resetSandbox: HandleResetSandbox,
+                onReload: HandleSandboxReload,
               }}
             >
               <SearchContext.Provider
@@ -2725,12 +3335,14 @@ function App() {
                   onSearchOpen: HandleSearchOpenChange,
                   onHideSearch: HandleHideSearch,
                   onNavigateBack: HandleNavigateBack,
+                  onReload: HandleSearchReload,
                 }}
               >
                 <FilterContext.Provider
                   value={{
                     currentSearchFilter: searchFilter,
                     onSearchFilterChange: HandleSearchFilterChange,
+                    onReload: HandleFilterReload,
                   }}
                 >
                   <SettingsContext.Provider
@@ -2749,6 +3361,7 @@ function App() {
                       onPropertyTemplatesChange: HandlePropertyTemplatesChange,
                       onStreetTemplateChange: HandleStreetTemplateChange,
                       onMapLayersChange: HandleMapLayersChange,
+                      onReload: HandleSettingsReload,
                     }}
                   >
                     <StreetContext.Provider
@@ -2796,6 +3409,7 @@ function App() {
                         restoreStreet: HandleRestoreStreet,
                         resetStreetErrors: HandleResetStreetErrors,
                         validateData: HandleStreetValidateData,
+                        onReload: HandleStreetReload,
                       }}
                     >
                       <PropertyContext.Provider
@@ -2825,6 +3439,7 @@ function App() {
                           restoreProperty: HandleRestoreProperty,
                           resetPropertyErrors: HandleResetPropertyErrors,
                           validateData: HandlePropertyValidateData,
+                          onReload: HandlePropertyReload,
                         }}
                       >
                         <MapContext.Provider
@@ -2871,6 +3486,7 @@ function App() {
                             onSelectPropertiesChange: HandleSelectPropertiesChange,
                             onLoadShpFile: HandleLoadShpFile,
                             onUnloadShpFile: HandleUnloadShpFile,
+                            onReload: HandleMapReload,
                           }}
                         >
                           <InformationContext.Provider
@@ -2879,6 +3495,7 @@ function App() {
                               informationSource: informationSource,
                               onDisplayInformation: HandleDisplayInformation,
                               onClearInformation: HandleClearInformation,
+                              onReload: HandleInformationReload,
                             }}
                           >
                             <SaveConfirmationServiceProvider>

@@ -66,6 +66,7 @@
 //    052   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    053   08.04.24 Sean Flook           STRT4 Changes to allow for authority extent defaults. Changes required to prevent crash when refreshing page.
 //    054   16.04.24 Sean Flook                 When loading a SHP file use the mapContext to retain the information and display the layer in the map.
+//    055   18.04.24 Sean Flook       IMANN-351 Changes required to prevent crashes when refreshing the page.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -166,6 +167,8 @@ import AddPropertyWizardDialog from "../dialogs/AddPropertyWizardDialog";
 import HistoricPropertyDialog from "../dialogs/HistoricPropertyDialog";
 import UploadShpFileDialog from "../dialogs/UploadShpFileDialog";
 
+import DETRCodes from "./../data/DETRCodes";
+
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import LayersIcon from "@mui/icons-material/Layers";
@@ -176,7 +179,6 @@ import { adsWhite } from "../utils/ADSColours";
 import { ActionIconStyle, GetAlertStyle, GetAlertIcon, GetAlertSeverity, dataFormStyle } from "../utils/ADSStyles";
 
 /* #endregion imports */
-import DETRCodes from "./../data/DETRCodes";
 
 const backgroundPropertyLayerName = "backgroundPropertyLayer";
 const backgroundStreetLayerName = "backgroundStreetLayer";
@@ -1027,6 +1029,32 @@ function ADSEsriMap(startExtent) {
   const isWelsh = useRef(settingsContext.isWelsh);
   const authorityCode = useRef(settingsContext.authorityCode);
 
+  const defaultCountryExtent = useRef(
+    settingsContext.isScottish
+      ? {
+          xmin: -83982.94519240677,
+          ymin: 530758.235875156,
+          xmax: 674272.3753963439,
+          ymax: 1078658.8546231566,
+          spatialReference: { wkid: 27700 },
+        }
+      : settingsContext.isWelsh
+      ? {
+          xmin: 115670.57268842091,
+          ymin: 139247.77699858515,
+          xmax: 494798.23298279627,
+          ymax: 413503.834485726,
+          spatialReference: { wkid: 27700 },
+        }
+      : {
+          xmin: 29143.856669624627,
+          ymin: 72747.56239049905,
+          xmax: 787399.1772583753,
+          ymax: 620648.1811384995,
+          spatialReference: { wkid: 27700 },
+        }
+  );
+
   const history = useHistory();
 
   const saveConfirmDialog = useSaveConfirmation();
@@ -1783,35 +1811,10 @@ function ADSEsriMap(startExtent) {
   };
 
   // Base mapping
-
   useEffect(() => {
     if (viewRef.current) return;
 
     const getAuthorityExtent = () => {
-      const defaultExtent = isScottish.current
-        ? {
-            xmin: -83982.94519240677,
-            ymin: 530758.235875156,
-            xmax: 674272.3753963439,
-            ymax: 1078658.8546231566,
-            spatialReference: { wkid: 27700 },
-          }
-        : isWelsh.current
-        ? {
-            xmin: 115670.57268842091,
-            ymin: 139247.77699858515,
-            xmax: 494798.23298279627,
-            ymax: 413503.834485726,
-            spatialReference: { wkid: 27700 },
-          }
-        : {
-            xmin: 29143.856669624627,
-            ymin: 72747.56239049905,
-            xmax: 787399.1772583753,
-            ymax: 620648.1811384995,
-            spatialReference: { wkid: 27700 },
-          };
-
       if (authorityCode.current) {
         const authorityRec = DETRCodes.find((x) => x.id === authorityCode.current);
 
@@ -1823,8 +1826,8 @@ function ADSEsriMap(startExtent) {
             ymax: authorityRec.ymax,
             spatialReference: { wkid: 27700 },
           };
-        } else return defaultExtent;
-      } else return defaultExtent;
+        } else return defaultCountryExtent.current;
+      } else return defaultCountryExtent.current;
     };
 
     const processBaseLayers = (mapLayers) => {
@@ -2164,7 +2167,7 @@ function ADSEsriMap(startExtent) {
       ? ArraysEqual(oldMapData.current.backgroundStreets, mapContext.currentBackgroundData.streets)
       : false;
 
-    if (!mapRef.current || !haveStreets || oldAndNewSame) return;
+    if (!mapRef.current || !mapRef.current.layers || !haveStreets || oldAndNewSame) return;
 
     oldMapData.current = {
       streets: oldMapData.current.streets,
@@ -2338,7 +2341,7 @@ function ADSEsriMap(startExtent) {
       ? ArraysEqual(oldMapData.current.unassignedEsus, mapContext.currentBackgroundData.unassignedEsus)
       : false;
 
-    if (!mapRef.current || !haveEsus || oldAndNewSame) return;
+    if (!mapRef.current || !mapRef.current.layers || !haveEsus || oldAndNewSame) return;
 
     oldMapData.current = {
       streets: oldMapData.current.streets,
@@ -2481,7 +2484,7 @@ function ADSEsriMap(startExtent) {
       ? ArraysEqual(oldMapData.current.backgroundProperties, mapContext.currentBackgroundData.properties)
       : false;
 
-    if (!mapRef.current || !haveProperties || oldAndNewSame) return;
+    if (!mapRef.current || !mapRef.current.layers || !haveProperties || oldAndNewSame) return;
 
     oldMapData.current = {
       streets: oldMapData.current.streets,
@@ -2788,6 +2791,7 @@ function ADSEsriMap(startExtent) {
   useEffect(() => {
     if (
       !mapRef.current ||
+      !mapRef.current.layers ||
       !view ||
       !view.ui ||
       (oldMapData.current.streets === mapContext.currentSearchData.streets &&
