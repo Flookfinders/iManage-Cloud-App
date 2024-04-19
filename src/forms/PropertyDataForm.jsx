@@ -57,6 +57,7 @@
 //    044   27.03.24 Sean Flook                 Undone a previous change as it was causing an issue.
 //    045   04.04.24 Sean Flook                 Various changes required for adding a child/children, deleting and changing the logical status.
 //    046   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
+//    047   19.04.24 Sean Flook       IMANN-130 Prevent unnecessary reloading of form data when trying to close the form.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2003,6 +2004,7 @@ function PropertyDataForm({ data, loading }) {
             propertyData.successorCrossRefs,
             propertyData.blpuNotes
           );
+        clearingType.current = "appCrossRef";
         handleCrossRefSelected(-1, null, null, null);
       }
     } else if (pkId && pkId < 0) {
@@ -2016,6 +2018,7 @@ function PropertyDataForm({ data, loading }) {
         propertyData.successorCrossRefs,
         propertyData.blpuNotes
       );
+      clearingType.current = "appCrossRef";
       handleCrossRefSelected(-1, null, null, null);
     }
   };
@@ -2704,6 +2707,7 @@ function PropertyDataForm({ data, loading }) {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   updateLPIData(currentData);
+                  clearingType.current = "lpi";
                   handleLPISelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -2726,6 +2730,7 @@ function PropertyDataForm({ data, loading }) {
         if (propertyContext.validateData()) {
           failedValidation.current = false;
           updateLPIData(currentData);
+          clearingType.current = "lpi";
           handleLPISelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -2788,6 +2793,7 @@ function PropertyDataForm({ data, loading }) {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   updateClassificationData(currentData);
+                  clearingType.current = "classification";
                   handleClassificationSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -2810,6 +2816,7 @@ function PropertyDataForm({ data, loading }) {
         if (propertyContext.validateData()) {
           failedValidation.current = false;
           updateClassificationData(currentData);
+          clearingType.current = "classification";
           handleClassificationSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -2872,6 +2879,7 @@ function PropertyDataForm({ data, loading }) {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   updateOrganisationData(currentData);
+                  clearingType.current = "organisation";
                   handleOrganisationSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -2894,6 +2902,7 @@ function PropertyDataForm({ data, loading }) {
         if (propertyContext.validateData()) {
           failedValidation.current = false;
           updateOrganisationData(currentData);
+          clearingType.current = "organisation";
           handleOrganisationSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -2956,6 +2965,7 @@ function PropertyDataForm({ data, loading }) {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   updateSuccessorCrossRefData(currentData);
+                  clearingType.current = "successorCrossRef";
                   handleSuccessorCrossRefSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -2978,6 +2988,7 @@ function PropertyDataForm({ data, loading }) {
         if (propertyContext.validateData()) {
           failedValidation.current = false;
           updateSuccessorCrossRefData(currentData);
+          clearingType.current = "successorCrossRef";
           handleSuccessorCrossRefSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -3040,6 +3051,7 @@ function PropertyDataForm({ data, loading }) {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   updateProvenanceData(currentData);
+                  clearingType.current = "provenance";
                   handleProvenanceSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -3063,6 +3075,7 @@ function PropertyDataForm({ data, loading }) {
           failedValidation.current = false;
           updateProvenanceData(currentData);
           provenanceChanged.current = false;
+          clearingType.current = "provenance";
           handleProvenanceSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -3125,6 +3138,7 @@ function PropertyDataForm({ data, loading }) {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   updateCrossRefData(currentData);
+                  clearingType.current = "appCrossRef";
                   handleCrossRefSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -3147,6 +3161,7 @@ function PropertyDataForm({ data, loading }) {
         if (propertyContext.validateData()) {
           failedValidation.current = false;
           updateCrossRefData(currentData);
+          clearingType.current = "appCrossRef";
           handleCrossRefSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -3208,6 +3223,7 @@ function PropertyDataForm({ data, loading }) {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   updateNoteData(currentData);
+                  clearingType.current = "propertyNote";
                   handleNoteSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -3230,6 +3246,7 @@ function PropertyDataForm({ data, loading }) {
         if (propertyContext.validateData()) {
           failedValidation.current = false;
           updateNoteData(currentData);
+          clearingType.current = "propertyNote";
           handleNoteSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;

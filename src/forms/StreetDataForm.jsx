@@ -75,6 +75,7 @@
 //    061   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
 //    062   05.04.24 Sean Flook       IMANN-326 Delete all type 63, 64 & 66 records if the street state is 4.
 //    063   12.04.24 Sean Flook       IMANN-385 When creating an ESU when selecting the start and end coordinates of the street, also try and create the highway dedication record if have template values.
+//    064   19.04.24 Sean Flook       IMANN-130 Prevent unnecessary reloading of form data when trying to close the form.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4420,6 +4421,7 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updateDescriptorData(currentData);
+                  clearingType.current = "streetDescriptor";
                   handleDescriptorSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -4442,6 +4444,7 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updateDescriptorData(currentData);
+          clearingType.current = "streetDescriptor";
           handleDescriptorSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -4549,6 +4552,7 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updateEsuData(currentData);
+                  clearingType.current = "esu";
                   handleEsuSelected(-1, null, null);
                 } else {
                   failedValidation.current = true;
@@ -4571,6 +4575,7 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updateEsuData(currentData);
+          clearingType.current = "esu";
           handleEsuSelected(-1, null, null);
         } else {
           failedValidation.current = true;
@@ -4619,6 +4624,7 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updateHighwayDedicationData(currentData);
+                  clearingType.current = "highwayDedication";
                   if (currentEsuFormData.current) resetEsuData();
                   else handleEsuSelected(-1, null, null);
                 } else {
@@ -4644,6 +4650,7 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updateHighwayDedicationData(currentData);
+          clearingType.current = "highwayDedication";
           if (currentEsuFormData.current) resetEsuData();
           else handleEsuSelected(-1, null, null);
         } else {
@@ -4693,6 +4700,7 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updateOneWayExemptionData(currentData);
+                  clearingType.current = "oneWayExemption";
                   if (currentEsuFormData.current) resetEsuData();
                   else handleEsuSelected(-1, null, null);
                 } else {
@@ -4718,6 +4726,7 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updateOneWayExemptionData(currentData);
+          clearingType.current = "oneWayExemption";
           if (currentEsuFormData.current) resetEsuData();
           else handleEsuSelected(-1, null, null);
         } else {
@@ -4786,6 +4795,7 @@ function StreetDataForm({ data, loading }) {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   updateSuccessorCrossRefData(currentData);
+                  clearingType.current = "successorCrossRef";
                   handleSuccessorCrossRefSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -4808,6 +4818,7 @@ function StreetDataForm({ data, loading }) {
         if (propertyContext.validateData()) {
           failedValidation.current = false;
           updateSuccessorCrossRefData(currentData);
+          clearingType.current = "successorCrossRef";
           handleSuccessorCrossRefSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
@@ -5604,6 +5615,7 @@ function StreetDataForm({ data, loading }) {
                 if (streetContext.validateData()) {
                   failedValidation.current = false;
                   updateNoteData(currentData);
+                  clearingType.current = "streetNote";
                   handleNoteSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
@@ -5626,6 +5638,7 @@ function StreetDataForm({ data, loading }) {
         if (streetContext.validateData()) {
           failedValidation.current = false;
           updateNoteData(currentData);
+          clearingType.current = "streetNote";
           handleNoteSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
