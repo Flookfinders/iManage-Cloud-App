@@ -51,6 +51,7 @@
 //    037   25.03.24 Sean Flook           MUL16 Removed option to remove from parent.
 //    038   04.04.24 Sean Flook                 Changes required to handle deleting ESUs from streets and child properties from parent properties.
 //    039   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
+//    040   19.04.24 Sean Flook       IMANN-132 When adding a child or children ensure we have the parent English LPI.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1282,12 +1283,16 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
 
         if (savedUprn !== wizardUprn.current) {
           wizardUprn.current = savedUprn;
+          const engLpi = ["addChild", "addChildren"].includes(propertyContext.wizardData.type)
+            ? propertyContext.wizardData.savedProperty.lpis.filter((x) => x.language === "ENG")
+            : null;
 
           switch (propertyContext.wizardData.type) {
             case "view":
               const rangeEngLpis = ["range", "rangeChildren"].includes(propertyContext.wizardData.variant)
                 ? propertyContext.wizardData.savedProperty[0].lpis.filter((x) => x.language === "ENG")
                 : null;
+
               switch (propertyContext.wizardData.variant) {
                 case "range":
                   doOpenRecord(
@@ -1373,7 +1378,6 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
               break;
 
             case "addChild":
-              const engLpi = propertyContext.wizardData.savedProperty.lpis.filter((x) => x.language === "ENG");
               propertyContext.resetPropertyErrors();
               propertyContext.onWizardDone(null, false, null, null);
               mapContext.onWizardSetCoordinate(null);
