@@ -23,6 +23,7 @@
 //    010   29.02.24 Joel Benford     IMANN-242 Add DbAuthority.
 //    011   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    013   19.04.24 Sean Flook       IMANN-355 Use a dropdown list for selecting the authority.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -44,16 +45,19 @@ import {
   Button,
   FormControlLabel,
   Switch,
+  Autocomplete,
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import ADSDialogTitle from "../components/ADSDialogTitle";
 
-import { stringToSentenceCase, GeoPlaceCrossRefSources } from "../utils/HelperUtils";
+import DETRCodes from "../data/DETRCodes";
+
+import { stringToSentenceCase, GeoPlaceCrossRefSources, lookupToTitleCase } from "../utils/HelperUtils";
 
 import CloseIcon from "@mui/icons-material/Close";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import DoneIcon from "@mui/icons-material/Done";
-import { adsRed, adsMagenta } from "../utils/ADSColours";
+import { adsRed, adsMagenta, adsDarkGrey } from "../utils/ADSColours";
 import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -120,8 +124,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
   const [dbAuthorityName, setDbAuthorityName] = useState(null);
   const [dbAuthorityMinUsrn, setDbAuthorityMinUsrn] = useState(null);
   const [dbAuthorityMaxUsrn, setDbAuthorityMaxUsrn] = useState(null);
-  const [dbAuthorityRefError, setDbAuthorityRefError] = useState(null);
-  const [dbAuthorityNameError, setDbAuthorityNameError] = useState(null);
   const [dbAuthorityMinUsrnError, setDbAuthorityMinUsrnError] = useState(null);
   const [dbAuthorityMaxUsrnError, setDbAuthorityMaxUsrnError] = useState(null);
 
@@ -562,32 +564,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
         break;
 
       case "dbAuthority":
-        if (!Number.isInteger(parseFloat(dbAuthorityRef)) || dbAuthorityRef <= 0 || dbAuthorityRef > 9999) {
-          setDbAuthorityRefError("DETR code must be 0 to 9999.");
-          validData = false;
-        } else {
-          const dbAuthorityRefRecord = lookupContext.currentLookups.dbAuthorities.find(
-            (x) => x.authorityRef === parseInt(dbAuthorityRef) && x.authorityRef !== lookupId
-          );
-          if (dbAuthorityRefRecord) {
-            setDbAuthorityRefError("There is already an entry with this code in the table.");
-            validData = false;
-          }
-        }
-
-        if (!dbAuthorityName || dbAuthorityName.length === 0) {
-          setDbAuthorityNameError("You cannot add an empty authority name.");
-          validData = false;
-        } else {
-          const dbAuthorityNameRecord = lookupContext.currentLookups.dbAuthorities.find(
-            (x) => x.authorityName === dbAuthorityName && x.authorityRef !== lookupId
-          );
-          if (dbAuthorityNameRecord) {
-            setDbAuthorityNameError("There is already an entry with this authority name in the table.");
-            validData = false;
-          }
-        }
-
         if (
           !Number.isInteger(parseFloat(dbAuthorityMinUsrn)) ||
           dbAuthorityMinUsrn <= 0 ||
@@ -1150,14 +1126,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
    */
   const onDbAuthorityRefChange = (event) => {
     setDbAuthorityRef(event.target.value);
-  };
-
-  /**
-   * Event to handle when the dbAuthority name changes.
-   *
-   * @param {object} event The event object.
-   */
-  const onDbAuthorityNameChange = (event) => {
     setDbAuthorityName(event.target.value);
   };
 
@@ -1771,55 +1739,48 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
             <Grid container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
               <Grid item xs={4}>
                 <Typography variant="body1" align="right" gutterBottom>
-                  DETR code
-                </Typography>
-              </Grid>
-              <Grid item xs={8}>
-                <TextField
-                  variant="outlined"
-                  type="number"
-                  error={dbAuthorityRefError}
-                  helperText={
-                    <Typography variant="caption" color={adsRed} align="left">
-                      {dbAuthorityRefError}
-                    </Typography>
-                  }
-                  value={dbAuthorityRef}
-                  fullWidth
-                  size="small"
-                  inputProps={{ min: 0, max: 9999 }}
-                  sx={{
-                    color: theme.palette.background.contrastText,
-                    pl: theme.spacing(1),
-                    pr: theme.spacing(1),
-                  }}
-                  onChange={onDbAuthorityRefChange}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <Typography variant="body1" align="right" gutterBottom>
                   Authority
                 </Typography>
               </Grid>
               <Grid item xs={8}>
-                <TextField
-                  variant="outlined"
-                  error={dbAuthorityNameError}
-                  helperText={
-                    <Typography variant="caption" color={adsRed} align="left">
-                      {dbAuthorityNameError}
-                    </Typography>
-                  }
-                  value={dbAuthorityName}
-                  fullWidth
-                  size="small"
-                  inputProps={{ maxLength: "255" }}
+                <Autocomplete
+                  id={"ads-select-authority"}
                   sx={{
-                    color: theme.palette.background.contrastText,
-                    pl: theme.spacing(1),
-                    pr: theme.spacing(1),
+                    color: "inherit",
                   }}
-                  onChange={onDbAuthorityNameChange}
+                  getOptionLabel={(option) => lookupToTitleCase(option, false)}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  noOptionsText={"No authority records"}
+                  options={DETRCodes}
+                  value={dbAuthorityName}
+                  autoHighlight
+                  disabled
+                  autoSelect
+                  onChange={onDbAuthorityRefChange}
+                  renderOption={(props, option) => {
+                    return (
+                      <li {...props}>
+                        <Typography variant="body2" color={adsDarkGrey} align="left">
+                          {lookupToTitleCase(option, false)}
+                        </Typography>
+                      </li>
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      sx={{
+                        color: theme.palette.background.contrastText,
+                        pl: theme.spacing(1),
+                        pr: theme.spacing(1),
+                      }}
+                      fullWidth
+                      placeholder="e.g. 1234"
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={4}>

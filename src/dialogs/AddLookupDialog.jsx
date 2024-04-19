@@ -21,6 +21,7 @@
 //    008   29.02.24 Joel Benford     IMANN-242 Add DbAuthority.
 //    009   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    010   27.03.24 Sean Flook                 Added ADSDialogTitle and fixed some warnings.
+//    011   19.04.24 Sean Flook       IMANN-355 Use a dropdown list for selecting the authority.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -42,14 +43,17 @@ import {
   Button,
   FormControlLabel,
   Switch,
+  Autocomplete,
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import ADSDialogTitle from "../components/ADSDialogTitle";
 
-import { stringToSentenceCase } from "../utils/HelperUtils";
+import DETRCodes from "../data/DETRCodes";
+
+import { lookupToTitleCase, stringToSentenceCase } from "../utils/HelperUtils";
 
 import DoneIcon from "@mui/icons-material/Done";
-import { adsRed } from "../utils/ADSColours";
+import { adsDarkGrey, adsRed } from "../utils/ADSColours";
 import { blueButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -113,8 +117,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
   const [dbAuthorityName, setDbAuthorityName] = useState("");
   const [dbAuthorityMinUsrn, setDbAuthorityMinUsrn] = useState(0);
   const [dbAuthorityMaxUsrn, setDbAuthorityMaxUsrn] = useState(0);
-  const [dbAuthorityRefError, setDbAuthorityRefError] = useState("");
-  const [dbAuthorityNameError, setDbAuthorityNameError] = useState("");
+  const [dbAuthorityError, setDbAuthorityError] = useState("");
   const [dbAuthorityMinUsrnError, setDbAuthorityMinUsrnError] = useState("");
   const [dbAuthorityMaxUsrnError, setDbAuthorityMaxUsrnError] = useState("");
 
@@ -454,27 +457,27 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
 
       case "dbAuthority":
         if (!Number.isInteger(parseFloat(dbAuthorityRef)) || dbAuthorityRef <= 0 || dbAuthorityRef > 9999) {
-          setDbAuthorityRefError("DETR code must be 0 to 9999.");
+          setDbAuthorityError("DETR code must be 0 to 9999.");
           validData = false;
         } else {
           const dbAuthorityRefRecord = lookupContext.currentLookups.dbAuthorities.find(
-            (x) => x.dbAuthorityRed === dbAuthorityRef
+            (x) => x.authorityRef === dbAuthorityRef
           );
           if (dbAuthorityRefRecord) {
-            setDbAuthorityRefError("There is already an entry with this code in the table.");
+            setDbAuthorityError("There is already an entry with this code in the table.");
             validData = false;
           }
         }
 
         if (!dbAuthorityName || dbAuthorityName.length === 0) {
-          setDbAuthorityNameError("You cannot add an empty authority name.");
+          setDbAuthorityError("You cannot add an empty authority name.");
           validData = false;
         } else {
           const dbAuthorityNameRecord = lookupContext.currentLookups.dbAuthorities.find(
             (x) => x.authorityName === dbAuthorityName
           );
           if (dbAuthorityNameRecord) {
-            setDbAuthorityNameError("There is already an entry with this authority name in the table.");
+            setDbAuthorityError("There is already an entry with this authority name in the table.");
             validData = false;
           }
         }
@@ -696,21 +699,16 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
   };
 
   /**
-   * Event to handle when the dbAuthority name changes.
-   *
-   * @param {object} event The event object.
-   */
-  const onDbAuthorityNameChange = (event) => {
-    setDbAuthorityName(event.target.value);
-  };
-
-  /**
    * Event to handle when the dbAuthority DETR code changes.
    *
    * @param {object} event The event object.
    */
-  const onDbAuthorityRefChange = (event) => {
-    setDbAuthorityRef(event.target.value);
+  const onDbAuthorityChange = (event, newValue) => {
+    const newAuthority = DETRCodes.find((x) => x.text === newValue);
+    if (newAuthority) {
+      setDbAuthorityName(newValue);
+      setDbAuthorityRef(newAuthority.id);
+    }
   };
 
   /**
@@ -921,8 +919,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
         setDbAuthorityRef("");
         setDbAuthorityMinUsrn(0);
         setDbAuthorityMaxUsrn(0);
-        setDbAuthorityNameError("");
-        setDbAuthorityRefError("");
+        setDbAuthorityError("");
         setDbAuthorityMinUsrnError("");
         setDbAuthorityMaxUsrnError("");
         break;
@@ -1064,58 +1061,54 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           <Grid container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
             <Grid item xs={4}>
               <Typography variant="body1" align="right" gutterBottom>
-                DETR code
-              </Typography>
-            </Grid>
-            <Grid item xs={8}>
-              <TextField
-                variant="outlined"
-                type="number"
-                error={!!dbAuthorityRefError}
-                helperText={
-                  <Typography variant="caption" color={adsRed} align="left">
-                    {dbAuthorityRefError}
-                  </Typography>
-                }
-                value={dbAuthorityRef}
-                placeholder="e.g. 1234"
-                fullWidth
-                size="small"
-                inputProps={{ min: 0, max: 9999 }}
-                sx={{
-                  color: theme.palette.background.contrastText,
-                  pl: theme.spacing(1),
-                  pr: theme.spacing(1),
-                }}
-                onChange={onDbAuthorityRefChange}
-              />
-            </Grid>
-            <Grid item xs={4}>
-              <Typography variant="body1" align="right" gutterBottom>
                 Authority
               </Typography>
             </Grid>
             <Grid item xs={8}>
-              <TextField
-                variant="outlined"
-                error={!!dbAuthorityNameError}
-                helperText={
-                  <Typography variant="caption" color={adsRed} align="left">
-                    {dbAuthorityNameError}
-                  </Typography>
-                }
-                value={dbAuthorityName}
-                placeholder="e.g. Woking Borough Council"
-                fullWidth
-                autoFocus
-                size="small"
-                inputProps={{ maxLength: "255" }}
+              <Autocomplete
+                id={"ads-select-authority"}
                 sx={{
-                  color: theme.palette.background.contrastText,
-                  pl: theme.spacing(1),
-                  pr: theme.spacing(1),
+                  color: "inherit",
                 }}
-                onChange={onDbAuthorityNameChange}
+                getOptionLabel={(option) => lookupToTitleCase(option, false)}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                noOptionsText={"No authority records"}
+                options={DETRCodes.map((x) => x.text)}
+                value={dbAuthorityName}
+                autoHighlight
+                autoSelect
+                onChange={onDbAuthorityChange}
+                renderOption={(props, option) => {
+                  return (
+                    <li {...props}>
+                      <Typography variant="body2" color={adsDarkGrey} align="left">
+                        {lookupToTitleCase(option, false)}
+                      </Typography>
+                    </li>
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    sx={{
+                      color: theme.palette.background.contrastText,
+                      pl: theme.spacing(1),
+                      pr: theme.spacing(1),
+                    }}
+                    error={!!dbAuthorityError}
+                    helperText={
+                      <Typography variant="caption" color={adsRed} align="left">
+                        {dbAuthorityError}
+                      </Typography>
+                    }
+                    fullWidth
+                    required
+                    placeholder="e.g. 1234"
+                    variant="outlined"
+                    margin="dense"
+                    size="small"
+                  />
+                )}
               />
             </Grid>
             <Grid item xs={4}>
