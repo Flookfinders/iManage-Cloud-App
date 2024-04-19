@@ -22,6 +22,7 @@
 //    009   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
 //    010   23.02.24 Joel Benford     IMANN-287 Correct hover blue
 //    011   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
+//    012   19.04.24 Sean Flook       IMANN-137 For Welsh authority allow 2 characters for the suffix.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1773,7 +1774,7 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                       variant="outlined"
                       margin="dense"
                       size="small"
-                      inputProps={{ maxLength: 1 }}
+                      inputProps={{ maxLength: `${settingsContext.isWelsh ? 2 : 1}` }}
                       placeholder="e.g. A"
                       value={rangeStartSuffix ? rangeStartSuffix : ""}
                       onChange={handleRangeStartSuffixChangeEvent}
@@ -1815,7 +1816,7 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                       variant="outlined"
                       margin="dense"
                       size="small"
-                      inputProps={{ maxLength: 1 }}
+                      inputProps={{ maxLength: `${settingsContext.isWelsh ? 2 : 1}` }}
                       placeholder="e.g. A"
                       value={rangeEndSuffix ? rangeEndSuffix : ""}
                       onChange={handleRangeEndSuffixChangeEvent}
