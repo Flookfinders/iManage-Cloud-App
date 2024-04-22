@@ -58,6 +58,7 @@
 //    045   04.04.24 Sean Flook                 Various changes required for adding a child/children, deleting and changing the logical status.
 //    046   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
 //    047   19.04.24 Sean Flook       IMANN-130 Prevent unnecessary reloading of form data when trying to close the form.
+//    048   22.04.24 Sean Flook       IMANN-374 Only try and open the related tab if not already displayed.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4208,13 +4209,15 @@ function PropertyDataForm({ data, loading }) {
   }, [sandboxContext.currentSandbox.currentPropertyRecords]);
 
   useEffect(() => {
-    if (propertyContext.currentProperty.openRelated) {
+    if (
+      propertyContext.currentProperty.openRelated &&
+      sandboxContext.currentSandbox.propertyTab !== (settingsContext.isScottish ? 6 : 3)
+    ) {
       failedValidation.current = false;
-      setValue(settingsContext.isScottish ? 6 : 3);
+      sandboxContext.onPropertyTabChange(settingsContext.isScottish ? 6 : 3);
       mapContext.onEditMapObject(null, null);
-      // propertyContext.onRelatedOpened();
     }
-  }, [propertyContext, mapContext, settingsContext.isScottish]);
+  }, [propertyContext, mapContext, settingsContext.isScottish, sandboxContext]);
 
   useEffect(() => {
     if (

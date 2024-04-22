@@ -32,6 +32,7 @@
 //    019   22.03.24 Sean Flook           GLB12 Use new constant for height.
 //    020   27.03.24 Sean Flook                 Added a tooltip to the close button.
 //    021   27.03.24 Sean Flook                 Changes required to remove warnings.
+//    022   22.04.24 Sean Flook       IMANN-374 Disable the buttons when creating the properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2431,6 +2432,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                   <Button
                     onClick={handleBack}
                     autoFocus
+                    disabled={creating}
                     variant="contained"
                     sx={whiteButtonStyle}
                     startIcon={<ArrowBackIcon />}
@@ -2443,6 +2445,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                       <Button
                         onClick={handleSkip}
                         autoFocus
+                        disabled={creating}
                         variant="contained"
                         sx={blueButtonStyle}
                         startIcon={<SkipNextIcon />}

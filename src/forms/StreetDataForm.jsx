@@ -76,6 +76,7 @@
 //    062   05.04.24 Sean Flook       IMANN-326 Delete all type 63, 64 & 66 records if the street state is 4.
 //    063   12.04.24 Sean Flook       IMANN-385 When creating an ESU when selecting the start and end coordinates of the street, also try and create the highway dedication record if have template values.
 //    064   19.04.24 Sean Flook       IMANN-130 Prevent unnecessary reloading of form data when trying to close the form.
+//    065   22.04.24 Sean Flook       IMANN-374 Only try and open the related tab if not already displayed.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -7035,12 +7036,17 @@ function StreetDataForm({ data, loading }) {
   }, [streetContext]);
 
   useEffect(() => {
-    if (streetContext.currentStreet.openRelated) {
+    if (
+      streetData &&
+      streetContext.currentStreet.openRelated &&
+      sandboxContext.currentSandbox.streetTab !== (displayAsdTab ? 3 : 2)
+    ) {
       failedValidation.current = false;
-      setValue(displayAsdTab ? 3 : 2);
+      sandboxContext.onStreetTabChange(displayAsdTab ? 3 : 2);
+      // setValue(displayAsdTab ? 3 : 2);
       mapContext.onEditMapObject(null, null);
     }
-  }, [streetContext.currentStreet.openRelated, mapContext, displayAsdTab]);
+  }, [streetContext.currentStreet.openRelated, mapContext, displayAsdTab, streetData, sandboxContext]);
 
   useEffect(() => {
     if (streetContext.currentErrors) {

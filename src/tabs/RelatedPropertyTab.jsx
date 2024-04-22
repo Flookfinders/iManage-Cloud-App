@@ -47,6 +47,7 @@
 //    033   25.03.24 Sean Flook           MUL16 Removed option to remove from parent.
 //    034   04.04.24 Sean Flook                 Use the new getWizardParentDetails method.
 //    035   16.04.24 Sean Flook                 Added ability to select historic properties.
+//    036   22.04.24 Sean Flook       IMANN-374 Correctly call DataFormStyle.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -931,7 +932,7 @@ function RelatedPropertyTab({
           </Menu>
         </Stack>
       </Box>
-      <Box sx={dataFormStyle(`${variant === "street" ? "StreetRelatedPropertyTab" : "PropertyRelatedPropertyTab"}`)}>
+      <Box sx={dataFormStyle("PropertyRelatedPropertyTab")}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : (
