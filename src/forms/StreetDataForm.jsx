@@ -77,6 +77,7 @@
 //    063   12.04.24 Sean Flook       IMANN-385 When creating an ESU when selecting the start and end coordinates of the street, also try and create the highway dedication record if have template values.
 //    064   19.04.24 Sean Flook       IMANN-130 Prevent unnecessary reloading of form data when trying to close the form.
 //    065   22.04.24 Sean Flook       IMANN-374 Only try and open the related tab if not already displayed.
+//    066   22.04.24 Sean Flook       IMANN-380 After discarding ASD changes return to the ASD list.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4872,7 +4873,9 @@ function StreetDataForm({ data, loading }) {
       failedValidation.current = false;
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
+      clearingType.current = "maintenanceResponsibility";
       sandboxContext.onSandboxChange("maintenanceResponsibility", null);
+      handleMaintenanceResponsibilitySelected(-1, null, null, null);
     };
 
     failedValidation.current = false;
@@ -4890,6 +4893,7 @@ function StreetDataForm({ data, loading }) {
                   failedValidation.current = false;
                   updateMaintenanceResponsibilityData(currentData);
                   handleAsdHomeClick();
+                  handleMaintenanceResponsibilitySelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
                   saveResult.current = false;
@@ -4905,6 +4909,7 @@ function StreetDataForm({ data, loading }) {
           else handleAsdHomeClick();
           clearingType.current = "maintenanceResponsibility";
           sandboxContext.onSandboxChange("maintenanceResponsibility", null);
+          handleMaintenanceResponsibilitySelected(-1, null, null, null);
         }
         break;
 
@@ -4913,6 +4918,7 @@ function StreetDataForm({ data, loading }) {
           failedValidation.current = false;
           updateMaintenanceResponsibilityData(currentData);
           handleAsdHomeClick();
+          handleMaintenanceResponsibilitySelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
           saveResult.current = false;
@@ -4965,7 +4971,9 @@ function StreetDataForm({ data, loading }) {
       failedValidation.current = false;
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
+      clearingType.current = "reinstatementCategory";
       sandboxContext.onSandboxChange("reinstatementCategory", null);
+      handleReinstatementCategorySelected(-1, null, null, null);
     };
 
     failedValidation.current = false;
@@ -4983,6 +4991,7 @@ function StreetDataForm({ data, loading }) {
                   failedValidation.current = false;
                   updateReinstatementCategoryData(currentData);
                   handleAsdHomeClick();
+                  handleReinstatementCategorySelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
                   saveResult.current = false;
@@ -4998,6 +5007,7 @@ function StreetDataForm({ data, loading }) {
           else handleAsdHomeClick();
           clearingType.current = "reinstatementCategory";
           sandboxContext.onSandboxChange("reinstatementCategory", null);
+          handleReinstatementCategorySelected(-1, null, null, null);
         }
         break;
 
@@ -5006,6 +5016,7 @@ function StreetDataForm({ data, loading }) {
           failedValidation.current = false;
           updateReinstatementCategoryData(currentData);
           handleAsdHomeClick();
+          handleReinstatementCategorySelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
           saveResult.current = false;
@@ -5056,7 +5067,9 @@ function StreetDataForm({ data, loading }) {
       failedValidation.current = false;
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
+      clearingType.current = "osSpecialDesignation";
       sandboxContext.onSandboxChange("osSpecialDesignation", null);
+      handleOSSpecialDesignationSelected(-1, null, null, null);
     };
 
     failedValidation.current = false;
@@ -5074,6 +5087,7 @@ function StreetDataForm({ data, loading }) {
                   failedValidation.current = false;
                   updateOSSpecialDesignationData(currentData);
                   handleAsdHomeClick();
+                  handleOSSpecialDesignationSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
                   saveResult.current = false;
@@ -5089,6 +5103,7 @@ function StreetDataForm({ data, loading }) {
           else handleAsdHomeClick();
           clearingType.current = "osSpecialDesignation";
           sandboxContext.onSandboxChange("osSpecialDesignation", null);
+          handleOSSpecialDesignationSelected(-1, null, null, null);
         }
         break;
 
@@ -5097,6 +5112,7 @@ function StreetDataForm({ data, loading }) {
           failedValidation.current = false;
           updateOSSpecialDesignationData(currentData);
           handleAsdHomeClick();
+          handleOSSpecialDesignationSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
           saveResult.current = false;
@@ -5147,7 +5163,9 @@ function StreetDataForm({ data, loading }) {
       failedValidation.current = false;
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
+      clearingType.current = "interest";
       sandboxContext.onSandboxChange("interest", null);
+      handleInterestedSelected(-1, null, null, null);
     };
 
     failedValidation.current = false;
@@ -5164,6 +5182,7 @@ function StreetDataForm({ data, loading }) {
                   failedValidation.current = false;
                   updateInterestData(currentData);
                   handleAsdHomeClick();
+                  handleInterestedSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
                   saveResult.current = false;
@@ -5179,6 +5198,7 @@ function StreetDataForm({ data, loading }) {
           else handleAsdHomeClick();
           clearingType.current = "interest";
           sandboxContext.onSandboxChange("interest", null);
+          handleInterestedSelected(-1, null, null, null);
         }
         break;
 
@@ -5187,6 +5207,7 @@ function StreetDataForm({ data, loading }) {
           failedValidation.current = false;
           updateInterestData(currentData);
           handleAsdHomeClick();
+          handleInterestedSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
           saveResult.current = false;
@@ -5237,7 +5258,9 @@ function StreetDataForm({ data, loading }) {
       failedValidation.current = false;
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
+      clearingType.current = "construction";
       sandboxContext.onSandboxChange("construction", null);
+      handleConstructionSelected(-1, null, null, null);
     };
 
     failedValidation.current = false;
@@ -5255,6 +5278,7 @@ function StreetDataForm({ data, loading }) {
                   failedValidation.current = false;
                   updateConstructionData(currentData);
                   handleAsdHomeClick();
+                  handleConstructionSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
                   saveResult.current = false;
@@ -5270,6 +5294,7 @@ function StreetDataForm({ data, loading }) {
           else handleAsdHomeClick();
           clearingType.current = "construction";
           sandboxContext.onSandboxChange("construction", null);
+          handleConstructionSelected(-1, null, null, null);
         }
         break;
 
@@ -5278,6 +5303,7 @@ function StreetDataForm({ data, loading }) {
           failedValidation.current = false;
           updateConstructionData(currentData);
           handleAsdHomeClick();
+          handleConstructionSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
           saveResult.current = false;
@@ -5328,7 +5354,9 @@ function StreetDataForm({ data, loading }) {
       failedValidation.current = false;
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
+      clearingType.current = "specialDesignation";
       sandboxContext.onSandboxChange("specialDesignation", null);
+      handleSpecialDesignationSelected(-1, null, null, null);
     };
 
     failedValidation.current = false;
@@ -5346,6 +5374,7 @@ function StreetDataForm({ data, loading }) {
                   failedValidation.current = false;
                   updateSpecialDesignationData(currentData);
                   handleAsdHomeClick();
+                  handleSpecialDesignationSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
                   saveResult.current = false;
@@ -5361,6 +5390,7 @@ function StreetDataForm({ data, loading }) {
           else handleAsdHomeClick();
           clearingType.current = "specialDesignation";
           sandboxContext.onSandboxChange("specialDesignation", null);
+          handleSpecialDesignationSelected(-1, null, null, null);
         }
         break;
 
@@ -5369,6 +5399,7 @@ function StreetDataForm({ data, loading }) {
           failedValidation.current = false;
           updateSpecialDesignationData(currentData);
           handleAsdHomeClick();
+          handleSpecialDesignationSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
           saveResult.current = false;
@@ -5419,7 +5450,9 @@ function StreetDataForm({ data, loading }) {
       failedValidation.current = false;
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
+      clearingType.current = "hww";
       sandboxContext.onSandboxChange("hww", null);
+      handleHWWSelected(-1, null, null, null);
     };
 
     failedValidation.current = false;
@@ -5437,6 +5470,7 @@ function StreetDataForm({ data, loading }) {
                   failedValidation.current = false;
                   updateHWWData(currentData);
                   handleAsdHomeClick();
+                  handleHWWSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
                   saveResult.current = false;
@@ -5452,6 +5486,7 @@ function StreetDataForm({ data, loading }) {
           else handleAsdHomeClick();
           clearingType.current = "hww";
           sandboxContext.onSandboxChange("hww", null);
+          handleHWWSelected(-1, null, null, null);
         }
         break;
 
@@ -5460,6 +5495,7 @@ function StreetDataForm({ data, loading }) {
           failedValidation.current = false;
           updateHWWData(currentData);
           handleAsdHomeClick();
+          handleHWWSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
           saveResult.current = false;
@@ -5510,7 +5546,9 @@ function StreetDataForm({ data, loading }) {
       failedValidation.current = false;
       if (currentStreetAsdData.current) resetStreetAsdData();
       else handleAsdHomeClick();
+      clearingType.current = "prow";
       sandboxContext.onSandboxChange("prow", null);
+      handlePRoWSelected(-1, null, null, null);
     };
 
     failedValidation.current = false;
@@ -5528,6 +5566,7 @@ function StreetDataForm({ data, loading }) {
                   failedValidation.current = false;
                   updatePRoWData(currentData);
                   handleAsdHomeClick();
+                  handlePRoWSelected(-1, null, null, null);
                 } else {
                   failedValidation.current = true;
                   saveResult.current = false;
@@ -5543,6 +5582,7 @@ function StreetDataForm({ data, loading }) {
           else handleAsdHomeClick();
           clearingType.current = "prow";
           sandboxContext.onSandboxChange("prow", null);
+          handlePRoWSelected(-1, null, null, null);
         }
         break;
 
@@ -5551,6 +5591,7 @@ function StreetDataForm({ data, loading }) {
           failedValidation.current = false;
           updatePRoWData(currentData);
           handleAsdHomeClick();
+          handlePRoWSelected(-1, null, null, null);
         } else {
           failedValidation.current = true;
           saveResult.current = false;
