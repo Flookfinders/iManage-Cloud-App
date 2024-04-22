@@ -78,6 +78,7 @@
 //    064   19.04.24 Sean Flook       IMANN-130 Prevent unnecessary reloading of form data when trying to close the form.
 //    065   22.04.24 Sean Flook       IMANN-374 Only try and open the related tab if not already displayed.
 //    066   22.04.24 Sean Flook       IMANN-380 After discarding ASD changes return to the ASD list.
+//    067   22.04.24 Sean Flook       IMANN-382 Ensure the whole street is highlighted unless on ESU or ASD tabs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -679,6 +680,7 @@ function StreetDataForm({ data, loading }) {
           if (descriptorFormData)
             streetContext.onRecordChange(15, descriptorFormData.pkId, descriptorFormData.index, null);
           else streetContext.onRecordChange(11, null, null, null);
+          if (streetData) mapContext.onHighlightStreetProperty([streetData.usrn], null);
           break;
 
         case 1:
@@ -695,6 +697,7 @@ function StreetDataForm({ data, loading }) {
             if (successorCrossRefFormData)
               streetContext.onRecordChange(30, successorCrossRefFormData.pkId, successorCrossRefFormData.index, null);
             else streetContext.onRecordChange(13, null, null, null);
+            if (streetData) mapContext.onHighlightStreetProperty([streetData.usrn], null);
           } else if (displayAsdTab) {
             if (maintenanceResponsibilityFormData) {
               streetContext.onRecordChange(
@@ -742,11 +745,12 @@ function StreetDataForm({ data, loading }) {
             else streetContext.onRecordChange(50, null, null, null);
           } else {
             // GP Related
+            if (streetData) mapContext.onHighlightStreetProperty([streetData.usrn], null);
           }
           break;
 
         case 3:
-          if (displayAsdTab) {
+          if (settingsContext.isScottish && displayAsdTab) {
             if (maintenanceResponsibilityFormData) {
               streetContext.onRecordChange(
                 51,
@@ -774,28 +778,14 @@ function StreetDataForm({ data, loading }) {
               );
               if (!osSpecialDesignationFormData.osSpecialDesignationData.wholeRoad)
                 mapContext.onEditMapObject(53, osSpecialDesignationFormData.osSpecialDesignationData.pkId);
-            } else if (interestFormData) {
-              streetContext.onRecordChange(61, interestFormData.pkId, interestFormData.index, null);
-              if (!interestFormData.interestData.wholeRoad)
-                mapContext.onEditMapObject(61, interestFormData.interestData.pkId);
-            } else if (constructionFormData) {
-              streetContext.onRecordChange(62, constructionFormData.pkId, constructionFormData.index, null);
-              if (!constructionFormData.constructionData.wholeRoad)
-                mapContext.onEditMapObject(62, constructionFormData.constructionData.pkId);
-            } else if (specialDesignationFormData) {
-              streetContext.onRecordChange(63, specialDesignationFormData.pkId, specialDesignationFormData.index, null);
-              if (!specialDesignationFormData.specialDesignationData.wholeRoad)
-                mapContext.onEditMapObject(63, specialDesignationFormData.specialDesignationData.pkId);
-            } else if (hwwFormData) {
-              streetContext.onRecordChange(64, hwwFormData.pkId, hwwFormData.index, null);
-              if (!hwwFormData.hwwData.wholeRoad) mapContext.onEditMapObject(64, hwwFormData.hwwData.pkId);
-            } else if (prowFormData) streetContext.onRecordChange(66, prowFormData.pkId, prowFormData.index, null);
-            else streetContext.onRecordChange(50, null, null, null);
+            } else streetContext.onRecordChange(50, null, null, null);
           } else if (settingsContext.isScottish && streetData && streetData.recordType > 2) {
             // Related tab
+            mapContext.onHighlightStreetProperty([streetData.usrn], null);
           } else {
             if (notesFormData) streetContext.onRecordChange(72, notesFormData.pkId, notesFormData.index, null);
             else streetContext.onRecordChange(11, null, null, null);
+            if (streetData) mapContext.onHighlightStreetProperty([streetData.usrn], null);
           }
           break;
 
@@ -803,6 +793,7 @@ function StreetDataForm({ data, loading }) {
         case 5:
           if (notesFormData) streetContext.onRecordChange(72, notesFormData.pkId, notesFormData.index, null);
           else streetContext.onRecordChange(11, null, null, null);
+          if (streetData) mapContext.onHighlightStreetProperty([streetData.usrn], null);
           break;
 
         default:
