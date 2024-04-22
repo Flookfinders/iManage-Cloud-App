@@ -25,6 +25,7 @@
 //    012   25.01.24 Joel Benford               Record counts to bold
 //    013   06.02.24 Sean Flook                 Set the partRoadColour on the wholeRoadIcon.
 //    014   22.02.24 Joel Benford     IMANN-287 Correct hover blue
+//    015   22.04.24 Sean Flook       IMANN-298 Do not display the delete button if more than 1 record is checked.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -407,16 +408,20 @@ function AsdDataListSubItem({
                   }
                 />
                 <ListItemAvatar sx={{ minWidth: 24, pr: "8px" }}>
-                  {selectedRecord && selectedRecord >= 0 && selectedRecord.toString() === subD.pkId.toString() && (
-                    <ADSActionButton
-                      variant="delete"
-                      disabled={!userCanEdit}
-                      inheritBackground
-                      tooltipTitle={`Delete ${title.toLowerCase()} record`}
-                      tooltipPlacement="right"
-                      onClick={(event) => handleItemDeleted(event, subD.pkId)}
-                    />
-                  )}
+                  {selectedRecord &&
+                    selectedRecord >= 0 &&
+                    selectedRecord.toString() === subD.pkId.toString() &&
+                    checked &&
+                    checked.length < 2 && (
+                      <ADSActionButton
+                        variant="delete"
+                        disabled={!userCanEdit}
+                        inheritBackground
+                        tooltipTitle={`Delete ${title.toLowerCase()} record`}
+                        tooltipPlacement="right"
+                        onClick={(event) => handleItemDeleted(event, subD.pkId)}
+                      />
+                    )}
                 </ListItemAvatar>
               </ListItemButton>
             ))}

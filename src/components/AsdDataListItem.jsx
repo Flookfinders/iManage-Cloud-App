@@ -26,6 +26,7 @@
 //    013   06.02.24 Sean Flook                 Set the partRoadColour on the wholeRoadIcon.
 //    014   13.02.24 Sean Flook                 Changes required to handle PRoW records.
 //    015   22.02.24 Joel Benford     IMANN-287 Correct hover blue
+//    016   22.04.24 Sean Flook       IMANN-298 Do not display the delete button if more than 1 record is checked.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -521,16 +522,20 @@ function AsdDataListItem({
                     )}
                   </ListItemAvatar>
                   <ListItemAvatar sx={{ minWidth: 24, pr: "8px" }}>
-                    {selectedRecord && selectedRecord >= 0 && selectedRecord.toString() === d.pkId.toString() && (
-                      <ADSActionButton
-                        variant="delete"
-                        disabled={!userCanEdit}
-                        inheritBackground
-                        tooltipTitle={`Delete ${title.toLowerCase()} record`}
-                        tooltipPlacement="right"
-                        onClick={(event) => handleItemDeleted(event, d.pkId)}
-                      />
-                    )}
+                    {selectedRecord &&
+                      selectedRecord >= 0 &&
+                      selectedRecord.toString() === d.pkId.toString() &&
+                      checked &&
+                      checked.length < 2 && (
+                        <ADSActionButton
+                          variant="delete"
+                          disabled={!userCanEdit}
+                          inheritBackground
+                          tooltipTitle={`Delete ${title.toLowerCase()} record`}
+                          tooltipPlacement="right"
+                          onClick={(event) => handleItemDeleted(event, d.pkId)}
+                        />
+                      )}
                   </ListItemAvatar>
                 </ListItemButton>
               ))}
