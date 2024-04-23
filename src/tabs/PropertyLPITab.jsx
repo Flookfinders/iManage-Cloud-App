@@ -38,6 +38,7 @@
 //    025   17.04.24 Joshua McCormick IMANN-277 Removed maxLength from ADSAddressableObjectControl, as it is hardcoded inside ADSAddressableObjectControl
 //    026   17.04.24 Joshua McCormick IMANN-207 endDate set to null if logical status is less than 7
 //    027   17.04.24 Joshua McCormick IMANN-277 remaining unnecessary maxLength removed from ADSAddressableObjectControl
+//    028   23.04.24 Joshua McCormick IMANN-386 changed LPI index&title to wrap correctly, formatted code
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -473,7 +474,12 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           language: field && field === "language" ? newValue : language,
           startDate:
             field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
-            endDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : field && field === "logicalStatus" && newValue < 7 ? null : endDate && ConvertDate(endDate),
+          endDate:
+            field && field === "endDate"
+              ? newValue && ConvertDate(newValue)
+              : field && field === "logicalStatus" && newValue < 7
+              ? null
+              : endDate && ConvertDate(endDate),
           saoStartNumber:
             field && field === "saoStartNumber"
               ? newValue && Number(newValue)
@@ -515,7 +521,12 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           language: field && field === "language" ? newValue : language,
           startDate:
             field && field === "startDate" ? newValue && ConvertDate(newValue) : startDate && ConvertDate(startDate),
-          endDate: field && field === "endDate" ? newValue && ConvertDate(newValue) : field && field === "logicalStatus" && newValue < 7 ? null : endDate && ConvertDate(endDate),
+          endDate:
+            field && field === "endDate"
+              ? newValue && ConvertDate(newValue)
+              : field && field === "logicalStatus" && newValue < 7
+              ? null
+              : endDate && ConvertDate(endDate),
           saoStartNumber:
             field && field === "saoStartNumber"
               ? newValue && Number(newValue)
@@ -970,12 +981,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
   return (
     <Fragment>
       <Box sx={toolbarStyle}>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ pl: theme.spacing(2), mt: theme.spacing(0.25) }}
-        >
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: theme.spacing(0.25) }}>
           <Typography variant="subtitle1">
             <ADSActionButton
               variant="home"
@@ -984,14 +990,13 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
               onClick={handleHomeClick}
             />
           </Typography>
-          <Typography variant="subtitle1">{`| LPI ${data.index + 1} of ${data.totalRecords}: `}</Typography>
           <Typography
             sx={{
               flexGrow: 1,
               fontSize: "14px",
               color: adsMidGreyA,
               display: "none",
-              pl: "8px",
+              pl: "6px",
               pt: "2px",
               [theme.breakpoints.up("sm")]: {
                 display: "block",
@@ -1000,7 +1005,12 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
             variant="subtitle1"
             noWrap
             align="left"
-          >{`${lpiAddress ? lpiAddress : ""}`}</Typography>
+          >
+            <Typography display="inline" variant="subtitle1">
+              {`| LPI ${data.index + 1} of ${data.totalRecords}: `}
+            </Typography>
+            {`${lpiAddress ? lpiAddress : ""}`}
+          </Typography>
           <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
             <IconButton
               onClick={handleActionsClick}
