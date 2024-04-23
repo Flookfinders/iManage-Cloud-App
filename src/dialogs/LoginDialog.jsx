@@ -18,6 +18,7 @@
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    006   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    007   09.04.24 Sean Flook                 Changed to use auditname for new security.
+//    008   23.04.24 Sean Flook       IMANN-366 If we are running on an Edge Chromium browser do not display our show password icon button.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -46,6 +47,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { adsBlueA, adsWhite, adsLightBlue } from "../utils/ADSColours";
 import { FormRowStyle, FormInputStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
+import { isEdgeChromium } from "../utils/HelperUtils";
 
 LoginDialog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
@@ -266,7 +268,7 @@ function LoginDialog({ isOpen, title, message }) {
               size="small"
               value={password}
               InputProps={{
-                endAdornment: (
+                endAdornment: !isEdgeChromium && (
                   <InputAdornment position="end">
                     <IconButton
                       aria-label="toggle password visibility"

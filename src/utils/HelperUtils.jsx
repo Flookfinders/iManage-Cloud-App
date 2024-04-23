@@ -43,6 +43,7 @@
 //    030   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //    031   04.04.24 Sean Flook       IMANN-320 Added error trapping for GetChangedAssociatedRecords.
 //    032   09.04.24 Sean Flook       IMANN-376 Added new methods to allow for adding lookups on the fly.
+//    033   23.04.24 Sean Flook       IMANN-366 Added ability to detect the type of browser being used.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2570,3 +2571,33 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
       result: false,
     };
 };
+
+/**
+ * A method to determine the type of browser this app is running under.
+ *
+ * @param {string} agent The window.navigator userAgent.
+ * @returns {string} A string representing the browser that the user is using.
+ */
+export const browser = (agent) => {
+  switch (true) {
+    case agent.indexOf("edge") > -1:
+      return "MS Edge (EdgeHtml)";
+    case agent.indexOf("edg") > -1:
+      return "MS Edge Chromium";
+    case agent.indexOf("opr") > -1 && !!window.opr:
+      return "opera";
+    case agent.indexOf("chrome") > -1 && !!window.chrome:
+      return "chrome";
+    case agent.indexOf("trident") > -1:
+      return "Internet Explorer";
+    case agent.indexOf("firefox") > -1:
+      return "firefox";
+    case agent.indexOf("safari") > -1:
+      return "safari";
+    default:
+      return "other";
+  }
+};
+
+export const isEdgeChromium = browser(window.navigator.userAgent.toLowerCase()) === "MS Edge Chromium";
+export const isChrome = browser(window.navigator.userAgent.toLowerCase()) === "chrome";
