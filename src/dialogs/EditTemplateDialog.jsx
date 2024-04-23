@@ -38,6 +38,7 @@
 //    025   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //    026   09.04.24 Sean Flook       IMANN-376 Removed for administrative area.
 //    027   17.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft to Scheme field.
+//    028   23.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft to ADSTextControl fields
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1483,10 +1484,10 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           <ADSTextControl
             label="Name"
             isEditable
-            displayCharactersLeft
             value={title}
             id="template_title"
             maxLength={75}
+            displayCharactersLeft
             onChange={handleTitleChangeEvent}
           />
         );
@@ -1499,6 +1500,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             value={description}
             id="template_description"
             maxLength={200}
+            displayCharactersLeft
             minLines={2}
             maxLines={10}
             onChange={handleDescriptionChangeEvent}
@@ -1641,6 +1643,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 value={level}
                 id="lpi_level_settings_template"
                 maxLength={30}
+                displayCharactersLeft
                 helperText="Memorandum of the vertical position of the BLPU."
                 onChange={handleLevelChangeEvent}
               />
@@ -1741,6 +1744,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               value={otherNote}
               id="other_note"
               maxLength={4000}
+              displayCharactersLeft
               minLines={2}
               maxLines={10}
               onChange={handleOtherNoteChangeEvent}
@@ -2801,6 +2805,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 errorText={levelError}
                 id="lpi_level_settings_template"
                 maxLength={30}
+                displayCharactersLeft
                 helperText="Memorandum of the vertical position of the BLPU."
                 onChange={handleLevelChangeEvent}
               />
@@ -2867,6 +2872,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               value={classificationScheme}
               id="wizard_classification_scheme"
               maxLength={40}
+              displayCharactersLeft
               errorText={classificationSchemeError}
               helperText="The classification scheme used for this record."
               onChange={handleClassificationSchemeChangeEvent}
@@ -2915,6 +2921,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               errorText={otherNoteError}
               id={"ads-text-textfield-note"}
               maxLength={4000}
+              displayCharactersLeft
               minLines={2}
               maxLines={10}
               onChange={handleOtherNoteChangeEvent}
