@@ -7,7 +7,7 @@
 //
 //  Maximum validation numbers
 //  =================================
-//  BLPU:                             2100064
+//  BLPU:                             2100065
 //  BLPU Provenance:                  2200020
 //  BLPU Application Cross Reference: 2300033
 //  LPI:                              2400085
@@ -38,6 +38,7 @@
 //    014   19.12.23 Sean Flook                 Various bug fixes.
 //    015   29.01.24 Sean Flook                 Added new checks.
 //    016   01.03.24 Sean Flook                 Corrected check for 2100011.
+//    017   24.04.24 Sean Flook                 Added check for 2100065.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -51,6 +52,7 @@ import {
   includeCheck,
   GetErrorMessage,
   GetCheck,
+  bracketValidator,
 } from "./HelperUtils";
 
 import BLPULogicalStatus from "../data/BLPULogicalStatus";
@@ -427,6 +429,12 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
     currentCheck = GetCheck(2100063, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && data.level && (data.level < 0.0 || data.level > 99.9)) {
       levelErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Organisation Name contains unmatched brackets.
+    currentCheck = GetCheck(2100065, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && data.organisation && !bracketValidator(data.organisation)) {
+      organisationErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     if (showDebugMessages) console.log("[DEBUG] ValidateBlpuData - Finished checks");

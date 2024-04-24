@@ -44,6 +44,7 @@
 //    031   04.04.24 Sean Flook       IMANN-320 Added error trapping for GetChangedAssociatedRecords.
 //    032   09.04.24 Sean Flook       IMANN-376 Added new methods to allow for adding lookups on the fly.
 //    033   23.04.24 Sean Flook       IMANN-366 Added ability to detect the type of browser being used.
+//    034   23.04.24 Sean Flook                 Added bracketValidator.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2601,3 +2602,35 @@ export const browser = (agent) => {
 
 export const isEdgeChromium = browser(window.navigator.userAgent.toLowerCase()) === "MS Edge Chromium";
 export const isChrome = browser(window.navigator.userAgent.toLowerCase()) === "chrome";
+
+/**
+ * Method to check a string for balanced brackets.
+ *
+ * @param {string} str The string to check for matched brackets
+ * @returns {Boolean} True is the brackets are matched; otherwise false.
+ */
+export const bracketValidator = (str) => {
+  if (typeof str !== "string") {
+    return false;
+  }
+  const stack = [];
+  const mapClosingBrackets = {
+    "{": "}",
+    "[": "]",
+    "(": ")",
+  };
+  const characters = str.split("");
+  for (let i = 0; i < characters.length; i++) {
+    if (characters[i] === "{" || characters[i] === "[" || characters[i] === "(") {
+      stack.push(characters[i]);
+    } else if (characters[i] === "}" || characters[i] === "]" || characters[i] === ")") {
+      let poppedValue = stack.pop();
+      if (mapClosingBrackets[poppedValue] !== characters[i]) {
+        return false;
+      }
+    }
+  }
+
+  if (stack.length) return false;
+  return true;
+};

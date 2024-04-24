@@ -4107,6 +4107,21 @@ const ValidationMessages = [
     osCheck: false,
   },
   {
+    messageId: 2100065,
+    errorMessage: "Organisation Name contains unmatched brackets.",
+    llpgCode: "AAU21.107",
+    lsgCode: "",
+    osgCode: "",
+    asdCode: "",
+    idoxCode: "2100065",
+    ignoreCheck: false,
+    risk: "M",
+    usedByApi: true,
+    usedByFrontEnd: true,
+    gpCheck: true,
+    osCheck: false,
+  },
+  {
     messageId: 2200001,
     errorMessage: "Mandatory Change Type is missing.",
     llpgCode: "",
@@ -9571,7 +9586,7 @@ const ValidationMessages = [
   {
     messageId: 6200045,
     errorMessage:
-      "A Street with an Whole Road Interest record with an Interest Type of 1 must have not have a Reinstatement Type Code if the record has Whole Road true.",
+      "A Street with an Interest record with an Interest Type of 1 and where Whole Road is false must not have a Reinstatement Type Code if the record has Whole Road true.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
