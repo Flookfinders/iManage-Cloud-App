@@ -22,13 +22,15 @@
 //    009   12.03.24 Sean Flook            MUL7 Updated for cancelMoveBlpu.
 //    010   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    011   04.04.24 Sean Flook                 Added cascadeLogicalStatus.
+//    012   25.04.24 Sean Flook       IMANN-390 Added noUprn and noUprnsRange.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
+import SettingsContext from "../context/settingsContext";
 
 import { Button, Typography, Dialog, DialogActions, DialogContent, Tooltip } from "@mui/material";
 import { Stack } from "@mui/system";
@@ -38,7 +40,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import SaveIcon from "@mui/icons-material/Save";
 
-import { blueButtonStyle, whiteButtonStyle, tooltipStyle } from "../utils/ADSStyles";
+import { blueButtonStyle, whiteButtonStyle, tooltipStyle, redButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 MessageDialog.propTypes = {
@@ -49,12 +51,16 @@ MessageDialog.propTypes = {
     "cancelASDPartRoad",
     "cancelASDInexact",
     "cascadeLogicalStatus",
+    "noUprn",
+    "noUprnsRange",
   ]).isRequired,
   onClose: PropTypes.func.isRequired,
 };
 
 function MessageDialog({ isOpen, variant, onClose }) {
   const theme = useTheme();
+
+  const settingsContext = useContext(SettingsContext);
 
   /**
    * Event to handle when the continue button is clicked
@@ -99,6 +105,12 @@ function MessageDialog({ isOpen, variant, onClose }) {
       case "cascadeLogicalStatus":
         return "Logical status change";
 
+      case "noUprn":
+        return "No available UPRNs";
+
+      case "noUprnsRange":
+        return "Not enough available UPRNs";
+
       default:
         return `Unknown variant: ${variant}`;
     }
@@ -115,6 +127,10 @@ function MessageDialog({ isOpen, variant, onClose }) {
       case "cancelASDInexact":
       case "cascadeLogicalStatus":
         return "Cancel change";
+
+      case "noUprn":
+      case "noUprnsRange":
+        return "Close wizard";
 
       default:
         return "Cancel exiting";
@@ -165,6 +181,26 @@ function MessageDialog({ isOpen, variant, onClose }) {
               This is a parent property so changing the logical status will also change the children's logical status.
             </Typography>
             <Typography variant="body2">Are you sure you want to continue?</Typography>
+          </Stack>
+        );
+
+      case "noUprn":
+        return (
+          <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={1}>
+            <Typography variant="body2">You do not have any available UPRNs to create this property.</Typography>
+            <Typography variant="body2">{`Contact ${
+              settingsContext.isScottish ? "OneScotland" : "GeoPlace"
+            } to get more UPRNs and then try again?`}</Typography>
+          </Stack>
+        );
+
+      case "noUprnsRange":
+        return (
+          <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={1}>
+            <Typography variant="body2">You do not have enough available UPRNs to create these properties.</Typography>
+            <Typography variant="body2">{`Contact ${
+              settingsContext.isScottish ? "OneScotland" : "GeoPlace"
+            } to get more UPRNs and then try again?`}</Typography>
           </Stack>
         );
 
@@ -258,6 +294,20 @@ function MessageDialog({ isOpen, variant, onClose }) {
               Cancel
             </Button>
           </>
+        );
+
+      case "noUprn":
+      case "noUprnsRange":
+        return (
+          <Button
+            variant="contained"
+            onClick={handleCloseClick}
+            autoFocus
+            sx={redButtonStyle}
+            startIcon={<CloseIcon />}
+          >
+            Close
+          </Button>
         );
 
       default:

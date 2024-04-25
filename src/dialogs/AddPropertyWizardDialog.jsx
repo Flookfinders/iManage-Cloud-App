@@ -34,6 +34,7 @@
 //    021   27.03.24 Sean Flook                 Changes required to remove warnings.
 //    022   22.04.24 Sean Flook       IMANN-374 Disable the buttons when creating the properties.
 //    023   24.04.24 Sean Flook       IMANN-390 Get the list of new UPRNs from the API before creating the properties.
+//    024   25.04.24 Sean Flook       IMANN-390 Display a message dialog if there are no available UPRNs to use to create the properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -149,6 +150,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
   const [viewErrors, setViewErrors] = useState(false);
   const [creating, setCreating] = useState(false);
   const [openMessageDialog, setOpenMessageDialog] = useState(false);
+  const [messageVariant, setMessageVariant] = useState("cancelWizard");
 
   const selectedTemplate = useRef(null);
   const addressDetails = useRef(null);
@@ -196,6 +198,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
    * Event to handle when the cancel button is clicked.
    */
   const handleCancelClick = () => {
+    setMessageVariant("cancelWizard");
     setOpenMessageDialog(true);
   };
 
@@ -551,7 +554,8 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
           newErrorIds.push({ pkId: blpuPkId--, addressId: address.id });
         }
       } else if (!haveEnoughUprns) {
-        // Need to communicate to user that they have run out of UPRNs
+        setMessageVariant(["range", "rangeChildren"].includes(variant) ? "noUprnsRange" : "noUprn");
+        setOpenMessageDialog(true);
       }
 
       errorId.current = newErrorIds;
@@ -2256,6 +2260,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
       setPropertyErrors([]);
       setFinaliseErrors([]);
       setHaveErrors(false);
+      setCreating(false);
 
       setEngSingleAddressData(null);
       setAltLangSingleAddressData(null);
@@ -2528,7 +2533,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
         failedCount={failedCount.current}
         onClose={handleFinaliseClose}
       />
-      <MessageDialog isOpen={openMessageDialog} variant="cancelWizard" onClose={handleMessageDialogClose} />
+      <MessageDialog isOpen={openMessageDialog} variant={messageVariant} onClose={handleMessageDialogClose} />
     </Fragment>
   );
 }
