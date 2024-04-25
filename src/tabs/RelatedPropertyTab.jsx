@@ -48,6 +48,7 @@
 //    034   04.04.24 Sean Flook                 Use the new getWizardParentDetails method.
 //    035   16.04.24 Sean Flook                 Added ability to select historic properties.
 //    036   22.04.24 Sean Flook       IMANN-374 Correctly call DataFormStyle.
+//    037   25.04.24 Sean Flook       IMANN-166 After putting the current property in focus do not keep doing it.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -147,6 +148,7 @@ function RelatedPropertyTab({
   const lookupContext = useContext(LookupContext);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
+  const initialPropertyFocused = useRef(false);
 
   const [propertySelected, setPropertySelected] = useState(null);
   const [propertyChecked, setPropertyChecked] = useState([]);
@@ -832,21 +834,25 @@ function RelatedPropertyTab({
         propertyContext.currentProperty.openRelated.property &&
         document.getElementById(
           `property-related-tree-${propertyContext.currentProperty.openRelated.property.toString()}`
-        )
+        ) &&
+        !initialPropertyFocused.current
       ) {
         document
           .getElementById(`property-related-tree-${propertyContext.currentProperty.openRelated.property.toString()}`)
           .scrollIntoView();
+        initialPropertyFocused.current = true;
       }
       propertyContext.onRelatedOpened();
     } else if (
       propertyContext.currentProperty.uprn &&
       propertyContext.currentProperty.uprn > 0 &&
-      document.getElementById(`property-related-tree-${propertyContext.currentProperty.uprn.toString()}`)
+      document.getElementById(`property-related-tree-${propertyContext.currentProperty.uprn.toString()}`) &&
+      !initialPropertyFocused.current
     )
       document
         .getElementById(`property-related-tree-${propertyContext.currentProperty.uprn.toString()}`)
         .scrollIntoView();
+    initialPropertyFocused.current = true;
   }, [streetContext, propertyContext, expanded, onNodeToggle]);
 
   return (

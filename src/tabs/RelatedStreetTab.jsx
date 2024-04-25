@@ -36,6 +36,7 @@
 //    023   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    024   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    025   22.04.24 Sean Flook       IMANN-374 Correctly call DataFormStyle.
+//    026   25.04.24 Sean Flook       IMANN-166 After putting the current street in focus do not keep doing it.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -155,6 +156,7 @@ function RelatedStreetTab({
   const settingsContext = useContext(SettingsContext);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
+  const initialStreetFocused = useRef(false);
 
   const [streetSelected, setStreetSelected] = useState(null);
   const [streetChecked, setStreetChecked] = useState([]);
@@ -705,9 +707,11 @@ function RelatedStreetTab({
     if (
       streetContext.currentStreet.usrn &&
       streetContext.currentStreet.usrn > 0 &&
-      document.getElementById(`street-related-tree-${streetContext.currentStreet.usrn.toString()}`)
+      document.getElementById(`street-related-tree-${streetContext.currentStreet.usrn.toString()}`) &&
+      !initialStreetFocused.current
     )
       document.getElementById(`street-related-tree-${streetContext.currentStreet.usrn.toString()}`).scrollIntoView();
+    initialStreetFocused.current = true;
   }, [streetContext.currentStreet.usrn]);
 
   return (
