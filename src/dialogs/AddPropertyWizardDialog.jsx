@@ -35,6 +35,7 @@
 //    022   22.04.24 Sean Flook       IMANN-374 Disable the buttons when creating the properties.
 //    023   24.04.24 Sean Flook       IMANN-390 Get the list of new UPRNs from the API before creating the properties.
 //    024   25.04.24 Sean Flook       IMANN-390 Display a message dialog if there are no available UPRNs to use to create the properties.
+//    025   25.04.24 Sean Flook       IMANN-390 If a property is failed by the API return the UPRN back to the API so it can be reused.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -50,7 +51,7 @@ import MapContext from "../context/mapContext";
 import PropertyContext from "../context/propertyContext";
 
 import { streetToTitleCase } from "../utils/StreetUtils";
-import { addressToTitleCase, SaveProperty } from "../utils/PropertyUtils";
+import { addressToTitleCase, returnFailedUprns, SaveProperty } from "../utils/PropertyUtils";
 
 import {
   Slide,
@@ -131,6 +132,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
   const [propertyErrors, setPropertyErrors] = useState([]);
   const [crossReferencesErrors, setCrossReferencesErrors] = useState([]);
   const [finaliseErrors, setFinaliseErrors] = useState([]);
+  const [failedUprns, setFailedUprns] = useState([]);
   const [haveErrors, setHaveErrors] = useState(false);
 
   const [engSingleAddressData, setEngSingleAddressData] = useState(null);
@@ -159,6 +161,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
   const errorId = useRef(null);
   const savedProperty = useRef(null);
   const rangeErrors = useRef(null);
+  const failedRangeUprns = useRef(null);
   const totalRangeCount = useRef(0);
   const createdCount = useRef(0);
   const failedCount = useRef(0);
@@ -551,7 +554,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
               lpis: newLpis,
             });
 
-          newErrorIds.push({ pkId: blpuPkId--, addressId: address.id });
+          newErrorIds.push({ pkId: blpuPkId--, addressId: address.id, uprn: newUprn });
         }
       } else if (!haveEnoughUprns) {
         setMessageVariant(["range", "rangeChildren"].includes(variant) ? "noUprnsRange" : "noUprn");
@@ -584,6 +587,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
             failedCount.current = 0;
             setHaveErrors(false);
             rangeErrors.current = null;
+            failedRangeUprns.current = null;
 
             for (const propertyRecord of propertyData) {
               SaveProperty(
@@ -621,6 +625,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                 createdCount.current = 1;
                 failedCount.current = 0;
                 setFinaliseErrors([]);
+                setFailedUprns([]);
                 setHaveErrors(false);
                 setCreating(false);
                 setFinaliseOpen(true);
@@ -2259,6 +2264,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
       setAddressErrors([]);
       setPropertyErrors([]);
       setFinaliseErrors([]);
+      setFailedUprns([]);
       setHaveErrors(false);
       setCreating(false);
 
@@ -2285,6 +2291,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
       errorId.current = null;
       savedProperty.current = null;
       rangeErrors.current = null;
+      failedRangeUprns.current = null;
       totalRangeCount.current = 0;
       createdCount.current = 0;
       failedCount.current = 0;
@@ -2357,10 +2364,15 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
         case "range":
         case "rangeChildren":
           const addressId = errorId.current.find((x) => x.pkId === propertyContext.currentErrors.pkId).addressId;
+          const rangeUprn = errorId.current.find((x) => x.pkId === propertyContext.currentErrors.pkId).uprn;
           if (rangeErrors.current) rangeErrors.current.push({ id: addressId, errors: propertyContext.currentErrors });
           else rangeErrors.current = [{ id: addressId, errors: propertyContext.currentErrors }];
           if (Array.isArray(rangeErrors.current)) setFinaliseErrors(rangeErrors.current);
           else setFinaliseErrors([rangeErrors.current]);
+          if (failedRangeUprns.current) failedRangeUprns.current.push(rangeUprn);
+          else failedRangeUprns.current = [rangeUprn];
+          if (Array.isArray(failedRangeUprns.current)) setFailedUprns(failedRangeUprns.current);
+          else setFailedUprns([failedRangeUprns.current]);
           break;
 
         default:
@@ -2368,13 +2380,17 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
           failedCount.current = 1;
           if (Array.isArray(propertyContext.currentErrors)) setFinaliseErrors(propertyContext.currentErrors);
           else setFinaliseErrors([propertyContext.currentErrors]);
+          if (errorId.current && errorId.current.length) {
+            const uprn = errorId.current.find((x) => x.pkId === propertyContext.currentErrors.pkId).uprn;
+            returnFailedUprns([uprn], userContext.currentUser.token);
+          }
           setHaveErrors(true);
           setCreating(false);
           setFinaliseOpen(true);
           break;
       }
     }
-  }, [propertyContext.currentErrors, propertyContext.currentPropertyHasErrors, variant]);
+  }, [propertyContext.currentErrors, propertyContext.currentPropertyHasErrors, variant, userContext.currentUser.token]);
 
   useEffect(() => {
     if (
@@ -2400,8 +2416,16 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
 
         setAddressPoints(errorAddressPoints);
       }
+      if (failedUprns && failedUprns.length) returnFailedUprns(failedUprns, userContext.currentUser.token);
     }
-  }, [viewErrors, addressPoints, settingsContext.isScottish, settingsContext.isWelsh]);
+  }, [
+    viewErrors,
+    addressPoints,
+    settingsContext.isScottish,
+    settingsContext.isWelsh,
+    failedUprns,
+    userContext.currentUser.token,
+  ]);
 
   return (
     <Fragment>

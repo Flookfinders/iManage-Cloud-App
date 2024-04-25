@@ -20,6 +20,7 @@
 //    007   25.01.24 Sean Flook                 Changes required after UX review.
 //    008   09.04.24 Sean Flook                 Changes required for updated security API.
 //    009   24.04.24 Sean Flook       IMANN-390 Added new endpoint to get the list of new UPRNs used when creating new properties.
+//    010   25.04.24 Sean Flook       IMANN-390 Added new endpoint to return UPRNs assigned to failed properties to be added back into the availableUprns table.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -430,17 +431,6 @@ export function GetPropertyFromUPRNUrl(userToken) {
 }
 
 /**
- * Get the URL used to return an array of new UPRNs to be used when creating new properties.
- *
- * @param {string} userToken The token for the user who is calling the endpoint.
- * @return {object} The URL object used in FETCH calls.
- */
-export function GetListOfUprnsUrl(userToken) {
-  const url = GetApiSite("main", "/api/Property/GetListOfUprns");
-  return getUrl(url, "GET", "application/json", userToken);
-}
-
-/**
  * Get the URL used to update a given property.
  *
  * @param {string} userToken The token for the user who is calling the endpoint.
@@ -460,6 +450,28 @@ export function GetUpdatePropertyUrl(userToken) {
 export function GetDeletePropertyUrl(userToken) {
   const url = GetApiSite("main", "/api/Property");
   return getUrl(url, "DELETE", "application/json", userToken);
+}
+
+/**
+ * Get the URL used to return an array of new UPRNs to be used when creating new properties.
+ *
+ * @param {string} userToken The token for the user who is calling the endpoint.
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function GetListOfUprnsUrl(userToken) {
+  const url = GetApiSite("main", "/api/Property/GetListOfUprns");
+  return getUrl(url, "GET", "application/json", userToken);
+}
+
+/**
+ * Get the URL used to return an array of new UPRNs to be used when creating new properties.
+ *
+ * @param {string} userToken The token for the user who is calling the endpoint.
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function GetAddUprnsBackUrl(userToken) {
+  const url = GetApiSite("main", "/api/Property/AddUprnsBackToAvailableUprns");
+  return getUrl(url, "POST", "application/json", userToken);
 }
 
 /**

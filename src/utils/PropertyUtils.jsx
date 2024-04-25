@@ -43,6 +43,7 @@
 //    030   04.04.24 Sean Flook                 Various changes for deleting and adding new properties.
 //    031   05.04.24 Sean Flook                 Correctly handle errors when creating, updating and deleting.
 //    032   24.04.24 Sean Flook       IMANN-390 When creating a new property if the UPRN is already set use that; otherwise use 0.
+//    033   25.04.24 Sean Flook       IMANN-390 Added returnFailedUprns method to return failed UPRNs back to the database.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -65,6 +66,7 @@ import {
   GetCreatePropertyUrl,
   GetUpdatePropertyUrl,
   GetTempAddressUrl,
+  GetAddUprnsBackUrl,
 } from "../configuration/ADSConfig";
 import BLPUClassification from "../data/BLPUClassification";
 import OSGClassification, { OSGScheme } from "../data/OSGClassification";
@@ -233,12 +235,12 @@ export function GetProvenanceLabel(provenanceCode, isScottish) {
 /**
  *  Gets the temporary address for the given LPI record.
  *
- * @param {object} lpiRecord The LPI record for which we need the temporary address for.
- * @param {string} organisation The organisation, used for creating the return object.
- * @param {object} lookupContext The lookup context object
- * @param {string} userToken The token for the user who is calling the endpoint.
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @return {string} The temporary address from the supplied data.
+ * @param {Object} lpiRecord The LPI record for which we need the temporary address for.
+ * @param {String} organisation The organisation, used for creating the return object.
+ * @param {Object} lookupContext The lookup context object
+ * @param {String} userToken The token for the user who is calling the endpoint.
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @return {String} The temporary address from the supplied data.
  */
 export async function GetTempAddress(lpiRecord, organisation, lookupContext, userToken, isScottish) {
   const postcode = lpiRecord.postcodeRef
@@ -2609,4 +2611,75 @@ export const getWizardParentDetails = (propertyData, postcodes) => {
       : null;
 
   return parent;
+};
+
+/**
+ * Method used to return UPRNs of properties that failed to be created.
+ *
+ * @param {Array} uprns The array of UPRNs where the create has failed.
+ * @param {String} userToken The token for the user who is calling the endpoint.
+ * @returns
+ */
+export const returnFailedUprns = async (uprns, userToken) => {
+  if (!Array.isArray(uprns) || uprns.length === 0) return;
+
+  const returnUrl = GetAddUprnsBackUrl(userToken);
+
+  console.log("[DEBUG] returnFailedUprns", returnUrl, JSON.stringify(uprns));
+
+  if (returnUrl) {
+    await fetch(returnUrl.url, {
+      headers: returnUrl.headers,
+      crossDomain: true,
+      method: returnUrl.type,
+      body: JSON.stringify(uprns),
+    })
+      .then((res) => (res.ok ? res : Promise.reject(res)))
+      .then((res) => {
+        switch (res.status) {
+          case 200:
+            return res;
+
+          default:
+            const contentType = res && res.headers ? res.headers.get("content-type") : null;
+            console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs - Failed`, {
+              res: res,
+              contentType: contentType,
+            });
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+              res.json().then((body) => {
+                console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, body);
+              });
+            } else if (contentType && contentType.indexOf("text")) {
+              res.text().then((response) => {
+                console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, response, res);
+              });
+            } else {
+              console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, res);
+            }
+            return null;
+        }
+      })
+      .then((result) => {
+        if (result) console.log("Failed UPRNs have been added back to the available UPRNs.");
+      })
+      .catch((res) => {
+        const contentType = res && res.headers ? res.headers.get("content-type") : null;
+        console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs - Failed`, {
+          res: res,
+          contentType: contentType,
+        });
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          res.json().then((body) => {
+            console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, body);
+          });
+        } else if (contentType && contentType.indexOf("text")) {
+          res.text().then((response) => {
+            console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, response, res);
+          });
+        } else {
+          console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, res);
+        }
+      });
+  }
 };
