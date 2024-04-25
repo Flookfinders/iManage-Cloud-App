@@ -26,6 +26,7 @@
 //    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    014   16.04.24 Sean Flook       IMANN-377 Added background properties and streets.
 //    015   16.04.24 Sean Flook                 When loading a SHP file use the mapContext to retain the information and display the layer in the map.
+//    016   07.02.24 Sean Flook       IMANN-377 Changes required to support viaEuropa mapping for OneScotland.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1063,6 +1064,23 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
               switch (baseLayer.serviceProvider) {
                 case "thinkWare":
                   alert("Code to handle thinkWare WMTS layers has not been written yet.");
+                  break;
+
+                case "viaEuropa":
+                  newBaseLayer = new WMTSLayer({
+                    url: `${baseLayer.url}/${baseLayer.layerKey}/${baseLayer.activeLayerId}/wmts?client=arcgis`,
+                    id: baseLayer.layerId,
+                    copyright:
+                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                        : baseLayer.copyright,
+                    title: baseLayer.title,
+                    listMode: baseLayer.displayInList ? "show" : "hide",
+                    maxScale: baseLayer.maxScale,
+                    minScale: baseLayer.minScale,
+                    opacity: baseLayer.opacity,
+                    visible: baseLayer.visible,
+                  });
                   break;
 
                 default: // OS
