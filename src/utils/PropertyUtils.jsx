@@ -42,6 +42,7 @@
 //    029   22.03.24 Sean Flook           MUL16 Added GetParentHierarchy.
 //    030   04.04.24 Sean Flook                 Various changes for deleting and adding new properties.
 //    031   05.04.24 Sean Flook                 Correctly handle errors when creating, updating and deleting.
+//    032   24.04.24 Sean Flook       IMANN-390 When creating a new property if the UPRN is already set use that; otherwise use 0.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1163,7 +1164,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
       parentUprn: propertyData.parentUprn,
       neverExport: propertyData.neverExport,
       siteSurvey: propertyData.siteSurvey,
-      uprn: 0,
+      uprn: propertyData.uprn && propertyData.uprn > 0 ? propertyData.uprn : 0,
       logicalStatus: propertyData.logicalStatus,
       endDate: propertyData.endDate,
       startDate: propertyData.startDate,
@@ -1178,7 +1179,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
         ? propertyData.blpuAppCrossRefs.map((x) => {
             return {
               changeType: "I",
-              uprn: 0,
+              uprn: propertyData.uprn && propertyData.uprn > 0 ? propertyData.uprn : 0,
               startDate: x.startDate,
               endDate: x.endDate,
               crossReference: x.crossReference,
@@ -1191,7 +1192,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
       blpuProvenances: propertyData.blpuProvenances
         ? propertyData.blpuProvenances.map((x) => {
             return {
-              uprn: 0,
+              uprn: propertyData.uprn && propertyData.uprn > 0 ? propertyData.uprn : 0,
               changeType: "I",
               provenanceCode: x.provenanceCode,
               annotation: x.annotation,
@@ -1204,7 +1205,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
       blpuNotes: propertyData.blpuNotes
         ? propertyData.blpuNotes.map((x) => {
             return {
-              uprn: 0,
+              uprn: propertyData.uprn && propertyData.uprn > 0 ? propertyData.uprn : 0,
               note: x.note,
               changeType: "I",
             };
@@ -1214,7 +1215,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
         ? propertyData.classifications.map((x) => {
             return {
               changeType: "I",
-              uprn: 0,
+              uprn: propertyData.uprn && propertyData.uprn > 0 ? propertyData.uprn : 0,
               classificationScheme: x.classificationScheme,
               blpuClass: x.blpuClass,
               startDate: x.startDate,
@@ -1227,7 +1228,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
         ? propertyData.organisations.map((x) => {
             return {
               changeType: "I",
-              uprn: 0,
+              uprn: propertyData.uprn && propertyData.uprn > 0 ? propertyData.uprn : 0,
               organisation: x.organisation,
               legalName: x.legalName,
               startDate: x.startDate,
@@ -1268,7 +1269,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               postTown: x.postTownRef ? x.postTown : "",
               postcode: x.postcodeRef ? x.postcode : "",
               dualLanguageLink: x.dualLanguageLink,
-              uprn: 0,
+              uprn: propertyData.uprn && propertyData.uprn > 0 ? propertyData.uprn : 0,
               changeType: "I",
               logicalStatus: x.logicalStatus,
               paoStartSuffix: x.paoStartSuffix,
@@ -1295,7 +1296,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
       parentUprn: propertyData.parentUprn,
       neverExport: propertyData.neverExport,
       siteSurvey: propertyData.siteSurvey,
-      uprn: 0,
+      uprn: propertyData.uprn && propertyData.uprn > 0 ? propertyData.uprn : 0,
       logicalStatus: propertyData.logicalStatus,
       blpuState: propertyData.blpuState,
       blpuClass: propertyData.blpuClass,
@@ -1307,7 +1308,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
         ? propertyData.blpuAppCrossRefs.map((x) => {
             return {
               changeType: "I",
-              uprn: 0,
+              uprn: propertyData.uprn && propertyData.uprn > 0 ? propertyData.uprn : 0,
               startDate: x.startDate,
               endDate: x.endDate,
               crossReference: x.crossReference,
@@ -1321,7 +1322,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
         ? propertyData.blpuProvenances.map((x) => {
             return {
               changeType: "I",
-              uprn: 0,
+              uprn: propertyData.uprn && propertyData.uprn > 0 ? propertyData.uprn : 0,
               provenanceCode: x.provenanceCode,
               annotation: x.annotation,
               startDate: x.startDate,
@@ -1333,7 +1334,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
       blpuNotes: propertyData.blpuNotes
         ? propertyData.blpuNotes.map((x) => {
             return {
-              uprn: 0,
+              uprn: propertyData.uprn && propertyData.uprn > 0 ? propertyData.uprn : 0,
               note: x.note,
               changeType: "I",
             };
@@ -1359,7 +1360,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               postTown: x.postTownRef ? x.postTown : "",
               postcode: x.postcodeRef ? x.postcode : "",
               dualLanguageLink: x.dualLanguageLink,
-              uprn: 0,
+              uprn: propertyData.uprn && propertyData.uprn > 0 ? propertyData.uprn : 0,
               logicalStatus: x.logicalStatus,
               paoStartSuffix: x.paoStartSuffix,
               paoEndSuffix: x.paoEndSuffix,

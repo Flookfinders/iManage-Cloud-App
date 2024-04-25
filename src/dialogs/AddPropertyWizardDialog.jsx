@@ -33,6 +33,7 @@
 //    020   27.03.24 Sean Flook                 Added a tooltip to the close button.
 //    021   27.03.24 Sean Flook                 Changes required to remove warnings.
 //    022   22.04.24 Sean Flook       IMANN-374 Disable the buttons when creating the properties.
+//    023   24.04.24 Sean Flook       IMANN-390 Get the list of new UPRNs from the API before creating the properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -76,7 +77,7 @@ import WizardFinalisePage from "../pages/WizardFinalisePage";
 import WizardFinaliseDialog from "./WizardFinaliseDialog";
 import MessageDialog from "./MessageDialog";
 
-import { GetPropertyFromUPRNUrl } from "../configuration/ADSConfig";
+import { GetListOfUprnsUrl, GetPropertyFromUPRNUrl } from "../configuration/ADSConfig";
 import { stringToSentenceCase } from "../utils/HelperUtils";
 import { streetDescriptorToTitleCase } from "../utils/StreetUtils";
 import { ValidateAddressDetails, ValidateCrossReference, ValidatePropertyDetails } from "../utils/WizardValidation";
@@ -222,7 +223,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
    *
    * @returns {Array} A list of the new properties.
    */
-  const getPropertyData = () => {
+  const getPropertyData = async () => {
     if (addressPoints) {
       const newProperties = [];
       const newErrorIds = [];
@@ -231,285 +232,326 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
       let notePkId = -10;
       let dualLanguageLink = 0;
 
-      for (const address of addressPoints.filter((x) => x.language === "ENG")) {
-        const newCrossRefs = [];
-        const newClassifications = [];
-        const newProvenances = [];
-        const newNotes = [];
-        const newLpis = [];
+      const getNewUprnsUrl = GetListOfUprnsUrl(userContext.currentUser.token);
+      const newUprnCount = addressPoints.filter((x) => x.language === "ENG").length;
+      let haveEnoughUprns = true;
 
-        dualLanguageLink++;
+      const newUprns = await fetch(`${getNewUprnsUrl.url}/${newUprnCount}`, {
+        headers: getNewUprnsUrl.headers,
+        crossDomain: true,
+        method: getNewUprnsUrl.type,
+      })
+        .then((res) => (res.ok ? res : Promise.reject(res)))
+        .then((res) => {
+          switch (res.status) {
+            case 200:
+              return res.json();
 
-        const engPostTownRecord = lookupContext.currentLookups.postTowns.find(
-          (x) => x.postTownRef === address.addressDetails.postTownRef
-        );
-        const subLocalityRecord = settingsContext.isScottish
-          ? lookupContext.currentLookups.subLocalities.find(
-              (x) => x.subLocalityRef === address.addressDetails.subLocalityRef
-            )
-          : null;
-        const postcodeRecord = lookupContext.currentLookups.postcodes.find(
-          (x) => x.postcodeRef === address.addressDetails.postcodeRef
-        );
+            default:
+              haveEnoughUprns = false;
+              return [];
+          }
+        })
+        .then((result) => {
+          if (Array.isArray(result)) {
+            if (result.length > 1)
+              return result.sort((a, b) => {
+                return b - a;
+              });
+            else return result;
+          } else return [result];
+        })
+        .catch((res) => {
+          haveEnoughUprns = false;
+          return [];
+        });
 
-        if (settingsContext.isScottish)
-          newLpis.push({
-            pkId: lpiPkId--,
-            changeType: "I",
-            language: "ENG",
-            startDate: address.lpi.startDate,
-            endDate: null,
-            saoStartNumber:
-              address.addressDetails.saoStartNumber && Number(address.addressDetails.saoStartNumber) > 0
-                ? address.addressDetails.saoStartNumber
-                : null,
-            saoStartSuffix: address.addressDetails.saoStartSuffix,
-            saoEndNumber:
-              address.addressDetails.saoEndNumber && Number(address.addressDetails.saoEndNumber) > 0
-                ? address.addressDetails.saoEndNumber
-                : null,
-            saoEndSuffix: address.addressDetails.saoEndSuffix,
-            saoText: address.addressDetails.saoText,
-            paoStartNumber:
-              address.addressDetails.paoStartNumber && Number(address.addressDetails.paoStartNumber) > 0
-                ? address.addressDetails.paoStartNumber
-                : null,
-            paoStartSuffix: address.addressDetails.paoStartSuffix,
-            paoEndNumber:
-              address.addressDetails.paoEndNumber && Number(address.addressDetails.paoEndNumber) > 0
-                ? address.addressDetails.paoEndNumber
-                : null,
-            paoEndSuffix: address.addressDetails.paoEndSuffix,
-            paoText: address.addressDetails.paoText,
-            usrn: address.addressDetails.usrn,
-            postcodeRef: address.addressDetails.postcodeRef,
-            postTownRef: address.addressDetails.postTownRef,
-            subLocalityRef: address.addressDetails.subLocalityRef,
-            neverExport: false,
-            address: address.addressDetails.address,
-            postTown: engPostTownRecord ? engPostTownRecord.postTown : null,
-            subLocality: subLocalityRecord ? subLocalityRecord.subLocality : null,
-            postcode: postcodeRecord ? postcodeRecord.postcode : null,
-            uprn: 0,
-            logicalStatus: address.lpi.logicalStatus,
-            postallyAddressable: address.lpi.postallyAddressable,
-            officialFlag: address.lpi.officialAddress,
-            dualLanguageLink: 0,
-          });
-        else
-          newLpis.push({
-            pkId: lpiPkId--,
-            changeType: "I",
-            language: "ENG",
-            startDate: address.lpi.startDate,
-            endDate: null,
-            saoStartNumber:
-              address.addressDetails.saoStartNumber && Number(address.addressDetails.saoStartNumber) > 0
-                ? address.addressDetails.saoStartNumber
-                : null,
-            saoStartSuffix: address.addressDetails.saoStartSuffix,
-            saoEndNumber:
-              address.addressDetails.saoEndNumber && Number(address.addressDetails.saoEndNumber) > 0
-                ? address.addressDetails.saoEndNumber
-                : null,
-            saoEndSuffix: address.addressDetails.saoEndSuffix,
-            saoText: address.addressDetails.saoText,
-            paoStartNumber:
-              address.addressDetails.paoStartNumber && Number(address.addressDetails.paoStartNumber) > 0
-                ? address.addressDetails.paoStartNumber
-                : null,
-            paoStartSuffix: address.addressDetails.paoStartSuffix,
-            paoEndNumber:
-              address.addressDetails.paoEndNumber && Number(address.addressDetails.paoEndNumber) > 0
-                ? address.addressDetails.paoEndNumber
-                : null,
-            paoEndSuffix: address.addressDetails.paoEndSuffix,
-            paoText: address.addressDetails.paoText,
-            usrn: address.addressDetails.usrn,
-            postcodeRef: address.addressDetails.postcodeRef,
-            postTownRef: address.addressDetails.postTownRef,
-            neverExport: false,
-            address: address.addressDetails.address,
-            postTown: engPostTownRecord ? engPostTownRecord.postTown : null,
-            postcode: postcodeRecord ? postcodeRecord.postcode : null,
-            uprn: 0,
-            logicalStatus: address.lpi.logicalStatus,
-            level: settingsContext.isScottish ? address.blpu.level : address.lpi.level,
-            postalAddress: address.lpi.postallyAddressable,
-            officialFlag: address.lpi.officialAddress,
-            dualLanguageLink: settingsContext.isWelsh ? dualLanguageLink : 0,
-          });
+      if (haveEnoughUprns) haveEnoughUprns = newUprns && newUprns.length && newUprns.length === newUprnCount;
 
-        if (settingsContext.isWelsh) {
-          const cymPostTownRecord = lookupContext.currentLookups.postTowns.find(
-            (x) => x.linkedRef === address.addressDetails.postTownRef
+      if (haveEnoughUprns) {
+        for (const address of addressPoints.filter((x) => x.language === "ENG")) {
+          const newCrossRefs = [];
+          const newClassifications = [];
+          const newProvenances = [];
+          const newNotes = [];
+          const newLpis = [];
+          const newUprn = newUprns.pop();
+
+          dualLanguageLink++;
+
+          const engPostTownRecord = lookupContext.currentLookups.postTowns.find(
+            (x) => x.postTownRef === address.addressDetails.postTownRef
+          );
+          const subLocalityRecord = settingsContext.isScottish
+            ? lookupContext.currentLookups.subLocalities.find(
+                (x) => x.subLocalityRef === address.addressDetails.subLocalityRef
+              )
+            : null;
+          const postcodeRecord = lookupContext.currentLookups.postcodes.find(
+            (x) => x.postcodeRef === address.addressDetails.postcodeRef
           );
 
-          const cymRecord = addressPoints.find((x) => x.id === `CYM_${address.addressDetails.id}`);
-
-          if (cymRecord)
+          if (settingsContext.isScottish)
             newLpis.push({
               pkId: lpiPkId--,
               changeType: "I",
-              language: "CYM",
-              startDate: cymRecord.lpi.startDate,
+              language: "ENG",
+              startDate: address.lpi.startDate,
               endDate: null,
               saoStartNumber:
-                cymRecord.addressDetails.saoStartNumber && Number(cymRecord.addressDetails.saoStartNumber) > 0
-                  ? cymRecord.addressDetails.saoStartNumber
+                address.addressDetails.saoStartNumber && Number(address.addressDetails.saoStartNumber) > 0
+                  ? address.addressDetails.saoStartNumber
                   : null,
-              saoStartSuffix: cymRecord.addressDetails.saoStartSuffix,
+              saoStartSuffix: address.addressDetails.saoStartSuffix,
               saoEndNumber:
-                cymRecord.addressDetails.saoEndNumber && Number(cymRecord.addressDetails.saoEndNumber) > 0
-                  ? cymRecord.addressDetails.saoEndNumber
+                address.addressDetails.saoEndNumber && Number(address.addressDetails.saoEndNumber) > 0
+                  ? address.addressDetails.saoEndNumber
                   : null,
-              saoEndSuffix: cymRecord.addressDetails.saoEndSuffix,
-              saoText: cymRecord.addressDetails.saoText,
+              saoEndSuffix: address.addressDetails.saoEndSuffix,
+              saoText: address.addressDetails.saoText,
               paoStartNumber:
-                cymRecord.addressDetails.paoStartNumber && Number(cymRecord.addressDetails.paoStartNumber) > 0
-                  ? cymRecord.addressDetails.paoStartNumber
+                address.addressDetails.paoStartNumber && Number(address.addressDetails.paoStartNumber) > 0
+                  ? address.addressDetails.paoStartNumber
                   : null,
-              paoStartSuffix: cymRecord.addressDetails.paoStartSuffix,
+              paoStartSuffix: address.addressDetails.paoStartSuffix,
               paoEndNumber:
-                cymRecord.addressDetails.paoEndNumber && Number(cymRecord.addressDetails.paoEndNumber) > 0
-                  ? cymRecord.addressDetails.paoEndNumber
+                address.addressDetails.paoEndNumber && Number(address.addressDetails.paoEndNumber) > 0
+                  ? address.addressDetails.paoEndNumber
                   : null,
-              paoEndSuffix: cymRecord.addressDetails.paoEndSuffix,
-              paoText: cymRecord.addressDetails.paoText,
-              usrn: cymRecord.addressDetails.usrn,
-              postcodeRef: cymRecord.addressDetails.postcodeRef,
-              postTownRef: cymRecord.addressDetails.postTownRef,
+              paoEndSuffix: address.addressDetails.paoEndSuffix,
+              paoText: address.addressDetails.paoText,
+              usrn: address.addressDetails.usrn,
+              postcodeRef: address.addressDetails.postcodeRef,
+              postTownRef: address.addressDetails.postTownRef,
+              subLocalityRef: address.addressDetails.subLocalityRef,
               neverExport: false,
-              address: cymRecord.addressDetails.address,
-              postTown: cymPostTownRecord ? cymPostTownRecord.postTown : null,
+              address: address.addressDetails.address,
+              postTown: engPostTownRecord ? engPostTownRecord.postTown : null,
+              subLocality: subLocalityRecord ? subLocalityRecord.subLocality : null,
               postcode: postcodeRecord ? postcodeRecord.postcode : null,
               uprn: 0,
-              logicalStatus: cymRecord.lpi.logicalStatus,
-              level: cymRecord.lpi.level,
-              postalAddress: cymRecord.lpi.postallyAddressable,
-              officialFlag: cymRecord.lpi.officialAddress,
-              dualLanguageLink: dualLanguageLink,
+              logicalStatus: address.lpi.logicalStatus,
+              postallyAddressable: address.lpi.postallyAddressable,
+              officialFlag: address.lpi.officialAddress,
+              dualLanguageLink: 0,
             });
-        }
+          else
+            newLpis.push({
+              pkId: lpiPkId--,
+              changeType: "I",
+              language: "ENG",
+              startDate: address.lpi.startDate,
+              endDate: null,
+              saoStartNumber:
+                address.addressDetails.saoStartNumber && Number(address.addressDetails.saoStartNumber) > 0
+                  ? address.addressDetails.saoStartNumber
+                  : null,
+              saoStartSuffix: address.addressDetails.saoStartSuffix,
+              saoEndNumber:
+                address.addressDetails.saoEndNumber && Number(address.addressDetails.saoEndNumber) > 0
+                  ? address.addressDetails.saoEndNumber
+                  : null,
+              saoEndSuffix: address.addressDetails.saoEndSuffix,
+              saoText: address.addressDetails.saoText,
+              paoStartNumber:
+                address.addressDetails.paoStartNumber && Number(address.addressDetails.paoStartNumber) > 0
+                  ? address.addressDetails.paoStartNumber
+                  : null,
+              paoStartSuffix: address.addressDetails.paoStartSuffix,
+              paoEndNumber:
+                address.addressDetails.paoEndNumber && Number(address.addressDetails.paoEndNumber) > 0
+                  ? address.addressDetails.paoEndNumber
+                  : null,
+              paoEndSuffix: address.addressDetails.paoEndSuffix,
+              paoText: address.addressDetails.paoText,
+              usrn: address.addressDetails.usrn,
+              postcodeRef: address.addressDetails.postcodeRef,
+              postTownRef: address.addressDetails.postTownRef,
+              neverExport: false,
+              address: address.addressDetails.address,
+              postTown: engPostTownRecord ? engPostTownRecord.postTown : null,
+              postcode: postcodeRecord ? postcodeRecord.postcode : null,
+              uprn: 0,
+              logicalStatus: address.lpi.logicalStatus,
+              level: settingsContext.isScottish ? address.blpu.level : address.lpi.level,
+              postalAddress: address.lpi.postallyAddressable,
+              officialFlag: address.lpi.officialAddress,
+              dualLanguageLink: settingsContext.isWelsh ? dualLanguageLink : 0,
+            });
 
-        if (crossReferenceData && crossReferenceData.length > 0) {
-          for (const crossReference of crossReferenceData) {
-            newCrossRefs.push({
+          if (settingsContext.isWelsh) {
+            const cymPostTownRecord = lookupContext.currentLookups.postTowns.find(
+              (x) => x.linkedRef === address.addressDetails.postTownRef
+            );
+
+            const cymRecord = addressPoints.find((x) => x.id === `CYM_${address.addressDetails.id}`);
+
+            if (cymRecord)
+              newLpis.push({
+                pkId: lpiPkId--,
+                changeType: "I",
+                language: "CYM",
+                startDate: cymRecord.lpi.startDate,
+                endDate: null,
+                saoStartNumber:
+                  cymRecord.addressDetails.saoStartNumber && Number(cymRecord.addressDetails.saoStartNumber) > 0
+                    ? cymRecord.addressDetails.saoStartNumber
+                    : null,
+                saoStartSuffix: cymRecord.addressDetails.saoStartSuffix,
+                saoEndNumber:
+                  cymRecord.addressDetails.saoEndNumber && Number(cymRecord.addressDetails.saoEndNumber) > 0
+                    ? cymRecord.addressDetails.saoEndNumber
+                    : null,
+                saoEndSuffix: cymRecord.addressDetails.saoEndSuffix,
+                saoText: cymRecord.addressDetails.saoText,
+                paoStartNumber:
+                  cymRecord.addressDetails.paoStartNumber && Number(cymRecord.addressDetails.paoStartNumber) > 0
+                    ? cymRecord.addressDetails.paoStartNumber
+                    : null,
+                paoStartSuffix: cymRecord.addressDetails.paoStartSuffix,
+                paoEndNumber:
+                  cymRecord.addressDetails.paoEndNumber && Number(cymRecord.addressDetails.paoEndNumber) > 0
+                    ? cymRecord.addressDetails.paoEndNumber
+                    : null,
+                paoEndSuffix: cymRecord.addressDetails.paoEndSuffix,
+                paoText: cymRecord.addressDetails.paoText,
+                usrn: cymRecord.addressDetails.usrn,
+                postcodeRef: cymRecord.addressDetails.postcodeRef,
+                postTownRef: cymRecord.addressDetails.postTownRef,
+                neverExport: false,
+                address: cymRecord.addressDetails.address,
+                postTown: cymPostTownRecord ? cymPostTownRecord.postTown : null,
+                postcode: postcodeRecord ? postcodeRecord.postcode : null,
+                uprn: 0,
+                logicalStatus: cymRecord.lpi.logicalStatus,
+                level: cymRecord.lpi.level,
+                postalAddress: cymRecord.lpi.postallyAddressable,
+                officialFlag: cymRecord.lpi.officialAddress,
+                dualLanguageLink: dualLanguageLink,
+              });
+          }
+
+          if (crossReferenceData && crossReferenceData.length > 0) {
+            for (const crossReference of crossReferenceData) {
+              newCrossRefs.push({
+                changeType: "I",
+                uprn: 0,
+                startDate: crossReference.startDate,
+                endDate: null,
+                crossReference: crossReference.crossReference,
+                sourceId: crossReference.sourceId,
+                source: null,
+                neverExport: false,
+              });
+            }
+          }
+
+          if (settingsContext.isScottish && address.classification) {
+            newClassifications.push({
               changeType: "I",
               uprn: 0,
-              startDate: crossReference.startDate,
+              classificationScheme: address.classification.classificationScheme,
+              blpuClass: address.classification.classification,
+              startDate: address.classification.startDate,
               endDate: null,
-              crossReference: crossReference.crossReference,
-              sourceId: crossReference.sourceId,
-              source: null,
               neverExport: false,
             });
           }
-        }
 
-        if (settingsContext.isScottish && address.classification) {
-          newClassifications.push({
-            changeType: "I",
-            uprn: 0,
-            classificationScheme: address.classification.classificationScheme,
-            blpuClass: address.classification.classification,
-            startDate: address.classification.startDate,
-            endDate: null,
-            neverExport: false,
-          });
-        }
+          if (address.other) {
+            if (address.other.provCode)
+              newProvenances.push({
+                changeType: "I",
+                uprn: 0,
+                provenanceCode: address.other.provCode,
+                annotation: null,
+                startDate: address.other.provStartDate,
+                endDate: null,
+                neverExport: false,
+                wktGeometry: null,
+              });
 
-        if (address.other) {
-          if (address.other.provCode)
-            newProvenances.push({
-              changeType: "I",
-              uprn: 0,
-              provenanceCode: address.other.provCode,
-              annotation: null,
-              startDate: address.other.provStartDate,
-              endDate: null,
-              neverExport: false,
-              wktGeometry: null,
-            });
-
-          if (address.other.note) {
-            if (Array.isArray(address.other.note)) {
-              for (const singleNote of address.other.note) {
+            if (address.other.note) {
+              if (Array.isArray(address.other.note)) {
+                for (const singleNote of address.other.note) {
+                  newNotes.push({
+                    pkId: notePkId--,
+                    changeType: "I",
+                    uprn: 0,
+                    note: singleNote,
+                  });
+                }
+              } else
                 newNotes.push({
                   pkId: notePkId--,
                   changeType: "I",
                   uprn: 0,
-                  note: singleNote,
+                  note: address.other.note,
                 });
-              }
-            } else
-              newNotes.push({
-                pkId: notePkId--,
-                changeType: "I",
-                uprn: 0,
-                note: address.other.note,
-              });
+            }
           }
+
+          if (settingsContext.isScottish)
+            newProperties.push({
+              pkId: blpuPkId,
+              changeType: "I",
+              blpuStateDate: address.blpu.stateDate,
+              xcoordinate: Number(address.easting),
+              ycoordinate: Number(address.northing),
+              rpc: address.blpu.rpc,
+              startDate: address.blpu.startDate,
+              endDate: null,
+              parentUprn: address.parentUprn,
+              neverExport: false,
+              siteSurvey: false,
+              uprn: newUprn && newUprn > 0 ? newUprn : 0,
+              logicalStatus: address.blpu.logicalStatus,
+              blpuState: address.blpu.state,
+              level: address.blpu.level,
+              custodianCode: settingsContext.authorityCode,
+              relatedPropertyCount: 0,
+              relatedStreetCount: 0,
+              blpuAppCrossRefs: newCrossRefs,
+              blpuProvenances: newProvenances,
+              blpuNotes: newNotes,
+              classifications: newClassifications,
+              organisations: [],
+              successorCrossRefs: [],
+              lpis: newLpis,
+            });
+          else
+            newProperties.push({
+              pkId: blpuPkId,
+              changeType: "I",
+              blpuStateDate: address.blpu.stateDate,
+              xcoordinate: Number(address.easting),
+              ycoordinate: Number(address.northing),
+              rpc: address.blpu.rpc,
+              startDate: address.blpu.startDate,
+              endDate: null,
+              parentUprn: address.parentUprn,
+              neverExport: false,
+              siteSurvey: false,
+              uprn: newUprn && newUprn > 0 ? newUprn : 0,
+              logicalStatus: address.blpu.logicalStatus,
+              blpuState: address.blpu.state,
+              blpuClass: address.blpu.classification,
+              localCustodianCode: settingsContext.authorityCode,
+              organisation: null,
+              wardCode: null,
+              parishCode: null,
+              relatedPropertyCount: 0,
+              relatedStreetCount: 0,
+              blpuAppCrossRefs: newCrossRefs,
+              blpuProvenances: newProvenances,
+              blpuNotes: newNotes,
+              lpis: newLpis,
+            });
+
+          newErrorIds.push({ pkId: blpuPkId--, addressId: address.id });
         }
-
-        if (settingsContext.isScottish)
-          newProperties.push({
-            pkId: blpuPkId,
-            changeType: "I",
-            blpuStateDate: address.blpu.stateDate,
-            xcoordinate: Number(address.easting),
-            ycoordinate: Number(address.northing),
-            rpc: address.blpu.rpc,
-            startDate: address.blpu.startDate,
-            endDate: null,
-            parentUprn: address.parentUprn,
-            neverExport: false,
-            siteSurvey: false,
-            uprn: 0,
-            logicalStatus: address.blpu.logicalStatus,
-            blpuState: address.blpu.state,
-            level: address.blpu.level,
-            custodianCode: settingsContext.authorityCode,
-            relatedPropertyCount: 0,
-            relatedStreetCount: 0,
-            blpuAppCrossRefs: newCrossRefs,
-            blpuProvenances: newProvenances,
-            blpuNotes: newNotes,
-            classifications: newClassifications,
-            organisations: [],
-            successorCrossRefs: [],
-            lpis: newLpis,
-          });
-        else
-          newProperties.push({
-            pkId: blpuPkId,
-            changeType: "I",
-            blpuStateDate: address.blpu.stateDate,
-            xcoordinate: Number(address.easting),
-            ycoordinate: Number(address.northing),
-            rpc: address.blpu.rpc,
-            startDate: address.blpu.startDate,
-            endDate: null,
-            parentUprn: address.parentUprn,
-            neverExport: false,
-            siteSurvey: false,
-            uprn: 0,
-            logicalStatus: address.blpu.logicalStatus,
-            blpuState: address.blpu.state,
-            blpuClass: address.blpu.classification,
-            localCustodianCode: settingsContext.authorityCode,
-            organisation: null,
-            wardCode: null,
-            parishCode: null,
-            relatedPropertyCount: 0,
-            relatedStreetCount: 0,
-            blpuAppCrossRefs: newCrossRefs,
-            blpuProvenances: newProvenances,
-            blpuNotes: newNotes,
-            lpis: newLpis,
-          });
-
-        newErrorIds.push({ pkId: blpuPkId--, addressId: address.id });
+      } else if (!haveEnoughUprns) {
+        // Need to communicate to user that they have run out of UPRNs
       }
 
       errorId.current = newErrorIds;
@@ -1684,7 +1726,10 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
         if (steps.length === 5) {
           createdCount.current = 0;
           failedCount.current = 0;
-          finishAndCreateProperty(getPropertyData());
+          getPropertyData().then((result) => {
+            if (result && Array.isArray(result)) finishAndCreateProperty(result);
+          });
+          // finishAndCreateProperty(getPropertyData());
         } else doNext();
         break;
 
@@ -1692,7 +1737,10 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
         createdCount.current = 0;
         failedCount.current = 0;
         setViewErrors(false);
-        finishAndCreateProperty(getPropertyData());
+        getPropertyData().then((result) => {
+          if (result && Array.isArray(result)) finishAndCreateProperty(result);
+        });
+        // finishAndCreateProperty(getPropertyData());
         break;
 
       default:

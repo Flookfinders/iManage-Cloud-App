@@ -19,6 +19,7 @@
 //    006   05.01.24 Sean Flook                 Correctly call GetApiSite.
 //    007   25.01.24 Sean Flook                 Changes required after UX review.
 //    008   09.04.24 Sean Flook                 Changes required for updated security API.
+//    009   24.04.24 Sean Flook       IMANN-390 Added new endpoint to get the list of new UPRNs used when creating new properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -425,6 +426,17 @@ export function GetCreatePropertyUrl(userToken) {
  */
 export function GetPropertyFromUPRNUrl(userToken) {
   const url = GetApiSite("main", "/api/Property");
+  return getUrl(url, "GET", "application/json", userToken);
+}
+
+/**
+ * Get the URL used to return an array of new UPRNs to be used when creating new properties.
+ *
+ * @param {string} userToken The token for the user who is calling the endpoint.
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function GetListOfUprnsUrl(userToken) {
+  const url = GetApiSite("main", "/api/Property/GetListOfUprns");
   return getUrl(url, "GET", "application/json", userToken);
 }
 
