@@ -20,6 +20,7 @@
 //    007   23.02.24 Sean Flook        ESU29_GP Updated text.
 //    008   22.03.24 Sean Flook       PRFRM5_GP Added moveSeedPoint, managePolygon & createPolygon variants.
 //    009   22.03.24 Sean Flook       PRFRM6_GP Added manageESU variant.
+//    010   25.04.24 Sean Flook                 Added propertyWizard variant.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -43,6 +44,7 @@ ADSInformationControl.propTypes = {
     "assignESUList",
     "assignESUMap",
     "divideESU",
+    "propertyWizard",
     "moveBLPU",
     "partRoadASD",
     "inexactASD",
@@ -91,6 +93,7 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
       case "divideESU":
         return "Divide ESU";
 
+      case "propertyWizard":
       case "moveBLPU":
       case "moveSeedPoint":
         return "Move BLPU seed point";
@@ -140,6 +143,9 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
       case "divideESU":
         return "Click the point on the ESU where you want to divide it.";
 
+      case "propertyWizard":
+        return "To move a seed point, click and drag it to the desired location. If needed, use the options to make additional changes. Click 'Finish' to apply the changes and create the properties.";
+
       case "moveBLPU":
         return "To move a seed point, click and drag it to the desired location. If needed, use the options to add a note or edit the RPC. Click 'Finish & Save' to apply the changes.";
 
@@ -171,6 +177,7 @@ function ADSInformationControl({ variant, hasCancel, onCancel }) {
    */
   const getControlStyle = () => {
     switch (variant) {
+      case "propertyWizard":
       case "moveBLPU":
         return {
           position: "absolute",

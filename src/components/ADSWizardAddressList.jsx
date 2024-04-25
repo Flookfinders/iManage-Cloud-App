@@ -28,6 +28,7 @@
 //    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    016   11.04.24 Sean Flook       IMANN-384 Hide information and selection control when updating.
 //    016   12.04.24 Sean Flook       IMANN-384 Clear checked when updating.
+//    017   25.04.24 Sean Flook                 Display the information control for the wizard as well.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1060,7 +1061,7 @@ function ADSWizardAddressList({
                 onClose={handleCloseSelection}
               />
             ))}
-          {haveMoveBlpu && !updating && <ADSInformationControl variant={"moveBLPU"} />}
+          {!updating && <ADSInformationControl variant={haveMoveBlpu ? "moveBLPU" : "propertyWizard"} />}
         </Stack>
       </Box>
       <Box sx={dataFormStyle(haveMoveBlpu ? "ADSWizardAddressListMoveBlpu" : "ADSWizardAddressListWizard")}>
