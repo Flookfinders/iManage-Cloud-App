@@ -49,6 +49,7 @@
 //    035   16.04.24 Sean Flook                 Added ability to select historic properties.
 //    036   22.04.24 Sean Flook       IMANN-374 Correctly call DataFormStyle.
 //    037   25.04.24 Sean Flook       IMANN-166 After putting the current property in focus do not keep doing it.
+//    038   26.04.24 Sean Flook       IMANN-166 Reset flag if the data changes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -810,6 +811,7 @@ function RelatedPropertyTab({
     if (data && data.properties) {
       setAllChecked(data.properties.length === checked.length);
       setPartialChecked(checked.length > 0 && data.properties.length > checked.length);
+      initialPropertyFocused.current = false;
     }
     setSelectionAnchorEl(checked.length > 0 ? document.getElementById("ads-related-toolbar") : null);
   }, [checked, data]);

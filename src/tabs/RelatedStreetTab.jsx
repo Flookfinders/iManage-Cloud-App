@@ -37,6 +37,7 @@
 //    024   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    025   22.04.24 Sean Flook       IMANN-374 Correctly call DataFormStyle.
 //    026   25.04.24 Sean Flook       IMANN-166 After putting the current street in focus do not keep doing it.
+//    027   26.04.24 Sean Flook       IMANN-166 Reset flag if the data changes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -702,6 +703,10 @@ function RelatedStreetTab({
   useEffect(() => {
     setStreetChecked(checked);
   }, [checked]);
+
+  useEffect(() => {
+    initialStreetFocused.current = false;
+  }, [data]);
 
   useEffect(() => {
     if (
