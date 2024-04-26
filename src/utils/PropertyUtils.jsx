@@ -44,6 +44,7 @@
 //    031   05.04.24 Sean Flook                 Correctly handle errors when creating, updating and deleting.
 //    032   24.04.24 Sean Flook       IMANN-390 When creating a new property if the UPRN is already set use that; otherwise use 0.
 //    033   25.04.24 Sean Flook       IMANN-390 Added returnFailedUprns method to return failed UPRNs back to the database.
+//    034   26.04.24 Sean Flook       IMANN-166 Refresh related after doing the save.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2184,7 +2185,6 @@ export async function UpdateRangeAfterSave(
   propertyContext.onPropertyModified(false);
   propertyContext.resetPropertyErrors();
   sandboxContext.resetSandbox("property");
-  sandboxContext.onRefreshRelated(true);
 
   const searchAddresses = [];
   let newSearchData = JSON.parse(JSON.stringify(searchContext.currentSearchData.results));
@@ -2293,6 +2293,8 @@ export async function UpdateRangeAfterSave(
 
   if (newMapSearchProperties)
     mapContext.onSearchDataChange(mapContext.currentSearchData.streets, newMapSearchProperties, null, null);
+
+  sandboxContext.onRefreshRelated(true);
 }
 
 /**
