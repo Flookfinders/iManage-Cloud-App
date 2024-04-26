@@ -52,6 +52,7 @@
 //    038   04.04.24 Sean Flook                 Changes required to handle deleting ESUs from streets and child properties from parent properties.
 //    039   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
 //    040   19.04.24 Sean Flook       IMANN-132 When adding a child or children ensure we have the parent English LPI.
+//    041   26.04.24 Sean Flook                 Added some error handling.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1017,9 +1018,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
    * @returns {object|null} The street record.
    */
   const getStreetFromId = (streetId) => {
-    const street = data.filter((x) => x.id === streetId);
-    if (street && street.length > 0) return { id: street[0].usrn, logical_status: street[0].logical_status };
-    else return null;
+    const street = data ? data.filter((x) => x.id === streetId) : null;
+    return street && street.length > 0 ? { id: street[0].usrn, logical_status: street[0].logical_status } : null;
   };
 
   /**
@@ -1029,7 +1029,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
    * @returns {object|null} The property record.
    */
   const getPropertyFromLPIKey = (lpiKey) => {
-    const property = data.find((x) => x.id === lpiKey);
+    const property = data ? data.find((x) => x.id === lpiKey) : null;
     return property ? { id: property.uprn, logical_status: property.logical_status } : null;
   };
 
@@ -1040,7 +1040,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
    * @returns {string|null} The property address.
    */
   const getAddressFromLPIKey = (lpiKey) => {
-    const property = data.find((x) => x.id === lpiKey);
+    const property = data ? data.find((x) => x.id === lpiKey) : null;
     return property ? property.formattedaddress : null;
   };
 
@@ -1051,7 +1051,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
    * @returns {array} An array of the unique selected USRNs.
    */
   const getUsrnsFromIds = (ids) => {
-    return [...new Set(data.filter((x) => ids.includes(x.id)).map((x) => x.usrn))];
+    return data ? [...new Set(data.filter((x) => ids.includes(x.id)).map((x) => x.usrn))] : [];
   };
 
   /**
@@ -1061,7 +1061,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
    * @returns {array} An array of the unique selected UPRNs.
    */
   const getUprnsFromLpiKeys = (lpiKeys) => {
-    return [...new Set(data.filter((x) => lpiKeys.includes(x.id)).map((x) => x.uprn))];
+    return data ? [...new Set(data.filter((x) => lpiKeys.includes(x.id)).map((x) => x.uprn))] : [];
   };
 
   /**
