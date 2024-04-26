@@ -22,6 +22,7 @@
 //    009   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    010   27.03.24 Sean Flook                 Added ADSDialogTitle and fixed some warnings.
 //    011   19.04.24 Sean Flook       IMANN-355 Use a dropdown list for selecting the authority.
+//    012   26.04.24 Sean Flook       IMANN-413 Removed Gaelic option.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -90,10 +91,8 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
   const [lookupType, setLookupType] = useState("unknown");
   const [engPlaceholder, setEngPlaceholder] = useState(null);
   const [cymPlaceholder, setCymPlaceholder] = useState(null);
-  const [gaePlaceholder, setGaePlaceholder] = useState(null);
   const [engValue, setEngValue] = useState("");
   const [cymValue, setCymValue] = useState("");
-  const [gaeValue, setGaeValue] = useState("");
   const [crossRefDescription, setCrossRefDescription] = useState("");
   const [crossRefSourceAuthority, setCrossRefSourceAuthority] = useState("");
   const [crossRefSourceCode, setCrossRefSourceCode] = useState("");
@@ -105,7 +104,6 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
   const [parishCode, setParishCode] = useState("");
   const [engError, setEngError] = useState("");
   const [cymError, setCymError] = useState("");
-  const [gaeError, setGaeError] = useState("");
   const [crossRefDescriptionError, setCrossRefDescriptionError] = useState("");
   const [crossRefSourceCodeError, setCrossRefSourceCodeError] = useState("");
   const [wardNameError, setWardNameError] = useState("");
@@ -175,21 +173,6 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
             }
           }
         }
-
-        if (settingsContext.isScottish) {
-          if (!gaeValue || gaeValue.length === 0) {
-            setGaeError("You cannot add an empty post town.");
-            validData = false;
-          } else {
-            const gaePostTownRecord = lookupContext.currentLookups.postTowns.find(
-              (x) => x.postTown === gaeValue && x.language === "GAE"
-            );
-            if (gaePostTownRecord) {
-              setGaeError("There is already a Gaelic entry with this post town in the table.");
-              validData = false;
-            }
-          }
-        }
         break;
 
       case "subLocality":
@@ -202,19 +185,6 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           );
           if (engSubLocalityRecord) {
             setEngError("There is already an English entry with this sub-locality in the table.");
-            validData = false;
-          }
-        }
-
-        if (!gaeValue || gaeValue.length === 0) {
-          setGaeError("You cannot add an empty sub-locality.");
-          validData = false;
-        } else {
-          const gaeSubLocalityRecord = lookupContext.currentLookups.subLocalities.find(
-            (x) => x.subLocality === gaeValue && x.language === "GAE"
-          );
-          if (gaeSubLocalityRecord) {
-            setGaeError("There is already a Gaelic entry with this sub-locality in the table.");
             validData = false;
           }
         }
@@ -276,21 +246,6 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
             }
           }
         }
-
-        if (settingsContext.isScottish) {
-          if (!gaeValue || gaeValue.length === 0) {
-            setGaeError("You cannot add an empty locality.");
-            validData = false;
-          } else {
-            const gaeLocalityRecord = lookupContext.currentLookups.localities.find(
-              (x) => x.locality === gaeValue && x.language === "GAE"
-            );
-            if (gaeLocalityRecord) {
-              setGaeError("There is already a Gaelic entry with this locality in the table.");
-              validData = false;
-            }
-          }
-        }
         break;
 
       case "town":
@@ -321,21 +276,6 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
             }
           }
         }
-
-        if (settingsContext.isScottish) {
-          if (!gaeValue || gaeValue.length === 0) {
-            setGaeError("You cannot add an empty town.");
-            validData = false;
-          } else {
-            const gaeTownRecord = lookupContext.currentLookups.towns.find(
-              (x) => x.town === gaeValue && x.language === "GAE"
-            );
-            if (gaeTownRecord) {
-              setGaeError("There is already a Gaelic entry with this town in the table.");
-              validData = false;
-            }
-          }
-        }
         break;
 
       case "island":
@@ -348,19 +288,6 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           );
           if (engIslandRecord) {
             setEngError("There is already an English entry with this island in the table.");
-            validData = false;
-          }
-        }
-
-        if (!gaeValue || gaeValue.length === 0) {
-          setGaeError("You cannot add an empty island.");
-          validData = false;
-        } else {
-          const gaeIslandRecord = lookupContext.currentLookups.islands.find(
-            (x) => x.island === gaeValue && x.language === "GAE"
-          );
-          if (gaeIslandRecord) {
-            setGaeError("There is already a Gaelic entry with this island in the table.");
             validData = false;
           }
         }
@@ -390,21 +317,6 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
             );
             if (cymAdministrativeAreaRecord) {
               setCymError("There is already a Welsh entry with this administrative area in the table.");
-              validData = false;
-            }
-          }
-        }
-
-        if (settingsContext.isScottish) {
-          if (!gaeValue || gaeValue.length === 0) {
-            setGaeError("You cannot add an empty administrative area.");
-            validData = false;
-          } else {
-            const gaeAdministrativeAreaRecord = lookupContext.currentLookups.adminAuthorities.find(
-              (x) => x.town === gaeValue && x.language === "GAE"
-            );
-            if (gaeAdministrativeAreaRecord) {
-              setGaeError("There is already a Gaelic entry with this administrative area in the table.");
               validData = false;
             }
           }
@@ -530,12 +442,12 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
       case "administrativeArea":
         return {
           variant: variant,
-          lookupData: { english: engValue, welsh: cymValue, gaelic: gaeValue, historic: false },
+          lookupData: { english: engValue, welsh: cymValue, historic: false },
         };
 
       case "subLocality":
       case "island":
-        return { variant: variant, lookupData: { english: engValue, gaelic: gaeValue, historic: false } };
+        return { variant: variant, lookupData: { english: engValue, historic: false } };
 
       case "crossReference":
         return {
@@ -619,15 +531,6 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
    */
   const onCymChange = (event) => {
     setCymValue(event.target.value);
-  };
-
-  /**
-   * Event to handle when the Scottish value changes.
-   *
-   * @param {object} event The event object.
-   */
-  const onGaeChange = (event) => {
-    setGaeValue(event.target.value);
   };
 
   /**
@@ -785,11 +688,8 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           setCymError("");
         } else if (settingsContext.isScottish) {
           setEngPlaceholder("e.g. Perth");
-          setGaePlaceholder("e.g. Peairt");
           setEngValue("");
-          setGaeValue("");
           setEngError("");
-          setGaeError("");
         } else {
           setEngPlaceholder("e.g. Woking");
           setEngValue("");
@@ -800,11 +700,8 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
       case "subLocality":
         setLookupType("sub-locality");
         setEngPlaceholder("e.g. Perth");
-        setGaePlaceholder("e.g. Peairt");
         setEngValue("");
-        setGaeValue("");
         setEngError("");
-        setGaeError("");
         break;
 
       case "crossReference":
@@ -829,11 +726,8 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           setCymError("");
         } else if (settingsContext.isScottish) {
           setEngPlaceholder("e.g. Perth");
-          setGaePlaceholder("e.g. Peairt");
           setEngValue("");
-          setGaeValue("");
           setEngError("");
-          setGaeError("");
         } else {
           setEngPlaceholder("e.g. Woking");
           setEngValue("");
@@ -852,11 +746,8 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           setCymError("");
         } else if (settingsContext.isScottish) {
           setEngPlaceholder("e.g. Perth");
-          setGaePlaceholder("e.g. Peairt");
           setEngValue("");
-          setGaeValue("");
           setEngError("");
-          setGaeError("");
         } else {
           setEngPlaceholder("e.g. Woking");
           setEngValue("");
@@ -867,11 +758,8 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
       case "island":
         setLookupType("island");
         setEngPlaceholder("e.g. Raasay");
-        setGaePlaceholder("e.g. Ratharsair");
         setEngValue("");
-        setGaeValue("");
         setEngError("");
-        setGaeError("");
         break;
 
       case "administrativeArea":
@@ -885,11 +773,8 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           setCymError("");
         } else if (settingsContext.isScottish) {
           setEngPlaceholder("e.g. Perthshire");
-          setGaePlaceholder("e.g. Siorrachd Pheairt");
           setEngValue("");
-          setGaeValue("");
           setEngError("");
-          setGaeError("");
         } else {
           setEngPlaceholder("e.g. Woking");
           setEngValue("");
@@ -938,10 +823,8 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
 
     if (errorAltLanguage) {
       setCymError(errorAltLanguage);
-      setGaeError(errorAltLanguage);
     } else {
       setCymError("");
-      setGaeError("");
     }
   }, [errorEng, errorAltLanguage]);
 
@@ -1291,7 +1174,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
                 {`${
                   variant === "postcode"
                     ? "Postcode"
-                    : !settingsContext.isWelsh && !settingsContext.isScottish
+                    : !settingsContext.isWelsh
                     ? stringToSentenceCase(lookupType)
                     : "English"
                 }`}
@@ -1347,37 +1230,6 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
                       pr: theme.spacing(1),
                     }}
                     onChange={onCymChange}
-                  />
-                </Grid>
-              </Fragment>
-            )}
-            {variant !== "postcode" && settingsContext.isScottish && (
-              <Fragment>
-                <Grid item xs={4}>
-                  <Typography variant="body1" align="right" gutterBottom>
-                    Gaelic
-                  </Typography>
-                </Grid>
-                <Grid item xs={8}>
-                  <TextField
-                    variant="outlined"
-                    error={!!gaeError}
-                    helperText={
-                      <Typography variant="caption" color={adsRed} align="left">
-                        {gaeError}
-                      </Typography>
-                    }
-                    value={gaeValue}
-                    placeholder={gaePlaceholder}
-                    fullWidth
-                    size="small"
-                    inputProps={{ maxLength: `${getMaxFieldLength()}` }}
-                    sx={{
-                      color: theme.palette.background.contrastText,
-                      pl: theme.spacing(1),
-                      pr: theme.spacing(1),
-                    }}
-                    onChange={onGaeChange}
                   />
                 </Grid>
               </Fragment>

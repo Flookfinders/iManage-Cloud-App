@@ -45,6 +45,7 @@
 //    032   09.04.24 Sean Flook       IMANN-376 Added new methods to allow for adding lookups on the fly.
 //    033   23.04.24 Sean Flook       IMANN-366 Added ability to detect the type of browser being used.
 //    034   23.04.24 Sean Flook                 Added bracketValidator.
+//    035   26.04.24 Sean Flook                 Included check for "<" & ">" in bracketValidator.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2618,12 +2619,13 @@ export const bracketValidator = (str) => {
     "{": "}",
     "[": "]",
     "(": ")",
+    "<": ">",
   };
   const characters = str.split("");
   for (let i = 0; i < characters.length; i++) {
-    if (characters[i] === "{" || characters[i] === "[" || characters[i] === "(") {
+    if (characters[i] === "{" || characters[i] === "[" || characters[i] === "(" || characters[i] === "<") {
       stack.push(characters[i]);
-    } else if (characters[i] === "}" || characters[i] === "]" || characters[i] === ")") {
+    } else if (characters[i] === "}" || characters[i] === "]" || characters[i] === ")" || characters[i] === ">") {
       let poppedValue = stack.pop();
       if (mapClosingBrackets[poppedValue] !== characters[i]) {
         return false;

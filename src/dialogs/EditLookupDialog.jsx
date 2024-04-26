@@ -24,6 +24,7 @@
 //    011   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    013   19.04.24 Sean Flook       IMANN-355 Use a dropdown list for selecting the authority.
+//    014   26.04.24 Sean Flook       IMANN-413 Removed Gaelic option.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -96,7 +97,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
   const [lookupType, setLookupType] = useState("unknown");
   const [engValue, setEngValue] = useState(null);
   const [cymValue, setCymValue] = useState(null);
-  const [gaeValue, setGaeValue] = useState(null);
   const [lookupHistoric, setLookupHistoric] = useState(false);
   const [geoPlaceCrossRef, setGeoPlaceCrossRef] = useState(false);
   const [crossRefDescription, setCrossRefDescription] = useState(null);
@@ -112,7 +112,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
   const [parishCode, setParishCode] = useState(null);
   const [engError, setEngError] = useState(null);
   const [cymError, setCymError] = useState(null);
-  const [gaeError, setGaeError] = useState(null);
   const [crossRefDescriptionError, setCrossRefDescriptionError] = useState(null);
   const [crossRefSourceCodeError, setCrossRefSourceCodeError] = useState(null);
   const [wardNameError, setWardNameError] = useState(null);
@@ -173,17 +172,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 validData = false;
               }
             }
-
-            if (settingsContext.isScottish) {
-              const gaePostTownRecord = lookupContext.currentLookups.postTowns.find(
-                (x) =>
-                  x.postTown === gaeValue && x.language === "GAE" && x.postTownRef !== currentPostTownRecord.linkedRef
-              );
-              if (gaePostTownRecord) {
-                setGaeError("There is already a Gaelic entry with this post town in the table.");
-                validData = false;
-              }
-            }
           } else {
             if (currentPostTownRecord.language === "ENG") {
               const engPostTownRecord = lookupContext.currentLookups.postTowns.find(
@@ -201,16 +189,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 );
                 if (cymPostTownRecord) {
                   setCymError("There is already a Welsh entry with this post town in the table.");
-                  validData = false;
-                }
-              }
-
-              if (settingsContext.isScottish) {
-                const gaePostTownRecord = lookupContext.currentLookups.postTowns.find(
-                  (x) => x.postTown === gaeValue && x.language === "GAE" && x.postTownRef !== lookupId
-                );
-                if (gaePostTownRecord) {
-                  setGaeError("There is already a Gaelic entry with this post town in the table.");
                   validData = false;
                 }
               }
@@ -233,17 +211,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
               setEngError("There is already an English entry with this sub-locality in the table.");
               validData = false;
             }
-
-            const gaeSubLocalityRecord = lookupContext.currentLookups.subLocalities.find(
-              (x) =>
-                x.subLocality === gaeValue &&
-                x.language === "GAE" &&
-                x.subLocalityRef !== currentSubLocalityRecord.linkedRef
-            );
-            if (gaeSubLocalityRecord) {
-              setGaeError("There is already a Gaelic entry with this sub-locality in the table.");
-              validData = false;
-            }
           } else {
             const engSubLocalityRecord = lookupContext.currentLookups.subLocalities.find(
               (x) =>
@@ -253,14 +220,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
             );
             if (engSubLocalityRecord) {
               setEngError("There is already an English entry with this sub-locality in the table.");
-              validData = false;
-            }
-
-            const gaeSubLocalityRecord = lookupContext.currentLookups.subLocalities.find(
-              (x) => x.subLocality === gaeValue && x.language === "GAE" && x.subLocalityRef !== lookupId
-            );
-            if (gaeSubLocalityRecord) {
-              setGaeError("There is already a Gaelic entry with this sub-locality in the table.");
               validData = false;
             }
           }
@@ -308,17 +267,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 validData = false;
               }
             }
-
-            if (settingsContext.isScottish) {
-              const gaeLocalityRecord = lookupContext.currentLookups.localities.find(
-                (x) =>
-                  x.locality === gaeValue && x.language === "GAE" && x.localityRef !== currentLocalityRecord.linkedRef
-              );
-              if (gaeLocalityRecord) {
-                setGaeError("There is already a Gaelic entry with this locality in the table.");
-                validData = false;
-              }
-            }
           } else {
             const engLocalityRecord = lookupContext.currentLookups.localities.find(
               (x) =>
@@ -335,16 +283,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
               );
               if (cymLocalityRecord) {
                 setCymError("There is already a Welsh entry with this locality in the table.");
-                validData = false;
-              }
-            }
-
-            if (settingsContext.isScottish) {
-              const gaeLocalityRecord = lookupContext.currentLookups.localities.find(
-                (x) => x.locality === gaeValue && x.language === "GAE" && x.localityRef !== lookupId
-              );
-              if (gaeLocalityRecord) {
-                setGaeError("There is already a Gaelic entry with this locality in the table.");
                 validData = false;
               }
             }
@@ -374,16 +312,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 validData = false;
               }
             }
-
-            if (settingsContext.isScottish) {
-              const gaeTownRecord = lookupContext.currentLookups.towns.find(
-                (x) => x.town === gaeValue && x.language === "GAE" && x.townRef !== currentTownRecord.linkedRef
-              );
-              if (gaeTownRecord) {
-                setGaeError("There is already a Gaelic entry with this town in the table.");
-                validData = false;
-              }
-            }
           } else {
             const engTownRecord = lookupContext.currentLookups.towns.find(
               (x) => x.town === engValue && x.language === "ENG" && x.townRef !== currentTownRecord.linkedRef
@@ -399,16 +327,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
               );
               if (cymTownRecord) {
                 setCymError("There is already a Welsh entry with this town in the table.");
-                validData = false;
-              }
-            }
-
-            if (settingsContext.isScottish) {
-              const gaeTownRecord = lookupContext.currentLookups.towns.find(
-                (x) => x.town === gaeValue && x.language === "GAE" && x.townRef !== lookupId
-              );
-              if (gaeTownRecord) {
-                setGaeError("There is already a Gaelic entry with this town in the table.");
                 validData = false;
               }
             }
@@ -428,28 +346,12 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
               setEngError("There is already an English entry with this island in the table.");
               validData = false;
             }
-
-            const gaeIslandRecord = lookupContext.currentLookups.islands.find(
-              (x) => x.island === gaeValue && x.language === "GAE" && x.islandRef !== currentIslandRecord.linkedRef
-            );
-            if (gaeIslandRecord) {
-              setGaeError("There is already a Gaelic entry with this island in the table.");
-              validData = false;
-            }
           } else {
             const engIslandRecord = lookupContext.currentLookups.islands.find(
               (x) => x.island === engValue && x.language === "ENG" && x.islandRef !== currentIslandRecord.linkedRef
             );
             if (engIslandRecord) {
               setEngError("There is already an English entry with this island in the table.");
-              validData = false;
-            }
-
-            const gaeIslandRecord = lookupContext.currentLookups.islands.find(
-              (x) => x.island === gaeValue && x.language === "GAE" && x.islandRef !== lookupId
-            );
-            if (gaeIslandRecord) {
-              setGaeError("There is already a Gaelic entry with this island in the table.");
               validData = false;
             }
           }
@@ -483,19 +385,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 validData = false;
               }
             }
-
-            if (settingsContext.isScottish) {
-              const gaeAdministrativeAreaRecord = lookupContext.currentLookups.adminAuthorities.find(
-                (x) =>
-                  x.town === gaeValue &&
-                  x.language === "GAE" &&
-                  x.administrativeAreaRef !== currentAdministrativeAreaRecord.linkedRef
-              );
-              if (gaeAdministrativeAreaRecord) {
-                setGaeError("There is already a Gaelic entry with this administrative area in the table.");
-                validData = false;
-              }
-            }
           } else {
             const engAdministrativeAreaRecord = lookupContext.currentLookups.adminAuthorities.find(
               (x) =>
@@ -514,16 +403,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
               );
               if (cymAdministrativeAreaRecord) {
                 setCymError("There is already a Welsh entry with this administrative area in the table.");
-                validData = false;
-              }
-            }
-
-            if (settingsContext.isScottish) {
-              const gaeAdministrativeAreaRecord = lookupContext.currentLookups.adminAuthorities.find(
-                (x) => x.town === gaeValue && x.language === "GAE" && x.administrativeAreaRef !== lookupId
-              );
-              if (gaeAdministrativeAreaRecord) {
-                setGaeError("There is already a Gaelic entry with this administrative area in the table.");
                 validData = false;
               }
             }
@@ -625,15 +504,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 oldCymPostTownRecord.postTown !== cymValue ||
                 oldPostTownRecord.historic !== lookupHistoric ||
                 oldCymPostTownRecord.historic !== lookupHistoric;
-            } else if (settingsContext.isScottish) {
-              const oldGaePostTownRecord = lookupContext.currentLookups.postTowns.find(
-                (x) => x.postTownRef === oldPostTownRecord.linkedRef
-              );
-              dataChanged =
-                oldPostTownRecord.postTown !== engValue ||
-                oldGaePostTownRecord.postTown !== gaeValue ||
-                oldPostTownRecord.historic !== lookupHistoric ||
-                oldGaePostTownRecord.historic !== lookupHistoric;
             } else {
               dataChanged = oldPostTownRecord.postTown !== engValue || oldPostTownRecord.historic !== lookupHistoric;
             }
@@ -650,7 +520,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
             } else {
               dataChanged =
                 oldEngPostTownRecord.postTown !== engValue ||
-                oldPostTownRecord.postTown !== gaeValue ||
                 oldPostTownRecord.historic !== lookupHistoric ||
                 oldEngPostTownRecord.historic !== lookupHistoric;
             }
@@ -664,21 +533,14 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
         );
         if (oldSubLocalityRecord) {
           if (oldSubLocalityRecord.language === "ENG") {
-            const oldGaeSubLocalityRecord = lookupContext.currentLookups.subLocalities.find(
-              (x) => x.subLocalityRef === oldSubLocalityRecord.linkedRef
-            );
             dataChanged =
-              oldSubLocalityRecord.subLocality !== engValue ||
-              oldGaeSubLocalityRecord.subLocality !== gaeValue ||
-              oldSubLocalityRecord.historic !== lookupHistoric ||
-              oldGaeSubLocalityRecord !== lookupHistoric;
+              oldSubLocalityRecord.subLocality !== engValue || oldSubLocalityRecord.historic !== lookupHistoric;
           } else {
             const oldEngSubLocalityRecord = lookupContext.currentLookups.subLocalities.find(
               (x) => x.subLocalityRef === oldSubLocalityRecord.linkedRef
             );
             dataChanged =
               oldEngSubLocalityRecord.subLocality !== engValue ||
-              oldSubLocalityRecord.subLocality !== gaeValue ||
               oldSubLocalityRecord.historic !== lookupHistoric ||
               oldEngSubLocalityRecord !== lookupHistoric;
           }
@@ -708,15 +570,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 oldCymLocalityRecord.locality !== cymValue ||
                 oldLocalityRecord.historic !== lookupHistoric ||
                 oldCymLocalityRecord !== lookupHistoric;
-            } else if (settingsContext.isScottish) {
-              const oldGaeLocalityRecord = lookupContext.currentLookups.localities.find(
-                (x) => x.localityRef === oldLocalityRecord.linkedRef
-              );
-              dataChanged =
-                oldLocalityRecord.locality !== engValue ||
-                oldGaeLocalityRecord.locality !== gaeValue ||
-                oldLocalityRecord.historic !== lookupHistoric ||
-                oldGaeLocalityRecord !== lookupHistoric;
             } else {
               dataChanged = oldLocalityRecord.locality !== engValue || oldLocalityRecord.historic !== lookupHistoric;
             }
@@ -728,12 +581,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
               dataChanged =
                 oldEngLocalityRecord.locality !== engValue ||
                 oldLocalityRecord.locality !== cymValue ||
-                oldLocalityRecord.historic !== lookupHistoric ||
-                oldEngLocalityRecord !== lookupHistoric;
-            } else if (settingsContext.isScottish) {
-              dataChanged =
-                oldEngLocalityRecord.locality !== engValue ||
-                oldLocalityRecord.locality !== gaeValue ||
                 oldLocalityRecord.historic !== lookupHistoric ||
                 oldEngLocalityRecord !== lookupHistoric;
             } else {
@@ -759,15 +606,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 oldCymTownRecord.town !== cymValue ||
                 oldTownRecord.historic !== lookupHistoric ||
                 oldCymTownRecord.historic !== lookupHistoric;
-            } else if (settingsContext.isScottish) {
-              const oldGaeTownRecord = lookupContext.currentLookups.towns.find(
-                (x) => x.townRef === oldTownRecord.linkedRef
-              );
-              dataChanged =
-                oldTownRecord.town !== engValue ||
-                oldGaeTownRecord.town !== gaeValue ||
-                oldTownRecord.historic !== lookupHistoric ||
-                oldGaeTownRecord.historic !== lookupHistoric;
             } else {
               dataChanged = oldTownRecord.town !== engValue || oldTownRecord.historic !== lookupHistoric;
             }
@@ -781,12 +619,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 oldTownRecord.town !== cymValue ||
                 oldTownRecord.historic !== lookupHistoric ||
                 oldEngTownRecord.historic !== lookupHistoric;
-            } else if (settingsContext.isScottish) {
-              dataChanged =
-                oldEngTownRecord.town !== engValue ||
-                oldTownRecord.town !== gaeValue ||
-                oldTownRecord.historic !== lookupHistoric ||
-                oldEngTownRecord.historic !== lookupHistoric;
             } else {
               dataChanged = oldEngTownRecord.town !== engValue || oldEngTownRecord.historic !== lookupHistoric;
             }
@@ -798,21 +630,13 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
         const oldIslandRecord = lookupContext.currentLookups.islands.find((x) => x.islandRef === lookupId);
         if (oldIslandRecord) {
           if (oldIslandRecord.language === "ENG") {
-            const oldGaeIslandRecord = lookupContext.currentLookups.islands.find(
-              (x) => x.islandRef === oldIslandRecord.linkedRef
-            );
-            dataChanged =
-              oldIslandRecord.island !== engValue ||
-              oldGaeIslandRecord.island !== gaeValue ||
-              oldIslandRecord.historic !== lookupHistoric ||
-              oldGaeIslandRecord.historic !== lookupHistoric;
+            dataChanged = oldIslandRecord.island !== engValue || oldIslandRecord.historic !== lookupHistoric;
           } else {
             const oldEngIslandRecord = lookupContext.currentLookups.islands.find(
               (x) => x.islandRef === oldIslandRecord.linkedRef
             );
             dataChanged =
               oldEngIslandRecord.island !== engValue ||
-              oldIslandRecord.island !== gaeValue ||
               oldIslandRecord.historic !== lookupHistoric ||
               oldEngIslandRecord.historic !== lookupHistoric;
           }
@@ -834,15 +658,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 oldCymAdministrativeAreaRecord.administrativeArea !== cymValue ||
                 oldAdministrativeAreaRecord.historic !== lookupHistoric ||
                 oldCymAdministrativeAreaRecord.historic !== lookupHistoric;
-            } else if (settingsContext.isScottish) {
-              const oldGaeAdministrativeAreaRecord = lookupContext.currentLookups.adminAuthorities.find(
-                (x) => x.administrativeAreaRef === oldAdministrativeAreaRecord.linkedRef
-              );
-              dataChanged =
-                oldAdministrativeAreaRecord.administrativeArea !== engValue ||
-                oldGaeAdministrativeAreaRecord.administrativeArea !== gaeValue ||
-                oldAdministrativeAreaRecord.historic !== lookupHistoric ||
-                oldGaeAdministrativeAreaRecord.historic !== lookupHistoric;
             } else {
               dataChanged =
                 oldAdministrativeAreaRecord.administrativeArea !== engValue ||
@@ -861,7 +676,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
             } else {
               dataChanged =
                 oldEngAdministrativeAreaRecord.administrativeArea !== engValue ||
-                oldAdministrativeAreaRecord.administrativeArea !== gaeValue ||
                 oldAdministrativeAreaRecord.historic !== lookupHistoric ||
                 oldEngAdministrativeAreaRecord.historic !== lookupHistoric;
             }
@@ -923,7 +737,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
             lookupId: lookupId,
             english: engValue,
             welsh: cymValue,
-            gaelic: gaeValue,
             historic: lookupHistoric,
           },
         };
@@ -932,7 +745,7 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
       case "island":
         return {
           variant: variant,
-          lookupData: { lookupId: lookupId, english: engValue, gaelic: gaeValue, historic: lookupHistoric },
+          lookupData: { lookupId: lookupId, english: engValue, historic: lookupHistoric },
         };
 
       case "crossReference":
@@ -1025,15 +838,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
    */
   const onCymChange = (event) => {
     setCymValue(event.target.value);
-  };
-
-  /**
-   * Event to handle when the Scottish value changes.
-   *
-   * @param {object} event The event object.
-   */
-  const onGaeChange = (event) => {
-    setGaeValue(event.target.value);
   };
 
   /**
@@ -1225,27 +1029,16 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 if (cymPostTown) setCymValue(cymPostTown.postTown);
                 else setCymValue(null);
               }
-            } else if (settingsContext.isScottish) {
-              if (postTownRecord.language === "GAE") setGaeValue(postTownRecord.postTown);
-              else {
-                const gaePostTown = lookupContext.currentLookups.postTowns.find(
-                  (x) => x.postTownRef === postTownRecord.linkedRef && x.language === "GAE"
-                );
-                if (gaePostTown) setGaeValue(gaePostTown.postTown);
-                else setGaeValue(null);
-              }
             }
             setLookupHistoric(postTownRecord.historic);
           } else {
             setEngValue(null);
             if (settingsContext.isWelsh) setCymValue(null);
-            else if (settingsContext.isScottish) setGaeValue(null);
             setLookupHistoric(false);
           }
         } else {
           setEngValue(null);
           if (settingsContext.isWelsh) setCymValue(null);
-          else if (settingsContext.isScottish) setGaeValue(null);
           setLookupHistoric(false);
         }
         break;
@@ -1266,23 +1059,13 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
               else setEngValue(null);
             }
 
-            if (subLocalityRecord.language === "GAE") setGaeValue(subLocalityRecord.subLocality);
-            else {
-              const gaeSubLocality = lookupContext.currentLookups.subLocalities.find(
-                (x) => x.subLocality === subLocalityRecord.linkedRef && x.language === "GAE"
-              );
-              if (gaeSubLocality) setGaeValue(gaeSubLocality.subLocality);
-              else setGaeValue(null);
-            }
             setLookupHistoric(subLocalityRecord.historic);
           } else {
             setEngValue(null);
-            setGaeValue(null);
             setLookupHistoric(false);
           }
         } else {
           setEngValue(null);
-          setGaeValue(null);
           setLookupHistoric(false);
         }
         break;
@@ -1346,27 +1129,16 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 if (cymLocality) setCymValue(cymLocality.locality);
                 else setCymValue(null);
               }
-            } else if (settingsContext.isScottish) {
-              if (localityRecord.language === "GAE") setGaeValue(localityRecord.locality);
-              else {
-                const gaeLocality = lookupContext.currentLookups.localities.find(
-                  (x) => x.localityRef === localityRecord.linkedRef && x.language === "GAE"
-                );
-                if (gaeLocality) setGaeValue(gaeLocality.locality);
-                else setGaeValue(null);
-              }
             }
             setLookupHistoric(localityRecord.historic);
           } else {
             setEngValue(null);
             if (settingsContext.isWelsh) setCymValue(null);
-            else if (settingsContext.isScottish) setGaeValue(null);
             setLookupHistoric(false);
           }
         } else {
           setEngValue(null);
           if (settingsContext.isWelsh) setCymValue(null);
-          else if (settingsContext.isScottish) setGaeValue(null);
           setLookupHistoric(false);
         }
         break;
@@ -1394,27 +1166,16 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 if (cymTown) setCymValue(cymTown.town);
                 else setCymValue(null);
               }
-            } else if (settingsContext.isScottish) {
-              if (townRecord.language === "GAE") setGaeValue(townRecord.town);
-              else {
-                const gaeTown = lookupContext.currentLookups.towns.find(
-                  (x) => x.townRef === townRecord.linkedRef && x.language === "GAE"
-                );
-                if (gaeTown) setGaeValue(gaeTown.town);
-                else setGaeValue(null);
-              }
             }
             setLookupHistoric(townRecord.historic);
           } else {
             setEngValue(null);
             if (settingsContext.isWelsh) setCymValue(null);
-            else if (settingsContext.isScottish) setGaeValue(null);
             setLookupHistoric(false);
           }
         } else {
           setEngValue(null);
           if (settingsContext.isWelsh) setCymValue(null);
-          else if (settingsContext.isScottish) setGaeValue(null);
           setLookupHistoric(false);
         }
         break;
@@ -1433,23 +1194,13 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
               else setEngValue(null);
             }
 
-            if (islandRecord.language === "GAE") setGaeValue(islandRecord.island);
-            else {
-              const gaeIsland = lookupContext.currentLookups.islands.find(
-                (x) => x.islandRef === islandRecord.linkedRef && x.language === "GAE"
-              );
-              if (gaeIsland) setGaeValue(gaeIsland.island);
-              else setGaeValue(null);
-            }
             setLookupHistoric(islandRecord.historic);
           } else {
             setEngValue(null);
-            setGaeValue(null);
             setLookupHistoric(false);
           }
         } else {
           setEngValue(null);
-          setGaeValue(null);
           setLookupHistoric(false);
         }
         break;
@@ -1479,27 +1230,16 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 if (cymAdministrativeArea) setCymValue(cymAdministrativeArea.administrativeArea);
                 else setCymValue(null);
               }
-            } else if (settingsContext.isScottish) {
-              if (administrativeAreaRecord.language === "GAE") setGaeValue(administrativeAreaRecord.administrativeArea);
-              else {
-                const gaeAdministrativeArea = lookupContext.currentLookups.adminAuthorities.find(
-                  (x) => x.administrativeAreaRef === administrativeAreaRecord.linkedRef && x.language === "GAE"
-                );
-                if (gaeAdministrativeArea) setGaeValue(gaeAdministrativeArea.administrativeArea);
-                else setGaeValue(null);
-              }
             }
             setLookupHistoric(administrativeAreaRecord.historic);
           } else {
             setEngValue(null);
             if (settingsContext.isWelsh) setCymValue(null);
-            else if (settingsContext.isScottish) setGaeValue(null);
             setLookupHistoric(false);
           }
         } else {
           setEngValue(null);
           if (settingsContext.isWelsh) setCymValue(null);
-          else if (settingsContext.isScottish) setGaeValue(null);
           setLookupHistoric(false);
         }
         break;
@@ -1581,10 +1321,8 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
 
     if (errorAltLanguage) {
       setCymError(errorAltLanguage);
-      setGaeError(errorAltLanguage);
     } else {
       setCymError(null);
-      setGaeError(null);
     }
   }, [errorEng, errorAltLanguage]);
 
@@ -2031,7 +1769,7 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                   {`${
                     variant === "postcode"
                       ? "Postcode"
-                      : !settingsContext.isWelsh && !settingsContext.isScottish
+                      : !settingsContext.isWelsh
                       ? stringToSentenceCase(lookupType)
                       : "English"
                   }`}
@@ -2084,36 +1822,6 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                         pr: theme.spacing(1),
                       }}
                       onChange={onCymChange}
-                    />
-                  </Grid>
-                </Fragment>
-              )}
-              {variant !== "postcode" && settingsContext.isScottish && (
-                <Fragment>
-                  <Grid item xs={4}>
-                    <Typography variant="body1" align="right" gutterBottom>
-                      Gaelic
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <TextField
-                      variant="outlined"
-                      error={gaeError}
-                      helperText={
-                        <Typography variant="caption" color={adsRed} align="left">
-                          {gaeError}
-                        </Typography>
-                      }
-                      value={gaeValue}
-                      fullWidth
-                      size="small"
-                      inputProps={{ maxLength: `${getMaxFieldLength()}` }}
-                      sx={{
-                        color: theme.palette.background.contrastText,
-                        pl: theme.spacing(1),
-                        pr: theme.spacing(1),
-                      }}
-                      onChange={onGaeChange}
                     />
                   </Grid>
                 </Fragment>

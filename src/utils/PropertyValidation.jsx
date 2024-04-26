@@ -39,6 +39,7 @@
 //    015   29.01.24 Sean Flook                 Added new checks.
 //    016   01.03.24 Sean Flook                 Corrected check for 2100011.
 //    017   24.04.24 Sean Flook                 Added check for 2100065.
+//    018   26.04.24 Sean Flook                 Tweaked check for 2100065.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -433,7 +434,12 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
 
     // Organisation Name contains unmatched brackets.
     currentCheck = GetCheck(2100065, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && data.organisation && !bracketValidator(data.organisation)) {
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.organisation &&
+      [1, 6].includes(data.logicalStatus) &&
+      !bracketValidator(data.organisation)
+    ) {
       organisationErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 

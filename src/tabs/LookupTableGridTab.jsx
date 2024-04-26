@@ -20,6 +20,7 @@
 //    007   01.02.24 Sean Flook                 Initial changes required for operational districts.
 //    008   29.02.24 Joel Benford     IMANN-242 Add DbAuthority.
 //    009   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    010   26.04.24 Sean Flook       IMANN-413 Removed Gaelic option.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -234,24 +235,6 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
   }
 
   /**
-   * Method to get the Scottish post town.
-   *
-   * @param {object} params The parameters passed into the method from the grid.
-   * @returns {JSX.Element} The display of for the Scottish post town.
-   */
-  function GetPostTownGae(params) {
-    if (params && params.row.postTownGae) {
-      if (params.row.historic)
-        return (
-          <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
-            {lookupToTitleCase(params.value, false)}
-          </Typography>
-        );
-      else return <Typography variant="body2">{lookupToTitleCase(params.value, false)}</Typography>;
-    }
-  }
-
-  /**
    * Method to get the English sub-locality.
    *
    * @param {object} params The parameters passed into the method from the grid.
@@ -259,24 +242,6 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
    */
   function GetSubLocalityEng(params) {
     if (params && params.row.subLocalityEng) {
-      if (params.row.historic)
-        return (
-          <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
-            {lookupToTitleCase(params.value, false)}
-          </Typography>
-        );
-      else return <Typography variant="body2">{lookupToTitleCase(params.value, false)}</Typography>;
-    }
-  }
-
-  /**
-   * Method to get the Scottish sub-locality.
-   *
-   * @param {object} params The parameters passed into the method from the grid.
-   * @returns {JSX.Element} The display of for the Scottish sub-locality.
-   */
-  function GetSubLocalityGae(params) {
-    if (params && params.row.subLocalityGae) {
       if (params.row.historic)
         return (
           <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
@@ -372,24 +337,6 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
   }
 
   /**
-   * Method to get the Scottish locality.
-   *
-   * @param {object} params The parameters passed into the method from the grid.
-   * @returns {JSX.Element} The display of for the Scottish locality.
-   */
-  function GetLocalityGae(params) {
-    if (params && params.row.localityGae) {
-      if (params.row.historic)
-        return (
-          <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
-            {lookupToTitleCase(params.value, false)}
-          </Typography>
-        );
-      else return <Typography variant="body2">{lookupToTitleCase(params.value, false)}</Typography>;
-    }
-  }
-
-  /**
    * Method to get the English town.
    *
    * @param {object} params The parameters passed into the method from the grid.
@@ -426,24 +373,6 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
   }
 
   /**
-   * Method to get the Scottish town.
-   *
-   * @param {object} params The parameters passed into the method from the grid.
-   * @returns {JSX.Element} The display of for the Scottish town.
-   */
-  function GetTownGae(params) {
-    if (params && params.row.townGae) {
-      if (params.row.historic)
-        return (
-          <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
-            {lookupToTitleCase(params.value, false)}
-          </Typography>
-        );
-      else return <Typography variant="body2">{lookupToTitleCase(params.value, false)}</Typography>;
-    }
-  }
-
-  /**
    * Method to get the English island.
    *
    * @param {object} params The parameters passed into the method from the grid.
@@ -451,24 +380,6 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
    */
   function GetIslandEng(params) {
     if (params && params.row.islandEng) {
-      if (params.row.historic)
-        return (
-          <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
-            {lookupToTitleCase(params.value, false)}
-          </Typography>
-        );
-      else return <Typography variant="body2">{lookupToTitleCase(params.value, false)}</Typography>;
-    }
-  }
-
-  /**
-   * Method to get the Scottish island.
-   *
-   * @param {object} params The parameters passed into the method from the grid.
-   * @returns {JSX.Element} The display of for the Scottish island.
-   */
-  function GetIslandGae(params) {
-    if (params && params.row.islandGae) {
       if (params.row.historic)
         return (
           <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
@@ -505,24 +416,6 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
    */
   function GetAdministrativeAreaCym(params) {
     if (params && params.row.administrativeAreaCym) {
-      if (params.row.historic)
-        return (
-          <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
-            {lookupToTitleCase(params.value, false)}
-          </Typography>
-        );
-      else return <Typography variant="body2">{lookupToTitleCase(params.value, false)}</Typography>;
-    }
-  }
-
-  /**
-   * Method to get the Scottish administrative area.
-   *
-   * @param {object} params The parameters passed into the method from the grid.
-   * @returns {JSX.Element} The display of for the Scottish administrative area.
-   */
-  function GetAdministrativeAreaGae(params) {
-    if (params && params.row.administrativeAreaGae) {
       if (params.row.historic)
         return (
           <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
@@ -752,22 +645,12 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
                 x.postTownEng.toUpperCase().includes(event.target.value.toUpperCase()) ||
                 x.postTownCym.toUpperCase().includes(event.target.value.toUpperCase())
             );
-          else if (settingsContext.isScottish)
-            filteredData = data.filter(
-              (x) =>
-                x.postTownEng.toUpperCase().includes(event.target.value.toUpperCase()) ||
-                x.postTownGae.toUpperCase().includes(event.target.value.toUpperCase())
-            );
           else
             filteredData = data.filter((x) => x.postTownEng.toUpperCase().includes(event.target.value.toUpperCase()));
           break;
 
         case "subLocality":
-          filteredData = data.filter(
-            (x) =>
-              x.subLocalityEng.toUpperCase().includes(event.target.value.toUpperCase()) ||
-              x.subLocalityGae.toUpperCase().includes(event.target.value.toUpperCase())
-          );
+          filteredData = data.filter((x) => x.subLocalityEng.toUpperCase().includes(event.target.value.toUpperCase()));
           break;
 
         case "crossReference":
@@ -785,12 +668,6 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
                 x.localityEng.toUpperCase().includes(event.target.value.toUpperCase()) ||
                 x.localityCym.toUpperCase().includes(event.target.value.toUpperCase())
             );
-          else if (settingsContext.isScottish)
-            filteredData = data.filter(
-              (x) =>
-                x.localityEng.toUpperCase().includes(event.target.value.toUpperCase()) ||
-                x.localityGae.toUpperCase().includes(event.target.value.toUpperCase())
-            );
           else
             filteredData = data.filter((x) => x.localityEng.toUpperCase().includes(event.target.value.toUpperCase()));
           break;
@@ -802,21 +679,11 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
                 x.townEng.toUpperCase().includes(event.target.value.toUpperCase()) ||
                 x.townCym.toUpperCase().includes(event.target.value.toUpperCase())
             );
-          else if (settingsContext.isScottish)
-            filteredData = data.filter(
-              (x) =>
-                x.townEng.toUpperCase().includes(event.target.value.toUpperCase()) ||
-                x.townGae.toUpperCase().includes(event.target.value.toUpperCase())
-            );
           else filteredData = data.filter((x) => x.townEng.toUpperCase().includes(event.target.value.toUpperCase()));
           break;
 
         case "island":
-          filteredData = data.filter(
-            (x) =>
-              x.islandEng.toUpperCase().includes(event.target.value.toUpperCase()) ||
-              x.islandGae.toUpperCase().includes(event.target.value.toUpperCase())
-          );
+          filteredData = data.filter((x) => x.islandEng.toUpperCase().includes(event.target.value.toUpperCase()));
           break;
 
         case "administrativeArea":
@@ -825,12 +692,6 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
               (x) =>
                 x.administrativeAreaEng.toUpperCase().includes(event.target.value.toUpperCase()) ||
                 x.administrativeAreaCym.toUpperCase().includes(event.target.value.toUpperCase())
-            );
-          else if (settingsContext.isScottish)
-            filteredData = data.filter(
-              (x) =>
-                x.administrativeAreaEng.toUpperCase().includes(event.target.value.toUpperCase()) ||
-                x.administrativeAreaGae.toUpperCase().includes(event.target.value.toUpperCase())
             );
           else
             filteredData = data.filter((x) =>
@@ -1008,51 +869,11 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
                 renderCell: displayActionButtons,
               },
             ]
-          : settingsContext.isScottish
-          ? [
-              { field: "id", hide: true },
-              {
-                field: "postTownEng",
-                headerName: "English",
-                headerClassName: "idox-data-grid-header",
-                flex: 30,
-                renderCell: GetPostTownEng,
-              },
-              {
-                field: "postTownGae",
-                headerName: "Gaelic",
-                headerClassName: "idox-data-grid-header",
-                flex: 30,
-                renderCell: GetPostTownGae,
-              },
-              {
-                field: "historic",
-                headerName: "Status",
-                headerClassName: "idox-data-grid-header",
-                flex: 30,
-                renderCell: GetHistoric,
-              },
-              {
-                field: "linkedRef",
-                headerClassName: "idox-data-grid-header",
-                hide: true,
-                sortable: false,
-                filterable: false,
-              },
-              {
-                field: "actions",
-                type: "actions",
-                headerClassName: "idox-data-grid-header",
-                sortable: false,
-                filterable: false,
-                renderCell: displayActionButtons,
-              },
-            ]
           : [
               { field: "id", hide: true },
               {
                 field: "postTownEng",
-                headerName: "English",
+                headerName: "Post town",
                 headerClassName: "idox-data-grid-header",
                 flex: 30,
                 renderCell: GetPostTownEng,
@@ -1092,17 +913,10 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
           },
           {
             field: "subLocalityEng",
-            headerName: "English",
+            headerName: "Sub-locality",
             headerClassName: "idox-data-grid-header",
             flex: 30,
             renderCell: GetSubLocalityEng,
-          },
-          {
-            field: "subLocalityGae",
-            headerName: "Gaelic",
-            headerClassName: "idox-data-grid-header",
-            flex: 30,
-            renderCell: GetSubLocalityGae,
           },
           {
             field: "historic",
@@ -1222,52 +1036,6 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
                 renderCell: displayActionButtons,
               },
             ]
-          : settingsContext.isScottish
-          ? [
-              {
-                field: "id",
-                headerClassName: "idox-data-grid-header",
-                hide: true,
-                sortable: false,
-                filterable: false,
-              },
-              {
-                field: "localityEng",
-                headerName: "English",
-                headerClassName: "idox-data-grid-header",
-                flex: 30,
-                renderCell: GetLocalityEng,
-              },
-              {
-                field: "localityGae",
-                headerName: "Gaelic",
-                headerClassName: "idox-data-grid-header",
-                flex: 30,
-                renderCell: GetLocalityGae,
-              },
-              {
-                field: "historic",
-                headerName: "Status",
-                headerClassName: "idox-data-grid-header",
-                flex: 30,
-                renderCell: GetHistoric,
-              },
-              {
-                field: "linkedRef",
-                headerClassName: "idox-data-grid-header",
-                hide: true,
-                sortable: false,
-                filterable: false,
-              },
-              {
-                field: "actions",
-                type: "actions",
-                headerClassName: "idox-data-grid-header",
-                sortable: false,
-                filterable: false,
-                renderCell: displayActionButtons,
-              },
-            ]
           : [
               {
                 field: "id",
@@ -1278,7 +1046,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
               },
               {
                 field: "localityEng",
-                headerName: "English",
+                headerName: "Locality",
                 headerClassName: "idox-data-grid-header",
                 flex: 30,
                 renderCell: GetLocalityEng,
@@ -1354,52 +1122,6 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
                 renderCell: displayActionButtons,
               },
             ]
-          : settingsContext.isScottish
-          ? [
-              {
-                field: "id",
-                headerClassName: "idox-data-grid-header",
-                hide: true,
-                sortable: false,
-                filterable: false,
-              },
-              {
-                field: "townEng",
-                headerName: "English",
-                headerClassName: "idox-data-grid-header",
-                flex: 30,
-                renderCell: GetTownEng,
-              },
-              {
-                field: "townGae",
-                headerName: "Gaelic",
-                headerClassName: "idox-data-grid-header",
-                flex: 30,
-                renderCell: GetTownGae,
-              },
-              {
-                field: "historic",
-                headerName: "Status",
-                headerClassName: "idox-data-grid-header",
-                flex: 30,
-                renderCell: GetHistoric,
-              },
-              {
-                field: "linkedRef",
-                headerClassName: "idox-data-grid-header",
-                hide: true,
-                sortable: false,
-                filterable: false,
-              },
-              {
-                field: "actions",
-                type: "actions",
-                headerClassName: "idox-data-grid-header",
-                sortable: false,
-                filterable: false,
-                renderCell: displayActionButtons,
-              },
-            ]
           : [
               {
                 field: "id",
@@ -1410,7 +1132,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
               },
               {
                 field: "townEng",
-                headerName: "English",
+                headerName: "Town",
                 headerClassName: "idox-data-grid-header",
                 flex: 30,
                 renderCell: GetTownEng,
@@ -1450,17 +1172,10 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
           },
           {
             field: "islandEng",
-            headerName: "English",
+            headerName: "Island",
             headerClassName: "idox-data-grid-header",
             flex: 30,
             renderCell: GetIslandEng,
-          },
-          {
-            field: "islandGae",
-            headerName: "Gaelic",
-            headerClassName: "idox-data-grid-header",
-            flex: 30,
-            renderCell: GetIslandGae,
           },
           {
             field: "historic",
@@ -1533,52 +1248,6 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
                 renderCell: displayActionButtons,
               },
             ]
-          : settingsContext.isScottish
-          ? [
-              {
-                field: "id",
-                headerClassName: "idox-data-grid-header",
-                hide: true,
-                sortable: false,
-                filterable: false,
-              },
-              {
-                field: "administrativeAreaEng",
-                headerName: "English",
-                headerClassName: "idox-data-grid-header",
-                flex: 30,
-                renderCell: GetAdministrativeAreaEng,
-              },
-              {
-                field: "administrativeAreaGae",
-                headerName: "Gaelic",
-                headerClassName: "idox-data-grid-header",
-                flex: 30,
-                renderCell: GetAdministrativeAreaGae,
-              },
-              {
-                field: "historic",
-                headerName: "Status",
-                headerClassName: "idox-data-grid-header",
-                flex: 30,
-                renderCell: GetHistoric,
-              },
-              {
-                field: "linkedRef",
-                headerClassName: "idox-data-grid-header",
-                hide: true,
-                sortable: false,
-                filterable: false,
-              },
-              {
-                field: "actions",
-                type: "actions",
-                headerClassName: "idox-data-grid-header",
-                sortable: false,
-                filterable: false,
-                renderCell: displayActionButtons,
-              },
-            ]
           : [
               {
                 field: "id",
@@ -1589,7 +1258,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
               },
               {
                 field: "administrativeAreaEng",
-                headerName: "English",
+                headerName: "Administrative area",
                 headerClassName: "idox-data-grid-header",
                 flex: 30,
                 renderCell: GetAdministrativeAreaEng,
