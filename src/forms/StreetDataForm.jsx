@@ -80,6 +80,7 @@
 //    066   22.04.24 Sean Flook       IMANN-380 After discarding ASD changes return to the ASD list.
 //    067   22.04.24 Sean Flook       IMANN-382 Ensure the whole street is highlighted unless on ESU or ASD tabs.
 //    068   29.04.24 Sean Flook       IMANN-413 When creating a new descriptor create it with the correct language.
+//    069   29.04.24 Sean Flook       IMANN-371 When the current USRN changes ensure the first tab is displayed.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -6616,13 +6617,14 @@ function StreetDataForm({ data, loading }) {
       streetUsrn.current = data.usrn;
       streetContext.resetStreetErrors();
       setStreetData(data);
+      sandboxContext.onStreetTabChange(0);
       mergedDividedEsus.current = [];
       if (data && data.usrn.toString() === "0" && saveDisabled) {
         setSaveDisabled(false);
         streetContext.onStreetModified(true);
       }
     }
-  }, [data, saveDisabled, streetContext]);
+  }, [data, saveDisabled, streetContext, sandboxContext]);
 
   useEffect(() => {
     if (!data) return;

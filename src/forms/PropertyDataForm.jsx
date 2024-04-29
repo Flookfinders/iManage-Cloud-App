@@ -59,6 +59,7 @@
 //    046   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
 //    047   19.04.24 Sean Flook       IMANN-130 Prevent unnecessary reloading of form data when trying to close the form.
 //    048   22.04.24 Sean Flook       IMANN-374 Only try and open the related tab if not already displayed.
+//    049   29.04.24 Sean Flook       IMANN-371 When the current UPRN changes ensure the first tab is displayed.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3988,12 +3989,13 @@ function PropertyDataForm({ data, loading }) {
       propertyUprn.current = data.uprn;
       propertyContext.resetPropertyErrors();
       setPropertyData(data);
+      sandboxContext.onPropertyTabChange(0);
       if (data && data.uprn.toString() === "0" && saveDisabled) {
         setSaveDisabled(false);
         propertyContext.onPropertyModified(true);
       }
     }
-  }, [data, saveDisabled, propertyContext]);
+  }, [data, saveDisabled, propertyContext, sandboxContext]);
 
   useEffect(() => {
     if (!data) return;
