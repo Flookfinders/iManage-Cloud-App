@@ -23,6 +23,7 @@
 //    010   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
 //    011   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    012   11.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
+//    013   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title nowrapping with width restrictions
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -299,25 +300,30 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onHomeCl
   return (
     <Fragment>
       <Box sx={toolbarStyle}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Stack direction="row" spacing={0.5} justifyContent="flex-start" alignItems="center">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: theme.spacing(0.25) }}>
+          <Typography variant="subtitle1">
             <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
-            <Typography
-              sx={{
-                flexGrow: 1,
-                display: "none",
-                [theme.breakpoints.up("sm")]: {
-                  display: "block",
-                },
-              }}
-              variant="subtitle1"
-              noWrap
-              align="left"
-            >
+          </Typography>
+          <Typography
+            sx={{
+              flexGrow: 1,
+              fontSize: "14px",
+              display: "none",
+              pl: "6px",
+              pt: "2px",
+              [theme.breakpoints.up("sm")]: {
+                display: "block",
+              },
+            }}
+            variant="subtitle1"
+            noWrap
+            align="left"
+          >
+            <Typography display="inline" variant="subtitle1">
               {`| Organisation (${data.index + 1} of ${data.totalRecords}): ${organisation ? organisation : ""}`}
             </Typography>
-            {errors && errors.length > 0 && <ErrorIcon sx={errorIconStyle} />}
-          </Stack>
+          </Typography>
+          {errors && errors.length > 0 && <ErrorIcon sx={errorIconStyle} />}
           <ADSActionButton
             variant="delete"
             disabled={!userCanEdit}
