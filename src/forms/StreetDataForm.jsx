@@ -79,6 +79,7 @@
 //    065   22.04.24 Sean Flook       IMANN-374 Only try and open the related tab if not already displayed.
 //    066   22.04.24 Sean Flook       IMANN-380 After discarding ASD changes return to the ASD list.
 //    067   22.04.24 Sean Flook       IMANN-382 Ensure the whole street is highlighted unless on ESU or ASD tabs.
+//    068   29.04.24 Sean Flook       IMANN-413 When creating a new descriptor create it with the correct language.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -836,7 +837,15 @@ function StreetDataForm({ data, loading }) {
             )
           : null;
       const newPkId = !minPkId || !minPkId.pkId || minPkId.pkId > -10 ? -10 : minPkId.pkId - 1;
-      const newEngRec = settingsContext.isScottish
+      let newLanguage = "ENG";
+      if (streetData.streetDescriptors.length === 1) {
+        if (settingsContext.isScottish) {
+          newLanguage = streetData.streetDescriptors[0].language === "ENG" ? "GAE" : "ENG";
+        } else if (settingsContext.isWelsh) {
+          newLanguage = streetData.streetDescriptors[0].language === "ENG" ? "CYM" : "ENG";
+        }
+      }
+      const newRec = settingsContext.isScottish
         ? {
             pkId: newPkId,
             changeType: "I",
@@ -870,7 +879,7 @@ function StreetDataForm({ data, loading }) {
                 ? settingsContext.streetTemplate.streetTemplate.islandRef
                 : 0,
             island: "",
-            language: "ENG",
+            language: newLanguage,
             neverExport: false,
             dualLanguageLink: settingsContext.isWelsh
               ? maxDualLanguageLink && maxDualLanguageLink.dualLanguageLink
@@ -904,7 +913,7 @@ function StreetDataForm({ data, loading }) {
                 ? settingsContext.streetTemplate.streetTemplate.adminAreaRef
                 : 0,
             administrativeArea: "",
-            language: "ENG",
+            language: newLanguage,
             neverExport: false,
             dualLanguageLink: settingsContext.isWelsh
               ? maxDualLanguageLink && maxDualLanguageLink.dualLanguageLink
@@ -915,7 +924,7 @@ function StreetDataForm({ data, loading }) {
 
       let newSDs = streetData.descriptor ? streetData.descriptor : [];
 
-      if (settingsContext.isWelsh) {
+      if (settingsContext.isWelsh && streetData.streetDescriptors.length === 0) {
         const defaultEngLocalityRef =
           settingsContext.streetTemplate &&
           settingsContext.streetTemplate.streetTemplate &&
@@ -961,8 +970,8 @@ function StreetDataForm({ data, loading }) {
           dualLanguageLink: maxDualLanguageLink ? maxDualLanguageLink.dualLanguageLink + 1 : 0,
         };
 
-        newSDs.push(newEngRec, newCymRec);
-      } else newSDs.push(newEngRec);
+        newSDs.push(newRec, newCymRec);
+      } else newSDs.push(newRec);
 
       setAssociatedStreetData(
         streetData.esus,
@@ -981,7 +990,7 @@ function StreetDataForm({ data, loading }) {
 
       setDescriptorFormData({
         pkId: 0,
-        sdData: newEngRec,
+        sdData: newRec,
         streetType: streetData.recordType,
         index: newIdx,
         totalRecords: streetData.descriptor
@@ -991,7 +1000,7 @@ function StreetDataForm({ data, loading }) {
           : 1,
       });
 
-      sandboxContext.onSandboxChange("streetDescriptor", newEngRec);
+      sandboxContext.onSandboxChange("streetDescriptor", newRec);
       streetContext.onRecordChange(15, newPkId, newIdx, null, true);
       lastOpenedId.current = pkId;
     } else {

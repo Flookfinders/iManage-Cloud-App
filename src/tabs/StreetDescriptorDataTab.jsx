@@ -25,6 +25,8 @@
 //    012   02.04.24 Joshua McCormick IMANN-277 Show displayCharactersLeft on descriptor input
 //    013   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //    014   09.04.24 Sean Flook       IMANN-376 Removed for administrative area.
+//    015   25.04.24 Joel Benford     IMANN-275 Allow any language in lookups
+//    016   29.04.24 Sean Flook       IMANN-413 Only filter lookups on language for Welsh authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -479,7 +481,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
           useRounded
           allowAddLookup
           lookupData={lookupContext.currentLookups.localities
-            .filter((x) => x.language === language && !x.historic)
+            .filter((x) => x.language === (settingsContext.isWelsh ? language : "ENG") && !x.historic)
             .sort(function (a, b) {
               return a.locality.localeCompare(b.locality, undefined, {
                 numeric: true,
@@ -503,7 +505,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
           useRounded
           allowAddLookup
           lookupData={lookupContext.currentLookups.towns
-            .filter((x) => x.language === language && !x.historic)
+            .filter((x) => x.language === (settingsContext.isWelsh ? language : "ENG") && !x.historic)
             .sort(function (a, b) {
               return a.town.localeCompare(b.town, undefined, {
                 numeric: true,
@@ -527,7 +529,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
             useRounded
             allowAddLookup
             lookupData={lookupContext.currentLookups.islands
-              .filter((x) => x.language === language && !x.historic)
+              .filter((x) => !x.historic)
               .sort(function (a, b) {
                 return a.island.localeCompare(b.island, undefined, {
                   numeric: true,
@@ -551,7 +553,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
           loading={loading}
           useRounded
           lookupData={lookupContext.currentLookups.adminAuthorities
-            .filter((x) => x.language === language && !x.historic)
+            .filter((x) => x.language === (settingsContext.isWelsh ? language : "ENG") && !x.historic)
             .sort(function (a, b) {
               return a.administrativeArea.localeCompare(b.administrativeArea, undefined, {
                 numeric: true,

@@ -39,6 +39,7 @@
 //    026   17.04.24 Joshua McCormick IMANN-207 endDate set to null if logical status is less than 7
 //    027   17.04.24 Joshua McCormick IMANN-277 remaining unnecessary maxLength removed from ADSAddressableObjectControl
 //    028   23.04.24 Joshua McCormick IMANN-386 changed LPI index&title to wrap correctly, formatted code
+//    029   29.04.24 Sean Flook       IMANN-413 Only filter lookups on language for Welsh authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1157,7 +1158,9 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           loading={loading}
           useRounded
           // doNotSetTitleCase
-          lookupData={lookupContext.currentLookups.streetDescriptors.filter((x) => x.language === language)}
+          lookupData={lookupContext.currentLookups.streetDescriptors.filter(
+            (x) => x.language === (settingsContext.isWelsh ? language : "ENG")
+          )}
           lookupId="usrn"
           lookupLabel="address"
           value={usrn}
@@ -1173,7 +1176,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           useRounded
           allowAddLookup
           lookupData={lookupContext.currentLookups.postTowns
-            .filter((x) => x.language === language && !x.historic)
+            .filter((x) => x.language === (settingsContext.isWelsh ? language : "ENG") && !x.historic)
             .sort(function (a, b) {
               return a.postTown.localeCompare(b.postTown, undefined, {
                 numeric: true,
@@ -1197,7 +1200,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
             useRounded
             allowAddLookup
             lookupData={lookupContext.currentLookups.subLocalities
-              .filter((x) => x.language === language && !x.historic)
+              .filter((x) => !x.historic)
               .sort(function (a, b) {
                 return a.subLocality.localeCompare(b.subLocality, undefined, {
                   numeric: true,
