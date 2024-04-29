@@ -60,6 +60,7 @@
 //    047   19.04.24 Sean Flook       IMANN-130 Prevent unnecessary reloading of form data when trying to close the form.
 //    048   22.04.24 Sean Flook       IMANN-374 Only try and open the related tab if not already displayed.
 //    049   29.04.24 Sean Flook       IMANN-371 When the current UPRN changes ensure the first tab is displayed.
+//    050   29.04.24 Sean Flook                 Set the sandbox source property data when opening a new street.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3990,6 +3991,7 @@ function PropertyDataForm({ data, loading }) {
       propertyContext.resetPropertyErrors();
       setPropertyData(data);
       sandboxContext.onPropertyTabChange(0);
+      sandboxContext.onSandboxChange("sourceProperty", data);
       if (data && data.uprn.toString() === "0" && saveDisabled) {
         setSaveDisabled(false);
         propertyContext.onPropertyModified(true);

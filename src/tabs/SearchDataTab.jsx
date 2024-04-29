@@ -53,6 +53,7 @@
 //    039   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
 //    040   19.04.24 Sean Flook       IMANN-132 When adding a child or children ensure we have the parent English LPI.
 //    041   26.04.24 Sean Flook                 Added some error handling.
+//    042   29.04.24 Sean Flook                 Replaced openPropertyRecord with call to doOpenRecord.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -431,54 +432,6 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   };
 
   /**
-   * Method to open the property record.
-   *
-   * @param {object} rec The search record.
-   */
-  const openPropertyRecord = async (rec) => {
-    propertyContext.onPropertyChange(
-      rec.uprn,
-      0,
-      rec.address,
-      rec.formattedAddress,
-      rec.postcode,
-      rec.easting,
-      rec.northing,
-      false,
-      null
-    );
-    const foundProperty = mapContext.currentSearchData.properties.find(({ uprn }) => uprn === rec.uprn);
-    const currentSearchProperties = JSON.parse(JSON.stringify(mapContext.currentSearchData.properties));
-
-    if (!foundProperty) {
-      currentSearchProperties.push({
-        uprn: rec.uprn,
-        parentUprn: rec.parent_uprn,
-        address: rec.formattedaddress,
-        postcode: rec.postcode,
-        easting: rec.easting,
-        northing: rec.northing,
-        logicalStatus: rec.logical_status,
-        classificationCode: rec.classification_code ? rec.classification_code.substring(0, 1) : "U",
-      });
-    }
-    const propertyData = await GetPropertyMapData(rec.uprn, userContext.currentUser.token);
-    const extents = propertyData
-      ? propertyData.blpuProvenances.map((provRec) => ({
-          pkId: provRec.pkId,
-          uprn: propertyData.uprn,
-          code: provRec.provenanceCode,
-          geometry:
-            provRec.wktGeometry && provRec.wktGeometry !== "" ? GetWktCoordinates(provRec.wktGeometry) : undefined,
-        }))
-      : undefined;
-
-    mapContext.onSearchDataChange(mapContext.currentSearchData.streets, currentSearchProperties, null, rec.uprn);
-    mapContext.onMapChange(extents, null, null);
-    mapContext.onEditMapObject(21, rec.uprn);
-  };
-
-  /**
    * Event to handle when the historic property dialog is closed.
    *
    * @param {string} action The action taken from the dialog
@@ -677,7 +630,16 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
         historicRec.current = { property: rec, related: null };
         setOpenHistoricProperty(true);
       } else {
-        openPropertyRecord(rec);
+        doOpenRecord(
+          rec,
+          null,
+          searchContext.currentSearchData.results,
+          mapContext,
+          streetContext,
+          propertyContext,
+          userContext.currentUser.token,
+          settingsContext.isScottish
+        );
       }
     }
   }
