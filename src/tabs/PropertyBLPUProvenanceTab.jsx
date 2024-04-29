@@ -30,6 +30,7 @@
 //    017   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    018   22.03.24 Sean Flook       PRFRM5_GP Display an information control for creating and modifying the geometry.
 //    019   09.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
+//    020   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title nowrapping with width restrictions
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -62,7 +63,7 @@ import BLPUProvenance from "../data/BLPUProvenance";
 
 import ErrorIcon from "@mui/icons-material/Error";
 import { useTheme } from "@mui/styles";
-import { toolbarStyle, dataTabToolBar, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
 
 PropertyBLPUProvenanceTab.propTypes = {
   data: PropTypes.object,
@@ -364,34 +365,39 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
 
   return (
     <Fragment>
-      <Box sx={toolbarStyle} id="ads-provenance-data-tab">
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={dataTabToolBar}>
-          <Stack direction="row" spacing={0.5} justifyContent="flex-start" alignItems="center">
+      <Box sx={toolbarStyle}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: theme.spacing(0.25) }}>
+          <Typography variant="subtitle1">
             <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
-            <Typography
-              sx={{
-                flexGrow: 1,
-                display: "none",
-                [theme.breakpoints.up("sm")]: {
-                  display: "block",
-                },
-              }}
-              variant="subtitle1"
-              noWrap
-              align="left"
-            >
+          </Typography>
+          <Typography
+            sx={{
+              flexGrow: 1,
+              fontSize: "14px",
+              display: "none",
+              pl: "6px",
+              pt: "2px",
+              [theme.breakpoints.up("sm")]: {
+                display: "block",
+              },
+            }}
+            variant="subtitle1"
+            noWrap
+            align="left"
+          >
+            <Typography display="inline" variant="subtitle1">
               {`| BLPU provenance (${data.index + 1} of ${data.totalRecords}): ${getProvenanceText(code)}`}
             </Typography>
-            {errors && errors.length > 0 && <ErrorIcon sx={errorIconStyle} />}
-          </Stack>
-          <ADSActionButton
-            variant="delete"
-            disabled={!userCanEdit}
-            tooltipTitle="Delete"
-            tooltipPlacement="right"
-            onClick={handleDeleteClick}
-          />
+          </Typography>
+          {errors && errors.length > 0 && <ErrorIcon sx={errorIconStyle} />}
         </Stack>
+        <ADSActionButton
+          variant="delete"
+          disabled={!userCanEdit}
+          tooltipTitle="Delete"
+          tooltipPlacement="right"
+          onClick={handleDeleteClick}
+        />
       </Box>
       <Box sx={dataFormStyle("PropertyBLPUProvenanceTab")}>
         <ADSSelectControl

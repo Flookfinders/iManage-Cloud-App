@@ -26,6 +26,7 @@
 //    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    014   26.03.24 Joshua McCormick IMANN-336 Added xrefKey field name to displayActionButtons to give same display properties, added flex25 to historic
 //    015   27.03.24 Sean Flook       IMANN-336 Undone above changes as already done under STRFRM3_OS.
+//    016   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title nowrapping with width restrictions
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -350,7 +351,7 @@ function PropertyCrossRefListTab({
     <Fragment>
       <Box sx={toolbarStyle} id="ads-cross-reference-data-grid">
         <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Typography variant="subtitle1" sx={{ pl: theme.spacing(2) }}>
+          <Typography variant="subtitle1" noWrap sx={{ pl: theme.spacing(2) }}>
             Cross references
           </Typography>
           <Tooltip title="Add new cross reference record" arrow placement="right" sx={tooltipStyle}>
@@ -358,6 +359,7 @@ function PropertyCrossRefListTab({
               <AddCircleIcon />
               <Typography
                 variant="subtitle1"
+                noWrap
                 sx={{
                   pl: theme.spacing(1),
                   pr: theme.spacing(1),

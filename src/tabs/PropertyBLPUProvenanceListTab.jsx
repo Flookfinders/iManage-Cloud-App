@@ -26,6 +26,7 @@
 //    013   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    014   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
 //    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    016   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title nowrapping with width restrictions
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -363,23 +364,31 @@ function PropertyBLPUProvenanceListTab({
     <Fragment>
       <Box sx={toolbarStyle} id="ads-provenance-data-grid">
         <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Typography variant="subtitle1" sx={{ pl: theme.spacing(2) }}>
+          <Typography variant="subtitle1" sx={{ pl: theme.spacing(2) }} noWrap>
             BLPU provenances
           </Typography>
-          <Tooltip title="Add new provenance record" arrow placement="right" sx={tooltipStyle}>
-            <IconButton sx={ActionIconStyle()} disabled={!userCanEdit} onClick={handleAddProvenanceClick} size="small">
-              <AddCircleIcon />
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  pl: theme.spacing(1),
-                  pr: theme.spacing(1),
-                }}
+          <Typography>
+            <Tooltip title="Add new provenance record" arrow placement="right" sx={tooltipStyle}>
+              <IconButton
+                sx={ActionIconStyle()}
+                disabled={!userCanEdit}
+                onClick={handleAddProvenanceClick}
+                size="small"
               >
-                BLPU provenance
-              </Typography>
-            </IconButton>
-          </Tooltip>
+                <AddCircleIcon />
+                <Typography
+                  variant="subtitle1"
+                  noWrap
+                  sx={{
+                    pl: theme.spacing(1),
+                    pr: theme.spacing(1),
+                  }}
+                >
+                  BLPU provenance
+                </Typography>
+              </IconButton>
+            </Tooltip>
+          </Typography>
         </Stack>
       </Box>
       <Box
