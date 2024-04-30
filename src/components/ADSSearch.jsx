@@ -37,6 +37,7 @@
 //    024   27.02.24 Sean Flook           MUL16 Changes required to allow control to be used for make child of dialog.
 //    025   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
 //    026   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
+//    027   30.04.24 Sean Flook                 Handle nulls being returned by the Scottish API for ASD records when none are present.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -749,7 +750,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
             }))
           : undefined;
         const asdType51 =
-          settingsContext.isScottish && streetData
+          settingsContext.isScottish && streetData && streetData.maintenanceResponsibilities
             ? streetData.maintenanceResponsibilities.map((asdRec) => ({
                 type: 51,
                 pkId: asdRec.pkId,
@@ -763,7 +764,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
               }))
             : [];
         const asdType52 =
-          settingsContext.isScottish && streetData
+          settingsContext.isScottish && streetData && streetData.reinstatementCategories
             ? streetData.reinstatementCategories.map((asdRec) => ({
                 type: 52,
                 pkId: asdRec.pkId,
@@ -777,7 +778,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
               }))
             : [];
         const asdType53 =
-          settingsContext.isScottish && streetData
+          settingsContext.isScottish && streetData && streetData.specialDesignations
             ? streetData.specialDesignations.map((asdRec) => ({
                 type: 53,
                 pkId: asdRec.pkId,
@@ -791,7 +792,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
               }))
             : [];
         const asdType61 =
-          !settingsContext.isScottish && HasASD() && streetData
+          !settingsContext.isScottish && HasASD() && streetData && streetData.interests
             ? streetData.interests.map((asdRec) => ({
                 type: 61,
                 pkId: asdRec.pkId,
@@ -806,7 +807,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
               }))
             : [];
         const asdType62 =
-          !settingsContext.isScottish && HasASD() && streetData
+          !settingsContext.isScottish && HasASD() && streetData && streetData.constructions
             ? streetData.constructions.map((asdRec) => ({
                 type: 62,
                 pkId: asdRec.pkId,
@@ -821,7 +822,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
               }))
             : [];
         const asdType63 =
-          !settingsContext.isScottish && HasASD() && streetData
+          !settingsContext.isScottish && HasASD() && streetData && streetData.specialDesignations
             ? streetData.specialDesignations.map((asdRec) => ({
                 type: 63,
                 pkId: asdRec.pkId,
@@ -835,7 +836,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
               }))
             : [];
         const asdType64 =
-          !settingsContext.isScottish && HasASD() && streetData
+          !settingsContext.isScottish && HasASD() && streetData && streetData.heightWidthWeights
             ? streetData.heightWidthWeights.map((asdRec) => ({
                 type: 64,
                 pkId: asdRec.pkId,
@@ -849,7 +850,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
               }))
             : [];
         const asdType66 =
-          !settingsContext.isScottish && HasASD() && streetData
+          !settingsContext.isScottish && HasASD() && streetData && streetData.publicRightOfWays
             ? streetData.publicRightOfWays.map((asdRec) => ({
                 type: 66,
                 pkId: asdRec.pkId,
