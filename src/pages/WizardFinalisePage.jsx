@@ -3,7 +3,7 @@
 //
 //  Description: Wizard finalise page
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001            Sean Flook                 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    003   30.04.24 Sean Flook       IMANN-384 Set the updating flag on the ADSWizardAddressList.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -89,6 +90,7 @@ function WizardFinalisePage({ data, isChild, errors, creating, onDataChange, onE
                 data={data}
                 checked={checked}
                 errors={errors}
+                updating={creating}
                 onCheckedChanged={handleCheckedChanged}
                 onDataChanged={handleDataChanged}
                 onErrorChanged={handleErrorChanged}
