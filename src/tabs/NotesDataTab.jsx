@@ -29,7 +29,8 @@
 //    016   26.03.24 Joel Benford     IMANN-365 Changed header back/text/visibility
 //    017   02.04.24 Joshua McCormick IMANN-277 Show displayCharactersLeft on note input
 //    018   10.04.24 Joel Benford     IMANN-379 Enable OK button when edited
-//    019   30.04.24 Sean Flook       IMANN-415 Corrected logic for enabling OK button for new records.
+//    019   30.04.24 Sean Flook       IMANN-425 Corrected logic for enabling OK button for new records.
+//    020   30.04.24 Sean Flook       IMANN-425 Corrected determine if the note has changed when creating a new note.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -101,7 +102,9 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
       data.variant === "street"
         ? sandboxContext.currentSandbox.sourceStreet.streetNotes.find((x) => x.pkId === data.noteData.pkId)
         : sandboxContext.currentSandbox.sourceProperty.blpuNotes.find((x) => x.pkId === data.noteData.pkId);
-    const different = noteBeforeOpening && noteBeforeOpening.note !== newValue;
+    const different =
+      (noteBeforeOpening && noteBeforeOpening.note !== newValue) ||
+      (!noteBeforeOpening && newValue && newValue.length > 0);
     setDataChanged(different);
     setNote(newValue);
     UpdateSandbox("note", newValue, different);
