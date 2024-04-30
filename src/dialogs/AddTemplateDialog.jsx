@@ -18,6 +18,7 @@
 //    005   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    006   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    007   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    008   30.04.24 Sean Flook       IMANN-418 Corrected logic.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -133,7 +134,7 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
     } else setDescriptionError(null);
 
     if (isValid) {
-      const data = getData(duplicateId ? duplicateId : createFromValue ? createFromValue : null);
+      const data = getData(duplicateId ? duplicateId : createFromValue ? createFromValue.id : null);
       if (onDone) onDone(data);
     }
   };
