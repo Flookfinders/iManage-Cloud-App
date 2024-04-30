@@ -54,6 +54,7 @@
 //    041   11.04.24 Sean Flook                 Use title case for authority name rather than sentence case.
 //    042   16.04.24 Sean Flook                 Changes required to handle loading and displaying SHP files.
 //    043   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
+//    044   30.04.24 Sean Flook       IMANN-371 Separate out streetTab and propertyTab.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -181,9 +182,10 @@ function App() {
       successorCrossRef: null,
       note: null,
     },
-    streetTab: 0,
-    propertyTab: 0,
   });
+
+  const [propertyTab, setPropertyTab] = useState(0);
+  const [streetTab, setStreetTab] = useState(0);
 
   const [refreshRelated, setRefreshRelated] = useState(false);
 
@@ -767,8 +769,6 @@ function App() {
             : sandbox.currentPropertyRecords.successorCrossRef,
         note: type === "propertyNote" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentPropertyRecords.note,
       },
-      streetTab: sandbox.streetTab,
-      propertyTab: sandbox.propertyTab,
     };
     setSandbox(newSandbox);
     sessionStorage.setItem("sandbox", JSON.stringify(newSandbox));
@@ -937,8 +937,6 @@ function App() {
             ? null
             : sandbox.currentPropertyRecords.note,
       },
-      streetTab: sandbox.streetTab,
-      propertyTab: sandbox.propertyTab,
     };
     setSandbox(newSandbox);
     sessionStorage.setItem("sandbox", JSON.stringify(newSandbox));
@@ -950,18 +948,8 @@ function App() {
    * @param {number} newValue The new tab value
    */
   function HandleStreetTabChange(newValue) {
-    const updatedSandbox = {
-      sourceStreet: sandbox.sourceStreet,
-      currentStreet: sandbox.currentStreet,
-      sourceProperty: sandbox.sourceProperty,
-      currentProperty: sandbox.currentProperty,
-      currentStreetRecords: sandbox.currentStreetRecords,
-      currentPropertyRecords: sandbox.currentPropertyRecords,
-      streetTab: newValue,
-      propertyTab: sandbox.propertyTab,
-    };
-    setSandbox(updatedSandbox);
-    sessionStorage.setItem("sandbox", JSON.stringify(updatedSandbox));
+    setStreetTab(newValue);
+    sessionStorage.setItem("streetTab", JSON.stringify(newValue));
   }
 
   /**
@@ -970,18 +958,8 @@ function App() {
    * @param {number} newValue The new tab value
    */
   function HandlePropertyTabChange(newValue) {
-    const updatedSandbox = {
-      sourceStreet: sandbox.sourceStreet,
-      currentStreet: sandbox.currentStreet,
-      sourceProperty: sandbox.sourceProperty,
-      currentProperty: sandbox.currentProperty,
-      currentStreetRecords: sandbox.currentStreetRecords,
-      currentPropertyRecords: sandbox.currentPropertyRecords,
-      streetTab: sandbox.streetTab,
-      propertyTab: newValue,
-    };
-    setSandbox(updatedSandbox);
-    sessionStorage.setItem("sandbox", JSON.stringify(updatedSandbox));
+    setPropertyTab(newValue);
+    sessionStorage.setItem("propertyTab", JSON.stringify(newValue));
   }
 
   /**
@@ -1020,11 +998,16 @@ function App() {
         successorCrossRef: null,
         note: null,
       },
-      streetTab: !["street", "property"].includes(sourceType) ? 0 : sandbox.streetTab,
-      propertyTab: !["street", "property"].includes(sourceType) ? 0 : sandbox.propertyTab,
     };
     setSandbox(resetSandbox);
+    setStreetTab(["street", "property"].includes(sourceType) ? 0 : streetTab);
+    setPropertyTab(["street", "property"].includes(sourceType) ? 0 : propertyTab);
     sessionStorage.setItem("sandbox", JSON.stringify(resetSandbox));
+    sessionStorage.setItem("streetTab", JSON.stringify(!["street", "property"].includes(sourceType) ? 0 : streetTab));
+    sessionStorage.setItem(
+      "propertyTab",
+      JSON.stringify(!["street", "property"].includes(sourceType) ? 0 : propertyTab)
+    );
   }
 
   /**
@@ -1033,6 +1016,8 @@ function App() {
   function HandleSandboxReload() {
     if (sessionStorage.getItem("sandbox") !== null) {
       setSandbox(JSON.parse(sessionStorage.getItem("sandbox")));
+      setStreetTab(JSON.parse(sessionStorage.getItem("streetTab")));
+      setPropertyTab(JSON.parse(sessionStorage.getItem("propertyTab")));
     }
   }
 
@@ -3314,6 +3299,8 @@ function App() {
               value={{
                 currentSandbox: sandbox,
                 refreshRelated: refreshRelated,
+                streetTab: streetTab,
+                propertyTab: propertyTab,
                 onSandboxChange: HandleSandboxChange,
                 onUpdateAndClear: HandleSandboxUpdateAndClear,
                 onStreetTabChange: HandleStreetTabChange,

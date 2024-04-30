@@ -61,6 +61,7 @@
 //    048   22.04.24 Sean Flook       IMANN-374 Only try and open the related tab if not already displayed.
 //    049   29.04.24 Sean Flook       IMANN-371 When the current UPRN changes ensure the first tab is displayed.
 //    050   29.04.24 Sean Flook                 Set the sandbox source property data when opening a new street.
+//    051   30.04.24 Sean Flook       IMANN-371 Separate out streetTab and propertyTab.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4002,7 +4003,7 @@ function PropertyDataForm({ data, loading }) {
   useEffect(() => {
     if (!data) return;
 
-    if (value !== sandboxContext.currentSandbox.propertyTab) setValue(sandboxContext.currentSandbox.propertyTab);
+    if (value !== sandboxContext.propertyTab) setValue(sandboxContext.propertyTab);
 
     if (
       sandboxContext.currentSandbox.currentPropertyRecords.lpi &&
@@ -4162,7 +4163,7 @@ function PropertyDataForm({ data, loading }) {
     }
   }, [
     sandboxContext.currentSandbox.currentPropertyRecords,
-    sandboxContext.currentSandbox.propertyTab,
+    sandboxContext.propertyTab,
     value,
     lpiFormData,
     crossRefFormData,
@@ -4215,7 +4216,7 @@ function PropertyDataForm({ data, loading }) {
   useEffect(() => {
     if (
       propertyContext.currentProperty.openRelated &&
-      sandboxContext.currentSandbox.propertyTab !== (settingsContext.isScottish ? 6 : 3)
+      sandboxContext.propertyTab !== (settingsContext.isScottish ? 6 : 3)
     ) {
       failedValidation.current = false;
       sandboxContext.onPropertyTabChange(settingsContext.isScottish ? 6 : 3);

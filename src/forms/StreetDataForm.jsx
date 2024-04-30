@@ -82,6 +82,7 @@
 //    068   29.04.24 Sean Flook       IMANN-413 When creating a new descriptor create it with the correct language.
 //    069   29.04.24 Sean Flook       IMANN-371 When the current USRN changes ensure the first tab is displayed.
 //    070   29.04.24 Sean Flook                 Set the sandbox source street data when opening a new street.
+//    071   30.04.24 Sean Flook       IMANN-371 Separate out streetTab and propertyTab.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -6631,7 +6632,7 @@ function StreetDataForm({ data, loading }) {
   useEffect(() => {
     if (!data) return;
 
-    if (value !== sandboxContext.currentSandbox.streetTab) setValue(sandboxContext.currentSandbox.streetTab);
+    if (value !== sandboxContext.streetTab) setValue(sandboxContext.streetTab);
 
     if (
       sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor &&
@@ -6871,7 +6872,7 @@ function StreetDataForm({ data, loading }) {
   }, [
     data,
     value,
-    sandboxContext.currentSandbox.streetTab,
+    sandboxContext.streetTab,
     sandboxContext.currentSandbox.currentStreetRecords,
     descriptorFormData,
     esuFormData,
@@ -7081,11 +7082,7 @@ function StreetDataForm({ data, loading }) {
   }, [streetContext]);
 
   useEffect(() => {
-    if (
-      streetData &&
-      streetContext.currentStreet.openRelated &&
-      sandboxContext.currentSandbox.streetTab !== (displayAsdTab ? 3 : 2)
-    ) {
+    if (streetData && streetContext.currentStreet.openRelated && sandboxContext.streetTab !== (displayAsdTab ? 3 : 2)) {
       failedValidation.current = false;
       sandboxContext.onStreetTabChange(displayAsdTab ? 3 : 2);
       // setValue(displayAsdTab ? 3 : 2);
