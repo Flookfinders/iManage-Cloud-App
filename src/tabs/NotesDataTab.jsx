@@ -29,6 +29,7 @@
 //    016   26.03.24 Joel Benford     IMANN-365 Changed header back/text/visibility
 //    017   02.04.24 Joshua McCormick IMANN-277 Show displayCharactersLeft on note input
 //    018   10.04.24 Joel Benford     IMANN-379 Enable OK button when edited
+//    019   30.04.24 Sean Flook       IMANN-415 Corrected logic for enabling OK button for new records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -352,8 +353,8 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
           displayCharactersLeft
         />
         <ADSOkCancelControl
-          okLabel={data.pkId === 0 ? "Add" : "Ok"}
-          okDisabled={data.pkId !== 0 && !dataChanged}
+          okLabel={data.pkId < 0 ? "Add" : "Ok"}
+          okDisabled={data.pkId > 0 && !dataChanged}
           indented={false}
           onOkClicked={handleOkClicked}
           onCancelClicked={handleCancelClicked}
