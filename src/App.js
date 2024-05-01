@@ -55,6 +55,7 @@
 //    042   16.04.24 Sean Flook                 Changes required to handle loading and displaying SHP files.
 //    043   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
 //    044   30.04.24 Sean Flook       IMANN-371 Separate out streetTab and propertyTab.
+//    045   01.05.24 Sean Flook                 Only reload contexts if required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -190,7 +191,7 @@ function App() {
   const [refreshRelated, setRefreshRelated] = useState(false);
 
   const [searchData, setSearchData] = useState({
-    searchString: "",
+    searchString: "!+reload+!",
     results: [],
   });
 
@@ -209,7 +210,7 @@ function App() {
 
   const [authorityDetails, setAuthorityDetails] = useState({
     userOrgName: null,
-    dataProviderCode: 6815,
+    dataProviderCode: null,
     msaLicenceNumber: null,
     tabText: null,
     minusrn: 0,
@@ -256,7 +257,7 @@ function App() {
 
   const [street, setStreet] = useState({
     usrn: 0,
-    descriptor: "",
+    descriptor: "!+reload+!",
     newStreet: false,
     openRelated: null,
   });
@@ -387,13 +388,7 @@ function App() {
   });
 
   const [map, setMap] = useState({
-    // backgroundStreets: [],
-    // backgroundProperties: [],
-    // searchStreets: [],
-    // searchProperties: [],
     extents: [],
-    // editStreet: null,
-    // editProperty: null,
     zoomStreet: null,
     zoomProperty: null,
   });
@@ -655,7 +650,7 @@ function App() {
    * Event to handle reloading the lookup context data from storage
    */
   function HandleLookupReload() {
-    if (sessionStorage.getItem("lookups") !== null) {
+    if (sessionStorage.getItem("lookups") !== null && lookups.validationMessages.length === 0) {
       const savedLookups = JSON.parse(sessionStorage.getItem("lookups"));
       setLookups({
         validationMessages: savedLookups.validationMessages,
@@ -675,7 +670,7 @@ function App() {
       });
     }
 
-    if (sessionStorage.getItem("metadata") !== null) {
+    if (sessionStorage.getItem("metadata") !== null && !metadata) {
       const savedMetadata = JSON.parse(sessionStorage.getItem("metadata"));
       setMetadata({
         guiVersion: savedMetadata.guiVersion,
@@ -1014,7 +1009,34 @@ function App() {
    * Event to handle reloading the sandbox context data from storage
    */
   function HandleSandboxReload() {
-    if (sessionStorage.getItem("sandbox") !== null) {
+    if (
+      sessionStorage.getItem("sandbox") !== null &&
+      !sandbox.sourceStreet &&
+      !sandbox.currentStreet &&
+      !sandbox.sourceProperty &&
+      !sandbox.currentProperty &&
+      !sandbox.currentStreetRecords.streetDescriptor &&
+      !sandbox.currentStreetRecords.esu &&
+      !sandbox.currentStreetRecords.highwayDedication &&
+      !sandbox.currentStreetRecords.oneWayExemption &&
+      !sandbox.currentStreetRecords.successorCrossRef &&
+      !sandbox.currentStreetRecords.maintenanceResponsibility &&
+      !sandbox.currentStreetRecords.reinstatementCategory &&
+      !sandbox.currentStreetRecords.osSpecialDesignation &&
+      !sandbox.currentStreetRecords.interest &&
+      !sandbox.currentStreetRecords.construction &&
+      !sandbox.currentStreetRecords.specialDesignation &&
+      !sandbox.currentStreetRecords.hww &&
+      !sandbox.currentStreetRecords.prow &&
+      !sandbox.currentStreetRecords.note &&
+      !sandbox.currentPropertyRecords.lpi &&
+      !sandbox.currentPropertyRecords.appCrossRef &&
+      !sandbox.currentPropertyRecords.provenance &&
+      !sandbox.currentPropertyRecords.classification &&
+      !sandbox.currentPropertyRecords.organisation &&
+      !sandbox.currentPropertyRecords.successorCrossRef &&
+      !sandbox.currentPropertyRecords.note
+    ) {
       setSandbox(JSON.parse(sessionStorage.getItem("sandbox")));
       setStreetTab(JSON.parse(sessionStorage.getItem("streetTab")));
       setPropertyTab(JSON.parse(sessionStorage.getItem("propertyTab")));
@@ -1126,9 +1148,9 @@ function App() {
    * Event to handle reloading the search context data from storage
    */
   function HandleSearchReload() {
-    if (sessionStorage.getItem("search") !== null) {
-      const searchData = JSON.parse(sessionStorage.getItem("search"));
-      HandleSearchDataChange(searchData.searchString, searchData.results, true);
+    if (sessionStorage.getItem("search") !== null && searchData.searchString === "!+reload+!") {
+      const savedSearchData = JSON.parse(sessionStorage.getItem("search"));
+      HandleSearchDataChange(savedSearchData.searchString, savedSearchData.results, true);
     }
   }
 
@@ -1234,11 +1256,11 @@ function App() {
    * Event to handle reloading the settings context data from storage
    */
   function HandleSettingsReload() {
-    if (sessionStorage.getItem("authorityDetails") !== null) {
+    if (sessionStorage.getItem("authorityDetails") !== null && !authorityDetails.dataProviderCode) {
       HandleAuthorityDetailsChange(JSON.parse(sessionStorage.getItem("authorityDetails")), true);
     }
 
-    if (sessionStorage.getItem("propertyTemplates") !== null) {
+    if (sessionStorage.getItem("propertyTemplates") !== null && propertyTemplates.length === 0) {
       setPropertyTemplates(JSON.parse(sessionStorage.getItem("propertyTemplates")));
     }
 
@@ -1246,7 +1268,7 @@ function App() {
       setStreetTemplate(JSON.parse(sessionStorage.getItem("streetTemplate")));
     }
 
-    if (sessionStorage.getItem("mapLayers") !== null) {
+    if (sessionStorage.getItem("mapLayers") !== null && !mapLayers) {
       setMapLayers(JSON.parse(sessionStorage.getItem("mapLayers")));
     }
   }
@@ -1894,7 +1916,7 @@ function App() {
    * Event to handle reloading the street context data from storage
    */
   function HandleStreetReload() {
-    if (sessionStorage.getItem("street") !== null) {
+    if (sessionStorage.getItem("street") !== null && street.descriptor === "!+reload+!") {
       const savedStreet = JSON.parse(sessionStorage.getItem("street"));
       setStreet({
         usrn: savedStreet.usrn,
@@ -1904,7 +1926,24 @@ function App() {
       });
     }
 
-    if (sessionStorage.getItem("streetErrors") !== null) {
+    if (
+      sessionStorage.getItem("streetErrors") !== null &&
+      streetErrors.street.length === 0 &&
+      streetErrors.descriptor.length === 0 &&
+      streetErrors.esu.length === 0 &&
+      streetErrors.highwayDedication.length === 0 &&
+      streetErrors.oneWayExemption.length === 0 &&
+      streetErrors.successorCrossRef.length === 0 &&
+      streetErrors.interest.length === 0 &&
+      streetErrors.maintenanceResponsibility.length === 0 &&
+      streetErrors.reinstatementCategory.length === 0 &&
+      streetErrors.osSpecialDesignation.length === 0 &&
+      streetErrors.construction.length === 0 &&
+      streetErrors.specialDesignation.length === 0 &&
+      streetErrors.heightWidthWeight.length === 0 &&
+      streetErrors.publicRightOfWay.length === 0 &&
+      streetErrors.note.length
+    ) {
       const savedStreetErrors = JSON.parse(sessionStorage.getItem("streetErrors"));
       HandleStreetErrors(
         savedStreetErrors.streetErrors,
@@ -1926,7 +1965,12 @@ function App() {
       );
     }
 
-    if (sessionStorage.getItem("streetRecord") !== null) {
+    if (
+      sessionStorage.getItem("streetRecord") !== null &&
+      streetRecord.type === 11 &&
+      !streetRecord.id &&
+      !streetRecord.index
+    ) {
       const savedStreetRecord = JSON.parse(sessionStorage.getItem("streetRecord"));
       setStreetRecord({
         type: savedStreetRecord.type,
@@ -1937,15 +1981,15 @@ function App() {
       });
     }
 
-    if (sessionStorage.getItem("esu") !== null) {
+    if (sessionStorage.getItem("esu") !== null && !selectedMapEsuId) {
       setSelectedMapEsuId(Number(sessionStorage.getItem("esu")));
     }
 
-    if (sessionStorage.getItem("expandedEsu") !== null) {
+    if (sessionStorage.getItem("expandedEsu") !== null && expandedEsu.length === 0) {
       setExpandedEsu(JSON.parse(sessionStorage.getItem("expandedEsu")));
     }
 
-    if (sessionStorage.getItem("expandedAsd") !== null) {
+    if (sessionStorage.getItem("expandedAsd") !== null && expandedAsd.length === 0) {
       setExpandedAsd(JSON.parse(sessionStorage.getItem("expandedAsd")));
     }
   }
@@ -2498,7 +2542,7 @@ function App() {
    * Event to handle reloading the property context data from storage
    */
   function HandlePropertyReload() {
-    if (sessionStorage.getItem("property") !== null) {
+    if (sessionStorage.getItem("property") !== null && property.uprn === 0 && property.usrn === 0) {
       const savedProperty = JSON.parse(sessionStorage.getItem("property"));
       HandlePropertyChange(
         savedProperty.uprn,
@@ -2515,7 +2559,17 @@ function App() {
       );
     }
 
-    if (sessionStorage.getItem("propertyErrors") !== null) {
+    if (
+      sessionStorage.getItem("propertyErrors") !== null &&
+      propertyErrors.blpu.length === 0 &&
+      propertyErrors.lpi.length === 0 &&
+      propertyErrors.provenance.length === 0 &&
+      propertyErrors.crossRef.length === 0 &&
+      propertyErrors.classification.length === 0 &&
+      propertyErrors.organisation.length === 0 &&
+      propertyErrors.successorCrossRef.length === 0 &&
+      propertyErrors.note.length === 0
+    ) {
       const savedPropertyErrors = JSON.parse(sessionStorage.getItem("propertyErrors"));
       HandlePropertyErrors(
         savedPropertyErrors.blpu,
@@ -2531,7 +2585,7 @@ function App() {
       );
     }
 
-    if (sessionStorage.getItem("propertyRecord") !== null) {
+    if (sessionStorage.getItem("propertyRecord") !== null && propertyRecord.type === 21 && !propertyRecord.index) {
       const savedPropertRecord = JSON.parse(sessionStorage.getItem("propertyRecord"));
       setPropertyRecord({
         type: savedPropertRecord.type,
@@ -2540,7 +2594,7 @@ function App() {
       });
     }
 
-    if (sessionStorage.getItem("wizardData") !== null) {
+    if (sessionStorage.getItem("wizardData") !== null && !wizardData) {
       setWizardData(JSON.parse(sessionStorage.getItem("wizardData")));
     }
   }
@@ -3189,11 +3243,22 @@ function App() {
    * Event to handle reloading the map context data from storage
    */
   function HandleMapReload() {
-    if (sessionStorage.getItem("backgroundData") !== null) {
+    if (
+      sessionStorage.getItem("backgroundData") !== null &&
+      backgroundData.streets.length === 0 &&
+      backgroundData.properties.length === 0 &&
+      backgroundData.unassignedEsus.length === 0
+    ) {
       setBackgroundData(JSON.parse(sessionStorage.getItem("backgroundData")));
     }
 
-    if (sessionStorage.getItem("mapSearch") !== null) {
+    if (
+      sessionStorage.getItem("mapSearch") !== null &&
+      mapSearchData.streets.length === 0 &&
+      mapSearchData.properties.length === 0 &&
+      !mapSearchData.editStreet &&
+      !mapSearchData.editProperty
+    ) {
       const savedMapSearch = JSON.parse(sessionStorage.getItem("mapSearch"));
       HandleMapSearchDataChange(
         savedMapSearch.streets,
@@ -3204,28 +3269,43 @@ function App() {
       );
     }
 
-    if (sessionStorage.getItem("map") !== null) {
+    if (sessionStorage.getItem("map") !== null && map.extents.length === 0 && !map.zoomStreet && !map.zoomProperty) {
       setMap(JSON.parse(sessionStorage.getItem("map")));
     }
 
-    if (sessionStorage.getItem("editObject") !== null) {
+    if (sessionStorage.getItem("editObject") !== null && !editObject) {
       const savedEditObject = JSON.parse(sessionStorage.getItem("editObject"));
       HandleEditMapObject(savedEditObject.objectType, savedEditObject.objectId, true);
     }
 
-    if (sessionStorage.getItem("mapProperty") !== null) {
+    if (sessionStorage.getItem("mapProperty") !== null && !mapProperty) {
       setMapProperty(JSON.parse(sessionStorage.getItem("mapProperty")));
     }
 
-    if (sessionStorage.getItem("mapStreet") !== null) {
+    if (sessionStorage.getItem("mapStreet") !== null && !mapStreet) {
       setMapStreet(JSON.parse(sessionStorage.getItem("mapStreet")));
     }
 
-    if (sessionStorage.getItem("mapExtent") !== null) {
+    if (sessionStorage.getItem("mapExtent") !== null && !mapExtent) {
       HandleExtentChange(JSON.parse(sessionStorage.getItem("mapExtent")), true);
     }
 
-    if (sessionStorage.getItem("highlight") !== null) {
+    if (
+      sessionStorage.getItem("highlight") !== null &&
+      !highlight.street &&
+      !highlight.esu &&
+      !highlight.asd51 &&
+      !highlight.asd52 &&
+      !highlight.asd53 &&
+      !highlight.asd61 &&
+      !highlight.asd62 &&
+      !highlight.asd63 &&
+      !highlight.asd64 &&
+      !highlight.asd66 &&
+      !highlight.property &&
+      !highlight.selectProperties &&
+      !highlight.extent
+    ) {
       setHighlight(JSON.parse(sessionStorage.getItem("highlight")));
     }
   }
@@ -3271,7 +3351,7 @@ function App() {
    * Event to handle reloading the information context data from storage
    */
   function HandleInformationReload() {
-    if (sessionStorage.getItem("displayInformation") !== null) {
+    if (sessionStorage.getItem("displayInformation") !== null && !informationType && !informationSource) {
       const savedDisplayInformation = JSON.parse(sessionStorage.getItem("displayInformation"));
       HandleDisplayInformation(savedDisplayInformation.type, savedDisplayInformation.source, true);
     }

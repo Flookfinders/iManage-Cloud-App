@@ -47,6 +47,7 @@
 //    034   15.03.24 Sean Flook            GLB6 Removed autofocus from the add street button as not required.
 //    035   04.04.24 Sean Flook                 Changes required to navigate back after deleting a property.
 //    036   05.04.24 Sean Flook                 Changes required to display errors even when records have not been edited (Delete and Get).
+//    037   01.05.24 Sean Flook                 Correctly set haveSearch.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -779,7 +780,8 @@ function ADSAppBar(props) {
     setHaveSearch(
       searchContext.currentSearchData &&
         searchContext.currentSearchData.searchString &&
-        searchContext.currentSearchData.searchString.length > 0
+        searchContext.currentSearchData.searchString.length > 0 &&
+        searchContext.currentSearchData.searchString !== "!+reload+!"
     );
 
     setHaveStreet(
