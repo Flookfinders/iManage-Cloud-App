@@ -19,6 +19,7 @@
 //    006   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    007   09.04.24 Sean Flook                 Changed to use auditname for new security.
 //    008   23.04.24 Sean Flook       IMANN-366 If we are running on an Edge Chromium browser do not display our show password icon button.
+//    009   01.05.24 Sean Flook       IMANN-142 Removed the cancel button.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -43,7 +44,6 @@ import {
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LoginIcon from "@mui/icons-material/Login";
-import CloseIcon from "@mui/icons-material/Close";
 import { adsBlueA, adsWhite, adsLightBlue } from "../utils/ADSColours";
 import { FormRowStyle, FormInputStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
@@ -195,14 +195,6 @@ function LoginDialog({ isOpen, title, message }) {
     } else console.error("[ERROR] Security apiUrl is null");
   };
 
-  /**
-   * Event to handle when the cancel button is clicked.
-   */
-  const handleCancelClick = () => {
-    // setShowDialog(false);
-    userContext.onUserChange(null);
-  };
-
   useEffect(() => {
     if (!apiUrl) {
       const userUrl = PostUserLoginUrl();
@@ -308,19 +300,6 @@ function LoginDialog({ isOpen, title, message }) {
           startIcon={<LoginIcon />}
         >
           Login
-        </Button>
-        <Button
-          onClick={handleCancelClick}
-          sx={{
-            color: adsBlueA,
-            "&:hover": {
-              backgroundColor: adsLightBlue,
-              color: adsWhite,
-            },
-          }}
-          startIcon={<CloseIcon />}
-        >
-          Cancel
         </Button>
       </DialogActions>
     </Dialog>
