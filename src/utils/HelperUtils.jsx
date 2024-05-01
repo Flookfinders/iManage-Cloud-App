@@ -46,6 +46,7 @@
 //    033   23.04.24 Sean Flook       IMANN-366 Added ability to detect the type of browser being used.
 //    034   23.04.24 Sean Flook                 Added bracketValidator.
 //    035   26.04.24 Sean Flook                 Included check for "<" & ">" in bracketValidator.
+//    036   01.05.24 Sean Flook       IMANN-429 Remove GAE code in addLookup.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2260,63 +2261,6 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
     } else return null;
   };
 
-  const getGaePostData = (newEngLookup) => {
-    if (data.lookupData && data.lookupData.gaelic) {
-      switch (data.variant) {
-        case "postTown":
-          return {
-            postTown: data.lookupData.gaelic,
-            historic: data.lookupData.historic,
-            language: "GAE",
-            linkedRef: newEngLookup && newEngLookup.postTownRef ? newEngLookup.postTownRef : -1,
-          };
-
-        case "subLocality":
-          return {
-            subLocality: data.lookupData.gaelic,
-            historic: data.lookupData.historic,
-            language: "GAE",
-            linkedRef: newEngLookup && newEngLookup.subLocalityRef ? newEngLookup.subLocalityRef : -1,
-          };
-
-        case "locality":
-          return {
-            locality: data.lookupData.gaelic,
-            historic: data.lookupData.historic,
-            language: "GAE",
-            linkedRef: newEngLookup && newEngLookup.localityRef ? newEngLookup.localityRef : -1,
-          };
-
-        case "town":
-          return {
-            town: data.lookupData.gaelic,
-            historic: data.lookupData.historic,
-            language: "GAE",
-            linkedRef: newEngLookup && newEngLookup.townRef ? newEngLookup.townRef : -1,
-          };
-
-        case "island":
-          return {
-            island: data.lookupData.gaelic,
-            historic: data.lookupData.historic,
-            language: "GAE",
-            linkedRef: newEngLookup && newEngLookup.islandRef ? newEngLookup.islandRef : -1,
-          };
-
-        case "administrativeArea":
-          return {
-            administrativeArea: data.lookupData.gaelic,
-            historic: data.lookupData.historic,
-            language: "GAE",
-            linkedRef: newEngLookup && newEngLookup.administrativeAreaRef ? newEngLookup.administrativeAreaRef : -1,
-          };
-
-        default:
-          return null;
-      }
-    } else return null;
-  };
-
   function UpdateEngLinkedRef(engLookup, linkedLookup) {
     if (engLookup && linkedLookup) {
       switch (data.variant) {
@@ -2465,63 +2409,6 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
           }
 
           if (newCymLookup) newEngLookup = UpdateEngLinkedRef(newEngLookup, newCymLookup);
-        }
-
-        if (canHaveMultiLanguage && isScottish) {
-          lookupAdded = false;
-          const gaeData = getGaePostData(newEngLookup);
-          // if (process.env.NODE_ENV === "development")
-          console.log("[DEBUG] handleDoneAddLookup", {
-            lookupUrl: lookupUrl,
-            language: "GAE",
-            JSON: JSON.stringify(gaeData),
-          });
-          if (gaeData) {
-            await fetch(lookupUrl.url, {
-              headers: lookupUrl.headers,
-              crossDomain: true,
-              method: lookupUrl.type,
-              body: JSON.stringify(gaeData),
-            })
-              .then((res) => (res.ok ? res : Promise.reject(res)))
-              .then((res) => res.json())
-              .then((result) => {
-                newGaeLookup = result;
-                lookupAdded = true;
-              })
-              .catch((res) => {
-                switch (res.status) {
-                  case 400:
-                    res.json().then((body) => {
-                      console.error(`[400 ERROR] Creating ${getLookupVariantString(data.variant)} object`, body.errors);
-                      let lookupGaeErrors = [];
-                      for (const [key, value] of Object.entries(body.errors)) {
-                        lookupGaeErrors.push({ key: key, value: value });
-                      }
-
-                      if (lookupGaeErrors.length > 0) altLanguageError = lookupGaeErrors[0].value;
-                      else altLanguageError = null;
-                    });
-                    break;
-
-                  case 401:
-                    res.json().then((body) => {
-                      console.error(`[401 ERROR] Creating ${getLookupVariantString(data.variant)} object`, body);
-                    });
-                    break;
-
-                  case 500:
-                    console.error(`[500 ERROR] Creating ${getLookupVariantString(data.variant)} object`, res);
-                    break;
-
-                  default:
-                    console.error(`[${res.status} ERROR] Creating ${getLookupVariantString(data.variant)} object`, res);
-                    break;
-                }
-              });
-          }
-
-          if (newGaeLookup) newEngLookup = UpdateEngLinkedRef(newEngLookup, newGaeLookup);
         }
 
         const updatedLookups = GetOldLookups(data.variant, currentLookups);
