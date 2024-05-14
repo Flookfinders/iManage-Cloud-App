@@ -11,7 +11,7 @@
 //
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   30.07.21 Sean Flook         WI39??? Initial Revision.
+//    001   30.07.21 Sean Flook                 Initial Revision.
 //    002   17.03.23 Sean Flook         WI40585 Hide Add property and range menu items.
 //    003   18.04.23 Sean Flook         WI40685 Modified call to ADSSelectionControl.
 //    004   30.06.23 Sean Flook                 Ensure the current property is initially in view.
@@ -32,8 +32,8 @@
 //    018   25.01.24 Sean Flook                 Changes required after UX review.
 //    019   06.02.24 Joel Benford               Change flavour of light blue
 //    020   07.02.24 Joel Benford               Spacing and colours
-//    021   08.02.24 Joel Benford     RTAB3     Supply null street state to classification icon tooltip
-//    022   14.02.24 Joel Benford     RTAB5     Interim check-in for comments
+//    021   08.02.24 Joel Benford         RTAB3 Supply null street state to classification icon tooltip
+//    022   14.02.24 Joel Benford         RTAB5 Interim check-in for comments
 //    023   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
 //    024   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
 //    025   22.02.24 Joel Benford     IMANN-287 Checked items blue
@@ -50,6 +50,7 @@
 //    036   22.04.24 Sean Flook       IMANN-374 Correctly call DataFormStyle.
 //    037   25.04.24 Sean Flook       IMANN-166 After putting the current property in focus do not keep doing it.
 //    038   26.04.24 Sean Flook       IMANN-166 Reset flag if the data changes.
+//    039   13.05.24 Sean Flook       IMANN-439 Changed to use grids to display th data as well as other display improvements.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -79,6 +80,7 @@ import {
   Avatar,
   Snackbar,
   Alert,
+  Grid,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { TreeView, TreeItem } from "@mui/x-tree-view";
@@ -97,14 +99,21 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
 
-import { adsBlueA, adsWhite, adsLightGreyB, adsPaleBlueA, adsLightGreyD } from "../utils/ADSColours";
+import {
+  adsBlueA,
+  adsWhite,
+  adsLightGreyB,
+  adsPaleBlueA,
+  adsLightGreyD,
+  adsBlack0,
+  adsMidGreyA,
+} from "../utils/ADSColours";
 import {
   dataFormStyle,
   ActionIconStyle,
   menuStyle,
   menuItemStyle,
   tooltipStyle,
-  GetTabIconStyle,
   RelatedLanguageChipStyle,
   toolbarStyle,
   GetAlertStyle,
@@ -154,9 +163,7 @@ function RelatedPropertyTab({
   const [propertySelected, setPropertySelected] = useState(null);
   const [propertyChecked, setPropertyChecked] = useState([]);
   const [anchorPropertyActionsEl, setAnchorPropertyActionsEl] = useState(null);
-  const [anchorPropertyActionsEl2, setAnchorPropertyActionsEl2] = useState(null);
-  const [anchorPropertyActionsEl3, setAnchorPropertyActionsEl3] = useState(null);
-  const [anchorPropertyActionsEl4, setAnchorPropertyActionsEl4] = useState(null);
+  const canAddChild = useRef(true);
   const [anchorSelectEl, setAnchorSelectEl] = useState(null);
 
   const [selectionAnchorEl, setSelectionAnchorEl] = useState(null);
@@ -467,9 +474,6 @@ function RelatedPropertyTab({
    */
   async function HandleAddChild(event, uprn) {
     handlePropertyActionsMenuClose(event);
-    handleChild1ActionsMenuClose(event);
-    handleChild2ActionsMenuClose(event);
-    handleChild3ActionsMenuClose(event);
 
     const propertyData = await GetPropertyMapData(uprn, userContext.currentUser.token);
 
@@ -488,9 +492,6 @@ function RelatedPropertyTab({
    */
   const handleAddChildren = async (event, uprn) => {
     handlePropertyActionsMenuClose(event);
-    handleChild1ActionsMenuClose(event);
-    handleChild2ActionsMenuClose(event);
-    handleChild3ActionsMenuClose(event);
 
     const propertyData = await GetPropertyMapData(uprn, userContext.currentUser.token);
 
@@ -533,76 +534,6 @@ function RelatedPropertyTab({
     setAnchorPropertyActionsEl(null);
     event.stopPropagation();
   };
-
-  /**
-   * Event to handle when the child 1 actions menu button is clicked.
-   *
-   * @param {object} event The event object.
-   */
-  const handleChild1ActionsMenuClick = (event) => {
-    setAnchorPropertyActionsEl2(event.nativeEvent.target);
-    event.stopPropagation();
-  };
-
-  /**
-   * Event to handle closing the child 1 actions menu.
-   *
-   * @param {object} event The event object.
-   */
-  const handleChild1ActionsMenuClose = (event) => {
-    setAnchorPropertyActionsEl2(null);
-    event.stopPropagation();
-  };
-
-  /**
-   * Event to handle when the child 2 actions menu button is clicked.
-   *
-   * @param {object} event The event object.
-   */
-  const handleChild2ActionsMenuClick = (event) => {
-    setAnchorPropertyActionsEl3(event.nativeEvent.target);
-    event.stopPropagation();
-  };
-
-  /**
-   * Event to handle closing the child 2 actions menu.
-   *
-   * @param {object} event The event object.
-   */
-  const handleChild2ActionsMenuClose = (event) => {
-    setAnchorPropertyActionsEl3(null);
-    event.stopPropagation();
-  };
-
-  /**
-   * Event to handle when the child 3 actions menu button is clicked.
-   *
-   * @param {object} event The event object.
-   */
-  const handleChild3ActionsMenuClick = (event) => {
-    setAnchorPropertyActionsEl4(event.nativeEvent.target);
-    event.stopPropagation();
-  };
-
-  /**
-   * Event to handle closing the child 3 actions menu.
-   *
-   * @param {object} event The event object.
-   */
-  const handleChild3ActionsMenuClose = (event) => {
-    setAnchorPropertyActionsEl4(null);
-    event.stopPropagation();
-  };
-
-  /**
-   * Method to get the styling for stack holding language chip + address.
-   *
-   * @returns {object} The styling to be used for the stack.
-   */
-  function LanguageAddressPairStyle() {
-    // return {};
-    return { mb: theme.spacing(1) };
-  }
 
   /**
    * Method to get the styling to be used for the language chip.
@@ -657,22 +588,26 @@ function RelatedPropertyTab({
         onClose={handleClose}
         sx={menuStyle}
       >
-        <MenuItem
-          dense
-          disabled={!userCanEdit}
-          onClick={(event) => HandleAddChild(event, record.uprn)}
-          sx={menuItemStyle(false)}
-        >
-          <Typography variant="inherit">Add child</Typography>
-        </MenuItem>
-        <MenuItem
-          dense
-          disabled={!userCanEdit}
-          onClick={(event) => handleAddChildren(event, record.uprn)}
-          sx={menuItemStyle(false)}
-        >
-          <Typography variant="inherit">Add children</Typography>
-        </MenuItem>
+        {canAddChild.current && (
+          <MenuItem
+            dense
+            disabled={!userCanEdit}
+            onClick={(event) => HandleAddChild(event, record.uprn)}
+            sx={menuItemStyle(false)}
+          >
+            <Typography variant="inherit">Add child</Typography>
+          </MenuItem>
+        )}
+        {canAddChild.current && (
+          <MenuItem
+            dense
+            disabled={!userCanEdit}
+            onClick={(event) => handleAddChildren(event, record.uprn)}
+            sx={menuItemStyle(false)}
+          >
+            <Typography variant="inherit">Add children</Typography>
+          </MenuItem>
+        )}
         <MenuItem dense onClick={(event) => handleStreetViewClick(event, record)} sx={menuItemStyle(false)}>
           <Typography variant="inherit">Open in Street View</Typography>
         </MenuItem>
@@ -751,24 +686,24 @@ function RelatedPropertyTab({
     if (currentProperty)
       return {
         backgroundColor: checked ? adsPaleBlueA : adsWhite,
-        borderBottom: `solid ${adsLightGreyB} 1px`,
+        borderTop: `solid ${adsLightGreyB} 1px`,
+        borderLeft: `solid ${adsLightGreyD} 5px`,
         pb: theme.spacing(1),
         pt: theme.spacing(1),
         "&:hover": {
           backgroundColor: adsPaleBlueA,
-          borderRight: `solid ${adsLightGreyD} 3px`,
           color: adsBlueA,
         },
       };
     else
       return {
         backgroundColor: checked ? adsPaleBlueA : "inherit",
-        borderBottom: `solid ${adsLightGreyB} 1px`,
+        borderTop: `solid ${adsLightGreyB} 1px`,
+        borderLeft: `solid ${adsBlack0} 5px`,
         pb: theme.spacing(1),
         pt: theme.spacing(1),
         "&:hover": {
           backgroundColor: adsPaleBlueA,
-          borderRight: `solid ${adsLightGreyD} 3px`,
           color: adsBlueA,
         },
       };
@@ -800,6 +735,151 @@ function RelatedPropertyTab({
     }
 
     setAlertOpen(false);
+  };
+
+  /**
+   * Get the styling to be used for the child count icon.
+   *
+   * @param {Number} dataLength The number of child records this property has.
+   * @returns {Object} The styling to be used for the control.
+   */
+  const getChildCountIconStyle = (dataLength) => {
+    return {
+      width: `${dataLength < 10 ? "20px" : dataLength < 100 ? "28px" : "36px"}`,
+      height: "20px",
+      color: adsMidGreyA,
+      backgroundColor: adsLightGreyB,
+      borderRadius: "18px",
+      fontFamily: "Open Sans",
+      ml: "0px",
+    };
+  };
+
+  /**
+   * Gets the display for the given property record.
+   *
+   * @param {Object} rec The property object that we want to display
+   * @param {Boolean} allowCreateChild If true then this property can have child records added to it; otherwise this property cannot have child records created on it.
+   * @returns {JSX.Element} The display of the given property record.
+   */
+  const getRelatedPropertyItem = (rec, allowCreateChild = true) => {
+    canAddChild.current = allowCreateChild;
+
+    return (
+      <Grid
+        container
+        spacing={0}
+        justifyContent="flex-start"
+        alignItems="center"
+        columns={12}
+        rowSpacing={1}
+        id={`related-property-item-${rec.uprn}`}
+      >
+        <Grid item xs={1}>
+          {data.properties && data.properties.filter((x) => x.parentUprn === rec.uprn).length > 0 && (
+            <Avatar
+              variant="rounded"
+              sx={getChildCountIconStyle(
+                data.properties && data.properties ? data.properties.filter((x) => x.parentUprn === rec.uprn).length : 0
+              )}
+            >
+              <Typography variant="caption">
+                <strong>
+                  {data.properties && data.properties
+                    ? data.properties.filter((x) => x.parentUprn === rec.uprn).length
+                    : 0}
+                </strong>
+              </Typography>
+            </Avatar>
+          )}
+        </Grid>
+        <Grid item xs={1}>
+          <Stack direction="row" justifyContent="flex-end" alignItems="center">
+            {((propertySelected && propertySelected === rec.uprn) || propertyChecked.includes(rec.uprn.toString())) && (
+              <Checkbox
+                sx={{
+                  pl: theme.spacing(0),
+                  pr: theme.spacing(0),
+                }}
+                checked={propertyChecked.includes(rec.uprn.toString())}
+                onChange={(event) => handleCheckboxChange(event, rec.uprn.toString(), rec.primary.address)}
+              />
+            )}
+            <Tooltip
+              title={GetAvatarTooltip(
+                24,
+                rec.primary.logicalStatus,
+                rec.blpuClass ? rec.blpuClass : "R",
+                null,
+                settingsContext.isScottish
+              )}
+              arrow
+              placement="bottom"
+              sx={tooltipStyle}
+            >
+              {GetClassificationIcon(rec.blpuClass ? rec.blpuClass : "R", GetAvatarColour(rec.primary.logicalStatus))}
+            </Tooltip>
+          </Stack>
+        </Grid>
+        <Grid container item xs={8} rowSpacing={1}>
+          <Grid item xs={2}>
+            <Chip size="small" label={rec.primary.language} sx={PropertyLanguageChipStyle(rec.primary.logicalStatus)} />
+          </Grid>
+          <Grid item xs={10}>
+            <Typography
+              variant="subtitle2"
+              sx={AddressStyle(rec.uprn.toString() === propertyContext.currentProperty.uprn.toString())}
+            >
+              {addressToTitleCase(rec.primary.address, rec.primary.postcode)}
+            </Typography>
+          </Grid>
+          {rec.additional.map((recAdd) => {
+            return (
+              <>
+                <Grid item xs={2}>
+                  <Chip size="small" label={recAdd.language} sx={PropertyLanguageChipStyle(recAdd.logicalStatus)} />
+                </Grid>
+                <Grid item xs={10}>
+                  <Typography
+                    variant="subtitle2"
+                    sx={AddressStyle(rec.uprn.toString() === propertyContext.currentProperty.uprn.toString())}
+                  >
+                    {addressToTitleCase(recAdd.address, recAdd.postcode)}
+                  </Typography>
+                </Grid>
+              </>
+            );
+          })}
+        </Grid>
+        <Grid item xs={2}>
+          {propertySelected && propertySelected === rec.uprn && propertyChecked && propertyChecked.length < 2 && (
+            <Stack direction="row" justifyContent="flex-end" alignItems="center">
+              <Tooltip title="Copy UPRN" arrow placement="bottom" sx={tooltipStyle}>
+                <IconButton onClick={(event) => itemCopy(event, rec.uprn.toString(), "UPRN")} size="small">
+                  <CopyIcon sx={ActionIconStyle()} />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Zoom to this" arrow placement="bottom" sx={tooltipStyle}>
+                <IconButton onClick={() => zoomToProperty(rec.uprn)} size="small">
+                  <MyLocationIcon sx={ActionIconStyle()} />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="More actions" arrow placement="bottom" sx={tooltipStyle}>
+                <IconButton
+                  onClick={handlePropertyActionsMenuClick}
+                  aria-controls="property-actions-menu"
+                  aria-haspopup="true"
+                  size="small"
+                >
+                  <MoreVertIcon sx={ActionIconStyle()} />
+                </IconButton>
+              </Tooltip>
+              {AddMenuItems(rec, "property-actions-menu", anchorPropertyActionsEl, handlePropertyActionsMenuClose)}
+            </Stack>
+          )}
+        </Grid>
+      </Grid>
+    );
   };
 
   useEffect(() => {
@@ -948,8 +1028,8 @@ function RelatedPropertyTab({
             sx={{ flexGrow: 1, overflowY: "auto" }}
             aria-label="property related tree"
             id="property-related-tree"
-            defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpandIcon={<ChevronRightIcon />}
+            defaultCollapseIcon={<ExpandMoreIcon sx={{ width: "24px", height: "24px" }} />}
+            defaultExpandIcon={<ChevronRightIcon sx={{ width: "24px", height: "24px" }} />}
             expanded={expanded}
             onNodeSelect={handleNodeSelected}
             onNodeToggle={handleNodeToggle}
@@ -974,143 +1054,7 @@ function RelatedPropertyTab({
                       key={rec.uprn}
                       nodeId={rec.uprn.toString()}
                       sx={treeItemStyle(rec.uprn)}
-                      label={
-                        <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
-                          <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                            {data.properties && data.properties.filter((x) => x.parentUprn === rec.uprn).length > 0 ? (
-                              <Avatar
-                                variant="rounded"
-                                sx={GetTabIconStyle(
-                                  data.properties && data.properties
-                                    ? data.properties.filter((x) => x.parentUprn === rec.uprn).length
-                                    : 0
-                                )}
-                              >
-                                <Typography variant="caption">
-                                  <strong>
-                                    {data.properties && data.properties
-                                      ? data.properties.filter((x) => x.parentUprn === rec.uprn).length
-                                      : 0}
-                                  </strong>
-                                </Typography>
-                              </Avatar>
-                            ) : (
-                              <Box sx={{ width: "24px" }} />
-                            )}
-                            {(propertySelected && propertySelected === rec.uprn) ||
-                            propertyChecked.includes(rec.uprn.toString()) ? (
-                              <Checkbox
-                                sx={{
-                                  pl: theme.spacing(0),
-                                  pr: theme.spacing(0),
-                                }}
-                                checked={propertyChecked.includes(rec.uprn.toString())}
-                                onChange={(event) =>
-                                  handleCheckboxChange(event, rec.uprn.toString(), rec.primary.address)
-                                }
-                              />
-                            ) : (
-                              <Box sx={{ width: "24px" }} />
-                            )}
-                            <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="flex-start">
-                              <Tooltip
-                                title={GetAvatarTooltip(
-                                  24,
-                                  rec.primary.logicalStatus,
-                                  rec.blpuClass ? rec.blpuClass : "R",
-                                  null,
-                                  settingsContext.isScottish
-                                )}
-                                arrow
-                                placement="bottom"
-                                sx={tooltipStyle}
-                              >
-                                {GetClassificationIcon(
-                                  rec.blpuClass ? rec.blpuClass : "R",
-                                  GetAvatarColour(rec.primary.logicalStatus)
-                                )}
-                              </Tooltip>
-                              <Stack direction="column">
-                                <Stack direction="row" spacing={1} sx={LanguageAddressPairStyle()}>
-                                  <Chip
-                                    size="small"
-                                    label={rec.primary.language}
-                                    sx={PropertyLanguageChipStyle(rec.primary.logicalStatus)}
-                                  />
-                                  <Typography
-                                    variant="subtitle2"
-                                    sx={AddressStyle(
-                                      rec.uprn.toString() === propertyContext.currentProperty.uprn.toString()
-                                    )}
-                                  >
-                                    {addressToTitleCase(rec.primary.address, rec.primary.postcode)}
-                                  </Typography>
-                                </Stack>
-                                {rec.additional.map((recAdd) => {
-                                  return (
-                                    <Stack
-                                      direction="row"
-                                      spacing={1}
-                                      sx={LanguageAddressPairStyle()}
-                                      key={recAdd.lpiKey}
-                                    >
-                                      <Chip
-                                        size="small"
-                                        label={recAdd.language}
-                                        sx={PropertyLanguageChipStyle(recAdd.logicalStatus)}
-                                      />
-                                      <Typography
-                                        variant="subtitle2"
-                                        sx={AddressStyle(
-                                          rec.uprn.toString() === propertyContext.currentProperty.uprn.toString()
-                                        )}
-                                      >
-                                        {addressToTitleCase(recAdd.address, recAdd.postcode)}
-                                      </Typography>
-                                    </Stack>
-                                  );
-                                })}
-                              </Stack>
-                            </Stack>
-                          </Stack>
-                          {propertySelected &&
-                            propertySelected === rec.uprn &&
-                            propertyChecked &&
-                            propertyChecked.length < 2 && (
-                              <Stack direction="row" justifyContent="flex-end" alignItems="center">
-                                <Tooltip title="Copy UPRN" arrow placement="bottom" sx={tooltipStyle}>
-                                  <IconButton
-                                    onClick={(event) => itemCopy(event, rec.uprn.toString(), "UPRN")}
-                                    size="small"
-                                  >
-                                    <CopyIcon sx={ActionIconStyle()} />
-                                  </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Zoom to this" arrow placement="bottom" sx={tooltipStyle}>
-                                  <IconButton onClick={() => zoomToProperty(rec.uprn)} size="small">
-                                    <MyLocationIcon sx={ActionIconStyle()} />
-                                  </IconButton>
-                                </Tooltip>
-                                <Tooltip title="More actions" arrow placement="bottom" sx={tooltipStyle}>
-                                  <IconButton
-                                    onClick={handlePropertyActionsMenuClick}
-                                    aria-controls="property-actions-menu"
-                                    aria-haspopup="true"
-                                    size="small"
-                                  >
-                                    <MoreVertIcon sx={ActionIconStyle()} />
-                                  </IconButton>
-                                </Tooltip>
-                                {AddMenuItems(
-                                  rec,
-                                  "property-actions-menu",
-                                  anchorPropertyActionsEl,
-                                  handlePropertyActionsMenuClose
-                                )}
-                              </Stack>
-                            )}
-                        </Stack>
-                      }
+                      label={getRelatedPropertyItem(rec)}
                       onMouseEnter={() => handleMouseEnterProperty(rec.uprn)}
                       onMouseLeave={handleMouseLeaveProperty}
                     >
@@ -1132,144 +1076,7 @@ function RelatedPropertyTab({
                                 key={child1.uprn}
                                 nodeId={child1.uprn.toString()}
                                 sx={treeItemStyle(child1.uprn)}
-                                label={
-                                  <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
-                                    <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
-                                      {data.properties &&
-                                      data.properties.filter((x) => x.parentUprn === child1.uprn).length > 0 ? (
-                                        <Avatar
-                                          variant="rounded"
-                                          sx={GetTabIconStyle(
-                                            data.properties && data.properties
-                                              ? data.properties.filter((x) => x.parentUprn === child1.uprn).length
-                                              : 0
-                                          )}
-                                        >
-                                          <Typography variant="caption">
-                                            <strong>
-                                              {data.properties && data.properties
-                                                ? data.properties.filter((x) => x.parentUprn === child1.uprn).length
-                                                : 0}
-                                            </strong>
-                                          </Typography>
-                                        </Avatar>
-                                      ) : (
-                                        <Box sx={{ width: "24px" }} />
-                                      )}
-                                      {(propertySelected && propertySelected === child1.uprn) ||
-                                      propertyChecked.includes(child1.uprn.toString()) ? (
-                                        <Checkbox
-                                          sx={{
-                                            pl: theme.spacing(0),
-                                            pr: theme.spacing(0),
-                                          }}
-                                          checked={propertyChecked.includes(child1.uprn.toString())}
-                                          onChange={(event) => handleCheckboxChange(event, child1.uprn.toString())}
-                                        />
-                                      ) : (
-                                        <Box sx={{ width: "24px" }} />
-                                      )}
-                                      <Stack
-                                        direction="row"
-                                        spacing={1}
-                                        justifyContent="flex-start"
-                                        alignItems="flex-start"
-                                      >
-                                        {GetClassificationIcon(
-                                          child1.blpuClass ? child1.blpuClass : "R",
-                                          GetAvatarColour(child1.primary.logicalStatus)
-                                        )}
-                                        <Stack direction="column">
-                                          <Stack
-                                            direction="row"
-                                            spacing={1}
-                                            justifyContent="flex-start"
-                                            alignItems="center"
-                                            sx={LanguageAddressPairStyle()}
-                                          >
-                                            <Chip
-                                              size="small"
-                                              label={child1.primary.language}
-                                              sx={PropertyLanguageChipStyle(child1.primary.logicalStatus)}
-                                            />
-                                            <Typography
-                                              variant="subtitle2"
-                                              sx={AddressStyle(
-                                                child1.uprn.toString() ===
-                                                  propertyContext.currentProperty.uprn.toString()
-                                              )}
-                                            >
-                                              {addressToTitleCase(child1.primary.address, child1.primary.postcode)}
-                                            </Typography>
-                                          </Stack>
-                                          {child1.additional.map((child1Add) => {
-                                            return (
-                                              <Stack
-                                                direction="row"
-                                                spacing={1}
-                                                justifyContent="flex-start"
-                                                alignItems="center"
-                                                key={child1Add.lpiKey}
-                                                sx={LanguageAddressPairStyle()}
-                                              >
-                                                <Chip
-                                                  size="small"
-                                                  label={child1Add.language}
-                                                  sx={PropertyLanguageChipStyle(child1Add.logicalStatus)}
-                                                />
-                                                <Typography
-                                                  variant="subtitle2"
-                                                  sx={AddressStyle(
-                                                    child1.uprn.toString() ===
-                                                      propertyContext.currentProperty.uprn.toString()
-                                                  )}
-                                                >
-                                                  {addressToTitleCase(child1Add.address, child1Add.postcode)}
-                                                </Typography>
-                                              </Stack>
-                                            );
-                                          })}
-                                        </Stack>
-                                      </Stack>
-                                    </Stack>
-                                    {propertySelected &&
-                                      propertySelected === child1.uprn &&
-                                      propertyChecked &&
-                                      propertyChecked.length < 2 && (
-                                        <Stack direction="row" justifyContent="flex-end" alignItems="center">
-                                          <Tooltip title="Copy UPRN" arrow placement="bottom" sx={tooltipStyle}>
-                                            <IconButton
-                                              onClick={(event) => itemCopy(event, child1.uprn.toString(), "UPRN")}
-                                              size="small"
-                                            >
-                                              <CopyIcon sx={ActionIconStyle()} />
-                                            </IconButton>
-                                          </Tooltip>
-                                          <Tooltip title="Zoom to this" arrow placement="bottom" sx={tooltipStyle}>
-                                            <IconButton onClick={() => zoomToProperty(child1.uprn)} size="small">
-                                              <MyLocationIcon sx={ActionIconStyle()} />
-                                            </IconButton>
-                                          </Tooltip>
-                                          <Tooltip title="More actions" arrow placement="bottom" sx={tooltipStyle}>
-                                            <IconButton
-                                              onClick={handleChild1ActionsMenuClick}
-                                              aria-controls="child1-actions-menu"
-                                              aria-haspopup="true"
-                                              size="small"
-                                            >
-                                              <MoreVertIcon sx={ActionIconStyle()} />
-                                            </IconButton>
-                                          </Tooltip>
-                                          {AddMenuItems(
-                                            child1,
-                                            "child1-actions-menu",
-                                            anchorPropertyActionsEl2,
-                                            handleChild1ActionsMenuClose
-                                          )}
-                                        </Stack>
-                                      )}
-                                  </Stack>
-                                }
+                                label={getRelatedPropertyItem(child1)}
                                 onMouseEnter={() => handleMouseEnterProperty(child1.uprn)}
                                 onMouseLeave={handleMouseLeaveProperty}
                               >
@@ -1291,182 +1098,7 @@ function RelatedPropertyTab({
                                           key={child2.uprn}
                                           nodeId={child2.uprn.toString()}
                                           sx={treeItemStyle(child2.uprn)}
-                                          label={
-                                            <Stack
-                                              direction="row"
-                                              spacing={1}
-                                              justifyContent="space-between"
-                                              alignItems="center"
-                                            >
-                                              <Stack
-                                                direction="row"
-                                                spacing={1}
-                                                justifyContent="flex-start"
-                                                alignItems="center"
-                                              >
-                                                {data.properties &&
-                                                data.properties.filter((x) => x.parentUprn === child2.uprn).length >
-                                                  0 ? (
-                                                  <Avatar
-                                                    variant="rounded"
-                                                    sx={GetTabIconStyle(
-                                                      data.properties && data.properties
-                                                        ? data.properties.filter((x) => x.parentUprn === child2.uprn)
-                                                            .length
-                                                        : 0
-                                                    )}
-                                                  >
-                                                    <Typography variant="caption">
-                                                      <strong>
-                                                        {data.properties && data.properties
-                                                          ? data.properties.filter((x) => x.parentUprn === child2.uprn)
-                                                              .length
-                                                          : 0}
-                                                      </strong>
-                                                    </Typography>
-                                                  </Avatar>
-                                                ) : (
-                                                  <Box sx={{ width: "24px" }} />
-                                                )}
-                                                {(propertySelected && propertySelected === child2.uprn) ||
-                                                propertyChecked.includes(child2.uprn.toString()) ? (
-                                                  <Checkbox
-                                                    sx={{
-                                                      pl: theme.spacing(0),
-                                                      pr: theme.spacing(0),
-                                                    }}
-                                                    checked={propertyChecked.includes(child2.uprn.toString())}
-                                                    onChange={(event) =>
-                                                      handleCheckboxChange(event, child2.uprn.toString())
-                                                    }
-                                                  />
-                                                ) : (
-                                                  <Box sx={{ width: "24px" }} />
-                                                )}
-                                                <Stack
-                                                  direction="row"
-                                                  spacing={1}
-                                                  justifyContent="flex-start"
-                                                  alignItems="flex-start"
-                                                >
-                                                  {GetClassificationIcon(
-                                                    child2.blpuClass ? child2.blpuClass : "R",
-                                                    GetAvatarColour(child2.primary.logicalStatus)
-                                                  )}
-                                                  <Stack direction="column">
-                                                    <Stack
-                                                      direction="row"
-                                                      spacing={1}
-                                                      justifyContent="flex-start"
-                                                      alignItems="center"
-                                                      sx={LanguageAddressPairStyle()}
-                                                    >
-                                                      <Chip
-                                                        size="small"
-                                                        label={child2.primary.language}
-                                                        sx={PropertyLanguageChipStyle(child2.primary.logicalStatus)}
-                                                      />
-                                                      <Typography
-                                                        variant="subtitle2"
-                                                        sx={AddressStyle(
-                                                          child2.uprn.toString() ===
-                                                            propertyContext.currentProperty.uprn.toString()
-                                                        )}
-                                                      >
-                                                        {addressToTitleCase(
-                                                          child2.primary.address,
-                                                          child2.primary.postcode
-                                                        )}
-                                                      </Typography>
-                                                    </Stack>
-                                                    {child2.additional.map((child2Add) => {
-                                                      return (
-                                                        <Stack
-                                                          direction="row"
-                                                          spacing={1}
-                                                          justifyContent="flex-start"
-                                                          alignItems="center"
-                                                          key={child2Add.lpiKey}
-                                                          sx={LanguageAddressPairStyle()}
-                                                        >
-                                                          <Chip
-                                                            size="small"
-                                                            label={child2Add.language}
-                                                            sx={PropertyLanguageChipStyle(child2Add.logicalStatus)}
-                                                          />
-                                                          <Typography
-                                                            variant="subtitle2"
-                                                            sx={AddressStyle(
-                                                              child2.uprn.toString() ===
-                                                                propertyContext.currentProperty.uprn.toString()
-                                                            )}
-                                                          >
-                                                            {addressToTitleCase(child2Add.address, child2Add.postcode)}
-                                                          </Typography>
-                                                        </Stack>
-                                                      );
-                                                    })}
-                                                  </Stack>
-                                                </Stack>
-                                              </Stack>
-                                              {propertySelected &&
-                                                propertySelected === child2.uprn &&
-                                                propertyChecked &&
-                                                propertyChecked.length < 2 && (
-                                                  <Stack direction="row" justifyContent="flex-end" alignItems="center">
-                                                    <Tooltip
-                                                      title="Copy UPRN"
-                                                      arrow
-                                                      placement="bottom"
-                                                      sx={tooltipStyle}
-                                                    >
-                                                      <IconButton
-                                                        onClick={(event) =>
-                                                          itemCopy(event, child2.uprn.toString(), "UPRN")
-                                                        }
-                                                        size="small"
-                                                      >
-                                                        <CopyIcon sx={ActionIconStyle()} />
-                                                      </IconButton>
-                                                    </Tooltip>
-                                                    <Tooltip
-                                                      title="Zoom to this"
-                                                      arrow
-                                                      placement="bottom"
-                                                      sx={tooltipStyle}
-                                                    >
-                                                      <IconButton
-                                                        onClick={() => zoomToProperty(child2.uprn)}
-                                                        size="small"
-                                                      >
-                                                        <MyLocationIcon sx={ActionIconStyle()} />
-                                                      </IconButton>
-                                                    </Tooltip>
-                                                    <Tooltip
-                                                      title="More actions"
-                                                      arrow
-                                                      placement="bottom"
-                                                      sx={tooltipStyle}
-                                                    >
-                                                      <IconButton
-                                                        onClick={handleChild2ActionsMenuClick}
-                                                        aria-controls="child2-actions-menu"
-                                                        aria-haspopup="true"
-                                                        size="small"
-                                                      >
-                                                        <MoreVertIcon sx={ActionIconStyle()} />
-                                                      </IconButton>
-                                                    </Tooltip>
-                                                    {AddMenuItems(
-                                                      child2,
-                                                      "child2-actions-menu",
-                                                      anchorPropertyActionsEl3,
-                                                      handleChild2ActionsMenuClose
-                                                    )}
-                                                  </Stack>
-                                                )}
-                                            </Stack>
-                                          }
+                                          label={getRelatedPropertyItem(child2)}
                                           onMouseEnter={() => handleMouseEnterProperty(child2.uprn)}
                                           onMouseLeave={handleMouseLeaveProperty}
                                         >
@@ -1488,199 +1120,7 @@ function RelatedPropertyTab({
                                                     key={child3.uprn}
                                                     nodeId={child3.uprn.toString()}
                                                     sx={treeItemStyle(child3.uprn)}
-                                                    label={
-                                                      <Stack
-                                                        direction="row"
-                                                        spacing={1}
-                                                        justifyContent="space-between"
-                                                        alignItems="center"
-                                                      >
-                                                        <Stack
-                                                          direction="row"
-                                                          spacing={1}
-                                                          justifyContent="flex-start"
-                                                          alignItems="center"
-                                                        >
-                                                          {data.properties &&
-                                                          data.properties.filter((x) => x.parentUprn === child3.uprn)
-                                                            .length > 0 ? (
-                                                            <Avatar
-                                                              variant="rounded"
-                                                              sx={GetTabIconStyle(
-                                                                data.properties && data.properties
-                                                                  ? data.properties.filter(
-                                                                      (x) => x.parentUprn === child3.uprn
-                                                                    ).length
-                                                                  : 0
-                                                              )}
-                                                            >
-                                                              <Typography variant="caption">
-                                                                <strong>
-                                                                  {data.properties && data.properties
-                                                                    ? data.properties.filter(
-                                                                        (x) => x.parentUprn === child3.uprn
-                                                                      ).length
-                                                                    : 0}
-                                                                </strong>
-                                                              </Typography>
-                                                            </Avatar>
-                                                          ) : (
-                                                            <Box sx={{ width: "24px" }} />
-                                                          )}
-                                                          {(propertySelected && propertySelected === child3.uprn) ||
-                                                          propertyChecked.includes(child3.uprn.toString()) ? (
-                                                            <Checkbox
-                                                              sx={{
-                                                                pl: theme.spacing(0),
-                                                                pr: theme.spacing(0),
-                                                              }}
-                                                              checked={propertyChecked.includes(child3.uprn.toString())}
-                                                              onChange={(event) =>
-                                                                handleCheckboxChange(event, child3.uprn.toString())
-                                                              }
-                                                            />
-                                                          ) : (
-                                                            <Box
-                                                              sx={{
-                                                                width: "24px",
-                                                              }}
-                                                            />
-                                                          )}
-                                                          <Stack
-                                                            direction="row"
-                                                            spacing={1}
-                                                            justifyContent="flex-start"
-                                                            alignItems="flex-start"
-                                                          >
-                                                            {GetClassificationIcon(
-                                                              child3.blpuClass ? child3.blpuClass : "R",
-                                                              GetAvatarColour(child3.primary.logicalStatus)
-                                                            )}
-                                                            <Stack direction="column">
-                                                              <Stack
-                                                                direction="row"
-                                                                spacing={1}
-                                                                justifyContent="flex-start"
-                                                                alignItems="center"
-                                                                sx={LanguageAddressPairStyle()}
-                                                              >
-                                                                <Chip
-                                                                  size="small"
-                                                                  label={child3.primary.language}
-                                                                  sx={PropertyLanguageChipStyle(
-                                                                    child3.primary.logicalStatus
-                                                                  )}
-                                                                />
-                                                                <Typography
-                                                                  variant="subtitle2"
-                                                                  sx={AddressStyle(
-                                                                    child3.uprn.toString() ===
-                                                                      propertyContext.currentProperty.uprn.toString()
-                                                                  )}
-                                                                >
-                                                                  {addressToTitleCase(
-                                                                    child3.primary.address,
-                                                                    child3.primary.postcode
-                                                                  )}
-                                                                </Typography>
-                                                              </Stack>
-                                                              {child3.additional.map((child3Add) => {
-                                                                return (
-                                                                  <Stack
-                                                                    direction="row"
-                                                                    spacing={1}
-                                                                    justifyContent="flex-start"
-                                                                    alignItems="center"
-                                                                    key={child3Add.lpiKey}
-                                                                    sx={LanguageAddressPairStyle()}
-                                                                  >
-                                                                    <Chip
-                                                                      size="small"
-                                                                      label={child3Add.language}
-                                                                      sx={PropertyLanguageChipStyle(
-                                                                        child3Add.logicalStatus
-                                                                      )}
-                                                                    />
-                                                                    <Typography
-                                                                      variant="subtitle2"
-                                                                      sx={AddressStyle(
-                                                                        child3.uprn.toString() ===
-                                                                          propertyContext.currentProperty.uprn.toString()
-                                                                      )}
-                                                                    >
-                                                                      {addressToTitleCase(
-                                                                        child3Add.address,
-                                                                        child3Add.postcode
-                                                                      )}
-                                                                    </Typography>
-                                                                  </Stack>
-                                                                );
-                                                              })}
-                                                            </Stack>
-                                                          </Stack>
-                                                        </Stack>
-                                                        {propertySelected &&
-                                                          propertySelected === child3.uprn &&
-                                                          propertyChecked &&
-                                                          propertyChecked.length < 2 && (
-                                                            <Stack
-                                                              direction="row"
-                                                              justifyContent="flex-end"
-                                                              alignItems="center"
-                                                            >
-                                                              <Tooltip
-                                                                title="Copy UPRN"
-                                                                arrow
-                                                                placement="bottom"
-                                                                sx={tooltipStyle}
-                                                              >
-                                                                <IconButton
-                                                                  onClick={(event) =>
-                                                                    itemCopy(event, child3.uprn.toString(), "UPRN")
-                                                                  }
-                                                                  size="small"
-                                                                >
-                                                                  <CopyIcon sx={ActionIconStyle()} />
-                                                                </IconButton>
-                                                              </Tooltip>
-                                                              <Tooltip
-                                                                title="Zoom to this"
-                                                                arrow
-                                                                placement="bottom"
-                                                                sx={tooltipStyle}
-                                                              >
-                                                                <IconButton
-                                                                  onClick={() => zoomToProperty(child3.uprn)}
-                                                                  size="small"
-                                                                >
-                                                                  <MyLocationIcon sx={ActionIconStyle()} />
-                                                                </IconButton>
-                                                              </Tooltip>
-                                                              <Tooltip
-                                                                title="More actions"
-                                                                arrow
-                                                                placement="bottom"
-                                                                sx={tooltipStyle}
-                                                              >
-                                                                <IconButton
-                                                                  onClick={handleChild3ActionsMenuClick}
-                                                                  aria-controls="child3-actions-menu"
-                                                                  aria-haspopup="true"
-                                                                  size="small"
-                                                                >
-                                                                  <MoreVertIcon sx={ActionIconStyle()} />
-                                                                </IconButton>
-                                                              </Tooltip>
-                                                              {AddMenuItems(
-                                                                child3,
-                                                                "child3-actions-menu",
-                                                                anchorPropertyActionsEl4,
-                                                                handleChild3ActionsMenuClose
-                                                              )}
-                                                            </Stack>
-                                                          )}
-                                                      </Stack>
-                                                    }
+                                                    label={getRelatedPropertyItem(child3, false)}
                                                     onMouseEnter={() => handleMouseEnterProperty(child3.uprn)}
                                                     onMouseLeave={handleMouseLeaveProperty}
                                                   >

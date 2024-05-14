@@ -38,6 +38,7 @@
 //    025   22.04.24 Sean Flook       IMANN-374 Correctly call DataFormStyle.
 //    026   25.04.24 Sean Flook       IMANN-166 After putting the current street in focus do not keep doing it.
 //    027   26.04.24 Sean Flook       IMANN-166 Reset flag if the data changes.
+//    028   13.05.24 Sean Flook       IMANN-439 Changed to use grids to display th data as well as other display improvements.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -109,6 +110,8 @@ import {
   adsMidRed,
   adsBrown,
   adsDarkGreen,
+  adsLightGreyD,
+  adsBlack0,
 } from "../utils/ADSColours";
 import {
   dataFormStyle,
@@ -645,8 +648,9 @@ function RelatedStreetTab({
     const checked = streetChecked.includes(usrn.toString());
     if (currentStreet)
       return {
-        backgroundColor: checked ? adsPaleBlueA : "inherit",
-        borderBottom: `solid ${adsLightGreyB} 1px`,
+        backgroundColor: checked ? adsPaleBlueA : adsWhite,
+        borderTop: `solid ${adsLightGreyB} 1px`,
+        borderLeft: `solid ${adsLightGreyD} 5px`,
         pb: theme.spacing(1),
         pt: theme.spacing(1),
         "&:hover": {
@@ -657,8 +661,8 @@ function RelatedStreetTab({
     else
       return {
         backgroundColor: checked ? adsPaleBlueA : "inherit",
-        borderBottom: `solid ${adsLightGreyB} 1px`,
-        borderLeftWidth: "3px",
+        borderTop: `solid ${adsLightGreyB} 1px`,
+        borderLeft: `solid ${adsBlack0} 5px`,
         pb: theme.spacing(1),
         pt: theme.spacing(1),
         "&:hover": {
