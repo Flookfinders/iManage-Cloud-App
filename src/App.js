@@ -56,6 +56,7 @@
 //    043   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
 //    044   30.04.24 Sean Flook       IMANN-371 Separate out streetTab and propertyTab.
 //    045   01.05.24 Sean Flook                 Only reload contexts if required.
+//    046   14.05.24 Joshua McCormick IMANN-270 Typo in Validation  for errors with hww & prow
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1867,9 +1868,9 @@ function App() {
           break;
 
         case 64:
-          if (sandbox.currentStreetRecords.heightWidthWeight) {
+          if (sandbox.currentStreetRecords.hww) {
             const heightWidthWeightErrors = ValidateHeightWidthWeightData(
-              sandbox.currentStreetRecords.heightWidthWeight,
+              sandbox.currentStreetRecords.hww,
               streetRecord.index,
               lookups
             );
@@ -1879,9 +1880,9 @@ function App() {
           break;
 
         case 66:
-          if (sandbox.currentStreetRecords.publicRightOfWay) {
+          if (sandbox.currentStreetRecords.prow) {
             const publicRightOfWayErrors = ValidatePublicRightOfWayData(
-              sandbox.currentStreetRecords.publicRightOfWay,
+              sandbox.currentStreetRecords.prow,
               streetRecord.index,
               lookups,
               authorityCode

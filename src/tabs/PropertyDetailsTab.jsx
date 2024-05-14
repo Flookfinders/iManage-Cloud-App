@@ -44,6 +44,7 @@
 //    031   04.04.24 Sean Flook                 Various changes for action menu items.
 //    032   09.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
 //    033   17.04.24 Joshua McCormick IMANN-207 endDate set to null if logical status is less than 7
+//    034   08.05.24 Joel Benford     IMANN-398 BLPU State is now mandatory
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -293,12 +294,17 @@ function PropertyDetailsTab({
               ? newValue && ConvertDate(newValue)
               : startDate && ConvertDate(startDate),
           endDate:
-            fieldName && fieldName === "endDate" ? newValue && ConvertDate(newValue) : fieldName && fieldName === "logicalStatus" && newValue < 7 ? null : endDate && ConvertDate(endDate),
+            fieldName && fieldName === "endDate"
+              ? newValue && ConvertDate(newValue)
+              : fieldName && fieldName === "logicalStatus" && newValue < 7
+              ? null
+              : endDate && ConvertDate(endDate),
           neverExport: fieldName && fieldName === "neverExport" ? newValue : excludeFromExport,
           siteSurvey: fieldName && fieldName === "siteSurvey" ? newValue : siteSurvey,
           parentUprn: fieldName && fieldName === "parentUprn" ? (newValue ? newValue.uprn : null) : parentUprn,
           parentAddress: fieldName && fieldName === "parentUprn" ? (newValue ? newValue.address : null) : parentAddress,
-          parentPostcode: fieldName && fieldName === "parentUprn" ? (newValue ? newValue.postcode : null) : parentPostcode,
+          parentPostcode:
+            fieldName && fieldName === "parentUprn" ? (newValue ? newValue.postcode : null) : parentPostcode,
         }
       : {
           level: fieldName && fieldName === "level" ? newValue : level,
@@ -317,12 +323,17 @@ function PropertyDetailsTab({
               ? newValue && ConvertDate(newValue)
               : startDate && ConvertDate(startDate),
           endDate:
-            fieldName && fieldName === "endDate" ? newValue && ConvertDate(newValue) : fieldName && fieldName === "logicalStatus" && newValue < 7 ? null : endDate && ConvertDate(endDate),
+            fieldName && fieldName === "endDate"
+              ? newValue && ConvertDate(newValue)
+              : fieldName && fieldName === "logicalStatus" && newValue < 7
+              ? null
+              : endDate && ConvertDate(endDate),
           neverExport: fieldName && fieldName === "neverExport" ? newValue : excludeFromExport,
           siteSurvey: fieldName && fieldName === "siteSurvey" ? newValue : siteSurvey,
           parentUprn: fieldName && fieldName === "parentUprn" ? (newValue ? newValue.uprn : null) : parentUprn,
           parentAddress: fieldName && fieldName === "parentUprn" ? (newValue ? newValue.address : null) : parentAddress,
-          parentPostcode: fieldName && fieldName === "parentUprn" ? (newValue ? newValue.postcode : null) : parentPostcode,
+          parentPostcode:
+            fieldName && fieldName === "parentUprn" ? (newValue ? newValue.postcode : null) : parentPostcode,
         };
 
     if (fieldName === "organisation") {
@@ -1377,7 +1388,7 @@ function PropertyDetailsTab({
         <ADSSelectControl
           label="State"
           isEditable={userCanEdit}
-          isRequired={blpuLogicalStatus === 6}
+          isRequired
           isFocused={focusedField ? focusedField === "BlpuState" : false}
           loading={loading}
           useRounded

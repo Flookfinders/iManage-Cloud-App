@@ -33,6 +33,7 @@
 //    020   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    021   18.03.24 Sean Flook         ASD3_OS Use the description as the secondary information for Scottish special designation records.
 //    022   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    023   14.05.24 Joshua McCormick IMAN-364  noWrap & padding to prevent toolbar content overlapping
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -539,10 +540,10 @@ function AsdDataTab({
     <Fragment>
       <Box sx={toolbarStyle} id={"ads-asd-data-grid"}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Typography variant="subtitle1" sx={{ pl: theme.spacing(1.5) }}>
+          <Typography variant="subtitle1" noWrap sx={{ pl: theme.spacing(1.5) }}>
             Associated Street Data
           </Typography>
-          <Stack direction="row" alignItems="center" justifyContent="flex-end">
+          <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ pl: theme.spacing(5) }}>
             <Tooltip title={`${expandCollapseLabel} items in list`} arrow placement="right" sx={tooltipStyle}>
               <IconButton
                 onClick={handleExpandCollapse}

@@ -21,6 +21,7 @@
 //    008   31.01.24 Joel Benford               Changes to as save and support OS
 //    009   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    010   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    011   09.05.24 Joel Benford     IMANN-443 Allow Gaelic for Scottish property metadata 
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -73,6 +74,11 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
       ? settingsContext.isWelsh
         ? [
             { id: "BIL", text: "Bilingual" },
+            { id: "ENG", text: "English" },
+          ]
+        : settingsContext.isScottish
+        ? [
+            { id: "GAE", text: "Gaelic" },
             { id: "ENG", text: "English" },
           ]
         : [{ id: "ENG", text: "English" }]

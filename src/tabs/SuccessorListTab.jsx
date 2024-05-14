@@ -25,6 +25,7 @@
 //    012   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    013   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
 //    014   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    015   14.05.24 Joshua McCormick IMAN-364  noWrap & padding to prevent toolbar content overlapping
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -329,7 +330,7 @@ function SuccessorListTab({
     <Fragment>
       <Box sx={toolbarStyle} id="ads-successor-data-grid">
         <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Typography variant="subtitle1" sx={{ pl: theme.spacing(2) }}>
+          <Typography variant="subtitle1" noWrap sx={{ pl: theme.spacing(1.5), pr: theme.spacing(2)}}>
             Successor cross references
           </Typography>
           <Tooltip title="Add new successor cross reference record" arrow placement="right" sx={tooltipStyle}>
@@ -424,7 +425,7 @@ function SuccessorListTab({
             >
               <ListItemText
                 primary={
-                  <Typography variant="subtitle1" sx={{ pl: "16px" }}>
+                  <Typography noWrap variant="subtitle1" sx={{ pl: "16px" }}>
                     No successor cross reference records present
                   </Typography>
                 }

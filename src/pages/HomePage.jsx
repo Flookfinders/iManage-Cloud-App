@@ -20,6 +20,7 @@
 //    007   25.01.24 Sean Flook                 Correctly handle status code 204.
 //    008   13.02.24 Sean Flook                 Correctly handle the response from the GET endpoints.
 //    009   26.02.24 Joel Benford     IMANN-242 Add DbAuthority to lookups context
+//    010   09.02.24 Joel Benford    IM-227/228 Generalize ward/parish URL
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -42,8 +43,8 @@ import {
   GetSubLocalityUrl,
   GetPostTownUrl,
   GetPostcodeUrl,
-  GetWardsForAuthorityUrl,
-  GetParishesForAuthorityUrl,
+  GetWardsUrl,
+  GetParishesUrl,
   GetDbAuthorityUrl,
   GetApiMetadataUrl,
   GetLookupMetadataUrl,
@@ -283,17 +284,13 @@ const HomePage = () => {
     const LoadWardParishLookups = async () => {
       const Lookups = [
         {
-          url: GetWardsForAuthorityUrl("GET", userContext.currentUser.token, Number(authorityDetails.dataProviderCode)),
+          url: GetWardsUrl("GET", userContext.currentUser.token, Number(authorityDetails.dataProviderCode)),
           data: lookupWards,
           noRecords: [],
           id: "lookupWards",
         },
         {
-          url: GetParishesForAuthorityUrl(
-            "GET",
-            userContext.currentUser.token,
-            Number(authorityDetails.dataProviderCode)
-          ),
+          url: GetParishesUrl("GET", userContext.currentUser.token, Number(authorityDetails.dataProviderCode)),
           data: lookupParishes,
           noRecords: [],
           id: "lookupParishes",

@@ -27,6 +27,8 @@
 //    014   09.04.24 Sean Flook       IMANN-376 Removed for administrative area.
 //    015   25.04.24 Joel Benford     IMANN-275 Allow any language in lookups
 //    016   29.04.24 Sean Flook       IMANN-413 Only filter lookups on language for Welsh authorities.
+//    017   03.05.24 Joel Benford               Fix index on new descriptors
+
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -436,7 +438,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
             noWrap
             align="left"
           >
-            {`| ${data.index + 1} of ${data.totalRecords}: ${streetToTitleCase(description)}`}
+            {`| ${data.index + 1} of ${data.totalRecords}: ${streetToTitleCase(description) || ""}`}
           </Typography>
         </Stack>
       </Box>

@@ -44,6 +44,7 @@
     "start": "craco start",
     "start:dev": "env-cmd -f ./environments/.dev.env craco start",
     "start:dev_multi": "env-cmd -f ./environments/.dev_multi.env craco start",
+    "start:local": "env-cmd -f ./environments/.local.env craco start",
     "start:dev_sco": "env-cmd -f ./environments/.dev_sco.env craco start",
     "start:demo": "env-cmd -f ./environments/.demo.env craco start",
     "start:demo_sco": "env-cmd -f ./environments/.demo_sco.env craco start",

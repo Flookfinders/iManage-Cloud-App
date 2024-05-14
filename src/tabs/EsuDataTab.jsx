@@ -36,6 +36,7 @@
 //    023   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    024   22.03.24 Sean Flook       PRFRM6_GP Display information control when editing an existing ESU.
 //    025   26.03.24 Joshua McCormick IMANN-280 Added divider on tab between back button and title
+//    026   14.05.24 Joshua McCormick IMANN-386 Toolbar styling for responsiveness
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -884,7 +885,7 @@ function EsuDataTab({
     <Fragment>
       <Box sx={toolbarStyle} id="ads-esu-data-form">
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={dataTabToolBar}>
-          <Stack direction="row" justifyContent="flex-start" alignItems="center">
+          <Stack direction="row" spacing={0.5} justifyContent="flex-start" alignItems="center">
             <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
             <Typography>{`| ${data.esuData.esuId < 0 ? `Add new ESU` : `${data.esuData.esuId}`}`}</Typography>
           </Stack>

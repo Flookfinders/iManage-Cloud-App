@@ -26,6 +26,7 @@
 //    013   27.03.24 Sean Flook                 Further changes to fix warnings.
 //    014   09.04.24 Sean Flook       IMANN-376 Changes required to allow lookups to be added on the fly.
 //    015   26.04.24 Sean Flook       IMANN-413 Removed Gaelic option.
+//    016   09.02.24 Joel Benford    IM-227/228 Fix ward/parish URL calls
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1588,7 +1589,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 pkId: data.lookupData.lookupId,
                 wardCode: data.lookupData.wardCode,
                 ward: data.lookupData.ward,
-                detrCode: settingsContext ? settingsContext.authorityCode : null,
+                detrCode: settingsContext ? settingsContext.authorityCode.toString() : null,
                 historic: data.lookupData.historic,
               };
             } else return null;
@@ -1600,7 +1601,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 pkId: data.lookupData.lookupId,
                 parishCode: data.lookupData.parishCode,
                 parish: data.lookupData.parish,
-                detrCode: settingsContext ? settingsContext.authorityCode : null,
+                detrCode: settingsContext ? settingsContext.authorityCode.toString() : null,
                 historic: data.lookupData.historic,
               };
             } else return null;

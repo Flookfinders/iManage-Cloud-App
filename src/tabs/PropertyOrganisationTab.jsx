@@ -24,6 +24,7 @@
 //    011   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    012   11.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
 //    013   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title nowrapping with width restrictions
+//    013   14.05.24 Joshua McCormick IMANN-386 Moved toolbar errors inside toolbar stack
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -324,14 +325,14 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onHomeCl
             </Typography>
           </Typography>
           {errors && errors.length > 0 && <ErrorIcon sx={errorIconStyle} />}
-          <ADSActionButton
-            variant="delete"
-            disabled={!userCanEdit}
-            tooltipTitle="Delete"
-            tooltipPlacement="right"
-            onClick={handleDeleteClick}
-          />
         </Stack>
+        <ADSActionButton
+          variant="delete"
+          disabled={!userCanEdit}
+          tooltipTitle="Delete"
+          tooltipPlacement="right"
+          onClick={handleDeleteClick}
+        />
       </Box>
       <Box sx={dataFormStyle("PropertyOrganisationTab")}>
         <ADSTextControl

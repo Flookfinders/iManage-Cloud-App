@@ -40,6 +40,7 @@
 //    016   01.03.24 Sean Flook                 Corrected check for 2100011.
 //    017   24.04.24 Sean Flook                 Added check for 2100065.
 //    018   26.04.24 Sean Flook                 Tweaked check for 2100065.
+//    019   08.05.24 Joel Benford     IMANN-398 Add check 2100066
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -240,6 +241,12 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
 
     if (includeCheck(currentCheck, isScottish) && data.blpuState && !data.blpuStateDate) {
       blpuStateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // BLPU State is Mandatory
+    currentCheck = GetCheck(2100066, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && !data.blpuState) {
+      blpuStateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // State Date cannot be in the future.

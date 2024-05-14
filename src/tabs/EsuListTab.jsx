@@ -33,6 +33,7 @@
 //    020   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    021   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    022   22.03.24 Sean Flook       PRFRM6_GP Ensure the information control is correctly displayed.
+//    023   14.05.24 Joshua McCormick IMAN-364  noWrap & padding to prevent toolbar content overlapping
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -437,8 +438,8 @@ function EsuListTab({
                 disabled={assigningEsus}
               />
             }
-            label={<Typography variant="subtitle1">Elementary Street Units</Typography>}
-            sx={{ pl: theme.spacing(1.5) }}
+            label={<Typography variant="subtitle1" noWrap>Elementary Street Units</Typography>}
+            sx={{ pl: theme.spacing(1.5), pr: theme.spacing(2)}}
           />
           <Stack direction="row" alignItems="center" justifyContent="flex-end">
             {!settingsContext.isScottish && (
@@ -451,7 +452,7 @@ function EsuListTab({
                   disabled={assigningEsus}
                 >
                   {expandCollapseLabel === "Expand all" ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
-                  <Typography variant="body2">{expandCollapseLabel}</Typography>
+                  <Typography variant="body2" noWrap>{expandCollapseLabel}</Typography>
                 </IconButton>
               </Tooltip>
             )}

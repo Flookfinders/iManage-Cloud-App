@@ -21,6 +21,7 @@
 //    008   09.04.24 Sean Flook                 Changes required for updated security API.
 //    009   24.04.24 Sean Flook       IMANN-390 Added new endpoint to get the list of new UPRNs used when creating new properties.
 //    010   25.04.24 Sean Flook       IMANN-390 Added new endpoint to return UPRNs assigned to failed properties to be added back into the availableUprns table.
+//    011   09.02.24 Joel Benford    IM-227/228 Generalize ward/parish URL
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -550,11 +551,12 @@ export function GetSubLocalityUrl(endPointType, userToken) {
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
  * @param {string} userToken The token for the user who is calling the endpoint.
- * @param {*} authorityCode The DETR code for the authority running the application.
+ * @param {*} authorityCode The DETR code for the authority running the application, only used on GET.
  * @return {object} The URL object used in FETCH calls.
  */
-export function GetParishesForAuthorityUrl(endPointType, userToken, authorityCode) {
-  const url = GetApiSite("lookup", `/api/Parish/${authorityCode}`);
+export function GetParishesUrl(endPointType, userToken, authorityCode) {
+  const url =
+    endPointType === "GET" ? GetApiSite("lookup", `/api/Parish/${authorityCode}`) : GetApiSite("lookup", `/api/Parish`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -563,11 +565,12 @@ export function GetParishesForAuthorityUrl(endPointType, userToken, authorityCod
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
  * @param {string} userToken The token for the user who is calling the endpoint.
- * @param {*} authorityCode The DETR code for the authority running the application.
+ * @param {*} authorityCode The DETR code for the authority running the application, only used on GET.
  * @return {object} The URL object used in FETCH calls.
  */
-export function GetWardsForAuthorityUrl(endPointType, userToken, authorityCode) {
-  const url = GetApiSite("lookup", `/api/Ward/${authorityCode}`);
+export function GetWardsUrl(endPointType, userToken, authorityCode) {
+  const url =
+    endPointType === "GET" ? GetApiSite("lookup", `/api/Ward/${authorityCode}`) : GetApiSite("lookup", `/api/Ward`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 

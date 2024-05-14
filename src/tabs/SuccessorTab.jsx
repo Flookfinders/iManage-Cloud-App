@@ -22,6 +22,8 @@
 //    009   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    010   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
 //    011   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    012   14.05.24 Joshua McCormick IMAN-364  Toolbar styling to prevent toolbar content overlapping
+//    013   14.05.24 Joshua McCormick IMANN-364 Removed unnecessary imports
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -331,33 +333,38 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onHomeClic
   return (
     <Fragment>
       <Box sx={toolbarStyle}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Stack direction="row" spacing={0.5} justifyContent="flex-start" alignItems="center">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: theme.spacing(0.25) }}>
+          <Typography variant="subtitle1">
             <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
-            <Typography
-              sx={{
-                flexGrow: 1,
-                display: "none",
-                [theme.breakpoints.up("sm")]: {
-                  display: "block",
-                },
-              }}
-              variant="subtitle1"
-              noWrap
-              align="left"
-            >
-              {`| Successor cross reference (${data.index + 1} of ${data.totalRecords}): ${successor}`}
+          </Typography>
+          <Typography
+            sx={{
+              flexGrow: 1,
+              fontSize: "14px",
+              display: "none",
+              pl: "6px",
+              pt: "2px",
+              [theme.breakpoints.up("sm")]: {
+                display: "block",
+              },
+            }}
+            variant="subtitle1"
+            noWrap
+            align="left"
+          >
+            <Typography display="inline" variant="subtitle1">
+              {`| Successor cross reference (${data.index + 1} of ${data.totalRecords}): ${successor}`}{" "}
             </Typography>
-            {errors && errors.length > 0 && <ErrorIcon sx={errorIconStyle} />}
-          </Stack>
-          <ADSActionButton
-            variant="delete"
-            disabled={!userCanEdit}
-            tooltipTitle="Delete"
-            tooltipPlacement="right"
-            onClick={handleDeleteClick}
-          />
+          </Typography>
+          {errors && errors.length > 0 && <ErrorIcon sx={errorIconStyle} />}
         </Stack>
+        <ADSActionButton
+          variant="delete"
+          disabled={!userCanEdit}
+          tooltipTitle="Delete"
+          tooltipPlacement="right"
+          onClick={handleDeleteClick}
+        />
       </Box>
       <Box sx={dataFormStyle(`${variant === "street" ? "StreetSuccessorTab" : "PropertySuccessorTab"}`)}>
         <ADSNumberControl
