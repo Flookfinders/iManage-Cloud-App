@@ -56,6 +56,7 @@
 //    043   02.05.24 Joshua McCormick IMANN-283 GetStreetTypeLabel now has included label defaulted to true 
 //    044   02.05.24 Joel Benford     IMANN-275 Use ENG for unassigned lookups in Scotland
 //    045   08.05.24 Sean Flook       IMANN-447 Added exclude from export when creating a new street.
+//    046   14.05.24 Sean Flook       IMANN-438 Fixed setting the prowUsrn field when updating.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2389,7 +2390,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
           ? streetData.publicRightOfWays.map((prow) => {
               return {
                 changeType: prow.changeType,
-                prowUsrn: streetData.prowUsrn,
+                prowUsrn: streetData.usrn,
                 defMapGeometryType: prow.defMapGeometryType,
                 defMapGeometryCount: prow.defMapGeometryCount,
                 prowLength: prow.prowLength,
