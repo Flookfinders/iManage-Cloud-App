@@ -30,6 +30,7 @@
 //    017   16.04.24 Sean Flook                 Added a sub menu on the properties menu item so that we can select properties by logical status as well.
 //    018   16.04.24 Sean Flook                 Added ability to select historic properties.
 //    019   18.04.24 Sean Flook       IMANN-351 Changes required to prevent crashes when refreshing the page.
+//    020   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -766,7 +767,8 @@ function SearchDataForm() {
         mapContext.onBackgroundDataChange(
           mapContext.currentBackgroundData.streets,
           mapContext.currentBackgroundData.unassignedEsus,
-          newMapBackgroundProperties
+          newMapBackgroundProperties,
+          mapContext.currentBackgroundData.provenances
         );
         mapContext.onSearchDataChange(mapContext.currentSearchData.streets, newMapSearchProperties, null, null);
       } else {
@@ -779,7 +781,8 @@ function SearchDataForm() {
         mapContext.onBackgroundDataChange(
           newMapBackgroundStreets,
           mapContext.currentBackgroundData.unassignedEsus,
-          mapContext.currentBackgroundData.properties
+          mapContext.currentBackgroundData.properties,
+          mapContext.currentBackgroundData.provenances
         );
         mapContext.onSearchDataChange(newMapSearchStreets, mapContext.currentSearchData.properties, null, null);
       }

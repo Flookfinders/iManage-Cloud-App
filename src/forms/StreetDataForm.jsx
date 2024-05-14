@@ -86,6 +86,7 @@
 //    072   02.05.24 Joel Benford     IMANN-275 Fix adding new descriptor
 //    073   03.05.24 Joel Benford               Fix index on new descriptors
 //    074   08.05.24 Sean Flook       IMANN-447 Added exclude from export from template.
+//    075   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3166,7 +3167,8 @@ function StreetDataForm({ data, loading }) {
         mapContext.onBackgroundDataChange(
           newMapBackgroundStreets,
           mapContext.currentBackgroundData.unassignedEsus,
-          mapContext.currentBackgroundData.properties
+          mapContext.currentBackgroundData.properties,
+          mapContext.currentBackgroundData.provenances
         );
         mapContext.onSearchDataChange(newMapSearchStreets, mapContext.currentSearchData.properties, null, null);
 
@@ -10012,7 +10014,8 @@ function StreetDataForm({ data, loading }) {
         mapContext.onBackgroundDataChange(
           mapContext.currentBackgroundData.streets,
           combinedUnassignedEsus,
-          mapContext.currentBackgroundData.properties
+          mapContext.currentBackgroundData.properties,
+          mapContext.currentBackgroundData.provenances
         );
 
         if (esuFormData) {

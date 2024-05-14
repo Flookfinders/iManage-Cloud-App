@@ -38,6 +38,7 @@
 //    025   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
 //    026   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //    027   30.04.24 Sean Flook                 Handle nulls being returned by the Scottish API for ASD records when none are present.
+//    028   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -75,6 +76,7 @@ import {
   GetBackgroundStreetsUrl,
   GetUnassignedEsusUrl,
   GetBackgroundPropertiesUrl,
+  GetBackgroundProvenancesUrl,
   GetSearchURL,
   HasASD,
 } from "../configuration/ADSConfig";
@@ -180,6 +182,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
   const backgroundStreetData = useRef(null);
   const unassignedEsuData = useRef(null);
   const backgroundPropertyData = useRef(null);
+  const backgroundProvenanceData = useRef(null);
   const searchStreets = useRef(null);
   const searchProperties = useRef(null);
 
@@ -1105,7 +1108,8 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
         mapContext.onBackgroundDataChange(
           backgroundStreetData.current,
           unassignedEsuData.current,
-          backgroundPropertyData.current
+          backgroundPropertyData.current,
+          backgroundProvenanceData.current
         );
       }
     }
@@ -1176,7 +1180,8 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
         mapContext.onBackgroundDataChange(
           backgroundStreetData.current,
           unassignedEsuData.current,
-          backgroundPropertyData.current
+          backgroundPropertyData.current,
+          backgroundProvenanceData.current
         );
       }
     }
@@ -1242,7 +1247,75 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
         mapContext.onBackgroundDataChange(
           backgroundStreetData.current,
           unassignedEsuData.current,
-          backgroundPropertyData.current
+          backgroundPropertyData.current,
+          backgroundProvenanceData.current
+        );
+      }
+    }
+
+    async function GetBackgroundProvenanceData() {
+      if (!userContext.currentUser) return;
+
+      if (
+        !mapContext.currentExtent ||
+        (mapContext.currentExtent.xmin === 0 &&
+          mapContext.currentExtent.ymin === 0 &&
+          mapContext.currentExtent.xmax === 660000 &&
+          mapContext.currentExtent.ymax === 1300000) ||
+        mapContext.currentExtent.zoomLevel < 18
+      )
+        return;
+
+      const backgroundProvenancesUrl = GetBackgroundProvenancesUrl(userContext.currentUser.token);
+
+      if (backgroundProvenancesUrl) {
+        const returnValue = await fetch(
+          `${backgroundProvenancesUrl.url}?XMin=${mapContext.currentExtent.xmin}&YMin=${mapContext.currentExtent.ymin}&XMax=${mapContext.currentExtent.xmax}&YMax=${mapContext.currentExtent.ymax}`,
+          {
+            headers: backgroundProvenancesUrl.headers,
+            crossDomain: true,
+            method: "GET",
+          }
+        )
+          .then((res) => (res.ok ? res : Promise.reject(res)))
+          .then((res) => {
+            if (res.status && res.status === 204) return [];
+            else return res.json();
+          })
+          .then((result) => {
+            return result;
+          })
+          .catch((res) => {
+            switch (res.status) {
+              case 400:
+                res.json().then((body) => {
+                  console.error(`[400 ERROR] Getting all provenance data`, body.errors);
+                });
+                return null;
+
+              case 401:
+                res.json().then((body) => {
+                  console.error(`[401 ERROR] Getting all provenance data`, body);
+                });
+                return null;
+
+              case 500:
+                console.error(`[500 ERROR] Getting all provenance data`, res);
+                return null;
+
+              default:
+                console.error(`[${res.status} ERROR] Getting all provenance data`, res);
+                return null;
+            }
+          });
+
+        backgroundProvenanceData.current = returnValue ? returnValue : undefined;
+
+        mapContext.onBackgroundDataChange(
+          backgroundStreetData.current,
+          unassignedEsuData.current,
+          backgroundPropertyData.current,
+          backgroundProvenanceData.current
         );
       }
     }
@@ -1270,6 +1343,14 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
       mapContext.currentExtent.zoomLevel > 17
     )
       GetBackgroundPropertyData();
+
+    if (
+      variant === "appBar" &&
+      !backgroundProvenanceData.current &&
+      mapContext.currentExtent &&
+      mapContext.currentExtent.zoomLevel > 17
+    )
+      GetBackgroundProvenanceData();
 
     return () => {
       setData([{ uprn: 0, address: "Loading Data...", postcode: "" }]);

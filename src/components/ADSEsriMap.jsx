@@ -70,6 +70,7 @@
 //    056   02.05.24 Joshua McCormick IMANN-283 Set GetStreetTypeLabel and GetStreetStateLabel return street code set to false with map overlay
 //    057   02.05.24 Joshua McCormick IMANN-283 GetStreetTypeLabel and GetStreetStateLabel return street code false for all instances
 //    058   03.05.24 Sean Flook                 Moved functions out of useEffect by using useCallback.
+//    059   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -185,6 +186,7 @@ import { ActionIconStyle, GetAlertStyle, GetAlertIcon, GetAlertSeverity, dataFor
 /* #endregion imports */
 
 const backgroundPropertyLayerName = "backgroundPropertyLayer";
+const backgroundProvenanceLayerName = "backgroundProvenanceLayer";
 const backgroundStreetLayerName = "backgroundStreetLayer";
 const unassignedEsusLayerName = "unassignedEsusLayer";
 const streetLayerName = "streetLayer";
@@ -1099,6 +1101,7 @@ function ADSEsriMap(startExtent) {
   const backgroundStreetData = useRef(null);
   const unassignedEsusData = useRef(null);
   const backgroundPropertyData = useRef(null);
+  const backgroundProvenanceData = useRef(null);
   const [streetData, setStreetData] = useState(null);
   const [propertyData, setPropertyData] = useState(null);
   const refStreetData = useRef(null);
@@ -1156,6 +1159,7 @@ function ADSEsriMap(startExtent) {
 
   const backgroundStreetLayerRef = useRef(null);
   const unassignedEsusLayerRef = useRef(null);
+  const backgroundProvenanceLayerRef = useRef(null);
   const backgroundPropertyLayerRef = useRef(null);
 
   const extentBorder = 20;
@@ -1485,7 +1489,7 @@ function ADSEsriMap(startExtent) {
       ];
     }
 
-    if (item.title === "Extent layer") {
+    if (item.title === "Provenance layer") {
       item.actionsSections = [
         [
           {
@@ -1531,6 +1535,23 @@ function ADSEsriMap(startExtent) {
             title: "Decrease opacity",
             className: "esri-icon-down",
             id: "decrease-unassigned-esu-opacity",
+          },
+        ],
+      ];
+    }
+
+    if (item.title === "Background Provenance layer") {
+      item.actionsSections = [
+        [
+          {
+            title: "Increase opacity",
+            className: "esri-icon-up",
+            id: "increase-background-provenance-opacity",
+          },
+          {
+            title: "Decrease opacity",
+            className: "esri-icon-down",
+            id: "decrease-background-provenance-opacity",
           },
         ],
       ];
@@ -2391,6 +2412,39 @@ function ADSEsriMap(startExtent) {
     } else return defaultCountryExtent.current;
   };
 
+  const fadeVisibilityOn = useCallback(
+    (layer) => {
+      let animating = true;
+      let opacity = 0;
+      // fade layer's opacity from 0 to
+      // whichever value the user has configured
+      const finalOpacity = layer.opacity;
+      layer.opacity = opacity;
+
+      view.whenLayerView(layer).then((layerView) => {
+        function incrementOpacityByFrame() {
+          if (opacity >= finalOpacity && animating) {
+            animating = false;
+            return;
+          }
+
+          layer.opacity = opacity;
+          opacity += 0.02;
+
+          requestAnimationFrame(incrementOpacityByFrame);
+        }
+
+        // Wait for tiles to finish loading before beginning the fade
+        reactiveUtils
+          .whenOnce(() => !layerView.updating)
+          .then(() => {
+            requestAnimationFrame(incrementOpacityByFrame);
+          });
+      });
+    },
+    [view]
+  );
+
   // Base mapping
   useEffect(() => {
     if (viewRef.current) return;
@@ -2713,6 +2767,7 @@ function ADSEsriMap(startExtent) {
       backgroundStreets: mapContext.currentBackgroundData.streets,
       unassignedEsus: oldMapData.current.unassignedEsus,
       backgroundProperties: oldMapData.current.backgroundProperties,
+      backgroundProvenances: oldMapData.current.backgroundProvenances,
       editStreet: oldMapData.current.editStreet,
       editProperty: oldMapData.current.editProperty,
       zoomStreet: oldMapData.current.zoomStreet,
@@ -2863,8 +2918,15 @@ function ADSEsriMap(startExtent) {
     if (backgroundStreetData && backgroundStreetData.current && backgroundStreetData.current.length > 0)
       mapRef.current.add(backgroundStreetLayer);
 
+    backgroundStreetLayer.watch("visible", (visible) => {
+      mapContext.onLayerVisibilityChange("backgroundStreets", visible);
+      if (visible) {
+        fadeVisibilityOn(backgroundStreetLayer);
+      }
+    });
+
     backgroundStreetLayerRef.current = backgroundStreetLayer;
-  }, [mapContext.currentBackgroundData, streetData, zoomStreetData]);
+  }, [mapContext, streetData, zoomStreetData, fadeVisibilityOn]);
 
   // Unassigned ESUs layer
   useEffect(() => {
@@ -2887,6 +2949,7 @@ function ADSEsriMap(startExtent) {
       backgroundStreets: oldMapData.current.streets,
       unassignedEsus: mapContext.currentBackgroundData.unassignedEsus,
       backgroundProperties: oldMapData.current.backgroundProperties,
+      backgroundProvenances: oldMapData.current.backgroundProvenances,
       editStreet: oldMapData.current.editStreet,
       editProperty: oldMapData.current.editProperty,
       zoomStreet: oldMapData.current.zoomStreet,
@@ -3006,8 +3069,15 @@ function ADSEsriMap(startExtent) {
     if (unassignedEsusData && unassignedEsusData.current && unassignedEsusData.current.length > 0)
       mapRef.current.add(unassignedEsusLayer);
 
+    unassignedEsusLayer.watch("visible", (visible) => {
+      mapContext.onLayerVisibilityChange("unassignedEsus", visible);
+      if (visible) {
+        fadeVisibilityOn(unassignedEsusLayer);
+      }
+    });
+
     unassignedEsusLayerRef.current = unassignedEsusLayer;
-  }, [mapContext.currentBackgroundData]);
+  }, [mapContext, fadeVisibilityOn]);
 
   // Background property layer
   useEffect(() => {
@@ -3030,6 +3100,7 @@ function ADSEsriMap(startExtent) {
       backgroundStreets: oldMapData.current.backgroundStreets,
       unassignedEsus: oldMapData.current.unassignedEsus,
       backgroundProperties: mapContext.currentBackgroundData.properties,
+      backgroundProvenances: oldMapData.current.backgroundProvenances,
       editStreet: oldMapData.current.editStreet,
       editProperty: oldMapData.current.editProperty,
       zoomStreet: oldMapData.current.zoomStreet,
@@ -3277,8 +3348,132 @@ function ADSEsriMap(startExtent) {
     )
       mapRef.current.add(selectPropertyLayer);
 
+    backgroundPropertyLayer.watch("visible", (visible) => {
+      mapContext.onLayerVisibilityChange("backgroundProperties", visible);
+      if (visible) {
+        fadeVisibilityOn(backgroundPropertyLayer);
+      }
+    });
+
     backgroundPropertyLayerRef.current = backgroundPropertyLayer;
-  }, [mapContext.currentBackgroundData, propertyData, zoomPropertyData]);
+  }, [mapContext, propertyData, zoomPropertyData, fadeVisibilityOn]);
+
+  // Background provenance layer
+  useEffect(() => {
+    // console.log("[SF] Background provenance layer");
+    const haveProvenances =
+      mapContext.currentBackgroundData &&
+      mapContext.currentBackgroundData.provenances &&
+      mapContext.currentBackgroundData.provenances.length > 0;
+
+    const oldAndNewSame = haveProvenances
+      ? ArraysEqual(oldMapData.current.backgroundProvenances, mapContext.currentBackgroundData.provenances)
+      : false;
+
+    if (!mapRef.current || !mapRef.current.layers || !haveProvenances || oldAndNewSame) return;
+
+    oldMapData.current = {
+      streets: oldMapData.current.streets,
+      properties: oldMapData.current.properties,
+      extents: oldMapData.current.extents,
+      backgroundStreets: oldMapData.current.streets,
+      unassignedEsus: oldMapData.current.unassignedEsus,
+      backgroundProperties: oldMapData.current.backgroundProperties,
+      backgroundProvenances: mapContext.currentBackgroundData.provenances,
+      editStreet: oldMapData.current.editStreet,
+      editProperty: oldMapData.current.editProperty,
+      zoomStreet: oldMapData.current.zoomStreet,
+      zoomProperty: oldMapData.current.zoomProperty,
+      mapProperty: oldMapData.current.mapProperty,
+    };
+
+    if (haveProvenances) {
+      backgroundProvenanceData.current = mapContext.currentBackgroundData.provenances;
+    } else backgroundProvenanceData.current = null;
+
+    const backgroundProvenancesFeatures =
+      backgroundProvenanceData.current &&
+      backgroundProvenanceData.current.map((rec, index) => ({
+        geometry: {
+          type: "polygon",
+          rings: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
+          spatialReference: { wkid: 27700 },
+        },
+        attributes: {
+          ObjectID: index,
+          UPRN: rec.uprn,
+          Code: rec.provCode,
+          CodeLabel: GetProvenanceLabel(rec.provCode, isScottish.current),
+        },
+      }));
+
+    const backgroundProvenancesLayer = new FeatureLayer({
+      id: backgroundProvenanceLayerName,
+      copyright: `© Copyright Idox Software Ltd. ${new Date().getFullYear()}`,
+      source: backgroundProvenancesFeatures,
+      fields: [
+        {
+          name: "ObjectID",
+          alias: "ObjectID",
+          type: "oid",
+        },
+        {
+          name: "UPRN",
+          alias: "UPRN",
+          type: "string",
+        },
+        {
+          name: "Code",
+          alias: "Code",
+          type: "string",
+        },
+        {
+          name: "CodeLabel",
+          alias: "Provenance",
+          type: "string",
+        },
+      ],
+      outFields: ["*"],
+      objectIdField: "ObjectID",
+      popupTemplate: {
+        title: "Extent",
+        lastEditInfoEnabled: false,
+        content: [
+          {
+            type: "fields",
+            fieldInfos: [
+              {
+                fieldName: "UPRN",
+              },
+              {
+                fieldName: "CodeLabel",
+                label: "Provenance",
+              },
+            ],
+          },
+        ],
+        // actions: [],
+      },
+      renderer: extentRenderer,
+      spatialReference: { wkid: 27700 },
+      title: "Background Provenance layer",
+      visible: mapContext.layerVisibility.backgroundProvenances,
+    });
+
+    mapRef.current.remove(mapRef.current.findLayerById(backgroundProvenanceLayerName));
+
+    if (backgroundProvenanceData && backgroundProvenanceData.current && backgroundProvenanceData.current.length > 0)
+      mapRef.current.add(backgroundProvenancesLayer);
+
+    backgroundProvenancesLayer.watch("visible", (visible) => {
+      mapContext.onLayerVisibilityChange("backgroundProvenances", visible);
+      if (visible) {
+        fadeVisibilityOn(backgroundProvenancesLayer);
+      }
+    });
+
+    backgroundProvenanceLayerRef.current = backgroundProvenancesLayer;
+  }, [mapContext, fadeVisibilityOn]);
 
   // Display loaded SHP files
   useEffect(() => {
@@ -4935,7 +5130,7 @@ function ADSEsriMap(startExtent) {
       },
       renderer: extentRenderer,
       spatialReference: { wkid: 27700 },
-      title: "Extent layer",
+      title: "Provenance layer",
     });
 
     mapRef.current.remove(mapRef.current.findLayerById(streetLayerName));
@@ -5650,35 +5845,35 @@ function ADSEsriMap(startExtent) {
         });
     }
 
-    function fadeVisibilityOn(layer) {
-      let animating = true;
-      let opacity = 0;
-      // fade layer's opacity from 0 to
-      // whichever value the user has configured
-      const finalOpacity = layer.opacity;
-      layer.opacity = opacity;
+    // function fadeVisibilityOn(layer) {
+    //   let animating = true;
+    //   let opacity = 0;
+    //   // fade layer's opacity from 0 to
+    //   // whichever value the user has configured
+    //   const finalOpacity = layer.opacity;
+    //   layer.opacity = opacity;
 
-      view.whenLayerView(layer).then((layerView) => {
-        function incrementOpacityByFrame() {
-          if (opacity >= finalOpacity && animating) {
-            animating = false;
-            return;
-          }
+    //   view.whenLayerView(layer).then((layerView) => {
+    //     function incrementOpacityByFrame() {
+    //       if (opacity >= finalOpacity && animating) {
+    //         animating = false;
+    //         return;
+    //       }
 
-          layer.opacity = opacity;
-          opacity += 0.02;
+    //       layer.opacity = opacity;
+    //       opacity += 0.02;
 
-          requestAnimationFrame(incrementOpacityByFrame);
-        }
+    //       requestAnimationFrame(incrementOpacityByFrame);
+    //     }
 
-        // Wait for tiles to finish loading before beginning the fade
-        reactiveUtils
-          .whenOnce(() => !layerView.updating)
-          .then(() => {
-            requestAnimationFrame(incrementOpacityByFrame);
-          });
-      });
-    }
+    //     // Wait for tiles to finish loading before beginning the fade
+    //     reactiveUtils
+    //       .whenOnce(() => !layerView.updating)
+    //       .then(() => {
+    //         requestAnimationFrame(incrementOpacityByFrame);
+    //       });
+    //   });
+    // }
 
     view.when().then(() => {
       // When the user toggles a layer on or off, transition
@@ -5728,6 +5923,14 @@ function ADSEsriMap(startExtent) {
 
         case "decrease-unassigned-esu-opacity":
           if (unassignedEsusLayerRef.current.opacity > 0) unassignedEsusLayerRef.current.opacity -= 0.25;
+          break;
+
+        case "increase-background-provenance-opacity":
+          if (backgroundProvenanceLayerRef.current.opacity < 1) backgroundProvenanceLayerRef.current.opacity += 0.25;
+          break;
+
+        case "decrease-background-provenance-opacity":
+          if (backgroundProvenanceLayerRef.current.opacity > 0) backgroundProvenanceLayerRef.current.opacity -= 0.25;
           break;
 
         case "increase-background-property-opacity":
@@ -6577,6 +6780,7 @@ function ADSEsriMap(startExtent) {
       backgroundStreets: mapContext.currentBackgroundData.streets,
       unassignedEsus: mapContext.currentBackgroundData.unassignedEsus,
       backgroundProperties: mapContext.currentBackgroundData.properties,
+      backgroundProvenances: mapContext.currentBackgroundData.provenances,
       editStreet: mapContext.currentSearchData.editStreet,
       editProperty: mapContext.currentSearchData.editProperty,
       zoomStreet: mapContext.currentLayers.zoomStreet,
@@ -6594,6 +6798,7 @@ function ADSEsriMap(startExtent) {
     loading,
     streetContext.currentStreet,
     streetContext,
+    fadeVisibilityOn,
   ]);
 
   // Fix the order of the layers
@@ -6605,40 +6810,51 @@ function ADSEsriMap(startExtent) {
     const backgroundStreetLayer = mapRef.current.findLayerById(backgroundStreetLayerName);
     const unassignedEsusLayer = mapRef.current.findLayerById(unassignedEsusLayerName);
     const backgroundPropertyLayer = mapRef.current.findLayerById(backgroundPropertyLayerName);
+    const backgroundProvenanceLayer = mapRef.current.findLayerById(backgroundProvenanceLayerName);
     const streetLayer = mapRef.current.findLayerById(streetLayerName);
     const propertyLayer = mapRef.current.findLayerById(propertyLayerName);
     const extentLayer = mapRef.current.findLayerById(extentLayerName);
 
-    if (!backgroundStreetLayer || !unassignedEsusLayer || !backgroundPropertyLayer || !streetLayer || !propertyLayer)
-      return;
+    if (!backgroundStreetLayer || !backgroundPropertyLayer || !streetLayer || !propertyLayer) return;
+
+    let levelAboveBase = baseMapLayers.current.length;
 
     const currentBackgroundStreetIndex = mapRef.current.layers.indexOf(backgroundStreetLayer);
-    const requiredBackgroundStreetIndex = baseMapLayers.current.length;
+    const requiredBackgroundStreetIndex = levelAboveBase++;
     if (currentBackgroundStreetIndex !== requiredBackgroundStreetIndex)
       mapRef.current.reorder(backgroundStreetLayer, requiredBackgroundStreetIndex);
 
-    const currentUnassignedEsusIndex = mapRef.current.layers.indexOf(unassignedEsusLayer);
-    const requiredUnassignedEsusIndex = baseMapLayers.current.length + 1;
-    if (currentUnassignedEsusIndex !== requiredUnassignedEsusIndex)
-      mapRef.current.reorder(unassignedEsusLayer, requiredUnassignedEsusIndex);
+    if (unassignedEsusLayer) {
+      const currentUnassignedEsusIndex = mapRef.current.layers.indexOf(unassignedEsusLayer);
+      const requiredUnassignedEsusIndex = levelAboveBase++;
+      if (currentUnassignedEsusIndex !== requiredUnassignedEsusIndex)
+        mapRef.current.reorder(unassignedEsusLayer, requiredUnassignedEsusIndex);
+    }
+
+    if (backgroundProvenanceLayer) {
+      const currentBackgroundProvenanceIndex = mapRef.current.layers.indexOf(backgroundProvenanceLayer);
+      const requiredBackgroundProvenanceIndex = levelAboveBase++;
+      if (currentBackgroundProvenanceIndex !== requiredBackgroundProvenanceIndex)
+        mapRef.current.reorder(backgroundProvenanceLayer, requiredBackgroundProvenanceIndex);
+    }
 
     const currentBackgroundPropertyIndex = mapRef.current.layers.indexOf(backgroundPropertyLayer);
-    const requiredBackgroundPropertyIndex = baseMapLayers.current.length + 2;
+    const requiredBackgroundPropertyIndex = levelAboveBase++;
     if (currentBackgroundPropertyIndex !== requiredBackgroundPropertyIndex)
       mapRef.current.reorder(backgroundPropertyLayer, requiredBackgroundPropertyIndex);
 
     const currentStreetIndex = mapRef.current.layers.indexOf(streetLayer);
-    const requiredStreetIndex = baseMapLayers.current.length + 3;
+    const requiredStreetIndex = levelAboveBase++;
     if (currentStreetIndex !== requiredStreetIndex) mapRef.current.reorder(streetLayer, requiredStreetIndex);
 
     if (extentLayer) {
       const currentExtentIndex = mapRef.current.layers.indexOf(extentLayer);
-      const requiredExtentIndex = baseMapLayers.current.length + 4;
+      const requiredExtentIndex = levelAboveBase++;
       if (currentExtentIndex !== requiredExtentIndex) mapRef.current.reorder(extentLayer, requiredExtentIndex);
     }
 
     const currentPropertyIndex = mapRef.current.layers.indexOf(propertyLayer);
-    const requiredPropertyIndex = extentLayer ? baseMapLayers.current.length + 5 : baseMapLayers.current.length + 4;
+    const requiredPropertyIndex = levelAboveBase++;
     if (currentPropertyIndex !== requiredPropertyIndex) mapRef.current.reorder(propertyLayer, requiredPropertyIndex);
   });
 
@@ -6804,6 +7020,10 @@ function ADSEsriMap(startExtent) {
         asd66Layer.opacity = 1;
         asd66Layer.popupEnabled = true;
       }
+      if (backgroundProvenanceLayerRef.current) {
+        backgroundProvenanceLayerRef.current.opacity = 0.5;
+        backgroundProvenanceLayerRef.current.popupEnabled = true;
+      }
       if (backgroundPropertyLayerRef.current) {
         backgroundPropertyLayerRef.current.opacity = 0.5;
         backgroundPropertyLayerRef.current.popupEnabled = true;
@@ -6840,6 +7060,7 @@ function ADSEsriMap(startExtent) {
       if (asd63Layer) asd63Layer.popupEnabled = false;
       if (asd64Layer) asd64Layer.popupEnabled = false;
       if (asd66Layer) asd66Layer.popupEnabled = false;
+      if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.popupEnabled = false;
       if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.popupEnabled = false;
       if (propertyLayer) propertyLayer.popupEnabled = false;
       if (extentLayer) extentLayer.popupEnabled = false;
@@ -6861,6 +7082,7 @@ function ADSEsriMap(startExtent) {
 
             if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
             if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
             if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
             if (streetLayer) streetLayer.opacity = 0.5;
 
@@ -6906,6 +7128,7 @@ function ADSEsriMap(startExtent) {
 
             if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
             if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
             if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
             if (propertyLayer) propertyLayer.opacity = 0.5;
 
@@ -6915,6 +7138,8 @@ function ADSEsriMap(startExtent) {
               LayersUsedForSnapping.push({ layer: backgroundStreetLayerRef.current, enabled: true });
             if (unassignedEsusLayerRef.current)
               LayersUsedForSnapping.push({ layer: unassignedEsusLayerRef.current, enabled: true });
+            if (backgroundProvenanceLayerRef.current)
+              LayersUsedForSnapping.push({ layer: backgroundProvenanceLayerRef.current, enabled: true });
             if (backgroundPropertyLayerRef.current)
               LayersUsedForSnapping.push({ layer: backgroundPropertyLayerRef.current, enabled: true });
             if (propertyLayer) LayersUsedForSnapping.push({ layer: propertyLayer, enabled: true });
@@ -6942,6 +7167,7 @@ function ADSEsriMap(startExtent) {
 
             if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
             if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
             if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
             if (extentLayer) extentLayer.opacity = 0.5;
             if (propertyLayer) propertyLayer.opacity = 0.5;
@@ -6975,6 +7201,7 @@ function ADSEsriMap(startExtent) {
 
             if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
             if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
             if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
             if (asd51Layer) asd51Layer.opacity = 0.5;
             if (asd52Layer) asd52Layer.opacity = 0.5;
@@ -7011,6 +7238,7 @@ function ADSEsriMap(startExtent) {
 
             if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
             if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
             if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
             if (asd51Layer) asd51Layer.opacity = 0.5;
             if (asd52Layer) asd52Layer.opacity = 0.5;
@@ -7047,6 +7275,7 @@ function ADSEsriMap(startExtent) {
 
             if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
             if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
             if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
             if (asd51Layer) asd51Layer.opacity = 0.5;
             if (asd52Layer) asd52Layer.opacity = 0.5;
@@ -7083,6 +7312,7 @@ function ADSEsriMap(startExtent) {
 
             if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
             if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
             if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
             if (asd61Layer) asd61Layer.opacity = 0.5;
             if (asd62Layer) asd62Layer.opacity = 0.5;
@@ -7123,6 +7353,7 @@ function ADSEsriMap(startExtent) {
 
             if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
             if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
             if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
             if (asd61Layer) asd61Layer.opacity = 0.5;
             if (asd62Layer) asd62Layer.opacity = 0.5;
@@ -7163,6 +7394,7 @@ function ADSEsriMap(startExtent) {
 
             if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
             if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
             if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
             if (asd61Layer) asd61Layer.opacity = 0.5;
             if (asd62Layer) asd62Layer.opacity = 0.5;
@@ -7203,6 +7435,7 @@ function ADSEsriMap(startExtent) {
 
             if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
             if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
             if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
             if (asd61Layer) asd61Layer.opacity = 0.5;
             if (asd62Layer) asd62Layer.opacity = 0.5;
@@ -7241,6 +7474,7 @@ function ADSEsriMap(startExtent) {
 
             if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
             if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
             if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
             if (asd61Layer) asd61Layer.opacity = 0.5;
             if (asd62Layer) asd62Layer.opacity = 0.5;
@@ -7314,6 +7548,10 @@ function ADSEsriMap(startExtent) {
           if (asd66Layer) {
             asd66Layer.opacity = 1;
             asd66Layer.popupEnabled = true;
+          }
+          if (backgroundProvenanceLayerRef.current) {
+            backgroundProvenanceLayerRef.current.opacity = 0.5;
+            backgroundProvenanceLayerRef.current.popupEnabled = true;
           }
           if (backgroundPropertyLayerRef.current) {
             backgroundPropertyLayerRef.current.opacity = 0.5;
@@ -7979,6 +8217,7 @@ function ADSEsriMap(startExtent) {
           if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.visible = false;
           if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.visible = false;
           if (streetLayer) streetLayer.visible = false;
+          if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.visible = false;
           if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.visible = false;
           if (propertyLayer) propertyLayer.visible = false;
           if (selectPropertyLayer) selectPropertyLayer.visible = true;
@@ -8012,10 +8251,15 @@ function ADSEsriMap(startExtent) {
       } else {
         selectingProperties.current = false;
 
-        if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.visible = true;
-        if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.visible = true;
+        if (backgroundStreetLayerRef.current)
+          backgroundStreetLayerRef.current.visible = mapContext.layerVisibility.backgroundStreets;
+        if (unassignedEsusLayerRef.current)
+          unassignedEsusLayerRef.current.visible = mapContext.layerVisibility.unassignedEsus;
         if (streetLayer) streetLayer.visible = true;
-        if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.visible = true;
+        if (backgroundProvenanceLayerRef.current)
+          backgroundProvenanceLayerRef.current.visible = mapContext.layerVisibility.backgroundProvenances;
+        if (backgroundPropertyLayerRef.current)
+          backgroundPropertyLayerRef.current.visible = mapContext.layerVisibility.backgroundProperties;
         if (propertyLayer) propertyLayer.visible = true;
         if (selectPropertyLayer) selectPropertyLayer.visible = false;
 
@@ -8030,7 +8274,7 @@ function ADSEsriMap(startExtent) {
         sketchRef.current.visible = false;
       }
     }
-  }, [mapContext.selectingProperties, mapContext.currentBackgroundData.properties]);
+  }, [mapContext.selectingProperties, mapContext.currentBackgroundData.properties, mapContext.layerVisibility]);
 
   return (
     <Fragment>

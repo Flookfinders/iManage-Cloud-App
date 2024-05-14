@@ -57,6 +57,7 @@
 //    044   30.04.24 Sean Flook       IMANN-371 Separate out streetTab and propertyTab.
 //    045   01.05.24 Sean Flook                 Only reload contexts if required.
 //    046   14.05.24 Joshua McCormick IMANN-270 Typo in Validation  for errors with hww & prow
+//    047   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -83,6 +84,7 @@ import {
   GetBackgroundStreetsUrl,
   GetUnassignedEsusUrl,
   GetBackgroundPropertiesUrl,
+  GetBackgroundProvenancesUrl,
   GetPropertyFromUPRNUrl,
 } from "./configuration/ADSConfig";
 import { mapSelectSearchString, mergeArrays, StringToTitleCase } from "./utils/HelperUtils";
@@ -374,6 +376,7 @@ function App() {
     streets: [],
     unassignedEsus: [],
     properties: [],
+    provenances: [],
   });
 
   const [mapSearchData, setMapSearchData] = useState({
@@ -427,6 +430,12 @@ function App() {
   const [wizardPoint, setWizardPoint] = useState(null);
   const [selectingProperties, setSelectingProperties] = useState(false);
   const [loadedShpFiles, setLoadedShpFiles] = useState([]);
+  const [layerVisibility, setLayerVisibility] = useState({
+    backgroundStreets: true,
+    unassignedEsus: true,
+    backgroundProvenances: false,
+    backgroundProperties: true,
+  });
 
   const [pointCaptureMode, setPointCaptureMode] = useState(null);
   const [selectedPin, setSelectedPin] = useState(null);
@@ -2606,13 +2615,24 @@ function App() {
    * @param {Array} streets The list of background streets.
    * @param {Array} unassignedEsus The list of unassigned ESUs.
    * @param {Array} properties The list of background properties.
+   * @param {Array} provenances The list of background provenances.
    */
-  function HandleBackgroundDataChange(streets, unassignedEsus, properties) {
-    setBackgroundData({ streets: streets, unassignedEsus: unassignedEsus, properties: properties });
+  function HandleBackgroundDataChange(streets, unassignedEsus, properties, provenances) {
+    setBackgroundData({
+      streets: streets,
+      unassignedEsus: unassignedEsus,
+      properties: properties,
+      provenances: provenances,
+    });
 
     sessionStorage.setItem(
       "backgroundData",
-      JSON.stringify({ streets: streets, unassignedEsus: unassignedEsus, properties: properties })
+      JSON.stringify({
+        streets: streets,
+        unassignedEsus: unassignedEsus,
+        properties: properties,
+        provenances: provenances,
+      })
     );
   }
 
@@ -2884,6 +2904,62 @@ function App() {
   }
 
   /**
+   * Method to get all the properties within a given extent.
+   *
+   * @param {object} extent The extent of the map
+   * @returns {array} The list of properties within the given extent.
+   */
+  async function GetBackgroundProvenanceData(extent) {
+    if (!currentUser || extent.zoomLevel < 18) return null;
+
+    const backgroundProvenancesUrl = GetBackgroundProvenancesUrl(currentUser.token);
+
+    if (backgroundProvenancesUrl) {
+      const returnValue = await fetch(
+        `${backgroundProvenancesUrl.url}?XMin=${extent.xmin}&YMin=${extent.ymin}&XMax=${extent.xmax}&YMax=${extent.ymax}`,
+        {
+          headers: backgroundProvenancesUrl.headers,
+          crossDomain: true,
+          method: "GET",
+        }
+      )
+        .then((res) => (res.ok ? res : Promise.reject(res)))
+        .then((res) => {
+          if (res.status && res.status === 204) return [];
+          else return res.json();
+        })
+        .then((result) => {
+          return result;
+        })
+        .catch((res) => {
+          switch (res.status) {
+            case 400:
+              res.json().then((body) => {
+                console.error(`[400 ERROR] Getting all provenance data`, body.errors);
+              });
+              return null;
+
+            case 401:
+              res.json().then((body) => {
+                console.error(`[401 ERROR] Getting all provenance data`, body);
+              });
+              return null;
+
+            case 500:
+              console.error(`[500 ERROR] Getting all provenance data`, res);
+              return null;
+
+            default:
+              console.error(`[${res.status} ERROR] Getting all provenance data`, res);
+              return null;
+          }
+        });
+
+      return returnValue;
+    } else return null;
+  }
+
+  /**
    * Event to handle when the map extent changes.
    *
    * @param {object} extent The extent for the map
@@ -2901,6 +2977,7 @@ function App() {
     let backgroundStreetData = null;
     let unassignedEsuData = null;
     let backgroundPropertyData = null;
+    let backgroundProvenanceData = null;
 
     if (
       !currentMapExtent.current ||
@@ -2921,13 +2998,18 @@ function App() {
 
       if (extent.zoomLevel > 17) {
         backgroundPropertyData = await GetBackgroundPropertyData(extent);
-      } else backgroundPropertyData = [];
+        backgroundProvenanceData = await GetBackgroundProvenanceData(extent);
+      } else {
+        backgroundPropertyData = [];
+        backgroundProvenanceData = [];
+      }
 
       if (backgroundStreetData || backgroundPropertyData) {
         setBackgroundData({
           streets: backgroundStreetData,
           unassignedEsus: unassignedEsuData,
           properties: backgroundPropertyData,
+          provenances: backgroundProvenanceData,
         });
 
         sessionStorage.setItem(
@@ -2936,6 +3018,7 @@ function App() {
             streets: backgroundStreetData,
             unassignedEsus: unassignedEsuData,
             properties: backgroundPropertyData,
+            provenances: backgroundProvenanceData,
           })
         );
       }
@@ -3312,6 +3395,21 @@ function App() {
   }
 
   /**
+   * Handle when the visibility of a layer is changed.
+   *
+   * @param {String} layer The layer that is having its visibility changed.
+   * @param {Boolean} visibility The new visibility for the layer.
+   */
+  function HandleLayerVisibilityChange(layer, visibility) {
+    setLayerVisibility({
+      backgroundStreets: layer === "backgroundStreets" ? visibility : layerVisibility.backgroundStreets,
+      unassignedEsus: layer === "unassignedEsus" ? visibility : layerVisibility.unassignedEsus,
+      backgroundProvenances: layer === "backgroundProvenances" ? visibility : layerVisibility.backgroundProvenances,
+      backgroundProperties: layer === "backgroundProperties" ? visibility : layerVisibility.backgroundProperties,
+    });
+  }
+
+  /**
    * Method to handle when the display information should be shown.
    *
    * @param {string} type The type of information being displayed.
@@ -3532,6 +3630,7 @@ function App() {
                             currentPinSelected: selectedPin,
                             selectingProperties: selectingProperties,
                             loadedShpFiles: loadedShpFiles,
+                            layerVisibility: layerVisibility,
                             onBackgroundDataChange: HandleBackgroundDataChange,
                             onSearchDataChange: HandleMapSearchDataChange,
                             onMapChange: HandleMapChange,
@@ -3555,6 +3654,7 @@ function App() {
                             onLoadShpFile: HandleLoadShpFile,
                             onUnloadShpFile: HandleUnloadShpFile,
                             onReload: HandleMapReload,
+                            onLayerVisibilityChange: HandleLayerVisibilityChange,
                           }}
                         >
                           <InformationContext.Provider

@@ -48,6 +48,7 @@
 //    035   04.04.24 Sean Flook                 Changes required to navigate back after deleting a property.
 //    036   05.04.24 Sean Flook                 Changes required to display errors even when records have not been edited (Delete and Get).
 //    037   01.05.24 Sean Flook                 Correctly set haveSearch.
+//    048   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -517,7 +518,7 @@ function ADSAppBar(props) {
     propertyContext.resetProperty();
     searchContext.onSearchDataChange("", []);
     sandboxContext.resetSandbox();
-    mapContext.onBackgroundDataChange([], [], []);
+    mapContext.onBackgroundDataChange([], [], [], []);
     mapContext.onSearchDataChange([], [], null, null);
     mapContext.onMapChange([], null, null);
     mapContext.onEditMapObject(null, null);

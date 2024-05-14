@@ -22,6 +22,7 @@
 //    009   24.04.24 Sean Flook       IMANN-390 Added new endpoint to get the list of new UPRNs used when creating new properties.
 //    010   25.04.24 Sean Flook       IMANN-390 Added new endpoint to return UPRNs assigned to failed properties to be added back into the availableUprns table.
 //    011   09.02.24 Joel Benford    IM-227/228 Generalize ward/parish URL
+//    012   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -406,6 +407,17 @@ export function GetUnassignedEsusUrl(userToken) {
  */
 export function GetBackgroundPropertiesUrl(userToken) {
   const url = GetApiSite("main", "/api/MappableData/GetProperties");
+  return getUrl(url, "GET", "application/json", userToken);
+}
+
+/**
+ * Get the URL used to return all the provenances within a bounding box.
+ *
+ * @param {string} userToken The token for the user who is calling the endpoint.
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function GetBackgroundProvenancesUrl(userToken) {
+  const url = GetApiSite("main", "/api/MappableData/GetBlpuProvenances");
   return getUrl(url, "GET", "application/json", userToken);
 }
 

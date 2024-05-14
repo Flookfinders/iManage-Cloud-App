@@ -62,6 +62,7 @@
 //    049   29.04.24 Sean Flook       IMANN-371 When the current UPRN changes ensure the first tab is displayed.
 //    050   29.04.24 Sean Flook                 Set the sandbox source property data when opening a new street.
 //    051   30.04.24 Sean Flook       IMANN-371 Separate out streetTab and propertyTab.
+//    052   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2227,7 +2228,8 @@ function PropertyDataForm({ data, loading }) {
       mapContext.onBackgroundDataChange(
         mapContext.currentBackgroundData.streets,
         mapContext.currentBackgroundData.unassignedEsus,
-        newMapBackgroundProperties
+        newMapBackgroundProperties,
+        mapContext.currentBackgroundData.provenances
       );
       mapContext.onSearchDataChange(mapContext.currentSearchData.streets, newMapSearchProperties, null, null);
 
