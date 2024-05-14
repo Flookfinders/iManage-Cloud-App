@@ -42,6 +42,7 @@
 //    029   22.03.24 Sean Flook           GLB12 Changed dataFormStyle to calculate the height for all the forms etc.
 //    030   27.03.24 Sean Flook                 Added dialogTitleTextStyle.
 //    031   04.04.24 Sean Flook                 Added deleteDialogContentStyle.
+//    032   08.05.24 Sean Flook       IMANN-447 Fixed height in wizard.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -779,7 +780,7 @@ export const settingsCardContentStyle = (variant) => {
       return { height: "330px" };
 
     case "wizard":
-      return { height: "240px" };
+      return { height: "250px" };
 
     default:
       break;

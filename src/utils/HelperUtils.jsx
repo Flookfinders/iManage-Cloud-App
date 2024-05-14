@@ -47,6 +47,8 @@
 //    034   23.04.24 Sean Flook                 Added bracketValidator.
 //    035   26.04.24 Sean Flook                 Included check for "<" & ">" in bracketValidator.
 //    036   01.05.24 Sean Flook       IMANN-429 Remove GAE code in addLookup.
+//    037   09.02.24 Joel Benford    IM-227/228 Generalize ward/parish URL
+//    038   03.05.24 Sean Flook                 Added getBaseMapLayers.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -63,13 +65,14 @@ import {
   GetDbAuthorityUrl,
   GetIslandUrl,
   GetLocalityUrl,
+  GetMapLayersUrl,
   GetOperationalDistrictUrl,
-  GetParishesForAuthorityUrl,
+  GetParishesUrl,
   GetPostTownUrl,
   GetPostcodeUrl,
   GetSubLocalityUrl,
   GetTownUrl,
-  GetWardsForAuthorityUrl,
+  GetWardsUrl,
   GetWhoAmIUrl,
   HasASD,
 } from "../configuration/ADSConfig";
@@ -2000,10 +2003,10 @@ export function GetLookupUrl(variant, endPointType, userToken, authorityCode) {
       return GetDbAuthorityUrl(endPointType, userToken);
 
     case "ward":
-      return GetWardsForAuthorityUrl(endPointType, userToken, authorityCode);
+      return GetWardsUrl(endPointType, userToken, authorityCode);
 
     case "parish":
-      return GetParishesForAuthorityUrl(endPointType, userToken, authorityCode);
+      return GetParishesUrl(endPointType, userToken, authorityCode);
 
     case "operationalDistrict":
       return GetOperationalDistrictUrl(endPointType, userToken);
@@ -2139,7 +2142,7 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
           return {
             wardCode: data.lookupData.wardCode,
             ward: data.lookupData.ward,
-            detrCode: authorityCode ? authorityCode : null,
+            detrCode: authorityCode ? authorityCode.toString() : null,
             historic: data.lookupData.historic,
           };
 
@@ -2147,7 +2150,7 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
           return {
             parishCode: data.lookupData.parishCode,
             parish: data.lookupData.parish,
-            detrCode: authorityCode ? authorityCode : null,
+            detrCode: authorityCode ? authorityCode.toString() : null,
             historic: data.lookupData.historic,
           };
 
@@ -2302,6 +2305,7 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
     let newGaeLookup = null;
 
     if (lookupUrl) {
+      console.log("[JB]", getEngPostData(), JSON.stringify(getEngPostData()));
       await fetch(lookupUrl.url, {
         headers: lookupUrl.headers,
         crossDomain: true,
@@ -2522,4 +2526,37 @@ export const bracketValidator = (str) => {
 
   if (stack.length) return false;
   return true;
+};
+
+/**
+ * Method to get the list of base map layer objects to be used.
+ *
+ * @param {string} userToken The token for the user who is calling the function.
+ * @returns  {Array} A list of the base map layer objects to be used.
+ */
+export const getBaseMapLayers = async (userToken) => {
+  const mapLayerUrl = GetMapLayersUrl("GET", userToken);
+
+  let baseMapLayers = [];
+
+  if (mapLayerUrl) {
+    baseMapLayers = await fetch(`${mapLayerUrl.url}`, {
+      headers: mapLayerUrl.headers,
+      crossDomain: true,
+      method: mapLayerUrl.type,
+    })
+      .then((res) => (res.ok ? res : Promise.reject(res)))
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          return result;
+        },
+        (error) => {
+          console.error("[ERROR] Getting base map layers", error);
+          return null;
+        }
+      );
+  }
+
+  return baseMapLayers;
 };

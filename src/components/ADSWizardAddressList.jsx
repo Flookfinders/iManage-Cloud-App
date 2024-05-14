@@ -29,6 +29,7 @@
 //    016   11.04.24 Sean Flook       IMANN-384 Hide information and selection control when updating.
 //    016   12.04.24 Sean Flook       IMANN-384 Clear checked when updating.
 //    017   25.04.24 Sean Flook                 Display the information control for the wizard as well.
+//    018   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -410,6 +411,42 @@ function ADSWizardAddressList({
   };
 
   /**
+   * Event to handle editing the exclude from export.
+   *
+   * @param {object} event The event object.
+   * @param {object} rec The record object.
+   */
+  const handleEditExcludeFromExport = (event, rec) => {
+    handleActionsMenuClose(event);
+    if (rec) {
+      addressListData.current = data;
+      actionAddressIds.current = getActionAddressIds(rec);
+      actionCount.current = 1;
+      setActionData(rec.blpu.excludeFromExport);
+      setActionType("excludeFromExport");
+      setOpenAction(true);
+    }
+  };
+
+  /**
+   * Event to handle editing the site visit required.
+   *
+   * @param {object} event The event object.
+   * @param {object} rec The record object.
+   */
+  const handleEditSiteVisit = (event, rec) => {
+    handleActionsMenuClose(event);
+    if (rec) {
+      addressListData.current = data;
+      actionAddressIds.current = getActionAddressIds(rec);
+      actionCount.current = 1;
+      setActionData(rec.blpu.siteVisit);
+      setActionType("siteVisit");
+      setOpenAction(true);
+    }
+  };
+
+  /**
    * Event to handle editing the level.
    *
    * @param {object} event The event object.
@@ -566,6 +603,8 @@ function ADSWizardAddressList({
                             state: currentRecord.blpu.state,
                             stateDate: currentRecord.blpu.stateDate,
                             classification: updatedData,
+                            excludeFromExport: currentRecord.blpu.excludeFromExport,
+                            siteVisit: currentRecord.blpu.siteVisit,
                             startDate: currentRecord.blpu.startDate,
                           },
                       lpi: currentRecord.lpi,
@@ -576,6 +615,82 @@ function ADSWizardAddressList({
                             startDate: currentRecord.classification.startDate,
                           }
                         : currentRecord.classification,
+                      other: currentRecord.other,
+                      parentUprn: currentRecord.parentUprn,
+                      easting: currentRecord.easting,
+                      northing: currentRecord.northing,
+                    },
+                  ].find((rec) => rec.id === x.id) || x
+              );
+              break;
+
+            case "excludeFromExport":
+              updatedRecords = updatedRecords.map(
+                (x) =>
+                  [
+                    {
+                      id: updateId,
+                      language: currentRecord.language,
+                      addressDetails: currentRecord.addressDetails,
+                      blpu: settingsContext.isScottish
+                        ? {
+                            logicalStatus: currentRecord.blpu.logicalStatus,
+                            rpc: currentRecord.blpu.rpc,
+                            level: currentRecord.blpu.level,
+                            excludeFromExport: updatedData,
+                            siteVisit: currentRecord.blpu.siteVisit,
+                            startDate: currentRecord.blpu.startDate,
+                          }
+                        : {
+                            logicalStatus: currentRecord.blpu.logicalStatus,
+                            rpc: currentRecord.blpu.rpc,
+                            state: currentRecord.blpu.state,
+                            stateDate: currentRecord.blpu.stateDate,
+                            classification: currentRecord.blpu.classification,
+                            excludeFromExport: updatedData,
+                            siteVisit: currentRecord.blpu.siteVisit,
+                            startDate: currentRecord.blpu.startDate,
+                          },
+                      lpi: currentRecord.lpi,
+                      classification: currentRecord.classification,
+                      other: currentRecord.other,
+                      parentUprn: currentRecord.parentUprn,
+                      easting: currentRecord.easting,
+                      northing: currentRecord.northing,
+                    },
+                  ].find((rec) => rec.id === x.id) || x
+              );
+              break;
+
+            case "siteVisit":
+              updatedRecords = updatedRecords.map(
+                (x) =>
+                  [
+                    {
+                      id: updateId,
+                      language: currentRecord.language,
+                      addressDetails: currentRecord.addressDetails,
+                      blpu: settingsContext.isScottish
+                        ? {
+                            logicalStatus: currentRecord.blpu.logicalStatus,
+                            rpc: currentRecord.blpu.rpc,
+                            level: currentRecord.blpu.level,
+                            excludeFromExport: currentRecord.blpu.excludeFromExport,
+                            siteVisit: updatedData,
+                            startDate: currentRecord.blpu.startDate,
+                          }
+                        : {
+                            logicalStatus: currentRecord.blpu.logicalStatus,
+                            rpc: currentRecord.blpu.rpc,
+                            state: currentRecord.blpu.state,
+                            stateDate: currentRecord.blpu.stateDate,
+                            classification: currentRecord.blpu.classification,
+                            excludeFromExport: currentRecord.blpu.excludeFromExport,
+                            siteVisit: updatedData,
+                            startDate: currentRecord.blpu.startDate,
+                          },
+                      lpi: currentRecord.lpi,
+                      classification: currentRecord.classification,
                       other: currentRecord.other,
                       parentUprn: currentRecord.parentUprn,
                       easting: currentRecord.easting,
@@ -598,6 +713,8 @@ function ADSWizardAddressList({
                             logicalStatus: currentRecord.blpu.logicalStatus,
                             rpc: currentRecord.blpu.rpc,
                             level: updatedData,
+                            excludeFromExport: currentRecord.blpu.excludeFromExport,
+                            siteVisit: currentRecord.blpu.siteVisit,
                             startDate: currentRecord.blpu.startDate,
                           }
                         : currentRecord.blpu,
@@ -785,6 +902,8 @@ function ADSWizardAddressList({
                             logicalStatus: currentRecord.blpu.logicalStatus,
                             rpc: updatedData,
                             level: currentRecord.blpu.level,
+                            excludeFromExport: currentRecord.blpu.excludeFromExport,
+                            siteVisit: currentRecord.blpu.siteVisit,
                             startDate: currentRecord.blpu.startDate,
                           }
                         : {
@@ -793,6 +912,8 @@ function ADSWizardAddressList({
                             state: currentRecord.blpu.state,
                             stateDate: currentRecord.blpu.stateDate,
                             classification: currentRecord.blpu.classification,
+                            excludeFromExport: currentRecord.blpu.excludeFromExport,
+                            siteVisit: currentRecord.blpu.siteVisit,
                             startDate: currentRecord.blpu.startDate,
                           },
                       lpi: currentRecord.lpi,
@@ -1179,6 +1300,24 @@ function ADSWizardAddressList({
                                 sx={menuItemStyle(false)}
                               >
                                 <Typography variant="inherit">Edit classification</Typography>
+                              </MenuItem>
+                            )}
+                            {!haveMoveBlpu && (
+                              <MenuItem
+                                dense
+                                onClick={(event) => handleEditExcludeFromExport(event, rec)}
+                                sx={menuItemStyle(false)}
+                              >
+                                <Typography variant="inherit">Edit exclude from export</Typography>
+                              </MenuItem>
+                            )}
+                            {!haveMoveBlpu && (
+                              <MenuItem
+                                dense
+                                onClick={(event) => handleEditSiteVisit(event, rec)}
+                                sx={menuItemStyle(false)}
+                              >
+                                <Typography variant="inherit">Edit site visit required</Typography>
                               </MenuItem>
                             )}
                             {!haveMoveBlpu && (

@@ -51,6 +51,11 @@
 //    038   26.03.24 Sean Flook        ASD10_GP Modified setASDLayerVisibility.
 //    039   05.04.24 Sean Flook                 Correctly handle errors when creating, updating and deleting.
 //    040   24.04.24 Sean Flook       IMANN-390 When creating a new street if the USRN is already set use that; otherwise use 0.
+//    041   02.05.24 Joshua McCormick IMANN-283 Map overlay, removed unneeded code numbers from Status & Type
+//    042   02.05.24 Joshua McCormick IMANN-283 Added check to GetStreetTypeLabel for included label, reverted 041 changes
+//    043   02.05.24 Joshua McCormick IMANN-283 GetStreetTypeLabel now has included label defaulted to true 
+//    044   02.05.24 Joel Benford     IMANN-275 Use ENG for unassigned lookups in Scotland
+//    045   08.05.24 Sean Flook       IMANN-447 Added exclude from export when creating a new street.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -173,12 +178,15 @@ export function GetStreetSurfaceLabel(surface, includeCode = true) {
  *
  * @param {number} type The street type code that we require the label for.
  * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {boolean} [includeCode=true] If true then the street state code is included in the returned label; otherwise it is not included.
  * @return {string} The street type label for the given code.
  */
-export function GetStreetTypeLabel(type, isScottish) {
+export function GetStreetTypeLabel(type, isScottish, includeCode = true) {
   const streetType = type ? StreetType.find((x) => x.id === type) : null;
-
-  if (streetType) return `${type.toString()} ${streetType[GetLookupLabel(isScottish)]}`;
+  if (streetType)
+    return includeCode
+      ? `${type.toString()} ${streetType[GetLookupLabel(isScottish)]}`
+      : `${streetType[GetLookupLabel(isScottish)]}`;
   else if (type) return type.toString();
   else return null;
 }
@@ -337,20 +345,21 @@ export function streetDescriptorToTitleCase(str) {
 /**
  * Returns a new (empty) street object.
  *
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @param {boolean} isWelsh True if the authority is a Welsh authority; otherwise false.
- * @param {number} authorityCode The DETR code for the authority creating the new street.
- * @param {number|null} defaultType The default type to use when creating the new street.
- * @param {number|null} defaultState The default state to use when creating the new street (GeoPlace only).
- * @param {number|null} defaultLocality The default locality to use when creating the new street.
- * @param {number|null} defaultTown The default town to use when creating the new street.
- * @param {number|null} defaultIsland The default island to use when creating the new street.
- * @param {number|null} defaultAdminArea The default administrative area to use when creating the new street.
- * @param {number|null} defaultClassification The default classification to use when creating the new street (GeoPlace only).
- * @param {number|null} defaultSurface The default surface to use when creating the new street (GeoPlace only).
- * @param {object} lookupContext The lookup context object.
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {Boolean} isWelsh True if the authority is a Welsh authority; otherwise false.
+ * @param {Number} authorityCode The DETR code for the authority creating the new street.
+ * @param {Number|null} defaultType The default type to use when creating the new street.
+ * @param {Number|null} defaultState The default state to use when creating the new street (GeoPlace only).
+ * @param {Number|null} defaultLocality The default locality to use when creating the new street.
+ * @param {Number|null} defaultTown The default town to use when creating the new street.
+ * @param {Number|null} defaultIsland The default island to use when creating the new street.
+ * @param {Number|null} defaultAdminArea The default administrative area to use when creating the new street.
+ * @param {Number|null} defaultClassification The default classification to use when creating the new street (GeoPlace only).
+ * @param {Number|null} defaultSurface The default surface to use when creating the new street (GeoPlace only).
+ * @param {Boolean} defaultExcludeFromExport The default exclude from export to use when creating the new street.
+ * @param {Object} lookupContext The lookup context object.
  * @param {Array|null} [newEsus=null] The array of ESUs to use when creating the new street.
- * @return {object} A new street object.
+ * @return {Object} A new street object.
  */
 export function GetNewStreet(
   isScottish,
@@ -364,6 +373,7 @@ export function GetNewStreet(
   defaultAdminArea,
   defaultClassification,
   defaultSurface,
+  defaultExcludeFromExport,
   lookupContext,
   newEsus = null
 ) {
@@ -394,7 +404,7 @@ export function GetNewStreet(
       swaOrgRefNaming: authorityCode,
       streetStartDate: currentDate,
       streetEndDate: null,
-      neverExport: false,
+      neverExport: defaultExcludeFromExport ? defaultExcludeFromExport : false,
       recordType: defaultType ? defaultType : null,
     };
 
@@ -424,7 +434,7 @@ export function GetNewStreet(
       streetSurface: defaultSurface ? defaultSurface : null,
       streetStartDate: currentDate,
       streetEndDate: null,
-      neverExport: false,
+      neverExport: defaultExcludeFromExport ? defaultExcludeFromExport : false,
       version: 1,
       recordType: defaultType ? defaultType : null,
       state: defaultState ? defaultState : null,
@@ -1402,7 +1412,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
           endDate: x.endDate,
           successorType: x.successorType,
           successor: x.successor,
-          neverExport: x.neverExport,
+          neverExport: streetData.neverExport,
         };
       }),
       maintenanceResponsibilities: streetData.maintenanceResponsibilities
@@ -1411,7 +1421,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
               usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
               wholeRoad: mr.wholeRoad,
               specificLocation: mr.specificLocation,
-              neverExport: mr.neverExport,
+              neverExport: streetData.neverExport,
               seqNum: mr.seqNum,
               changeType: "I",
               custodianCode: mr.custodianCode,
@@ -1430,7 +1440,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
               usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
               wholeRoad: rc.wholeRoad,
               specificLocation: rc.specificLocation,
-              neverExport: rc.neverExport,
+              neverExport: streetData.neverExport,
               seqNum: rc.seqNum,
               changeType: "I",
               custodianCode: rc.custodianCode,
@@ -1449,7 +1459,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
               usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
               wholeRoad: sd.wholeRoad,
               specificLocation: sd.specificLocation,
-              neverExport: sd.neverExport,
+              neverExport: streetData.neverExport,
               seqNum: sd.seqNum,
               changeType: "I",
               custodianCode: sd.custodianCode,
@@ -1504,7 +1514,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
                 : unassignedEngAdminArea.administrativeAreaRef,
               administrativeArea: sd.adminAreaRef ? sd.administrativeArea : "",
               language: sd.language,
-              neverExport: sd.neverExport,
+              neverExport: streetData.neverExport,
               islandRef: sd.islandRef
                 ? sd.islandRef
                 : sd.language === "GAE"
@@ -1625,7 +1635,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
                   : unassignedEngAdminArea.administrativeAreaRef,
                 administrativeArea: sd.adminAreaRef ? sd.administrativeArea : "",
                 language: sd.language,
-                neverExport: sd.neverExport,
+                neverExport: streetData.neverExport,
               };
             })
           : [],
@@ -1734,7 +1744,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
                   : unassignedEngAdminArea.administrativeAreaRef,
                 administrativeArea: sd.adminAreaRef ? sd.administrativeArea : "",
                 language: sd.language,
-                neverExport: sd.neverExport,
+                neverExport: streetData.neverExport,
               };
             })
           : [],
@@ -1763,7 +1773,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
                 usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
                 wholeRoad: i.wholeRoad,
                 specificLocation: i.specificLocation,
-                neverExport: i.neverExport,
+                neverExport: streetData.neverExport,
               };
             })
           : [],
@@ -1775,7 +1785,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
                 seqNum: c.seqNum,
                 wholeRoad: c.wholeRoad,
                 specificLocation: c.specificLocation,
-                neverExport: c.neverExport,
+                neverExport: streetData.neverExport,
                 recordStartDate: c.recordStartDate,
                 recordEndDate: c.recordEndDate,
                 reinstatementTypeCode: c.reinstatementTypeCode,
@@ -1819,7 +1829,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
                 usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
                 wholeRoad: sd.wholeRoad,
                 specificLocation: sd.specificLocation,
-                neverExport: sd.neverExport,
+                neverExport: streetData.neverExport,
               };
             })
           : [],
@@ -1856,7 +1866,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
                 sourceText: prow.sourceText,
                 prowOrgRefConsultant: prow.prowOrgRefConsultant,
                 prowDistrictRefConsultant: prow.prowDistrictRefConsultant,
-                neverExport: prow.neverExport,
+                neverExport: streetData.neverExport,
                 wktGeometry: prow.wktGeometry,
               };
             })
@@ -1879,7 +1889,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
                 usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
                 wholeRoad: hww.wholeRoad,
                 specificLocation: hww.specificLocation,
-                neverExport: hww.neverExport,
+                neverExport: streetData.neverExport,
               };
             })
           : [],
@@ -1913,20 +1923,8 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
   );
 
   if (isScottish) {
-    const unassignedGaeLocality = lookupContext.currentLookups.localities.find(
-      (x) => x.locality === "Unassigned" && x.language === "GAE"
-    );
-    const unassignedGaeTown = lookupContext.currentLookups.towns.find(
-      (x) => x.town === "Unassigned" && x.language === "GAE"
-    );
     const unassignedEngIsland = lookupContext.currentLookups.islands.find(
       (x) => x.island === "Unassigned" && x.language === "ENG"
-    );
-    const unassignedGaeIsland = lookupContext.currentLookups.islands.find(
-      (x) => x.island === "Unassigned" && x.language === "GAE"
-    );
-    const unassignedGaeAdminArea = lookupContext.currentLookups.adminAuthorities.find(
-      (x) => x.administrativeArea === "Unassigned" && x.language === "GAE"
     );
 
     return {
@@ -1949,7 +1947,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
               endDate: s.endDate,
               successorType: s.successorType,
               successor: s.successor,
-              neverExport: s.neverExport,
+              neverExport: streetData.neverExport,
             };
           })
         : [],
@@ -1959,7 +1957,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
               usrn: streetData.usrn,
               wholeRoad: mr.wholeRoad,
               specificLocation: mr.specificLocation,
-              neverExport: mr.neverExport,
+              neverExport: streetData.neverExport,
               pkId: mr.pkId > 0 ? mr.pkId : 0,
               seqNum: mr.seqNum,
               changeType: mr.changeType,
@@ -1979,7 +1977,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
               usrn: streetData.usrn,
               wholeRoad: rc.wholeRoad,
               specificLocation: rc.specificLocation,
-              neverExport: rc.neverExport,
+              neverExport: streetData.neverExport,
               pkId: rc.pkId > 0 ? rc.pkId : 0,
               seqNum: rc.seqNum,
               changeType: rc.changeType,
@@ -1999,7 +1997,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
               usrn: streetData.usrn,
               wholeRoad: sd.wholeRoad,
               specificLocation: sd.specificLocation,
-              neverExport: sd.neverExport,
+              neverExport: streetData.neverExport,
               pkId: sd.pkId > 0 ? sd.pkId : 0,
               seqNum: sd.seqNum,
               changeType: sd.changeType,
@@ -2037,31 +2035,15 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
               changeType: sd.changeType,
               usrn: streetData.usrn,
               streetDescriptor: sd.streetDescriptor,
-              locRef: sd.locRef
-                ? sd.locRef
-                : sd.language === "GAE"
-                ? unassignedGaeLocality.localityRef
-                : unassignedEngLocality.localityRef,
+              locRef: sd.locRef ? sd.locRef : unassignedEngLocality.localityRef,
               locality: sd.locRef ? sd.locality : "",
-              townRef: sd.townRef
-                ? sd.townRef
-                : sd.language === "GAE"
-                ? unassignedGaeTown.townRef
-                : unassignedEngTown.townRef,
+              townRef: sd.townRef ? sd.townRef : unassignedEngTown.townRef,
               town: sd.townRef ? sd.town : "",
-              adminAreaRef: sd.adminAreaRef
-                ? sd.adminAreaRef
-                : sd.language === "GAE"
-                ? unassignedGaeAdminArea.administrativeAreaRef
-                : unassignedEngAdminArea.administrativeAreaRef,
+              adminAreaRef: sd.adminAreaRef ? sd.adminAreaRef : unassignedEngAdminArea.administrativeAreaRef,
               administrativeArea: sd.adminAreaRef ? sd.administrativeArea : "",
               language: sd.language,
-              neverExport: sd.neverExport,
-              islandRef: sd.islandRef
-                ? sd.islandRef
-                : sd.language === "GAE"
-                ? unassignedGaeIsland.islandRef
-                : unassignedEngIsland.islandRef,
+              neverExport: streetData.neverExport,
+              islandRef: sd.islandRef ? sd.islandRef : unassignedEngIsland.islandRef,
               island: sd.islandRef ? sd.island : "",
               pkId: sd.pkId > 0 ? sd.pkId : 0,
             };
@@ -2184,7 +2166,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                   : unassignedEngAdminArea.administrativeAreaRef,
                 administrativeArea: sd.adminAreaRef ? sd.administrativeArea : "",
                 language: sd.language,
-                neverExport: sd.neverExport,
+                neverExport: streetData.neverExport,
               };
             })
           : [],
@@ -2304,7 +2286,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                   : unassignedEngAdminArea.administrativeAreaRef,
                 administrativeArea: sd.adminAreaRef ? sd.administrativeArea : "",
                 language: sd.language,
-                neverExport: sd.neverExport,
+                neverExport: streetData.neverExport,
               };
             })
           : [],
@@ -2336,7 +2318,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                 usrn: streetData.usrn,
                 wholeRoad: i.wholeRoad,
                 specificLocation: i.specificLocation,
-                neverExport: i.neverExport,
+                neverExport: streetData.neverExport,
               };
             })
           : [],
@@ -2348,7 +2330,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                 seqNum: c.seqNum,
                 wholeRoad: c.wholeRoad,
                 specificLocation: c.specificLocation,
-                neverExport: c.neverExport,
+                neverExport: streetData.neverExport,
                 recordStartDate: c.recordStartDate,
                 recordEndDate: c.recordEndDate,
                 reinstatementTypeCode: c.reinstatementTypeCode,
@@ -2399,7 +2381,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                 usrn: streetData.usrn,
                 wholeRoad: sd.wholeRoad,
                 specificLocation: sd.specificLocation,
-                neverExport: sd.neverExport,
+                neverExport: streetData.neverExport,
               };
             })
           : [],
@@ -2436,7 +2418,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                 sourceText: prow.sourceText,
                 prowOrgRefConsultant: prow.prowOrgRefConsultant,
                 prowDistrictRefConsultant: prow.prowDistrictRefConsultant,
-                neverExport: prow.neverExport,
+                neverExport: streetData.neverExport,
                 wktGeometry: prow.wktGeometry,
                 pkId: prow.pkId > 0 ? prow.pkId : 0,
               };
@@ -2461,7 +2443,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                 usrn: streetData.usrn,
                 wholeRoad: hww.wholeRoad,
                 specificLocation: hww.specificLocation,
-                neverExport: hww.neverExport,
+                neverExport: streetData.neverExport,
               };
             })
           : [],

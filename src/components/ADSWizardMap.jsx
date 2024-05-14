@@ -27,6 +27,7 @@
 //    014   16.04.24 Sean Flook       IMANN-377 Added background properties and streets.
 //    015   16.04.24 Sean Flook                 When loading a SHP file use the mapContext to retain the information and display the layer in the map.
 //    016   07.02.24 Sean Flook       IMANN-377 Changes required to support viaEuropa mapping for OneScotland.
+//    017   03.05.24 Sean Flook                 Call getBaseMapLayers.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -63,9 +64,7 @@ import { Box, Stack } from "@mui/system";
 import ADSPlaceOnMapControl from "./ADSPlaceOnMapControl";
 import UploadShpFileDialog from "../dialogs/UploadShpFileDialog";
 
-import { GetMapLayersUrl } from "../configuration/ADSConfig";
-
-import { ArraysEqual, GetWktCoordinates, defaultMapLayerIds } from "../utils/HelperUtils";
+import { ArraysEqual, GetWktCoordinates, defaultMapLayerIds, getBaseMapLayers } from "../utils/HelperUtils";
 
 import {
   GetPropertyMapSymbol,
@@ -945,29 +944,6 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
   useEffect(() => {
     if (viewRef.current) return;
 
-    async function GetBaseMapLayers() {
-      const mapLayerUrl = GetMapLayersUrl("GET", userContext.current.currentUser.token);
-
-      if (mapLayerUrl) {
-        baseMapLayers.current = await fetch(`${mapLayerUrl.url}`, {
-          headers: mapLayerUrl.headers,
-          crossDomain: true,
-          method: "GET",
-        })
-          .then((res) => (res.ok ? res : Promise.reject(res)))
-          .then((res) => res.json())
-          .then(
-            (result) => {
-              return result;
-            },
-            (error) => {
-              console.error("[ERROR] Getting base map layers", error);
-              return null;
-            }
-          );
-      }
-    }
-
     const baseLayers = [];
     const baseLayerIds = [];
     const snapEsu = [];
@@ -976,7 +952,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
     const featureLayer = [];
     let newBaseLayer;
 
-    if (!baseMapLayers.current) GetBaseMapLayers();
+    if (!baseMapLayers.current) baseMapLayers.current = getBaseMapLayers(userContext.current.currentUser.token);
 
     baseMapLayers.current
       .sort((a, b) => a.layerPosition - b.layerPosition)

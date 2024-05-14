@@ -83,6 +83,9 @@
 //    069   29.04.24 Sean Flook       IMANN-371 When the current USRN changes ensure the first tab is displayed.
 //    070   29.04.24 Sean Flook                 Set the sandbox source street data when opening a new street.
 //    071   30.04.24 Sean Flook       IMANN-371 Separate out streetTab and propertyTab.
+//    072   02.05.24 Joel Benford     IMANN-275 Fix adding new descriptor
+//    073   03.05.24 Joel Benford               Fix index on new descriptors
+//    074   08.05.24 Sean Flook       IMANN-447 Added exclude from export from template.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -826,7 +829,7 @@ function StreetDataForm({ data, loading }) {
       streetContext.onRecordChange(11, null, null, null);
       lastOpenedId.current = pkId;
     } else if (pkId === 0) {
-      const newIdx = streetData && streetData.streetDescriptors ? streetData.streetDescriptors.length + 1 : 1;
+      const newIdx = streetData && streetData.streetDescriptors ? streetData.streetDescriptors.length : 1;
       const minPkId =
         streetData.descriptor && streetData.descriptor.length > 0
           ? streetData.descriptor.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
@@ -883,7 +886,12 @@ function StreetDataForm({ data, loading }) {
                 : 0,
             island: "",
             language: newLanguage,
-            neverExport: false,
+            neverExport:
+              settingsContext.streetTemplate &&
+              settingsContext.streetTemplate.streetTemplate &&
+              settingsContext.streetTemplate.streetTemplate.streetExcludeFromExport
+                ? settingsContext.streetTemplate.streetTemplate.streetExcludeFromExport
+                : false,
             dualLanguageLink: settingsContext.isWelsh
               ? maxDualLanguageLink && maxDualLanguageLink.dualLanguageLink
                 ? maxDualLanguageLink.dualLanguageLink + 1
@@ -917,7 +925,12 @@ function StreetDataForm({ data, loading }) {
                 : 0,
             administrativeArea: "",
             language: newLanguage,
-            neverExport: false,
+            neverExport:
+              settingsContext.streetTemplate &&
+              settingsContext.streetTemplate.streetTemplate &&
+              settingsContext.streetTemplate.streetTemplate.streetExcludeFromExport
+                ? settingsContext.streetTemplate.streetTemplate.streetExcludeFromExport
+                : false,
             dualLanguageLink: settingsContext.isWelsh
               ? maxDualLanguageLink && maxDualLanguageLink.dualLanguageLink
                 ? maxDualLanguageLink.dualLanguageLink + 1
@@ -925,7 +938,7 @@ function StreetDataForm({ data, loading }) {
               : 0,
           };
 
-      let newSDs = streetData.descriptor ? streetData.descriptor : [];
+      let newSDs = streetData.streetDescriptors ? streetData.streetDescriptors : [];
 
       if (settingsContext.isWelsh && streetData.streetDescriptors.length === 0) {
         const defaultEngLocalityRef =
@@ -5758,6 +5771,65 @@ function StreetDataForm({ data, loading }) {
           [newData].find((descriptor) => descriptor.pkId === x.pkId) ||
           [newSecondDescriptor].find((descriptor) => descriptor.pkId === x.pkId)
       );
+    } else if (settingsContext.isScottish) {
+      const secondLanguage = newData.language === "ENG" ? "GAE" : "ENG";
+
+      // let secondDescriptor = null;
+      // if (newData.dualLanguageLink === 0) {
+      //   secondDescriptor = streetData.streetDescriptors.find(
+      //     (x) => x.usrn === newData.usrn && x.language === secondLanguage
+      //   );
+      // } else {
+      //   secondDescriptor = streetData.streetDescriptors.find(
+      //     (x) =>  x.language === secondLanguage
+      //   );
+      // }
+      const secondDescriptor = streetData.streetDescriptors.find(
+        (x) => x.usrn === newData.usrn && x.language === secondLanguage
+      );
+
+      const secondLocality = lookupContext.currentLookups.localities.find(
+        (x) => x.locRef === newData.locRef && x.language === "ENG"
+      );
+      const secondTown = lookupContext.currentLookups.towns.find(
+        (x) => x.townRef === newData.townRef && x.language === "ENG"
+      );
+      const secondAdminAuthorities = lookupContext.currentLookups.adminAuthorities.find(
+        (x) => x.administrativeAreaRef === newData.adminAreaRef && x.language === "ENG"
+      );
+      const secondIsland = lookupContext.currentLookups.islands.find(
+        (x) => x.islandRef === newData.islandRef && x.language === "ENG "
+      );
+
+      const newSecondDescriptor = {
+        changeType: secondDescriptor.changeType,
+        usrn: secondDescriptor.usrn,
+        streetDescriptor:
+          secondDescriptor && secondDescriptor.streetDescriptor
+            ? secondDescriptor.streetDescriptor
+            : newData.streetDescriptor,
+        locRef: secondLocality ? secondLocality.localityRef : null,
+        locality: secondLocality ? secondLocality.locality : null,
+        townRef: secondTown ? secondTown.townRef : null,
+        town: secondTown ? secondTown.town : null,
+        islandRef: secondIsland ? secondIsland.islandRef : null,
+        island: secondIsland ? secondIsland.island : null,
+        adminAreaRef: secondAdminAuthorities ? secondAdminAuthorities.administrativeAreaRef : null,
+        administrativeArea: secondAdminAuthorities ? secondAdminAuthorities.administrativeArea : null,
+        language: secondLanguage,
+        neverExport: newData.neverExport,
+        dualLanguageLink: secondDescriptor.dualLanguageLink,
+        pkId: secondDescriptor.pkId,
+      };
+
+      newDescriptors = streetData.streetDescriptors.map(
+        (x) =>
+          [newData].find((descriptor) => descriptor.pkId === x.pkId) ||
+          [newSecondDescriptor].find((descriptor) => descriptor.pkId === x.pkId)
+      );
+      // newDescriptors = [];
+      // newDescriptors.push(secondDescriptor);
+      // newDescriptors.push(newData);
     } else {
       newDescriptors = streetData.streetDescriptors.map((x) =>
         [newData].find((descriptor) => descriptor.pkId === x.pkId)

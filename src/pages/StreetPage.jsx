@@ -23,6 +23,7 @@
 //    010   05.04.24 Sean Flook       IMANN-351 Changes to handle browser navigation.
 //    011   11.04.24 Sean Flook       IMANN-351 Prevent infinite loops when creating a new record.
 //    012   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
+//    017   08.05.24 Sean Flook       IMANN-447 Added exclude from export from template.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -355,6 +356,11 @@ function StreetPage() {
           settingsContext.streetTemplate.streetTemplate.streetSurface
           ? settingsContext.streetTemplate.streetTemplate.streetSurface
           : null,
+        settingsContext.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate &&
+          settingsContext.streetTemplate.streetTemplate.streetExcludeFromExport
+          ? settingsContext.streetTemplate.streetTemplate.streetExcludeFromExport
+          : false,
         lookupContext,
         newEsus
       );

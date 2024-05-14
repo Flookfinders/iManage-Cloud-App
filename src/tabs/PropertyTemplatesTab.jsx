@@ -26,6 +26,7 @@
 //    013   16.01.23 Joel Benford               OS/GP level split
 //    014   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    015   20.02.24 Sean Flook                 Default blpuLevel to 0 if null when saving.
+//    016   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -68,6 +69,8 @@ function PropertyTemplatesTab() {
   const deletePkId = useRef(null);
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
 
+  const [updateError, setUpdateError] = useState(null);
+
   /**
    * Event to handle when a node is selected.
    *
@@ -107,6 +110,8 @@ function PropertyTemplatesTab() {
         blpuLogicalStatus: newRecord.blpuLogicalStatus,
         rpc: newRecord.rpc,
         state: newRecord.state,
+        excludeFromExport: newRecord.excludeFromExport,
+        siteVisit: newRecord.siteVisit,
         classification: newRecord.classification,
         lpiLogicalStatus: newRecord.lpiLogicalStatus,
         postTownRef: newRecord.postTownRef,
@@ -200,6 +205,8 @@ function PropertyTemplatesTab() {
    * @param {object} updatedData The updated template data.
    */
   const handleUpdateData = async (updatedData) => {
+    setUpdateError(null);
+
     if (updatedData) {
       const saveUrl = GetPropertyTemplatesUrl("PUT", userContext.currentUser.token);
 
@@ -216,6 +223,8 @@ function PropertyTemplatesTab() {
           blpuLevel: updatedData.blpuLevel ? updatedData.blpuLevel : 0,
           rpc: updatedData.rpc,
           state: updatedData.state,
+          excludeFromExport: updatedData.excludeFromExport,
+          siteVisit: updatedData.siteVisit,
           classification: updatedData.classification,
           classificationScheme: updatedData.classificationScheme,
           lpiTemplatePkId: updatedData.lpiTemplatePkId,
@@ -257,13 +266,21 @@ function PropertyTemplatesTab() {
                 break;
 
               case 401:
-                res.json().then((body) => {
-                  console.error("[401 ERROR] Updating property template", body);
-                });
+                setUpdateError("You do not have authorisation to update this template");
+                break;
+
+              case 403:
+                setUpdateError("You do not have authorisation to update this template");
                 break;
 
               case 500:
-                console.error("[500 ERROR] Updating property template", res);
+                res.json().then((body) => {
+                  if (process.env.NODE_ENV === "development")
+                    setUpdateError(`ERROR: ${body[0].errorTitle} - ${body[0].errorDescription}`);
+                  console.error(
+                    `[500 ERROR] Updating street template - ${body[0].errorTitle}: ${body[0].errorDescription}`
+                  );
+                });
                 break;
 
               default:
@@ -346,6 +363,7 @@ function PropertyTemplatesTab() {
       {templateFormData ? (
         <EditPropertyTemplateTab
           data={templateFormData}
+          error={updateError}
           onHomeClick={doHomeClick}
           onUpdateData={(updatedData) => handleUpdateData(updatedData)}
           onDuplicateClick={(pkId) => handleDuplicateTemplate(pkId)}

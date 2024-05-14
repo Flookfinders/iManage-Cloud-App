@@ -39,6 +39,7 @@
 //    026   09.04.24 Sean Flook       IMANN-376 Removed for administrative area.
 //    027   17.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft to Scheme field.
 //    028   23.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft to ADSTextControl fields
+//    029   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -172,6 +173,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [blpuStateDate, setBlpuStateDate] = useState(null);
   const [blpuClassification, setBlpuClassification] = useState(null);
   const [blpuStartDate, setBlpuStartDate] = useState(null);
+  const [excludeFromExport, setExcludeFromExport] = useState(false);
+  const [siteVisit, setSiteVisit] = useState(false);
   const [level, setLevel] = useState(""); // numeric on BLPU for OS, string on LPI for GP
   const [lpiStatus, setLpiStatus] = useState(null);
   const [lpiPostTown, setLpiPostTown] = useState(null);
@@ -258,6 +261,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [blpuStateError, setBlpuStateError] = useState(null);
   const [blpuStateDateError, setBlpuStateDateError] = useState(null);
   const [blpuClassificationError, setBlpuClassificationError] = useState(null);
+  const [excludeFromExportError, setExcludeFromExportError] = useState(null);
+  const [siteVisitError, setSiteVisitError] = useState(null);
   const [blpuStartDateError, setBlpuStartDateError] = useState(null);
   const [lpiStatusError, setLpiStatusError] = useState(null);
   const [levelError, setLevelError] = useState(null);
@@ -309,6 +314,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           state: blpuState,
           classification: blpuClassification,
           blpuLevel: level,
+          excludeFromExport: excludeFromExport,
+          siteVisit: siteVisit,
         };
 
       case "lpi":
@@ -344,6 +351,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           adminAreaRef: streetAdminArea,
           classification: streetClassification,
           surface: streetSurface,
+          streetExcludeFromExport: excludeFromExport,
         };
 
       case "esu":
@@ -446,6 +454,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             state: blpuState,
             stateDate: blpuStateDate,
             blpuLevel: level,
+            excludeFromExport: excludeFromExport,
+            siteVisit: siteVisit,
             startDate: blpuStartDate,
             errors: errors,
           };
@@ -456,6 +466,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             state: blpuState,
             stateDate: blpuStateDate,
             classification: blpuClassification,
+            excludeFromExport: excludeFromExport,
+            siteVisit: siteVisit,
             startDate: blpuStartDate,
             errors: errors,
           };
@@ -605,6 +617,28 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
     if (variant === "blpuWizard" || variant === "classificationWizard") {
       updateErrors("classification");
       setBlpuClassificationError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the exclude from export is changed.
+   */
+  const handleExcludeFromExportChangeEvent = () => {
+    setExcludeFromExport(!excludeFromExport);
+    if (variant === "blpuWizard") {
+      updateErrors("excludeFromExport");
+      setExcludeFromExportError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the BLPU site visit is changed.
+   */
+  const handleBlpuSiteVisitChangeEvent = () => {
+    setSiteVisit(!siteVisit);
+    if (variant === "blpuWizard") {
+      updateErrors("siteVisit");
+      setSiteVisitError(null);
     }
   };
 
@@ -1575,6 +1609,24 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 onChange={handleLevelChangeEvent}
               />
             )}
+            <ADSSwitchControl
+              label="Exclude from export"
+              isEditable
+              checked={excludeFromExport}
+              trueLabel="Yes"
+              falseLabel="No"
+              helperText="Set this if you do not want this property to be included in any exports."
+              onChange={handleExcludeFromExportChangeEvent}
+            />
+            <ADSSwitchControl
+              label="Site visit required"
+              isEditable
+              checked={siteVisit}
+              trueLabel="Yes"
+              falseLabel="No"
+              helperText="Set this if the property requires a site visit."
+              onChange={handleBlpuSiteVisitChangeEvent}
+            />
           </Stack>
         );
 
@@ -1893,6 +1945,15 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 onChange={handleSurfaceChangeEvent}
               />
             )}
+            <ADSSwitchControl
+              label="Exclude from export"
+              isEditable
+              checked={excludeFromExport}
+              trueLabel="Yes"
+              falseLabel="No"
+              helperText="Set this if you do not want this street to be included in any exports."
+              onChange={handleExcludeFromExportChangeEvent}
+            />
           </Stack>
         );
 
@@ -2765,10 +2826,31 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                 label="Level"
                 isEditable
                 value={level}
+                errorText={levelError}
                 helperText="Memorandum of the vertical position of the BLPU."
                 onChange={handleLevelChangeEvent}
               />
             )}
+            <ADSSwitchControl
+              label="Exclude from export"
+              isEditable
+              checked={excludeFromExport}
+              trueLabel="Yes"
+              falseLabel="No"
+              errorText={excludeFromExportError}
+              helperText="Set this if you do not want this property to be included in any exports."
+              onChange={handleExcludeFromExportChangeEvent}
+            />
+            <ADSSwitchControl
+              label="Site visit required"
+              isEditable
+              checked={siteVisit}
+              trueLabel="Yes"
+              falseLabel="No"
+              errorText={siteVisitError}
+              helperText="Set this if the property requires a site visit."
+              onChange={handleBlpuSiteVisitChangeEvent}
+            />
             <ADSDateControl
               label="Start date"
               isEditable
@@ -3045,6 +3127,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           } else {
             setBlpuClassification(data.classification);
           }
+          setExcludeFromExport(data.excludeFromExport);
+          setSiteVisit(data.siteVisit);
           break;
 
         case "lpi":
@@ -3083,6 +3167,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           setStreetAdminArea(data.adminAreaRef);
           setStreetClassification(data.classification);
           setStreetSurface(data.surface);
+          setExcludeFromExport(data.excludeFromExport);
           break;
 
         case "esu":
@@ -3191,6 +3276,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           } else {
             setBlpuClassification(data.classification);
           }
+          setExcludeFromExport(data.excludeFromExport);
+          setSiteVisit(data.siteVisit);
           setBlpuStartDate(data.startDate);
           break;
 
@@ -3237,6 +3324,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         setBlpuStateError(null);
         setBlpuStateDateError(null);
         setBlpuClassificationError(null);
+        setExcludeFromExportError(null);
+        setSiteVisitError(null);
         setBlpuStartDateError(null);
         setLpiStatusError(null);
         setLevelError(null);
@@ -3268,6 +3357,14 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
 
             case "classification":
               setBlpuClassificationError(error.errors);
+              break;
+
+            case "excludefromexport":
+              setExcludeFromExportError(error.errors);
+              break;
+
+            case "sitevisit":
+              setSiteVisitError(error.errors);
               break;
 
             case "blpucstartdate":

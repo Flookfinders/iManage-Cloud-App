@@ -23,6 +23,7 @@
 //    010   16.01.23 Joel Benford               OS/GP level split
 //    011   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    012   25.01.24 Sean Flook                 Changes required after UX review.
+//    013   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -70,7 +71,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import EditIcon from "@mui/icons-material/Edit";
 import LockIcon from "@mui/icons-material/Lock";
 
-import { adsPaleBlueA } from "../utils/ADSColours";
+import { adsPaleBlueA, adsRed } from "../utils/ADSColours";
 import {
   blueButtonStyle,
   redButtonStyle,
@@ -84,13 +85,14 @@ import { useTheme } from "@mui/styles";
 
 EditPropertyTemplateTab.propTypes = {
   data: PropTypes.object.isRequired,
+  error: PropTypes.string,
   onHomeClick: PropTypes.func.isRequired,
   onUpdateData: PropTypes.func.isRequired,
   onDuplicateClick: PropTypes.func.isRequired,
   onDeleteClick: PropTypes.func.isRequired,
 };
 
-function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateClick, onDeleteClick }) {
+function EditPropertyTemplateTab({ data, error, onHomeClick, onUpdateData, onDuplicateClick, onDeleteClick }) {
   const theme = useTheme();
 
   const lookupContext = useContext(LookupContext);
@@ -103,6 +105,8 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
   const [blpuState, setBlpuState] = useState(null);
   const [blpuClassification, setBlpuClassification] = useState(null);
   const [blpuLevel, setBlpuLevel] = useState(0); // OS numeric
+  const [excludeFromExport, setExcludeFromExport] = useState(false);
+  const [siteVisit, setSiteVisit] = useState(false);
   const [classificationScheme, setClassificationScheme] = useState(null);
   const [lpiStatus, setLpiStatus] = useState(null);
   const [lpiPostTown, setLpiPostTown] = useState(null);
@@ -125,6 +129,8 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
 
   const [titleHighlighted, setTitleHighlighted] = useState(false);
   const [descriptionHighlighted, setDescriptionHighlighted] = useState(false);
+
+  const [updateError, setUpdateError] = useState(null);
 
   /**
    * Event to handle when the home button is clicked.
@@ -152,12 +158,15 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
    */
   const doEditBlpu = () => {
     setEditVariant("blpu");
+    setUpdateError(null);
     setEditData({
       blpuLogicalStatus: data.blpuLogicalStatus,
       rpc: data.rpc,
       state: data.state,
       classification: data.classification,
       level: data.blpuLevel,
+      excludeFromExport: data.excludeFromExport,
+      siteVisit: data.siteVisit,
     });
     setShowEditDialog(true);
   };
@@ -167,6 +176,7 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
    */
   const doEditLpi = () => {
     setEditVariant("lpi");
+    setUpdateError(null);
     setEditData({
       lpiLogicalStatus: data.lpiLogicalStatus,
       postTownRef: data.postTownRef,
@@ -183,6 +193,7 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
    */
   const doEditClassification = () => {
     setEditVariant("classification");
+    setUpdateError(null);
     setEditData({
       classification: data.classification,
       classificationScheme: data.classificationScheme,
@@ -195,6 +206,7 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
    */
   const doEditOther = () => {
     setEditVariant("other");
+    setUpdateError(null);
     setEditData({
       source: data.source,
       provCode: data.provCode,
@@ -224,6 +236,8 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               blpuTemplatePkId: data.blpuTemplatePkId,
               blpuLogicalStatus: blpuStatus,
               blpuLevel: blpuLevel,
+              excludeFromExport: excludeFromExport,
+              siteVisit: siteVisit,
               rpc: blpuRpc,
               state: blpuState,
               classification: blpuClassification,
@@ -255,6 +269,8 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               blpuTemplatePkId: data.blpuTemplatePkId,
               blpuLogicalStatus: blpuStatus,
               blpuLevel: blpuLevel,
+              excludeFromExport: excludeFromExport,
+              siteVisit: siteVisit,
               rpc: blpuRpc,
               state: blpuState,
               classification: blpuClassification,
@@ -278,6 +294,8 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
           setBlpuRpc(updatedData.rpc);
           setBlpuState(updatedData.state);
           setBlpuLevel(updatedData.blpuLevel);
+          setExcludeFromExport(updatedData.excludeFromExport);
+          setSiteVisit(updatedData.siteVisit);
           if (onUpdateData)
             onUpdateData({
               templatePkId: data.templatePkId,
@@ -289,6 +307,8 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               blpuTemplatePkId: data.blpuTemplatePkId,
               blpuLogicalStatus: updatedData.blpuLogicalStatus,
               blpuLevel: updatedData.blpuLevel,
+              excludeFromExport: updatedData.excludeFromExport,
+              siteVisit: updatedData.siteVisit,
               rpc: updatedData.rpc,
               state: updatedData.state,
               // if Scottish this is handled in classification card, so return no change here
@@ -326,6 +346,8 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               blpuTemplatePkId: data.blpuTemplatePkId,
               blpuLogicalStatus: blpuStatus,
               blpuLevel: blpuLevel,
+              excludeFromExport: excludeFromExport,
+              siteVisit: siteVisit,
               rpc: blpuRpc,
               state: blpuState,
               classification: blpuClassification,
@@ -359,6 +381,8 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               blpuTemplatePkId: data.blpuTemplatePkId,
               blpuLogicalStatus: data.blpuLogicalStatus,
               blpuLevel: blpuLevel,
+              excludeFromExport: excludeFromExport,
+              siteVisit: siteVisit,
               rpc: data.rpc,
               state: data.state,
               classification: updatedData.classification,
@@ -392,6 +416,8 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
               blpuTemplatePkId: data.blpuTemplatePkId,
               blpuLogicalStatus: blpuStatus,
               blpuLevel: blpuLevel,
+              excludeFromExport: excludeFromExport,
+              siteVisit: siteVisit,
               rpc: blpuRpc,
               state: blpuState,
               classification: blpuClassification,
@@ -579,6 +605,8 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
       setBlpuState(data.state);
       setBlpuClassification(data.classification);
       setBlpuLevel(data.blpuLevel);
+      setExcludeFromExport(data.excludeFromExport);
+      setSiteVisit(data.siteVisit);
       setClassificationScheme(data.classificationScheme);
       setLpiStatus(data.lpiLogicalStatus);
       setLpiPostTown(data.postTownRef);
@@ -591,6 +619,10 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
       setOtherNote(data.note);
     }
   }, [data]);
+
+  useEffect(() => {
+    setUpdateError(error);
+  }, [error]);
 
   return (
     <Box
@@ -669,6 +701,11 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
                 <EditIcon sx={ActionIconStyle(true)} />
               </IconButton>
             </Tooltip>
+          )}
+          {updateError && (
+            <Typography variant="body2" sx={{ color: adsRed }}>
+              {updateError}
+            </Typography>
           )}
         </Stack>
         <Grid
@@ -755,6 +792,22 @@ function EditPropertyTemplateTab({ data, onHomeClick, onUpdateData, onDuplicateC
                         </Grid>
                       </>
                     )}
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Exclude from export</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {`${excludeFromExport ? "Yes" : "No"}`}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Site visit required</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {`${siteVisit ? "Yes" : "No"}`}
+                      </Typography>
+                    </Grid>
                   </Grid>
                 </CardContent>
               </CardActionArea>

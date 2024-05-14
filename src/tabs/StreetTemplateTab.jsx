@@ -25,6 +25,7 @@
 //    012   30.01.24 Sean Flook                 Added ESU tolerance for GeoPlace.
 //    013   13.02.24 Sean Flook                 Only set the data if it exists.
 //    014   19.02.24 Sean Flook       IMANN-307 Check for the ESU objects when trying to edit the ESU template.
+//    015   08.05.24 Sean Flook       IMANN-447 Added exclude from export.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -73,6 +74,8 @@ import {
   getTemplateIconStyle,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
+import { StringToTitleCase } from "../utils/HelperUtils";
+import { adsRed } from "../utils/ADSColours";
 
 function StreetTemplateTab() {
   const theme = useTheme();
@@ -91,6 +94,7 @@ function StreetTemplateTab() {
   const [adminAreaRef, setAdminAreaRef] = useState(null);
   const [classification, setClassification] = useState(null);
   const [surface, setSurface] = useState(null);
+  const [excludeFromExport, setExcludeFromExport] = useState(false);
   const [esuDirection, setEsuDirection] = useState(null);
   const [esuTolerance, setEsuTolerance] = useState(null);
   const [esuState, setEsuState] = useState(null);
@@ -113,6 +117,8 @@ function StreetTemplateTab() {
   const [editVariant, setEditVariant] = useState(null);
   const [editData, setEditData] = useState(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
+
+  const [updateError, setUpdateError] = useState(null);
 
   /**
    * Event to handle when the mouse enters the street card.
@@ -347,6 +353,7 @@ function StreetTemplateTab() {
    * Event to handle when the street data is edited.
    */
   const doEditStreet = () => {
+    setUpdateError(null);
     setEditVariant("street");
     setEditData({
       streetRefType: data.streetTemplate.recordType,
@@ -357,6 +364,7 @@ function StreetTemplateTab() {
       adminAreaRef: data.streetTemplate.adminAreaRef,
       classification: data.streetTemplate.classification,
       surface: data.streetTemplate.streetSurface,
+      excludeFromExport: data.streetTemplate.streetExcludeFromExport,
     });
     setShowEditDialog(true);
   };
@@ -365,6 +373,7 @@ function StreetTemplateTab() {
    * Event to handle when the ESU data is edited.
    */
   const doEditEsu = () => {
+    setUpdateError(null);
     setEditVariant("esu");
     setEditData({
       esuDirection: data.esuTemplate ? data.esuTemplate.esuDirection : null,
@@ -379,6 +388,7 @@ function StreetTemplateTab() {
    * Event to handle when the one-way exemption data is edited.
    */
   const doEditOneWayExemption = () => {
+    setUpdateError(null);
     setEditVariant("owe");
     setEditData({
       oweType: data.esuTemplate.oneWayExemptionType,
@@ -391,6 +401,7 @@ function StreetTemplateTab() {
    * Event to handle when the highway dedication data is edited.
    */
   const doEditHighwayDedication = () => {
+    setUpdateError(null);
     setEditVariant("hd");
     setEditData({
       hdCode: data.esuTemplate.highwayDedicationCode,
@@ -509,6 +520,12 @@ function StreetTemplateTab() {
               editVariant === "street" && settingsContext.isScottish
                 ? updatedData.islandRef
                 : data.streetTemplate.islandRef,
+            streetExcludeFromExport:
+              editVariant === "street"
+                ? updatedData.streetExcludeFromExport
+                : data.streetTemplate.streetExcludeFromExport
+                ? data.streetTemplate.streetExcludeFromExport
+                : false,
           },
         };
 
@@ -535,13 +552,21 @@ function StreetTemplateTab() {
                 break;
 
               case 401:
-                res.json().then((body) => {
-                  console.error("[401 ERROR] Updating street template", body);
-                });
+                setUpdateError("You do not have authorisation to update the template");
+                break;
+
+              case 403:
+                setUpdateError("You do not have authorisation to update the template");
                 break;
 
               case 500:
-                console.error("[500 ERROR] Updating street template", res);
+                res.json().then((body) => {
+                  if (process.env.NODE_ENV === "development")
+                    setUpdateError(`ERROR: ${body[0].errorTitle} - ${body[0].errorDescription}`);
+                  console.error(
+                    `[500 ERROR] Updating street template - ${body[0].errorTitle}: ${body[0].errorDescription}`
+                  );
+                });
                 break;
 
               default:
@@ -578,6 +603,7 @@ function StreetTemplateTab() {
       setAdminAreaRef(data.streetTemplate ? data.streetTemplate.adminAreaRef : null);
       setClassification(data.streetTemplate ? data.streetTemplate.classification : null);
       setSurface(data.streetTemplate ? data.streetTemplate.streetSurface : null);
+      setExcludeFromExport(data.streetTemplate ? data.streetTemplate.streetExcludeFromExport : false);
       setEsuDirection(data.esuTemplate ? data.esuTemplate.esuDirection : null);
       setEsuTolerance(data.esuTemplate ? data.esuTemplate.esuTolerance : null);
       setEsuState(data.scoEsuTemplate ? data.scoEsuTemplate.state : null);
@@ -598,9 +624,16 @@ function StreetTemplateTab() {
     <Box sx={{ ml: theme.spacing(1), mr: theme.spacing(4) }}>
       <Stack direction="column" spacing={1}>
         <Typography sx={{ fontSize: 24, flexGrow: 1, pl: theme.spacing(3) }}>Street template</Typography>
-        <Typography variant="body2" sx={{ pl: theme.spacing(3) }}>
-          Set default lookup values for streets
-        </Typography>
+        <Stack direction="row" spacing={2}>
+          <Typography variant="body2" sx={{ pl: theme.spacing(3) }}>
+            Set default lookup values for streets
+          </Typography>
+          {updateError && (
+            <Typography variant="body2" sx={{ color: adsRed }}>
+              {updateError}
+            </Typography>
+          )}
+        </Stack>
         <Grid container sx={{ pr: theme.spacing(3.5) }} spacing={3}>
           <Grid item xs={6}>
             <Card
@@ -652,7 +685,7 @@ function StreetTemplateTab() {
                     </Grid>
                     <Grid item xs={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        {getLocality(localityRef)}
+                        {StringToTitleCase(getLocality(localityRef))}
                       </Typography>
                     </Grid>
                     <Grid item xs={3}>
@@ -660,7 +693,7 @@ function StreetTemplateTab() {
                     </Grid>
                     <Grid item xs={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        {getTown(townRef)}
+                        {StringToTitleCase(getTown(townRef))}
                       </Typography>
                     </Grid>
                     {settingsContext.isScottish && (
@@ -671,7 +704,7 @@ function StreetTemplateTab() {
                     {settingsContext.isScottish && (
                       <Grid item xs={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getIsland(islandRef)}
+                          {StringToTitleCase(getIsland(islandRef))}
                         </Typography>
                       </Grid>
                     )}
@@ -680,7 +713,7 @@ function StreetTemplateTab() {
                     </Grid>
                     <Grid item xs={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        {getAdminArea(adminAreaRef)}
+                        {StringToTitleCase(getAdminArea(adminAreaRef))}
                       </Typography>
                     </Grid>
                     {!settingsContext.isScottish && (
@@ -707,6 +740,14 @@ function StreetTemplateTab() {
                         </Typography>
                       </Grid>
                     )}
+                    <Grid item xs={3}>
+                      <Typography variant="body2">Exclude from export</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {`${excludeFromExport ? "Yes" : "No"}`}
+                      </Typography>
+                    </Grid>
                   </Grid>
                 </CardContent>
               </CardActionArea>

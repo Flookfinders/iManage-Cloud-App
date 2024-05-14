@@ -67,13 +67,16 @@
 //    053   08.04.24 Sean Flook           STRT4 Changes to allow for authority extent defaults. Changes required to prevent crash when refreshing page.
 //    054   16.04.24 Sean Flook                 When loading a SHP file use the mapContext to retain the information and display the layer in the map.
 //    055   18.04.24 Sean Flook       IMANN-351 Changes required to prevent crashes when refreshing the page.
+//    056   02.05.24 Joshua McCormick IMANN-283 Set GetStreetTypeLabel and GetStreetStateLabel return street code set to false with map overlay
+//    057   02.05.24 Joshua McCormick IMANN-283 GetStreetTypeLabel and GetStreetStateLabel return street code false for all instances
+//    058   03.05.24 Sean Flook                 Moved functions out of useEffect by using useCallback.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
 /* #region imports */
-import React, { useContext, useEffect, useState, useRef, Fragment } from "react";
+import React, { useContext, useState, useRef, useCallback, useEffect, Fragment } from "react";
 import { useHistory } from "react-router";
 import PropTypes from "prop-types";
 
@@ -88,7 +91,7 @@ import SettingsContext from "../context/settingsContext";
 import InformationContext from "../context/informationContext";
 
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
-import { GetPropertyFromUPRNUrl, GetMapLayersUrl } from "../configuration/ADSConfig";
+import { GetPropertyFromUPRNUrl } from "../configuration/ADSConfig";
 import {
   GetWktCoordinates,
   GetPolylineAsWKT,
@@ -99,6 +102,7 @@ import {
   doOpenRecord,
   defaultMapLayerIds,
   mergeArrays,
+  getBaseMapLayers,
 } from "../utils/HelperUtils";
 import {
   GetStreetStateLabel,
@@ -1810,301 +1814,588 @@ function ADSEsriMap(startExtent) {
     }
   };
 
-  // Base mapping
-  useEffect(() => {
-    if (viewRef.current) return;
+  /**
+   * Method to handle saving changes to a street.
+   *
+   * @param {object} currentStreet The current street.
+   */
+  const handleSaveStreet = useCallback(
+    (currentStreet) => {
+      SaveStreet(
+        currentStreet,
+        streetContext,
+        userContext,
+        lookupContext,
+        searchContext,
+        mapContext,
+        sandboxContext,
+        isScottish.current,
+        isWelsh.current
+      ).then((result) => {
+        if (result) {
+          saveResult.current = true;
+          saveType.current = "street";
+          setSaveOpen(true);
+        } else {
+          saveResult.current = false;
+          saveType.current = "street";
+          setSaveOpen(true);
+        }
+      });
+    },
+    [mapContext, sandboxContext, searchContext, streetContext]
+  );
 
-    const getAuthorityExtent = () => {
-      if (authorityCode.current) {
-        const authorityRec = DETRCodes.find((x) => x.id === authorityCode.current);
+  /**
+   * Method to handle saving changes to a property.
+   *
+   * @param {object} currentProperty The current property.
+   */
+  const handleSaveProperty = useCallback(
+    (currentProperty) => {
+      SavePropertyAndUpdate(
+        currentProperty,
+        propertyContext.currentProperty.newProperty,
+        propertyContext,
+        userContext.currentUser.token,
+        lookupContext,
+        searchContext,
+        mapContext,
+        sandboxContext,
+        isScottish.current,
+        isWelsh.current
+      ).then((result) => {
+        if (result) {
+          saveResult.current = true;
+          saveType.current = "property";
+          setSaveOpen(true);
+        } else {
+          saveResult.current = false;
+          saveType.current = "property";
+          setSaveOpen(true);
+        }
+      });
+    },
+    [mapContext, propertyContext, sandboxContext, searchContext]
+  );
 
-        if (authorityRec && authorityRec.xmin) {
-          return {
-            xmin: authorityRec.xmin,
-            ymin: authorityRec.ymin,
-            xmax: authorityRec.xmax,
-            ymax: authorityRec.ymax,
-            spatialReference: { wkid: 27700 },
-          };
-        } else return defaultCountryExtent.current;
-      } else return defaultCountryExtent.current;
-    };
+  /**
+   * Method to check for any unsaved changes to the existing record.
+   *
+   * @param {object} functionAfterCheck The function to be called after we have checked for any unsaved changes.
+   */
+  const checkForUnsavedChanges = useCallback(
+    (functionAfterCheck) => {
+      if (sandbox.current.sourceStreet) {
+        const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
 
-    const processBaseLayers = (mapLayers) => {
-      mapLayers
-        .sort((a, b) => a.layerPosition - b.layerPosition)
-        .forEach((baseLayer) => {
-          if (baseLayer.visible) {
-            newBaseLayer = null;
+        if (streetChanged) {
+          associatedRecords.current = GetChangedAssociatedRecords(
+            "street",
+            sandboxContext,
+            streetContext.esuDataChanged
+          );
 
-            switch (baseLayer.layerType) {
-              case 1: // WFS
-                // Create an empty GraphicsLayer as a placeholder for when the user actually gets the features
-                newBaseLayer = new GraphicsLayer({
-                  id: baseLayer.layerId,
-                  copyright:
-                    baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
-                      ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                      : baseLayer.copyright,
-                  title: baseLayer.title,
-                  listMode: baseLayer.displayInList ? "show" : "hide",
-                  maxScale: baseLayer.maxScale,
-                  minScale: baseLayer.minScale,
-                  opacity: baseLayer.opacity,
-                  visible: baseLayer.visible,
-                });
-                featureLayer.push({ layer: baseLayer, startIndex: 0 });
-                break;
+          const streetDataRef = sandbox.current.currentStreet
+            ? sandbox.current.currentStreet
+            : sandbox.current.sourceStreet;
 
-              case 2: // WMS
-                switch (baseLayer.serviceProvider) {
-                  case "thinkWare":
-                    newBaseLayer = new WMSLayer({
-                      url: baseLayer.url,
-                      id: baseLayer.layerId,
-                      customParameters: {
-                        token: baseLayer.token,
-                      },
-                      sublayers: [
-                        {
-                          name: baseLayer.activeLayerId,
-                          title: baseLayer.activeLayerTitle,
-                        },
-                      ],
-                      copyright:
-                        baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
-                          ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                          : baseLayer.copyright,
-                      title: baseLayer.title,
-                      listMode: baseLayer.displayInList ? "show" : "hide",
-                      maxScale: baseLayer.maxScale,
-                      minScale: baseLayer.minScale,
-                      opacity: baseLayer.opacity,
-                      visible: baseLayer.visible,
-                    });
-                    break;
-
-                  case "viaEuropa":
-                    alert("Code to handle viaEuropa WMS layers has not been written yet.");
-                    break;
-
-                  default: // OS
-                    alert("Code to handle OS WMS layers has not been written yet.");
-                    break;
+          if (associatedRecords.current.length > 0) {
+            saveConfirmDialog(associatedRecords.current)
+              .then((result) => {
+                if (result === "save") {
+                  if (streetContext.validateData()) {
+                    failedValidation.current = false;
+                    const currentStreetData = GetCurrentStreetData(
+                      streetDataRef,
+                      sandboxContext,
+                      lookupContext,
+                      isWelsh.current,
+                      isScottish.current
+                    );
+                    handleSaveStreet(currentStreetData);
+                  } else {
+                    failedValidation.current = true;
+                    saveResult.current = false;
+                    setSaveOpen(true);
+                  }
                 }
-                break;
-
-              case 3: // WMTS
-                switch (baseLayer.serviceProvider) {
-                  case "thinkWare":
-                    alert("Code to handle thinkWare WMTS layers has not been written yet.");
-                    break;
-
-                  case "viaEuropa":
-                    newBaseLayer = new WMTSLayer({
-                      url: `${baseLayer.url}/${baseLayer.layerKey}/${baseLayer.activeLayerId}/wmts?client=arcgis`,
-                      id: baseLayer.layerId,
-                      copyright:
-                        baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
-                          ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                          : baseLayer.copyright,
-                      title: baseLayer.title,
-                      listMode: baseLayer.displayInList ? "show" : "hide",
-                      maxScale: baseLayer.maxScale,
-                      minScale: baseLayer.minScale,
-                      opacity: baseLayer.opacity,
-                      visible: baseLayer.visible,
-                    });
-                    break;
-
-                  default: // OS
-                    newBaseLayer = new WMTSLayer({
-                      url: baseLayer.url,
-                      serviceMode: baseLayer.serviceMode,
-                      activeLayer: {
-                        id: baseLayer.activeLayerId,
-                      },
-                      customParameters: {
-                        key: baseLayer.layerKey,
-                      },
-                      id: baseLayer.layerId,
-                      copyright:
-                        baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
-                          ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                          : baseLayer.copyright,
-                      title: baseLayer.title,
-                      listMode: baseLayer.displayInList ? "show" : "hide",
-                      maxScale: baseLayer.maxScale,
-                      minScale: baseLayer.minScale,
-                      opacity: baseLayer.opacity,
-                      visible: baseLayer.visible,
-                    });
-                    break;
+                mapContext.onSetCoordinate(null);
+                streetContext.onStreetModified(false);
+                sandboxContext.resetSandbox("street");
+                functionAfterCheck();
+              })
+              .catch(() => {});
+          } else {
+            saveConfirmDialog(true)
+              .then((result) => {
+                if (result === "save") {
+                  handleSaveStreet(sandbox.current.currentStreet);
                 }
-                break;
-
-              default:
-                break;
-            }
-
-            if (newBaseLayer) {
-              baseLayerIds.push(baseLayer.layerId);
-              if (baseLayer.esuSnap) snapEsu.push(baseLayer.layerId);
-              if (baseLayer.blpuSnap) snapBlpu.push(baseLayer.layerId);
-              if (baseLayer.extentSnap) snapExtent.push(baseLayer.layerId);
-              baseLayers.push(newBaseLayer);
-            }
+                mapContext.onSetCoordinate(null);
+                streetContext.onStreetModified(false);
+                sandboxContext.resetSandbox("street");
+                functionAfterCheck();
+              })
+              .catch(() => {});
           }
-        });
+        } else {
+          mapContext.onSetCoordinate(null);
+          streetContext.onStreetModified(false);
+          sandboxContext.resetSandbox("street");
+          functionAfterCheck();
+        }
+      } else if (sandbox.current.sourceProperty) {
+        const propertyChanged = hasPropertyChanged(
+          propertyContext.currentProperty.newProperty,
+          sandboxContext.currentSandbox
+        );
 
-      baseMappingLayerIds.current = baseLayerIds;
-      baseLayersSnapEsu.current = snapEsu;
-      baseLayersSnapBlpu.current = snapBlpu;
-      baseLayersSnapExtent.current = snapExtent;
-      baseLayersFeature.current = featureLayer;
+        if (propertyChanged) {
+          associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);
 
-      const baseMap = new Map({
-        layers: baseLayers,
-      });
+          const propertyDataRef = sandbox.current.currentProperty
+            ? sandbox.current.currentProperty
+            : sandbox.current.sourceProperty;
 
-      const baseView = new MapView({
-        container: mapRef.current,
-        map: baseMap,
-        extent: backgroundExtent.current ? backgroundExtent.current : getAuthorityExtent(),
-        constraints: {
-          minZoom: 2,
-          maxZoom: 21,
-          rotationEnabled: false,
-          lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods,
-        },
-        highlightOptions: {
-          color: [217, 0, 182, 255],
-          fillOpacity: 0.25,
-        },
-        popup: {
-          collapseEnabled: false,
-          dockOptions: {
-            buttonEnabled: false,
-          },
-        },
-      });
+          if (associatedRecords.current.length > 0) {
+            saveConfirmDialog(associatedRecords.current)
+              .then((result) => {
+                if (result === "save") {
+                  if (propertyContext.validateData()) {
+                    failedValidation.current = false;
+                    const currentPropertyData = GetCurrentPropertyData(
+                      propertyDataRef,
+                      sandboxContext,
+                      lookupContext,
+                      isWelsh.current,
+                      isScottish.current
+                    );
+                    handleSaveProperty(currentPropertyData);
+                    mapContext.onSetCoordinate(null);
+                    propertyContext.onPropertyModified(false);
+                    sandboxContext.resetSandbox("property");
+                    functionAfterCheck();
+                  } else {
+                    failedValidation.current = true;
+                    saveResult.current = false;
+                    setSaveOpen(true);
+                  }
+                } else {
+                  mapContext.onSetCoordinate(null);
+                  propertyContext.onPropertyModified(false);
+                  sandboxContext.resetSandbox("property");
+                  functionAfterCheck();
+                }
+              })
+              .catch(() => {});
+          } else {
+            saveConfirmDialog(true)
+              .then((result) => {
+                if (result === "save") {
+                  handleSaveProperty(sandbox.current.currentProperty);
+                }
+                mapContext.onSetCoordinate(null);
+                propertyContext.onPropertyModified(false);
+                sandboxContext.resetSandbox("property");
+                functionAfterCheck();
+              })
+              .catch(() => {});
+          }
+        } else {
+          mapContext.onSetCoordinate(null);
+          propertyContext.onPropertyModified(false);
+          sandboxContext.resetSandbox("property");
+          functionAfterCheck();
+        }
+      } else {
+        mapContext.onSetCoordinate(null);
+        streetContext.onStreetModified(false);
+        propertyContext.onPropertyModified(false);
+        sandboxContext.resetSandbox("all");
+        functionAfterCheck();
+      }
+    },
+    [
+      handleSaveProperty,
+      handleSaveStreet,
+      mapContext,
+      propertyContext,
+      sandboxContext,
+      saveConfirmDialog,
+      streetContext,
+    ]
+  );
 
-      const scaleBar = new ScaleBar({
-        view: baseView,
-        unit: "dual", // The scale bar displays both metric and non-metric units.
-      });
+  /**
+   * Method to update the property data.
+   *
+   * @param {number} uprn The UPRN of the property to update.
+   */
+  const updateMapPropertyData = useCallback(
+    async (uprn) => {
+      const propertyUrl = GetPropertyFromUPRNUrl(userContext.current.currentUser.token);
 
-      const baseCoordinateConversion = new CoordinateConversion({
-        label: "Coordinates",
-        view: baseView,
-        visibleElements: {
-          settingsButton: false,
-        },
-      });
-
-      const baseSketch = new Sketch({
-        id: "ADSEditWidget",
-        view: baseView,
-        creationMode: "update",
-        availableCreateTools: [],
-        defaultCreateOptions: { hasZ: false },
-        defaultUpdateOptions: {
-          tool: "reshape",
-          enableRotation: false,
-          enableZ: false,
-          multipleSelectionEnabled: false,
-          toggleToolOnClick: false,
-        },
-        snappingOptions: { enabled: true },
-        visibleElements: {
-          createTools: {
-            rectangle: false,
-            circle: false,
-          },
-        },
-        visible: false,
-      });
-
-      const baseMeasurement = new Measurement({
-        id: "ADSMeasurement",
-        view: baseView,
-        activeTool: null,
-        visible: false,
-      });
-
-      const baseLayerList = new LayerList({
-        id: "ADSLayerList",
-        view: baseView,
-        label: "Current layers",
-        visible: false,
-        listItemCreatedFunction: defineActions,
-      });
-
-      baseView.ui.add(baseSketch, {
-        position: "top-right",
-      });
-
-      baseView.ui.remove("zoom"); // Remove default zoom widget first
-
-      baseView.ui.add("ads-buttons", "bottom-left");
-
-      baseView.ui.add(baseLayerList, {
-        position: "bottom-left",
-      });
-
-      baseView.ui.add(baseMeasurement, "bottom-left");
-
-      baseView.ui.add(scaleBar, {
-        position: "bottom-left",
-      });
-
-      baseView.ui.add(baseCoordinateConversion, { position: "bottom-right" });
-
-      baseSketch.activeTool = null;
-
-      baseView.when((_) => {
-        const plus = document.getElementsByClassName("esri-icon-plus");
-        if (plus && plus.length === 1) plus[0].classList = "mapPlusIcon";
-
-        const minus = document.getElementsByClassName("esri-icon-minus");
-        if (minus && minus.length === 1) minus[0].classList = "mapMinusIcon";
-      });
-
-      mapRef.current = baseMap;
-      setView(baseView);
-      viewRef.current = baseView;
-      sketchRef.current = baseSketch;
-      layerListRef.current = baseLayerList;
-      measurementRef.current = baseMeasurement;
-      coordinateConversionRef.current = baseCoordinateConversion;
-    };
-
-    /**
-     * Method to get the base map layers.
-     */
-    async function GetBaseMapLayers() {
-      const mapLayerUrl = GetMapLayersUrl("GET", userContext.current.currentUser.token);
-
-      if (mapLayerUrl) {
-        baseMapLayers.current = await fetch(`${mapLayerUrl.url}`, {
-          headers: mapLayerUrl.headers,
+      if (propertyUrl) {
+        const returnValue = await fetch(`${propertyUrl.url}/${uprn}`, {
+          headers: propertyUrl.headers,
           crossDomain: true,
-          method: mapLayerUrl.type,
+          method: "GET",
         })
           .then((res) => (res.ok ? res : Promise.reject(res)))
           .then((res) => res.json())
           .then(
             (result) => {
-              processBaseLayers(result);
               return result;
             },
             (error) => {
-              console.error("[ERROR] Getting base map layers", error);
+              console.error("[ERROR] Get Property data", error);
               return null;
             }
           );
+
+        const extents = returnValue
+          ? returnValue.blpuProvenances.map((rec) => ({
+              pkId: rec.pkId,
+              uprn: uprn,
+              code: rec.provenanceCode,
+              geometry: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
+            }))
+          : undefined;
+
+        mapContext.onSearchDataChange(
+          mapContext.currentSearchData.streets,
+          mapContext.currentSearchData.properties,
+          null,
+          uprn
+        );
+        mapContext.onMapChange(extents, null, null);
+      }
+    },
+    [mapContext]
+  );
+
+  /**
+   * Method to handle opening a street from the feature dialog.
+   */
+  const handleOpenStreet = useCallback(() => {
+    if (recordAttributes.current) {
+      propertyContext.onPropertyChange(0, 0, null, null, null, null, null, false, null);
+
+      streetContext.onStreetChange(recordAttributes.current.USRN, recordAttributes.current.Description, false);
+
+      mapContext.onSearchDataChange(
+        mapContext.currentSearchData.streets,
+        mapContext.currentSearchData.properties,
+        recordAttributes.current.USRN,
+        null
+      );
+
+      mapContext.onMapChange([], null, null);
+
+      mapContext.onSetCoordinate(null);
+      streetContext.onStreetModified(false);
+      sandboxContext.resetSandbox("street");
+    }
+  }, [mapContext, sandboxContext, propertyContext, streetContext]);
+
+  /**
+   * Method to handle displaying a maintenance responsibility record from the feature dialog (OneScotland only).
+   */
+  const handleOpenASD51 = useCallback(() => {
+    if (recordAttributes.current) {
+      streetContext.onGoToField(51, recordAttributes.current.ObjectId - 1, null, "StreetStatus");
+    }
+  }, [streetContext]);
+
+  /**
+   * Method to handle displaying a reinstatement category record from the feature dialog (OneScotland only).
+   */
+  const handleOpenASD52 = useCallback(() => {
+    if (recordAttributes.current) {
+      streetContext.onGoToField(52, recordAttributes.current.ObjectId - 1, null, "ReinstatementCategory");
+    }
+  }, [streetContext]);
+
+  /**
+   * Method to handle displaying a special designation record from the feature dialog (OneScotland only).
+   */
+  const handleOpenASD53 = useCallback(() => {
+    if (recordAttributes.current) {
+      streetContext.onGoToField(53, recordAttributes.current.ObjectId - 1, null, "StreetSpecialDesigCode");
+    }
+  }, [streetContext]);
+
+  /**
+   * Method to handle displaying an interest record from the feature dialog (GeoPlace only).
+   */
+  const handleOpenASD61 = useCallback(() => {
+    if (recordAttributes.current) {
+      streetContext.onGoToField(61, recordAttributes.current.ObjectId - 1, null, "StreetStatus");
+    }
+  }, [streetContext]);
+
+  /**
+   * Method to handle displaying a construction record from the feature dialog (GeoPlace only).
+   */
+  const handleOpenASD62 = useCallback(() => {
+    if (recordAttributes.current) {
+      streetContext.onGoToField(62, recordAttributes.current.ObjectId - 1, null, "ConstructionType");
+    }
+  }, [streetContext]);
+
+  /**
+   * Method to handle displaying a special designation record from the feature dialog (GeoPlace only).
+   */
+  const handleOpenASD63 = useCallback(() => {
+    if (recordAttributes.current) {
+      streetContext.onGoToField(63, recordAttributes.current.ObjectId - 1, null, "StreetSpecialDesigCode");
+    }
+  }, [streetContext]);
+
+  /**
+   * Method to handle displaying a height, width & weight restriction record from the feature dialog (GeoPlace only).
+   */
+  const handleOpenASD64 = useCallback(() => {
+    if (recordAttributes.current) {
+      streetContext.onGoToField(64, recordAttributes.current.ObjectId - 1, null, "HwwRestrictionCode");
+    }
+  }, [streetContext]);
+
+  /**
+   * Method to handle displaying a public right of way record from the feature dialog (GeoPlace only).
+   */
+  const handleOpenASD66 = useCallback(() => {
+    if (recordAttributes.current) {
+      streetContext.onGoToField(66, recordAttributes.current.ObjectId - 1, null, "ProwRights");
+    }
+  }, [streetContext]);
+
+  /**
+   * Method to handle adding a single property to a street from the feature dialog.
+   */
+  const handleAddProperty = useCallback(async () => {
+    if (recordAttributes.current && !displayingWizard.current) {
+      if ([1, 2, 9].includes(recordAttributes.current.Type) && recordAttributes.current.State !== 4) {
+        displayingWizard.current = true;
+        saveOpenRef.current = false;
+        setSaveOpen(false);
+
+        const rec = {
+          address: recordAttributes.current.Description,
+          usrn: Number(recordAttributes.current.USRN),
+        };
+        propertyContext.resetPropertyErrors();
+        propertyContext.onWizardDone(null, false, null, null);
+        mapContext.onWizardSetCoordinate(null);
+        propertyWizardType.current = "property";
+        propertyWizardParent.current = rec;
+        setOpenPropertyWizard(true);
+      } else {
+        saveResult.current = false;
+        saveType.current = recordAttributes.current.State === 4 ? "addPropertyInvalidState" : "addPropertyInvalidType";
+        saveOpenRef.current = true;
+        setSaveOpen(true);
       }
     }
+  }, [mapContext, propertyContext]);
+
+  /**
+   * Method to handle adding a range of properties to a street from the feature dialog.
+   */
+  const handleAddRange = useCallback(async () => {
+    if (recordAttributes.current && !displayingWizard.current) {
+      if ([1, 2, 9].includes(recordAttributes.current.Type) && recordAttributes.current.State !== 4) {
+        displayingWizard.current = true;
+        saveOpenRef.current = false;
+        setSaveOpen(false);
+
+        const rec = {
+          address: recordAttributes.current.Description,
+          usrn: Number(recordAttributes.current.USRN),
+        };
+        propertyContext.resetPropertyErrors();
+        propertyContext.onWizardDone(null, false, null, null);
+        mapContext.onWizardSetCoordinate(null);
+        propertyWizardType.current = "range";
+        propertyWizardParent.current = rec;
+        setOpenPropertyWizard(true);
+      } else {
+        saveResult.current = false;
+        saveType.current = recordAttributes.current.State === 4 ? "addRangeInvalidState" : "addRangeInvalidType";
+        saveOpenRef.current = true;
+        setSaveOpen(true);
+      }
+    }
+  }, [mapContext, propertyContext]);
+
+  /**
+   * Method to handle dividing an ESU from the feature dialog.
+   */
+  const handleDivideEsu = useCallback(() => {
+    if (streetContext.esuDividedMerged) {
+      saveResult.current = false;
+      saveType.current = "streetAlreadyDividedMerged";
+      saveOpenRef.current = true;
+      setSaveOpen(true);
+    } else if (
+      recordAttributes.current &&
+      streetContext.currentStreet &&
+      Number(recordAttributes.current.USRN) === streetContext.currentStreet.usrn
+    ) {
+      mapContext.onDivideEsu(Number(recordAttributes.current.EsuId));
+    } else {
+      saveResult.current = false;
+      saveType.current = "invalidDivideEsu";
+      saveOpenRef.current = true;
+      setSaveOpen(true);
+    }
+  }, [mapContext, streetContext.currentStreet, streetContext.esuDividedMerged]);
+
+  /**
+   * Method to handle assigning an ESU from the feature dialog.
+   */
+  const handleAssignEsu = useCallback(() => {
+    if (
+      recordAttributes.current &&
+      streetContext.currentStreet &&
+      (streetContext.currentStreet.usrn > 0 || streetContext.currentStreet.newStreet)
+    ) {
+      if (Number(recordAttributes.current.USRN) === streetContext.currentStreet.usrn) {
+        saveResult.current = false;
+        saveType.current = "assignEsuSameStreet";
+        saveOpenRef.current = true;
+        setSaveOpen(true);
+      } else streetContext.onAssignEsu(Number(recordAttributes.current.EsuId));
+    } else {
+      saveResult.current = false;
+      saveType.current = "invalidAssignEsu";
+      saveOpenRef.current = true;
+      setSaveOpen(true);
+    }
+  }, [streetContext]);
+
+  /**
+   * Display the street in Google Street View.
+   */
+  const handleStreetStreetView = useCallback(() => {
+    if (recordAttributes.current && recordAttributes.current.USRN) {
+      DisplayStreetInStreetView(
+        Number(recordAttributes.current.USRN),
+        userContext.current.currentUser.token,
+        isScottish.current
+      );
+    }
+  }, []);
+
+  /**
+   * Method to handle opening a property from the feature dialog.
+   */
+  const handleOpenProperty = useCallback(() => {
+    if (recordAttributes.current) {
+      if (recordAttributes.current.LogicalStatus === 8) {
+        historicRec.current = { property: recordAttributes.current, related: null };
+        setOpenHistoricProperty(true);
+      } else {
+        streetContext.onStreetChange(0, "", false);
+
+        propertyContext.onPropertyChange(
+          recordAttributes.current.UPRN,
+          0,
+          recordAttributes.current.Address,
+          recordAttributes.current.FormattedAddress,
+          recordAttributes.current.Postcode,
+          recordAttributes.current.Easting,
+          recordAttributes.current.Northing,
+          false,
+          null
+        );
+
+        updateMapPropertyData(recordAttributes.current.UPRN);
+
+        mapContext.onSetCoordinate(null);
+        propertyContext.onPropertyModified(false);
+        sandboxContext.resetSandbox("property");
+      }
+    }
+  }, [updateMapPropertyData, mapContext, propertyContext, sandboxContext, streetContext]);
+
+  /**
+   * Method to handle adding a single child to a property from the feature dialog.
+   */
+  const handleAddChild = useCallback(async () => {
+    if (recordAttributes.current && !displayingWizard.current) {
+      displayingWizard.current = true;
+      const rec = {
+        address: recordAttributes.current.Address,
+        easting: Number(recordAttributes.current.Easting),
+        northing: Number(recordAttributes.current.Northing),
+        postcode: recordAttributes.current.Postcode,
+        uprn: Number(recordAttributes.current.UPRN),
+      };
+      propertyContext.resetPropertyErrors();
+      propertyContext.onWizardDone(null, false, null, null);
+      mapContext.onWizardSetCoordinate(null);
+      propertyWizardType.current = "child";
+      propertyWizardParent.current = rec;
+      setOpenPropertyWizard(true);
+    }
+  }, [mapContext, propertyContext]);
+
+  /**
+   * Method to handle adding a range of children to a property from the feature dialog.
+   */
+  const handleAddChildren = useCallback(async () => {
+    if (recordAttributes.current && !displayingWizard.current) {
+      displayingWizard.current = true;
+      const rec = {
+        address: recordAttributes.current.Address,
+        easting: Number(recordAttributes.current.Easting),
+        northing: Number(recordAttributes.current.Northing),
+        postcode: recordAttributes.current.Postcode,
+        uprn: Number(recordAttributes.current.UPRN),
+      };
+      propertyContext.resetPropertyErrors();
+      propertyContext.onWizardDone(null, false, null, null);
+      mapContext.onWizardSetCoordinate(null);
+      propertyWizardType.current = "rangeChildren";
+      propertyWizardParent.current = rec;
+      setOpenPropertyWizard(true);
+    }
+  }, [mapContext, propertyContext]);
+
+  /**
+   * Display the property in Google Street View.
+   */
+  const handlePropertyStreetView = useCallback(() => {
+    if (recordAttributes.current) {
+      if (recordAttributes.current.Easting && recordAttributes.current.Northing) {
+        openInStreetView([Number(recordAttributes.current.Easting), Number(recordAttributes.current.Northing)]);
+      }
+    }
+  }, []);
+
+  const getAuthorityExtent = () => {
+    if (authorityCode.current) {
+      const authorityRec = DETRCodes.find((x) => x.id === authorityCode.current);
+
+      if (authorityRec && authorityRec.xmin) {
+        return {
+          xmin: authorityRec.xmin,
+          ymin: authorityRec.ymin,
+          xmax: authorityRec.xmax,
+          ymax: authorityRec.ymax,
+          spatialReference: { wkid: 27700 },
+        };
+      } else return defaultCountryExtent.current;
+    } else return defaultCountryExtent.current;
+  };
+
+  // Base mapping
+  useEffect(() => {
+    if (viewRef.current) return;
+
+    // console.log(["[SF] Base mapping"]);
 
     const baseLayers = [];
     const baseLayerIds = [];
@@ -2115,8 +2406,254 @@ function ADSEsriMap(startExtent) {
     let newBaseLayer;
 
     // console.log("[SF] Base mapping");
-    if (!baseMapLayers.current) GetBaseMapLayers();
-    else processBaseLayers(baseMapLayers.current);
+    if (!baseMapLayers.current) baseMapLayers.current = getBaseMapLayers(userContext.current.currentUser.token);
+
+    baseMapLayers.current
+      .sort((a, b) => a.layerPosition - b.layerPosition)
+      .forEach((baseLayer) => {
+        if (baseLayer.visible) {
+          newBaseLayer = null;
+
+          switch (baseLayer.layerType) {
+            case 1: // WFS
+              // Create an empty GraphicsLayer as a placeholder for when the user actually gets the features
+              newBaseLayer = new GraphicsLayer({
+                id: baseLayer.layerId,
+                copyright:
+                  baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                    ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                    : baseLayer.copyright,
+                title: baseLayer.title,
+                listMode: baseLayer.displayInList ? "show" : "hide",
+                maxScale: baseLayer.maxScale,
+                minScale: baseLayer.minScale,
+                opacity: baseLayer.opacity,
+                visible: baseLayer.visible,
+              });
+              featureLayer.push({ layer: baseLayer, startIndex: 0 });
+              break;
+
+            case 2: // WMS
+              switch (baseLayer.serviceProvider) {
+                case "thinkWare":
+                  newBaseLayer = new WMSLayer({
+                    url: baseLayer.url,
+                    id: baseLayer.layerId,
+                    customParameters: {
+                      token: baseLayer.token,
+                    },
+                    sublayers: [
+                      {
+                        name: baseLayer.activeLayerId,
+                        title: baseLayer.activeLayerTitle,
+                      },
+                    ],
+                    copyright:
+                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                        : baseLayer.copyright,
+                    title: baseLayer.title,
+                    listMode: baseLayer.displayInList ? "show" : "hide",
+                    maxScale: baseLayer.maxScale,
+                    minScale: baseLayer.minScale,
+                    opacity: baseLayer.opacity,
+                    visible: baseLayer.visible,
+                  });
+                  break;
+
+                case "viaEuropa":
+                  alert("Code to handle viaEuropa WMS layers has not been written yet.");
+                  break;
+
+                default: // OS
+                  alert("Code to handle OS WMS layers has not been written yet.");
+                  break;
+              }
+              break;
+
+            case 3: // WMTS
+              switch (baseLayer.serviceProvider) {
+                case "thinkWare":
+                  alert("Code to handle thinkWare WMTS layers has not been written yet.");
+                  break;
+
+                case "viaEuropa":
+                  newBaseLayer = new WMTSLayer({
+                    url: `${baseLayer.url}/${baseLayer.layerKey}/${baseLayer.activeLayerId}/wmts?client=arcgis`,
+                    id: baseLayer.layerId,
+                    copyright:
+                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                        : baseLayer.copyright,
+                    title: baseLayer.title,
+                    listMode: baseLayer.displayInList ? "show" : "hide",
+                    maxScale: baseLayer.maxScale,
+                    minScale: baseLayer.minScale,
+                    opacity: baseLayer.opacity,
+                    visible: baseLayer.visible,
+                  });
+                  break;
+
+                default: // OS
+                  newBaseLayer = new WMTSLayer({
+                    url: baseLayer.url,
+                    serviceMode: baseLayer.serviceMode,
+                    activeLayer: {
+                      id: baseLayer.activeLayerId,
+                    },
+                    customParameters: {
+                      key: baseLayer.layerKey,
+                    },
+                    id: baseLayer.layerId,
+                    copyright:
+                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                        : baseLayer.copyright,
+                    title: baseLayer.title,
+                    listMode: baseLayer.displayInList ? "show" : "hide",
+                    maxScale: baseLayer.maxScale,
+                    minScale: baseLayer.minScale,
+                    opacity: baseLayer.opacity,
+                    visible: baseLayer.visible,
+                  });
+                  break;
+              }
+              break;
+
+            default:
+              break;
+          }
+
+          if (newBaseLayer) {
+            baseLayerIds.push(baseLayer.layerId);
+            if (baseLayer.esuSnap) snapEsu.push(baseLayer.layerId);
+            if (baseLayer.blpuSnap) snapBlpu.push(baseLayer.layerId);
+            if (baseLayer.extentSnap) snapExtent.push(baseLayer.layerId);
+            baseLayers.push(newBaseLayer);
+          }
+        }
+      });
+
+    baseMappingLayerIds.current = baseLayerIds;
+    baseLayersSnapEsu.current = snapEsu;
+    baseLayersSnapBlpu.current = snapBlpu;
+    baseLayersSnapExtent.current = snapExtent;
+    baseLayersFeature.current = featureLayer;
+
+    const baseMap = new Map({
+      layers: baseLayers,
+    });
+
+    const baseView = new MapView({
+      container: mapRef.current,
+      map: baseMap,
+      extent: backgroundExtent.current ? backgroundExtent.current : getAuthorityExtent(),
+      constraints: {
+        minZoom: 2,
+        maxZoom: 21,
+        rotationEnabled: false,
+        lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods,
+      },
+      highlightOptions: {
+        color: [217, 0, 182, 255],
+        fillOpacity: 0.25,
+      },
+      popup: {
+        collapseEnabled: false,
+        dockOptions: {
+          buttonEnabled: false,
+        },
+      },
+    });
+
+    const scaleBar = new ScaleBar({
+      view: baseView,
+      unit: "dual", // The scale bar displays both metric and non-metric units.
+    });
+
+    const baseCoordinateConversion = new CoordinateConversion({
+      label: "Coordinates",
+      view: baseView,
+      visibleElements: {
+        settingsButton: false,
+      },
+    });
+
+    const baseSketch = new Sketch({
+      id: "ADSEditWidget",
+      view: baseView,
+      creationMode: "update",
+      availableCreateTools: [],
+      defaultCreateOptions: { hasZ: false },
+      defaultUpdateOptions: {
+        tool: "reshape",
+        enableRotation: false,
+        enableZ: false,
+        multipleSelectionEnabled: false,
+        toggleToolOnClick: false,
+      },
+      snappingOptions: { enabled: true },
+      visibleElements: {
+        createTools: {
+          rectangle: false,
+          circle: false,
+        },
+      },
+      visible: false,
+    });
+
+    const baseMeasurement = new Measurement({
+      id: "ADSMeasurement",
+      view: baseView,
+      activeTool: null,
+      visible: false,
+    });
+
+    const baseLayerList = new LayerList({
+      id: "ADSLayerList",
+      view: baseView,
+      label: "Current layers",
+      visible: false,
+      listItemCreatedFunction: defineActions,
+    });
+
+    baseView.ui.add(baseSketch, {
+      position: "top-right",
+    });
+
+    baseView.ui.remove("zoom"); // Remove default zoom widget first
+
+    baseView.ui.add("ads-buttons", "bottom-left");
+
+    baseView.ui.add(baseLayerList, {
+      position: "bottom-left",
+    });
+
+    baseView.ui.add(baseMeasurement, "bottom-left");
+
+    baseView.ui.add(scaleBar, {
+      position: "bottom-left",
+    });
+
+    baseView.ui.add(baseCoordinateConversion, { position: "bottom-right" });
+
+    baseSketch.activeTool = null;
+
+    baseView.when((_) => {
+      const plus = document.getElementsByClassName("esri-icon-plus");
+      if (plus && plus.length === 1) plus[0].classList = "mapPlusIcon";
+
+      const minus = document.getElementsByClassName("esri-icon-minus");
+      if (minus && minus.length === 1) minus[0].classList = "mapMinusIcon";
+    });
+
+    mapRef.current = baseMap;
+    setView(baseView);
+    viewRef.current = baseView;
+    sketchRef.current = baseSketch;
+    layerListRef.current = baseLayerList;
+    measurementRef.current = baseMeasurement;
+    coordinateConversionRef.current = baseCoordinateConversion;
 
     // destroy the map view
     return () => {
@@ -2216,8 +2753,8 @@ function ADSEsriMap(startExtent) {
           Description: streetToTitleCase(rec.address),
           State: rec.state,
           Type: rec.type ? rec.type : 1,
-          StateLabel: GetStreetStateLabel(rec.state),
-          TypeLabel: GetStreetTypeLabel(rec.type ? rec.type : 1, isScottish.current),
+          StateLabel: GetStreetStateLabel(rec.state, false),
+          TypeLabel: GetStreetTypeLabel(rec.type ? rec.type : 1, isScottish.current, false),
           SymbolCode: `${rec.type ? rec.type.toString() : "1"}, ${rec.state.toString()}`,
         },
       }));
@@ -2376,8 +2913,8 @@ function ADSEsriMap(startExtent) {
           Description: "",
           State: rec.state ? rec.state : 0,
           Type: 0,
-          StateLabel: GetStreetStateLabel(rec.state ? rec.state : 0),
-          TypeLabel: GetStreetTypeLabel(0, isScottish.current),
+          StateLabel: GetStreetStateLabel(rec.state ? rec.state : 0, false),
+          TypeLabel: GetStreetTypeLabel(0, isScottish.current, false),
           SymbolCode: `0, ${rec.state ? rec.state.toString() : "0"}`,
         },
       }));
@@ -2745,6 +3282,7 @@ function ADSEsriMap(startExtent) {
 
   // Display loaded SHP files
   useEffect(() => {
+    // console.log("[SF] Display loaded SHP files");
     // First unload all the shpFiles previously loaded
     if (loadedShpFileIds.current && loadedShpFileIds.current.length) {
       loadedShpFileIds.current.forEach((shpId) => {
@@ -3180,7 +3718,8 @@ function ADSEsriMap(startExtent) {
               mapContext.currentStreet.usrn &&
               mapContext.currentStreet.usrn.toString() === rec.usrn.toString()
               ? mapContext.currentStreet.state
-              : rec.state
+              : rec.state,
+            false
           ),
           TypeLabel: GetStreetTypeLabel(
             mapContext.currentStreet &&
@@ -3190,7 +3729,8 @@ function ADSEsriMap(startExtent) {
               : rec.type
               ? rec.type
               : 1,
-            isScottish.current
+            isScottish.current,
+            false
           ),
           SymbolCode: `${
             mapContext.currentStreet &&
@@ -6807,6 +7347,8 @@ function ADSEsriMap(startExtent) {
     if (!mapRef.current || !mapRef.current.layers || !mapRef.current.layers.length) return;
 
     if (streetContext.currentRecord) {
+      // console.log("[SF] ASD Layer visibility");
+
       const asd51Layer = mapRef.current && mapRef.current.findLayerById(asd51LayerName);
       const asd52Layer = mapRef.current && mapRef.current.findLayerById(asd52LayerName);
       const asd53Layer = mapRef.current && mapRef.current.findLayerById(asd53LayerName);
@@ -6835,548 +7377,6 @@ function ADSEsriMap(startExtent) {
 
   // Map actions and events
   useEffect(() => {
-    /**
-     * Method to handle saving changes to a street.
-     *
-     * @param {object} currentStreet The current street.
-     */
-    function HandleSaveStreet(currentStreet) {
-      SaveStreet(
-        currentStreet,
-        streetContext,
-        userContext,
-        lookupContext,
-        searchContext,
-        mapContext,
-        sandboxContext,
-        isScottish.current,
-        isWelsh.current
-      ).then((result) => {
-        if (result) {
-          saveResult.current = true;
-          saveType.current = "street";
-          setSaveOpen(true);
-        } else {
-          saveResult.current = false;
-          saveType.current = "street";
-          setSaveOpen(true);
-        }
-      });
-    }
-
-    /**
-     * Method to handle saving changes to a property.
-     *
-     * @param {object} currentProperty The current property.
-     */
-    function HandleSaveProperty(currentProperty) {
-      SavePropertyAndUpdate(
-        currentProperty,
-        propertyContext.currentProperty.newProperty,
-        propertyContext,
-        userContext.currentUser.token,
-        lookupContext,
-        searchContext,
-        mapContext,
-        sandboxContext,
-        isScottish.current,
-        isWelsh.current
-      ).then((result) => {
-        if (result) {
-          saveResult.current = true;
-          saveType.current = "property";
-          setSaveOpen(true);
-        } else {
-          saveResult.current = false;
-          saveType.current = "property";
-          setSaveOpen(true);
-        }
-      });
-    }
-
-    /**
-     * Method to check for any unsaved changes to the existing record.
-     *
-     * @param {object} functionAfterCheck The function to be called after we have checked for any unsaved changes.
-     */
-    function CheckForUnsavedChanges(functionAfterCheck) {
-      if (sandbox.current.sourceStreet) {
-        const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
-
-        if (streetChanged) {
-          associatedRecords.current = GetChangedAssociatedRecords(
-            "street",
-            sandboxContext,
-            streetContext.esuDataChanged
-          );
-
-          const streetDataRef = sandbox.current.currentStreet
-            ? sandbox.current.currentStreet
-            : sandbox.current.sourceStreet;
-
-          if (associatedRecords.current.length > 0) {
-            saveConfirmDialog(associatedRecords.current)
-              .then((result) => {
-                if (result === "save") {
-                  if (streetContext.validateData()) {
-                    failedValidation.current = false;
-                    const currentStreetData = GetCurrentStreetData(
-                      streetDataRef,
-                      sandboxContext,
-                      lookupContext,
-                      isWelsh.current,
-                      isScottish.current
-                    );
-                    HandleSaveStreet(currentStreetData);
-                  } else {
-                    failedValidation.current = true;
-                    saveResult.current = false;
-                    setSaveOpen(true);
-                  }
-                }
-                mapContext.onSetCoordinate(null);
-                streetContext.onStreetModified(false);
-                sandboxContext.resetSandbox("street");
-                functionAfterCheck();
-              })
-              .catch(() => {});
-          } else {
-            saveConfirmDialog(true)
-              .then((result) => {
-                if (result === "save") {
-                  HandleSaveStreet(sandbox.current.currentStreet);
-                }
-                mapContext.onSetCoordinate(null);
-                streetContext.onStreetModified(false);
-                sandboxContext.resetSandbox("street");
-                functionAfterCheck();
-              })
-              .catch(() => {});
-          }
-        } else {
-          mapContext.onSetCoordinate(null);
-          streetContext.onStreetModified(false);
-          sandboxContext.resetSandbox("street");
-          functionAfterCheck();
-        }
-      } else if (sandbox.current.sourceProperty) {
-        const propertyChanged = hasPropertyChanged(
-          propertyContext.currentProperty.newProperty,
-          sandboxContext.currentSandbox
-        );
-
-        if (propertyChanged) {
-          associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);
-
-          const propertyDataRef = sandbox.current.currentProperty
-            ? sandbox.current.currentProperty
-            : sandbox.current.sourceProperty;
-
-          if (associatedRecords.current.length > 0) {
-            saveConfirmDialog(associatedRecords.current)
-              .then((result) => {
-                if (result === "save") {
-                  if (propertyContext.validateData()) {
-                    failedValidation.current = false;
-                    const currentPropertyData = GetCurrentPropertyData(
-                      propertyDataRef,
-                      sandboxContext,
-                      lookupContext,
-                      isWelsh.current,
-                      isScottish.current
-                    );
-                    HandleSaveProperty(currentPropertyData);
-                    mapContext.onSetCoordinate(null);
-                    propertyContext.onPropertyModified(false);
-                    sandboxContext.resetSandbox("property");
-                    functionAfterCheck();
-                  } else {
-                    failedValidation.current = true;
-                    saveResult.current = false;
-                    setSaveOpen(true);
-                  }
-                } else {
-                  mapContext.onSetCoordinate(null);
-                  propertyContext.onPropertyModified(false);
-                  sandboxContext.resetSandbox("property");
-                  functionAfterCheck();
-                }
-              })
-              .catch(() => {});
-          } else {
-            saveConfirmDialog(true)
-              .then((result) => {
-                if (result === "save") {
-                  HandleSaveProperty(sandbox.current.currentProperty);
-                }
-                mapContext.onSetCoordinate(null);
-                propertyContext.onPropertyModified(false);
-                sandboxContext.resetSandbox("property");
-                functionAfterCheck();
-              })
-              .catch(() => {});
-          }
-        } else {
-          mapContext.onSetCoordinate(null);
-          propertyContext.onPropertyModified(false);
-          sandboxContext.resetSandbox("property");
-          functionAfterCheck();
-        }
-      } else {
-        mapContext.onSetCoordinate(null);
-        streetContext.onStreetModified(false);
-        propertyContext.onPropertyModified(false);
-        sandboxContext.resetSandbox("all");
-        functionAfterCheck();
-      }
-    }
-
-    /**
-     * Method to update the property data.
-     *
-     * @param {number} uprn The UPRN of the property to update.
-     */
-    async function UpdateMapPropertyData(uprn) {
-      const propertyUrl = GetPropertyFromUPRNUrl(userContext.current.currentUser.token);
-
-      if (propertyUrl) {
-        const returnValue = await fetch(`${propertyUrl.url}/${uprn}`, {
-          headers: propertyUrl.headers,
-          crossDomain: true,
-          method: "GET",
-        })
-          .then((res) => (res.ok ? res : Promise.reject(res)))
-          .then((res) => res.json())
-          .then(
-            (result) => {
-              return result;
-            },
-            (error) => {
-              console.error("[ERROR] Get Property data", error);
-              return null;
-            }
-          );
-
-        const extents = returnValue
-          ? returnValue.blpuProvenances.map((rec) => ({
-              pkId: rec.pkId,
-              uprn: uprn,
-              code: rec.provenanceCode,
-              geometry: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
-            }))
-          : undefined;
-
-        mapContext.onSearchDataChange(
-          mapContext.currentSearchData.streets,
-          mapContext.currentSearchData.properties,
-          null,
-          uprn
-        );
-        mapContext.onMapChange(extents, null, null);
-      }
-    }
-
-    /**
-     * Method to handle opening a street from the feature dialog.
-     */
-    function HandleOpenStreet() {
-      if (recordAttributes.current) {
-        propertyContext.onPropertyChange(0, 0, null, null, null, null, null, false, null);
-
-        streetContext.onStreetChange(recordAttributes.current.USRN, recordAttributes.current.Description, false);
-
-        mapContext.onSearchDataChange(
-          mapContext.currentSearchData.streets,
-          mapContext.currentSearchData.properties,
-          recordAttributes.current.USRN,
-          null
-        );
-
-        mapContext.onMapChange([], null, null);
-
-        mapContext.onSetCoordinate(null);
-        streetContext.onStreetModified(false);
-        sandboxContext.resetSandbox("street");
-      }
-    }
-
-    /**
-     * Method to handle displaying a maintenance responsibility record from the feature dialog (OneScotland only).
-     */
-    function HandleOpenASD51() {
-      if (recordAttributes.current) {
-        streetContext.onGoToField(51, recordAttributes.current.ObjectId - 1, null, "StreetStatus");
-      }
-    }
-
-    /**
-     * Method to handle displaying a reinstatement category record from the feature dialog (OneScotland only).
-     */
-    function HandleOpenASD52() {
-      if (recordAttributes.current) {
-        streetContext.onGoToField(52, recordAttributes.current.ObjectId - 1, null, "ReinstatementCategory");
-      }
-    }
-
-    /**
-     * Method to handle displaying a special designation record from the feature dialog (OneScotland only).
-     */
-    function HandleOpenASD53() {
-      if (recordAttributes.current) {
-        streetContext.onGoToField(53, recordAttributes.current.ObjectId - 1, null, "StreetSpecialDesigCode");
-      }
-    }
-
-    /**
-     * Method to handle displaying an interest record from the feature dialog (GeoPlace only).
-     */
-    function HandleOpenASD61() {
-      if (recordAttributes.current) {
-        streetContext.onGoToField(61, recordAttributes.current.ObjectId - 1, null, "StreetStatus");
-      }
-    }
-
-    /**
-     * Method to handle displaying a construction record from the feature dialog (GeoPlace only).
-     */
-    function HandleOpenASD62() {
-      if (recordAttributes.current) {
-        streetContext.onGoToField(62, recordAttributes.current.ObjectId - 1, null, "ConstructionType");
-      }
-    }
-
-    /**
-     * Method to handle displaying a special designation record from the feature dialog (GeoPlace only).
-     */
-    function HandleOpenASD63() {
-      if (recordAttributes.current) {
-        streetContext.onGoToField(63, recordAttributes.current.ObjectId - 1, null, "StreetSpecialDesigCode");
-      }
-    }
-
-    /**
-     * Method to handle displaying a height, width & weight restriction record from the feature dialog (GeoPlace only).
-     */
-    function HandleOpenASD64() {
-      if (recordAttributes.current) {
-        streetContext.onGoToField(64, recordAttributes.current.ObjectId - 1, null, "HwwRestrictionCode");
-      }
-    }
-
-    /**
-     * Method to handle displaying a public right of way record from the feature dialog (GeoPlace only).
-     */
-    function HandleOpenASD66() {
-      if (recordAttributes.current) {
-        streetContext.onGoToField(66, recordAttributes.current.ObjectId - 1, null, "ProwRights");
-      }
-    }
-
-    /**
-     * Method to handle adding a single property to a street from the feature dialog.
-     */
-    async function HandleAddProperty() {
-      if (recordAttributes.current && !displayingWizard.current) {
-        if ([1, 2, 9].includes(recordAttributes.current.Type) && recordAttributes.current.State !== 4) {
-          displayingWizard.current = true;
-          saveOpenRef.current = false;
-          setSaveOpen(false);
-
-          const rec = {
-            address: recordAttributes.current.Description,
-            usrn: Number(recordAttributes.current.USRN),
-          };
-          propertyContext.resetPropertyErrors();
-          propertyContext.onWizardDone(null, false, null, null);
-          mapContext.onWizardSetCoordinate(null);
-          propertyWizardType.current = "property";
-          propertyWizardParent.current = rec;
-          setOpenPropertyWizard(true);
-        } else {
-          saveResult.current = false;
-          saveType.current =
-            recordAttributes.current.State === 4 ? "addPropertyInvalidState" : "addPropertyInvalidType";
-          saveOpenRef.current = true;
-          setSaveOpen(true);
-        }
-      }
-    }
-
-    /**
-     * Method to handle adding a range of properties to a street from the feature dialog.
-     */
-    async function HandleAddRange() {
-      if (recordAttributes.current && !displayingWizard.current) {
-        if ([1, 2, 9].includes(recordAttributes.current.Type) && recordAttributes.current.State !== 4) {
-          displayingWizard.current = true;
-          saveOpenRef.current = false;
-          setSaveOpen(false);
-
-          const rec = {
-            address: recordAttributes.current.Description,
-            usrn: Number(recordAttributes.current.USRN),
-          };
-          propertyContext.resetPropertyErrors();
-          propertyContext.onWizardDone(null, false, null, null);
-          mapContext.onWizardSetCoordinate(null);
-          propertyWizardType.current = "range";
-          propertyWizardParent.current = rec;
-          setOpenPropertyWizard(true);
-        } else {
-          saveResult.current = false;
-          saveType.current = recordAttributes.current.State === 4 ? "addRangeInvalidState" : "addRangeInvalidType";
-          saveOpenRef.current = true;
-          setSaveOpen(true);
-        }
-      }
-    }
-
-    /**
-     * Method to handle dividing an ESU from the feature dialog.
-     */
-    function HandleDivideEsu() {
-      if (streetContext.esuDividedMerged) {
-        saveResult.current = false;
-        saveType.current = "streetAlreadyDividedMerged";
-        saveOpenRef.current = true;
-        setSaveOpen(true);
-      } else if (
-        recordAttributes.current &&
-        streetContext.currentStreet &&
-        Number(recordAttributes.current.USRN) === streetContext.currentStreet.usrn
-      ) {
-        mapContext.onDivideEsu(Number(recordAttributes.current.EsuId));
-      } else {
-        saveResult.current = false;
-        saveType.current = "invalidDivideEsu";
-        saveOpenRef.current = true;
-        setSaveOpen(true);
-      }
-    }
-
-    /**
-     * Method to handle assigning an ESU from the feature dialog.
-     */
-    function HandleAssignEsu() {
-      if (
-        recordAttributes.current &&
-        streetContext.currentStreet &&
-        (streetContext.currentStreet.usrn > 0 || streetContext.currentStreet.newStreet)
-      ) {
-        if (Number(recordAttributes.current.USRN) === streetContext.currentStreet.usrn) {
-          saveResult.current = false;
-          saveType.current = "assignEsuSameStreet";
-          saveOpenRef.current = true;
-          setSaveOpen(true);
-        } else streetContext.onAssignEsu(Number(recordAttributes.current.EsuId));
-      } else {
-        saveResult.current = false;
-        saveType.current = "invalidAssignEsu";
-        saveOpenRef.current = true;
-        setSaveOpen(true);
-      }
-    }
-
-    /**
-     * Display the street in Google Street View.
-     */
-    function HandleStreetStreetView() {
-      if (recordAttributes.current && recordAttributes.current.USRN) {
-        DisplayStreetInStreetView(
-          Number(recordAttributes.current.USRN),
-          userContext.current.currentUser.token,
-          isScottish.current
-        );
-      }
-    }
-
-    /**
-     * Method to handle opening a property from the feature dialog.
-     */
-    function HandleOpenProperty() {
-      if (recordAttributes.current) {
-        if (recordAttributes.current.LogicalStatus === 8) {
-          historicRec.current = { property: recordAttributes.current, related: null };
-          setOpenHistoricProperty(true);
-        } else {
-          streetContext.onStreetChange(0, "", false);
-
-          propertyContext.onPropertyChange(
-            recordAttributes.current.UPRN,
-            0,
-            recordAttributes.current.Address,
-            recordAttributes.current.FormattedAddress,
-            recordAttributes.current.Postcode,
-            recordAttributes.current.Easting,
-            recordAttributes.current.Northing,
-            false,
-            null
-          );
-
-          UpdateMapPropertyData(recordAttributes.current.UPRN);
-
-          mapContext.onSetCoordinate(null);
-          propertyContext.onPropertyModified(false);
-          sandboxContext.resetSandbox("property");
-        }
-      }
-    }
-
-    /**
-     * Method to handle adding a single child to a property from the feature dialog.
-     */
-    async function HandleAddChild() {
-      if (recordAttributes.current && !displayingWizard.current) {
-        displayingWizard.current = true;
-        const rec = {
-          address: recordAttributes.current.Address,
-          easting: Number(recordAttributes.current.Easting),
-          northing: Number(recordAttributes.current.Northing),
-          postcode: recordAttributes.current.Postcode,
-          uprn: Number(recordAttributes.current.UPRN),
-        };
-        propertyContext.resetPropertyErrors();
-        propertyContext.onWizardDone(null, false, null, null);
-        mapContext.onWizardSetCoordinate(null);
-        propertyWizardType.current = "child";
-        propertyWizardParent.current = rec;
-        setOpenPropertyWizard(true);
-      }
-    }
-
-    /**
-     * Method to handle adding a range of children to a property from the feature dialog.
-     */
-    async function HandleAddChildren() {
-      if (recordAttributes.current && !displayingWizard.current) {
-        displayingWizard.current = true;
-        const rec = {
-          address: recordAttributes.current.Address,
-          easting: Number(recordAttributes.current.Easting),
-          northing: Number(recordAttributes.current.Northing),
-          postcode: recordAttributes.current.Postcode,
-          uprn: Number(recordAttributes.current.UPRN),
-        };
-        propertyContext.resetPropertyErrors();
-        propertyContext.onWizardDone(null, false, null, null);
-        mapContext.onWizardSetCoordinate(null);
-        propertyWizardType.current = "rangeChildren";
-        propertyWizardParent.current = rec;
-        setOpenPropertyWizard(true);
-      }
-    }
-
-    /**
-     * Display the property in Google Street View.
-     */
-    function HandlePropertyStreetView() {
-      if (recordAttributes.current) {
-        if (recordAttributes.current.Easting && recordAttributes.current.Northing) {
-          openInStreetView([Number(recordAttributes.current.Easting), Number(recordAttributes.current.Northing)]);
-        }
-      }
-    }
-
     if (view) {
       // console.log("[SF] Map actions and events");
       reactiveUtils.when(
@@ -7390,59 +7390,59 @@ function ADSEsriMap(startExtent) {
 
             switch (event.action.id) {
               case "open-street-record":
-                CheckForUnsavedChanges(HandleOpenStreet);
+                checkForUnsavedChanges(handleOpenStreet);
                 break;
 
               case "open-asd-51-record":
-                CheckForUnsavedChanges(HandleOpenASD51);
+                checkForUnsavedChanges(handleOpenASD51);
                 break;
 
               case "open-asd-52-record":
-                CheckForUnsavedChanges(HandleOpenASD52);
+                checkForUnsavedChanges(handleOpenASD52);
                 break;
 
               case "open-asd-53-record":
-                CheckForUnsavedChanges(HandleOpenASD53);
+                checkForUnsavedChanges(handleOpenASD53);
                 break;
 
               case "open-asd-61-record":
-                CheckForUnsavedChanges(HandleOpenASD61);
+                checkForUnsavedChanges(handleOpenASD61);
                 break;
 
               case "open-asd-62-record":
-                CheckForUnsavedChanges(HandleOpenASD62);
+                checkForUnsavedChanges(handleOpenASD62);
                 break;
 
               case "open-asd-63-record":
-                CheckForUnsavedChanges(HandleOpenASD63);
+                checkForUnsavedChanges(handleOpenASD63);
                 break;
 
               case "open-asd-64-record":
-                CheckForUnsavedChanges(HandleOpenASD64);
+                checkForUnsavedChanges(handleOpenASD64);
                 break;
 
               case "open-asd-66-record":
-                CheckForUnsavedChanges(HandleOpenASD66);
+                checkForUnsavedChanges(handleOpenASD66);
                 break;
 
               case "add-property":
-                CheckForUnsavedChanges(HandleAddProperty);
+                checkForUnsavedChanges(handleAddProperty);
                 break;
 
               case "add-range-properties":
-                CheckForUnsavedChanges(HandleAddRange);
+                checkForUnsavedChanges(handleAddRange);
                 break;
 
               case "divide-esu":
-                HandleDivideEsu();
+                handleDivideEsu();
                 break;
 
               case "assign-esu":
-                HandleAssignEsu();
+                handleAssignEsu();
                 break;
 
               case "street-street-view":
-                HandleStreetStreetView();
+                handleStreetStreetView();
                 break;
 
               case "street-menu":
@@ -7450,15 +7450,15 @@ function ADSEsriMap(startExtent) {
                 break;
 
               case "open-property-record":
-                CheckForUnsavedChanges(HandleOpenProperty);
+                checkForUnsavedChanges(handleOpenProperty);
                 break;
 
               case "add-child":
-                CheckForUnsavedChanges(HandleAddChild);
+                checkForUnsavedChanges(handleAddChild);
                 break;
 
               case "add-range-children":
-                CheckForUnsavedChanges(HandleAddChildren);
+                checkForUnsavedChanges(handleAddChildren);
                 break;
 
               case "property-radial-search":
@@ -7473,7 +7473,7 @@ function ADSEsriMap(startExtent) {
 
               case "property-street-view":
                 // Open street view at property
-                HandlePropertyStreetView();
+                handlePropertyStreetView();
                 break;
 
               case "property-menu":
@@ -7491,7 +7491,28 @@ function ADSEsriMap(startExtent) {
         }
       );
     }
-  }, [view, sandboxContext, streetContext, propertyContext, mapContext, searchContext, saveConfirmDialog]);
+  }, [
+    view,
+    checkForUnsavedChanges,
+    handleAddChild,
+    handleAddChildren,
+    handleAddProperty,
+    handleAddRange,
+    handleAssignEsu,
+    handleDivideEsu,
+    handleOpenASD51,
+    handleOpenASD52,
+    handleOpenASD53,
+    handleOpenASD61,
+    handleOpenASD62,
+    handleOpenASD63,
+    handleOpenASD64,
+    handleOpenASD66,
+    handleOpenProperty,
+    handleOpenStreet,
+    handleStreetStreetView,
+    handlePropertyStreetView,
+  ]);
 
   // Highlight map objects
   useEffect(() => {
@@ -7741,6 +7762,8 @@ function ADSEsriMap(startExtent) {
   // Capture coordinates
   useEffect(() => {
     if (!mapRef.current || !mapRef.current.layers || !mapRef.current.layers.length) return;
+
+    // console.log("[SF] Capture coordinates");
 
     const streetLayer = mapRef.current && mapRef.current.findLayerById(streetLayerName);
     const asd51Layer = mapRef.current && mapRef.current.findLayerById(asd51LayerName);

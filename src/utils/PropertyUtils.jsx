@@ -45,6 +45,7 @@
 //    032   24.04.24 Sean Flook       IMANN-390 When creating a new property if the UPRN is already set use that; otherwise use 0.
 //    033   25.04.24 Sean Flook       IMANN-390 Added returnFailedUprns method to return failed UPRNs back to the database.
 //    034   26.04.24 Sean Flook       IMANN-166 Refresh related after doing the save.
+//    035   08.05.24 Sean Flook       IMANN-447 Return empty string when the sub-locality is null.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1188,7 +1189,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               crossReference: x.crossReference,
               sourceId: x.sourceId ? x.sourceId : 0,
               source: x.source ? x.source : null,
-              neverExport: x.neverExport,
+              neverExport: propertyData.neverExport,
             };
           })
         : [],
@@ -1223,7 +1224,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               blpuClass: x.blpuClass,
               startDate: x.startDate,
               endDate: x.endDate,
-              neverExport: x.neverExport,
+              neverExport: propertyData.neverExport,
             };
           })
         : [],
@@ -1236,7 +1237,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               legalName: x.legalName,
               startDate: x.startDate,
               endDate: x.endDate,
-              neverExport: x.neverExport,
+              neverExport: propertyData.neverExport,
             };
           })
         : [],
@@ -1249,7 +1250,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               endDate: x.endDate,
               successorType: x.successorType,
               successor: x.successor,
-              neverExport: x.neverExport,
+              neverExport: propertyData.neverExport,
             };
           })
         : [],
@@ -1268,7 +1269,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               usrn: x.usrn,
               postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
               postTownRef: x.postTownRef ? x.postTownRef : -1,
-              neverExport: x.neverExport,
+              neverExport: propertyData.neverExport,
               postTown: x.postTownRef ? x.postTown : "",
               postcode: x.postcodeRef ? x.postcode : "",
               dualLanguageLink: x.dualLanguageLink,
@@ -1280,7 +1281,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               saoStartSuffix: x.saoStartSuffix,
               saoEndSuffix: x.saoEndSuffix,
               subLocalityRef: x.subLocalityRef ? x.subLocalityRef : -1,
-              subLocality: x.subLocality,
+              subLocality: x.subLocality ? x.subLocality : "",
               postallyAddressable: x.postallyAddressable,
               officialFlag: x.officialFlag,
             };
@@ -1317,7 +1318,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               crossReference: x.crossReference,
               sourceId: x.sourceId ? x.sourceId : 0,
               source: x.source ? x.source : null,
-              neverExport: x.neverExport,
+              neverExport: propertyData.neverExport,
             };
           })
         : [],
@@ -1359,7 +1360,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               usrn: x.usrn,
               postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
               postTownRef: x.postTownRef ? x.postTownRef : -1,
-              neverExport: x.neverExport,
+              neverExport: propertyData.neverExport,
               postTown: x.postTownRef ? x.postTown : "",
               postcode: x.postcodeRef ? x.postcode : "",
               dualLanguageLink: x.dualLanguageLink,
@@ -1416,7 +1417,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               crossReference: x.crossReference,
               sourceId: x.sourceId ? x.sourceId : 0,
               source: x.source ? x.source : null,
-              neverExport: x.neverExport,
+              neverExport: propertyData.neverExport,
             };
           })
         : [],
@@ -1431,7 +1432,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               annotation: x.annotation,
               startDate: x.startDate,
               endDate: x.endDate,
-              neverExport: x.neverExport,
+              neverExport: propertyData.neverExport,
               wktGeometry: x.wktGeometry,
             };
           })
@@ -1458,7 +1459,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               blpuClass: x.blpuClass,
               startDate: x.startDate,
               endDate: x.endDate,
-              neverExport: x.neverExport,
+              neverExport: propertyData.neverExport,
             };
           })
         : [],
@@ -1473,7 +1474,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               legalName: x.legalName,
               startDate: x.startDate,
               endDate: x.endDate,
-              neverExport: x.neverExport,
+              neverExport: propertyData.neverExport,
             };
           })
         : [],
@@ -1488,7 +1489,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               endDate: x.endDate,
               successorType: x.successorType,
               successor: x.successor,
-              neverExport: x.neverExport,
+              neverExport: propertyData.neverExport,
             };
           })
         : [],
@@ -1507,7 +1508,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               usrn: x.usrn,
               postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
               postTownRef: x.postTownRef ? x.postTownRef : -1,
-              neverExport: x.neverExport,
+              neverExport: propertyData.neverExport,
               postTown: x.postTownRef ? x.postTown : "",
               postcode: x.postcodeRef ? x.postcode : "",
               dualLanguageLink: x.dualLanguageLink,
@@ -1518,15 +1519,12 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               saoStartSuffix: x.saoStartSuffix,
               saoEndSuffix: x.saoEndSuffix,
               subLocalityRef: x.subLocalityRef ? x.subLocalityRef : -1,
-              subLocality: x.subLocality,
+              subLocality: x.subLocality ? x.subLocality : "",
               postallyAddressable: x.postallyAddressable,
               officialFlag: x.officialFlag,
               pkId: x.pkId > 0 ? x.pkId : 0,
               changeType: x.changeType,
               lpiKey: x.lpiKey,
-              address: x.address, // TODO: remove once it has been removed from the API [IMANN-240]
-              entryDate: x.entryDate, // TODO: remove once it has been removed from the API [IMANN-240]
-              lastUpdateDate: x.lastUpdateDate, // TODO: remove once it has been removed from the API [IMANN-240]
             };
           })
         : [],
@@ -1562,7 +1560,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               crossReference: x.crossReference,
               sourceId: x.sourceId ? x.sourceId : 0,
               source: x.source ? x.source : null,
-              neverExport: x.neverExport,
+              neverExport: propertyData.neverExport,
               pkId: x.pkId > 0 ? x.pkId : 0,
               xrefKey: x.xrefKey,
             };
@@ -1610,7 +1608,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               usrn: x.usrn,
               postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
               postTownRef: x.postTownRef ? x.postTownRef : -1,
-              neverExport: x.neverExport,
+              neverExport: propertyData.neverExport,
               postTown: x.postTownRef ? x.postTown : "",
               postcode: x.postcodeRef ? x.postcode : "",
               dualLanguageLink: x.dualLanguageLink,

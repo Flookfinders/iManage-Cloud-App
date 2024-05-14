@@ -18,6 +18,7 @@
 //    005   20.11.23 Sean Flook                 Added icon for street BLPUs and display the nodes on a street.
 //    006   09.02.24 Sean Flook                 Modified GetASDMapSymbol to handle different ASD types.
 //    007   04.03.24 Sean Flook            COL3 Changed the colour and style for type 51/61 ASD records.
+//    008   08.05.24 Sean Flook                 Bug fixes in GetExtentMapSymbol.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -740,7 +741,7 @@ export function GetExtentMapSymbol(provenance) {
         return [1, 1];
 
       case "P": // Inferred from physical features.
-        return [1000];
+        return [1];
 
       case "R": // Rental agreement.
         return [1, 2, 6, 2];
@@ -749,10 +750,10 @@ export function GetExtentMapSymbol(provenance) {
         return [5, 2];
 
       case "U": // Inferred from use.
-        return [1000];
+        return [1];
 
       default:
-        return [1000];
+        return [1];
     }
   };
 
@@ -770,7 +771,7 @@ export function GetExtentMapSymbol(provenance) {
             lineStyle3D: "Strip",
             miterLimit: 10,
             width: 2,
-            color: getPolygonColour(),
+            color: getPolygonColour(true),
             colorLocked: true,
             effects: [
               {
@@ -785,7 +786,7 @@ export function GetExtentMapSymbol(provenance) {
             type: "CIMSolidFill",
             enable: true,
             colorLocked: true,
-            color: getPolygonColour(),
+            color: getPolygonColour(false),
           },
         ],
       },

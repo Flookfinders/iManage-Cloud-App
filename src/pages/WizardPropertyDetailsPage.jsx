@@ -20,6 +20,7 @@
 //    007   10.01.24 Sean Flook                 Fix warnings.
 //    008   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    009   25.01.24 Sean Flook                 Changes required after UX review.
+//    010   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -82,6 +83,8 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
   const [blpuState, setBlpuState] = useState(null);
   const [blpuStateDate, setBlpuStateDate] = useState(null);
   const [blpuClassification, setBlpuClassification] = useState(null);
+  const [excludeFromExport, setExcludeFromExport] = useState(false);
+  const [siteVisit, setSiteVisit] = useState(false);
   const [blpuStartDate, setBlpuStartDate] = useState(null);
   const [lpiStatus, setLpiStatus] = useState(null);
   const [lpiLevel, setLpiLevel] = useState("");
@@ -114,6 +117,8 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
   const [blpuStateError, setBlpuStateError] = useState(false);
   const [blpuStateDateError, setBlpuStateDateError] = useState(false);
   const [blpuClassificationError, setBlpuClassificationError] = useState(false);
+  const [excludeFromExportError, setExcludeFromExportError] = useState(false);
+  const [siteVisitError, setSiteVisitError] = useState(false);
   const [blpuStartDateError, setBlpuStartDateError] = useState(false);
   const [lpiStatusError, setLpiStatusError] = useState(false);
   const [lpiLevelError, setLpiLevelError] = useState(false);
@@ -143,6 +148,8 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
             state: blpuState,
             stateDate: blpuStateDate,
             level: lpiLevel,
+            excludeFromExport: excludeFromExport,
+            siteVisit: siteVisit,
             startDate: blpuStartDate,
             errors: blpuErrors,
           }
@@ -152,6 +159,8 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
             state: blpuState,
             stateDate: blpuStateDate,
             classification: blpuClassification,
+            excludeFromExport: excludeFromExport,
+            siteVisit: siteVisit,
             startDate: blpuStartDate,
             errors: blpuErrors,
           }
@@ -221,6 +230,8 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                     state: updatedData.state,
                     stateDate: updatedData.stateDate,
                     level: updatedData.level,
+                    excludeFromExport: updatedData.excludeFromExport,
+                    siteVisit: updatedData.siteVisit,
                     startDate: updatedData.startDate,
                   }
                 : {
@@ -229,6 +240,8 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                     state: updatedData.state,
                     stateDate: updatedData.stateDate,
                     classification: updatedData.classification,
+                    excludeFromExport: updatedData.excludeFromExport,
+                    siteVisit: updatedData.siteVisit,
                     startDate: updatedData.startDate,
                   },
               lpi: lpiData,
@@ -410,6 +423,8 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
     setBlpuStateError(false);
     setBlpuStateDateError(false);
     setBlpuClassificationError(false);
+    setExcludeFromExportError(false);
+    setSiteVisitError(false);
     setLpiLevelError(false);
     setBlpuStartDateError(false);
 
@@ -438,6 +453,16 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
 
           case "classification":
             setBlpuClassificationError(true);
+            setHaveBlpuErrors(true);
+            break;
+
+          case "excludefromexport":
+            setExcludeFromExportError(true);
+            setHaveBlpuErrors(true);
+            break;
+
+          case "sitevisit":
+            setSiteVisitError(true);
             setHaveBlpuErrors(true);
             break;
 
@@ -586,6 +611,8 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
       } else {
         setBlpuClassification(blpuData.classification);
       }
+      setExcludeFromExport(blpuData.excludeFromExport);
+      setSiteVisit(blpuData.siteVisit);
       setBlpuStartDate(blpuData.startDate);
     }
   }, [blpuData, settingsContext.isScottish]);
@@ -646,59 +673,59 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
               <CardActionArea onClick={doEditBlpu}>
                 <CardContent sx={settingsCardContentStyle("wizard")}>
                   <Grid container rowSpacing={1}>
-                    <Grid item xs={3}>
-                      <Typography variant="body2">Status</Typography>
+                    <Grid item xs={4}>
+                      <Typography variant="body2">Status*</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       {blpuStatusError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={7}>
                       <Typography variant="body2" sx={getWizardValueStyle(blpuStatusError)}>
                         {getBlpuStatus(blpuStatus, settingsContext.isScottish)}
                       </Typography>
                     </Grid>
-                    <Grid item xs={3}>
-                      <Typography variant="body2">RPC</Typography>
+                    <Grid item xs={4}>
+                      <Typography variant="body2">RPC*</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       {blpuRpcError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={7}>
                       <Typography variant="body2" sx={getWizardValueStyle(blpuRpcError)}>
                         {getBlpuRpc(blpuRpc, settingsContext.isScottish)}
                       </Typography>
                     </Grid>
-                    <Grid item xs={3}>
-                      <Typography variant="body2">State</Typography>
+                    <Grid item xs={4}>
+                      <Typography variant="body2">State*</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       {blpuStateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={7}>
                       <Typography variant="body2" sx={getWizardValueStyle(blpuStateError)}>
                         {getBlpuState(blpuState, settingsContext.isScottish)}
                       </Typography>
                     </Grid>
-                    <Grid item xs={3}>
-                      <Typography variant="body2">State date</Typography>
+                    <Grid item xs={4}>
+                      <Typography variant="body2">State date*</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       {blpuStateDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={7}>
                       <Typography variant="body2" sx={getWizardValueStyle(blpuStateDateError)}>
                         {DateString(blpuStateDate)}
                       </Typography>
                     </Grid>
                     {settingsContext.isScottish && (
                       <Fragment>
-                        <Grid item xs={3}>
+                        <Grid item xs={4}>
                           <Typography variant="body2">Level</Typography>
                         </Grid>
                         <Grid item xs={1}>
                           {lpiLevelError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                         </Grid>
-                        <Grid item xs={8}>
+                        <Grid item xs={7}>
                           <Typography variant="body2" sx={getWizardValueStyle(lpiLevelError)}>
                             {lpiLevel}
                           </Typography>
@@ -707,26 +734,48 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                     )}
                     {!settingsContext.isScottish && (
                       <Fragment>
-                        <Grid item xs={3}>
-                          <Typography variant="body2">Classification</Typography>
+                        <Grid item xs={4}>
+                          <Typography variant="body2">Classification*</Typography>
                         </Grid>
                         <Grid item xs={1}>
                           {blpuClassificationError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                         </Grid>
-                        <Grid item xs={8}>
+                        <Grid item xs={7}>
                           <Typography variant="body2" sx={getWizardValueStyle(blpuClassificationError)}>
                             {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
                           </Typography>
                         </Grid>
                       </Fragment>
                     )}
-                    <Grid item xs={3}>
-                      <Typography variant="body2">Start date</Typography>
+                    <Grid item xs={4}>
+                      <Typography variant="body2">Exclude from export</Typography>
+                    </Grid>
+                    <Grid item xs={1}>
+                      {excludeFromExportError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                    </Grid>
+                    <Grid item xs={7}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {`${excludeFromExport ? "Yes" : "No"}`}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography variant="body2">Site visit required</Typography>
+                    </Grid>
+                    <Grid item xs={1}>
+                      {siteVisitError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                    </Grid>
+                    <Grid item xs={7}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {`${siteVisit ? "Yes" : "No"}`}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography variant="body2">Start date*</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       {blpuStartDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={7}>
                       <Typography variant="body2" sx={getWizardValueStyle(blpuStartDateError)}>
                         {DateString(blpuStartDate)}
                       </Typography>
@@ -761,61 +810,61 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
               <CardActionArea onClick={doEditLpi}>
                 <CardContent sx={settingsCardContentStyle("wizard")}>
                   <Grid container rowSpacing={1}>
-                    <Grid item xs={3}>
-                      <Typography variant="body2">Status</Typography>
+                    <Grid item xs={4}>
+                      <Typography variant="body2">Status*</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       {lpiStatusError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={7}>
                       <Typography variant="body2" sx={getWizardValueStyle(lpiStatusError)}>
                         {getLpiStatus(lpiStatus, settingsContext.isScottish)}
                       </Typography>
                     </Grid>
                     {!settingsContext.isScottish && (
                       <Fragment>
-                        <Grid item xs={3}>
+                        <Grid item xs={4}>
                           <Typography variant="body2">Level</Typography>
                         </Grid>
                         <Grid item xs={1}>
                           {lpiLevelError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                         </Grid>
-                        <Grid item xs={8}>
+                        <Grid item xs={7}>
                           <Typography variant="body2" sx={getWizardValueStyle(lpiLevelError)}>
                             {lpiLevel}
                           </Typography>
                         </Grid>
                       </Fragment>
                     )}
-                    <Grid item xs={3}>
+                    <Grid item xs={4}>
                       <Typography variant="body2">Official address</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       {lpiOfficialAddressError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={7}>
                       <Typography variant="body2" sx={getWizardValueStyle(lpiOfficialAddressError)}>
                         {getLpiOfficialAddress(lpiOfficialAddress)}
                       </Typography>
                     </Grid>
-                    <Grid item xs={3}>
-                      <Typography variant="body2">Postal address</Typography>
+                    <Grid item xs={4}>
+                      <Typography variant="body2">Postal address*</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       {lpiPostalAddressError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={7}>
                       <Typography variant="body2" sx={getWizardValueStyle(lpiPostalAddressError)}>
                         {getLpiPostalAddress(lpiPostalAddress)}
                       </Typography>
                     </Grid>
-                    <Grid item xs={3}>
-                      <Typography variant="body2">Start date</Typography>
+                    <Grid item xs={4}>
+                      <Typography variant="body2">Start date*</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       {lpiStartDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={7}>
                       <Typography variant="body2" sx={getWizardValueStyle(lpiStartDateError)}>
                         {DateString(lpiStartDate)}
                       </Typography>
@@ -853,35 +902,35 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                 <CardActionArea onClick={doEditClassification}>
                   <CardContent sx={settingsCardContentStyle("wizard")}>
                     <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
+                      <Grid item xs={4}>
                         <Typography variant="body2">Classification</Typography>
                       </Grid>
                       <Grid item xs={1}>
                         {blpuClassificationError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                       </Grid>
-                      <Grid item xs={8}>
+                      <Grid item xs={7}>
                         <Typography variant="body2" sx={getWizardValueStyle(blpuClassificationError)}>
                           {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
                         </Typography>
                       </Grid>
-                      <Grid item xs={3}>
+                      <Grid item xs={4}>
                         <Typography variant="body2">Scheme</Typography>
                       </Grid>
                       <Grid item xs={1}>
                         {classificationSchemeError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                       </Grid>
-                      <Grid item xs={8}>
+                      <Grid item xs={7}>
                         <Typography variant="body2" sx={getWizardValueStyle(classificationSchemeError)}>
                           {classificationScheme}
                         </Typography>
                       </Grid>
-                      <Grid item xs={3}>
+                      <Grid item xs={4}>
                         <Typography variant="body2">Start date</Typography>
                       </Grid>
                       <Grid item xs={1}>
                         {classificationStartDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                       </Grid>
-                      <Grid item xs={8}>
+                      <Grid item xs={7}>
                         <Typography variant="body2" sx={getWizardValueStyle(classificationStartDateError)}>
                           {DateString(classificationStartDate)}
                         </Typography>
@@ -917,35 +966,35 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
               <CardActionArea onClick={doEditOther}>
                 <CardContent sx={settingsCardContentStyle("wizard")}>
                   <Grid container rowSpacing={1}>
-                    <Grid item xs={3}>
+                    <Grid item xs={4}>
                       <Typography variant="body2">Provenance</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       {otherProvenanceError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={7}>
                       <Typography variant="body2" sx={getWizardValueStyle(otherProvenanceError)}>
                         {getOtherProvenance(otherProvenance, settingsContext.isScottish)}
                       </Typography>
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={4}>
                       <Typography variant="body2">Start date</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       {otherProvenanceStartDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={7}>
                       <Typography variant="body2" sx={getWizardValueStyle(otherProvenanceStartDateError)}>
                         {DateString(otherProvenanceStartDate)}
                       </Typography>
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={4}>
                       <Typography variant="body2">Note</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       {otherNoteError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={7}>
                       <Typography variant="body2" sx={getWizardValueStyle(otherNoteError)}>
                         {otherNote}
                       </Typography>

@@ -36,6 +36,7 @@
 //    023   24.04.24 Sean Flook       IMANN-390 Get the list of new UPRNs from the API before creating the properties.
 //    024   25.04.24 Sean Flook       IMANN-390 Display a message dialog if there are no available UPRNs to use to create the properties.
 //    025   25.04.24 Sean Flook       IMANN-390 If a property is failed by the API return the UPRN back to the API so it can be reused.
+//    026   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -508,8 +509,8 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
               startDate: address.blpu.startDate,
               endDate: null,
               parentUprn: address.parentUprn,
-              neverExport: false,
-              siteSurvey: false,
+              neverExport: address.blpu.excludeFromExport,
+              siteSurvey: address.blpu.siteVisit,
               uprn: newUprn && newUprn > 0 ? newUprn : 0,
               logicalStatus: address.blpu.logicalStatus,
               blpuState: address.blpu.state,
@@ -536,8 +537,8 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
               startDate: address.blpu.startDate,
               endDate: null,
               parentUprn: address.parentUprn,
-              neverExport: false,
-              siteSurvey: false,
+              neverExport: address.blpu.excludeFromExport,
+              siteSurvey: address.blpu.siteVisit,
               uprn: newUprn && newUprn > 0 ? newUprn : 0,
               logicalStatus: address.blpu.logicalStatus,
               blpuState: address.blpu.state,
@@ -1453,6 +1454,8 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                       state: selectedTemplate.current.state,
                       stateDate: selectedTemplate.current.state ? new Date() : null,
                       level: selectedTemplate.current.blpuLevel ? selectedTemplate.current.blpuLevel : 0,
+                      excludeFromExport: selectedTemplate.current.excludeFromExport,
+                      siteVisit: selectedTemplate.current.siteVisit,
                       startDate: new Date(),
                     }
                   : {
@@ -1461,6 +1464,8 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                       state: selectedTemplate.current.state,
                       stateDate: selectedTemplate.current.state ? new Date() : null,
                       classification: selectedTemplate.current.classification,
+                      excludeFromExport: selectedTemplate.current.excludeFromExport,
+                      siteVisit: selectedTemplate.current.siteVisit,
                       startDate: new Date(),
                     }
               );

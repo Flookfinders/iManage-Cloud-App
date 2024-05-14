@@ -36,6 +36,7 @@
 //    023   13.03.24 Sean Flook            MUL9 No need to do resets here.
 //    024   25.03.24 Sean Flook           MUL16 Removed option to remove from parent.
 //    025   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
+//    026   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1069,6 +1070,22 @@ function ADSSelectionControl({
   };
 
   /**
+   * Event to handle editing the exclude from export.
+   */
+  const handleEditExcludeFromExport = () => {
+    setAnchorWizardActionsEl(null);
+    if (onEditWizard) onEditWizard("excludeFromExport");
+  };
+
+  /**
+   * Event to handle editing the site visit.
+   */
+  const handleEditSiteVisit = () => {
+    setAnchorWizardActionsEl(null);
+    if (onEditWizard) onEditWizard("siteVisit");
+  };
+
+  /**
    * Event to handle editing the level.
    */
   const handleEditLevel = () => {
@@ -1934,6 +1951,12 @@ function ADSSelectionControl({
                 >
                   <MenuItem dense onClick={handleEditClassification} sx={menuItemStyle(false)}>
                     <Typography variant="inherit">Edit classification</Typography>
+                  </MenuItem>
+                  <MenuItem dense onClick={handleEditExcludeFromExport} sx={menuItemStyle(false)}>
+                    <Typography variant="inherit">Edit exclude from export</Typography>
+                  </MenuItem>
+                  <MenuItem dense onClick={handleEditSiteVisit} sx={menuItemStyle(false)}>
+                    <Typography variant="inherit">Edit site visit required</Typography>
                   </MenuItem>
                   <MenuItem dense onClick={handleEditLevel} sx={menuItemStyle(false)}>
                     <Typography variant="inherit">Edit level</Typography>

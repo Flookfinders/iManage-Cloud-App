@@ -24,6 +24,7 @@
 //    011   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle.
 //    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    013   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
+//    014   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -57,10 +58,21 @@ import SaveIcon from "@mui/icons-material/SaveOutlined";
 import { adsMidGreyA } from "../utils/ADSColours";
 import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
+import ADSSwitchControl from "../components/ADSSwitchControl";
 
 WizardActionDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  variant: PropTypes.oneOf(["classification", "level", "postcode", "postTown", "subLocality", "note", "rpc"]),
+  variant: PropTypes.oneOf([
+    "classification",
+    "excludeFromExport",
+    "siteVisit",
+    "level",
+    "postcode",
+    "postTown",
+    "subLocality",
+    "note",
+    "rpc",
+  ]),
   data: PropTypes.any,
   recordCount: PropTypes.number,
   onClose: PropTypes.func.isRequired,
@@ -163,18 +175,6 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
   };
 
   /**
-   * Method to handle when the Gaelic sub-locality is changed.
-   *
-   * @param {number} newValue The reference for the Gaelic sub-locality.
-   */
-  const handleAltSubLocalityChanged = (newValue) => {
-    const selectedRecord = lookupContext.currentLookups.subLocalities.find((x) => x.subLocalityRef === newValue);
-    if (selectedRecord && selectedRecord.linkedRef !== newValue)
-      setActionData({ eng: selectedRecord.linkedRef, alt: newValue });
-    else setActionData({ eng: actionData.eng, alt: newValue });
-  };
-
-  /**
    * Event to handle when a new sub-locality is added.
    */
   const handleAddSubLocalityEvent = () => {
@@ -199,6 +199,12 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
     switch (variant) {
       case "classification":
         return getEditTitle("classification");
+
+      case "excludeFromExport":
+        return getEditTitle("exclude from export");
+
+      case "siteVisit":
+        return getEditTitle("site visit required");
 
       case "level":
         return getEditTitle("level");
@@ -250,6 +256,38 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
               value={actionData}
               onChange={(newValue) => setActionData(newValue)}
               helperText="Classification code for the BLPU."
+            />
+          </Box>
+        );
+
+      case "excludeFromExport":
+        return (
+          <Box sx={boxStyle}>
+            <ADSSwitchControl
+              label="Exclude from export"
+              isEditable
+              isFocused
+              checked={actionData}
+              trueLabel="Yes"
+              falseLabel="No"
+              helperText="Set this if you do not want this property to be included in any exports."
+              onChange={(newValue) => setActionData(newValue)}
+            />
+          </Box>
+        );
+
+      case "siteVisit":
+        return (
+          <Box sx={boxStyle}>
+            <ADSSwitchControl
+              label="Site visit required"
+              isEditable
+              isFocused
+              checked={actionData}
+              trueLabel="Yes"
+              falseLabel="No"
+              helperText="Set this if the property requires a site visit."
+              onChange={(newValue) => setActionData(newValue)}
             />
           </Box>
         );
@@ -333,28 +371,6 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
               onAddLookup={handleAddPostTownEvent}
               helperText="Allocated by the Royal Mail to assist in delivery of mail."
             />
-            {settingsContext.isScottish && (
-              <ADSSelectControl
-                label="Gaelic post town"
-                isEditable
-                useRounded
-                allowAddLookup
-                lookupData={lookupContext.currentLookups.postTowns
-                  .filter((x) => x.language === "GAE" && !x.historic)
-                  .sort(function (a, b) {
-                    return a.postTown.localeCompare(b.postTown, undefined, {
-                      numeric: true,
-                      sensitivity: "base",
-                    });
-                  })}
-                lookupId="postTownRef"
-                lookupLabel="postTown"
-                value={actionData ? actionData.alt : null}
-                onChange={handleAltPostTownChanged}
-                onAddLookup={handleAddPostTownEvent}
-                helperText="Allocated by the Royal Mail to assist in delivery of mail."
-              />
-            )}
             {settingsContext.isWelsh && (
               <ADSSelectControl
                 label="Welsh post town"
@@ -394,19 +410,6 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
               lookupLabel="subLocality"
               value={actionData ? actionData.eng : null}
               onChange={handleEngSubLocalityChanged}
-              onAddLookup={handleAddSubLocalityEvent}
-              helperText="Third level of geographic area name. e.g. to record an island name or property group."
-            />
-            <ADSSelectControl
-              label="Gaelic sub-locality"
-              isEditable
-              useRounded
-              allowAddLookup
-              lookupData={lookupContext.currentLookups.subLocalities.filter((x) => x.language === "GAE")}
-              lookupId="subLocalityRef"
-              lookupLabel="subLocality"
-              value={actionData ? actionData.alt : null}
-              onChange={handleAltSubLocalityChanged}
               onAddLookup={handleAddSubLocalityEvent}
               helperText="Third level of geographic area name. e.g. to record an island name or property group."
             />
@@ -508,7 +511,17 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
 
   useEffect(() => {
     setActionData(
-      data ? data : variant === "level" ? (settingsContext.isScottish ? 0 : "") : variant === "note" ? "" : null
+      data
+        ? data
+        : variant === "level"
+        ? settingsContext.isScottish
+          ? 0
+          : ""
+        : variant === "note"
+        ? ""
+        : ["excludeFromExport", "siteVisit"].includes(variant)
+        ? false
+        : null
     );
     setRepresentativePointCodeLookup(FilteredRepresentativePointCode(settingsContext.isScottish));
   }, [data, variant, settingsContext.isScottish]);
