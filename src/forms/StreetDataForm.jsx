@@ -87,6 +87,7 @@
 //    073   03.05.24 Joel Benford               Fix index on new descriptors
 //    074   08.05.24 Sean Flook       IMANN-447 Added exclude from export from template.
 //    075   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
+//    076   15.05.24 Sean Flook                 Do not clear the point capture if assigning ESUs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -10277,7 +10278,10 @@ function StreetDataForm({ data, loading }) {
     const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
     setSaveDisabled(!streetChanged);
     streetContext.onStreetModified(streetChanged);
-    if (streetChanged && !["streetStart", "streetEnd", "divideEsu"].includes(mapContext.currentPointCaptureMode))
+    if (
+      streetChanged &&
+      !["streetStart", "streetEnd", "divideEsu", "assignEsu"].includes(mapContext.currentPointCaptureMode)
+    )
       mapContext.onSetCoordinate(null);
   }, [streetContext, sandboxContext.currentSandbox, mapContext]);
 
