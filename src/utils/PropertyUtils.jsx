@@ -46,6 +46,7 @@
 //    033   25.04.24 Sean Flook       IMANN-390 Added returnFailedUprns method to return failed UPRNs back to the database.
 //    034   26.04.24 Sean Flook       IMANN-166 Refresh related after doing the save.
 //    035   08.05.24 Sean Flook       IMANN-447 Return empty string when the sub-locality is null.
+//    036   15.05.24 Sean Flook       IMANN-131 Ensure NeverExport is always set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1166,8 +1167,8 @@ export function GetPropertyCreateData(propertyData, isScottish) {
     return {
       blpuStateDate: propertyData.blpuStateDate,
       parentUprn: propertyData.parentUprn,
-      neverExport: propertyData.neverExport,
-      siteSurvey: propertyData.siteSurvey,
+      neverExport: propertyData.neverExport ? propertyData.neverExport : false,
+      siteSurvey: propertyData.siteSurvey ? propertyData.siteSurvey : false,
       uprn: propertyData.uprn && propertyData.uprn > 0 ? propertyData.uprn : 0,
       logicalStatus: propertyData.logicalStatus,
       endDate: propertyData.endDate,
@@ -1189,7 +1190,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               crossReference: x.crossReference,
               sourceId: x.sourceId ? x.sourceId : 0,
               source: x.source ? x.source : null,
-              neverExport: propertyData.neverExport,
+              neverExport: propertyData.neverExport ? propertyData.neverExport : false,
             };
           })
         : [],
@@ -1224,7 +1225,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               blpuClass: x.blpuClass,
               startDate: x.startDate,
               endDate: x.endDate,
-              neverExport: propertyData.neverExport,
+              neverExport: propertyData.neverExport ? propertyData.neverExport : false,
             };
           })
         : [],
@@ -1237,7 +1238,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               legalName: x.legalName,
               startDate: x.startDate,
               endDate: x.endDate,
-              neverExport: propertyData.neverExport,
+              neverExport: propertyData.neverExport ? propertyData.neverExport : false,
             };
           })
         : [],
@@ -1250,7 +1251,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               endDate: x.endDate,
               successorType: x.successorType,
               successor: x.successor,
-              neverExport: propertyData.neverExport,
+              neverExport: propertyData.neverExport ? propertyData.neverExport : false,
             };
           })
         : [],
@@ -1269,7 +1270,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               usrn: x.usrn,
               postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
               postTownRef: x.postTownRef ? x.postTownRef : -1,
-              neverExport: propertyData.neverExport,
+              neverExport: propertyData.neverExport ? propertyData.neverExport : false,
               postTown: x.postTownRef ? x.postTown : "",
               postcode: x.postcodeRef ? x.postcode : "",
               dualLanguageLink: x.dualLanguageLink,
@@ -1298,8 +1299,8 @@ export function GetPropertyCreateData(propertyData, isScottish) {
       startDate: propertyData.startDate,
       endDate: propertyData.endDate,
       parentUprn: propertyData.parentUprn,
-      neverExport: propertyData.neverExport,
-      siteSurvey: propertyData.siteSurvey,
+      neverExport: propertyData.neverExport ? propertyData.neverExport : false,
+      siteSurvey: propertyData.siteSurvey ? propertyData.siteSurvey : false,
       uprn: propertyData.uprn && propertyData.uprn > 0 ? propertyData.uprn : 0,
       logicalStatus: propertyData.logicalStatus,
       blpuState: propertyData.blpuState,
@@ -1318,7 +1319,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               crossReference: x.crossReference,
               sourceId: x.sourceId ? x.sourceId : 0,
               source: x.source ? x.source : null,
-              neverExport: propertyData.neverExport,
+              neverExport: propertyData.neverExport ? propertyData.neverExport : false,
             };
           })
         : [],
@@ -1360,7 +1361,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               usrn: x.usrn,
               postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
               postTownRef: x.postTownRef ? x.postTownRef : -1,
-              neverExport: propertyData.neverExport,
+              neverExport: propertyData.neverExport ? propertyData.neverExport : false,
               postTown: x.postTownRef ? x.postTown : "",
               postcode: x.postcodeRef ? x.postcode : "",
               dualLanguageLink: x.dualLanguageLink,
@@ -1391,8 +1392,8 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
     return {
       blpuStateDate: propertyData.blpuStateDate,
       parentUprn: propertyData.parentUprn,
-      neverExport: propertyData.neverExport,
-      siteSurvey: propertyData.siteSurvey,
+      neverExport: propertyData.neverExport ? propertyData.neverExport : false,
+      siteSurvey: propertyData.siteSurvey ? propertyData.siteSurvey : false,
       uprn: propertyData.uprn,
       logicalStatus: propertyData.logicalStatus,
       endDate: propertyData.endDate,
@@ -1417,7 +1418,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               crossReference: x.crossReference,
               sourceId: x.sourceId ? x.sourceId : 0,
               source: x.source ? x.source : null,
-              neverExport: propertyData.neverExport,
+              neverExport: propertyData.neverExport ? propertyData.neverExport : false,
             };
           })
         : [],
@@ -1432,7 +1433,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               annotation: x.annotation,
               startDate: x.startDate,
               endDate: x.endDate,
-              neverExport: propertyData.neverExport,
+              neverExport: propertyData.neverExport ? propertyData.neverExport : false,
               wktGeometry: x.wktGeometry,
             };
           })
@@ -1459,7 +1460,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               blpuClass: x.blpuClass,
               startDate: x.startDate,
               endDate: x.endDate,
-              neverExport: propertyData.neverExport,
+              neverExport: propertyData.neverExport ? propertyData.neverExport : false,
             };
           })
         : [],
@@ -1474,7 +1475,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               legalName: x.legalName,
               startDate: x.startDate,
               endDate: x.endDate,
-              neverExport: propertyData.neverExport,
+              neverExport: propertyData.neverExport ? propertyData.neverExport : false,
             };
           })
         : [],
@@ -1489,7 +1490,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               endDate: x.endDate,
               successorType: x.successorType,
               successor: x.successor,
-              neverExport: propertyData.neverExport,
+              neverExport: propertyData.neverExport ? propertyData.neverExport : false,
             };
           })
         : [],
@@ -1508,7 +1509,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               usrn: x.usrn,
               postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
               postTownRef: x.postTownRef ? x.postTownRef : -1,
-              neverExport: propertyData.neverExport,
+              neverExport: propertyData.neverExport ? propertyData.neverExport : false,
               postTown: x.postTownRef ? x.postTown : "",
               postcode: x.postcodeRef ? x.postcode : "",
               dualLanguageLink: x.dualLanguageLink,
@@ -1537,8 +1538,8 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
       startDate: propertyData.startDate,
       endDate: propertyData.endDate,
       parentUprn: propertyData.parentUprn,
-      neverExport: propertyData.neverExport,
-      siteSurvey: propertyData.siteSurvey,
+      neverExport: propertyData.neverExport ? propertyData.neverExport : false,
+      siteSurvey: propertyData.siteSurvey ? propertyData.siteSurvey : false,
       uprn: propertyData.uprn,
       logicalStatus: propertyData.logicalStatus,
       blpuState: propertyData.blpuState,
@@ -1560,7 +1561,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               crossReference: x.crossReference,
               sourceId: x.sourceId ? x.sourceId : 0,
               source: x.source ? x.source : null,
-              neverExport: propertyData.neverExport,
+              neverExport: propertyData.neverExport ? propertyData.neverExport : false,
               pkId: x.pkId > 0 ? x.pkId : 0,
               xrefKey: x.xrefKey,
             };
@@ -1608,7 +1609,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               usrn: x.usrn,
               postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
               postTownRef: x.postTownRef ? x.postTownRef : -1,
-              neverExport: propertyData.neverExport,
+              neverExport: propertyData.neverExport ? propertyData.neverExport : false,
               postTown: x.postTownRef ? x.postTown : "",
               postcode: x.postcodeRef ? x.postcode : "",
               dualLanguageLink: x.dualLanguageLink,
