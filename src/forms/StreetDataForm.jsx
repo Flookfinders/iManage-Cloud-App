@@ -88,6 +88,7 @@
 //    074   08.05.24 Sean Flook       IMANN-447 Added exclude from export from template.
 //    075   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //    076   15.05.24 Sean Flook                 Do not clear the point capture if assigning ESUs.
+//    077   16.05.24 Sean Flook       IMANN-259 Use the template if present to set the tolerance for new ESUs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1184,7 +1185,12 @@ function StreetDataForm({ data, loading }) {
             changeType: "I",
             esuVersionNumber: 1,
             numCoordCount: 0,
-            esuTolerance: 10,
+            esuTolerance:
+              settingsContext.streetTemplate &&
+              settingsContext.streetTemplate.esuTemplate &&
+              settingsContext.streetTemplate.esuTemplate.esuTolerance
+                ? settingsContext.streetTemplate.esuTemplate.esuTolerance
+                : 10,
             esuStartDate: currentDate,
             esuEndDate: null,
             esuDirection:
@@ -8797,7 +8803,12 @@ function StreetDataForm({ data, loading }) {
                   changeType: "I",
                   esuVersionNumber: 1,
                   numCoordCount: 0,
-                  esuTolerance: 10,
+                  esuTolerance:
+                    settingsContext.streetTemplate &&
+                    settingsContext.streetTemplate.esuTemplate &&
+                    settingsContext.streetTemplate.esuTemplate.esuTolerance
+                      ? settingsContext.streetTemplate.esuTemplate.esuTolerance
+                      : 10,
                   esuStartDate: currentDate,
                   esuEndDate: null,
                   esuDirection:
@@ -9020,7 +9031,12 @@ function StreetDataForm({ data, loading }) {
                   changeType: "I",
                   esuVersionNumber: 1,
                   numCoordCount: 0,
-                  esuTolerance: 10,
+                  esuTolerance:
+                    settingsContext.streetTemplate &&
+                    settingsContext.streetTemplate.esuTemplate &&
+                    settingsContext.streetTemplate.esuTemplate.esuTolerance
+                      ? settingsContext.streetTemplate.esuTemplate.esuTolerance
+                      : 10,
                   esuStartDate: currentDate,
                   esuEndDate: null,
                   esuDirection:
@@ -9840,7 +9856,12 @@ function StreetDataForm({ data, loading }) {
               changeType: "I",
               esuVersionNumber: 1,
               numCoordCount: 0,
-              esuTolerance: 10,
+              esuTolerance:
+                settingsContext.streetTemplate &&
+                settingsContext.streetTemplate.esuTemplate &&
+                settingsContext.streetTemplate.esuTemplate.esuTolerance
+                  ? settingsContext.streetTemplate.esuTemplate.esuTolerance
+                  : 10,
               esuStartDate: currentDate,
               esuEndDate: null,
               esuDirection: mergeEsusSame
