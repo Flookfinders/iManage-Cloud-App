@@ -71,6 +71,7 @@
 //    057   02.05.24 Joshua McCormick IMANN-283 GetStreetTypeLabel and GetStreetStateLabel return street code false for all instances
 //    058   03.05.24 Sean Flook                 Moved functions out of useEffect by using useCallback.
 //    059   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
+//    060   14.05.24 Sean Flook       IMANN-206 Include property actions to the background provenance layer information dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3436,7 +3437,7 @@ function ADSEsriMap(startExtent) {
       outFields: ["*"],
       objectIdField: "ObjectID",
       popupTemplate: {
-        title: "Extent",
+        title: "Provenance",
         lastEditInfoEnabled: false,
         content: [
           {
@@ -3452,7 +3453,15 @@ function ADSEsriMap(startExtent) {
             ],
           },
         ],
-        // actions: [],
+        actions: [
+          propertyOpenAction,
+          propertyAddChild,
+          propertyAddRangeChildren,
+          // propertyRadialSearchAction,
+          // propertyAddToActivityListAction,
+          propertyStreetViewAction,
+          // propertyMenuAction,
+        ],
       },
       renderer: extentRenderer,
       spatialReference: { wkid: 27700 },
@@ -5110,7 +5119,7 @@ function ADSEsriMap(startExtent) {
       outFields: ["*"],
       objectIdField: "ObjectID",
       popupTemplate: {
-        title: "Extent",
+        title: "Provenance",
         lastEditInfoEnabled: false,
         content: [
           {
