@@ -8,7 +8,7 @@
 //  Maximum validation numbers
 //  =================================
 //  Metadata: 1000000 - 1000019
-//  Settings: 8700027
+//  Settings: 8700027 - 8700029
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -113,17 +113,17 @@ export function ValidateMapLayer(data, currentLookups, isScottish) {
     if (currentCheck && !currentCheck.ignoreCheck && data.propertyName && data.propertyName.length > 100)
       propertyNameErrors.push(GetErrorMessage(currentCheck, isScottish));
 
-    // Mandatory layer type is missing.
+    // Layer type is missing.
     currentCheck = GetCheck(8700014, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && !data.layerType)
       layerTypeErrors.push(GetErrorMessage(currentCheck, isScottish));
 
-    // Mandatory layer id is missing.
+    // Layer id is missing.
     currentCheck = GetCheck(8700015, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && !data.layerId)
       layerIdErrors.push(GetErrorMessage(currentCheck, isScottish));
 
-    // Mandatory url is missing.
+    // URL is missing.
     currentCheck = GetCheck(8700018, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && !data.url)
       urlErrors.push(GetErrorMessage(currentCheck, isScottish));
@@ -133,12 +133,12 @@ export function ValidateMapLayer(data, currentLookups, isScottish) {
     if (currentCheck && !currentCheck.ignoreCheck && !data.opacity)
       opacityErrors.push(GetErrorMessage(currentCheck, isScottish));
 
-    // Mandatory Service provider is missing.
+    // Service provider is missing.
     currentCheck = GetCheck(8700020, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && !data.serviceProvider)
       serviceProviderErrors.push(GetErrorMessage(currentCheck, isScottish));
 
-    // Mandatory copyright is missing.
+    // Copyright is missing.
     currentCheck = GetCheck(8700022, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       currentCheck &&
@@ -152,7 +152,7 @@ export function ValidateMapLayer(data, currentLookups, isScottish) {
     )
       copyrightErrors.push(GetErrorMessage(currentCheck, isScottish));
 
-    // Mandatory OS service mode is missing.
+    // OS service mode is missing.
     currentCheck = GetCheck(8700023, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       currentCheck &&
@@ -163,12 +163,12 @@ export function ValidateMapLayer(data, currentLookups, isScottish) {
     )
       serviceModeErrors.push(GetErrorMessage(currentCheck, isScottish));
 
-    // Mandatory property name is missing.
+    // property name is missing.
     currentCheck = GetCheck(8700024, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && data.layerType === 1 && !data.propertyName)
       propertyNameErrors.push(GetErrorMessage(currentCheck, isScottish));
 
-    // Mandatory layer key is missing.
+    // layer key is missing.
     currentCheck = GetCheck(8700027, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && data.serviceProvider === "OS" && !data.layerKey)
       layerKeyErrors.push(GetErrorMessage(currentCheck, isScottish));

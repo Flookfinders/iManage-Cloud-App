@@ -1,7 +1,7 @@
 const ValidationMessages = [
   {
     messageId: 1000001,
-    errorMessage: "Mandatory Gaz Scope is missing.",
+    errorMessage: "Gaz scope is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -16,7 +16,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000002,
-    errorMessage: "Mandatory Terms of Use is missing.",
+    errorMessage: "Terms of use is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -31,7 +31,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000003,
-    errorMessage: "Mandatory Gaz Owner is missing.",
+    errorMessage: "Gaz owner is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -46,7 +46,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000004,
-    errorMessage: "Mandatory Custodian Name is missing.",
+    errorMessage: "Custodian name is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -61,7 +61,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000005,
-    errorMessage: "Mandatory Custodian Code is missing.",
+    errorMessage: "Custodian code is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -76,7 +76,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000006,
-    errorMessage: "Mandatory Coord Units is missing.",
+    errorMessage: "Coord units is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -91,7 +91,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000007,
-    errorMessage: "Mandatory Meta Date is missing.",
+    errorMessage: "Meta date is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -106,7 +106,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000008,
-    errorMessage: "Mandatory Class Scheme is missing.",
+    errorMessage: "Class scheme is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -121,7 +121,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000009,
-    errorMessage: "Mandatory Gaz Date is missing.",
+    errorMessage: "Gaz date is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -136,7 +136,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000010,
-    errorMessage: "Gaz Date cannot be in the future.",
+    errorMessage: "Gaz date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -151,7 +151,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000011,
-    errorMessage: "Class Scheme is too long.",
+    errorMessage: "Class scheme is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -166,7 +166,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000012,
-    errorMessage: "Meta Date cannot be in the future.",
+    errorMessage: "Meta date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -181,7 +181,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000013,
-    errorMessage: "Coord Units is too long.",
+    errorMessage: "Coord units is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -196,7 +196,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000014,
-    errorMessage: "Custodian Name is too long.",
+    errorMessage: "Custodian name is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -211,7 +211,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000015,
-    errorMessage: "Gaz Owner is too long.",
+    errorMessage: "Gaz owner is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -226,7 +226,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000016,
-    errorMessage: "Gaz Scope is too long.",
+    errorMessage: "Gaz scope is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -241,7 +241,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000017,
-    errorMessage: "Territory of Use is too long.",
+    errorMessage: "Territory of use is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -256,7 +256,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1000018,
-    errorMessage: "Invalid Gaz Name.",
+    errorMessage: "Invalid gaz name.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "4.3.2",
@@ -286,7 +286,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -301,7 +301,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100002,
-    errorMessage: "Change Type is too long.",
+    errorMessage: "Change type is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -316,7 +316,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100003,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -331,7 +331,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100004,
-    errorMessage: "End Date cannot be before the Street Start Date.",
+    errorMessage: "End date cannot be before the street start date.",
     llpgCode: "S-15",
     lsgCode: "LG11.014",
     osgCode: "13.21.2a",
@@ -346,7 +346,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100007,
-    errorMessage: "Missing Street Descriptor.",
+    errorMessage: "Missing street descriptor.",
     llpgCode: "AAU11.22",
     lsgCode: "LG11.022",
     osgCode: "",
@@ -391,7 +391,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100010,
-    errorMessage: "Street Tolerance must be within the accepted Tolerance range (0-99).",
+    errorMessage: "Street tolerance must be within the accepted tolerance range (0-99).",
     llpgCode: "AAU11.18",
     lsgCode: "",
     osgCode: "",
@@ -406,7 +406,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100011,
-    errorMessage: "Street End Date is set but State is not 4.",
+    errorMessage: "Street end date is set but state is not 4.",
     llpgCode: "AAU11.32",
     lsgCode: "LG11.032",
     osgCode: "",
@@ -421,7 +421,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100012,
-    errorMessage: "State is supplied but State Date not set.",
+    errorMessage: "State is supplied but state date not set.",
     llpgCode: "AAU11.49",
     lsgCode: "",
     osgCode: "",
@@ -451,7 +451,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100014,
-    errorMessage: "Street Surface is invalid.",
+    errorMessage: "Street surface is invalid.",
     llpgCode: "S-10",
     lsgCode: "LG11.007",
     osgCode: "",
@@ -466,7 +466,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100015,
-    errorMessage: "Record Entry Date cannot be in the future.",
+    errorMessage: "Record entry date cannot be in the future.",
     llpgCode: "S-13H",
     lsgCode: "LG11.009",
     osgCode: "",
@@ -481,7 +481,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100016,
-    errorMessage: "Mandatory Street Start Date is missing.",
+    errorMessage: "Street start date is missing.",
     llpgCode: "S-6F",
     lsgCode: "LG11.011",
     osgCode: "",
@@ -496,7 +496,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100017,
-    errorMessage: "Mandatory Last Update Date is missing.",
+    errorMessage: "Last update date is missing.",
     llpgCode: "S-6E",
     lsgCode: "LG11.010",
     osgCode: "",
@@ -511,7 +511,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100018,
-    errorMessage: "Last Update Date cannot be in the future.",
+    errorMessage: "Last update date cannot be in the future.",
     llpgCode: "S-13",
     lsgCode: "LG11.010",
     osgCode: "",
@@ -526,7 +526,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100019,
-    errorMessage: "Mandatory Tolerance is missing.",
+    errorMessage: "Tolerance is missing.",
     llpgCode: "S-6H",
     lsgCode: "LG11.018",
     osgCode: "",
@@ -541,7 +541,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100020,
-    errorMessage: "Mandatory Record Entry Date is missing.",
+    errorMessage: "Record entry date is missing.",
     llpgCode: "S-6D",
     lsgCode: "LG11.009",
     osgCode: "",
@@ -556,7 +556,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100021,
-    errorMessage: "Street Start Date cannot be in the future.",
+    errorMessage: "Street start date cannot be in the future.",
     llpgCode: "S-13B",
     lsgCode: "",
     osgCode: "13.20.4",
@@ -571,7 +571,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100022,
-    errorMessage: "State is 4 but Street End Date is not set.",
+    errorMessage: "State is 4 but street end date is not set.",
     llpgCode: "S-9B",
     lsgCode: "LG11.015",
     osgCode: "",
@@ -586,7 +586,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100024,
-    errorMessage: "Mandatory USRN is missing.",
+    errorMessage: "USRN is missing.",
     llpgCode: "S-6B",
     lsgCode: "LG11.001",
     osgCode: "",
@@ -601,7 +601,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100025,
-    errorMessage: "Mandatory Swa Org Ref naming value is missing.",
+    errorMessage: "Swa Org Ref naming value is missing.",
     llpgCode: "S-6B",
     lsgCode: "LG11.004",
     osgCode: "",
@@ -616,7 +616,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100026,
-    errorMessage: "Mandatory Version is missing.",
+    errorMessage: "Version is missing.",
     llpgCode: "S-6C",
     lsgCode: "LG11.008",
     osgCode: "",
@@ -631,7 +631,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100027,
-    errorMessage: "Mandatory Coordinates are missing.",
+    errorMessage: "Coordinates are missing.",
     llpgCode: "S-GC",
     lsgCode: "LG11.016",
     osgCode: "",
@@ -661,7 +661,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100029,
-    errorMessage: "Record Type is invalid.",
+    errorMessage: "Record type is invalid.",
     llpgCode: "S-8",
     lsgCode: "LG11.003",
     osgCode: "13.6.1",
@@ -676,7 +676,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100030,
-    errorMessage: "State Date prior to 1990 are not allowed.",
+    errorMessage: "State dates prior to 1990 are not allowed.",
     llpgCode: "S9-c",
     lsgCode: "",
     osgCode: "",
@@ -691,7 +691,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100031,
-    errorMessage: "State Date cannot be in the future.",
+    errorMessage: "State date cannot be in the future.",
     llpgCode: "S-13I",
     lsgCode: "",
     osgCode: "",
@@ -706,7 +706,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100032,
-    errorMessage: "Street Classification is invalid.",
+    errorMessage: "Street classification is invalid.",
     llpgCode: "S-11",
     lsgCode: "",
     osgCode: "",
@@ -721,7 +721,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100033,
-    errorMessage: "Mandatory Record Type is missing.",
+    errorMessage: "Record type is missing.",
     llpgCode: "S-6",
     lsgCode: "LG11.003",
     osgCode: "13.6.1",
@@ -736,7 +736,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100034,
-    errorMessage: "Last Update Date must be the same as or after the Record Entry Date.",
+    errorMessage: "Last update date must be the same as or after the record entry date.",
     llpgCode: "S-14",
     lsgCode: "",
     osgCode: "13.20.1b",
@@ -751,7 +751,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100035,
-    errorMessage: "End Date cannot be in the future.",
+    errorMessage: "End date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -781,7 +781,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100037,
-    errorMessage: "Mandatory State is missing.",
+    errorMessage: "State is missing.",
     llpgCode: "",
     lsgCode: "LG11.005",
     osgCode: "",
@@ -841,7 +841,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100041,
-    errorMessage: "Street types 2, 3 & 4 must not have a State of 5.",
+    errorMessage: "Street types 2, 3 & 4 must not have a state of 5.",
     llpgCode: "",
     lsgCode: "LG11.037",
     osgCode: "",
@@ -856,7 +856,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100042,
-    errorMessage: "Mandatory State Date is missing.",
+    errorMessage: "State date is missing.",
     llpgCode: "",
     lsgCode: "LG11.006",
     osgCode: "",
@@ -871,7 +871,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100043,
-    errorMessage: "Mandatory Street Surface is missing.",
+    errorMessage: "Street surface is missing.",
     llpgCode: "",
     lsgCode: "LG11.007",
     osgCode: "",
@@ -931,7 +931,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100047,
-    errorMessage: "The supplied USRN and Primary Key (PkId) do not match a record in the Street table.",
+    errorMessage: "The supplied USRN and primary key (PkId) do not match a record in the street table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -946,7 +946,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100048,
-    errorMessage: "Street creation and maintenance is restricted to your assigned Authority.",
+    errorMessage: "Street creation and maintenance is restricted to your assigned authority.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -961,7 +961,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100049,
-    errorMessage: "Open Street not linked to an open ESU.",
+    errorMessage: "Open street not linked to an open ESU.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "13.21.0",
@@ -976,7 +976,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100050,
-    errorMessage: "Open Street not linked to an open Xref.",
+    errorMessage: "Open street not linked to an open xref.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "13.21.0",
@@ -991,7 +991,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100051,
-    errorMessage: "No open Esus, End date must be set.",
+    errorMessage: "No open ESUs, end date must be set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "13.21.3",
@@ -1006,7 +1006,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100052,
-    errorMessage: "No open Esus, End date must be set.",
+    errorMessage: "No open ESUs, end date must be set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "13.21.3",
@@ -1021,7 +1021,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100053,
-    errorMessage: "A Maintenance Responsibility record is mandatory on a Type 1 or 2 street.",
+    errorMessage: "A maintenance responsibility record must exist on a type 1 or 2 street.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1036,7 +1036,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100054,
-    errorMessage: "An Interest record is mandatory on a Type 1 or 2 street.",
+    errorMessage: "An interested organisation record must exist on a type 1 or 2 street.",
     llpgCode: "",
     lsgCode: "LG11.020",
     osgCode: "",
@@ -1052,7 +1052,7 @@ const ValidationMessages = [
   {
     messageId: 1100055,
     errorMessage:
-      "At least one Construction record with Construction Type = 1 and Resinstatement code between 1 and 12 is mandatory on a Type 1 or 2 street.",
+      "At least one construction record with construction type = 1 and reinstatement code between 1 and 12 must exist on a type 1 or 2 street.",
     llpgCode: "",
     lsgCode: "LG11.021",
     osgCode: "",
@@ -1067,7 +1067,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100056,
-    errorMessage: "If State is 5, there must an Interest record with State set to 5.",
+    errorMessage: "If state is 5, there must an interested organisation record with state set to 5.",
     llpgCode: "",
     lsgCode: "LG11.027",
     osgCode: "",
@@ -1082,7 +1082,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100057,
-    errorMessage: "If State is 5, there must a Construction record with Reinstatement Type Code set to 12.",
+    errorMessage: "If state is 5, there must a construction record with reinstatement type code set to 12.",
     llpgCode: "",
     lsgCode: "LG11.028",
     osgCode: "",
@@ -1097,7 +1097,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100058,
-    errorMessage: "A Special Designation record must not be present on a Street with State set to 5.",
+    errorMessage: "A special designation record must not be present on a street with state set to 5.",
     llpgCode: "",
     lsgCode: "LG11.029",
     osgCode: "",
@@ -1112,7 +1112,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100059,
-    errorMessage: "A street with a State of 2 or 5 must have an open ESU record.",
+    errorMessage: "A street with a state of 2 or 5 must have an open ESU record.",
     llpgCode: "",
     lsgCode: "LG11.034",
     osgCode: "",
@@ -1127,7 +1127,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1200001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1142,7 +1142,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1200002,
-    errorMessage: "Mandatory ESU Version is missing.",
+    errorMessage: "ESU version is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1157,7 +1157,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1200003,
-    errorMessage: "Mandatory USRN is missing.",
+    errorMessage: "USRN is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1172,7 +1172,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1200004,
-    errorMessage: "Mandatory ESU Id is missing.",
+    errorMessage: "ESU id is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1187,7 +1187,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1200005,
-    errorMessage: "Duplicate Street Cross Reference on USRN and ESU Id.",
+    errorMessage: "Duplicate street cross reference on USRN and ESU id.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1202,7 +1202,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1200006,
-    errorMessage: "USRN does not exist in the Street table.",
+    errorMessage: "USRN does not exist in the street table.",
     llpgCode: "",
     lsgCode: "LG12.002",
     osgCode: "",
@@ -1217,7 +1217,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1200007,
-    errorMessage: "ESU Id does not exist in the ESU table.",
+    errorMessage: "ESU id does not exist in the ESU table.",
     llpgCode: "",
     lsgCode: "LG12.004",
     osgCode: "",
@@ -1233,7 +1233,7 @@ const ValidationMessages = [
   {
     messageId: 1200008,
     errorMessage:
-      "ESU cross references to Type 3 or 4 Street, must also be cross referenced to type 1 or 2 Street with a STATE of 1 or 5.",
+      "ESU cross references to type 3 or 4 street, must also be cross referenced to type 1 or 2 street with a state of 1 or 5.",
     llpgCode: "",
     lsgCode: "LG12.005",
     osgCode: "",
@@ -1249,7 +1249,7 @@ const ValidationMessages = [
   {
     messageId: 1200009,
     errorMessage:
-      "ESU cross references to Type 1 or 2 Street with a state of 1, 2 or 4, must not be cross referenced to another Type 1 or 2 Street with a state of 1, 2 or 4, unless Street has an Interest Record with a street status of 5.",
+      "ESU cross references to type 1 or 2 street with a state of 1, 2 or 4, must not be cross referenced to another type 1 or 2 street with a state of 1, 2 or 4, unless street has an interested organisation record with a street status of 5.",
     llpgCode: "",
     lsgCode: "LG12.006",
     osgCode: "",
@@ -1265,7 +1265,7 @@ const ValidationMessages = [
   {
     messageId: 1200010,
     errorMessage:
-      "ESU cross references to a Type 3 Street with a state of 2 must not be cross referenced to another Type 3 Street with a state of 2, unless the Descriptor is prefixed with a Y, NCR or LCR.",
+      "ESU cross references to a type 3 street with a state of 2 must not be cross referenced to another type 3 street with a state of 2, unless the descriptor is prefixed with a Y, NCR or LCR.",
     llpgCode: "",
     lsgCode: "LG12.007",
     osgCode: "",
@@ -1281,7 +1281,7 @@ const ValidationMessages = [
   {
     messageId: 1200011,
     errorMessage:
-      "ESU cross references to a Street with a state of 5 must also be cross referenced to a Type 1 or 2 Street with a state of 2.",
+      "ESU cross references to a street with a state of 5 must also be cross referenced to a type 1 or 2 street with a state of 2.",
     llpgCode: "",
     lsgCode: "LG12.011",
     osgCode: "",
@@ -1296,7 +1296,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1200012,
-    errorMessage: "USRN must match the Street USRN.",
+    errorMessage: "USRN must match the street USRN.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1311,7 +1311,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1200013,
-    errorMessage: "The supplied USRN and Primary Key (PkId) do not match a record in the Street Cross Ref table.",
+    errorMessage: "The supplied USRN and primary key (PkId) do not match a record in the street cross ref table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1326,7 +1326,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1200014,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1341,7 +1341,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1356,7 +1356,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300002,
-    errorMessage: "Mandatory geometry is missing.",
+    errorMessage: "Geometry is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1371,7 +1371,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300003,
-    errorMessage: "There are no available ESU Ids.",
+    errorMessage: "There are no available ESU ids.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1386,7 +1386,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300004,
-    errorMessage: "The ESU Id could not be calculated.",
+    errorMessage: "The ESU id could not be calculated.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1401,7 +1401,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300005,
-    errorMessage: "The ESU Id is linked to another street and cannot be deleted.",
+    errorMessage: "The ESU id is linked to another street and cannot be deleted.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1416,7 +1416,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300006,
-    errorMessage: "The ESU has Highway dedication or One Way Exemption records and cannot be deleted.",
+    errorMessage: "The ESU has highway dedication or one way exemption records and cannot be deleted.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1431,7 +1431,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300007,
-    errorMessage: "Mandatory ESU Id is missing.",
+    errorMessage: "ESU id is missing.",
     llpgCode: "",
     lsgCode: "LG13.001",
     osgCode: "",
@@ -1446,7 +1446,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300008,
-    errorMessage: "The supplied ESU Id and Primary Key (PkId) do not match a record in the ESU table.",
+    errorMessage: "The supplied ESU id and primary key (PkId) do not match a record in the ESU table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1461,7 +1461,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300009,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1476,7 +1476,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300010,
-    errorMessage: "Duplicate ESU Id.",
+    errorMessage: "Duplicate ESU id.",
     llpgCode: "",
     lsgCode: "LG13.013",
     osgCode: "3.22.1",
@@ -1491,7 +1491,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300011,
-    errorMessage: "Mandatory State is missing.",
+    errorMessage: "State is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "13.23.1",
@@ -1506,7 +1506,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300012,
-    errorMessage: "Mandatory State Date is missing.",
+    errorMessage: "State date is missing.",
     llpgCode: "",
     lsgCode: "LG11.006",
     osgCode: "",
@@ -1521,7 +1521,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300013,
-    errorMessage: "State Date cannot be in the future.",
+    errorMessage: "State date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1551,7 +1551,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300015,
-    errorMessage: "State Date cannot be before the Start Date.",
+    errorMessage: "State date cannot be before the start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "13.23.3a",
@@ -1566,7 +1566,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300016,
-    errorMessage: "State is 4 but Esu End Date is not set.",
+    errorMessage: "State is 4 but ESU end date is not set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "13.27.4",
@@ -1581,7 +1581,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300017,
-    errorMessage: "Mandatory Start Date is missing.",
+    errorMessage: "Start date is missing.",
     llpgCode: "",
     lsgCode: "LG13.005",
     osgCode: "13.27.5",
@@ -1596,7 +1596,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300018,
-    errorMessage: "Mandatory Entry Date is missing.",
+    errorMessage: "Entry date is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "13.27.6",
@@ -1611,7 +1611,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300020,
-    errorMessage: "Start Date cannot be in the future.",
+    errorMessage: "Start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "13.27.5",
@@ -1626,7 +1626,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300021,
-    errorMessage: "End Date cannot be in the future.",
+    errorMessage: "End date cannot be in the future.",
     llpgCode: "",
     lsgCode: "LG13.006",
     osgCode: "",
@@ -1641,7 +1641,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300022,
-    errorMessage: "End Date cannot be before the Start Date.",
+    errorMessage: "End date cannot be before the start date.",
     llpgCode: "",
     lsgCode: "LG13.007",
     osgCode: "13.27.2",
@@ -1656,7 +1656,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300023,
-    errorMessage: "Mandatory Classification is missing.",
+    errorMessage: "Classification is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "13.24.1",
@@ -1686,7 +1686,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300025,
-    errorMessage: "Mandatory Classification Date is missing.",
+    errorMessage: "Classification date is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "13.24.2",
@@ -1701,7 +1701,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300026,
-    errorMessage: "Classification Date cannot be before the Start Date.",
+    errorMessage: "Classification date cannot be before the start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "13.24.3a",
@@ -1716,7 +1716,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300028,
-    errorMessage: "Esu End Date is set but State is not 4.",
+    errorMessage: "Esu end date is set but state is not 4.",
     llpgCode: "",
     lsgCode: "LG13.017",
     osgCode: "13.27.4",
@@ -1731,7 +1731,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300029,
-    errorMessage: "Mandatory ESU Version Number is missing.",
+    errorMessage: "ESU version number is missing.",
     llpgCode: "",
     lsgCode: "LG13.002",
     osgCode: "",
@@ -1746,7 +1746,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300030,
-    errorMessage: "Mandatory ESU Tolerance is missing.",
+    errorMessage: "ESU tolerance is missing.",
     llpgCode: "",
     lsgCode: "LG13.008",
     osgCode: "",
@@ -1761,7 +1761,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300031,
-    errorMessage: "ESU Tolerance is invalid.",
+    errorMessage: "ESU tolerance is invalid.",
     llpgCode: "",
     lsgCode: "LG13.008",
     osgCode: "",
@@ -1776,7 +1776,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300032,
-    errorMessage: "ESU Tolerance of 10 or less on a Street with a State of 2 or 5.",
+    errorMessage: "ESU tolerance of 10 or less on a street with a state of 2 or 5.",
     llpgCode: "",
     lsgCode: "LG13.010",
     osgCode: "",
@@ -1791,7 +1791,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300033,
-    errorMessage: "ESU Tolerance of 10 or less on a Street created after 1/10/2013 with a State of 4.",
+    errorMessage: "ESU tolerance of 10 or less on a street created after 1/10/2013 with a state of 4.",
     llpgCode: "",
     lsgCode: "LG13.011",
     osgCode: "",
@@ -1806,7 +1806,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300034,
-    errorMessage: "Mandatory Num Coord Count is missing.",
+    errorMessage: "Num coord count is missing.",
     llpgCode: "",
     lsgCode: "LG13.012",
     osgCode: "",
@@ -1821,7 +1821,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300035,
-    errorMessage: "Num Coord Count is invalid.",
+    errorMessage: "Num coord count is invalid.",
     llpgCode: "",
     lsgCode: "LG13.012",
     osgCode: "",
@@ -1836,7 +1836,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300036,
-    errorMessage: "Mandatory ESU Direction is missing.",
+    errorMessage: "ESU direction is missing.",
     llpgCode: "",
     lsgCode: "LG13.015",
     osgCode: "",
@@ -1851,7 +1851,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300037,
-    errorMessage: "ESU Direction is invalid.",
+    errorMessage: "ESU direction is invalid.",
     llpgCode: "",
     lsgCode: "LG13.015",
     osgCode: "",
@@ -1866,7 +1866,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300038,
-    errorMessage: "Open Esu must have a Corresponding Highway Dedication record.",
+    errorMessage: "Open esu must have a Corresponding highway dedication record.",
     llpgCode: "",
     lsgCode: "LG13.018",
     osgCode: "",
@@ -1881,7 +1881,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1300039,
-    errorMessage: "Start Date cannot be in the future.",
+    errorMessage: "Start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1896,7 +1896,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -1911,7 +1911,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500002,
-    errorMessage: "Mandatory Street Descriptor is missing.",
+    errorMessage: "Street descriptor is missing.",
     llpgCode: "AAU15.2",
     lsgCode: "LG15.003",
     osgCode: "",
@@ -1926,7 +1926,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500003,
-    errorMessage: "Mandatory Language is missing.",
+    errorMessage: "Language is missing.",
     llpgCode: "AAU15.21",
     lsgCode: "",
     osgCode: "",
@@ -1941,7 +1941,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500004,
-    errorMessage: "Mandatory Town Name is missing.",
+    errorMessage: "Town name is missing.",
     llpgCode: "AAU15.17",
     lsgCode: "LG15.006",
     osgCode: "",
@@ -1956,7 +1956,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500005,
-    errorMessage: "Mandatory Administrative Area is missing.",
+    errorMessage: "Administrative area is missing.",
     llpgCode: "AAU15.43",
     lsgCode: "LG15.008",
     osgCode: "",
@@ -1986,7 +1986,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500007,
-    errorMessage: "Locality Name is too long.",
+    errorMessage: "Locality name is too long.",
     llpgCode: "SD-1B",
     lsgCode: "LG15.005",
     osgCode: "",
@@ -2001,7 +2001,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500008,
-    errorMessage: "Town Name is too long.",
+    errorMessage: "Town name is too long.",
     llpgCode: "SD-1C",
     lsgCode: "LG15.006",
     osgCode: "",
@@ -2016,7 +2016,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500009,
-    errorMessage: "Administrative Area is too long.",
+    errorMessage: "Administrative area is too long.",
     llpgCode: "SD-1D",
     lsgCode: "LG15.008",
     osgCode: "",
@@ -2046,7 +2046,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500011,
-    errorMessage: "Named Street must not contain a description.",
+    errorMessage: "Named street must not contain a description.",
     llpgCode: "AAU15.47",
     lsgCode: "",
     osgCode: "",
@@ -2076,7 +2076,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500013,
-    errorMessage: "Duplicate Street information.",
+    errorMessage: "Duplicate street information.",
     llpgCode: "WSDI-1",
     lsgCode: "LG15.009",
     osgCode: "",
@@ -2091,7 +2091,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500014,
-    errorMessage: "Missing Welsh Street Descriptor.",
+    errorMessage: "Missing welsh street descriptor.",
     llpgCode: "BS7666-4B",
     lsgCode: "LG15.011",
     osgCode: "",
@@ -2106,7 +2106,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500015,
-    errorMessage: "Missing English Street Descriptor.",
+    errorMessage: "Missing english street descriptor.",
     llpgCode: "BS7666-4A",
     lsgCode: "",
     osgCode: "LG15.010",
@@ -2121,7 +2121,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500016,
-    errorMessage: "Mandatory USRN is missing.",
+    errorMessage: "USRN is missing.",
     llpgCode: "SD-6",
     lsgCode: "LG15.001",
     osgCode: "",
@@ -2136,7 +2136,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500017,
-    errorMessage: "Descriptor of a Type 3 street record must start with a letter.",
+    errorMessage: "Descriptor of a type 3 street record must start with a letter.",
     llpgCode: "",
     lsgCode: "LG15.018",
     osgCode: "",
@@ -2151,7 +2151,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500018,
-    errorMessage: "Descriptor of a Type 1 street record must not have abbreviations.",
+    errorMessage: "Descriptor of a type 1 street record must not have abbreviations.",
     llpgCode: "",
     lsgCode: "LG15.019",
     osgCode: "",
@@ -2166,7 +2166,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500019,
-    errorMessage: "USRN must match the Street USRN.",
+    errorMessage: "USRN must match the street USRN.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -2181,7 +2181,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500020,
-    errorMessage: "A street can only have one Descriptor record.",
+    errorMessage: "A street can only have one descriptor record.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -2196,7 +2196,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500021,
-    errorMessage: "Invalid characters for the Descriptor of a Type 3 street record.",
+    errorMessage: "Invalid characters for the descriptor of a type 3 street record.",
     llpgCode: "",
     lsgCode: "LG15.017",
     osgCode: "",
@@ -2211,7 +2211,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500022,
-    errorMessage: "Invalid characters for the Descriptor of a street record.",
+    errorMessage: "Invalid characters for the descriptor of a street record.",
     llpgCode: "",
     lsgCode: "LG15.003",
     osgCode: "",
@@ -2226,7 +2226,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500023,
-    errorMessage: "Locality does not exist in the Lookup Table.",
+    errorMessage: "Locality does not exist in the lookup table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -2241,7 +2241,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500024,
-    errorMessage: "Town does not exist in the Lookup Table.",
+    errorMessage: "Town does not exist in the lookup table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -2256,7 +2256,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500025,
-    errorMessage: "Administrative Area does not exist in the Lookup Table.",
+    errorMessage: "Administrative area does not exist in the lookup table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -2271,7 +2271,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500026,
-    errorMessage: "Locality and Town must not be the same.",
+    errorMessage: "Locality and town must not be the same.",
     llpgCode: "",
     lsgCode: "LG15.007",
     osgCode: "",
@@ -2286,7 +2286,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500027,
-    errorMessage: "Descriptor cannot be more than 8 characters on a Type 3 street.",
+    errorMessage: "Descriptor cannot be more than 8 characters on a type 3 street.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "13.8.10",
@@ -2301,7 +2301,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500028,
-    errorMessage: "Descriptor on a Type 3 street must begin with a valid letter.",
+    errorMessage: "Descriptor on a type 3 street must begin with a valid letter.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "13.8.9",
@@ -2316,7 +2316,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500029,
-    errorMessage: "Descriptor on a Type 1 street must not contain any numbers.",
+    errorMessage: "Descriptor on a type 1 street must not contain any numbers.",
     llpgCode: "",
     lsgCode: "LG15.017",
     osgCode: "13.8.5",
@@ -2332,7 +2332,7 @@ const ValidationMessages = [
   {
     messageId: 1500030,
     errorMessage:
-      "The supplied USRN, Language and Primary Key (PkId) do not match a record in the Street Descriptor table.",
+      "The supplied USRN, language and primary key (PkId) do not match a record in the street descriptor table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -2347,7 +2347,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500031,
-    errorMessage: "A Type 3 Street must contain a number.",
+    errorMessage: "A type 3 street must contain a number.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -2362,7 +2362,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500032,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -2377,7 +2377,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500033,
-    errorMessage: "Island does not exist in the Lookup Table.",
+    errorMessage: "Island does not exist in the lookup table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -2392,7 +2392,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500034,
-    errorMessage: "Island Name is too long.",
+    errorMessage: "Island name is too long.",
     llpgCode: "SD-1B",
     lsgCode: "LG15.005",
     osgCode: "",
@@ -2407,7 +2407,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500035,
-    errorMessage: "Locality, Town and Island must not be the same.",
+    errorMessage: "Locality, town and island must not be the same.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "13.8.2",
@@ -2422,7 +2422,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500036,
-    errorMessage: "Mandatory Descriptor, Town, Administrative Area and Language missing for a Type 1 or 2 street.",
+    errorMessage: "A type 1 or 2 street must have a descriptor, town, administrative area and language.",
     llpgCode: "",
     lsgCode: "LG15.012",
     osgCode: "",
@@ -2437,7 +2437,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500037,
-    errorMessage: "Mandatory Descriptor, Administrative Area and Language missing for a Type 3 or 4 street.",
+    errorMessage: "A type 3 or 4 street must have a descriptor, administrative area and language.",
     llpgCode: "",
     lsgCode: "LG15.013",
     osgCode: "",
@@ -2452,7 +2452,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500038,
-    errorMessage: "Mandatory Town is missing when Locality present.",
+    errorMessage: "Town must be entered when there is a locality present.",
     llpgCode: "",
     lsgCode: "LG15.014",
     osgCode: "",
@@ -2483,7 +2483,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500040,
-    errorMessage: "A Motorway must have a Highway Dedication record with a Highway Code of 11.",
+    errorMessage: "A Motorway must have a highway dedication record with a highway code of 11.",
     llpgCode: "",
     lsgCode: "LG15.021",
     osgCode: "",
@@ -2497,8 +2497,23 @@ const ValidationMessages = [
     osCheck: false,
   },
   {
+    messageId: 1500041,
+    errorMessage: "A dual language street can't have more than two descriptor records.",
+    llpgCode: "",
+    lsgCode: "",
+    osgCode: "",
+    asdCode: "",
+    idoxCode: "1500041",
+    ignoreCheck: false,
+    risk: "M",
+    usedByApi: true,
+    usedByFrontEnd: false,
+    gpCheck: true,
+    osCheck: true,
+  },
+  {
     messageId: 1600001,
-    errorMessage: "One Way Exemption Type is invalid.",
+    errorMessage: "One way exemption type is invalid.",
     llpgCode: "",
     lsgCode: "LG16.003",
     osgCode: "",
@@ -2513,7 +2528,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600002,
-    errorMessage: "Record End Date cannot be in the future.",
+    errorMessage: "Record end date cannot be in the future.",
     llpgCode: "",
     lsgCode: "LG16.007",
     osgCode: "",
@@ -2528,7 +2543,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600003,
-    errorMessage: "Record End Date cannot be before the Record Entry Date.",
+    errorMessage: "Record end date cannot be before the record entry date.",
     llpgCode: "",
     lsgCode: "LG16.007",
     osgCode: "",
@@ -2543,7 +2558,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600004,
-    errorMessage: "One Way Exemption End Date cannot be before the One Way Exemption Start Date.",
+    errorMessage: "One way exemption end date cannot be before the one way exemption start date.",
     llpgCode: "",
     lsgCode: "LG16.011",
     osgCode: "",
@@ -2558,7 +2573,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600005,
-    errorMessage: "Mandatory One Way Exemption Periodicity Code is missing.",
+    errorMessage: "One way exemption periodicity code is missing.",
     llpgCode: "",
     lsgCode: "LG16.016",
     osgCode: "",
@@ -2573,7 +2588,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600006,
-    errorMessage: "One Way Exemption Periodicity Code is invalid.",
+    errorMessage: "One way exemption periodicity code is invalid.",
     llpgCode: "",
     lsgCode: "LG16.016",
     osgCode: "",
@@ -2588,7 +2603,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600007,
-    errorMessage: "A One Way Exemption record must not exist on a street with a state of 4 or 5.",
+    errorMessage: "A one way exemption record must not exist on a street with a state of 4 or 5.",
     llpgCode: "",
     lsgCode: "LG16.017",
     osgCode: "",
@@ -2603,7 +2618,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600008,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -2618,7 +2633,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600009,
-    errorMessage: "Mandatory Sequence Number is missing.",
+    errorMessage: "Sequence number is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -2633,7 +2648,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600010,
-    errorMessage: "Sequence Number is invalid.",
+    errorMessage: "Sequence number is invalid.",
     llpgCode: "",
     lsgCode: "LG17.028",
     osgCode: "",
@@ -2649,7 +2664,7 @@ const ValidationMessages = [
   {
     messageId: 1600011,
     errorMessage:
-      "One Way Exemption Start Date and One Way Exemption End Date must either both be blank or both have a value.",
+      "One way exemption start date and one way exemption end date must either both be blank or both have a value.",
     llpgCode: "",
     lsgCode: "LG16.010",
     osgCode: "",
@@ -2664,7 +2679,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600012,
-    errorMessage: "Invalid One Way Exemption Start Time.",
+    errorMessage: "Invalid one way exemption start time.",
     llpgCode: "",
     lsgCode: "LG16.012",
     osgCode: "",
@@ -2679,7 +2694,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600013,
-    errorMessage: "Invalid One Way Exemption End Time.",
+    errorMessage: "Invalid one way exemption end time.",
     llpgCode: "",
     lsgCode: "LG16.015",
     osgCode: "",
@@ -2695,7 +2710,7 @@ const ValidationMessages = [
   {
     messageId: 1600014,
     errorMessage:
-      "One Way Exemption Start Time and One Way Exemption End Time must either both be blank or both have a value.",
+      "One way exemption start time and one way exemption end time must either both be blank or both have a value.",
     llpgCode: "",
     lsgCode: "LG16.013",
     osgCode: "",
@@ -2710,7 +2725,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600015,
-    errorMessage: "One Way Exemption End Time cannot be before One Way Exemption Start Time.",
+    errorMessage: "One way exemption end time cannot be before one way exemption start time.",
     llpgCode: "",
     lsgCode: "LG16.015",
     osgCode: "",
@@ -2726,7 +2741,7 @@ const ValidationMessages = [
   {
     messageId: 1600016,
     errorMessage:
-      "One Way Exemption Start Date, Start Time, End Date and End Time must be present when Periodicity Code is 15.",
+      "One way exemption start date, start Time, end date and end time must be present when periodicity code is 15.",
     llpgCode: "",
     lsgCode: "LG16.018",
     osgCode: "",
@@ -2742,7 +2757,7 @@ const ValidationMessages = [
   {
     messageId: 1600017,
     errorMessage:
-      "The supplied ESU Id, Seq No. and Primary Key (PkId) do not match a record in the One Way Exemption table.",
+      "The supplied ESU id, seq no. and primary key (PkId) do not match a record in the one way exemption table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -2757,7 +2772,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600018,
-    errorMessage: "Mandatory One Way Exemption Type is missing.",
+    errorMessage: "One way exemption type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -2772,7 +2787,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600019,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -2787,7 +2802,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600020,
-    errorMessage: "Record Entry Date cannot be in the future.",
+    errorMessage: "Record entry date cannot be in the future.",
     llpgCode: "",
     lsgCode: "LG11.014",
     osgCode: "",
@@ -2802,7 +2817,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600021,
-    errorMessage: "Record End Date cannot be in the future.",
+    errorMessage: "Record end date cannot be in the future.",
     llpgCode: "",
     lsgCode: "LG16.007",
     osgCode: "",
@@ -2817,7 +2832,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600022,
-    errorMessage: "Duplicate One Way Exemption on ESU Id, One Way Exemption Type and Seq No.",
+    errorMessage: "Duplicate one way exemption on ESU id, one way exemption type and seq No.",
     llpgCode: "",
     lsgCode: "LG16.004",
     osgCode: "",
@@ -2832,7 +2847,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1600023,
-    errorMessage: "A corresponding ESU Record with a Direction Flag of 2 or 3 must be present.",
+    errorMessage: "A corresponding ESU record with a direction flag of 2 or 3 must be present.",
     llpgCode: "",
     lsgCode: "LG16.002",
     osgCode: "",
@@ -2847,7 +2862,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -2862,7 +2877,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700002,
-    errorMessage: "Mandatory Highway Dedication Code is missing.",
+    errorMessage: "Highway dedication code is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -2877,7 +2892,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700003,
-    errorMessage: "Mandatory Sequence Number is missing.",
+    errorMessage: "Sequence number is missing.",
     llpgCode: "",
     lsgCode: "LG17.028",
     osgCode: "",
@@ -2892,7 +2907,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700004,
-    errorMessage: "Highway Dedication Code is invalid.",
+    errorMessage: "Highway dedication code is invalid.",
     llpgCode: "",
     lsgCode: "LG17.002",
     osgCode: "",
@@ -2907,7 +2922,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700005,
-    errorMessage: "Sequence Number is invalid.",
+    errorMessage: "Sequence number is invalid.",
     llpgCode: "",
     lsgCode: "LG17.028",
     osgCode: "",
@@ -2922,7 +2937,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700006,
-    errorMessage: "HD End Date cannot be before the HD Start Date.",
+    errorMessage: "HD end date cannot be before the HD start date.",
     llpgCode: "",
     lsgCode: "LG17.009",
     osgCode: "",
@@ -2937,7 +2952,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700007,
-    errorMessage: "The Record End Date cannot be before the HD Start Date.",
+    errorMessage: "The record end date cannot be before the HD start date.",
     llpgCode: "",
     lsgCode: "LG17.006",
     osgCode: "",
@@ -2952,7 +2967,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700008,
-    errorMessage: "HD Start Time and HD End Time must either both be blank or both have a value.",
+    errorMessage: "HD start time and HD end time must either both be blank or both have a value.",
     llpgCode: "",
     lsgCode: "LG17.013",
     osgCode: "",
@@ -2967,7 +2982,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700009,
-    errorMessage: "HD End Time cannot be before HD Start Time.",
+    errorMessage: "HD end time cannot be before HD start time.",
     llpgCode: "",
     lsgCode: "LG17.015",
     osgCode: "",
@@ -2982,7 +2997,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700010,
-    errorMessage: "Mandatory HD PRoW is missing.",
+    errorMessage: "HD PRoW is missing.",
     llpgCode: "",
     lsgCode: "LG17.016",
     osgCode: "",
@@ -2997,7 +3012,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700011,
-    errorMessage: "Mandatory HD Ncr is missing.",
+    errorMessage: "HD Ncr is missing.",
     llpgCode: "",
     lsgCode: "LG17.017",
     osgCode: "",
@@ -3012,7 +3027,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700012,
-    errorMessage: "HD Seasonal Start Date and HD Seasonal End Date must either both be blank or both have a value.",
+    errorMessage: "HD seasonal start date and HD seasonal end date must either both be blank or both have a value.",
     llpgCode: "",
     lsgCode: "LG17.029",
     osgCode: "",
@@ -3027,7 +3042,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700013,
-    errorMessage: "Invalid HD Start Time.",
+    errorMessage: "Invalid HD start time.",
     llpgCode: "",
     lsgCode: "LG17.012",
     osgCode: "",
@@ -3042,7 +3057,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700014,
-    errorMessage: "Invalid HD End Time.",
+    errorMessage: "Invalid HD end time.",
     llpgCode: "",
     lsgCode: "LG17.014",
     osgCode: "",
@@ -3058,7 +3073,7 @@ const ValidationMessages = [
   {
     messageId: 1700015,
     errorMessage:
-      "The supplied ESU Id, Seq No. and Primary Key (PkId) do not match a record in the Highway dedication table.",
+      "The supplied ESU id, seq no. and primary key (PkId) do not match a record in the highway dedication table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -3073,7 +3088,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700016,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -3088,7 +3103,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700017,
-    errorMessage: "Duplicate Highway Dedication on ESU Id, Highway Dedication Code and Seq No.",
+    errorMessage: "Duplicate highway dedication on ESU id, highway dedication code and Seq No.",
     llpgCode: "",
     lsgCode: "LG17.003",
     osgCode: "",
@@ -3103,7 +3118,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700018,
-    errorMessage: "The Last Update Date cannot be before the HD Start Date.",
+    errorMessage: "The last update date cannot be before the HD start date.",
     llpgCode: "",
     lsgCode: "LG17.006",
     osgCode: "",
@@ -3118,7 +3133,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700019,
-    errorMessage: "HD Quiet Route is invalid.",
+    errorMessage: "HD quiet route is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -3133,7 +3148,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700020,
-    errorMessage: "HD Planning Order is invalid.",
+    errorMessage: "HD planning order is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -3148,7 +3163,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700021,
-    errorMessage: "HD Works Prohibited is invalid.",
+    errorMessage: "HD works prohibited is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -3163,7 +3178,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700022,
-    errorMessage: "Mandatory ESU Id is missing.",
+    errorMessage: "ESU id is missing.",
     llpgCode: "",
     lsgCode: "LG17.001",
     osgCode: "",
@@ -3178,7 +3193,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -3193,7 +3208,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100002,
-    errorMessage: "Change Type is too long.",
+    errorMessage: "Change type is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -3208,7 +3223,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100003,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -3223,7 +3238,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100004,
-    errorMessage: "Mandatory UPRN is missing.",
+    errorMessage: "UPRN is missing.",
     llpgCode: "VBI-2",
     lsgCode: "",
     osgCode: "",
@@ -3256,7 +3271,7 @@ const ValidationMessages = [
     errorMessage: "Duplicate UPRN.",
     llpgCode: "VBI-3",
     lsgCode: "",
-    osgCode: "7.3.2",
+    osgCode: "7.3.2.b",
     asdCode: "",
     idoxCode: "2100006",
     ignoreCheck: false,
@@ -3268,7 +3283,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100008,
-    errorMessage: "Mandatory Logical Status is missing.",
+    errorMessage: "Logical status is missing.",
     llpgCode: "VB-10",
     lsgCode: "",
     osgCode: "",
@@ -3283,10 +3298,10 @@ const ValidationMessages = [
   },
   {
     messageId: 2100009,
-    errorMessage: "Logical Status is invalid.",
+    errorMessage: "Logical status is invalid.",
     llpgCode: "VB-10B",
     lsgCode: "",
-    osgCode: "",
+    osgCode: "7.4.1",
     asdCode: "",
     idoxCode: "2100009",
     ignoreCheck: false,
@@ -3298,7 +3313,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100011,
-    errorMessage: "The State is incompatible with the Logical Status.",
+    errorMessage: "State is incompatible with the logical Status.",
     llpgCode: "VB-8",
     lsgCode: "",
     osgCode: "",
@@ -3313,7 +3328,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100012,
-    errorMessage: "Blpu State is Invalid.",
+    errorMessage: "State is invalid.",
     llpgCode: "VB-8I",
     lsgCode: "",
     osgCode: "",
@@ -3328,7 +3343,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100013,
-    errorMessage: "Open BLPU/LPI on a Closed Street.",
+    errorMessage: "Open BLPU/LPI on a closed street.",
     llpgCode: "WLPI-VI3",
     lsgCode: "",
     osgCode: "",
@@ -3343,7 +3358,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100014,
-    errorMessage: "Mandatory Representative Point Code (RPC) is missing.",
+    errorMessage: "Representative point code (RPC) is missing.",
     llpgCode: "VB-11B",
     lsgCode: "",
     osgCode: "",
@@ -3373,7 +3388,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100016,
-    errorMessage: "Mandatory Classification is missing.",
+    errorMessage: "Classification is missing.",
     llpgCode: "VBI-2F",
     lsgCode: "",
     osgCode: "",
@@ -3388,7 +3403,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100017,
-    errorMessage: "Mandatory Local Custodian Code is missing.",
+    errorMessage: "Local custodian code is missing.",
     llpgCode: "VBI-2B",
     lsgCode: "",
     osgCode: "",
@@ -3433,7 +3448,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100020,
-    errorMessage: "Mandatory Coordinates are missing.",
+    errorMessage: "Coordinates are missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -3463,7 +3478,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100022,
-    errorMessage: "Ward Code is too long.",
+    errorMessage: "Ward code is too long.",
     llpgCode: "VB-1C",
     lsgCode: "",
     osgCode: "",
@@ -3478,7 +3493,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100023,
-    errorMessage: "Parish Code is too long.",
+    errorMessage: "Parish code is too long.",
     llpgCode: "VB-1D",
     lsgCode: "",
     osgCode: "",
@@ -3493,7 +3508,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100024,
-    errorMessage: "Missing State or State Date.",
+    errorMessage: "Missing state or state date.",
     llpgCode: "VB-8F",
     lsgCode: "",
     osgCode: "",
@@ -3508,10 +3523,10 @@ const ValidationMessages = [
   },
   {
     messageId: 2100025,
-    errorMessage: "State Date cannot be in the future.",
-    llpgCode: "",
+    errorMessage: "State date cannot be in the future.",
+    llpgCode: "S-13I",
     lsgCode: "",
-    osgCode: "",
+    osgCode: "7.6.1",
     asdCode: "",
     idoxCode: "2100025",
     ignoreCheck: false,
@@ -3523,7 +3538,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100026,
-    errorMessage: "Representative Point Code (RPC) is invalid.",
+    errorMessage: "Representative point code (RPC) is invalid.",
     llpgCode: "AAU21.15",
     lsgCode: "",
     osgCode: "",
@@ -3538,7 +3553,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100027,
-    errorMessage: "Mandatory Start Date is missing.",
+    errorMessage: "Start date is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -3553,7 +3568,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100028,
-    errorMessage: "Start Date cannot be in the future.",
+    errorMessage: "Start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -3568,7 +3583,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100029,
-    errorMessage: "Start Dates prior to 1753 are not allowed.",
+    errorMessage: "Start dates prior to 1753 are not allowed.",
     llpgCode: "AAU21.26",
     lsgCode: "",
     osgCode: "",
@@ -3583,7 +3598,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100030,
-    errorMessage: "End Date cannot be in the future.",
+    errorMessage: "End date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -3598,7 +3613,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100031,
-    errorMessage: "End Date cannot be before the Start Date.",
+    errorMessage: "End date cannot be before the start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "7.11.1",
@@ -3613,7 +3628,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100032,
-    errorMessage: "End Date supplied but Logical Status is not 7, 8 or 9.",
+    errorMessage: "End date supplied but logical status is not 7, 8 or 9.",
     llpgCode: "VB-6C",
     lsgCode: "",
     osgCode: "",
@@ -3628,7 +3643,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100033,
-    errorMessage: "The Parent UPRN is the same as the UPRN.",
+    errorMessage: "The parent UPRN is the same as the UPRN.",
     llpgCode: "VB-8H",
     lsgCode: "",
     osgCode: "",
@@ -3643,7 +3658,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100034,
-    errorMessage: "The Coordinates must match Start or End of Street Coordinates.",
+    errorMessage: "The coordinates must match start or end of street coordinates.",
     llpgCode: "AAU21.8",
     lsgCode: "",
     osgCode: "",
@@ -3658,7 +3673,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100035,
-    errorMessage: "BLPU Logical Status is incompatible with LPI Logical Status.",
+    errorMessage: "BLPU logical status is incompatible with LPI logical Status.",
     llpgCode: "AAU21.2",
     lsgCode: "",
     osgCode: "",
@@ -3703,7 +3718,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100038,
-    errorMessage: "Parent and Child Logical Statuses are incompatible.",
+    errorMessage: "Parent and child logical statuses are incompatible.",
     llpgCode: "AAU21.4",
     lsgCode: "",
     osgCode: "",
@@ -3718,7 +3733,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100039,
-    errorMessage: "SAO details present for Approved or Provisional LPI that has no parent UPRN specified.",
+    errorMessage: "SAO details present for approved or provisional LPI that has no parent UPRN specified.",
     llpgCode: "AAU21.7",
     lsgCode: "",
     osgCode: "",
@@ -3733,7 +3748,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100040,
-    errorMessage: "The Parent UPRN does not exist.",
+    errorMessage: "The parent UPRN does not exist.",
     llpgCode: "AAU21.5",
     lsgCode: "",
     osgCode: "",
@@ -3778,7 +3793,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100043,
-    errorMessage: "If the Classification is 'PS', PAO Text must be equal to 'STREET RECORD'.",
+    errorMessage: "If the classification is 'PS', PAO text must be equal to 'STREET RECORD'.",
     llpgCode: "AAU21.102",
     lsgCode: "",
     osgCode: "",
@@ -3808,7 +3823,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100045,
-    errorMessage: "A Logical Status of 7, 8 or 9 requires an End Date.",
+    errorMessage: "A logical status of 7, 8 or 9 requires an end date.",
     llpgCode: "VB-6B",
     lsgCode: "",
     osgCode: "",
@@ -3823,7 +3838,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100046,
-    errorMessage: "The Logical Status is incompatible with the State.",
+    errorMessage: "The logical status is incompatible with the State.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -3838,10 +3853,10 @@ const ValidationMessages = [
   },
   {
     messageId: 2100047,
-    errorMessage: "A Logical Status of 8 or 9 requires an End Date.",
+    errorMessage: "A logical status of 8 or 9 requires an end date.",
     llpgCode: "",
     lsgCode: "",
-    osgCode: "7.4.3b",
+    osgCode: "7.4.3a",
     asdCode: "",
     idoxCode: "2100047",
     ignoreCheck: false,
@@ -3928,7 +3943,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100053,
-    errorMessage: "Ward Code does not exist in the Lookup Table.",
+    errorMessage: "Ward code does not exist in the lookup table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -3943,7 +3958,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100054,
-    errorMessage: "Parish Code does not exist in the Lookup Table.",
+    errorMessage: "Parish code does not exist in the lookup table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -3958,7 +3973,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100055,
-    errorMessage: "BLPU Classification does not exist in the Lookup Table.",
+    errorMessage: "BLPU classification does not exist in the lookup table.",
     llpgCode: "VB-8J",
     lsgCode: "",
     osgCode: "",
@@ -3988,7 +4003,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100057,
-    errorMessage: "The supplied UPRN and Primary Key (PkId) do not match a record in the BLPU table.",
+    errorMessage: "The supplied UPRN and primary key (PkId) do not match a record in the BLPU table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4003,7 +4018,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100058,
-    errorMessage: "If the PAO Text is 'STREET RECORD', the Classification must be 'PS'.",
+    errorMessage: "If the PAO text is 'STREET RECORD', the classification must be 'PS'.",
     llpgCode: "AAU21.102",
     lsgCode: "",
     osgCode: "",
@@ -4018,7 +4033,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100059,
-    errorMessage: "Mandatory State missing.",
+    errorMessage: "State missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4027,13 +4042,13 @@ const ValidationMessages = [
     ignoreCheck: false,
     risk: "M",
     usedByApi: true,
-    usedByFrontEnd: false,
+    usedByFrontEnd: true,
     gpCheck: true,
     osCheck: true,
   },
   {
     messageId: 2100060,
-    errorMessage: "Local Custodian Code is invalid.",
+    errorMessage: "Local custodian code is invalid.",
     llpgCode: "VB-3",
     lsgCode: "",
     osgCode: "",
@@ -4093,7 +4108,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100064,
-    errorMessage: "Multiple Street BLPUs are not allowed.",
+    errorMessage: "Multiple street BLPUs are not allowed.",
     llpgCode: "S-18",
     lsgCode: "",
     osgCode: "",
@@ -4108,7 +4123,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2100065,
-    errorMessage: "Organisation Name contains unmatched brackets.",
+    errorMessage: "Organisation name contains unmatched brackets.",
     llpgCode: "AAU21.107",
     lsgCode: "",
     osgCode: "",
@@ -4123,22 +4138,22 @@ const ValidationMessages = [
   },
   {
     messageId: 2100066,
-    errorMessage: "Blpu State is Mandatory.",
+    errorMessage: "A previously rejected BLPU cannot have it's logical status changed.",
     llpgCode: "",
     lsgCode: "",
-    osgCode: "",
+    osgCode: "7.4.2a",
     asdCode: "",
     idoxCode: "2100066",
     ignoreCheck: false,
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: true,
-    osCheck: false,
+    gpCheck: false,
+    osCheck: true,
   },
   {
     messageId: 2200001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4153,7 +4168,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2200002,
-    errorMessage: "Change Type is too long.",
+    errorMessage: "Change type is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4168,7 +4183,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2200003,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4183,7 +4198,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2200004,
-    errorMessage: "Mandatory UPRN is missing.",
+    errorMessage: "UPRN is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4213,7 +4228,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2200006,
-    errorMessage: "Provenance Key is too long.",
+    errorMessage: "Provenance key is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4228,7 +4243,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2200007,
-    errorMessage: "Mandatory Provenance Key is missing.",
+    errorMessage: "Provenance key is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4243,7 +4258,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2200009,
-    errorMessage: "Mandatory Provenance Code is missing.",
+    errorMessage: "Provenance code is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4258,7 +4273,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2200010,
-    errorMessage: "Provenance Code is invalid.",
+    errorMessage: "Provenance code is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4273,7 +4288,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2200011,
-    errorMessage: "Mandatory Start Date is missing.",
+    errorMessage: "Start date is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4288,7 +4303,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2200012,
-    errorMessage: "Start Date cannot be in the future.",
+    errorMessage: "Start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4318,7 +4333,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2200014,
-    errorMessage: "End Date cannot be in the future.",
+    errorMessage: "End date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4333,7 +4348,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2200015,
-    errorMessage: "End Date cannot be before the Start Date.",
+    errorMessage: "End date cannot be before the start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4349,7 +4364,7 @@ const ValidationMessages = [
   {
     messageId: 2200016,
     errorMessage:
-      "The supplied Provenance Key and Primary Key (PkId) do not match a record in the BLPU Provenance table.",
+      "The supplied provenance key and primary key (PkId) do not match a record in the BLPU provenance table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4364,7 +4379,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2200017,
-    errorMessage: "This is a duplicate Provenance record.",
+    errorMessage: "This is a duplicate provenance record.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4379,7 +4394,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2200018,
-    errorMessage: "Provenance Key is invalid.",
+    errorMessage: "Provenance key is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4409,7 +4424,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2200020,
-    errorMessage: "Start Dates prior to 1753 are not allowed.",
+    errorMessage: "Start dates prior to 1753 are not allowed.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4424,7 +4439,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4439,7 +4454,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300002,
-    errorMessage: "Change Type is too long.",
+    errorMessage: "Change type is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4454,7 +4469,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300003,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4469,7 +4484,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300004,
-    errorMessage: "Mandatory UPRN is missing.",
+    errorMessage: "UPRN is missing.",
     llpgCode: "VX-3H",
     lsgCode: "",
     osgCode: "",
@@ -4499,7 +4514,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300006,
-    errorMessage: "Mandatory Start Date is missing.",
+    errorMessage: "Start date is missing.",
     llpgCode: "VX-3G",
     lsgCode: "",
     osgCode: "",
@@ -4514,7 +4529,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300007,
-    errorMessage: "Inserting/Editing/Deleting a Bilingual Cross Reference is not allowed.",
+    errorMessage: "Inserting/Editing/Deleting a bilingual cross reference is not allowed.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4529,7 +4544,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300008,
-    errorMessage: "Mandatory Last Update Date is missing.",
+    errorMessage: "Last update date is missing.",
     llpgCode: "VX-3C",
     lsgCode: "",
     osgCode: "",
@@ -4544,7 +4559,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300009,
-    errorMessage: "Last Update Date cannot be in the future.",
+    errorMessage: "Last update date cannot be in the future.",
     llpgCode: "VX-3E",
     lsgCode: "",
     osgCode: "",
@@ -4559,7 +4574,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300010,
-    errorMessage: "Start Date cannot be in the future.",
+    errorMessage: "Start date cannot be in the future.",
     llpgCode: "VX-3D",
     lsgCode: "",
     osgCode: "",
@@ -4574,7 +4589,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300011,
-    errorMessage: "End Date cannot be in the future.",
+    errorMessage: "End date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4589,7 +4604,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300012,
-    errorMessage: "End Date cannot be before the Start Date.",
+    errorMessage: "End date cannot be before the start date.",
     llpgCode: "AAU23.12",
     lsgCode: "",
     osgCode: "",
@@ -4604,7 +4619,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300013,
-    errorMessage: "Last Update Date must be the same as or after the Entry Date.",
+    errorMessage: "Last update date must be the same as or after the entry date.",
     llpgCode: "VX-3B",
     lsgCode: "",
     osgCode: "",
@@ -4619,7 +4634,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300014,
-    errorMessage: "Mandatory Cross Reference is missing.",
+    errorMessage: "Cross reference is missing.",
     llpgCode: "VX-3J",
     lsgCode: "",
     osgCode: "",
@@ -4634,7 +4649,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300015,
-    errorMessage: "Cross Reference is too long.",
+    errorMessage: "Cross reference is too long.",
     llpgCode: "VX-1C",
     lsgCode: "",
     osgCode: "",
@@ -4649,7 +4664,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300016,
-    errorMessage: "Mandatory Cross Reference Source is missing, historic or not enabled.",
+    errorMessage: "Cross reference source is missing, historic or not enabled.",
     llpgCode: "VX-3J",
     lsgCode: "",
     osgCode: "",
@@ -4664,7 +4679,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300017,
-    errorMessage: "Cross Reference Source is too long.",
+    errorMessage: "Cross reference source is too long.",
     llpgCode: "VX-1",
     lsgCode: "",
     osgCode: "",
@@ -4679,7 +4694,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300018,
-    errorMessage: "Cross Reference Key is too long.",
+    errorMessage: "Cross reference key is too long.",
     llpgCode: "VX-1B",
     lsgCode: "",
     osgCode: "",
@@ -4694,7 +4709,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300019,
-    errorMessage: "Mandatory Cross Reference Key is missing.",
+    errorMessage: "Cross reference key is missing.",
     llpgCode: "VX-3I",
     lsgCode: "",
     osgCode: "",
@@ -4709,7 +4724,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300021,
-    errorMessage: "Cross Reference does not exist.",
+    errorMessage: "Cross reference does not exist.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4739,7 +4754,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300024,
-    errorMessage: "Duplicate Cross Reference on UPRN, Source and Cross Reference.",
+    errorMessage: "Duplicate cross reference on UPRN, source and cross reference.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4754,7 +4769,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300025,
-    errorMessage: "Cross Reference Source does not exist in the Lookup Table or is marked as Historic/Disabled.",
+    errorMessage: "Cross reference source does not exist in thelLookup table or is marked as historic/disabled.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4784,7 +4799,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300027,
-    errorMessage: "Cross Reference Key is invalid.",
+    errorMessage: "Cross reference key is invalid.",
     llpgCode: "VX-5B",
     lsgCode: "",
     osgCode: "",
@@ -4799,7 +4814,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300028,
-    errorMessage: "Application Cross Reference cannot be updated to a different UPRN.",
+    errorMessage: "Application cross reference cannot be updated to a different UPRN.",
     llpgCode: "AAU23.23",
     lsgCode: "",
     osgCode: "",
@@ -4814,7 +4829,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300029,
-    errorMessage: "Updating App Cross References is limited to a single property at a time.",
+    errorMessage: "Updating app cross references is limited to a single property at a time.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4845,7 +4860,7 @@ const ValidationMessages = [
   {
     messageId: 2300031,
     errorMessage:
-      "The supplied Cross Reference Key and Primary Key (PkId) do not match a record in the BLPU App Cross Ref table.",
+      "The supplied cross reference key and primary key (PkId) do not match a record in the BLPU app cross ref table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4860,7 +4875,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300032,
-    errorMessage: "Inserting App Cross References is limited to a single property at a time.",
+    errorMessage: "Inserting app cross references is limited to a single property at a time.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4875,7 +4890,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2300033,
-    errorMessage: "Start Dates prior to 1753 are not allowed.",
+    errorMessage: "Start dates prior to 1753 are not allowed.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4890,7 +4905,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400001,
-    errorMessage: "Dual Language records are not linked.",
+    errorMessage: "Dual language records are not linked.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4905,7 +4920,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400002,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4920,7 +4935,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400003,
-    errorMessage: "Change Type is too long.",
+    errorMessage: "Change type is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4935,7 +4950,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400004,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -4950,7 +4965,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400005,
-    errorMessage: "Mandatory UPRN is missing.",
+    errorMessage: "UPRN is missing.",
     llpgCode: "LPI-V13L",
     lsgCode: "",
     osgCode: "",
@@ -4980,7 +4995,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400007,
-    errorMessage: "Mandatory Start Date is missing.",
+    errorMessage: "Start date is missing.",
     llpgCode: "LPI-V13G",
     lsgCode: "",
     osgCode: "",
@@ -4995,7 +5010,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400008,
-    errorMessage: "Start Date cannot be in the future.",
+    errorMessage: "Start date cannot be in the future.",
     llpgCode: "LPI-V3F",
     lsgCode: "",
     osgCode: "8.6.5",
@@ -5010,7 +5025,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400009,
-    errorMessage: "Mandatory Last Update Date is missing.",
+    errorMessage: "Last update date is missing.",
     llpgCode: "LPI-V3E",
     lsgCode: "",
     osgCode: "",
@@ -5025,7 +5040,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400010,
-    errorMessage: "Last Update Date cannot be in the future.",
+    errorMessage: "Last update date cannot be in the future.",
     llpgCode: "LPI-V3E",
     lsgCode: "",
     osgCode: "",
@@ -5040,7 +5055,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400011,
-    errorMessage: "End Date cannot be in the future.",
+    errorMessage: "End date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5055,7 +5070,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400012,
-    errorMessage: "End Date cannot be before the Start Date.",
+    errorMessage: "End date cannot be before the start date.",
     llpgCode: "AAU23.12",
     lsgCode: "",
     osgCode: "",
@@ -5070,7 +5085,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400013,
-    errorMessage: "Last Update Date must be the same as or after the Entry Date.",
+    errorMessage: "Last update date must be the same as or after the entry date.",
     llpgCode: "LPI-V3B",
     lsgCode: "",
     osgCode: "",
@@ -5100,7 +5115,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400015,
-    errorMessage: "Duplicate LPI Address (PAO, SAO, Postcode, Post Town & USRN).",
+    errorMessage: "Duplicate LPI address (PAO, SAO, postcode, post town, level, official address & street).",
     llpgCode: "AAU24.92",
     lsgCode: "",
     osgCode: "",
@@ -5111,7 +5126,7 @@ const ValidationMessages = [
     usedByApi: true,
     usedByFrontEnd: false,
     gpCheck: true,
-    osCheck: true,
+    osCheck: false,
   },
   {
     messageId: 2400016,
@@ -5130,7 +5145,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400017,
-    errorMessage: "A Logical Status of 7, 8 or 9 requires an End Date.",
+    errorMessage: "A logical status of 7, 8 or 9 requires an end date.",
     llpgCode: "LPI-V6B",
     lsgCode: "",
     osgCode: "",
@@ -5145,7 +5160,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400018,
-    errorMessage: "PAO Start Suffix is too long.",
+    errorMessage: "PAO start suffix is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5160,7 +5175,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400019,
-    errorMessage: "PAO End Suffix is too long.",
+    errorMessage: "PAO end suffix is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5175,7 +5190,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400020,
-    errorMessage: "SAO Start Suffix is too long.",
+    errorMessage: "SAO start suffix is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5190,7 +5205,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400021,
-    errorMessage: "SAO End Suffix is too long.",
+    errorMessage: "SAO end suffix is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5205,7 +5220,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400022,
-    errorMessage: "Mandatory Postal Address Flag is missing.",
+    errorMessage: "Postal address flag is missing.",
     llpgCode: "LPI-V13O",
     lsgCode: "",
     osgCode: "",
@@ -5220,7 +5235,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400023,
-    errorMessage: "Postal Address Flag is too long.",
+    errorMessage: "Postal address flag is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5235,7 +5250,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400024,
-    errorMessage: "Postal Address Flag is invalid.",
+    errorMessage: "Postal address flag is invalid.",
     llpgCode: "LPI-V13",
     lsgCode: "",
     osgCode: "8.10.1",
@@ -5250,7 +5265,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400025,
-    errorMessage: "Official Flag is too long.",
+    errorMessage: "Official flag is too long.",
     llpgCode: "LPI-V1N",
     lsgCode: "",
     osgCode: "",
@@ -5268,7 +5283,7 @@ const ValidationMessages = [
     errorMessage: "Official Flag is invalid.",
     llpgCode: "LPI-V11C",
     lsgCode: "",
-    osgCode: "",
+    osgCode: "8.13.2",
     asdCode: "",
     idoxCode: "2400026",
     ignoreCheck: false,
@@ -5280,7 +5295,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400027,
-    errorMessage: "Candidate Key is too long.",
+    errorMessage: "Candidate key is too long.",
     llpgCode: "LPI-V13N",
     lsgCode: "",
     osgCode: "",
@@ -5295,7 +5310,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400028,
-    errorMessage: "Mandatory Language is missing.",
+    errorMessage: "Language is missing.",
     llpgCode: "LPI-V5",
     lsgCode: "",
     osgCode: "",
@@ -5325,7 +5340,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400030,
-    errorMessage: "Start Dates prior to 1753 are not allowed.",
+    errorMessage: "Start dates prior to 1753 are not allowed.",
     llpgCode: "AAU24.18",
     lsgCode: "",
     osgCode: "",
@@ -5340,7 +5355,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400031,
-    errorMessage: "End Date supplied but Logical Status is not 8 or 9.",
+    errorMessage: "End date supplied but logical status is not 8 or 9.",
     llpgCode: "AAU24.55",
     lsgCode: "",
     osgCode: "",
@@ -5355,7 +5370,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400032,
-    errorMessage: "SAO Start Number is invalid.",
+    errorMessage: "SAO start number is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5370,7 +5385,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400033,
-    errorMessage: "SAO End Number is invalid.",
+    errorMessage: "SAO end number is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5385,7 +5400,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400034,
-    errorMessage: "SAO End Number has a value but SAO Start Number is blank.",
+    errorMessage: "SAO end number has a value but SAO start number is blank.",
     llpgCode: "LPI-V12B",
     lsgCode: "",
     osgCode: "",
@@ -5400,7 +5415,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400035,
-    errorMessage: "PAO Text is too long.",
+    errorMessage: "PAO text is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5415,7 +5430,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400036,
-    errorMessage: "SAO Text is too long.",
+    errorMessage: "SAO text is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5430,7 +5445,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400037,
-    errorMessage: "PAO Start Number is invalid.",
+    errorMessage: "PAO start number is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5445,7 +5460,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400038,
-    errorMessage: "PAO End Number is invalid.",
+    errorMessage: "PAO end number is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5460,7 +5475,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400039,
-    errorMessage: "PAO End Number has a value but PAO Start Number is blank.",
+    errorMessage: "PAO end number has a value but PAO start number is blank.",
     llpgCode: "LPI-V12",
     lsgCode: "",
     osgCode: "",
@@ -5475,7 +5490,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400040,
-    errorMessage: "Mandatory PAO Details missing.",
+    errorMessage: "PAO details missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5490,7 +5505,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400041,
-    errorMessage: "PAO and SAO Text must not be the same.",
+    errorMessage: "PAO and SAO text must not be the same.",
     llpgCode: "AAU24.14",
     lsgCode: "",
     osgCode: "",
@@ -5505,7 +5520,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400042,
-    errorMessage: "Mandatory USRN is missing.",
+    errorMessage: "USRN is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5535,7 +5550,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400044,
-    errorMessage: "Post Town is too long.",
+    errorMessage: "Post town is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5565,7 +5580,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400046,
-    errorMessage: "Mandatory LPI Key is missing.",
+    errorMessage: "LPI key is missing.",
     llpgCode: "LPI-V13I",
     lsgCode: "",
     osgCode: "",
@@ -5580,7 +5595,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400047,
-    errorMessage: "LPI Key is too long.",
+    errorMessage: "LPI key is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5595,7 +5610,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400048,
-    errorMessage: "Duplicate Approved Preferred LPI on same BLPU.",
+    errorMessage: "Duplicate approved preferred LPI on same BLPU.",
     llpgCode: "LPI-V15",
     lsgCode: "",
     osgCode: "",
@@ -5610,7 +5625,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400049,
-    errorMessage: "Postcode does not exist in the Lookup Table.",
+    errorMessage: "Postcode does not exist in the lookup table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5655,7 +5670,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400052,
-    errorMessage: "Missing a Welsh LPI.",
+    errorMessage: "Missing a welsh LPI.",
     llpgCode: "BS7666-3A",
     lsgCode: "",
     osgCode: "",
@@ -5670,7 +5685,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400053,
-    errorMessage: "Missing an English LPI.",
+    errorMessage: "Missing an english LPI.",
     llpgCode: "BS7666-3B",
     lsgCode: "",
     osgCode: "",
@@ -5685,7 +5700,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400054,
-    errorMessage: "Missing a Gaelic LPI.",
+    errorMessage: "Missing a gaelic LPI.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5700,7 +5715,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400055,
-    errorMessage: "Post Town does not exist in the Lookup Table.",
+    errorMessage: "Post town does not exist in the lookup table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5715,7 +5730,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400056,
-    errorMessage: "Post Town is invalid.",
+    errorMessage: "Post town is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5775,7 +5790,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400060,
-    errorMessage: "Postal Address Flag of 'N' must not have a Postcode or Post Town.",
+    errorMessage: "Postal address flag of 'N' must not have a Postcode or Post Town.",
     llpgCode: "AAU24.35",
     lsgCode: "",
     osgCode: "",
@@ -5790,7 +5805,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400061,
-    errorMessage: "Postal Address Flag of 'Y', 'A' or 'L' must have a Postcode and Post Town.",
+    errorMessage: "Postal address flag of 'Y', 'A' or 'L' must have a Postcode and Post Town.",
     llpgCode: "AAU24.34",
     lsgCode: "",
     osgCode: "",
@@ -5805,7 +5820,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400062,
-    errorMessage: "Postal Address Flag of 'P' must have a Postcode but no Post Town.",
+    errorMessage: "Postal address flag of 'P' must have a Postcode but no Post Town.",
     llpgCode: "AAU24.37",
     lsgCode: "",
     osgCode: "",
@@ -5835,7 +5850,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400064,
-    errorMessage: "Mandatory Logical Status is missing.",
+    errorMessage: "Logical status is missing.",
     llpgCode: "LPI-V13H",
     lsgCode: "",
     osgCode: "",
@@ -5880,7 +5895,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400067,
-    errorMessage: "The supplied LPI Key and Primary Key (PkId) do not match a record in the LPI table.",
+    errorMessage: "The supplied LPI key and primary key (PkId) do not match a record in the LPI table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5895,7 +5910,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400068,
-    errorMessage: "LPI Key is invalid.",
+    errorMessage: "LPI key is invalid.",
     llpgCode: "LPI-V1BA",
     lsgCode: "",
     osgCode: "",
@@ -5910,7 +5925,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400069,
-    errorMessage: "Logical Status is invalid.",
+    errorMessage: "Logical status is invalid.",
     llpgCode: "LPI-V5B",
     lsgCode: "",
     osgCode: "",
@@ -5940,7 +5955,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400072,
-    errorMessage: "Mandatory SAO is missing.",
+    errorMessage: "SAO is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -5955,7 +5970,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400073,
-    errorMessage: "PAO Start Suffix supplied but no PAO Start Number.",
+    errorMessage: "PAO start suffix supplied but no PAO start number.",
     llpgCode: "LPI-V13K",
     lsgCode: "",
     osgCode: "",
@@ -5970,7 +5985,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400074,
-    errorMessage: "PAO End Suffix supplied but no PAO End Number.",
+    errorMessage: "PAO end suffix supplied but no PAO end number.",
     llpgCode: "LPI-V13K",
     lsgCode: "",
     osgCode: "",
@@ -5985,7 +6000,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400075,
-    errorMessage: "SAO Start Suffix supplied but no SAO Start Number.",
+    errorMessage: "SAO start suffix supplied but no SAO start number.",
     llpgCode: "LPI-V13K",
     lsgCode: "",
     osgCode: "",
@@ -6000,7 +6015,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400076,
-    errorMessage: "SAO End Suffix supplied but no SAO End Number.",
+    errorMessage: "SAO end suffix supplied but no SAO end number.",
     llpgCode: "LPI-V13K",
     lsgCode: "",
     osgCode: "",
@@ -6015,7 +6030,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400077,
-    errorMessage: "SAO End Number must be greater than SAO Start Number.",
+    errorMessage: "SAO end number must be greater than SAO start number.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6030,7 +6045,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400078,
-    errorMessage: "PAO End Number must be greater than PAO Start Number.",
+    errorMessage: "PAO end number must be greater than PAO start number.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6045,7 +6060,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400079,
-    errorMessage: "Approved LPI must not be assigned to a Type 3 or Type 4 street (Street BLPUs are allowed).",
+    errorMessage: "Approved LPI must not be assigned to a type 3 or type 4 street (Street BLPUs are allowed).",
     llpgCode: "SI-5",
     lsgCode: "",
     osgCode: "",
@@ -6060,7 +6075,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400080,
-    errorMessage: "PAO Text contains an invalid character.",
+    errorMessage: "PAO text contains an invalid character.",
     llpgCode: "LPI-22",
     lsgCode: "",
     osgCode: "",
@@ -6075,7 +6090,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400081,
-    errorMessage: "SAO Text contains an invalid character.",
+    errorMessage: "SAO text contains an invalid character.",
     llpgCode: "LPI-23",
     lsgCode: "",
     osgCode: "",
@@ -6090,7 +6105,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400082,
-    errorMessage: "Postal Address Flag of 'Y' or 'L' must have a Postcode and Post Town.",
+    errorMessage: "Postal address flag of 'Y' or 'L' must have a Postcode and Post Town.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6105,7 +6120,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400083,
-    errorMessage: "Sub Locality does not exist in the Lookup Table.",
+    errorMessage: "Sub locality does not exist in the lookup table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6120,7 +6135,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400084,
-    errorMessage: "A Logical Status of 8 or 9 requires an End Date.",
+    errorMessage: "A logical status of 8 or 9 requires an end date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "7.4.3b",
@@ -6149,8 +6164,23 @@ const ValidationMessages = [
     osCheck: false,
   },
   {
+    messageId: 2400086,
+    errorMessage: "Duplicate LPI Address (PAO, SAO, Postcode, Post Town, sub locality, & Street).",
+    llpgCode: "",
+    lsgCode: "",
+    osgCode: "",
+    asdCode: "",
+    idoxCode: "2400086",
+    ignoreCheck: false,
+    risk: "M",
+    usedByApi: true,
+    usedByFrontEnd: false,
+    gpCheck: false,
+    osCheck: true,
+  },
+  {
     messageId: 3000001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6165,7 +6195,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3000002,
-    errorMessage: "Change Type is too long.",
+    errorMessage: "Change type is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6180,7 +6210,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3000003,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6195,7 +6225,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3000004,
-    errorMessage: "Mandatory Successor is missing.",
+    errorMessage: "Successor is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6225,7 +6255,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3000006,
-    errorMessage: "Successor Key is too long.",
+    errorMessage: "Successor key is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6240,7 +6270,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3000007,
-    errorMessage: "Mandatory Successor Key is missing.",
+    errorMessage: "Successor key is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6255,7 +6285,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3000008,
-    errorMessage: "Start Date cannot be in the future.",
+    errorMessage: "Start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6270,7 +6300,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3000009,
-    errorMessage: "End Date cannot be in the future.",
+    errorMessage: "End date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6285,7 +6315,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3000010,
-    errorMessage: "End Date cannot be before the Start Date.",
+    errorMessage: "End date cannot be before the start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6300,7 +6330,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3000011,
-    errorMessage: "This is a duplicate Successor record.",
+    errorMessage: "This is a duplicate successor record.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6315,7 +6345,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3000012,
-    errorMessage: "Mandatory Predecessor is missing.",
+    errorMessage: "Predecessor is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6330,7 +6360,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3000013,
-    errorMessage: "Mandatory Successor Type is missing.",
+    errorMessage: "Successor type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6360,7 +6390,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3000015,
-    errorMessage: "Successor Type is invalid.",
+    errorMessage: "Successor type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6375,7 +6405,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3000016,
-    errorMessage: "Successor Key is invalid.",
+    errorMessage: "Successor key is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6390,7 +6420,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3000017,
-    errorMessage: "The supplied Successor Key and Primary Key (PkId) do not match a record in the Successor table.",
+    errorMessage: "The supplied successor key and primary key (PkId) do not match a record in the successor table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6405,7 +6435,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3100001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6420,7 +6450,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3100002,
-    errorMessage: "Change Type is too long.",
+    errorMessage: "Change type is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6435,7 +6465,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3100003,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6450,7 +6480,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3100004,
-    errorMessage: "Mandatory UPRN is missing.",
+    errorMessage: "UPRN is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6480,7 +6510,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3100006,
-    errorMessage: "Organisation Key is too long.",
+    errorMessage: "Organisation key is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6495,7 +6525,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3100007,
-    errorMessage: "Mandatory Organisation Key is missing.",
+    errorMessage: "Organisation key is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6510,10 +6540,10 @@ const ValidationMessages = [
   },
   {
     messageId: 3100008,
-    errorMessage: "Start Date cannot be in the future.",
+    errorMessage: "Start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
-    osgCode: "",
+    osgCode: "11.6.1e",
     asdCode: "",
     idoxCode: "3100008",
     ignoreCheck: false,
@@ -6540,7 +6570,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3100010,
-    errorMessage: "End Date cannot be in the future.",
+    errorMessage: "End date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6556,7 +6586,7 @@ const ValidationMessages = [
   {
     messageId: 3100011,
     errorMessage:
-      "The supplied Organisation Key and Primary Key (PkId) do not match a record in the Organisation table.",
+      "The supplied Organisation key and primary key (PkId) do not match a record in the Organisation table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6571,7 +6601,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3100012,
-    errorMessage: "Organisation Key is invalid.",
+    errorMessage: "Organisation key is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6586,10 +6616,10 @@ const ValidationMessages = [
   },
   {
     messageId: 3100013,
-    errorMessage: "End Date cannot be before the Start Date.",
+    errorMessage: "End date cannot be before the start date.",
     llpgCode: "",
     lsgCode: "",
-    osgCode: "",
+    osgCode: "11.6.1.b",
     asdCode: "",
     idoxCode: "3100013",
     ignoreCheck: false,
@@ -6616,7 +6646,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3100015,
-    errorMessage: "Legal Name is too long.",
+    errorMessage: "Legal name is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6631,7 +6661,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3100016,
-    errorMessage: "Mandatory Organisation is missing.",
+    errorMessage: "Organisation is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6645,8 +6675,38 @@ const ValidationMessages = [
     osCheck: true,
   },
   {
+    messageId: 3100017,
+    errorMessage: "Organisation contains an invalid character.",
+    llpgCode: "",
+    lsgCode: "",
+    osgCode: "",
+    asdCode: "",
+    idoxCode: "3100017",
+    ignoreCheck: false,
+    risk: "M",
+    usedByApi: true,
+    usedByFrontEnd: true,
+    gpCheck: true,
+    osCheck: false,
+  },
+  {
+    messageId: 3100018,
+    errorMessage: "The supplied LPI key and primary key (PkId) do not match a record in the organisation table.",
+    llpgCode: "",
+    lsgCode: "",
+    osgCode: "",
+    asdCode: "",
+    idoxCode: "3100018",
+    ignoreCheck: false,
+    risk: "M",
+    usedByApi: true,
+    usedByFrontEnd: false,
+    gpCheck: true,
+    osCheck: true,
+  },
+  {
     messageId: 3200001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6661,7 +6721,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3200002,
-    errorMessage: "Change Type is too long.",
+    errorMessage: "Change type is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6676,7 +6736,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3200003,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6691,7 +6751,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3200004,
-    errorMessage: "Mandatory UPRN is missing.",
+    errorMessage: "UPRN is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6721,7 +6781,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3200006,
-    errorMessage: "Classification Key is too long.",
+    errorMessage: "Classification key is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6736,7 +6796,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3200007,
-    errorMessage: "Mandatory Classification Key is missing.",
+    errorMessage: "Classification key is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6751,7 +6811,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3200008,
-    errorMessage: "Mandatory Classification Code is missing.",
+    errorMessage: "Classification code is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6766,7 +6826,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3200009,
-    errorMessage: "Start Date cannot be in the future.",
+    errorMessage: "Start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6796,7 +6856,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3200011,
-    errorMessage: "End Date cannot be in the future.",
+    errorMessage: "End date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6812,7 +6872,7 @@ const ValidationMessages = [
   {
     messageId: 3200012,
     errorMessage:
-      "The supplied Classification Key and Primary Key (PkId) do not match a record in the Classification table.",
+      "The supplied classification key and primary key (PkId) do not match a record in the classification table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6827,7 +6887,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3200013,
-    errorMessage: "Classification Key is invalid.",
+    errorMessage: "Classification key is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6842,10 +6902,10 @@ const ValidationMessages = [
   },
   {
     messageId: 3200014,
-    errorMessage: "End Date cannot be before the Start Date.",
+    errorMessage: "End date cannot be before the start date.",
     llpgCode: "",
     lsgCode: "",
-    osgCode: "",
+    osgCode: "12.0.a",
     asdCode: "",
     idoxCode: "3200014",
     ignoreCheck: false,
@@ -6872,7 +6932,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6887,7 +6947,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100002,
-    errorMessage: "Mandatory USRN is missing.",
+    errorMessage: "USRN is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.3",
@@ -6902,7 +6962,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100003,
-    errorMessage: "Mandatory Sequence Number is missing.",
+    errorMessage: "Sequence number is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6917,7 +6977,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100004,
-    errorMessage: "Sequence Number is invalid.",
+    errorMessage: "Sequence number is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6932,7 +6992,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100005,
-    errorMessage: "USRN must match the Street USRN.",
+    errorMessage: "USRN must match the street USRN.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6948,7 +7008,7 @@ const ValidationMessages = [
   {
     messageId: 5100006,
     errorMessage:
-      "The supplied USRN, Seq No. and Primary Key (PkId) do not match a record in the Additional Street table.",
+      "The supplied USRN, seq no. and primary key (PkId) do not match a record in the Additional street table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6963,7 +7023,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100007,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6978,7 +7038,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100008,
-    errorMessage: "Specific Location is too long.",
+    errorMessage: "Specific location is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -6993,7 +7053,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100009,
-    errorMessage: "Mandatory Custodian Code is missing.",
+    errorMessage: "Custodian code is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.5",
@@ -7008,7 +7068,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100010,
-    errorMessage: "Custodian Code is invalid.",
+    errorMessage: "Custodian code is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.5",
@@ -7023,7 +7083,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100011,
-    errorMessage: "Maintaining Authority Code is invalid.",
+    errorMessage: "Authority code is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.6",
@@ -7038,7 +7098,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100012,
-    errorMessage: "Mandatory Maintaining Authority Code is missing.",
+    errorMessage: "Authority code is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.6",
@@ -7053,7 +7113,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100013,
-    errorMessage: "Mandatory Street Status is missing.",
+    errorMessage: "Street status is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.8",
@@ -7068,7 +7128,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100014,
-    errorMessage: "Street Status is invalid.",
+    errorMessage: "Street status is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.8",
@@ -7083,7 +7143,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100015,
-    errorMessage: "Mandatory State is missing.",
+    errorMessage: "State is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.4",
@@ -7113,7 +7173,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100017,
-    errorMessage: "State is 2 but End Date is not set.",
+    errorMessage: "State is 2 but end date is not set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.12c",
@@ -7128,7 +7188,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100018,
-    errorMessage: "State is 1 but End Date is set.",
+    errorMessage: "State is 1 but end date is set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.12b",
@@ -7143,7 +7203,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100019,
-    errorMessage: "Start Date cannot be in the future.",
+    errorMessage: "Start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7158,7 +7218,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100020,
-    errorMessage: "End Date cannot be in the future.",
+    errorMessage: "End date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7173,7 +7233,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100021,
-    errorMessage: "End Date cannot be before the Start Date.",
+    errorMessage: "End date cannot be before the start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.12c",
@@ -7188,7 +7248,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100022,
-    errorMessage: "Whole Road is true but Specific Location is set.",
+    errorMessage: "Whole road is true but specific location is set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.11a",
@@ -7203,7 +7263,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100023,
-    errorMessage: "Whole Road is false but Specific Location is not set.",
+    errorMessage: "Whole road is false but specific location is not set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.11b",
@@ -7218,7 +7278,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100024,
-    errorMessage: "Mandatory Whole Road is missing.",
+    errorMessage: "Whole road is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7233,7 +7293,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100025,
-    errorMessage: "Duplicate Maintenance Responsibility on USRN, Custodian Code and Seq No.",
+    errorMessage: "Duplicate Maintenance Responsibility on USRN, custodian code and Seq No.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7248,7 +7308,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100026,
-    errorMessage: "Mandatory Start Date is missing.",
+    errorMessage: "Start date is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.12a",
@@ -7263,7 +7323,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100027,
-    errorMessage: "A Maintenance Responsibility record can only exist on a Type 1 or 2 street.",
+    errorMessage: "A Maintenance Responsibility record can only exist on a type 1 or 2 street.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7278,7 +7338,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100029,
-    errorMessage: "Specific Location contains invalid characters.",
+    errorMessage: "Specific location contains invalid characters.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7293,7 +7353,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5100030,
-    errorMessage: "SWA Org Ref Authority value does not exist in the RAUCS SWA Org Ref table.",
+    errorMessage: "SWA org ref authority value does not exist in the RAUCS SWA org ref table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7308,7 +7368,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7323,7 +7383,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200002,
-    errorMessage: "Mandatory USRN is missing.",
+    errorMessage: "USRN is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.2.3",
@@ -7338,7 +7398,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200003,
-    errorMessage: "Mandatory Sequence Number is missing.",
+    errorMessage: "Sequence number is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.2.7a",
@@ -7353,7 +7413,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200004,
-    errorMessage: "Sequence Number is invalid.",
+    errorMessage: "Sequence number is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.2.7a",
@@ -7368,7 +7428,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200005,
-    errorMessage: "USRN must match the Street USRN.",
+    errorMessage: "USRN must match the street USRN.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7384,7 +7444,7 @@ const ValidationMessages = [
   {
     messageId: 5200006,
     errorMessage:
-      "The supplied USRN, Seq No. and Primary Key (PkId) do not match a record in the Reinstatement Designation table.",
+      "The supplied USRN, seq no. and primary key (PkId) do not match a record in the reinstatement designation table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7399,7 +7459,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200007,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7414,7 +7474,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200008,
-    errorMessage: "Specific Location is too long.",
+    errorMessage: "Specific location is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7429,7 +7489,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200009,
-    errorMessage: "Mandatory Custodian Code is missing.",
+    errorMessage: "Custodian code is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.2.5",
@@ -7444,7 +7504,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200010,
-    errorMessage: "Custodian Code is invalid.",
+    errorMessage: "Custodian code is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.2.5",
@@ -7459,7 +7519,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200011,
-    errorMessage: "Reinstatement Authority Code is invalid.",
+    errorMessage: "Authority code is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.2.6",
@@ -7474,7 +7534,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200012,
-    errorMessage: "Mandatory Reinstatement Authority Code is missing.",
+    errorMessage: "Authority code is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.2.6",
@@ -7489,7 +7549,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200013,
-    errorMessage: "Mandatory Reinstatement Category is missing.",
+    errorMessage: "Reinstatement Category is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7519,7 +7579,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200015,
-    errorMessage: "Mandatory State is missing.",
+    errorMessage: "State is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.2.4",
@@ -7549,7 +7609,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200017,
-    errorMessage: "State is 2 but End Date is not set.",
+    errorMessage: "State is 2 but end date is not set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.2.13b",
@@ -7564,7 +7624,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200018,
-    errorMessage: "Start Date cannot be in the future.",
+    errorMessage: "Start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7579,7 +7639,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200019,
-    errorMessage: "End Date cannot be in the future.",
+    errorMessage: "End date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7594,7 +7654,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200020,
-    errorMessage: "End Date cannot be before the Start Date.",
+    errorMessage: "End date cannot be before the start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7609,7 +7669,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200021,
-    errorMessage: "Whole Road is true but Specific Location is set.",
+    errorMessage: "Whole road is true but specific location is set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.2.12a",
@@ -7624,7 +7684,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200022,
-    errorMessage: "Whole Road is false but Specific Location is not set.",
+    errorMessage: "Whole road is false but specific location is not set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.2.12b",
@@ -7639,7 +7699,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200023,
-    errorMessage: "Mandatory Whole Road is missing.",
+    errorMessage: "Whole road is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.2.11",
@@ -7654,7 +7714,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200024,
-    errorMessage: "Duplicate Reinstatement Category on USRN, Custodian Code and Seq No.",
+    errorMessage: "Duplicate reinstatement Category on USRN, custodian code and Seq No.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7669,7 +7729,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200025,
-    errorMessage: "Mandatory Start Date is missing.",
+    errorMessage: "Start date is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.12a",
@@ -7684,7 +7744,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200026,
-    errorMessage: "Specific Location contains invalid characters.",
+    errorMessage: "Specific location contains invalid characters.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7699,7 +7759,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5200027,
-    errorMessage: "SWA Org Ref Consultant value does not exist in the RAUCS SWA Org Ref table.",
+    errorMessage: "SWA org ref consultant value does not exist in the RAUCS SWA org ref table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7714,7 +7774,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7729,7 +7789,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300002,
-    errorMessage: "Mandatory USRN is missing.",
+    errorMessage: "USRN is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7744,7 +7804,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300003,
-    errorMessage: "Mandatory Sequence Number is missing.",
+    errorMessage: "Sequence number is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7759,7 +7819,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300004,
-    errorMessage: "Sequence Number is invalid.",
+    errorMessage: "Sequence number is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7774,7 +7834,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300005,
-    errorMessage: "USRN must match the Street USRN.",
+    errorMessage: "USRN must match the street USRN.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7790,7 +7850,7 @@ const ValidationMessages = [
   {
     messageId: 5300006,
     errorMessage:
-      "The supplied USRN, Seq No. and Primary Key (PkId) do not match a record in the Special Designation table.",
+      "The supplied USRN, seq no. and primary key (PkId) do not match a record in the special designation table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7805,7 +7865,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300007,
-    errorMessage: "Mandatory Custodian Code is missing.",
+    errorMessage: "Custodian code is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.3.5",
@@ -7820,7 +7880,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300008,
-    errorMessage: "Custodian Code is invalid.",
+    errorMessage: "Custodian code is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.3.5",
@@ -7835,7 +7895,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300009,
-    errorMessage: "Mandatory Whole Road is missing.",
+    errorMessage: "Whole road is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7850,7 +7910,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300010,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7865,7 +7925,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300011,
-    errorMessage: "Authority Code is invalid.",
+    errorMessage: "Authority code is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.3.6",
@@ -7880,7 +7940,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300012,
-    errorMessage: "Mandatory Authority Code is missing.",
+    errorMessage: "Authority code is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.3.6",
@@ -7895,7 +7955,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300013,
-    errorMessage: "Mandatory Special Designation is missing.",
+    errorMessage: "Special designation is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7910,7 +7970,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300014,
-    errorMessage: "Special Designation Type Code is invalid.",
+    errorMessage: "Special designation type code is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.3.8",
@@ -7925,7 +7985,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300015,
-    errorMessage: "Mandatory Description is missing.",
+    errorMessage: "Description is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7955,7 +8015,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300017,
-    errorMessage: "Mandatory State is missing.",
+    errorMessage: "State is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.3.4",
@@ -7985,7 +8045,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300019,
-    errorMessage: "State is 2 but End Date is not set.",
+    errorMessage: "State is 2 but end date is not set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.3.13b",
@@ -8000,7 +8060,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300020,
-    errorMessage: "Start Date cannot be in the future.",
+    errorMessage: "Start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8015,7 +8075,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300021,
-    errorMessage: "End Date cannot be in the future.",
+    errorMessage: "End date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8030,7 +8090,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300022,
-    errorMessage: "End Date cannot be before the Start Date.",
+    errorMessage: "End date cannot be before the start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8045,7 +8105,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300023,
-    errorMessage: "Specific Location is too long.",
+    errorMessage: "Specific location is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8060,7 +8120,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300024,
-    errorMessage: "Whole Road is true but Specific Location is set.",
+    errorMessage: "Whole road is true but specific location is set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.3.12a",
@@ -8075,7 +8135,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300025,
-    errorMessage: "Whole Road is false but Specific Location is not set.",
+    errorMessage: "Whole road is false but specific location is not set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.3.12b",
@@ -8090,7 +8150,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300026,
-    errorMessage: "Duplicate Special Designation on USRN, Custodian Code and Seq No.",
+    errorMessage: "Duplicate special designation on USRN, custodian code and Seq No.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.3.7b",
@@ -8105,7 +8165,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300027,
-    errorMessage: "Mandatory Start Date is missing.",
+    errorMessage: "Start date is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.12a",
@@ -8120,7 +8180,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300028,
-    errorMessage: "Specific Location contains invalid characters.",
+    errorMessage: "Specific location contains invalid characters.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8135,7 +8195,7 @@ const ValidationMessages = [
   },
   {
     messageId: 5300029,
-    errorMessage: "SWA Org Ref Consultant value does not exist in the RAUCS SWA Org Ref table.",
+    errorMessage: "SWA org ref consultant value does not exist in the RAUCS SWA org ref table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8150,7 +8210,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8165,7 +8225,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100002,
-    errorMessage: "Mandatory USRN is missing.",
+    errorMessage: "USRN is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8180,7 +8240,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100003,
-    errorMessage: "Mandatory Sequence Number is missing.",
+    errorMessage: "Sequence number is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8195,7 +8255,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100004,
-    errorMessage: "Sequence Number is invalid.",
+    errorMessage: "Sequence number is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8210,7 +8270,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100005,
-    errorMessage: "USRN must match the Street USRN.",
+    errorMessage: "USRN must match the street USRN.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8285,7 +8345,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100010,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8300,7 +8360,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100011,
-    errorMessage: "SWA Org Ref Authority is invalid.",
+    errorMessage: "SWA org ref authority is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8315,7 +8375,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100012,
-    errorMessage: "Mandatory SWA Org Ref Authority is missing.",
+    errorMessage: "SWA org ref authority is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8330,7 +8390,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100013,
-    errorMessage: "Mandatory District Ref Authority is missing.",
+    errorMessage: "District Ref Authority is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8360,7 +8420,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100015,
-    errorMessage: "ASD Coordinate value is invalid.",
+    errorMessage: "ASD coordinate value is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8375,7 +8435,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100016,
-    errorMessage: "Mandatory ASD Coordinate value is missing.",
+    errorMessage: "ASD coordinate value is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8390,7 +8450,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100017,
-    errorMessage: "ASD Coordinate count is invalid.",
+    errorMessage: "ASD coordinate count is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8406,7 +8466,7 @@ const ValidationMessages = [
   {
     messageId: 6100018,
     errorMessage:
-      "The supplied USRN, Seq No. and Primary Key (PkId) do not match a record in the Additional Street table.",
+      "The supplied USRN, seq no. and primary key (PkId) do not match a record in the Additional street table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8421,7 +8481,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100019,
-    errorMessage: "An Interest record must not exist on a street with a state of 4.",
+    errorMessage: "An interested organisation record must not exist on a street with a state of 4.",
     llpgCode: "",
     lsgCode: "AD61.026",
     osgCode: "",
@@ -8436,7 +8496,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100020,
-    errorMessage: "Last Update Date cannot be in the future.",
+    errorMessage: "Last update date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8451,7 +8511,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100021,
-    errorMessage: "Specific Location is too long.",
+    errorMessage: "Specific location is too long.",
     llpgCode: "",
     lsgCode: "AD61.008",
     osgCode: "",
@@ -8466,7 +8526,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100022,
-    errorMessage: "Whole Road is true but Specific Location is set.",
+    errorMessage: "Whole road is true but specific location is set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8481,7 +8541,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100023,
-    errorMessage: "Whole Road is false but Specific Location is not set.",
+    errorMessage: "Whole road is false but specific location is not set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "AD61.009",
@@ -8496,7 +8556,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100024,
-    errorMessage: "Mandatory Whole Road is missing.",
+    errorMessage: "Whole road is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8511,7 +8571,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100025,
-    errorMessage: "An Interest record can only exist on a Type 1 or 2 street.",
+    errorMessage: "An interested organisation record can only exist on a type 1 or 2 street.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8526,7 +8586,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100026,
-    errorMessage: "Whole Road is true but coordinates are set.",
+    errorMessage: "Whole road is true but coordinates are set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8541,7 +8601,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100027,
-    errorMessage: "Specific Location contains an invalid character.",
+    errorMessage: "Specific location contains an invalid character.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8556,7 +8616,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100028,
-    errorMessage: "Whole Road is false but coordinates are not set.",
+    errorMessage: "Whole road is false but coordinates are not set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8571,7 +8631,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100029,
-    errorMessage: "Street Status is invalid.",
+    errorMessage: "Street status is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8586,7 +8646,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100030,
-    errorMessage: "Mandatory Interest Type is missing.",
+    errorMessage: "Interest type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8601,7 +8661,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100031,
-    errorMessage: "Interest Type is invalid.",
+    errorMessage: "Interest type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8616,7 +8676,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100032,
-    errorMessage: "Duplicate Interest record on Usrn and Seq No.",
+    errorMessage: "Duplicate interested organisation record on Usrn and Seq No.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8631,7 +8691,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100033,
-    errorMessage: "Additional Interest records with Whole Road false must have Interest Type of 8 or 9.",
+    errorMessage: "Additional interested organisation records with whole road false must have Interest type of 8 or 9.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8647,7 +8707,7 @@ const ValidationMessages = [
   {
     messageId: 6100034,
     errorMessage:
-      "Additional Interest records must not have Whole Road true or Whole road false and Interest Type of 1.",
+      "Additional interested organisation records must not have whole road true or whole road false and Interest type of 1.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8662,7 +8722,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100035,
-    errorMessage: "Interest Type of 8 or 9 must not have Street Status of 1, 2, 3 or 5.",
+    errorMessage: "Interest type of 8 or 9 must not have street status of 1, 2, 3 or 5.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8677,7 +8737,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100036,
-    errorMessage: "SWA Org Ref Maintaining is invalid.",
+    errorMessage: "SWA org ref maintaining is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8692,7 +8752,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100037,
-    errorMessage: "SWA Org Ref Authority value of 0011, 0012, 013, 0014, 0016, 0020 or 7093 must not be used.",
+    errorMessage: "SWA org ref authority value of 0011, 0012, 013, 0014, 0016, 0020 or 7093 must not be used.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8707,7 +8767,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100038,
-    errorMessage: "Street Status of 4 must have an Interest Type of 8 or 9.",
+    errorMessage: "Street status of 4 must have an Interest type of 8 or 9.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8722,7 +8782,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100039,
-    errorMessage: "A record already exists with a Street Status of 1 and Whole Road true.",
+    errorMessage: "A record already exists with a street status of 1 and whole road true.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8737,7 +8797,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100040,
-    errorMessage: "Record Start Date cannot be in the future.",
+    errorMessage: "Record start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8752,7 +8812,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100041,
-    errorMessage: "Record End Date cannot be in the future.",
+    errorMessage: "Record end date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8767,7 +8827,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100042,
-    errorMessage: "End Date cannot be before the Record Start Date.",
+    errorMessage: "End date cannot be before the record start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8782,7 +8842,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100043,
-    errorMessage: "Record Start Date prior to 1990 are not allowed.",
+    errorMessage: "Record start date prior to 1990 are not allowed.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8797,7 +8857,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100044,
-    errorMessage: "Mandatory WktGeometry is missing.",
+    errorMessage: "WktGeometry is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8812,7 +8872,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100045,
-    errorMessage: "Specific Location contains invalid characters.",
+    errorMessage: "Specific location contains invalid characters.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8827,7 +8887,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100046,
-    errorMessage: "SWA Org Ref Authority value does not exist in the SWA Org Ref table.",
+    errorMessage: "SWA org ref authority value does not exist in the SWA org ref table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8842,7 +8902,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100047,
-    errorMessage: "District Ref value does not exist in the Operational District Table.",
+    errorMessage: "District Ref value does not exist in the operational district table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8858,7 +8918,7 @@ const ValidationMessages = [
   {
     messageId: 6100048,
     errorMessage:
-      "If Street Status is 4 then there must be a matching Construction Record with a Reinstatement Type Code of 11.",
+      "If street status is 4 then there must be a matching construction record with a reinstatement type code of 11.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8873,7 +8933,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100049,
-    errorMessage: "Mandatory Record Start Date is missing.",
+    errorMessage: "Record start date is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8888,7 +8948,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100050,
-    errorMessage: "Interest Type of 1 must have a Street Status of 1, 2, 3 or 5.",
+    errorMessage: "Interest type of 1 must have a street status of 1, 2, 3 or 5.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8903,7 +8963,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100051,
-    errorMessage: 'If Whole Road is false then Location Text must not contain "WHOLE ROAD".',
+    errorMessage: 'If whole road is false then location text must not contain "WHOLE ROAD".',
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8918,7 +8978,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100052,
-    errorMessage: "If SWA Org Ref Maintaining is 11, 16, 20 or 7093, Street Status must be 4.",
+    errorMessage: "If SWA org ref maintaining is 11, 16, 20 or 7093, street status must be 4.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8933,7 +8993,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8948,7 +9008,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200002,
-    errorMessage: "Mandatory USRN is missing.",
+    errorMessage: "USRN is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8963,7 +9023,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200003,
-    errorMessage: "Mandatory Sequence Number is missing.",
+    errorMessage: "Sequence number is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8978,7 +9038,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200004,
-    errorMessage: "Sequence Number is invalid.",
+    errorMessage: "Sequence number is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -8993,7 +9053,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200005,
-    errorMessage: "USRN must match the Street USRN.",
+    errorMessage: "USRN must match the street USRN.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9068,7 +9128,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200010,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9083,7 +9143,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200011,
-    errorMessage: "ASD Coordinate value is invalid.",
+    errorMessage: "ASD coordinate value is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9098,7 +9158,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200012,
-    errorMessage: "Mandatory ASD Coordinate value is missing.",
+    errorMessage: "ASD coordinate value is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9113,7 +9173,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200013,
-    errorMessage: "ASD Coordinate count is invalid.",
+    errorMessage: "ASD coordinate count is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9128,7 +9188,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200014,
-    errorMessage: "SWA Org Ref Consultant value does not exist in the SWA Org Ref table.",
+    errorMessage: "SWA org ref consultant value does not exist in the SWA org ref table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9143,7 +9203,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200015,
-    errorMessage: "District Ref Consultant is invalid.",
+    errorMessage: "District ref consultant is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9158,7 +9218,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200016,
-    errorMessage: "Mandatory Reinstatement Type Code is missing.",
+    errorMessage: "Reinstatement type code is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9173,7 +9233,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200017,
-    errorMessage: "Reinstatement Type Code is invalid.",
+    errorMessage: "Reinstatement type code is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9188,7 +9248,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200018,
-    errorMessage: "Mandatory Construction Type is missing.",
+    errorMessage: "Construction type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9203,7 +9263,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200019,
-    errorMessage: "Construction Type is invalid.",
+    errorMessage: "Construction type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9218,7 +9278,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200020,
-    errorMessage: "Aggregate Abrasion Value is invalid.",
+    errorMessage: "Aggregate abrasion value is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9234,7 +9294,7 @@ const ValidationMessages = [
   {
     messageId: 6200021,
     errorMessage:
-      "The supplied USRN, Seq No. and Primary Key (PkId) do not match a record in the Reinstatement Designation table.",
+      "The supplied USRN, seq no. and primary key (PkId) do not match a record in the reinstatement designation table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9249,7 +9309,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200022,
-    errorMessage: "Polished Stone Value invalid.",
+    errorMessage: "Polished stone value invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9264,7 +9324,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200023,
-    errorMessage: "Specific Location is too long.",
+    errorMessage: "Specific location is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9279,7 +9339,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200024,
-    errorMessage: "Start Date cannot be in the future.",
+    errorMessage: "Start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9294,7 +9354,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200025,
-    errorMessage: "End Date cannot be in the future.",
+    errorMessage: "End date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9309,7 +9369,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200026,
-    errorMessage: "End Date cannot be before the Start Date.",
+    errorMessage: "End date cannot be before the start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9324,7 +9384,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200027,
-    errorMessage: "Whole Road is true but Specific Location is set.",
+    errorMessage: "Whole road is true but specific location is set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.11a",
@@ -9339,7 +9399,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200028,
-    errorMessage: "Whole Road is false but Specific Location is not set.",
+    errorMessage: "Whole road is false but specific location is not set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "15.1.11b",
@@ -9354,7 +9414,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200029,
-    errorMessage: "Mandatory Whole Road is missing.",
+    errorMessage: "Whole road is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9369,7 +9429,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200030,
-    errorMessage: "Mandatory Start Date is missing.",
+    errorMessage: "Start date is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9384,7 +9444,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200031,
-    errorMessage: "Frost Heave Susceptibility value is invalid.",
+    errorMessage: "Frost heave susceptibility value is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9399,7 +9459,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200032,
-    errorMessage: "Stepped Joint value is invalid.",
+    errorMessage: "Stepped joint value is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9414,7 +9474,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200033,
-    errorMessage: "Construction Type is 1 but Construction Description is set.",
+    errorMessage: "When construction type is 1, construction description must be blank.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9429,7 +9489,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200034,
-    errorMessage: "Mandatory pkid is missing.",
+    errorMessage: "Pkid is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9444,7 +9504,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200035,
-    errorMessage: "Duplicate Construction record on Usrn and Seq No.",
+    errorMessage: "Duplicate construction record on Usrn and Seq No.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9459,7 +9519,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200036,
-    errorMessage: "A Construction record can only exist on a Type 1 or 2 street.",
+    errorMessage: "A construction record can only exist on a type 1 or 2 street.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9474,7 +9534,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200037,
-    errorMessage: "Only one Whole Road record with this Reinstatement Type Code can exist on a street.",
+    errorMessage: "Only one whole road record with this reinstatement type code can exist on a street.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9489,7 +9549,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200038,
-    errorMessage: "SWA Org Ref Consultant and District Ref Consultant must either both be blank or both have a value.",
+    errorMessage: "SWA org ref consultant and district ref consultant must either both be blank or both have a value.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9505,7 +9565,7 @@ const ValidationMessages = [
   {
     messageId: 6200039,
     errorMessage:
-      "A corresponding Construction record with a Construction Type of 2 or 3 record must exist when the Reinstatement Type Code is 7.",
+      "A corresponding construction record with a construction type of 2 or 3 record must exist when the reinstatement type code is 7.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9521,7 +9581,7 @@ const ValidationMessages = [
   {
     messageId: 6200040,
     errorMessage:
-      "A record with a Reinstatement Type Code of 12 must have an Interest record with a Street Status of 5.",
+      "A record with a reinstatement type code of 12 must have an interested organisation record with a street status of 5.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9537,7 +9597,7 @@ const ValidationMessages = [
   {
     messageId: 6200041,
     errorMessage:
-      "A record with a Reinstatement Type Code of 11 must have an Interest record with a Street Status of 4.",
+      "A record with a reinstatement type code of 11 must have an interested organisation record with a street status of 4.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9553,7 +9613,7 @@ const ValidationMessages = [
   {
     messageId: 6200042,
     errorMessage:
-      "A Whole Road record with a Reinstatement Type Code of 8 exists, another record with Reinstatement Type Code of 8 is not allowed.",
+      "A whole road record with a reinstatement type code of 8 exists, another record with reinstatement type code of 8 is not allowed.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9569,7 +9629,7 @@ const ValidationMessages = [
   {
     messageId: 6200043,
     errorMessage:
-      "A Street with a Highway dedication record with Highway Dedication Code of 4, 6, 9 or 10 must not have a Whole Road record with Reinstatement Type Code 1, 2, 3, 4,5 or 10.",
+      "A street with a highway dedication record with highway dedication code of 4, 6, 9 or 10 must not have a whole road record with reinstatement type code 1, 2, 3, 4,5 or 10.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9585,7 +9645,7 @@ const ValidationMessages = [
   {
     messageId: 6200044,
     errorMessage:
-      "A Street with an Interest record with a Street Status of 4 must have a Construction record with Reinstatement Type Code of 11.",
+      "A street with an interested organisation record with a street status of 4 must have a construction record with reinstatement type code of 11.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9601,7 +9661,7 @@ const ValidationMessages = [
   {
     messageId: 6200045,
     errorMessage:
-      "A Street with an Interest record with an Interest Type of 1 and where Whole Road is false must not have a Reinstatement Type Code if the record has Whole Road true.",
+      "A street with an interested organisation record with an Interest type of 1 and where whole road is false must not have a reinstatement type code if the record has whole road true.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9616,7 +9676,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200046,
-    errorMessage: "Construction Description contains an invalid character.",
+    errorMessage: "Construction description contains an invalid character.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9631,7 +9691,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200047,
-    errorMessage: "Construction Description is too long.",
+    errorMessage: "Construction description is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9646,7 +9706,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200048,
-    errorMessage: "Specific Location contains invalid characters.",
+    errorMessage: "Specific location contains invalid characters.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9661,7 +9721,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200049,
-    errorMessage: "A Construction record is not allowed on a street with a State of 4.",
+    errorMessage: "A construction record is not allowed on a street with a state of 4.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9676,7 +9736,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200050,
-    errorMessage: "SWA Org Ref Consultant value of 0011, 0012, 013, 0014, 0016, 0020 or 7093 must not be used.",
+    errorMessage: "SWA org ref consultant value of 0011, 0012, 013, 0014, 0016, 0020 or 7093 must not be used.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9691,7 +9751,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200051,
-    errorMessage: "District Ref Consultant value does not exist in the Operational District Table.",
+    errorMessage: "District ref consultant value does not exist in the operational district table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9706,7 +9766,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200052,
-    errorMessage: "Reinstatement Type Code must not be present when Construction Type is 2 or 3.",
+    errorMessage: "Reinstatement type code must not be present when construction type is 2 or 3.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9721,7 +9781,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6200053,
-    errorMessage: 'If Whole Road is false then Location Text must not contain "Whole Road".',
+    errorMessage: 'If whole road is false then location text must not contain "whole road".',
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9736,7 +9796,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9751,7 +9811,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300002,
-    errorMessage: "Mandatory USRN is missing.",
+    errorMessage: "USRN is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9766,7 +9826,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300003,
-    errorMessage: "Mandatory Sequence Number is missing.",
+    errorMessage: "Sequence number is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9781,7 +9841,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300004,
-    errorMessage: "Sequence Number is invalid.",
+    errorMessage: "Sequence number is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9796,7 +9856,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300005,
-    errorMessage: "USRN must match the Street USRN.",
+    errorMessage: "USRN must match the street USRN.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9871,7 +9931,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300010,
-    errorMessage: "Record Start Date cannot be in the future.",
+    errorMessage: "Record start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9886,7 +9946,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300011,
-    errorMessage: "Record End Date cannot be in the future.",
+    errorMessage: "Record end date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9901,7 +9961,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300012,
-    errorMessage: "End Date cannot be before the Start Date.",
+    errorMessage: "End date cannot be before the start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9916,7 +9976,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300013,
-    errorMessage: "Mandatory Record Start Date is missing.",
+    errorMessage: "Record start date is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9931,7 +9991,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300014,
-    errorMessage: "Special Designation End Date cannot be before the Special Designation Start Date.",
+    errorMessage: "Special designation end date cannot be before the special designation start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9946,7 +10006,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300015,
-    errorMessage: "Special Designation Start Date cannot be before the Record Start Date.",
+    errorMessage: "Special designation start date cannot be before the record start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9961,7 +10021,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300016,
-    errorMessage: "Special Designation Type Code is invalid.",
+    errorMessage: "Special designation type code is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9976,7 +10036,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300017,
-    errorMessage: "Mandatory Special Designation Type Code is missing.",
+    errorMessage: "Special designation type code is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -9991,7 +10051,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300018,
-    errorMessage: "Mandatory Special Designation Description is missing.",
+    errorMessage: "Special designation description is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10006,7 +10066,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300019,
-    errorMessage: "Special Designation Description is too long.",
+    errorMessage: "Special designation description is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10021,7 +10081,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300020,
-    errorMessage: "Special Designation Description contains an invalid character.",
+    errorMessage: "Special designation description contains an invalid character.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10036,7 +10096,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300021,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10051,7 +10111,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300022,
-    errorMessage: "ASD Coordinate value is invalid.",
+    errorMessage: "ASD coordinate value is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10066,7 +10126,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300023,
-    errorMessage: "Mandatory ASD Coordinate value is missing.",
+    errorMessage: "ASD coordinate value is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10081,7 +10141,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300024,
-    errorMessage: "ASD Coordinate count is invalid.",
+    errorMessage: "ASD coordinate count is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10096,7 +10156,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300025,
-    errorMessage: "Periodicity Code is invalid.",
+    errorMessage: "Periodicity code is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10112,7 +10172,7 @@ const ValidationMessages = [
   {
     messageId: 6300026,
     errorMessage:
-      "The supplied USRN, Seq No. and Primary Key (PkId) do not match a record in the Special Designation table.",
+      "The supplied USRN, seq no. and primary key (PkId) do not match a record in the special designation table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10127,7 +10187,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300027,
-    errorMessage: "Invalid Special Designation Start Time.",
+    errorMessage: "Invalid special designation start time.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10142,7 +10202,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300028,
-    errorMessage: "Invalid Special Designation End Time.",
+    errorMessage: "Invalid special designation end time.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10158,7 +10218,7 @@ const ValidationMessages = [
   {
     messageId: 6300029,
     errorMessage:
-      "Special Designation Start Time and Special Designation End Time must either both be blank or both have a value.",
+      "Special designation start time and special designation end time must either both be blank or both have a value.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10173,7 +10233,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300030,
-    errorMessage: "Special Designation End Time cannot be before Special Designation Start Time.",
+    errorMessage: "Special designation end time cannot be before special designation start time.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10188,7 +10248,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300031,
-    errorMessage: "Specific Location is too long.",
+    errorMessage: "Specific location is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10203,7 +10263,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300032,
-    errorMessage: "Whole Road is true but Specific Location is set.",
+    errorMessage: "Whole road is true but specific location is set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10218,7 +10278,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300033,
-    errorMessage: "Whole Road is false but Specific Location is not set.",
+    errorMessage: "Whole road is false but specific location is not set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10233,7 +10293,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300034,
-    errorMessage: "Mandatory Whole Road is missing.",
+    errorMessage: "Whole road is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10248,7 +10308,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300035,
-    errorMessage: "District Ref Consultant is invalid for open records.",
+    errorMessage: "District ref consultant is invalid for open records.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10263,7 +10323,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300036,
-    errorMessage: "A Special Designation record can only exist on a Type 1 or 2 street.",
+    errorMessage: "A special designation record can only exist on a type 1 or 2 street.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10278,7 +10338,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300037,
-    errorMessage: "Specific Location contains invalid characters.",
+    errorMessage: "Specific location contains invalid characters.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10293,7 +10353,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300038,
-    errorMessage: "When Periodicity Code is 16, Special Designation Description is mandatory.",
+    errorMessage: "When periodicity code is 16, special designation description is mandatory.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10309,7 +10369,7 @@ const ValidationMessages = [
   {
     messageId: 6300039,
     errorMessage:
-      "A Special Designation record can not exist on Street with a Whole Road Interest record with a Street Status of 4.",
+      "A special designation record can not exist on street with a whole road interested organisation record with a street status of 4.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10324,7 +10384,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300040,
-    errorMessage: "Record Start Date prior to 1990 are not allowed.",
+    errorMessage: "Record start date prior to 1990 are not allowed.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10339,7 +10399,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300041,
-    errorMessage: "Duplicate Special Designation record on Usrn and Seq No.",
+    errorMessage: "Duplicate special designation record on Usrn and Seq No.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10354,7 +10414,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300042,
-    errorMessage: "Mandatory Periodicity Code is missing.",
+    errorMessage: "Periodicity code is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10369,7 +10429,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300043,
-    errorMessage: "SWA Org Ref Consultant value of 0011, 0012, 013, 0014, 0016, 0020 or 7093 must not be used.",
+    errorMessage: "SWA org ref consultant value of 0011, 0012, 013, 0014, 0016, 0020 or 7093 must not be used.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10384,7 +10444,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300044,
-    errorMessage: "SWA Org Ref Consultant and District Ref Consultant must either both be blank or both have a value.",
+    errorMessage: "SWA org ref consultant and district ref consultant must either both be blank or both have a value.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10399,7 +10459,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300045,
-    errorMessage: "SWA Org Ref Consultant value does not exist in the SWA Org Ref table.",
+    errorMessage: "SWA org ref consultant value does not exist in the SWA org ref table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10415,7 +10475,7 @@ const ValidationMessages = [
   {
     messageId: 6300046,
     errorMessage:
-      "If Street Special Designation Code is 1,3,6,8,9,10,12,20,22,or 28 then the Periodicity Code must be 1.",
+      "If street special designation code is 1,3,6,8,9,10,12,20,22,or 28 then the periodicity code must be 1.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10430,7 +10490,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300047,
-    errorMessage: 'If Whole Road is false then Location Text must not contain "WHOLE ROAD".',
+    errorMessage: 'If whole road is false then location text must not contain "WHOLE ROAD".',
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10445,7 +10505,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300048,
-    errorMessage: "A Special Designation record must not exist on a street with a state of 4 or 5.",
+    errorMessage: "A special designation record must not exist on a street with a state of 4 or 5.",
     llpgCode: "",
     lsgCode: "AD63.034",
     osgCode: "",
@@ -10460,7 +10520,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300049,
-    errorMessage: "Special Designation Source Text contains invalid characters.",
+    errorMessage: "Special designation source text contains invalid characters.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10476,7 +10536,7 @@ const ValidationMessages = [
   {
     messageId: 6300050,
     errorMessage:
-      "Special Designation Periodicity code of 15 must have Special Designation Start Date and Time and End Date and Time.",
+      "Special designation periodicity code of 15 must have special designation start date and time and end date and time.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10491,7 +10551,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300051,
-    errorMessage: "District Ref Consultant value does not exist in the Operational District Table.",
+    errorMessage: "District ref consultant value does not exist in the operational district table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10506,7 +10566,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10521,12 +10581,12 @@ const ValidationMessages = [
   },
   {
     messageId: 6400002,
-    errorMessage: "Mandatory USRN is missing.",
+    errorMessage: "USRN is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
     asdCode: "AD64.001",
-    idoxCode: "6200002",
+    idoxCode: "6400002",
     ignoreCheck: false,
     risk: "M",
     usedByApi: true,
@@ -10536,12 +10596,12 @@ const ValidationMessages = [
   },
   {
     messageId: 6400003,
-    errorMessage: "Mandatory Sequence Number is missing.",
+    errorMessage: "Sequence number is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
     asdCode: "AD64.003",
-    idoxCode: "6200003",
+    idoxCode: "6400003",
     ignoreCheck: false,
     risk: "M",
     usedByApi: true,
@@ -10551,7 +10611,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400004,
-    errorMessage: "Sequence Number is invalid.",
+    errorMessage: "Sequence number is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10566,7 +10626,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400005,
-    errorMessage: "Restriction Code is invalid.",
+    errorMessage: "Restriction code is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10581,7 +10641,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400006,
-    errorMessage: "Mandatory Restriction Code is missing.",
+    errorMessage: "Restriction code is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10596,7 +10656,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400007,
-    errorMessage: "ASD Coordinate Count value is invalid.",
+    errorMessage: "ASD coordinate Count value is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10611,7 +10671,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400008,
-    errorMessage: "ASD Coordinate value is invalid.",
+    errorMessage: "ASD coordinate value is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10686,7 +10746,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400013,
-    errorMessage: "USRN must match the Street USRN.",
+    errorMessage: "USRN must match the street USRN.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10701,7 +10761,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400014,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10716,7 +10776,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400015,
-    errorMessage: "The supplied USRN and Primary Key (PkId) do not match a record in the Height Weight Width table.",
+    errorMessage: "The supplied USRN and primary key (PkId) do not match a record in the height, weight, width table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10731,7 +10791,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400016,
-    errorMessage: "Specific Location is too long.",
+    errorMessage: "Specific location is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10746,7 +10806,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400017,
-    errorMessage: "Height, Width and Weight records can only be attached to a Type 1 or 2 street.",
+    errorMessage: "Height, width and weight records can only be attached to a type 1 or 2 street.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10761,7 +10821,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400018,
-    errorMessage: "Record End Date cannot be before the Record Start Date.",
+    errorMessage: "Record end date cannot be before the record start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10776,7 +10836,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400019,
-    errorMessage: "Record End Date cannot be in the future.",
+    errorMessage: "Record end date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10791,7 +10851,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400020,
-    errorMessage: "Mandatory Whole Road is missing.",
+    errorMessage: "Whole road is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10806,7 +10866,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400021,
-    errorMessage: "Whole Road is true Specific Location and Coordinates must not be set.",
+    errorMessage: "Whole road is true specific location and coordinates must not be set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10821,7 +10881,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400022,
-    errorMessage: "Whole Road is false Specific Location and Coordinates must be set.",
+    errorMessage: "Whole road is false specific location and coordinates must be set.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10836,7 +10896,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400023,
-    errorMessage: "Specific Location contains Invalid characters.",
+    errorMessage: "Specific location contains Invalid characters.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10852,7 +10912,7 @@ const ValidationMessages = [
   {
     messageId: 6400024,
     errorMessage:
-      "Additional record not allowed when a Whole Road record with Restriction Code is 1, 2 or 3 already exists.",
+      "Additional record not allowed when a whole road record with Restriction code is 1, 2 or 3 already exists.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10867,7 +10927,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400025,
-    errorMessage: "Invalid Value Metric.",
+    errorMessage: "Invalid value metric.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10882,7 +10942,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400026,
-    errorMessage: "Tro Text is too long.",
+    errorMessage: "Tro text is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10897,7 +10957,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400027,
-    errorMessage: "Tro Text contains invalid characters.",
+    errorMessage: "Tro text contains invalid characters.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10912,7 +10972,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400028,
-    errorMessage: "Feature Description is too long.",
+    errorMessage: "Feature description is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10927,7 +10987,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400029,
-    errorMessage: "Feature Description contains invalid characters.",
+    errorMessage: "Feature description contains invalid characters.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10942,7 +11002,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400030,
-    errorMessage: "SWA Org Ref Consultant value of 0011, 0012, 013, 0014, 0016, 0020 or 7093 must not be used.",
+    errorMessage: "SWA org ref consultant value of 0011, 0012, 013, 0014, 0016, 0020 or 7093 must not be used.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10957,7 +11017,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400031,
-    errorMessage: "SWA Org Ref Consultant and District Ref Consultant must either both be blank or both have a value.",
+    errorMessage: "SWA org ref consultant and district ref consultant must either both be blank or both have a value.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10972,7 +11032,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400032,
-    errorMessage: "District Ref Consultant is invalid.",
+    errorMessage: "District ref consultant is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10987,7 +11047,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400033,
-    errorMessage: "ASD Coordinate is mandatory when Whole Road is false.",
+    errorMessage: "ASD coordinate is mandatory when whole road is false.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11002,7 +11062,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400035,
-    errorMessage: "ASD Coordinate Count is invalid.",
+    errorMessage: "ASD coordinate Count is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11017,7 +11077,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400036,
-    errorMessage: "ASD Coordinate Count of 0 must be set when ASD Coordinate is true.",
+    errorMessage: "ASD coordinate Count of 0 must be set when ASD coordinate is true.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11032,7 +11092,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400037,
-    errorMessage: "ASD Coordinate must be false when Whole Road is true.",
+    errorMessage: "ASD coordinate must be false when whole road is true.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11047,7 +11107,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400038,
-    errorMessage: "A Height, Weight, Width record must not exist on a Street with a State of 4 or 5.",
+    errorMessage: "A height, weight, width record must not exist on a street with a state of 4 or 5.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11062,7 +11122,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400039,
-    errorMessage: "Source Text is too long.",
+    errorMessage: "Source text is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11077,7 +11137,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400040,
-    errorMessage: "Source Text contains invalid characters.",
+    errorMessage: "Source text contains invalid characters.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11092,7 +11152,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400041,
-    errorMessage: "Duplicate Height Weight Width record on Usrn and Seq No.",
+    errorMessage: "Duplicate height, weight, width record on Usrn and Seq No.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11107,7 +11167,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400043,
-    errorMessage: "Mandatory Record Start Date is missing.",
+    errorMessage: "Record start date is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11122,7 +11182,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400044,
-    errorMessage: "Record Start Date cannot be in the future.",
+    errorMessage: "Record start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11137,7 +11197,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400045,
-    errorMessage: "Record Start Date prior to 1990 are not allowed.",
+    errorMessage: "Record start date prior to 1990 are not allowed.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11152,7 +11212,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400046,
-    errorMessage: "Mandatory Value Metric is missing.",
+    errorMessage: "Value metric is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11167,7 +11227,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400047,
-    errorMessage: "SWA Org Ref Consultant value does not exist in the SWA Org Ref table.",
+    errorMessage: "SWA org ref consultant value does not exist in the SWA org ref table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11182,7 +11242,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400048,
-    errorMessage: "District Ref Consultant value does not exist in the Operational District Table.",
+    errorMessage: "District ref consultant value does not exist in the operational district table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11197,7 +11257,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600001,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11212,7 +11272,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600002,
-    errorMessage: "Mandatory PRoW USRN is missing.",
+    errorMessage: "PRoW USRN is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11227,7 +11287,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600003,
-    errorMessage: "USRN must match the Street USRN.",
+    errorMessage: "USRN must match the street USRN.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11242,7 +11302,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600004,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11272,7 +11332,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600006,
-    errorMessage: "Mandatory Pedestrian Access is missing.",
+    errorMessage: "Pedestrian access is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11287,7 +11347,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600007,
-    errorMessage: "Mandatory Equestrian Access is missing.",
+    errorMessage: "Equestrian access is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11302,7 +11362,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600008,
-    errorMessage: "Mandatory Non Motorised Vehicle Access is missing.",
+    errorMessage: "Non motorised vehicle access is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11317,7 +11377,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600009,
-    errorMessage: "Mandatory Bicycle Access is missing.",
+    errorMessage: "Bicycle access is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11332,7 +11392,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600010,
-    errorMessage: "Mandatory Motorised Vehicle Access is missing.",
+    errorMessage: "Motorised vehicle access is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11347,7 +11407,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600011,
-    errorMessage: "Mandatory PRoW Rights is missing.",
+    errorMessage: "PRoW rights is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11362,7 +11422,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600012,
-    errorMessage: "PRoW Rights is invalid.",
+    errorMessage: "PRoW rights is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11377,7 +11437,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600013,
-    errorMessage: "Mandatory PRoW Status is missing.",
+    errorMessage: "PRoW status is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11392,7 +11452,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600014,
-    errorMessage: "PRoW Status is invalid.",
+    errorMessage: "PRoW status is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11408,7 +11468,7 @@ const ValidationMessages = [
   {
     messageId: 6600015,
     errorMessage:
-      "The supplied PRoW USRN and Primary Key (PkId) do not match a record in the Public Right of Way table.",
+      "The supplied PRoW USRN and primary key (PkId) do not match a record in the public right of way table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11423,7 +11483,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600016,
-    errorMessage: "Def Coordinate count is invalid.",
+    errorMessage: "Def coordinate count is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11438,7 +11498,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600017,
-    errorMessage: "PRoW Length is invalid.",
+    errorMessage: "PRoW length is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11453,7 +11513,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600018,
-    errorMessage: "Mandatory Def Map Geometry Type is missing.",
+    errorMessage: "Def map geometry type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11468,7 +11528,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600019,
-    errorMessage: "Mandatory PRoW Length is missing.",
+    errorMessage: "PRoW length is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11483,7 +11543,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600020,
-    errorMessage: "Def Map Geometry Count is invalid.",
+    errorMessage: "Def map geometry Count is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11498,7 +11558,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600021,
-    errorMessage: "Pedestrian Access is invalid.",
+    errorMessage: "Pedestrian access is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11513,7 +11573,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600022,
-    errorMessage: "Equestrian Access is invalid.",
+    errorMessage: "Equestrian access is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11528,7 +11588,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600023,
-    errorMessage: "Non Motorised Vehicle Access is invalid.",
+    errorMessage: "Non motorised vehicle access is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11543,7 +11603,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600024,
-    errorMessage: "Bicycle Access is invalid.",
+    errorMessage: "Bicycle access is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11558,7 +11618,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600025,
-    errorMessage: "Motorised Vehicle Access is invalid.",
+    errorMessage: "Motorised vehicle access is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11573,7 +11633,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600026,
-    errorMessage: "Mandatory Record Entry Date is missing.",
+    errorMessage: "Record entry date is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11588,7 +11648,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600027,
-    errorMessage: "Mandatory Record Start Date is missing.",
+    errorMessage: "Record start date is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11603,7 +11663,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600028,
-    errorMessage: "Record Start Date cannot be in the future.",
+    errorMessage: "Record start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11618,7 +11678,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600029,
-    errorMessage: "Record Start Date prior to 1990 are not allowed.",
+    errorMessage: "Record start date prior to 1990 are not allowed.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11633,7 +11693,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600030,
-    errorMessage: "Relevant Start Date prior to 1990 are not allowed.",
+    errorMessage: "Relevant start date prior to 1990 are not allowed.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11648,7 +11708,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600031,
-    errorMessage: "Record End Date must be the same as or after the Record Entry Date.",
+    errorMessage: "Record end date must be the same as or after the record entry date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11663,7 +11723,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600032,
-    errorMessage: "Record End Date prior to 1990 are not allowed.",
+    errorMessage: "Record end date prior to 1990 are not allowed.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11678,7 +11738,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600033,
-    errorMessage: "Record End Date cannot be in the future.",
+    errorMessage: "Record end date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11693,7 +11753,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600034,
-    errorMessage: "PRoW Location is too long.",
+    errorMessage: "PRoW location is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11708,7 +11768,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600035,
-    errorMessage: "PRoW Location contains an invalid character.",
+    errorMessage: "PRoW location contains an invalid character.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11723,7 +11783,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600036,
-    errorMessage: "PRoW Details is too long.",
+    errorMessage: "PRoW details is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11738,7 +11798,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600037,
-    errorMessage: "PRoW Details contains an invalid character.",
+    errorMessage: "PRoW details contains an invalid character.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11753,7 +11813,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600038,
-    errorMessage: "Promoted Route is invalid.",
+    errorMessage: "Promoted route is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11768,7 +11828,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600039,
-    errorMessage: "Accessible Route is invalid.",
+    errorMessage: "Accessible route is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11783,7 +11843,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600040,
-    errorMessage: "Source Text is too long.",
+    errorMessage: "Source text is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11798,7 +11858,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600041,
-    errorMessage: "Source Text contains an invalid character.",
+    errorMessage: "Source text contains an invalid character.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11813,7 +11873,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600042,
-    errorMessage: "PRoW Org Ref Consultant is invalid.",
+    errorMessage: "PRoW org ref consultant is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11829,7 +11889,7 @@ const ValidationMessages = [
   {
     messageId: 6600043,
     errorMessage:
-      "PRoW Org Ref Consultant and PRoW District Ref Consultant must either both be blank or both have a value.",
+      "PRoW org ref consultant and PRoW district ref consultant must either both be blank or both have a value.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11844,7 +11904,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600044,
-    errorMessage: "PRoW District Ref Consultant is invalid.",
+    errorMessage: "PRoW district ref consultant is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11859,7 +11919,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600045,
-    errorMessage: "A PRoW record is not allowed on a Street with a State of 4 or 5.",
+    errorMessage: "A PRoW record is not allowed on a street with a state of 4 or 5.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11874,7 +11934,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600046,
-    errorMessage: "Mandatory PRoW Location is missing.",
+    errorMessage: "PRoW location is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11889,7 +11949,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600047,
-    errorMessage: "Mandatory PRoW Details is missing.",
+    errorMessage: "PRoW details is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11904,7 +11964,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600048,
-    errorMessage: "Appeal Details is too long.",
+    errorMessage: "Appeal details is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11949,7 +12009,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600051,
-    errorMessage: "Consult Details is too long.",
+    errorMessage: "Consult details is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11964,7 +12024,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600052,
-    errorMessage: "Mandatory PRoW District Ref Consultant is missing.",
+    errorMessage: "PRoW district ref consultant is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11980,7 +12040,7 @@ const ValidationMessages = [
   {
     messageId: 6600053,
     errorMessage:
-      "For PRoW Status of C the Consult Start Date, Consult End Date, Consult Ref and Consult Details must be present.",
+      "For PRoW status of C the Consult start Date, Consult end Date, Consult Ref and Consult details must be present.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -11995,7 +12055,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600054,
-    errorMessage: "Consult End Date must be the same as or after the Consult Start Date.",
+    errorMessage: "Consult end date must be the same as or after the Consult start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12010,7 +12070,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600055,
-    errorMessage: "For PRoW Status of A the Appeal Date, Appeal Ref and Appeal Details must be present.",
+    errorMessage: "For PRoW status of A the Appeal Date, Appeal Ref and Appeal details must be present.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12025,7 +12085,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600056,
-    errorMessage: "For PRoW Status of D the Div Related USRN must be present.",
+    errorMessage: "For PRoW status of D the div related USRN must be present.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12040,7 +12100,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600057,
-    errorMessage: "For PRoW Status of D the Div Related USRN must be for a Type 3 Street.",
+    errorMessage: "For PRoW status of D the div related USRN must be for a type 3 Street.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12055,7 +12115,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600058,
-    errorMessage: "PRoW Org Ref Consultant value does not exist in the SWA Org Ref table.",
+    errorMessage: "PRoW org ref consultant value does not exist in the SWA org ref table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12070,7 +12130,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600059,
-    errorMessage: "A PRoW Record must be on a Type 3 street.",
+    errorMessage: "A PRoW record must be on a type 3 street.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12086,7 +12146,7 @@ const ValidationMessages = [
   {
     messageId: 6600060,
     errorMessage:
-      "If a cross referenced Highway Dedication record with a dedication Code of 2 is present then PRoW Rights must be 4.",
+      "If a cross referenced highway dedication record with a dedication code of 2 is present then PRoW rights must be 4.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12102,7 +12162,7 @@ const ValidationMessages = [
   {
     messageId: 6600061,
     errorMessage:
-      "If a cross referenced Highway Dedication record with a dedication Code of 4 is present then PRoW Rights must be 1.",
+      "If a cross referenced highway dedication record with a dedication code of 4 is present then PRoW rights must be 1.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12118,7 +12178,7 @@ const ValidationMessages = [
   {
     messageId: 6600062,
     errorMessage:
-      "If a cross referenced Highway Dedication record with a dedication Code of 9 is present then PRoW Rights must be 3.",
+      "If a cross referenced highway dedication record with a dedication code of 9 is present then PRoW rights must be 3.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12134,7 +12194,7 @@ const ValidationMessages = [
   {
     messageId: 6600063,
     errorMessage:
-      "If a cross referenced Highway Dedication record with a dedication Code of 10 is present then PRoW Rights must be 2.",
+      "If a cross referenced highway dedication record with a dedication code of 10 is present then PRoW rights must be 2.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12150,7 +12210,7 @@ const ValidationMessages = [
   {
     messageId: 6600064,
     errorMessage:
-      "If a cross referenced Highway Dedication record with a dedication Code of 6 is present then PRoW Rights must be 5.",
+      "If a cross referenced highway dedication record with a dedication code of 6 is present then PRoW rights must be 5.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12165,7 +12225,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7100001,
-    errorMessage: "Mandatory UPRN is missing.",
+    errorMessage: "UPRN is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12195,7 +12255,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7100003,
-    errorMessage: "Mandatory Seq No. is missing.",
+    errorMessage: "Seq no. is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12210,7 +12270,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7100004,
-    errorMessage: "Seq No. is invalid.",
+    errorMessage: "Seq no. is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12240,7 +12300,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7100006,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12255,7 +12315,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7100007,
-    errorMessage: "Change Type is too long.",
+    errorMessage: "Change type is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12270,7 +12330,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7100008,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12315,7 +12375,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7100012,
-    errorMessage: "The supplied UPRN, Seq No. and Primary Key (PkId) do not match a record in the BLPU Notes table.",
+    errorMessage: "The supplied UPRN, seq no. and primary key (PkId) do not match a record in the BLPU notes table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12330,7 +12390,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7100013,
-    errorMessage: "Inserting BLPU Notes is limited to a single property at a time.",
+    errorMessage: "Inserting BLPU notes is limited to a single property at a time.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12345,7 +12405,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7100014,
-    errorMessage: "Updating BLPU Notes is limited to a single property at a time.",
+    errorMessage: "Updating BLPU notes is limited to a single property at a time.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12360,7 +12420,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7200001,
-    errorMessage: "Mandatory USRN is missing.",
+    errorMessage: "USRN is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12390,7 +12450,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7200003,
-    errorMessage: "Mandatory Seq No. is missing.",
+    errorMessage: "Seq no. is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12405,7 +12465,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7200004,
-    errorMessage: "Seq No. is invalid.",
+    errorMessage: "Seq no. is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12435,7 +12495,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7200006,
-    errorMessage: "Mandatory Change Type is missing.",
+    errorMessage: "Change type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12450,7 +12510,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7200007,
-    errorMessage: "Change Type is too long.",
+    errorMessage: "Change type is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12465,7 +12525,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7200008,
-    errorMessage: "Change Type is invalid.",
+    errorMessage: "Change type is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12495,7 +12555,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7200010,
-    errorMessage: "Change Type must be an I.",
+    errorMessage: "Change type must be an I.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12510,7 +12570,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7200011,
-    errorMessage: "USRN must match the Street USRN.",
+    errorMessage: "USRN must match the street USRN.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12525,7 +12585,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7200012,
-    errorMessage: "The supplied USRN, Seq No. and Primary Key (PkId) do not match a record in the Street Notes table.",
+    errorMessage: "The supplied USRN, seq no. and primary key (PkId) do not match a record in the street notes table.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12548,10 +12608,10 @@ const ValidationMessages = [
     idoxCode: "8700001",
     ignoreCheck: false,
     risk: "M",
-    usedByApi: true,
+    usedByApi: false,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700002,
@@ -12563,10 +12623,10 @@ const ValidationMessages = [
     idoxCode: "8700002",
     ignoreCheck: false,
     risk: "M",
-    usedByApi: true,
+    usedByApi: false,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700003,
@@ -12580,8 +12640,8 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700004,
@@ -12595,8 +12655,8 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700005,
@@ -12610,8 +12670,8 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700006,
@@ -12625,8 +12685,8 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700007,
@@ -12640,8 +12700,8 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700008,
@@ -12655,8 +12715,8 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700009,
@@ -12670,8 +12730,8 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700010,
@@ -12685,8 +12745,8 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700011,
@@ -12700,8 +12760,8 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700012,
@@ -12715,8 +12775,8 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700013,
@@ -12730,12 +12790,12 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700014,
-    errorMessage: "Mandatory layer type is missing.",
+    errorMessage: "Layer type is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12745,12 +12805,12 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700015,
-    errorMessage: "Mandatory layer id is missing.",
+    errorMessage: "Layer id is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12760,12 +12820,12 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700016,
-    errorMessage: "Mandatory layer position is missing.",
+    errorMessage: "Layer position is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12775,8 +12835,8 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700017,
@@ -12790,12 +12850,12 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700018,
-    errorMessage: "Mandatory url is missing.",
+    errorMessage: "Url is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12805,8 +12865,8 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700019,
@@ -12820,12 +12880,12 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700020,
-    errorMessage: "Mandatory Service provider is missing.",
+    errorMessage: "Service provider is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12835,12 +12895,12 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700021,
-    errorMessage: "Mandatory pkid is missing.",
+    errorMessage: "Pkid is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12850,12 +12910,12 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700022,
-    errorMessage: "Mandatory copyright is missing.",
+    errorMessage: "Copyright is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12863,14 +12923,14 @@ const ValidationMessages = [
     idoxCode: "8700022",
     ignoreCheck: false,
     risk: "M",
-    usedByApi: true,
-    usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    usedByApi: false,
+    usedByFrontEnd: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700023,
-    errorMessage: "Mandatory service mode is missing.",
+    errorMessage: "Service mode is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12878,14 +12938,14 @@ const ValidationMessages = [
     idoxCode: "8700023",
     ignoreCheck: false,
     risk: "M",
-    usedByApi: true,
-    usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    usedByApi: false,
+    usedByFrontEnd: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700024,
-    errorMessage: "Mandatory property name is missing.",
+    errorMessage: "Property name is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12895,8 +12955,8 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700025,
@@ -12910,8 +12970,8 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700026,
@@ -12925,12 +12985,12 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8700027,
-    errorMessage: "Mandatory layer key is missing.",
+    errorMessage: "Layer key is missing.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12940,8 +13000,38 @@ const ValidationMessages = [
     risk: "M",
     usedByApi: true,
     usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: false,
+    gpCheck: true,
+    osCheck: true,
+  },
+  {
+    messageId: 8700028,
+    errorMessage: "Title is missing.",
+    llpgCode: "",
+    lsgCode: "",
+    osgCode: "",
+    asdCode: "",
+    idoxCode: "8700028",
+    ignoreCheck: false,
+    risk: "M",
+    usedByApi: true,
+    usedByFrontEnd: true,
+    gpCheck: true,
+    osCheck: true,
+  },
+  {
+    messageId: 8700029,
+    errorMessage: "Layers require either layer key, or layer user name and layer password.",
+    llpgCode: "",
+    lsgCode: "",
+    osgCode: "",
+    asdCode: "",
+    idoxCode: "8700029",
+    ignoreCheck: false,
+    risk: "M",
+    usedByApi: true,
+    usedByFrontEnd: true,
+    gpCheck: true,
+    osCheck: true,
   },
   {
     messageId: 8800001,
