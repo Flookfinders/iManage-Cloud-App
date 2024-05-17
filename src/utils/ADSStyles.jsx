@@ -43,6 +43,7 @@
 //    030   27.03.24 Sean Flook                 Added dialogTitleTextStyle.
 //    031   04.04.24 Sean Flook                 Added deleteDialogContentStyle.
 //    032   08.05.24 Sean Flook       IMANN-447 Fixed height in wizard.
+//    033   17.05.24 Sean Flook       IMANN-458 Modified GetTabIconStyle to include isActive.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -569,19 +570,30 @@ export const dashboardIconStyle = { color: grey[400] };
 /**
  * Return the styling for tab icons.
  *
- * @param {number} dataLength The number of records.
- * @return {object} The styling used for tab icons.
+ * @param {Number} dataLength The number of records.
+ * @param {Boolean} isActive True if the tab is active; otherwise false.
+ * @return {Object} The styling used for tab icons.
  */
-export function GetTabIconStyle(dataLength) {
-  return {
-    width: `${dataLength < 10 ? "16px" : dataLength < 100 ? "24px" : "32px"}`,
-    height: "16px",
-    color: adsMidGreyA,
-    backgroundColor: adsLightGreyB,
-    borderRadius: "18px",
-    fontFamily: "Open Sans",
-    ml: "2px",
-  };
+export function GetTabIconStyle(dataLength, isActive) {
+  if (isActive)
+    return {
+      width: `${dataLength < 10 ? "16px" : dataLength < 100 ? "24px" : "32px"}`,
+      height: "16px",
+      backgroundColor: adsBlueA,
+      borderRadius: "18px",
+      fontFamily: "Open Sans",
+      ml: "2px",
+    };
+  else
+    return {
+      width: `${dataLength < 10 ? "16px" : dataLength < 100 ? "24px" : "32px"}`,
+      height: "16px",
+      color: adsMidGreyA,
+      backgroundColor: adsLightGreyB,
+      borderRadius: "18px",
+      fontFamily: "Open Sans",
+      ml: "2px",
+    };
 }
 
 /**
@@ -910,8 +922,8 @@ export const wizardTabStyle = {
 /**
  * Returns the styling used for tab labels.
  *
- * @param {boolean} isActive True if the tab is active; otherwise false.
- * @return {object} The styling used for tab labels.
+ * @param {Boolean} isActive True if the tab is active; otherwise false.
+ * @return {Object} The styling used for tab labels.
  */
 export const tabLabelStyle = (isActive) => {
   return isActive

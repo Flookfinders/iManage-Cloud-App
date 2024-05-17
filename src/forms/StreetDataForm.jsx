@@ -89,6 +89,7 @@
 //    075   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //    076   15.05.24 Sean Flook                 Do not clear the point capture if assigning ESUs.
 //    077   16.05.24 Sean Flook       IMANN-259 Use the template if present to set the tolerance for new ESUs.
+//    078   17.05.24 Sean Flook       IMANN-458 Pass isActive to the GetTabIconStyle method.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -10358,7 +10359,8 @@ function StreetDataForm({ data, loading }) {
                     sx={GetTabIconStyle(
                       streetData && streetData.esus
                         ? streetData.esus.filter((x) => x.changeType !== "D" && x.assignUnassign !== -1).length
-                        : 0
+                        : 0,
+                      value === 1
                     )}
                   >
                     <Typography variant="caption">
@@ -10390,7 +10392,8 @@ function StreetDataForm({ data, loading }) {
                       sx={GetTabIconStyle(
                         streetData && streetData.successorCrossRefs
                           ? streetData.successorCrossRefs.filter((x) => x.changeType !== "D").length
-                          : 0
+                          : 0,
+                        value === 2
                       )}
                     >
                       <Typography variant="caption">
@@ -10447,7 +10450,8 @@ function StreetDataForm({ data, loading }) {
                               (streetData.heightWidthWeights
                                 ? streetData.heightWidthWeights.filter((x) => x.changeType !== "D").length
                                 : 0)
-                          : 0
+                          : 0,
+                        value === (settingsContext.isScottish ? 3 : 2)
                       )}
                     >
                       <Typography variant="caption">
@@ -10498,7 +10502,10 @@ function StreetDataForm({ data, loading }) {
                 </Typography>
                 <Avatar
                   variant="rounded"
-                  sx={GetTabIconStyle(streetData ? streetData.relatedPropertyCount + streetData.relatedStreetCount : 0)}
+                  sx={GetTabIconStyle(
+                    streetData ? streetData.relatedPropertyCount + streetData.relatedStreetCount : 0,
+                    value === (settingsContext.isScottish ? (displayAsdTab ? 4 : 3) : displayAsdTab ? 3 : 2)
+                  )}
                 >
                   <Typography variant="caption">
                     <strong>{streetData ? streetData.relatedPropertyCount + streetData.relatedStreetCount : 0}</strong>
@@ -10528,7 +10535,8 @@ function StreetDataForm({ data, loading }) {
                     sx={GetTabIconStyle(
                       streetData && streetData.streetNotes
                         ? streetData.streetNotes.filter((x) => x.changeType !== "D").length
-                        : 0
+                        : 0,
+                      value === (settingsContext.isScottish ? (displayAsdTab ? 5 : 4) : displayAsdTab ? 4 : 3)
                     )}
                   >
                     <Typography variant="caption">

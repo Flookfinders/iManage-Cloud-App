@@ -39,6 +39,7 @@
 //    026   25.04.24 Sean Flook       IMANN-166 After putting the current street in focus do not keep doing it.
 //    027   26.04.24 Sean Flook       IMANN-166 Reset flag if the data changes.
 //    028   13.05.24 Sean Flook       IMANN-439 Changed to use grids to display th data as well as other display improvements.
+//    029   17.05.24 Sean Flook       IMANN-458 Correctly highlight the avatar when items are hovered.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -946,7 +947,13 @@ function RelatedStreetTab({
                             }}
                           >
                             ESUs
-                            <Avatar variant="rounded" sx={GetTabIconStyle(rec && rec.esus ? rec.esus.length : 0)}>
+                            <Avatar
+                              variant="rounded"
+                              sx={GetTabIconStyle(
+                                rec && rec.esus ? rec.esus.length : 0,
+                                streetSelected && streetSelected === rec.usrn
+                              )}
+                            >
                               <Typography variant="caption">
                                 <strong>{rec && rec.esus ? rec.esus.length : 0}</strong>
                               </Typography>
@@ -978,7 +985,13 @@ function RelatedStreetTab({
                           label={
                             <Typography variant="subtitle2" sx={{ display: "inline-flex" }}>
                               ASDs
-                              <Avatar variant="rounded" sx={GetTabIconStyle(rec && rec.asds ? rec.asds.length : 0)}>
+                              <Avatar
+                                variant="rounded"
+                                sx={GetTabIconStyle(
+                                  rec && rec.asds ? rec.asds.length : 0,
+                                  streetSelected && streetSelected === rec.usrn
+                                )}
+                              >
                                 <Typography variant="caption">
                                   <strong>{rec && rec.asds ? rec.asds.length : 0}</strong>
                                 </Typography>

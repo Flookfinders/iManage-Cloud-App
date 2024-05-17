@@ -37,6 +37,7 @@
 //    024   22.03.24 Sean Flook       PRFRM6_GP Display information control when editing an existing ESU.
 //    025   26.03.24 Joshua McCormick IMANN-280 Added divider on tab between back button and title
 //    026   14.05.24 Joshua McCormick IMANN-386 Toolbar styling for responsiveness
+//    027   17.05.24 Sean Flook       IMANN-458 Pass isActive to the GetTabIconStyle method.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1198,7 +1199,8 @@ function EsuDataTab({
                     <Avatar
                       variant="rounded"
                       sx={GetTabIconStyle(
-                        data.esuData && data.esuData.highwayDedications ? data.esuData.highwayDedications.length : 0
+                        data.esuData && data.esuData.highwayDedications ? data.esuData.highwayDedications.length : 0,
+                        hdItemSelected
                       )}
                     >
                       <Typography variant="caption">
@@ -1364,7 +1366,8 @@ function EsuDataTab({
                       <Avatar
                         variant="rounded"
                         sx={GetTabIconStyle(
-                          data.esuData && data.esuData.oneWayExemptions ? data.esuData.oneWayExemptions.length : 0
+                          data.esuData && data.esuData.oneWayExemptions ? data.esuData.oneWayExemptions.length : 0,
+                          oweItemSelected
                         )}
                       >
                         <Typography variant="caption">

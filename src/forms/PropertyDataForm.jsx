@@ -63,6 +63,7 @@
 //    050   29.04.24 Sean Flook                 Set the sandbox source property data when opening a new street.
 //    051   30.04.24 Sean Flook       IMANN-371 Separate out streetTab and propertyTab.
 //    052   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
+//    053   17.05.24 Sean Flook       IMANN-458 Pass isActive to the GetTabIconStyle method.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4827,7 +4828,8 @@ function PropertyDataForm({ data, loading }) {
                       sx={GetTabIconStyle(
                         propertyData && propertyData.classifications
                           ? propertyData.classifications.filter((x) => x.changeType !== "D").length
-                          : 0
+                          : 0,
+                        value === 1
                       )}
                     >
                       <Typography variant="caption">
@@ -4860,7 +4862,8 @@ function PropertyDataForm({ data, loading }) {
                       sx={GetTabIconStyle(
                         propertyData && propertyData.organisations
                           ? propertyData.organisations.filter((x) => x.changeType !== "D").length
-                          : 0
+                          : 0,
+                        value === 2
                       )}
                     >
                       <Typography variant="caption">
@@ -4893,7 +4896,8 @@ function PropertyDataForm({ data, loading }) {
                       sx={GetTabIconStyle(
                         propertyData && propertyData.successorCrossRefs
                           ? propertyData.successorCrossRefs.filter((x) => x.changeType !== "D").length
-                          : 0
+                          : 0,
+                        value === 3
                       )}
                     >
                       <Typography variant="caption">
@@ -4925,7 +4929,8 @@ function PropertyDataForm({ data, loading }) {
                     sx={GetTabIconStyle(
                       propertyData && propertyData.blpuProvenances
                         ? propertyData.blpuProvenances.filter((x) => x.changeType !== "D").length
-                        : 0
+                        : 0,
+                      value === (settingsContext.isScottish ? 4 : 1)
                     )}
                   >
                     <Typography variant="caption">
@@ -4956,7 +4961,8 @@ function PropertyDataForm({ data, loading }) {
                     sx={GetTabIconStyle(
                       propertyData && propertyData.blpuAppCrossRefs
                         ? propertyData.blpuAppCrossRefs.filter((x) => x.changeType !== "D").length
-                        : 0
+                        : 0,
+                      value === (settingsContext.isScottish ? 5 : 2)
                     )}
                   >
                     <Typography variant="caption">
@@ -4982,7 +4988,8 @@ function PropertyDataForm({ data, loading }) {
                 <Avatar
                   variant="rounded"
                   sx={GetTabIconStyle(
-                    propertyData ? propertyData.relatedPropertyCount + propertyData.relatedStreetCount : 0
+                    propertyData ? propertyData.relatedPropertyCount + propertyData.relatedStreetCount : 0,
+                    value === (settingsContext.isScottish ? 6 : 3)
                   )}
                 >
                   <Typography variant="caption">
@@ -5010,7 +5017,8 @@ function PropertyDataForm({ data, loading }) {
                     sx={GetTabIconStyle(
                       propertyData && propertyData.blpuNotes
                         ? propertyData.blpuNotes.filter((x) => x.changeType !== "D").length
-                        : 0
+                        : 0,
+                      value === (settingsContext.isScottish ? 7 : 4)
                     )}
                   >
                     <Typography variant="caption">

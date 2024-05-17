@@ -50,7 +50,8 @@
 //    036   22.04.24 Sean Flook       IMANN-374 Correctly call DataFormStyle.
 //    037   25.04.24 Sean Flook       IMANN-166 After putting the current property in focus do not keep doing it.
 //    038   26.04.24 Sean Flook       IMANN-166 Reset flag if the data changes.
-//    039   13.05.24 Sean Flook       IMANN-439 Changed to use grids to display th data as well as other display improvements.
+//    039   13.05.24 Sean Flook       IMANN-439 Changed to use grids to display the data as well as other display improvements.
+//    040   17.05.24 Sean Flook       IMANN-458 Correctly highlight the avatar when items are hovered.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -741,18 +742,29 @@ function RelatedPropertyTab({
    * Get the styling to be used for the child count icon.
    *
    * @param {Number} dataLength The number of child records this property has.
+   * @param {Boolean} hover True if the item has the mouse over it; otherwise false.
    * @returns {Object} The styling to be used for the control.
    */
-  const getChildCountIconStyle = (dataLength) => {
-    return {
-      width: `${dataLength < 10 ? "20px" : dataLength < 100 ? "28px" : "36px"}`,
-      height: "20px",
-      color: adsMidGreyA,
-      backgroundColor: adsLightGreyB,
-      borderRadius: "18px",
-      fontFamily: "Open Sans",
-      ml: "0px",
-    };
+  const getChildCountIconStyle = (dataLength, hover) => {
+    if (hover)
+      return {
+        width: `${dataLength < 10 ? "20px" : dataLength < 100 ? "28px" : "36px"}`,
+        height: "20px",
+        backgroundColor: adsBlueA,
+        borderRadius: "18px",
+        fontFamily: "Open Sans",
+        ml: "0px",
+      };
+    else
+      return {
+        width: `${dataLength < 10 ? "20px" : dataLength < 100 ? "28px" : "36px"}`,
+        height: "20px",
+        color: adsMidGreyA,
+        backgroundColor: adsLightGreyB,
+        borderRadius: "18px",
+        fontFamily: "Open Sans",
+        ml: "0px",
+      };
   };
 
   /**
@@ -780,7 +792,10 @@ function RelatedPropertyTab({
             <Avatar
               variant="rounded"
               sx={getChildCountIconStyle(
-                data.properties && data.properties ? data.properties.filter((x) => x.parentUprn === rec.uprn).length : 0
+                data.properties && data.properties
+                  ? data.properties.filter((x) => x.parentUprn === rec.uprn).length
+                  : 0,
+                propertySelected && propertySelected === rec.uprn
               )}
             >
               <Typography variant="caption">
