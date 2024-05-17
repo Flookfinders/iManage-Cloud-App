@@ -28,6 +28,7 @@
 //    015   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    016   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    017   16.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft to consultation and appeal refs and details input
+//    018   17.04.24 Joshua McCormick IMANN-277 Added dataTabToolBar styling for PRoW spacing
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -68,7 +69,7 @@ import MessageDialog from "../dialogs/MessageDialog";
 
 import { DirectionsWalk, ArrowForwardIosSharp, QuestionAnswer, Flag, Done } from "@mui/icons-material";
 import { adsBlueA, adsWhite, adsLightBlue10, adsBlack125, adsDarkGreen } from "../utils/ADSColours";
-import { toolbarStyle, dataFormStyle, FormRowStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataTabToolBar, dataFormStyle, FormRowStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 PRoWDataTab.propTypes = {
@@ -836,7 +837,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
   return (
     <Fragment>
       <Box sx={toolbarStyle} id={"prow-data"}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={dataTabToolBar}>
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
             {streetContext.currentRecord.type === 66 && streetContext.currentRecord.newRecord ? (
               <ADSActionButton

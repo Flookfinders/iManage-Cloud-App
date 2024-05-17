@@ -33,6 +33,7 @@
 //    020   22.03.24 Sean Flook                 Sort the descriptor records so that the English one always appears first.
 //    021   04.04.24 Sean Flook                 Changes required to handle deleting ESUs when deleting a street.
 //    022   05.04.24 Sean Flook       IMANN-326 If state is changed to 4 set the surface to 2.
+//    023   17.05.24 Joshua McCormick           Added noWrap to street title for when too many characters overflow
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -908,7 +909,7 @@ function StreetDataTab({
           justifyContent="space-between"
           sx={{ pl: theme.spacing(2), mt: theme.spacing(0.25) }}
         >
-          <Typography variant="subtitle1">{`${streetToTitleCase(streetContext.currentStreet.descriptor)}${
+          <Typography noWrap variant="subtitle1">{`${streetToTitleCase(streetContext.currentStreet.descriptor)}${
             streetContext.currentStreet.usrn ? ": " + streetContext.currentStreet.usrn : ""
           }`}</Typography>
           <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>

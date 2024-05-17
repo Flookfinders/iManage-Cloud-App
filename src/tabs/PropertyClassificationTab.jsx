@@ -26,6 +26,7 @@
 //    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    014   17.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for the classification Scheme
 //    015   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title nowrapping with width restrictions
+//    016   17.05.24 Joshua McCormick IMANN-364 Fixed Toolbar delete action button placement and alignment
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -48,7 +49,7 @@ import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import ErrorIcon from "@mui/icons-material/Error";
 import { useTheme } from "@mui/styles";
-import { toolbarStyle, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
+import { toolbarStyle, dataTabToolBar, dataFormStyle, errorIconStyle } from "../utils/ADSStyles";
 
 PropertyClassificationTab.propTypes = {
   data: PropTypes.object,
@@ -324,17 +325,12 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onHome
   return (
     <Fragment>
       <Box sx={toolbarStyle}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: theme.spacing(0.25) }}>
-          <Typography variant="subtitle1">
-            <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
-          </Typography>
+        <Stack direction="row" alignItems="center" justifyContent="flex-start" sx={dataTabToolBar}>
+          <ADSActionButton variant="home" tooltipTitle="Home" tooltipPlacement="bottom" onClick={handleHomeClick} />
           <Typography
             sx={{
               flexGrow: 1,
-              fontSize: "14px",
               display: "none",
-              pl: "6px",
-              pt: "2px",
               [theme.breakpoints.up("sm")]: {
                 display: "block",
               },
@@ -343,19 +339,19 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onHome
             noWrap
             align="left"
           >
-            <Typography display="inline" variant="subtitle1">
-              {`| Classification (${data.index + 1} of ${data.totalRecords}): ${getClassificationText(classification)}`}
-            </Typography>
+            {`| Classification (${data.index + 1} of ${data.totalRecords}): ${getClassificationText(classification)}`}
           </Typography>
           {errors && errors.length > 0 && <ErrorIcon sx={errorIconStyle} />}
+          <Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <ADSActionButton
+              variant="delete"
+              disabled={!userCanEdit}
+              tooltipTitle="Delete"
+              tooltipPlacement="right"
+              onClick={handleDeleteClick}
+            />
+          </Stack>
         </Stack>
-        <ADSActionButton
-          variant="delete"
-          disabled={!userCanEdit}
-          tooltipTitle="Delete"
-          tooltipPlacement="right"
-          onClick={handleDeleteClick}
-        />
       </Box>
       <Box sx={dataFormStyle("PropertyClassificationTab")}>
         <ADSSelectControl
