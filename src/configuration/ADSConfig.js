@@ -23,6 +23,7 @@
 //    010   25.04.24 Sean Flook       IMANN-390 Added new endpoint to return UPRNs assigned to failed properties to be added back into the availableUprns table.
 //    011   09.02.24 Joel Benford    IM-227/228 Generalize ward/parish URL
 //    012   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
+//    013   17.05.24 Sean Flook       IMANN-176 Added a new endpoints used for spatially updating BLPU ward and parish codes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -556,6 +557,28 @@ export function GetPostTownUrl(endPointType, userToken) {
 export function GetSubLocalityUrl(endPointType, userToken) {
   const url = GetApiSite("lookup", "/api/SubLocality");
   return getUrl(url, endPointType, "application/json", userToken);
+}
+
+/**
+ * Get the URL used to return the count of properties with incorrect wards or parishes.
+ *
+ * @param {string} userToken The token for the user who is calling the endpoint.
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function GetIncorrectBoundariesCountUrl(userToken) {
+  const url = GetApiSite("main", "/api/Boundary/IncorrectBoundariesCount");
+  return getUrl(url, "GET", "application/json", userToken);
+}
+
+/**
+ * Get the URL used to update the ward and parish codes from the spatial data.
+ *
+ * @param {string} userToken The token for the user who is calling the endpoint.
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function GetUpdateBlpuBoundaryCodesUrl(userToken) {
+  const url = GetApiSite("main", "/api/Boundary/UpdateBLPUBoundaryCodes");
+  return getUrl(url, "PUT", "application/json", userToken);
 }
 
 /**

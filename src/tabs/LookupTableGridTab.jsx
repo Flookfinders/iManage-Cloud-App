@@ -21,6 +21,7 @@
 //    008   29.02.24 Joel Benford     IMANN-242 Add DbAuthority.
 //    009   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    010   26.04.24 Sean Flook       IMANN-413 Removed Gaelic option.
+//    011   17.05.24 Sean Flook       IMANN-176 Added a new button to allow for spatially updating BLPU ward and parish codes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -54,6 +55,7 @@ import SwaOrgRef from "../data/SwaOrgRef";
 
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
+import UpdateIcon from "@mui/icons-material/Update";
 import ClearIcon from "@mui/icons-material/Clear";
 import { AddCircleOutlineOutlined as AddCircleIcon } from "@mui/icons-material";
 import { adsBlueA, adsLightGreyB, adsDarkGrey10, adsDarkGrey20, adsPaleBlueA } from "../utils/ADSColours";
@@ -112,10 +114,11 @@ LookupTableGridTab.propTypes = {
   data: PropTypes.array.isRequired,
   onAddLookup: PropTypes.func.isRequired,
   onEditLookup: PropTypes.func.isRequired,
+  onUpdateSpatialData: PropTypes.func,
   onDeleteLookup: PropTypes.func,
 };
 
-function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDeleteLookup }) {
+function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdateSpatialData, onDeleteLookup }) {
   const theme = useTheme();
   const classes = useStyles();
 
@@ -762,6 +765,13 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
     if (param && param.field !== "__check__" && param.field !== "" && param.field !== "actions" && param.id > 0) {
       if (onEditLookup) onEditLookup(param.row.id);
     }
+  };
+
+  /**
+   * Event to handle updating the ward and parish spatial data.
+   */
+  const doUpdateSpatialData = () => {
+    if (onUpdateSpatialData) onUpdateSpatialData();
   };
 
   /**
@@ -1822,9 +1832,16 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onDelete
               }}
             />
           </Box>
-          <Button variant="contained" sx={blueButtonStyle} startIcon={<AddIcon />} onClick={doAddLookup}>
-            <Typography variant="body2">{`${stringToSentenceCase(lookupType)}`}</Typography>
-          </Button>
+          <Stack direction="row" spacing={2}>
+            {["ward", "parish"].includes(variant) && (
+              <Button variant="contained" sx={blueButtonStyle} startIcon={<UpdateIcon />} onClick={doUpdateSpatialData}>
+                <Typography variant="body2">{`Spatially update BLPU ${variant} codes`}</Typography>
+              </Button>
+            )}
+            <Button variant="contained" sx={blueButtonStyle} startIcon={<AddIcon />} onClick={doAddLookup}>
+              <Typography variant="body2">{`${stringToSentenceCase(lookupType)}`}</Typography>
+            </Button>
+          </Stack>
         </Stack>
         <Box sx={dataFormStyle("LookupTableGridTab")} className={classes.root}>
           {data && data.length > 0 ? (

@@ -27,6 +27,7 @@
 //    014   09.04.24 Sean Flook       IMANN-376 Changes required to allow lookups to be added on the fly.
 //    015   26.04.24 Sean Flook       IMANN-413 Removed Gaelic option.
 //    016   09.02.24 Joel Benford    IM-227/228 Fix ward/parish URL calls
+//    017   17.05.24 Sean Flook       IMANN-176 Display dialog to allow for spatially updating BLPU ward and parish codes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -48,6 +49,7 @@ import LookupTableGridTab from "../tabs/LookupTableGridTab";
 import AddLookupDialog from "../dialogs/AddLookupDialog";
 import EditLookupDialog from "../dialogs/EditLookupDialog";
 import DeleteLookupDialog from "../dialogs/DeleteLookupDialog";
+import UpdateWardParishBoundariesDialog from "../dialogs/UpdateWardParishBoundariesDialog";
 
 import { GetAlertStyle, GetAlertIcon, GetAlertSeverity } from "../utils/ADSStyles";
 
@@ -108,6 +110,8 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
   const [addOpen, setAddOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [openUpdateWardParishBoundariesDialog, setOpenUpdateWardParishBoundariesDialog] = useState(false);
+  const [updateWardParishBoundariesVariant, setUpdateWardParishBoundariesVariant] = useState("Ward");
 
   const [engError, setEngError] = useState(null);
   const [altLanguageError, setAltLanguageError] = useState(null);
@@ -759,6 +763,11 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
     setShowEditDialog(true);
   };
 
+  const handleUpdateWardSpatialData = () => {
+    setUpdateWardParishBoundariesVariant("Ward");
+    setOpenUpdateWardParishBoundariesDialog(true);
+  };
+
   const handleDeleteWard = (id) => {
     setLookupId(id);
     setLookupType("ward");
@@ -778,6 +787,11 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
     // isLookupInUse("parish", id);
     setLookupInUse(false);
     setShowEditDialog(true);
+  };
+
+  const handleUpdateParishSpatialData = () => {
+    setUpdateWardParishBoundariesVariant("Parish");
+    setOpenUpdateWardParishBoundariesDialog(true);
   };
 
   const handleDeleteParish = (id) => {
@@ -2718,6 +2732,13 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
     setDeleteOpen(false);
   };
 
+  /**
+   * Event to handle when the message dialog closes.
+   */
+  const handleMessageDialogClose = () => {
+    setOpenUpdateWardParishBoundariesDialog(false);
+  };
+
   useEffect(() => {
     setEngError(null);
     setAltLanguageError(null);
@@ -2867,6 +2888,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
             data={getWardsData()}
             onAddLookup={handleAddWard}
             onEditLookup={(id) => handleEditWard(id)}
+            onUpdateSpatialData={handleUpdateWardSpatialData}
             onDeleteLookup={(id) => handleDeleteWard(id)}
           />
         </TabPanel>
@@ -2876,6 +2898,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
             data={getParishesData()}
             onAddLookup={handleAddParish}
             onEditLookup={(id) => handleEditParish(id)}
+            onUpdateSpatialData={handleUpdateParishSpatialData}
             onDeleteLookup={(id) => handleDeleteParish(id)}
           />
         </TabPanel>
@@ -2917,6 +2940,11 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
         onDelete={(variant, lookupId) => handleDeleteLookup(variant, lookupId)}
         onHistoric={(variant, lookupId) => handleHistoricLookup(variant, lookupId)}
         onClose={handleCloseDeleteLookup}
+      />
+      <UpdateWardParishBoundariesDialog
+        isOpen={openUpdateWardParishBoundariesDialog}
+        variant={updateWardParishBoundariesVariant}
+        onClose={handleMessageDialogClose}
       />
       <div>
         <Snackbar
