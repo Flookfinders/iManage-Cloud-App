@@ -50,6 +50,7 @@
 //    037   09.02.24 Joel Benford    IM-227/228 Generalize ward/parish URL
 //    038   03.05.24 Sean Flook                 Added getBaseMapLayers.
 //    039   17.05.24 Sean Flook       IMANN-309 Only check all ESUs if geometry has changed and this is not a new street.
+//    040   17.05.24 Joshua McCormick IMANN-460 Added PUT to call English with Welsh ref  
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2294,7 +2295,7 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
   }
 
   if (data) {
-    const lookupUrl = GetLookupUrl(data.variant, "POST", userToken, authorityCode);
+    let lookupUrl = GetLookupUrl(data.variant, "POST", userToken, authorityCode);
 
     // if (process.env.NODE_ENV === "development")
     console.log("[DEBUG] handleDoneAddLookup", {
@@ -2414,7 +2415,60 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
               });
           }
 
-          if (newCymLookup) newEngLookup = UpdateEngLinkedRef(newEngLookup, newCymLookup);
+          if (newCymLookup) {
+            newEngLookup = UpdateEngLinkedRef(newEngLookup, newCymLookup);
+            lookupUrl = GetLookupUrl(data.variant, "PUT", userToken, authorityCode);
+
+            if (lookupUrl) {
+              await fetch(lookupUrl.url, {
+                headers: lookupUrl.headers,
+                crossDomain: true,
+                method: lookupUrl.type,
+                body: JSON.stringify(newEngLookup),
+              })
+                .then((res) => (res.ok ? res : Promise.reject(res)))
+                .then((res) => res.json())
+                .then((result) => {
+                  newEngLookup = result;
+                })
+                .catch((res) => {
+                  switch (res.status) {
+                    case 400:
+                      res.json().then((body) => {
+                        console.error(
+                          `[400 ERROR] Updating ${getLookupVariantString(data.variant)} object`,
+                          body.errors
+                        );
+                        let lookupEngErrors = [];
+                        for (const [key, value] of Object.entries(body.errors)) {
+                          lookupEngErrors.push({ key: key, value: value });
+                        }
+
+                        if (lookupEngErrors.length > 0) engError = lookupEngErrors[0].value;
+                        else engError = null;
+                      });
+                      break;
+
+                    case 401:
+                      res.json().then((body) => {
+                        console.error(`[401 ERROR] Updating ${getLookupVariantString(data.variant)} object`, body);
+                      });
+                      break;
+
+                    case 500:
+                      console.error(`[500 ERROR] Updating ${getLookupVariantString(data.variant)} object`, res);
+                      break;
+
+                    default:
+                      console.error(
+                        `[${res.status} ERROR] Updating ${getLookupVariantString(data.variant)} object`,
+                        res
+                      );
+                      break;
+                  }
+                });
+            }
+          }
         }
 
         const updatedLookups = GetOldLookups(data.variant, currentLookups);
