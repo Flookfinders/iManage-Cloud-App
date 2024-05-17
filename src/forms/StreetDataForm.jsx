@@ -90,6 +90,7 @@
 //    076   15.05.24 Sean Flook                 Do not clear the point capture if assigning ESUs.
 //    077   16.05.24 Sean Flook       IMANN-259 Use the template if present to set the tolerance for new ESUs.
 //    078   17.05.24 Sean Flook       IMANN-458 Pass isActive to the GetTabIconStyle method.
+//    079   17.05.24 Sean Flook       IMANN-374 Correctly open the related tab for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -7164,13 +7165,24 @@ function StreetDataForm({ data, loading }) {
   }, [streetContext]);
 
   useEffect(() => {
-    if (streetData && streetContext.currentStreet.openRelated && sandboxContext.streetTab !== (displayAsdTab ? 3 : 2)) {
+    if (
+      streetData &&
+      streetContext.currentStreet.openRelated &&
+      sandboxContext.streetTab !== (settingsContext.isScottish ? 4 : displayAsdTab ? 3 : 2)
+    ) {
       failedValidation.current = false;
-      sandboxContext.onStreetTabChange(displayAsdTab ? 3 : 2);
+      sandboxContext.onStreetTabChange(settingsContext.isScottish ? 4 : displayAsdTab ? 3 : 2);
       // setValue(displayAsdTab ? 3 : 2);
       mapContext.onEditMapObject(null, null);
     }
-  }, [streetContext.currentStreet.openRelated, mapContext, displayAsdTab, streetData, sandboxContext]);
+  }, [
+    streetContext.currentStreet.openRelated,
+    settingsContext.isScottish,
+    mapContext,
+    displayAsdTab,
+    streetData,
+    sandboxContext,
+  ]);
 
   useEffect(() => {
     if (streetContext.currentErrors) {
