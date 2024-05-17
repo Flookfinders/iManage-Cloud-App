@@ -49,6 +49,7 @@
 //    036   01.05.24 Sean Flook       IMANN-429 Remove GAE code in addLookup.
 //    037   09.02.24 Joel Benford    IM-227/228 Generalize ward/parish URL
 //    038   03.05.24 Sean Flook                 Added getBaseMapLayers.
+//    039   17.05.24 Sean Flook       IMANN-309 Only check all ESUs if geometry has changed and this is not a new street.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -996,6 +997,7 @@ export function GetChangedAssociatedRecords(type, sandboxContext, geometryTypeCh
         (geometryTypeChanged &&
           sandboxContext.currentSandbox.sourceStreet &&
           sandboxContext.currentSandbox.sourceStreet.esus &&
+          sandboxContext.currentSandbox.sourceStreet.esus.length > 0 &&
           sandboxContext.currentSandbox.currentStreet &&
           sandboxContext.currentSandbox.currentStreet.esus &&
           !EsusComparison(
