@@ -12,6 +12,7 @@
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   17.05.24 Sean Flook       IMANN-176 Initial version.
+//    002   20.05.24 Sean Flook       IMANN-176 Handle when there are no invalid codes found.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -331,12 +332,20 @@ function UpdateWardParishBoundariesDialog({ isOpen, variant, onClose }) {
         );
 
       case 1:
-        return (
-          <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={1}>
-            <Typography variant="body2">{`Found ${count} incorrect ${variant.toLowerCase()} codes.`}</Typography>
-            <Typography variant="body2">Are you sure you want to continue and update them?</Typography>
-          </Stack>
-        );
+        if (count > 0) {
+          return (
+            <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={1}>
+              <Typography variant="body2">{`Found ${count} incorrect ${variant.toLowerCase()} codes.`}</Typography>
+              <Typography variant="body2">Are you sure you want to continue and update them?</Typography>
+            </Stack>
+          );
+        } else {
+          return (
+            <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={1}>
+              <Typography variant="body2">{`No incorrect ${variant.toLowerCase()} codes were found.`}</Typography>
+            </Stack>
+          );
+        }
 
       case 2:
         return <Typography variant="body2">{`Finished updating the ${variant.toLowerCase()} codes.`}</Typography>;
@@ -366,20 +375,7 @@ function UpdateWardParishBoundariesDialog({ isOpen, variant, onClose }) {
           </Button>
         );
 
-      case 2:
-        return (
-          <Button
-            variant="contained"
-            onClick={handleCloseClick}
-            autoFocus
-            sx={blueButtonStyle}
-            startIcon={<CloseIcon />}
-          >
-            Close
-          </Button>
-        );
-
-      default:
+      case 0:
         return (
           <>
             <Button
@@ -402,6 +398,58 @@ function UpdateWardParishBoundariesDialog({ isOpen, variant, onClose }) {
               Cancel
             </Button>
           </>
+        );
+
+      case 1:
+        if (count > 0) {
+          return (
+            <>
+              <Button
+                variant="contained"
+                disabled={processing}
+                onClick={handleContinueClick}
+                sx={blueButtonStyle}
+                startIcon={<ArrowRightIcon />}
+              >
+                Continue
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleCloseClick}
+                disabled={processing}
+                autoFocus
+                sx={whiteButtonStyle}
+                startIcon={<CloseIcon />}
+              >
+                Cancel
+              </Button>
+            </>
+          );
+        } else {
+          return (
+            <Button
+              variant="contained"
+              onClick={handleCloseClick}
+              autoFocus
+              sx={blueButtonStyle}
+              startIcon={<CloseIcon />}
+            >
+              Close
+            </Button>
+          );
+        }
+
+      default:
+        return (
+          <Button
+            variant="contained"
+            onClick={handleCloseClick}
+            autoFocus
+            sx={blueButtonStyle}
+            startIcon={<CloseIcon />}
+          >
+            Close
+          </Button>
         );
     }
   };
