@@ -8,7 +8,7 @@
 //  Maximum validation numbers
 //  =================================
 //  Metadata: 1000000 - 1000019
-//  Settings: 8700027 - 8700029
+//  Settings: 8700027 - 8700031
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -20,6 +20,7 @@
 //    002   07.09.23 Sean Flook                 Removed unnecessary console logs.
 //    003   15.12.23 Sean Flook                 Added comments.
 //    004   08.02.24 Sean Flook                 Changes required for viaEuropa.
+//    005   20.05.24 Sean Flook       IMANN-446 Added missing map layer checks.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -56,6 +57,7 @@ export function ValidateMapLayer(data, currentLookups, isScottish) {
   const layerIdErrors = [];
   const urlErrors = [];
   const opacityErrors = [];
+  const geometryTypeErrors = [];
 
   if (data) {
     // Layer type is invalid.
@@ -98,7 +100,7 @@ export function ValidateMapLayer(data, currentLookups, isScottish) {
     if (currentCheck && !currentCheck.ignoreCheck && data.layerPassword && data.layerPassword.length > 40)
       layerPasswordErrors.push(GetErrorMessage(currentCheck, isScottish));
 
-    // Active layer id is too long.
+    // Service layer name is too long.
     currentCheck = GetCheck(8700011, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && data.activeLayerId && data.activeLayerId.length > 40)
       activeLayerIdErrors.push(GetErrorMessage(currentCheck, isScottish));
@@ -113,15 +115,15 @@ export function ValidateMapLayer(data, currentLookups, isScottish) {
     if (currentCheck && !currentCheck.ignoreCheck && data.propertyName && data.propertyName.length > 100)
       propertyNameErrors.push(GetErrorMessage(currentCheck, isScottish));
 
-    // Layer type is missing.
+    // Type of service is missing.
     currentCheck = GetCheck(8700014, currentLookups, methodName, isScottish, showDebugMessages);
     if (currentCheck && !currentCheck.ignoreCheck && !data.layerType)
       layerTypeErrors.push(GetErrorMessage(currentCheck, isScottish));
 
-    // Layer id is missing.
+    // Service layer name is missing.
     currentCheck = GetCheck(8700015, currentLookups, methodName, isScottish, showDebugMessages);
-    if (currentCheck && !currentCheck.ignoreCheck && !data.layerId)
-      layerIdErrors.push(GetErrorMessage(currentCheck, isScottish));
+    if (currentCheck && !currentCheck.ignoreCheck && !data.activeLayerId)
+      activeLayerIdErrors.push(GetErrorMessage(currentCheck, isScottish));
 
     // URL is missing.
     currentCheck = GetCheck(8700018, currentLookups, methodName, isScottish, showDebugMessages);
@@ -170,8 +172,28 @@ export function ValidateMapLayer(data, currentLookups, isScottish) {
 
     // layer key is missing.
     currentCheck = GetCheck(8700027, currentLookups, methodName, isScottish, showDebugMessages);
-    if (currentCheck && !currentCheck.ignoreCheck && data.serviceProvider === "OS" && !data.layerKey)
+    if (
+      currentCheck &&
+      !currentCheck.ignoreCheck &&
+      (data.serviceProvider === "OS" || data.serviceProvider === "viaEuropa") &&
+      !data.layerKey
+    )
       layerKeyErrors.push(GetErrorMessage(currentCheck, isScottish));
+
+    // Title is missing.
+    currentCheck = GetCheck(8700028, currentLookups, methodName, isScottish, showDebugMessages);
+    if (currentCheck && !currentCheck.ignoreCheck && !data.title)
+      titleErrors.push(GetErrorMessage(currentCheck, isScottish));
+
+    // Geometry type is missing.
+    currentCheck = GetCheck(8700030, currentLookups, methodName, isScottish, showDebugMessages);
+    if (currentCheck && !currentCheck.ignoreCheck && !data.geometryType)
+      geometryTypeErrors.push(GetErrorMessage(currentCheck, isScottish));
+
+    // Map layer id is missing.
+    currentCheck = GetCheck(8700031, currentLookups, methodName, isScottish, showDebugMessages);
+    if (currentCheck && !currentCheck.ignoreCheck && !data.layerId)
+      layerIdErrors.push(GetErrorMessage(currentCheck, isScottish));
   }
 
   if (layerTypeErrors.length > 0)
@@ -250,6 +272,12 @@ export function ValidateMapLayer(data, currentLookups, isScottish) {
     validationErrors.push({
       field: "Opacity",
       errors: opacityErrors,
+    });
+
+  if (geometryTypeErrors.length > 0)
+    validationErrors.push({
+      field: "GeometryType",
+      errors: geometryTypeErrors,
     });
 
   return validationErrors;
