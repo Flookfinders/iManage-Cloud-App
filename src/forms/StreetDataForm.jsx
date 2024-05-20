@@ -91,6 +91,7 @@
 //    077   16.05.24 Sean Flook       IMANN-259 Use the template if present to set the tolerance for new ESUs.
 //    078   17.05.24 Sean Flook       IMANN-458 Pass isActive to the GetTabIconStyle method.
 //    079   17.05.24 Sean Flook       IMANN-374 Correctly open the related tab for Scottish authorities.
+//    080   20.05.24 Sean Flook       IMANN-467 Only set second language details if one exists for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -5785,62 +5786,55 @@ function StreetDataForm({ data, loading }) {
     } else if (settingsContext.isScottish) {
       const secondLanguage = newData.language === "ENG" ? "GAE" : "ENG";
 
-      // let secondDescriptor = null;
-      // if (newData.dualLanguageLink === 0) {
-      //   secondDescriptor = streetData.streetDescriptors.find(
-      //     (x) => x.usrn === newData.usrn && x.language === secondLanguage
-      //   );
-      // } else {
-      //   secondDescriptor = streetData.streetDescriptors.find(
-      //     (x) =>  x.language === secondLanguage
-      //   );
-      // }
       const secondDescriptor = streetData.streetDescriptors.find(
         (x) => x.usrn === newData.usrn && x.language === secondLanguage
       );
 
-      const secondLocality = lookupContext.currentLookups.localities.find(
-        (x) => x.locRef === newData.locRef && x.language === "ENG"
-      );
-      const secondTown = lookupContext.currentLookups.towns.find(
-        (x) => x.townRef === newData.townRef && x.language === "ENG"
-      );
-      const secondAdminAuthorities = lookupContext.currentLookups.adminAuthorities.find(
-        (x) => x.administrativeAreaRef === newData.adminAreaRef && x.language === "ENG"
-      );
-      const secondIsland = lookupContext.currentLookups.islands.find(
-        (x) => x.islandRef === newData.islandRef && x.language === "ENG "
-      );
+      if (secondDescriptor) {
+        const secondLocality = lookupContext.currentLookups.localities.find(
+          (x) => x.locRef === newData.locRef && x.language === "ENG"
+        );
+        const secondTown = lookupContext.currentLookups.towns.find(
+          (x) => x.townRef === newData.townRef && x.language === "ENG"
+        );
+        const secondAdminAuthorities = lookupContext.currentLookups.adminAuthorities.find(
+          (x) => x.administrativeAreaRef === newData.adminAreaRef && x.language === "ENG"
+        );
+        const secondIsland = lookupContext.currentLookups.islands.find(
+          (x) => x.islandRef === newData.islandRef && x.language === "ENG "
+        );
 
-      const newSecondDescriptor = {
-        changeType: secondDescriptor.changeType,
-        usrn: secondDescriptor.usrn,
-        streetDescriptor:
-          secondDescriptor && secondDescriptor.streetDescriptor
-            ? secondDescriptor.streetDescriptor
-            : newData.streetDescriptor,
-        locRef: secondLocality ? secondLocality.localityRef : null,
-        locality: secondLocality ? secondLocality.locality : null,
-        townRef: secondTown ? secondTown.townRef : null,
-        town: secondTown ? secondTown.town : null,
-        islandRef: secondIsland ? secondIsland.islandRef : null,
-        island: secondIsland ? secondIsland.island : null,
-        adminAreaRef: secondAdminAuthorities ? secondAdminAuthorities.administrativeAreaRef : null,
-        administrativeArea: secondAdminAuthorities ? secondAdminAuthorities.administrativeArea : null,
-        language: secondLanguage,
-        neverExport: newData.neverExport,
-        dualLanguageLink: secondDescriptor.dualLanguageLink,
-        pkId: secondDescriptor.pkId,
-      };
+        const newSecondDescriptor = {
+          changeType: secondDescriptor.changeType,
+          usrn: secondDescriptor.usrn,
+          streetDescriptor:
+            secondDescriptor && secondDescriptor.streetDescriptor
+              ? secondDescriptor.streetDescriptor
+              : newData.streetDescriptor,
+          locRef: secondLocality ? secondLocality.localityRef : null,
+          locality: secondLocality ? secondLocality.locality : null,
+          townRef: secondTown ? secondTown.townRef : null,
+          town: secondTown ? secondTown.town : null,
+          islandRef: secondIsland ? secondIsland.islandRef : null,
+          island: secondIsland ? secondIsland.island : null,
+          adminAreaRef: secondAdminAuthorities ? secondAdminAuthorities.administrativeAreaRef : null,
+          administrativeArea: secondAdminAuthorities ? secondAdminAuthorities.administrativeArea : null,
+          language: secondLanguage,
+          neverExport: newData.neverExport,
+          dualLanguageLink: secondDescriptor.dualLanguageLink,
+          pkId: secondDescriptor.pkId,
+        };
 
-      newDescriptors = streetData.streetDescriptors.map(
-        (x) =>
-          [newData].find((descriptor) => descriptor.pkId === x.pkId) ||
-          [newSecondDescriptor].find((descriptor) => descriptor.pkId === x.pkId)
-      );
-      // newDescriptors = [];
-      // newDescriptors.push(secondDescriptor);
-      // newDescriptors.push(newData);
+        newDescriptors = streetData.streetDescriptors.map(
+          (x) =>
+            [newData].find((descriptor) => descriptor.pkId === x.pkId) ||
+            [newSecondDescriptor].find((descriptor) => descriptor.pkId === x.pkId)
+        );
+      } else {
+        newDescriptors = streetData.streetDescriptors.map((x) =>
+          [newData].find((descriptor) => descriptor.pkId === x.pkId)
+        );
+      }
     } else {
       newDescriptors = streetData.streetDescriptors.map((x) =>
         [newData].find((descriptor) => descriptor.pkId === x.pkId)
