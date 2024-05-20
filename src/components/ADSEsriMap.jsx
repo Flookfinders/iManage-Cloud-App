@@ -73,6 +73,7 @@
 //    059   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //    060   14.05.24 Sean Flook       IMANN-206 Include property actions to the background provenance layer information dialog.
 //    061   20.05.24 Sean Flook       IMANN-444 Refresh the snap layers after loading a SHP file.
+//    062   20.05.24 Sean Flook       IMANN-476 Check view has been created first in fadeVisibilityOn.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2423,26 +2424,28 @@ function ADSEsriMap(startExtent) {
       const finalOpacity = layer.opacity;
       layer.opacity = opacity;
 
-      view.whenLayerView(layer).then((layerView) => {
-        function incrementOpacityByFrame() {
-          if (opacity >= finalOpacity && animating) {
-            animating = false;
-            return;
+      if (view) {
+        view.whenLayerView(layer).then((layerView) => {
+          function incrementOpacityByFrame() {
+            if (opacity >= finalOpacity && animating) {
+              animating = false;
+              return;
+            }
+
+            layer.opacity = opacity;
+            opacity += 0.02;
+
+            requestAnimationFrame(incrementOpacityByFrame);
           }
 
-          layer.opacity = opacity;
-          opacity += 0.02;
-
-          requestAnimationFrame(incrementOpacityByFrame);
-        }
-
-        // Wait for tiles to finish loading before beginning the fade
-        reactiveUtils
-          .whenOnce(() => !layerView.updating)
-          .then(() => {
-            requestAnimationFrame(incrementOpacityByFrame);
-          });
-      });
+          // Wait for tiles to finish loading before beginning the fade
+          reactiveUtils
+            .whenOnce(() => !layerView.updating)
+            .then(() => {
+              requestAnimationFrame(incrementOpacityByFrame);
+            });
+        });
+      }
     },
     [view]
   );

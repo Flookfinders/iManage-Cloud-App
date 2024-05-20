@@ -28,6 +28,7 @@
 //    015   16.04.24 Sean Flook                 When loading a SHP file use the mapContext to retain the information and display the layer in the map.
 //    016   07.02.24 Sean Flook       IMANN-377 Changes required to support viaEuropa mapping for OneScotland.
 //    017   03.05.24 Sean Flook                 Call getBaseMapLayers.
+//    018   20.05.24 Sean Flook       IMANN-476 Check view has been created first in fadeVisibilityOn.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1779,26 +1780,28 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
       const finalOpacity = layer.opacity;
       layer.opacity = opacity;
 
-      view.whenLayerView(layer).then((layerView) => {
-        function incrementOpacityByFrame() {
-          if (opacity >= finalOpacity && animating) {
-            animating = false;
-            return;
+      if (view) {
+        view.whenLayerView(layer).then((layerView) => {
+          function incrementOpacityByFrame() {
+            if (opacity >= finalOpacity && animating) {
+              animating = false;
+              return;
+            }
+
+            layer.opacity = opacity;
+            opacity += 0.02;
+
+            requestAnimationFrame(incrementOpacityByFrame);
           }
 
-          layer.opacity = opacity;
-          opacity += 0.02;
-
-          requestAnimationFrame(incrementOpacityByFrame);
-        }
-
-        // Wait for tiles to finish loading before beginning the fade
-        reactiveUtils
-          .whenOnce(() => !layerView.updating)
-          .then(() => {
-            requestAnimationFrame(incrementOpacityByFrame);
-          });
-      });
+          // Wait for tiles to finish loading before beginning the fade
+          reactiveUtils
+            .whenOnce(() => !layerView.updating)
+            .then(() => {
+              requestAnimationFrame(incrementOpacityByFrame);
+            });
+        });
+      }
     }
 
     view.when().then(() => {
