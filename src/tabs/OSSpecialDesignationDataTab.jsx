@@ -32,6 +32,7 @@
 //    019   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    020   20.02.24 Joel Benford     IMANN-299 Finish earlier toolbar changes
 //    021   27.03.24 Sean Flook                 Clear specific location if going back to whole road.
+//    022   17.05.24 Joshua McCormick IMANN-400 OSSpecial desc char limit set to 255 from 250
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -652,7 +653,7 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
           isFocused={focusedField ? focusedField === "Description" : false}
           loading={loading}
           value={description}
-          maxLength={250}
+          maxLength={255}
           minLines={3}
           maxLines={5}
           characterSet="GeoPlaceStreet1"
