@@ -52,6 +52,7 @@
 //    038   26.04.24 Sean Flook       IMANN-166 Reset flag if the data changes.
 //    039   13.05.24 Sean Flook       IMANN-439 Changed to use grids to display the data as well as other display improvements.
 //    040   17.05.24 Sean Flook       IMANN-458 Correctly highlight the avatar when items are hovered.
+//    041   20.05.24 Sean Flook       IMANN-450 Correctly get the USRN when creating a child/children.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -481,7 +482,7 @@ function RelatedPropertyTab({
     if (propertyData) {
       const parent = getWizardParentDetails(propertyData, lookupContext.currentLookups.postcodes);
 
-      if (onPropertyAdd && parent) onPropertyAdd(propertyData.usrn, parent, false);
+      if (onPropertyAdd && parent) onPropertyAdd(parent.usrn, parent, false);
     }
   }
 
@@ -499,7 +500,7 @@ function RelatedPropertyTab({
     if (propertyData) {
       const parent = getWizardParentDetails(propertyData, lookupContext.currentLookups.postcodes);
 
-      if (onPropertyAdd && parent) onPropertyAdd(propertyData.usrn, parent, true);
+      if (onPropertyAdd && parent) onPropertyAdd(parent.usrn, parent, true);
     }
   };
 
