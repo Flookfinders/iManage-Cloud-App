@@ -72,6 +72,7 @@
 //    058   03.05.24 Sean Flook                 Moved functions out of useEffect by using useCallback.
 //    059   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //    060   14.05.24 Sean Flook       IMANN-206 Include property actions to the background provenance layer information dialog.
+//    061   20.05.24 Sean Flook       IMANN-444 Refresh the snap layers after loading a SHP file.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3523,6 +3524,7 @@ function ADSEsriMap(startExtent) {
 
       loadedShpFileTitles.current = mapContext.loadedShpFiles.map((x) => x.shpFile.title);
       loadedShpFileIds.current = mapContext.loadedShpFiles.map((x) => x.id);
+      editingObject.current = null;
     } else {
       loadedShpFileTitles.current = [];
       loadedShpFileIds.current = [];

@@ -47,6 +47,7 @@
 //    034   26.04.24 Sean Flook       IMANN-166 Refresh related after doing the save.
 //    035   08.05.24 Sean Flook       IMANN-447 Return empty string when the sub-locality is null.
 //    036   15.05.24 Sean Flook       IMANN-131 Ensure NeverExport is always set.
+//    037   20.05.24 Sean Flook       IMANN-444 Prevent exceptions from occurring.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2528,12 +2529,16 @@ export const hasPropertyChanged = (newProperty, currentSandbox) => {
   return (
     newProperty ||
     (currentSandbox.currentPropertyRecords.lpi &&
+      currentSandbox.sourceProperty &&
+      currentSandbox.sourceProperty.lpis &&
       !ObjectComparison(
         currentSandbox.sourceProperty.lpis.find((x) => x.pkId === currentSandbox.currentPropertyRecords.lpi.pkId),
         currentSandbox.currentPropertyRecords.lpi,
         lpiKeysToIgnore
       )) ||
     (currentSandbox.currentPropertyRecords.appCrossRef &&
+      currentSandbox.sourceProperty &&
+      currentSandbox.sourceProperty.blpuAppCrossRefs &&
       !ObjectComparison(
         currentSandbox.sourceProperty.blpuAppCrossRefs.find(
           (x) => x.pkId === currentSandbox.currentPropertyRecords.appCrossRef.pkId
@@ -2542,14 +2547,18 @@ export const hasPropertyChanged = (newProperty, currentSandbox) => {
         blpuAppCrossRefKeysToIgnore
       )) ||
     (currentSandbox.currentPropertyRecords.provenance &&
+      currentSandbox.sourceProperty &&
+      currentSandbox.sourceProperty.blpuProvenances &&
       !ObjectComparison(
         currentSandbox.sourceProperty.blpuProvenances.find(
-          (x) => x.pkId === currentSandbox.currentPropertyRecords.provenance.pkId
+          (x) => x.pkId === currentSandbox.currentPropertyRecords.provenance.id
         ),
         currentSandbox.currentPropertyRecords.provenance,
         provenanceKeysToIgnore
       )) ||
     (currentSandbox.currentPropertyRecords.classification &&
+      currentSandbox.sourceProperty &&
+      currentSandbox.sourceProperty.classifications &&
       !ObjectComparison(
         currentSandbox.sourceProperty.classifications.find(
           (x) => x.pkId === currentSandbox.currentPropertyRecords.classification.pkId
@@ -2558,6 +2567,8 @@ export const hasPropertyChanged = (newProperty, currentSandbox) => {
         classificationKeysToIgnore
       )) ||
     (currentSandbox.currentPropertyRecords.organisation &&
+      currentSandbox.sourceProperty &&
+      currentSandbox.sourceProperty.organisations &&
       !ObjectComparison(
         currentSandbox.sourceProperty.organisations.find(
           (x) => x.pkId === currentSandbox.currentPropertyRecords.organisation.pkId
@@ -2566,6 +2577,8 @@ export const hasPropertyChanged = (newProperty, currentSandbox) => {
         organisationKeysToIgnore
       )) ||
     (currentSandbox.currentPropertyRecords.successorCrossRef &&
+      currentSandbox.sourceProperty &&
+      currentSandbox.sourceProperty.successorCrossRefs &&
       !ObjectComparison(
         currentSandbox.sourceProperty.successorCrossRefs.find(
           (x) => x.pkId === currentSandbox.currentPropertyRecords.successorCrossRef.pkId
@@ -2574,12 +2587,15 @@ export const hasPropertyChanged = (newProperty, currentSandbox) => {
         successorCrossRefKeysToIgnore
       )) ||
     (currentSandbox.currentPropertyRecords.note &&
+      currentSandbox.sourceProperty &&
+      currentSandbox.sourceProperty.blpuNotes &&
       !ObjectComparison(
         currentSandbox.sourceProperty.blpuNotes.find((x) => x.pkId === currentSandbox.currentPropertyRecords.note.pkId),
         currentSandbox.currentPropertyRecords.note,
         noteKeysToIgnore
       )) ||
     (currentSandbox.currentProperty &&
+      currentSandbox.sourceProperty &&
       !PropertyComparison(currentSandbox.sourceProperty, currentSandbox.currentProperty))
   );
 };
