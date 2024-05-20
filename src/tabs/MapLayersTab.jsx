@@ -22,6 +22,7 @@
 //    009   10.01.24 Sean Flook                 Fix warnings.
 //    010   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    011   27.03.24 Sean Flook                 Further changes to fix warnings.
+//    012   20.05.24 Sean Flook       IMANN-445 Display API errors.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -616,10 +617,54 @@ function MapLayersTab(props) {
             case 400:
               res.json().then((body) => {
                 console.error(`[400 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body.errors);
+
+                let errorMapLayer = [];
+
+                for (const [key, value] of Object.entries(body.errors)) {
+                  if (key.toLowerCase().includes("title")) {
+                    errorMapLayer.push({ field: "Title", errors: value });
+                  } else if (key.toLowerCase().includes("layertype")) {
+                    errorMapLayer.push({ field: "LayerType", errors: value });
+                  } else if (key.toLowerCase().includes("copyright")) {
+                    errorMapLayer.push({ field: "Copyright", errors: value });
+                  } else if (key.toLowerCase().includes("serviceprovider")) {
+                    errorMapLayer.push({ field: "ServiceProvider", errors: value });
+                  } else if (key.toLowerCase().includes("layerkey")) {
+                    errorMapLayer.push({ field: "LayerKey", errors: value });
+                  } else if (key.toLowerCase().includes("layerusername")) {
+                    errorMapLayer.push({ field: "LayerUsername", errors: value });
+                  } else if (key.toLowerCase().includes("layerpassword")) {
+                    errorMapLayer.push({ field: "LayerPassword", errors: value });
+                  } else if (key.toLowerCase().includes("activelayerid")) {
+                    errorMapLayer.push({ field: "ActiveLayerId", errors: value });
+                  } else if (key.toLowerCase().includes("servicemode")) {
+                    errorMapLayer.push({ field: "ServiceMode", errors: value });
+                  } else if (key.toLowerCase().includes("propertyname")) {
+                    errorMapLayer.push({ field: "PropertyName", errors: value });
+                  } else if (key.toLowerCase().includes("layerid")) {
+                    errorMapLayer.push({ field: "LayerId", errors: value });
+                  } else if (key.toLowerCase().includes("url")) {
+                    errorMapLayer.push({ field: "Url", errors: value });
+                  } else if (key.toLowerCase().includes("opacity")) {
+                    errorMapLayer.push({ field: "Opacity", errors: value });
+                  } else {
+                    errorMapLayer.push({ field: key, errors: value });
+                  }
+                }
+
+                if (errorMapLayer.length > 0) {
+                  setMapLayerErrors(errorMapLayer);
+                }
               });
               break;
 
             case 401:
+              setMapLayerErrors([
+                {
+                  field: "Title",
+                  errors: [`You are not authorised to ${isNewLayer ? "create" : "update"} this map layer.`],
+                },
+              ]);
               res.json().then((body) => {
                 console.error(`[401 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body);
               });
@@ -650,6 +695,13 @@ function MapLayersTab(props) {
 
                   if (errorTitle && errorTitle.length > 0 && errorDescription && errorDescription.length > 0) break;
                 }
+
+                setMapLayerErrors([
+                  {
+                    field: "Title",
+                    errors: [`${errorTitle}: ${errorDescription}`],
+                  },
+                ]);
               });
               break;
           }
