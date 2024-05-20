@@ -7,12 +7,12 @@
 //
 //  Maximum validation numbers
 //  =================================
-//  BLPU:                             2100065
+//  BLPU:                             2100066
 //  BLPU Provenance:                  2200020
 //  BLPU Application Cross Reference: 2300033
-//  LPI:                              2400085 - 2400086
+//  LPI:                              2400087
 //  Successor Cross Reference:        3000017
-//  Organisation:                     3100016 - 3100018
+//  Organisation:                     3100017
 //  Classification:                   3200015
 //  Note:                             7100014
 //
@@ -41,6 +41,7 @@
 //    017   24.04.24 Sean Flook                 Added check for 2100065.
 //    018   26.04.24 Sean Flook                 Tweaked check for 2100065.
 //    019   08.05.24 Joel Benford     IMANN-398 Add check 2100066
+//    020   08.05.24 Sean Flook       IMANN-474 Add check 2400087
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1020,6 +1021,12 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       levelErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Official Flag is missing.
+    currentCheck = GetCheck(2400087, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && !data.officialFlag) {
+      officialFlagErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateLpiData - Finished checks");
 
     if (startDateErrors.length > 0)
@@ -1466,6 +1473,18 @@ export function ValidateOrganisationData(data, index, currentLookups) {
     // Organisation is missing.
     currentCheck = GetCheck(3100016, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, true) && !data.organisation) {
+      organisationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Organisation contains an invalid character.
+    currentCheck = GetCheck(3100017, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.organisation &&
+      !/[a-zA-Z0-9 !.,&;:[\]()+-/_@£$ÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜŴÝŸŶàáâäèéêëìíîïòóôöúùûüŵýÿŷẁẃẅẀẂẄỳỲ]+/giu.test(
+        data.organisation
+      )
+    ) {
       organisationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
