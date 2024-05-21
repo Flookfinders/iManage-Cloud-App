@@ -74,6 +74,7 @@
 //    060   14.05.24 Sean Flook       IMANN-206 Include property actions to the background provenance layer information dialog.
 //    061   20.05.24 Sean Flook       IMANN-444 Refresh the snap layers after loading a SHP file.
 //    062   20.05.24 Sean Flook       IMANN-476 Check view has been created first in fadeVisibilityOn.
+//    063   21.05.24 Sean Flook       IMANN-462 Moved loading of base mapping into its own method and wait for details before we try and load it.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2454,6 +2455,255 @@ function ADSEsriMap(startExtent) {
   useEffect(() => {
     if (viewRef.current) return;
 
+    const loadBaseMapLayers = () => {
+      baseMapLayers.current
+        .sort((a, b) => a.layerPosition - b.layerPosition)
+        .forEach((baseLayer) => {
+          if (baseLayer.visible) {
+            newBaseLayer = null;
+
+            switch (baseLayer.layerType) {
+              case 1: // WFS
+                // Create an empty GraphicsLayer as a placeholder for when the user actually gets the features
+                newBaseLayer = new GraphicsLayer({
+                  id: baseLayer.layerId,
+                  copyright:
+                    baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                      ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                      : baseLayer.copyright,
+                  title: baseLayer.title,
+                  listMode: baseLayer.displayInList ? "show" : "hide",
+                  maxScale: baseLayer.maxScale,
+                  minScale: baseLayer.minScale,
+                  opacity: baseLayer.opacity,
+                  visible: baseLayer.visible,
+                });
+                featureLayer.push({ layer: baseLayer, startIndex: 0 });
+                break;
+
+              case 2: // WMS
+                switch (baseLayer.serviceProvider) {
+                  case "thinkWare":
+                    newBaseLayer = new WMSLayer({
+                      url: baseLayer.url,
+                      id: baseLayer.layerId,
+                      customParameters: {
+                        token: baseLayer.token,
+                      },
+                      sublayers: [
+                        {
+                          name: baseLayer.activeLayerId,
+                          title: baseLayer.activeLayerTitle,
+                        },
+                      ],
+                      copyright:
+                        baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                          ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                          : baseLayer.copyright,
+                      title: baseLayer.title,
+                      listMode: baseLayer.displayInList ? "show" : "hide",
+                      maxScale: baseLayer.maxScale,
+                      minScale: baseLayer.minScale,
+                      opacity: baseLayer.opacity,
+                      visible: baseLayer.visible,
+                    });
+                    break;
+
+                  case "viaEuropa":
+                    alert("Code to handle viaEuropa WMS layers has not been written yet.");
+                    break;
+
+                  default: // OS
+                    alert("Code to handle OS WMS layers has not been written yet.");
+                    break;
+                }
+                break;
+
+              case 3: // WMTS
+                switch (baseLayer.serviceProvider) {
+                  case "thinkWare":
+                    alert("Code to handle thinkWare WMTS layers has not been written yet.");
+                    break;
+
+                  case "viaEuropa":
+                    newBaseLayer = new WMTSLayer({
+                      url: `${baseLayer.url}/${baseLayer.layerKey}/${baseLayer.activeLayerId}/wmts?client=arcgis`,
+                      id: baseLayer.layerId,
+                      copyright:
+                        baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                          ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                          : baseLayer.copyright,
+                      title: baseLayer.title,
+                      listMode: baseLayer.displayInList ? "show" : "hide",
+                      maxScale: baseLayer.maxScale,
+                      minScale: baseLayer.minScale,
+                      opacity: baseLayer.opacity,
+                      visible: baseLayer.visible,
+                    });
+                    break;
+
+                  default: // OS
+                    newBaseLayer = new WMTSLayer({
+                      url: baseLayer.url,
+                      serviceMode: baseLayer.serviceMode,
+                      activeLayer: {
+                        id: baseLayer.activeLayerId,
+                      },
+                      customParameters: {
+                        key: baseLayer.layerKey,
+                      },
+                      id: baseLayer.layerId,
+                      copyright:
+                        baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
+                          ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                          : baseLayer.copyright,
+                      title: baseLayer.title,
+                      listMode: baseLayer.displayInList ? "show" : "hide",
+                      maxScale: baseLayer.maxScale,
+                      minScale: baseLayer.minScale,
+                      opacity: baseLayer.opacity,
+                      visible: baseLayer.visible,
+                    });
+                    break;
+                }
+                break;
+
+              default:
+                break;
+            }
+
+            if (newBaseLayer) {
+              baseLayerIds.push(baseLayer.layerId);
+              if (baseLayer.esuSnap) snapEsu.push(baseLayer.layerId);
+              if (baseLayer.blpuSnap) snapBlpu.push(baseLayer.layerId);
+              if (baseLayer.extentSnap) snapExtent.push(baseLayer.layerId);
+              baseLayers.push(newBaseLayer);
+            }
+          }
+        });
+
+      baseMappingLayerIds.current = baseLayerIds;
+      baseLayersSnapEsu.current = snapEsu;
+      baseLayersSnapBlpu.current = snapBlpu;
+      baseLayersSnapExtent.current = snapExtent;
+      baseLayersFeature.current = featureLayer;
+
+      const baseMap = new Map({
+        layers: baseLayers,
+      });
+
+      const baseView = new MapView({
+        container: mapRef.current,
+        map: baseMap,
+        extent: backgroundExtent.current ? backgroundExtent.current : getAuthorityExtent(),
+        constraints: {
+          minZoom: 2,
+          maxZoom: 21,
+          rotationEnabled: false,
+          lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods,
+        },
+        highlightOptions: {
+          color: [217, 0, 182, 255],
+          fillOpacity: 0.25,
+        },
+        popup: {
+          collapseEnabled: false,
+          dockOptions: {
+            buttonEnabled: false,
+          },
+        },
+      });
+
+      const scaleBar = new ScaleBar({
+        view: baseView,
+        unit: "dual", // The scale bar displays both metric and non-metric units.
+      });
+
+      const baseCoordinateConversion = new CoordinateConversion({
+        label: "Coordinates",
+        view: baseView,
+        visibleElements: {
+          settingsButton: false,
+        },
+      });
+
+      const baseSketch = new Sketch({
+        id: "ADSEditWidget",
+        view: baseView,
+        creationMode: "update",
+        availableCreateTools: [],
+        defaultCreateOptions: { hasZ: false },
+        defaultUpdateOptions: {
+          tool: "reshape",
+          enableRotation: false,
+          enableZ: false,
+          multipleSelectionEnabled: false,
+          toggleToolOnClick: false,
+        },
+        snappingOptions: { enabled: true },
+        visibleElements: {
+          createTools: {
+            rectangle: false,
+            circle: false,
+          },
+        },
+        visible: false,
+      });
+
+      const baseMeasurement = new Measurement({
+        id: "ADSMeasurement",
+        view: baseView,
+        activeTool: null,
+        visible: false,
+      });
+
+      const baseLayerList = new LayerList({
+        id: "ADSLayerList",
+        view: baseView,
+        label: "Current layers",
+        visible: false,
+        listItemCreatedFunction: defineActions,
+      });
+
+      baseView.ui.add(baseSketch, {
+        position: "top-right",
+      });
+
+      baseView.ui.remove("zoom"); // Remove default zoom widget first
+
+      baseView.ui.add("ads-buttons", "bottom-left");
+
+      baseView.ui.add(baseLayerList, {
+        position: "bottom-left",
+      });
+
+      baseView.ui.add(baseMeasurement, "bottom-left");
+
+      baseView.ui.add(scaleBar, {
+        position: "bottom-left",
+      });
+
+      baseView.ui.add(baseCoordinateConversion, { position: "bottom-right" });
+
+      baseSketch.activeTool = null;
+
+      baseView.when((_) => {
+        const plus = document.getElementsByClassName("esri-icon-plus");
+        if (plus && plus.length === 1) plus[0].classList = "mapPlusIcon";
+
+        const minus = document.getElementsByClassName("esri-icon-minus");
+        if (minus && minus.length === 1) minus[0].classList = "mapMinusIcon";
+      });
+
+      mapRef.current = baseMap;
+      setView(baseView);
+      viewRef.current = baseView;
+      sketchRef.current = baseSketch;
+      layerListRef.current = baseLayerList;
+      measurementRef.current = baseMeasurement;
+      coordinateConversionRef.current = baseCoordinateConversion;
+    };
+
     // console.log(["[SF] Base mapping"]);
 
     const baseLayers = [];
@@ -2465,254 +2715,14 @@ function ADSEsriMap(startExtent) {
     let newBaseLayer;
 
     // console.log("[SF] Base mapping");
-    if (!baseMapLayers.current) baseMapLayers.current = getBaseMapLayers(userContext.current.currentUser.token);
-
-    baseMapLayers.current
-      .sort((a, b) => a.layerPosition - b.layerPosition)
-      .forEach((baseLayer) => {
-        if (baseLayer.visible) {
-          newBaseLayer = null;
-
-          switch (baseLayer.layerType) {
-            case 1: // WFS
-              // Create an empty GraphicsLayer as a placeholder for when the user actually gets the features
-              newBaseLayer = new GraphicsLayer({
-                id: baseLayer.layerId,
-                copyright:
-                  baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
-                    ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                    : baseLayer.copyright,
-                title: baseLayer.title,
-                listMode: baseLayer.displayInList ? "show" : "hide",
-                maxScale: baseLayer.maxScale,
-                minScale: baseLayer.minScale,
-                opacity: baseLayer.opacity,
-                visible: baseLayer.visible,
-              });
-              featureLayer.push({ layer: baseLayer, startIndex: 0 });
-              break;
-
-            case 2: // WMS
-              switch (baseLayer.serviceProvider) {
-                case "thinkWare":
-                  newBaseLayer = new WMSLayer({
-                    url: baseLayer.url,
-                    id: baseLayer.layerId,
-                    customParameters: {
-                      token: baseLayer.token,
-                    },
-                    sublayers: [
-                      {
-                        name: baseLayer.activeLayerId,
-                        title: baseLayer.activeLayerTitle,
-                      },
-                    ],
-                    copyright:
-                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
-                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                        : baseLayer.copyright,
-                    title: baseLayer.title,
-                    listMode: baseLayer.displayInList ? "show" : "hide",
-                    maxScale: baseLayer.maxScale,
-                    minScale: baseLayer.minScale,
-                    opacity: baseLayer.opacity,
-                    visible: baseLayer.visible,
-                  });
-                  break;
-
-                case "viaEuropa":
-                  alert("Code to handle viaEuropa WMS layers has not been written yet.");
-                  break;
-
-                default: // OS
-                  alert("Code to handle OS WMS layers has not been written yet.");
-                  break;
-              }
-              break;
-
-            case 3: // WMTS
-              switch (baseLayer.serviceProvider) {
-                case "thinkWare":
-                  alert("Code to handle thinkWare WMTS layers has not been written yet.");
-                  break;
-
-                case "viaEuropa":
-                  newBaseLayer = new WMTSLayer({
-                    url: `${baseLayer.url}/${baseLayer.layerKey}/${baseLayer.activeLayerId}/wmts?client=arcgis`,
-                    id: baseLayer.layerId,
-                    copyright:
-                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
-                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                        : baseLayer.copyright,
-                    title: baseLayer.title,
-                    listMode: baseLayer.displayInList ? "show" : "hide",
-                    maxScale: baseLayer.maxScale,
-                    minScale: baseLayer.minScale,
-                    opacity: baseLayer.opacity,
-                    visible: baseLayer.visible,
-                  });
-                  break;
-
-                default: // OS
-                  newBaseLayer = new WMTSLayer({
-                    url: baseLayer.url,
-                    serviceMode: baseLayer.serviceMode,
-                    activeLayer: {
-                      id: baseLayer.activeLayerId,
-                    },
-                    customParameters: {
-                      key: baseLayer.layerKey,
-                    },
-                    id: baseLayer.layerId,
-                    copyright:
-                      baseLayer.copyright && baseLayer.copyright.includes("<<year>>")
-                        ? baseLayer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                        : baseLayer.copyright,
-                    title: baseLayer.title,
-                    listMode: baseLayer.displayInList ? "show" : "hide",
-                    maxScale: baseLayer.maxScale,
-                    minScale: baseLayer.minScale,
-                    opacity: baseLayer.opacity,
-                    visible: baseLayer.visible,
-                  });
-                  break;
-              }
-              break;
-
-            default:
-              break;
-          }
-
-          if (newBaseLayer) {
-            baseLayerIds.push(baseLayer.layerId);
-            if (baseLayer.esuSnap) snapEsu.push(baseLayer.layerId);
-            if (baseLayer.blpuSnap) snapBlpu.push(baseLayer.layerId);
-            if (baseLayer.extentSnap) snapExtent.push(baseLayer.layerId);
-            baseLayers.push(newBaseLayer);
-          }
-        }
+    if (!baseMapLayers.current) {
+      getBaseMapLayers(userContext.current.currentUser.token).then((result) => {
+        baseMapLayers.current = result;
+        loadBaseMapLayers();
       });
-
-    baseMappingLayerIds.current = baseLayerIds;
-    baseLayersSnapEsu.current = snapEsu;
-    baseLayersSnapBlpu.current = snapBlpu;
-    baseLayersSnapExtent.current = snapExtent;
-    baseLayersFeature.current = featureLayer;
-
-    const baseMap = new Map({
-      layers: baseLayers,
-    });
-
-    const baseView = new MapView({
-      container: mapRef.current,
-      map: baseMap,
-      extent: backgroundExtent.current ? backgroundExtent.current : getAuthorityExtent(),
-      constraints: {
-        minZoom: 2,
-        maxZoom: 21,
-        rotationEnabled: false,
-        lods: TileInfo.create({ spatialReference: { wkid: 27700 } }).lods,
-      },
-      highlightOptions: {
-        color: [217, 0, 182, 255],
-        fillOpacity: 0.25,
-      },
-      popup: {
-        collapseEnabled: false,
-        dockOptions: {
-          buttonEnabled: false,
-        },
-      },
-    });
-
-    const scaleBar = new ScaleBar({
-      view: baseView,
-      unit: "dual", // The scale bar displays both metric and non-metric units.
-    });
-
-    const baseCoordinateConversion = new CoordinateConversion({
-      label: "Coordinates",
-      view: baseView,
-      visibleElements: {
-        settingsButton: false,
-      },
-    });
-
-    const baseSketch = new Sketch({
-      id: "ADSEditWidget",
-      view: baseView,
-      creationMode: "update",
-      availableCreateTools: [],
-      defaultCreateOptions: { hasZ: false },
-      defaultUpdateOptions: {
-        tool: "reshape",
-        enableRotation: false,
-        enableZ: false,
-        multipleSelectionEnabled: false,
-        toggleToolOnClick: false,
-      },
-      snappingOptions: { enabled: true },
-      visibleElements: {
-        createTools: {
-          rectangle: false,
-          circle: false,
-        },
-      },
-      visible: false,
-    });
-
-    const baseMeasurement = new Measurement({
-      id: "ADSMeasurement",
-      view: baseView,
-      activeTool: null,
-      visible: false,
-    });
-
-    const baseLayerList = new LayerList({
-      id: "ADSLayerList",
-      view: baseView,
-      label: "Current layers",
-      visible: false,
-      listItemCreatedFunction: defineActions,
-    });
-
-    baseView.ui.add(baseSketch, {
-      position: "top-right",
-    });
-
-    baseView.ui.remove("zoom"); // Remove default zoom widget first
-
-    baseView.ui.add("ads-buttons", "bottom-left");
-
-    baseView.ui.add(baseLayerList, {
-      position: "bottom-left",
-    });
-
-    baseView.ui.add(baseMeasurement, "bottom-left");
-
-    baseView.ui.add(scaleBar, {
-      position: "bottom-left",
-    });
-
-    baseView.ui.add(baseCoordinateConversion, { position: "bottom-right" });
-
-    baseSketch.activeTool = null;
-
-    baseView.when((_) => {
-      const plus = document.getElementsByClassName("esri-icon-plus");
-      if (plus && plus.length === 1) plus[0].classList = "mapPlusIcon";
-
-      const minus = document.getElementsByClassName("esri-icon-minus");
-      if (minus && minus.length === 1) minus[0].classList = "mapMinusIcon";
-    });
-
-    mapRef.current = baseMap;
-    setView(baseView);
-    viewRef.current = baseView;
-    sketchRef.current = baseSketch;
-    layerListRef.current = baseLayerList;
-    measurementRef.current = baseMeasurement;
-    coordinateConversionRef.current = baseCoordinateConversion;
+    } else {
+      loadBaseMapLayers();
+    }
 
     // destroy the map view
     return () => {
