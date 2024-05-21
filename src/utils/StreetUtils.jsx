@@ -58,6 +58,7 @@
 //    045   08.05.24 Sean Flook       IMANN-447 Added exclude from export when creating a new street.
 //    046   14.05.24 Sean Flook       IMANN-438 Fixed setting the prowUsrn field when updating.
 //    047   15.05.24 Sean Flook       IMANN-131 Ensure NeverExport is always set.
+//    048   21.05.24 Sean Flook       IMANN-469 Modified GetStreetUpdateData to set streetSurface, highwayDedicationCode, hdProw and changeType of ASD records when state is closed.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2083,7 +2084,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
         stateDate: streetData.stateDate,
         streetEndDate: streetData.streetEndDate,
         streetClassification: streetData.streetClassification,
-        streetSurface: streetData.streetSurface,
+        streetSurface: streetData.state === 4 ? 2 : streetData.streetSurface,
         streetTolerance: streetData.streetTolerance,
         streetStartX: streetData.streetStartX ? streetData.streetStartX : 0,
         streetStartY: streetData.streetStartY ? streetData.streetStartY : 0,
@@ -2108,7 +2109,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                     esuId: hd.esuId > 0 ? hd.esuId : 0,
                     seqNum: hd.seqNum,
                     changeType: esu.changeType === "D" && hd.changeType !== "D" ? "D" : hd.changeType,
-                    highwayDedicationCode: hd.highwayDedicationCode,
+                    highwayDedicationCode: streetData.state === 4 ? 12 : hd.highwayDedicationCode,
                     recordEndDate: esu.changeType === "D" && hd.changeType !== "D" ? esu.endDate : hd.recordEndDate,
                     hdStartDate: hd.hdStartDate,
                     hdEndDate: hd.hdEndDate,
@@ -2116,7 +2117,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                     hdSeasonalEndDate: hd.hdSeasonalEndDate,
                     hdStartTime: hd.hdStartTime,
                     hdEndTime: hd.hdEndTime,
-                    hdProw: hd.hdProw,
+                    hdProw: streetData.state === 4 ? false : hd.hdProw,
                     hdNcr: hd.hdNcr,
                     hdQuietRoute: hd.hdQuietRoute,
                     hdObstruction: hd.hdObstruction,
@@ -2198,7 +2199,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
         stateDate: streetData.stateDate,
         streetEndDate: streetData.streetEndDate,
         streetClassification: streetData.streetClassification,
-        streetSurface: streetData.streetSurface,
+        streetSurface: streetData.state === 4 ? 2 : streetData.streetSurface,
         streetTolerance: streetData.streetTolerance,
         streetStartX: streetData.streetStartX ? streetData.streetStartX : 0,
         streetStartY: streetData.streetStartY ? streetData.streetStartY : 0,
@@ -2224,7 +2225,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                         esuId: hd.esuId > 0 ? hd.esuId : 0,
                         seqNum: hd.seqNum,
                         changeType: esu.changeType === "D" && hd.changeType !== "D" ? "D" : hd.changeType,
-                        highwayDedicationCode: hd.highwayDedicationCode,
+                        highwayDedicationCode: streetData.state === 4 ? 12 : hd.highwayDedicationCode,
                         recordEndDate: esu.changeType === "D" && hd.changeType !== "D" ? esu.endDate : hd.recordEndDate,
                         hdStartDate: hd.hdStartDate,
                         hdEndDate: hd.hdEndDate,
@@ -2232,7 +2233,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                         hdSeasonalEndDate: hd.hdSeasonalEndDate,
                         hdStartTime: hd.hdStartTime,
                         hdEndTime: hd.hdEndTime,
-                        hdProw: hd.hdProw,
+                        hdProw: streetData.state === 4 ? false : hd.hdProw,
                         hdNcr: hd.hdNcr,
                         hdQuietRoute: hd.hdQuietRoute,
                         hdObstruction: hd.hdObstruction,
@@ -2308,7 +2309,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
               return {
                 pkId: i.pkId > 0 ? i.pkId : 0,
                 seqNum: i.seqNum,
-                changeType: i.changeType,
+                changeType: streetData.state === 4 ? "D" : i.changeType,
                 swaOrgRefAuthority: i.swaOrgRefAuthority,
                 districtRefAuthority: i.districtRefAuthority,
                 recordStartDate: i.recordStartDate,
@@ -2327,7 +2328,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
         constructions: streetData.constructions
           ? streetData.constructions.map((c) => {
               return {
-                changeType: c.changeType,
+                changeType: streetData.state === 4 ? "D" : c.changeType,
                 usrn: streetData.usrn,
                 seqNum: c.seqNum,
                 wholeRoad: c.wholeRoad,
@@ -2360,7 +2361,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
               return {
                 pkId: sd.pkId > 0 ? sd.pkId : 0,
                 seqNum: sd.seqNum,
-                changeType: sd.changeType,
+                changeType: streetData.state === 4 ? "D" : sd.changeType,
                 streetSpecialDesigCode: sd.streetSpecialDesigCode,
                 asdCoordinate: sd.asdCoordinate,
                 asdCoordinateCount: sd.asdCoordinateCount,
@@ -2390,7 +2391,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
         publicRightOfWays: streetData.publicRightOfWays
           ? streetData.publicRightOfWays.map((prow) => {
               return {
-                changeType: prow.changeType,
+                changeType: streetData.state === 4 ? "D" : prow.changeType,
                 prowUsrn: streetData.usrn,
                 defMapGeometryType: prow.defMapGeometryType,
                 defMapGeometryCount: prow.defMapGeometryCount,
@@ -2430,7 +2431,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
           ? streetData.heightWidthWeights.map((hww) => {
               return {
                 pkId: hww.pkId > 0 ? hww.pkId : 0,
-                changeType: hww.changeType,
+                changeType: streetData.state === 4 ? "D" : hww.changeType,
                 seqNum: hww.seqNum,
                 hwwRestrictionCode: hww.hwwRestrictionCode,
                 recordStartDate: hww.recordStartDate,
