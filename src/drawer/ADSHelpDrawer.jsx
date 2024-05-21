@@ -18,6 +18,7 @@
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    006   11.03.24 Sean Flook           GLB12 Correctly set width.
 //    007   02.04.24 Sean Flook                 Keep title in view when overflowing.
+//    008   21.05.24 Sean Flook                 Updated support email address.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -257,7 +258,7 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
                 Contact support <br />
                 <Link
                   align={"left"}
-                  href="mailto:ads.servicedesk@idoxgroup.com?subject=Support enquiry raised from iManage Cloud Help"
+                  href="mailto:servicedesk@idoxgroup.com?subject=Support enquiry raised from iManage Cloud Help"
                   variant="body2"
                 >
                   Raise a case with our support team
