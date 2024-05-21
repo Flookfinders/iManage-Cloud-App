@@ -42,6 +42,7 @@
 //    018   26.04.24 Sean Flook                 Tweaked check for 2100065.
 //    019   08.05.24 Joel Benford     IMANN-398 Add check 2100066
 //    020   08.05.24 Sean Flook       IMANN-474 Add check 2400087
+//    021   21.05.24 Sean Flook       IMANN-473 Fixed some logic.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -231,16 +232,11 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
 
     // Missing state or state date.
     currentCheck = GetCheck(2100024, currentLookups, methodName, isScottish, showDebugMessages);
-    if (
-      includeCheck(currentCheck, isScottish) &&
-      data.logicalStatus &&
-      [5, 6].includes(data.logicalStatus) &&
-      !data.blpuState
-    ) {
+    if (includeCheck(currentCheck, isScottish) && !data.blpuState) {
       blpuStateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
-    if (includeCheck(currentCheck, isScottish) && data.blpuState && !data.blpuStateDate) {
+    if (includeCheck(currentCheck, isScottish) && !data.blpuStateDate) {
       blpuStateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
@@ -1800,12 +1796,7 @@ export function ValidateMultiEditLogicalStatus(data, currentLookups, isScottish)
 
     // State missing.
     currentCheck = GetCheck(2100059, currentLookups, methodName, isScottish, showDebugMessages);
-    if (
-      includeCheck(currentCheck, isScottish) &&
-      data.logicalStatus &&
-      [5, 6].includes(data.logicalStatus) &&
-      !data.blpuState
-    ) {
+    if (includeCheck(currentCheck, isScottish) && !data.blpuState) {
       blpuStateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 

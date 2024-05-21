@@ -21,6 +21,7 @@
 //    008   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    009   25.01.24 Sean Flook                 Changes required after UX review.
 //    010   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
+//    011   21.05.24 Sean Flook       IMANN-473 Split out the Scottish classification errors to a separate variable.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -125,6 +126,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
   const [lpiOfficialAddressError, setLpiOfficialAddressError] = useState(false);
   const [lpiPostalAddressError, setLpiPostalAddressError] = useState(false);
   const [lpiStartDateError, setLpiStartDateError] = useState(false);
+  const [classificationError, setClassificationError] = useState(false);
   const [classificationSchemeError, setClassificationSchemeError] = useState(false);
   const [classificationStartDateError, setClassificationStartDateError] = useState(false);
   const [otherProvenanceError, setOtherProvenanceError] = useState(false);
@@ -530,7 +532,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
   useEffect(() => {
     setHaveClassificationErrors(false);
 
-    setBlpuClassificationError(false);
+    setClassificationError(false);
     setClassificationSchemeError(false);
     setClassificationStartDateError(false);
 
@@ -538,7 +540,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
       for (const error of classificationErrors) {
         switch (error.field.toLowerCase()) {
           case "classification":
-            setBlpuClassificationError(true);
+            setClassificationError(true);
             setHaveClassificationErrors(true);
             break;
 
@@ -906,10 +908,10 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                         <Typography variant="body2">Classification</Typography>
                       </Grid>
                       <Grid item xs={1}>
-                        {blpuClassificationError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                        {classificationError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                       </Grid>
                       <Grid item xs={7}>
-                        <Typography variant="body2" sx={getWizardValueStyle(blpuClassificationError)}>
+                        <Typography variant="body2" sx={getWizardValueStyle(classificationError)}>
                           {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
                         </Typography>
                       </Grid>
