@@ -34,6 +34,7 @@
 //    021   04.04.24 Sean Flook                 Changes required to handle deleting ESUs when deleting a street.
 //    022   05.04.24 Sean Flook       IMANN-326 If state is changed to 4 set the surface to 2.
 //    023   17.05.24 Joshua McCormick           Added noWrap to street title for when too many characters overflow
+//    024   23.05.24 Sean Flook       IMANN-485 When state changes set the state date to current date.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -217,7 +218,7 @@ function StreetDataTab({
             : null
           : state,
       stateDate:
-        updatedField === "state" && newValue === 4
+        updatedField === "state"
           ? GetCurrentDate()
           : updatedField === "stateDate"
           ? newValue

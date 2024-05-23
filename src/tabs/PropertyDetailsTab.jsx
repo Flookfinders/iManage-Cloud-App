@@ -45,6 +45,7 @@
 //    032   09.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
 //    033   17.04.24 Joshua McCormick IMANN-207 endDate set to null if logical status is less than 7
 //    034   08.05.24 Joel Benford     IMANN-398 BLPU State is now mandatory
+//    035   23.05.24 Sean Flook       IMANN-485 When state changes set the state date to current date.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -63,7 +64,13 @@ import SettingsContext from "../context/settingsContext";
 import SearchContext from "../context/searchContext";
 import InformationContext from "../context/informationContext";
 
-import { copyTextToClipboard, GetLookupLabel, ConvertDate, openInStreetView } from "../utils/HelperUtils";
+import {
+  copyTextToClipboard,
+  GetLookupLabel,
+  ConvertDate,
+  openInStreetView,
+  GetCurrentDate,
+} from "../utils/HelperUtils";
 import {
   FilteredBLPULogicalStatus,
   FilteredRepresentativePointCode,
@@ -283,7 +290,9 @@ function PropertyDetailsTab({
           logicalStatus: fieldName && fieldName === "logicalStatus" ? newValue : blpuLogicalStatus,
           blpuState: fieldName && fieldName === "state" ? newValue : state,
           blpuStateDate:
-            fieldName && fieldName === "stateDate"
+            fieldName && fieldName === "state"
+              ? GetCurrentDate()
+              : fieldName && fieldName === "stateDate"
               ? newValue && ConvertDate(newValue)
               : stateDate && ConvertDate(stateDate),
           xcoordinate: fieldName && fieldName === "easting" ? newValue : easting,
