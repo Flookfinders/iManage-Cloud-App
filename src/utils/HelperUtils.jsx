@@ -51,6 +51,7 @@
 //    038   03.05.24 Sean Flook                 Added getBaseMapLayers.
 //    039   17.05.24 Sean Flook       IMANN-309 Only check all ESUs if geometry has changed and this is not a new street.
 //    040   17.05.24 Joshua McCormick IMANN-460 Added PUT to call English with Welsh ref  
+//    041   23.05.24 Sean Flook       IMANN-478 Include usedByFrontEnd in includeCheck.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1331,6 +1332,7 @@ export const includeCheck = (currentCheck, isScottish) => {
   return (
     currentCheck &&
     !currentCheck.ignoreCheck &&
+    currentCheck.usedByFrontEnd &&
     ((currentCheck.gpCheck && !isScottish) || (currentCheck.osCheck && isScottish))
   );
 };

@@ -47,6 +47,7 @@
 //    016   18.03.24 Sean Flook         ESU2_GP Added check for missing geometry on ESU record.
 //    017   28.03.24 Sean Flook                 Fixed check 6200016.
 //    018   16.04.24 Sean Flook       IMANN-388 Corrected bug.
+//    019   23.05.24 Joshua McCormick IMANN-478 Removed 6600052 PRoW district ref consultant is missing. as not used in API or GUI
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3770,12 +3771,6 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups, author
     currentCheck = GetCheck(6600051, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, false) && data.consultDetails && data.consultDetails.length > 30) {
       consultDetailsErrors.push(GetErrorMessage(currentCheck, false));
-    }
-
-    // PRoW district ref consultant is missing.
-    currentCheck = GetCheck(6600052, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, false) && !data.prowDistrictRefConsultant) {
-      prowDistrictRefConsultantErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // For PRoW status of C the consult start date, consult end date, consult ref and consult details must be present.
