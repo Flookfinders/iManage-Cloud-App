@@ -93,6 +93,7 @@
 //    079   17.05.24 Sean Flook       IMANN-374 Correctly open the related tab for Scottish authorities.
 //    080   20.05.24 Sean Flook       IMANN-467 Only set second language details if one exists for Scottish authorities.
 //    081   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
+//    082   23.05.24 Sean Flook       IMANN-484 When adding a new ESU to a street call GetNewEsuStreetData to ensure the geometry on any ASD records are updated as well.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -7782,132 +7783,15 @@ function StreetDataForm({ data, loading }) {
               endY = coordinates.endY;
             }
 
-            newStreetData =
-              !settingsContext.isScottish && !HasASD()
-                ? {
-                    changeType: contextStreet.changeType,
-                    usrn: contextStreet.usrn,
-                    swaOrgRefNaming: contextStreet.swaOrgRefNaming,
-                    streetSurface: contextStreet.streetSurface,
-                    streetStartDate: contextStreet.streetStartDate,
-                    streetEndDate: contextStreet.streetEndDate,
-                    neverExport: contextStreet.neverExport,
-                    version: contextStreet.version,
-                    recordType: contextStreet.recordType,
-                    state: contextStreet.state,
-                    stateDate: contextStreet.stateDate,
-                    streetClassification: contextStreet.streetClassification,
-                    streetTolerance: contextStreet.streetTolerance,
-                    streetStartX:
-                      contextStreet.streetStartX && contextStreet.streetStartX > 0
-                        ? contextStreet.streetStartX
-                        : startX,
-                    streetStartY:
-                      contextStreet.streetStartY && contextStreet.streetStartY > 0
-                        ? contextStreet.streetStartY
-                        : startY,
-                    streetEndX:
-                      contextStreet.streetEndX && contextStreet.streetEndX > 0 ? contextStreet.streetEndX : endX,
-                    streetEndY:
-                      contextStreet.streetEndY && contextStreet.streetEndY > 0 ? contextStreet.streetEndY : endY,
-                    pkId: contextStreet.pkId,
-                    lastUpdateDate: contextStreet.lastUpdateDate,
-                    entryDate: contextStreet.entryDate,
-                    streetLastUpdated: contextStreet.streetLastUpdated,
-                    streetLastUser: contextStreet.streetLastUser,
-                    relatedPropertyCount: contextStreet.relatedPropertyCount,
-                    relatedStreetCount: contextStreet.relatedStreetCount,
-                    esus: newEsus,
-                    streetDescriptors: contextStreet.streetDescriptors,
-                    streetNotes: contextStreet.streetNotes,
-                  }
-                : !settingsContext.isScottish && HasASD()
-                ? {
-                    changeType: contextStreet.changeType,
-                    usrn: contextStreet.usrn,
-                    swaOrgRefNaming: contextStreet.swaOrgRefNaming,
-                    streetSurface: contextStreet.streetSurface,
-                    streetStartDate: contextStreet.streetStartDate,
-                    streetEndDate: contextStreet.streetEndDate,
-                    neverExport: contextStreet.neverExport,
-                    version: contextStreet.version,
-                    recordType: contextStreet.recordType,
-                    state: contextStreet.state,
-                    stateDate: contextStreet.stateDate,
-                    streetClassification: contextStreet.streetClassification,
-                    streetTolerance: contextStreet.streetTolerance,
-                    streetStartX:
-                      contextStreet.streetStartX && contextStreet.streetStartX > 0
-                        ? contextStreet.streetStartX
-                        : startX,
-                    streetStartY:
-                      contextStreet.streetStartY && contextStreet.streetStartY > 0
-                        ? contextStreet.streetStartY
-                        : startY,
-                    streetEndX:
-                      contextStreet.streetEndX && contextStreet.streetEndX > 0 ? contextStreet.streetEndX : endX,
-                    streetEndY:
-                      contextStreet.streetEndY && contextStreet.streetEndY > 0 ? contextStreet.streetEndY : endY,
-                    pkId: contextStreet.pkId,
-                    lastUpdateDate: contextStreet.lastUpdateDate,
-                    entryDate: contextStreet.entryDate,
-                    streetLastUpdated: contextStreet.streetLastUpdated,
-                    streetLastUser: contextStreet.streetLastUser,
-                    relatedPropertyCount: contextStreet.relatedPropertyCount,
-                    relatedStreetCount: contextStreet.relatedStreetCount,
-                    esus: newEsus,
-                    streetDescriptors: contextStreet.streetDescriptors,
-                    streetNotes: contextStreet.streetNotes,
-                    interests: contextStreet.recordType < 4 ? contextStreet.interests : null,
-                    constructions: contextStreet.recordType < 4 ? contextStreet.constructions : null,
-                    specialDesignations: contextStreet.recordType < 4 ? contextStreet.specialDesignations : null,
-                    publicRightOfWays: contextStreet.recordType < 4 ? contextStreet.publicRightOfWays : null,
-                    heightWidthWeights: contextStreet.recordType < 4 ? contextStreet.heightWidthWeights : null,
-                  }
-                : {
-                    pkId: contextStreet.pkId,
-                    changeType: contextStreet.changeType,
-                    usrn: contextStreet.usrn,
-                    recordType: contextStreet.recordType,
-                    swaOrgRefNaming: contextStreet.swaOrgRefNaming,
-                    version: contextStreet.version,
-                    recordEntryDate: contextStreet.recordEntryDate,
-                    lastUpdateDate: contextStreet.lastUpdateDate,
-                    streetStartDate: contextStreet.streetStartDate,
-                    streetEndDate: contextStreet.streetEndDate,
-                    streetStartX:
-                      contextStreet.streetStartX && contextStreet.streetStartX > 0
-                        ? contextStreet.streetStartX
-                        : startX,
-                    streetStartY:
-                      contextStreet.streetStartY && contextStreet.streetStartY > 0
-                        ? contextStreet.streetStartY
-                        : startY,
-                    streetEndX:
-                      contextStreet.streetEndX && contextStreet.streetEndX > 0 ? contextStreet.streetEndX : endX,
-                    streetEndY:
-                      contextStreet.streetEndY && contextStreet.streetEndY > 0 ? contextStreet.streetEndY : endY,
-                    streetTolerance: contextStreet.streetTolerance,
-                    esuCount: contextStreet.esuCount,
-                    streetLastUpdated: contextStreet.streetLastUpdated,
-                    streetLastUser: contextStreet.streetLastUser,
-                    neverExport: contextStreet.neverExport,
-                    relatedPropertyCount: contextStreet.relatedPropertyCount,
-                    relatedStreetCount: contextStreet.relatedStreetCount,
-                    lastUpdated: contextStreet.lastUpdated,
-                    insertedTimestamp: contextStreet.insertedTimestamp,
-                    insertedUser: contextStreet.insertedUser,
-                    lastUser: contextStreet.lastUser,
-                    esus: newEsus,
-                    successorCrossRefs: contextStreet.successorCrossRefs,
-                    streetDescriptors: contextStreet.streetDescriptors,
-                    streetNotes: contextStreet.streetNotes,
-                    maintenanceResponsibilities:
-                      contextStreet.recordType < 3 ? contextStreet.maintenanceResponsibilities : null,
-                    reinstatementCategories:
-                      contextStreet.recordType < 3 ? contextStreet.reinstatementCategories : null,
-                    specialDesignations: contextStreet.recordType < 3 ? contextStreet.specialDesignations : null,
-                  };
+            const newEsuStreetData = GetNewEsuStreetData(
+              sandboxContext.currentSandbox,
+              newEsus,
+              streetData,
+              settingsContext.isScottish,
+              true
+            );
+
+            newStreetData = newEsuStreetData.streetData;
 
             setEsuFormData({
               pkId: updatedEsu.pkId,
