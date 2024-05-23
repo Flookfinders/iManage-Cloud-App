@@ -22,6 +22,7 @@
 //    009   25.01.24 Sean Flook                 Changes required after UX review.
 //    010   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //    011   21.05.24 Sean Flook       IMANN-473 Split out the Scottish classification errors to a separate variable.
+//    012   22.05.24 Sean Flook       IMANN-473 Changes required for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -722,7 +723,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                     {settingsContext.isScottish && (
                       <Fragment>
                         <Grid item xs={4}>
-                          <Typography variant="body2">Level</Typography>
+                          <Typography variant="body2">Level*</Typography>
                         </Grid>
                         <Grid item xs={1}>
                           {lpiLevelError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
@@ -839,7 +840,9 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                       </Fragment>
                     )}
                     <Grid item xs={4}>
-                      <Typography variant="body2">Official address</Typography>
+                      <Typography variant="body2">{`Official address${
+                        settingsContext.isScottish ? "*" : ""
+                      }`}</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       {lpiOfficialAddressError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
@@ -850,7 +853,9 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                       </Typography>
                     </Grid>
                     <Grid item xs={4}>
-                      <Typography variant="body2">Postal address*</Typography>
+                      <Typography variant="body2">{`${
+                        settingsContext.isScottish ? "Postally addressable*" : "Postal address*"
+                      }`}</Typography>
                     </Grid>
                     <Grid item xs={1}>
                       {lpiPostalAddressError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
@@ -905,7 +910,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                   <CardContent sx={settingsCardContentStyle("wizard")}>
                     <Grid container rowSpacing={1}>
                       <Grid item xs={4}>
-                        <Typography variant="body2">Classification</Typography>
+                        <Typography variant="body2">Classification*</Typography>
                       </Grid>
                       <Grid item xs={1}>
                         {classificationError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
@@ -916,7 +921,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                         </Typography>
                       </Grid>
                       <Grid item xs={4}>
-                        <Typography variant="body2">Scheme</Typography>
+                        <Typography variant="body2">Scheme*</Typography>
                       </Grid>
                       <Grid item xs={1}>
                         {classificationSchemeError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
@@ -927,7 +932,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                         </Typography>
                       </Grid>
                       <Grid item xs={4}>
-                        <Typography variant="body2">Start date</Typography>
+                        <Typography variant="body2">Start date*</Typography>
                       </Grid>
                       <Grid item xs={1}>
                         {classificationStartDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}

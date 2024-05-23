@@ -24,6 +24,7 @@
 //    011   12.03.24 Sean Flook           MUL10 Display errors in a list control.
 //    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    013   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
+//    014   22.05.24 Sean Flook       IMANN-473 Corrected label for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -966,7 +967,7 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                 </Grid>
                 <Grid item xs={12}>
                   <ADSSelectControl
-                    label="Postal address"
+                    label={`${settingsContext.isScottish ? "Postally addressable" : "Postal address"}`}
                     isEditable
                     useRounded
                     disabled={updating}

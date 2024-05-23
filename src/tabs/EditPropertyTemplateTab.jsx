@@ -24,6 +24,7 @@
 //    011   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    012   25.01.24 Sean Flook                 Changes required after UX review.
 //    013   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
+//    014   22.05.24 Sean Flook       IMANN-473 Corrected label for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -892,7 +893,9 @@ function EditPropertyTemplateTab({ data, error, onHomeClick, onUpdateData, onDup
                       </Typography>
                     </Grid>
                     <Grid item xs={3}>
-                      <Typography variant="body2">Postal address</Typography>
+                      <Typography variant="body2">{`${
+                        settingsContext.isScottish ? "Postally addressable" : "Postal address"
+                      }`}</Typography>
                     </Grid>
                     <Grid item xs={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>

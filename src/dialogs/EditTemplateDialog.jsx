@@ -40,6 +40,7 @@
 //    027   17.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft to Scheme field.
 //    028   23.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft to ADSTextControl fields
 //    029   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
+//    030   22.05.24 Sean Flook       IMANN-473 Corrected label for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1534,7 +1535,6 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             value={description}
             id="template_description"
             maxLength={200}
-            displayCharactersLeft
             minLines={2}
             maxLines={10}
             onChange={handleDescriptionChangeEvent}
@@ -1713,7 +1713,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               helperText="Status of address."
             />
             <ADSSelectControl
-              label="Postal address"
+              label={`${settingsContext.isScottish ? "Postally addressable" : "Postal address"}`}
               isEditable
               useRounded
               doNotSetTitleCase
@@ -1796,7 +1796,6 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               value={otherNote}
               id="other_note"
               maxLength={4000}
-              displayCharactersLeft
               minLines={2}
               maxLines={10}
               onChange={handleOtherNoteChangeEvent}
@@ -2756,6 +2755,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             <ADSSelectControl
               label="Logical status"
               isEditable
+              isRequired
               useRounded
               doNotSetTitleCase
               lookupData={FilteredBLPULogicalStatus(settingsContext.isScottish, true)}
@@ -2770,6 +2770,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             <ADSSelectControl
               label="RPC"
               isEditable
+              isRequired
               useRounded
               doNotSetTitleCase
               lookupData={FilteredRepresentativePointCode(settingsContext.isScottish, true)}
@@ -2784,6 +2785,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             <ADSSelectControl
               label="State"
               isEditable
+              isRequired
               useRounded
               doNotSetTitleCase
               lookupData={FilteredBLPUState(settingsContext.isScottish, blpuStatus ? blpuStatus : null)}
@@ -2798,6 +2800,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             <ADSDateControl
               label="State date"
               isEditable
+              isRequired
               value={blpuStateDate}
               errorText={blpuStateDateError}
               onChange={handleBlpuStateDateChangeEvent}
@@ -2807,6 +2810,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               <ADSSelectControl
                 label="Classification"
                 isEditable
+                isRequired
                 includeHiddenCode
                 useRounded
                 doNotSetTitleCase
@@ -2825,6 +2829,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               <ADSNumberControl
                 label="Level"
                 isEditable
+                isRequired
                 value={level}
                 errorText={levelError}
                 helperText="Memorandum of the vertical position of the BLPU."
@@ -2854,6 +2859,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             <ADSDateControl
               label="Start date"
               isEditable
+              isRequired
               value={blpuStartDate}
               helperText="Date on which this BLPU was defined."
               errorText={blpuStartDateError}
@@ -2868,6 +2874,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             <ADSSelectControl
               label="Logical status"
               isEditable
+              isRequired
               useRounded
               doNotSetTitleCase
               lookupData={FilteredLPILogicalStatus(settingsContext.isScottish, null, true)}
@@ -2895,6 +2902,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             <ADSSelectControl
               label="Official address"
               isEditable
+              isRequired={settingsContext.isScottish}
               useRounded
               doNotSetTitleCase
               lookupData={filteredLookup(OfficialAddress, settingsContext.isScottish)}
@@ -2906,8 +2914,9 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               helperText="Status of address."
             />
             <ADSSelectControl
-              label="Postal address"
+              label={`${settingsContext.isScottish ? "Postally addressable" : "Postal address"}`}
               isEditable
+              isRequired
               useRounded
               doNotSetTitleCase
               lookupData={filteredLookup(PostallyAddressable, settingsContext.isScottish)}
@@ -2921,6 +2930,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             <ADSDateControl
               label="Start date"
               isEditable
+              isRequired
               value={lpiStartDate}
               helperText="Date this Record was created."
               errorText={lpiStartDateError}
@@ -2935,6 +2945,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             <ADSSelectControl
               label="Classification"
               isEditable
+              isRequired
               includeHiddenCode
               useRounded
               doNotSetTitleCase
@@ -2951,6 +2962,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             <ADSTextControl
               label="Scheme"
               isEditable
+              isRequired
               value={classificationScheme}
               id="wizard_classification_scheme"
               maxLength={40}
@@ -2962,6 +2974,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             <ADSDateControl
               label="Start date"
               isEditable
+              isRequired
               value={classificationStartDate}
               helperText="Date on which this classification was defined."
               errorText={classificationStartDateError}
@@ -3003,7 +3016,6 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               errorText={otherNoteError}
               id={"ads-text-textfield-note"}
               maxLength={4000}
-              displayCharactersLeft
               minLines={2}
               maxLines={10}
               onChange={handleOtherNoteChangeEvent}

@@ -28,6 +28,7 @@
 //    011   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
 //    012   15.12.23 Sean Flook                 Added comments.
 //    013   21.05.24 Sean Flook       IMANN-473 Added missing checks and fixed some logic.
+//    014   22.05.24 Sean Flook       IMANN-473 Added missing checks for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -874,6 +875,12 @@ export function ValidatePropertyDetails(
     ) {
       blpuLevelErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
+
+    // BLPU level is missing.
+    currentCheck = GetCheck(2100068, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && !blpuData.level && blpuData.level !== 0) {
+      blpuLevelErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
   }
 
   if (!haveMoveBlpu) {
@@ -1011,13 +1018,13 @@ export function ValidatePropertyDetails(
         lpiStatusErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
-      // Postal address flag of 'Y' or 'L' must have a postcode and post town.
+      // Postally addressable flag of 'Y' or 'L' must have a Postcode and Post Town.
       currentCheck = GetCheck(2400082, currentLookups, methodName, isScottish, showDebugMessages);
       if (
-        !isScottish &&
+        isScottish &&
         includeCheck(currentCheck, isScottish) &&
-        lpiData.postalAddress &&
-        ["Y", "L"].includes(lpiData.postalAddress) &&
+        lpiData.postallyAddressable &&
+        ["Y", "L"].includes(lpiData.postallyAddressable) &&
         (!lpiData.postTownRef || !lpiData.postcodeRef)
       ) {
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
@@ -1033,6 +1040,58 @@ export function ValidatePropertyDetails(
       currentCheck = GetCheck(2400087, currentLookups, methodName, isScottish, showDebugMessages);
       if (includeCheck(currentCheck, isScottish) && !lpiData.officialFlag) {
         officialFlagErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+
+      // Postally addressable flag is missing.
+      currentCheck = GetCheck(2400088, currentLookups, methodName, isScottish, showDebugMessages);
+      if (isScottish && includeCheck(currentCheck, isScottish) && !lpiData.postallyAddressable) {
+        postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+
+      // Postally addressable flag is too long.
+      currentCheck = GetCheck(2400089, currentLookups, methodName, isScottish, showDebugMessages);
+      if (
+        isScottish &&
+        includeCheck(currentCheck, isScottish) &&
+        lpiData.postallyAddressable &&
+        lpiData.postallyAddressable.length > 1
+      ) {
+        postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+
+      // Postally addressable flag is invalid.
+      currentCheck = GetCheck(2400090, currentLookups, methodName, isScottish, showDebugMessages);
+      if (
+        isScottish &&
+        includeCheck(currentCheck, isScottish) &&
+        lpiData.postallyAddressable &&
+        !["Y", "L", "N"].includes(lpiData.postallyAddressable)
+      ) {
+        postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+
+      // Postally addressable flag of 'N' must not have a Postcode or Post Town.
+      currentCheck = GetCheck(2400091, currentLookups, methodName, isScottish, showDebugMessages);
+      if (
+        isScottish &&
+        includeCheck(currentCheck, isScottish) &&
+        lpiData.postallyAddressable &&
+        lpiData.postallyAddressable === "N" &&
+        (lpiData.postTownRef || lpiData.postcodeRef)
+      ) {
+        postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+
+      // Postally addressable flag of 'Y' must have a Postcode and a Post Town.
+      currentCheck = GetCheck(2400092, currentLookups, methodName, isScottish, showDebugMessages);
+      if (
+        isScottish &&
+        includeCheck(currentCheck, isScottish) &&
+        lpiData.postallyAddressable &&
+        lpiData.postallyAddressable === "Y" &&
+        (!lpiData.postTownRef || !lpiData.postcodeRef)
+      ) {
+        postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
     }
 
@@ -1060,8 +1119,41 @@ export function ValidatePropertyDetails(
     } else {
       // Classification code is missing.
       currentCheck = GetCheck(3200008, currentLookups, methodName, isScottish, showDebugMessages);
-      if (!haveMoveBlpu && includeCheck(currentCheck, isScottish) && !classificationData.classification)
+      if (!haveMoveBlpu && includeCheck(currentCheck, isScottish) && !classificationData.classification) {
         blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+
+      // Start date cannot be in the future.
+      currentCheck = GetCheck(3200009, currentLookups, methodName, true, showDebugMessages);
+      if (
+        includeCheck(currentCheck, true) &&
+        classificationData.startDate &&
+        isFutureDate(classificationData.startDate)
+      ) {
+        classificationStartDateErrors.push(GetErrorMessage(currentCheck, true));
+      }
+
+      // Scheme is too long.
+      currentCheck = GetCheck(3200015, currentLookups, methodName, true, showDebugMessages);
+      if (
+        includeCheck(currentCheck, true) &&
+        classificationData.classificationScheme &&
+        classificationData.classificationScheme.length > 40
+      ) {
+        classificationSchemeErrors.push(GetErrorMessage(currentCheck, true));
+      }
+
+      // BLPU class scheme is missing.
+      currentCheck = GetCheck(3200017, currentLookups, methodName, true, showDebugMessages);
+      if (includeCheck(currentCheck, true) && !classificationData.classificationScheme) {
+        classificationSchemeErrors.push(GetErrorMessage(currentCheck, true));
+      }
+
+      // Start date is missing.
+      currentCheck = GetCheck(3200018, currentLookups, methodName, true, showDebugMessages);
+      if (includeCheck(currentCheck, true) && !classificationData.startDate) {
+        classificationStartDateErrors.push(GetErrorMessage(currentCheck, true));
+      }
     }
   }
 

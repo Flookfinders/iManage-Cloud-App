@@ -7,13 +7,13 @@
 //
 //  Maximum validation numbers
 //  =================================
-//  BLPU:                             2100066
+//  BLPU:                             2100069
 //  BLPU Provenance:                  2200020
 //  BLPU Application Cross Reference: 2300033
-//  LPI:                              2400087
+//  LPI:                              2400094
 //  Successor Cross Reference:        3000017
 //  Organisation:                     3100017
-//  Classification:                   3200015
+//  Classification:                   3200019
 //  Note:                             7100014
 //
 //--------------------------------------------------------------------------------------------------
@@ -43,6 +43,8 @@
 //    019   08.05.24 Joel Benford     IMANN-398 Add check 2100066
 //    020   08.05.24 Sean Flook       IMANN-474 Add check 2400087
 //    021   21.05.24 Sean Flook       IMANN-473 Fixed some logic.
+//    022   22.05.24 Sean Flook       IMANN-473 Added new Scottish checks.
+//    023   22.05.24 Sean Flook       IMANN-459 Corrected field name for BLPU state checks.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -120,12 +122,12 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
     if (
       includeCheck(currentCheck, isScottish) &&
       data.logicalStatus &&
-      ((data.logicalStatus === 1 && data.state && ![1, 2, 3].includes(data.state)) ||
-        (data.logicalStatus === 5 && (!data.state || ![1, 2, 3, 4, 6].includes(data.state))) ||
-        (data.logicalStatus === 6 && (!data.state || ![1, 5, 6, 7].includes(data.state))) ||
-        (data.logicalStatus === 7 && data.state && ![1, 2, 3, 4, 6].includes(data.state)) ||
-        (data.logicalStatus === 8 && data.state && ![4, 7].includes(data.state)) ||
-        (data.logicalStatus === 9 && data.state && ![1, 2, 3, 4, 5, 6, 7].includes(data.state)))
+      ((data.logicalStatus === 1 && data.blpuState && ![1, 2, 3].includes(data.blpuState)) ||
+        (data.logicalStatus === 5 && (!data.blpuState || ![1, 2, 3, 4, 6].includes(data.blpuState))) ||
+        (data.logicalStatus === 6 && (!data.blpuState || ![1, 5, 6, 7].includes(data.blpuState))) ||
+        (data.logicalStatus === 7 && data.blpuState && ![1, 2, 3, 4, 6].includes(data.blpuState)) ||
+        (data.logicalStatus === 8 && data.blpuState && ![4, 7].includes(data.blpuState)) ||
+        (data.logicalStatus === 9 && data.blpuState && ![1, 2, 3, 4, 5, 6, 7].includes(data.blpuState)))
     ) {
       blpuStateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -326,12 +328,12 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
     if (
       includeCheck(currentCheck, isScottish) &&
       data.logicalStatus &&
-      ((data.logicalStatus === 1 && data.state && ![1, 2, 3].includes(data.state)) ||
-        (data.logicalStatus === 5 && (!data.state || ![1, 2, 3, 4, 6].includes(data.state))) ||
-        (data.logicalStatus === 6 && (!data.state || ![1, 5, 6, 7].includes(data.state))) ||
-        (data.logicalStatus === 7 && data.state && ![1, 2, 3, 4, 6].includes(data.state)) ||
-        (data.logicalStatus === 8 && data.state && ![4, 7].includes(data.state)) ||
-        (data.logicalStatus === 9 && data.state && ![1, 2, 3, 4, 5, 6, 7].includes(data.state)))
+      ((data.logicalStatus === 1 && data.blpuState && ![1, 2, 3].includes(data.blpuState)) ||
+        (data.logicalStatus === 5 && (!data.blpuState || ![1, 2, 3, 4, 6].includes(data.blpuState))) ||
+        (data.logicalStatus === 6 && (!data.blpuState || ![1, 5, 6, 7].includes(data.blpuState))) ||
+        (data.logicalStatus === 7 && data.blpuState && ![1, 2, 3, 4, 6].includes(data.blpuState)) ||
+        (data.logicalStatus === 8 && data.blpuState && ![4, 7].includes(data.blpuState)) ||
+        (data.logicalStatus === 9 && data.blpuState && ![1, 2, 3, 4, 5, 6, 7].includes(data.blpuState)))
     ) {
       logicalStatusErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -434,6 +436,12 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
       !bracketValidator(data.organisation)
     ) {
       organisationErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // BLPU level is missing.
+    currentCheck = GetCheck(2100068, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && !data.level && data.level !== 0) {
+      levelErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     if (showDebugMessages) console.log("[DEBUG] ValidateBlpuData - Finished checks");
@@ -979,12 +987,12 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       saoTextErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
-    // Postal address flag of 'Y' or 'L' must have a postcode and post town.
+    // Postally addressable flag of 'Y' or 'L' must have a Postcode and Post Town.
     currentCheck = GetCheck(2400082, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
-      data.postalAddress &&
-      ["Y", "L"].includes(data.postalAddress) &&
+      data.postallyAddressable &&
+      ["Y", "L"].includes(data.postallyAddressable) &&
       (!data.postTownRef || !data.postcodeRef)
     ) {
       postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
@@ -1021,6 +1029,50 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
     currentCheck = GetCheck(2400087, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && !data.officialFlag) {
       officialFlagErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Postally addressable flag is missing.
+    currentCheck = GetCheck(2400088, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && !data.postallyAddressable) {
+      postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Postally addressable flag is too long.
+    currentCheck = GetCheck(2400089, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && data.postallyAddressable && data.postallyAddressable.length > 1) {
+      postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Postally addressable flag is invalid.
+    currentCheck = GetCheck(2400090, currentLookups, methodName, isScottish, showDebugMessages);
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.postallyAddressable &&
+      !["Y", "L", "N"].includes(data.postallyAddressable)
+    ) {
+      postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Postally addressable flag of 'N' must not have a Postcode or Post Town.
+    currentCheck = GetCheck(2400091, currentLookups, methodName, isScottish, showDebugMessages);
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.postallyAddressable &&
+      data.postallyAddressable === "N" &&
+      (data.postTownRef || data.postcodeRef)
+    ) {
+      postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Postally addressable flag of 'Y' must have a Postcode and a Post Town.
+    currentCheck = GetCheck(2400092, currentLookups, methodName, isScottish, showDebugMessages);
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.postallyAddressable &&
+      data.postallyAddressable === "Y" &&
+      (!data.postTownRef || !data.postcodeRef)
+    ) {
+      postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     if (showDebugMessages) console.log("[DEBUG] ValidateLpiData - Finished checks");
@@ -1565,10 +1617,22 @@ export function ValidateClassificationData(data, index, currentLookups) {
       endDateErrors.push(GetErrorMessage(currentCheck, true));
     }
 
-    // Scheme is too long.
+    // Class scheme is too long.
     currentCheck = GetCheck(3200015, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, true) && data.classificationScheme && data.classificationScheme.length > 40) {
       classificationSchemeErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // BLPU class scheme is missing.
+    currentCheck = GetCheck(3200017, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && !data.classificationScheme) {
+      classificationSchemeErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Start date is missing.
+    currentCheck = GetCheck(3200018, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && !data.startDate) {
+      startDateErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     if (showDebugMessages) console.log("[DEBUG] ValidateOrganisationData - Finished checks");
@@ -1752,8 +1816,8 @@ export function ValidateMultiEditLogicalStatus(data, currentLookups, isScottish)
     if (
       includeCheck(currentCheck, isScottish) &&
       data.logicalStatus &&
-      ((data.logicalStatus === 1 && data.state && ![1, 2, 3, 4].includes(data.state)) ||
-        (data.logicalStatus === 8 && data.state && ![4, 7].includes(data.state)))
+      ((data.logicalStatus === 1 && data.blpuState && ![1, 2, 3, 4].includes(data.blpuState)) ||
+        (data.logicalStatus === 8 && data.blpuState && ![4, 7].includes(data.blpuState)))
     ) {
       blpuStateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }

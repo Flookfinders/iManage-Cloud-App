@@ -40,6 +40,7 @@
 //    027   17.04.24 Joshua McCormick IMANN-277 remaining unnecessary maxLength removed from ADSAddressableObjectControl
 //    028   23.04.24 Joshua McCormick IMANN-386 changed LPI index&title to wrap correctly, formatted code
 //    029   29.04.24 Sean Flook       IMANN-413 Only filter lookups on language for Welsh authorities.
+//    030   22.05.24 Sean Flook       IMANN-473 Prevent controls from being edited under certain conditions for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1080,7 +1081,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
         />
         <ADSSelectControl
           label="LPI logical status"
-          isEditable={userCanEdit}
+          isEditable={userCanEdit && (!settingsContext.isScottish || ![7, 9].includes(logicalStatus))}
           isRequired
           isFocused={focusedField ? focusedField === "LogicalStatus" : false}
           loading={loading}
@@ -1098,7 +1099,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
         <ADSAddressableObjectControl
           displayCharactersLeft
           variant="SAO"
-          isEditable={userCanEdit}
+          isEditable={userCanEdit && (!settingsContext.isScottish || logicalStatus !== 8)}
           isStartNumberFocused={focusedField ? focusedField === "SaoStartNumber" : false}
           isStartSuffixFocused={focusedField ? focusedField === "SaoStartSuffix" : false}
           isEndNumberFocused={focusedField ? focusedField === "SaoEndNumber" : false}
@@ -1125,7 +1126,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
         <ADSAddressableObjectControl
           displayCharactersLeft
           variant="PAO"
-          isEditable={userCanEdit}
+          isEditable={userCanEdit && (!settingsContext.isScottish || logicalStatus !== 8)}
           isRequired
           isStartNumberFocused={focusedField ? focusedField === "PaoStartNumber" : false}
           isStartSuffixFocused={focusedField ? focusedField === "PaoStartSuffix" : false}
