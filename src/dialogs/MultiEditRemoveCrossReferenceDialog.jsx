@@ -21,6 +21,7 @@
 //    008   11.03.24 Sean Flook           MUL11 Reset counts when closing dialog.
 //    009   12.03.24 Sean Flook           MUL10 Display errors in a list control.
 //    010   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    011   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -277,11 +278,11 @@ function MultiEditRemoveCrossReferenceDialog({ propertyUprns, isOpen, onClose })
               ? property.blpuNotes.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
               : null;
           const newPkIdNote = !minPkIdNote || !minPkIdNote.pkId || minPkIdNote.pkId > -10 ? -10 : minPkIdNote.pkId - 1;
-          const maxSeqNoNote =
+          const maxSeqNumNote =
             property.blpuNotes && property.blpuNotes.length > 0
-              ? property.blpuNotes.reduce((prev, curr) => (prev.seqNo > curr.seqNo ? prev : curr))
+              ? property.blpuNotes.reduce((prev, curr) => (prev.seqNum > curr.seqNum ? prev : curr))
               : null;
-          const newSeqNoNote = maxSeqNoNote && maxSeqNoNote.seqNo ? maxSeqNoNote.seqNo + 1 : 1;
+          const newSeqNumNote = maxSeqNumNote && maxSeqNumNote.seqNum ? maxSeqNumNote.seqNum + 1 : 1;
 
           const updatedNotes = property.blpuNotes ? [...property.blpuNotes] : [];
           if (noteOpen)
@@ -290,7 +291,7 @@ function MultiEditRemoveCrossReferenceDialog({ propertyUprns, isOpen, onClose })
               note: note,
               changeType: "I",
               pkId: newPkIdNote,
-              seqNo: newSeqNoNote,
+              seqNum: newSeqNumNote,
             });
 
           if (settingsContext.isScottish)

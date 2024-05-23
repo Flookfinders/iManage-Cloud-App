@@ -23,6 +23,7 @@
 //    010   12.03.24 Sean Flook            MUL8 Display an alert if the save fails.
 //    011   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //    012   11.04.24 Sean Flook       IMANN-384 Check we have a parent UPRN before changing it to a string.
+//    013   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -232,11 +233,11 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
               ? currentProperty.blpuNotes.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
               : null;
           let newPkId = !minPkIdNote || !minPkIdNote.pkId || minPkIdNote.pkId > -10 ? -10 : minPkIdNote.pkId - 1;
-          const maxSeqNo =
+          const maxSeqNum =
             currentProperty.blpuNotes && currentProperty.blpuNotes.length > 0
-              ? currentProperty.blpuNotes.reduce((prev, curr) => (prev.seqNo > curr.seqNo ? prev : curr))
+              ? currentProperty.blpuNotes.reduce((prev, curr) => (prev.seqNum > curr.seqNum ? prev : curr))
               : null;
-          let newSeqNo = maxSeqNo && maxSeqNo.seqNo ? maxSeqNo.seqNo + 1 : 1;
+          let newSeqNum = maxSeqNum && maxSeqNum.seqNum ? maxSeqNum.seqNum + 1 : 1;
 
           const updatedNotes = currentProperty.blpuNotes ? [...currentProperty.blpuNotes] : [];
           if (property.other.notes) {
@@ -246,11 +247,11 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
                 note: note,
                 changeType: "I",
                 pkId: newPkId,
-                seqNo: newSeqNo,
+                seqNum: newSeqNum,
               });
 
               newPkId -= 1;
-              newSeqNo += 1;
+              newSeqNum += 1;
             });
           }
 

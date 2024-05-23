@@ -31,6 +31,7 @@
 //    018   10.04.24 Joel Benford     IMANN-379 Enable OK button when edited
 //    019   30.04.24 Sean Flook       IMANN-425 Corrected logic for enabling OK button for new records.
 //    020   30.04.24 Sean Flook       IMANN-425 Corrected determine if the note has changed when creating a new note.
+//    021   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -209,7 +210,7 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
       if (different)
         return {
           pkId: data.noteData.pkId,
-          seqNo: data.noteData.seqNo,
+          seqNum: data.noteData.seqNum,
           usrn: data.noteData.usrn,
           note: field && field === "note" ? newValue : note,
           changeType: field && field === "changeType" ? newValue : data.noteData.pkId < 0 ? "I" : "U",
@@ -218,7 +219,7 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
       else
         return {
           pkId: data.noteData.pkId,
-          seqNo: data.noteData.seqNo,
+          seqNum: data.noteData.seqNum,
           usrn: data.noteData.usrn,
           note: data.noteData.note,
           changeType: field && field === "changeType" ? newValue : data.noteData.changeType,
@@ -228,7 +229,7 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
       if (different)
         return {
           pkId: data.noteData.pkId,
-          seqNo: data.noteData.seqNo,
+          seqNum: data.noteData.seqNum,
           uprn: data.noteData.uprn,
           note: field && field === "note" ? newValue : note,
           changeType: field && field === "changeType" ? newValue : data.noteData.pkId < 0 ? "I" : "U",
@@ -237,7 +238,7 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
       else
         return {
           pkId: data.noteData.pkId,
-          seqNo: data.noteData.seqNo,
+          seqNum: data.noteData.seqNum,
           uprn: data.noteData.uprn,
           note: data.noteData.note,
           changeType: field && field === "changeType" ? newValue : data.noteData.changeType,

@@ -17,6 +17,7 @@
 //    004   25.03.24 Sean Flook           MUL16 Added cascade address changes option.
 //    005   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    006   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
+//    007   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -361,12 +362,12 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
                     const newPkIdNote =
                       !minPkIdNote || !minPkIdNote.pkId || minPkIdNote.pkId > -10 ? -10 : minPkIdNote.pkId - 1;
 
-                    const maxSeqNoNote =
+                    const maxSeqNumNote =
                       childProperty.blpuNotes && childProperty.blpuNotes.length > 0
-                        ? childProperty.blpuNotes.reduce((prev, curr) => (prev.seqNo > curr.seqNo ? prev : curr))
+                        ? childProperty.blpuNotes.reduce((prev, curr) => (prev.seqNum > curr.seqNum ? prev : curr))
                         : null;
 
-                    const newSeqNoNote = maxSeqNoNote && maxSeqNoNote.seqNo ? maxSeqNoNote.seqNo + 1 : 1;
+                    const newSeqNumNote = maxSeqNumNote && maxSeqNumNote.seqNum ? maxSeqNumNote.seqNum + 1 : 1;
 
                     const updatedNotes = childProperty.blpuNotes ? [...childProperty.blpuNotes] : [];
 
@@ -376,7 +377,7 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
                         note: note,
                         changeType: "I",
                         pkId: newPkIdNote,
-                        seqNo: newSeqNoNote,
+                        seqNum: newSeqNumNote,
                       });
 
                     const updatedChildProperty = settingsContext.isScottish

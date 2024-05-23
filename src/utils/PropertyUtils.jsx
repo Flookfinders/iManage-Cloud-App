@@ -48,6 +48,7 @@
 //    035   08.05.24 Sean Flook       IMANN-447 Return empty string when the sub-locality is null.
 //    036   15.05.24 Sean Flook       IMANN-131 Ensure NeverExport is always set.
 //    037   20.05.24 Sean Flook       IMANN-444 Prevent exceptions from occurring.
+//    038   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1443,7 +1444,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
         ? propertyData.blpuNotes.map((x) => {
             return {
               pkId: x.pkId > 0 ? x.pkId : 0,
-              seqNo: x.seqNo,
+              seqNum: x.seqNum,
               uprn: propertyData.uprn,
               note: x.note,
               changeType: x.changeType,
@@ -1590,7 +1591,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
               note: x.note,
               changeType: x.changeType,
               pkId: x.pkId > 0 ? x.pkId : 0,
-              seqNo: x.seqNo,
+              seqNum: x.seqNum,
             };
           })
         : [],

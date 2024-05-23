@@ -64,6 +64,7 @@
 //    051   30.04.24 Sean Flook       IMANN-371 Separate out streetTab and propertyTab.
 //    052   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //    053   17.05.24 Sean Flook       IMANN-458 Pass isActive to the GetTabIconStyle method.
+//    054   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1383,17 +1384,17 @@ function PropertyDataForm({ data, loading }) {
           ? propertyData.blpuNotes.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
           : null;
       const newPkId = !minPkIdNote || !minPkIdNote.pkId || minPkIdNote.pkId > -10 ? -10 : minPkIdNote.pkId - 1;
-      const maxSeqNo =
+      const maxSeqNum =
         propertyData.blpuNotes && propertyData.blpuNotes.length > 0
-          ? propertyData.blpuNotes.reduce((prev, curr) => (prev.seqNo > curr.seqNo ? prev : curr))
+          ? propertyData.blpuNotes.reduce((prev, curr) => (prev.seqNum > curr.seqNum ? prev : curr))
           : null;
-      const newSeqNo = maxSeqNo && maxSeqNo.seqNo ? maxSeqNo.seqNo + 1 : 1;
+      const newSeqNum = maxSeqNum && maxSeqNum.seqNum ? maxSeqNum.seqNum + 1 : 1;
 
       const newRec = {
         createdDate: currentDate,
         lastUpdatedDate: currentDate,
         pkId: newPkId,
-        seqNo: newSeqNo,
+        seqNum: newSeqNum,
         uprn: propertyData && propertyData.uprn,
         note: null,
         changeType: "I",
@@ -2109,7 +2110,7 @@ function PropertyDataForm({ data, loading }) {
           createdDate: deleteNote.createdDate,
           lastUpdateDate: deleteNote.lastUpdateDate,
           pkId: deleteNote.pkId,
-          seqNo: deleteNote.seqNo,
+          seqNum: deleteNote.seqNum,
           uprn: deleteNote.uprn,
           note: deleteNote.note,
           changeType: "D",

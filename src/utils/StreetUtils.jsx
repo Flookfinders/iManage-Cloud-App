@@ -59,6 +59,7 @@
 //    046   14.05.24 Sean Flook       IMANN-438 Fixed setting the prowUsrn field when updating.
 //    047   15.05.24 Sean Flook       IMANN-131 Ensure NeverExport is always set.
 //    048   21.05.24 Sean Flook       IMANN-469 Modified GetStreetUpdateData to set streetSurface, highwayDedicationCode, hdProw and changeType of ASD records when state is closed.
+//    049   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2056,7 +2057,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
         ? streetData.streetNotes.map((sn) => {
             return {
               pkId: sn.pkId > 0 ? sn.pkId : 0,
-              seqNo: sn.seqNo,
+              seqNum: sn.seqNum,
               usrn: streetData.usrn,
               note: sn.note,
               changeType: sn.changeType,
@@ -2177,7 +2178,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
           ? streetData.streetNotes.map((sn) => {
               return {
                 pkId: sn.pkId > 0 ? sn.pkId : 0,
-                seqNo: sn.seqNo,
+                seqNum: sn.seqNum,
                 usrn: streetData.usrn,
                 note: sn.note,
                 changeType: sn.changeType,
@@ -2297,7 +2298,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
           ? streetData.streetNotes.map((sn) => {
               return {
                 pkId: sn.pkId > 0 ? sn.pkId : 0,
-                seqNo: sn.seqNo,
+                seqNum: sn.seqNum,
                 usrn: streetData.usrn,
                 note: sn.note,
                 changeType: sn.changeType,

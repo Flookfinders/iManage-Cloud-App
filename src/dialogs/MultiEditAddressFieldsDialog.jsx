@@ -24,6 +24,7 @@
 //    011   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    012   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //    013   22.05.24 Sean Flook       IMANN-473 Corrected label for Scottish authorities.
+//    014   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -297,11 +298,11 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
               ? property.blpuNotes.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
               : null;
           const newPkId = !minPkIdNote || !minPkIdNote.pkId || minPkIdNote.pkId > -10 ? -10 : minPkIdNote.pkId - 1;
-          const maxSeqNo =
+          const maxSeqNum =
             property.blpuNotes && property.blpuNotes.length > 0
-              ? property.blpuNotes.reduce((prev, curr) => (prev.seqNo > curr.seqNo ? prev : curr))
+              ? property.blpuNotes.reduce((prev, curr) => (prev.seqNum > curr.seqNum ? prev : curr))
               : null;
-          const newSeqNo = maxSeqNo && maxSeqNo.seqNo ? maxSeqNo.seqNo + 1 : 1;
+          const newSeqNum = maxSeqNum && maxSeqNum.seqNum ? maxSeqNum.seqNum + 1 : 1;
 
           const updatedNotes = property.blpuNotes ? [...property.blpuNotes] : [];
           if (noteOpen)
@@ -310,7 +311,7 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
               note: note,
               changeType: "I",
               pkId: newPkId,
-              seqNo: newSeqNo,
+              seqNum: newSeqNum,
             });
 
           if (settingsContext.isWelsh) {

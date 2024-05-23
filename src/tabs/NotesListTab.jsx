@@ -22,6 +22,7 @@
 //    009   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    010   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    011   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    012   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -230,7 +231,7 @@ function NotesListTab({ data, errors, loading, variant, onNoteSelected, onNoteDe
           data.length > 0 &&
           data
             .filter((x) => x.changeType !== "D")
-            .sort((a, b) => b.seqNo - a.seqNo)
+            .sort((a, b) => b.seqNum - a.seqNum)
             .map((rec, index) => (
               <List
                 sx={{

@@ -92,6 +92,7 @@
 //    078   17.05.24 Sean Flook       IMANN-458 Pass isActive to the GetTabIconStyle method.
 //    079   17.05.24 Sean Flook       IMANN-374 Correctly open the related tab for Scottish authorities.
 //    080   20.05.24 Sean Flook       IMANN-467 Only set second language details if one exists for Scottish authorities.
+//    081   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2983,17 +2984,17 @@ function StreetDataForm({ data, loading }) {
           ? streetData.streetNotes.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
           : null;
       const newPkId = !minPkIdNote || !minPkIdNote.pkId || minPkIdNote.pkId > -10 ? -10 : minPkIdNote.pkId - 1;
-      const maxSeqNo =
+      const maxSeqNum =
         streetData.streetNotes && streetData.streetNotes.length > 0
-          ? streetData.streetNotes.reduce((prev, curr) => (prev.seqNo > curr.seqNo ? prev : curr))
+          ? streetData.streetNotes.reduce((prev, curr) => (prev.seqNum > curr.seqNum ? prev : curr))
           : null;
-      const newSeqNo = maxSeqNo && maxSeqNo.seqNo ? maxSeqNo.seqNo + 1 : 1;
+      const newSeqNum = maxSeqNum && maxSeqNum.seqNum ? maxSeqNum.seqNum + 1 : 1;
 
       const newRec = {
         createdDate: currentDate,
         lastUpdatedDate: currentDate,
         pkId: newPkId,
-        seqNo: newSeqNo,
+        seqNum: newSeqNum,
         usrn: streetData && streetData.usrn,
         note: null,
         changeType: "I",
@@ -4240,7 +4241,7 @@ function StreetDataForm({ data, loading }) {
       if (deleteNote) {
         const deletedNote = {
           pkId: deleteNote.pkId,
-          seqNo: deleteNote.seqNo,
+          seqNum: deleteNote.seqNum,
           usrn: deleteNote.usrn,
           note: deleteNote.note,
           changeType: "D",
