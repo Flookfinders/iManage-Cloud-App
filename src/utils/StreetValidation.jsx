@@ -48,6 +48,7 @@
 //    017   28.03.24 Sean Flook                 Fixed check 6200016.
 //    018   16.04.24 Sean Flook       IMANN-388 Corrected bug.
 //    019   23.05.24 Joshua McCormick IMANN-478 Removed 6600052 PRoW district ref consultant is missing. as not used in API or GUI
+//    020   20.04.24 Sean Flook       IMANN-221 Use the correct table when checking Scottish ASD custodian and authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1309,7 +1310,7 @@ export function ValidateMaintenanceResponsibilityData(data, index, currentLookup
 
     // Custodian code is invalid.
     currentCheck = GetCheck(5100010, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.custodianCode && !DETRCodes.find((x) => x.id === data.custodianCode)) {
+    if (includeCheck(currentCheck, true) && data.custodianCode && !SwaOrgRef.find((x) => x.id === data.custodianCode)) {
       custodianErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -1318,7 +1319,7 @@ export function ValidateMaintenanceResponsibilityData(data, index, currentLookup
     if (
       includeCheck(currentCheck, true) &&
       data.maintainingAuthorityCode &&
-      !DETRCodes.find((x) => x.id === data.maintainingAuthorityCode)
+      !SwaOrgRef.find((x) => x.id === data.maintainingAuthorityCode)
     ) {
       maintainingAuthorityErrors.push(GetErrorMessage(currentCheck, true));
     }
@@ -1524,7 +1525,7 @@ export function ValidateReinstatementCategoryData(data, index, currentLookups) {
 
     // Custodian code is invalid.
     currentCheck = GetCheck(5200010, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.custodianCode && !DETRCodes.find((x) => x.id === data.custodianCode)) {
+    if (includeCheck(currentCheck, true) && data.custodianCode && !SwaOrgRef.find((x) => x.id === data.custodianCode)) {
       custodianErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -1533,7 +1534,7 @@ export function ValidateReinstatementCategoryData(data, index, currentLookups) {
     if (
       includeCheck(currentCheck, true) &&
       data.reinstatementAuthorityCode &&
-      !DETRCodes.find((x) => x.id === data.reinstatementAuthorityCode)
+      !SwaOrgRef.find((x) => x.id === data.reinstatementAuthorityCode)
     ) {
       reinstatementAuthorityErrors.push(GetErrorMessage(currentCheck, true));
     }
@@ -1714,7 +1715,6 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
   let startDateErrors = [];
   let specificLocationErrors = [];
   let wholeRoadErrors = [];
-  let custodianCodeErrors = [];
 
   if (data) {
     // Custodian code is missing.
@@ -1725,13 +1725,13 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
 
     // Custodian code is invalid.
     currentCheck = GetCheck(5300008, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.custodianCode && !DETRCodes.find((x) => x.id === data.custodianCode)) {
+    if (includeCheck(currentCheck, true) && data.custodianCode && !SwaOrgRef.find((x) => x.id === data.custodianCode)) {
       custodianErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Authority code is invalid.
     currentCheck = GetCheck(5300011, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && data.authorityCode && !DETRCodes.find((x) => x.id === data.authorityCode)) {
+    if (includeCheck(currentCheck, true) && data.authorityCode && !SwaOrgRef.find((x) => x.id === data.authorityCode)) {
       authorityErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -1844,7 +1844,7 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
     // SWA org ref consultant value does not exist in the RAUCS SWA org ref table.
     currentCheck = GetCheck(5300029, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, true) && data.custodianCode && !SwaOrgRef.find((x) => x.id === data.custodianCode)) {
-      custodianCodeErrors.push(GetErrorMessage(currentCheck, true));
+      custodianErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     if (showDebugMessages) console.log("[DEBUG] ValidateOSSpecialDesignationData - Finished checks");
@@ -1910,13 +1910,6 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
         index: index,
         field: "WholeRoad",
         errors: wholeRoadErrors,
-      });
-
-    if (custodianCodeErrors.length > 0)
-      validationErrors.push({
-        index: index,
-        field: "CustodianCode",
-        errors: custodianCodeErrors,
       });
   }
 
