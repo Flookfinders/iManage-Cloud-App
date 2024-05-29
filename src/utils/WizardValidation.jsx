@@ -29,6 +29,7 @@
 //    012   15.12.23 Sean Flook                 Added comments.
 //    013   21.05.24 Sean Flook       IMANN-473 Added missing checks and fixed some logic.
 //    014   22.05.24 Sean Flook       IMANN-473 Added missing checks for Scottish authorities.
+//    015   29.05.24 Sean Flook       IMANN-494 Corrected check 2400087 and removed checks that cannot be done here.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1018,18 +1019,6 @@ export function ValidatePropertyDetails(
         lpiStatusErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
-      // Postally addressable flag of 'Y' or 'L' must have a Postcode and Post Town.
-      currentCheck = GetCheck(2400082, currentLookups, methodName, isScottish, showDebugMessages);
-      if (
-        isScottish &&
-        includeCheck(currentCheck, isScottish) &&
-        lpiData.postallyAddressable &&
-        ["Y", "L"].includes(lpiData.postallyAddressable) &&
-        (!lpiData.postTownRef || !lpiData.postcodeRef)
-      ) {
-        postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
-      }
-
       // Level is too long.
       currentCheck = GetCheck(2400085, currentLookups, methodName, isScottish, showDebugMessages);
       if (!isScottish && includeCheck(currentCheck, isScottish) && lpiData.level && lpiData.level.length > 30) {
@@ -1038,8 +1027,14 @@ export function ValidatePropertyDetails(
 
       // Official Flag is missing.
       currentCheck = GetCheck(2400087, currentLookups, methodName, isScottish, showDebugMessages);
-      if (includeCheck(currentCheck, isScottish) && !lpiData.officialFlag) {
-        officialFlagErrors.push(GetErrorMessage(currentCheck, isScottish));
+      if (isScottish) {
+        if (includeCheck(currentCheck, isScottish) && !lpiData.officialAddress) {
+          officialFlagErrors.push(GetErrorMessage(currentCheck, isScottish));
+        }
+      } else {
+        if (includeCheck(currentCheck, isScottish) && !lpiData.officialFlag) {
+          officialFlagErrors.push(GetErrorMessage(currentCheck, isScottish));
+        }
       }
 
       // Postally addressable flag is missing.
@@ -1078,18 +1073,6 @@ export function ValidatePropertyDetails(
         lpiData.postallyAddressable &&
         lpiData.postallyAddressable === "N" &&
         (lpiData.postTownRef || lpiData.postcodeRef)
-      ) {
-        postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
-      }
-
-      // Postally addressable flag of 'Y' must have a Postcode and a Post Town.
-      currentCheck = GetCheck(2400092, currentLookups, methodName, isScottish, showDebugMessages);
-      if (
-        isScottish &&
-        includeCheck(currentCheck, isScottish) &&
-        lpiData.postallyAddressable &&
-        lpiData.postallyAddressable === "Y" &&
-        (!lpiData.postTownRef || !lpiData.postcodeRef)
       ) {
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }

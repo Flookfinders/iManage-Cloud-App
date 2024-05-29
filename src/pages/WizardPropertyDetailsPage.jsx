@@ -23,6 +23,7 @@
 //    010   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //    011   21.05.24 Sean Flook       IMANN-473 Split out the Scottish classification errors to a separate variable.
 //    012   22.05.24 Sean Flook       IMANN-473 Changes required for Scottish authorities.
+//    013   29.05.24 Sean Flook       IMANN-494 Pass through the scottish flag when calling getLpiOfficialAddress.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -849,7 +850,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                     </Grid>
                     <Grid item xs={7}>
                       <Typography variant="body2" sx={getWizardValueStyle(lpiOfficialAddressError)}>
-                        {getLpiOfficialAddress(lpiOfficialAddress)}
+                        {getLpiOfficialAddress(lpiOfficialAddress, settingsContext.isScottish)}
                       </Typography>
                     </Grid>
                     <Grid item xs={4}>
