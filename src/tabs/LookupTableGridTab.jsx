@@ -22,6 +22,7 @@
 //    009   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    010   26.04.24 Sean Flook       IMANN-413 Removed Gaelic option.
 //    011   17.05.24 Sean Flook       IMANN-176 Added a new button to allow for spatially updating BLPU ward and parish codes.
+//    012   28.05.24 Joel Benford     IMANN-481 Hide delete button fro wards and parishes
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -169,16 +170,18 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
           tooltipPlacement="bottom"
           onClick={onEditClick}
         />
-        {(variant !== "crossReference" || !isGeoPlaceCrossRef(params.id)) && (
-          <ADSActionButton
-            id={`delete-${lookupTypeId}-${params.id}`}
-            variant="deleteForever"
-            inheritBackground
-            tooltipTitle={`Delete ${lookupType} forever`}
-            tooltipPlacement="bottom"
-            onClick={onDeleteClick}
-          />
-        )}
+        {(variant !== "crossReference" || !isGeoPlaceCrossRef(params.id)) &&
+          variant !== "ward" &&
+          variant !== "parish" && (
+            <ADSActionButton
+              id={`delete-${lookupTypeId}-${params.id}`}
+              variant="deleteForever"
+              inheritBackground
+              tooltipTitle={`Delete ${lookupType} forever`}
+              tooltipPlacement="bottom"
+              onClick={onDeleteClick}
+            />
+          )}
       </Stack>
     ) : null;
   };

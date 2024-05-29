@@ -28,6 +28,7 @@
 //    015   26.04.24 Sean Flook       IMANN-413 Removed Gaelic option.
 //    016   09.02.24 Joel Benford    IM-227/228 Fix ward/parish URL calls
 //    017   17.05.24 Sean Flook       IMANN-176 Display dialog to allow for spatially updating BLPU ward and parish codes.
+//    018   09.02.24 Joel Benford    IM-227/228 Fix ward/parish update, and various array pushes
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -934,9 +935,12 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                     },
                   ].find((rec) => rec.postcodeRef === x.postcodeRef) || x
               );
-
-              return updatedHistoricPostcode.push(updatedLookup);
-            } else return lookupContext.currentLookups.postcodes.push(updatedLookup);
+              updatedHistoricPostcode.push(updatedLookup);
+              return updatedHistoricPostcode;
+            } else {
+              lookupContext.currentLookups.postcodes.push(updatedLookup);
+              return lookupContext.currentLookups.postcodes;
+            }
           } else
             return lookupContext.currentLookups.postcodes.map(
               (x) => [updatedLookup].find((rec) => rec.postcodeRef === x.postcodeRef) || x
@@ -958,9 +962,12 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                     },
                   ].find((rec) => rec.postTownRef === x.postTownRef) || x
               );
-
-              return updatedHistoricPostTown.push(updatedLookup);
-            } else return lookupContext.currentLookups.postTowns.push(updatedLookup);
+              updatedHistoricPostTown.push(updatedLookup);
+              return updatedHistoricPostTown;
+            } else {
+              lookupContext.currentLookups.postTowns.push(updatedLookup);
+              return lookupContext.currentLookups.postTowns;
+            }
           } else
             return lookupContext.currentLookups.postTowns.map(
               (x) => [updatedLookup].find((rec) => rec.postTownRef === x.postTownRef) || x
@@ -984,9 +991,12 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                     },
                   ].find((rec) => rec.subLocalityRef === x.subLocalityRef) || x
               );
-
-              return updatedHistoricSubLocality.push(updatedLookup);
-            } else return lookupContext.currentLookups.subLocalities.push(updatedLookup);
+              updatedHistoricSubLocality.push(updatedLookup);
+              return updatedHistoricSubLocality;
+            } else {
+              lookupContext.currentLookups.subLocalities.push(updatedLookup);
+              return lookupContext.currentLookups.subLocalities;
+            }
           } else
             return lookupContext.currentLookups.subLocalities.map(
               (x) => [updatedLookup].find((rec) => rec.subLocalityRef === x.subLocalityRef) || x
@@ -1013,9 +1023,12 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                     },
                   ].find((rec) => rec.localityRef === x.localityRef) || x
               );
-
-              return updatedHistoricLocality.push(updatedLookup);
-            } else return lookupContext.currentLookups.localities.push(updatedLookup);
+              updatedHistoricLocality.push(updatedLookup);
+              return updatedHistoricLocality;
+            } else {
+              lookupContext.currentLookups.localities.push(updatedLookup);
+              return lookupContext.currentLookups.localities;
+            }
           } else
             return lookupContext.currentLookups.localities.map(
               (x) => [updatedLookup].find((rec) => rec.localityRef === x.localityRef) || x
@@ -1037,9 +1050,12 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                     },
                   ].find((rec) => rec.townRef === x.townRef) || x
               );
-
-              return updatedHistoricTown.push(updatedLookup);
-            } else return lookupContext.currentLookups.towns.push(updatedLookup);
+              updatedHistoricTown.push(updatedLookup);
+              return updatedHistoricTown;
+            } else {
+              lookupContext.currentLookups.towns.push(updatedLookup);
+              return lookupContext.currentLookups.towns;
+            }
           } else
             return lookupContext.currentLookups.towns.map(
               (x) => [updatedLookup].find((rec) => rec.townRef === x.townRef) || x
@@ -1061,21 +1077,72 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                     },
                   ].find((rec) => rec.islandRef === x.islandRef) || x
               );
-
-              return updatedHistoricIsland.push(updatedLookup);
-            } else return lookupContext.currentLookups.islands.push(updatedLookup);
+              updatedHistoricIsland.push(updatedLookup);
+              return updatedHistoricIsland;
+            } else {
+              lookupContext.currentLookups.islands.push(updatedLookup);
+              return lookupContext.currentLookups.islands;
+            }
           } else
             return lookupContext.currentLookups.islands.map(
               (x) => [updatedLookup].find((rec) => rec.islandRef === x.islandRef) || x
             );
 
         case "ward":
-          return lookupContext.currentLookups.wards.map((x) => [updatedLookup].find((rec) => rec.pkId === x.pkId) || x);
+          if (originalId !== updatedLookup.pkId) {
+            const historicWard = lookupContext.currentLookups.wards.find((x) => x.pkId === originalId);
+            if (historicWard) {
+              const updatedHistoricWard = lookupContext.currentLookups.wards.map(
+                (x) =>
+                  [
+                    {
+                      pkId: historicWard.pkId,
+                      wardCode: historicWard.wardCode,
+                      wardLegacyCode: historicWard.wardLegacyCode,
+                      ward: historicWard.ward,
+                      detrCode: historicWard.detrCode,
+                      historic: true,
+                    },
+                  ].find((rec) => rec.pkId === x.pkId) || x
+              );
+              updatedHistoricWard.push(updatedLookup);
+              return updatedHistoricWard;
+            } else {
+              lookupContext.currentLookups.wards.push(updatedLookup);
+              return lookupContext.currentLookups.wards;
+            }
+          } else
+            return lookupContext.currentLookups.wards.map(
+              (x) => [updatedLookup].find((rec) => rec.pkId === x.pkId) || x
+            );
 
         case "parish":
-          return lookupContext.currentLookups.parishes.map(
-            (x) => [updatedLookup].find((rec) => rec.pkId === x.pkId) || x
-          );
+          if (originalId !== updatedLookup.pkId) {
+            const historicParish = lookupContext.currentLookups.parishes.find((x) => x.pkId === originalId);
+            if (historicParish) {
+              const updatedHistoricParish = lookupContext.currentLookups.parishes.map(
+                (x) =>
+                  [
+                    {
+                      pkId: historicParish.pkId,
+                      parishCode: historicParish.parishCode,
+                      parishLegacyCode: historicParish.parishLegacyCode,
+                      parish: historicParish.parish,
+                      detrCode: historicParish.detrCode,
+                      historic: true,
+                    },
+                  ].find((rec) => rec.pkId === x.pkId) || x
+              );
+              updatedHistoricParish.push(updatedLookup);
+              return updatedHistoricParish;
+            } else {
+              lookupContext.currentLookups.parishes.push(updatedLookup);
+              return lookupContext.currentLookups.parishes;
+            }
+          } else
+            return lookupContext.currentLookups.parishes.map(
+              (x) => [updatedLookup].find((rec) => rec.pkId === x.pkId) || x
+            );
 
         case "dbAuthority":
           return lookupContext.currentLookups.dbAuthorities.map(
@@ -1127,8 +1194,8 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                       ].find((rec) => rec.postTownRef === x.postTownRef) ||
                       x
                   );
-
-                  return updatedHistoricPostTown.push(updatedEngLookup, updatedCymLookup);
+                  updatedHistoricPostTown.push(updatedEngLookup, updatedCymLookup);
+                  return updatedHistoricPostTown;
                 } else {
                   const updatedHistoricPostTown = lookupContext.currentLookups.postTowns.map(
                     (x) =>
@@ -1142,8 +1209,8 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                         },
                       ].find((rec) => rec.postTownRef === x.postTownRef) || x
                   );
-
-                  return updatedHistoricPostTown.push(updatedEngLookup, updatedCymLookup);
+                  updatedHistoricPostTown.push(updatedEngLookup, updatedCymLookup);
+                  return updatedHistoricPostTown;
                 }
               } else {
                 const engHistoricPostTown = lookupContext.currentLookups.postTowns.find(
@@ -1172,8 +1239,8 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                       ].find((rec) => rec.postTownRef === x.postTownRef) ||
                       x
                   );
-
-                  return updatedHistoricPostTown.push(updatedEngLookup, updatedCymLookup);
+                  updatedHistoricPostTown.push(updatedEngLookup, updatedCymLookup);
+                  return updatedHistoricPostTown;
                 } else {
                   const updatedHistoricPostTown = lookupContext.currentLookups.postTowns.map(
                     (x) =>
@@ -1187,11 +1254,14 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                         },
                       ].find((rec) => rec.postTownRef === x.postTownRef) || x
                   );
-
-                  return updatedHistoricPostTown.push(updatedEngLookup, updatedCymLookup);
+                  updatedHistoricPostTown.push(updatedEngLookup, updatedCymLookup);
+                  return updatedHistoricPostTown;
                 }
               }
-            } else return lookupContext.currentLookups.postTowns.push(updatedEngLookup, updatedCymLookup);
+            } else {
+              lookupContext.currentLookups.postTowns.push(updatedEngLookup, updatedCymLookup);
+              return lookupContext.currentLookups.postTowns;
+            }
           } else
             return lookupContext.currentLookups.postTowns.map(
               (x) =>
@@ -1231,8 +1301,8 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                       ].find((rec) => rec.localityRef === x.localityRef) ||
                       x
                   );
-
-                  return updatedHistoricLocality.push(updatedEngLookup, updatedCymLookup);
+                  updatedHistoricLocality.push(updatedEngLookup, updatedCymLookup);
+                  return updatedHistoricLocality;
                 } else {
                   const updatedHistoricLocality = lookupContext.currentLookups.localities.map(
                     (x) =>
@@ -1246,8 +1316,8 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                         },
                       ].find((rec) => rec.localityRef === x.localityRef) || x
                   );
-
-                  return updatedHistoricLocality.push(updatedEngLookup, updatedCymLookup);
+                  updatedHistoricLocality.push(updatedEngLookup, updatedCymLookup);
+                  return updatedHistoricLocality;
                 }
               } else {
                 const engHistoricLocality = lookupContext.currentLookups.localities.find(
@@ -1276,8 +1346,8 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                       ].find((rec) => rec.localityRef === x.localityRef) ||
                       x
                   );
-
-                  return updatedHistoricLocality.push(updatedEngLookup, updatedCymLookup);
+                  updatedHistoricLocality.push(updatedEngLookup, updatedCymLookup);
+                  return updatedHistoricLocality;
                 } else {
                   const updatedHistoricLocality = lookupContext.currentLookups.localities.map(
                     (x) =>
@@ -1291,11 +1361,14 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                         },
                       ].find((rec) => rec.localityRef === x.localityRef) || x
                   );
-
-                  return updatedHistoricLocality.push(updatedEngLookup, updatedCymLookup);
+                  updatedHistoricLocality.push(updatedEngLookup, updatedCymLookup);
+                  return updatedHistoricLocality;
                 }
               }
-            } else return lookupContext.currentLookups.localities.push(updatedEngLookup, updatedCymLookup);
+            } else {
+              lookupContext.currentLookups.localities.push(updatedEngLookup, updatedCymLookup);
+              return lookupContext.currentLookups.localities;
+            }
           } else
             return lookupContext.currentLookups.localities.map(
               (x) =>
@@ -1335,8 +1408,8 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                       ].find((rec) => rec.townRef === x.townRef) ||
                       x
                   );
-
-                  return updatedHistoricTown.push(updatedEngLookup, updatedCymLookup);
+                  updatedHistoricTown.push(updatedEngLookup, updatedCymLookup);
+                  return updatedHistoricTown;
                 } else {
                   const updatedHistoricTown = lookupContext.currentLookups.towns.map(
                     (x) =>
@@ -1350,8 +1423,8 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                         },
                       ].find((rec) => rec.townRef === x.townRef) || x
                   );
-
-                  return updatedHistoricTown.push(updatedEngLookup, updatedCymLookup);
+                  updatedHistoricTown.push(updatedEngLookup, updatedCymLookup);
+                  return updatedHistoricTown;
                 }
               } else {
                 const engHistoricTown = lookupContext.currentLookups.towns.find(
@@ -1380,8 +1453,8 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                       ].find((rec) => rec.townRef === x.townRef) ||
                       x
                   );
-
-                  return updatedHistoricTown.push(updatedEngLookup, updatedCymLookup);
+                  updatedHistoricTown.push(updatedEngLookup, updatedCymLookup);
+                  return updatedHistoricTown;
                 } else {
                   const updatedHistoricTown = lookupContext.currentLookups.towns.map(
                     (x) =>
@@ -1395,11 +1468,14 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                         },
                       ].find((rec) => rec.townRef === x.townRef) || x
                   );
-
-                  return updatedHistoricTown.push(updatedEngLookup, updatedCymLookup);
+                  updatedHistoricTown.push(updatedEngLookup, updatedCymLookup);
+                  return updatedHistoricTown;
                 }
               }
-            } else return lookupContext.currentLookups.towns.push(updatedEngLookup, updatedCymLookup);
+            } else {
+              lookupContext.currentLookups.towns.push(updatedEngLookup, updatedCymLookup);
+              return lookupContext.currentLookups.towns;
+            }
           } else
             return lookupContext.currentLookups.towns.map(
               (x) =>
@@ -1601,10 +1677,12 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
             if (wardRecord) {
               return {
                 pkId: data.lookupData.lookupId,
-                wardCode: data.lookupData.wardCode,
+                wardCode: "from pkId",
+                newWardCode: data.lookupData.wardCode,
                 ward: data.lookupData.ward,
                 detrCode: settingsContext ? settingsContext.authorityCode.toString() : null,
                 historic: data.lookupData.historic,
+                updateType: data.lookupData.historic ? "HISTORIC" : "ALL",
               };
             } else return null;
 
@@ -1613,10 +1691,12 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
             if (parishRecord) {
               return {
                 pkId: data.lookupData.lookupId,
-                parishCode: data.lookupData.parishCode,
+                parishCode: "from pkId",
+                newParishCode: data.lookupData.parishCode,
                 parish: data.lookupData.parish,
                 detrCode: settingsContext ? settingsContext.authorityCode.toString() : null,
                 historic: data.lookupData.historic,
+                updateType: data.lookupData.historic ? "HISTORIC" : "ALL",
               };
             } else return null;
 

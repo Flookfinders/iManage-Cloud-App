@@ -54,6 +54,7 @@
 //    040   19.04.24 Sean Flook       IMANN-132 When adding a child or children ensure we have the parent English LPI.
 //    041   26.04.24 Sean Flook                 Added some error handling.
 //    042   29.04.24 Sean Flook                 Replaced openPropertyRecord with call to doOpenRecord.
+//    043   29.05.24 Joshua McCormick IMANN-470 Nowrap street title & added tooltip with title
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1525,7 +1526,11 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                     </ListItemIcon>
                     <ListItemText
                       primary={
-                        <Typography variant="subtitle1">{addressToTitleCase(rec.address, rec.postcode)}</Typography>
+                        <Tooltip title={addressToTitleCase(rec.address, rec.postcode)}>
+                          <Typography variant="subtitle1" noWrap>
+                            {addressToTitleCase(rec.address, rec.postcode)}
+                          </Typography>
+                        </Tooltip>
                       }
                     />
                     <ListItemAvatar

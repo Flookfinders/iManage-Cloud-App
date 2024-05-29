@@ -25,6 +25,7 @@
 //    012   25.01.24 Sean Flook                 Changes required after UX review.
 //    013   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //    014   22.05.24 Sean Flook       IMANN-473 Corrected label for Scottish authorities.
+//    015   29.05.24 Joshua McComrick IMANN-94  Rename Edit template title to Rename template
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -543,7 +544,7 @@ function EditPropertyTemplateTab({ data, error, onHomeClick, onUpdateData, onDup
   const getTitleIcon = () => {
     if (data.templateType === 3) {
       return (
-        <Tooltip title="Edit template title" placement="bottom" sx={tooltipStyle}>
+        <Tooltip title="Rename template" placement="bottom" sx={tooltipStyle}>
           <IconButton onClick={doEditTitle}>
             <EditIcon sx={ActionIconStyle(true)} />
           </IconButton>
