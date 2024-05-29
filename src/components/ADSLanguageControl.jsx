@@ -3,7 +3,7 @@
 //
 //  Description: Language component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -15,6 +15,7 @@
 //    002   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    005   29.05.24 Sean Flook       IMANN-489 Prevent the user from changing the language.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -37,34 +38,17 @@ import { FormBoxRowStyle, FormRowStyle, controlLabelStyle, tooltipStyle } from "
 
 ADSLanguageControl.propTypes = {
   label: PropTypes.string.isRequired,
-  isEditable: PropTypes.bool,
-  isRequired: PropTypes.bool,
-  isFocused: PropTypes.bool,
   loading: PropTypes.bool,
   helperText: PropTypes.string,
   value: PropTypes.string,
   errorText: PropTypes.array,
-  onChange: PropTypes.func.isRequired,
 };
 
 ADSLanguageControl.defaultProps = {
-  isEditable: false,
-  isRequired: false,
-  isFocused: false,
   loading: false,
 };
 
-function ADSLanguageControl({
-  label,
-  isEditable,
-  isRequired,
-  isFocused,
-  loading,
-  helperText,
-  value,
-  errorText,
-  onChange,
-}) {
+function ADSLanguageControl({ label, loading, helperText, value, errorText }) {
   const settingsContext = useContext(SettingsContext);
 
   const [displayError, setDisplayError] = useState("");
@@ -72,16 +56,6 @@ function ADSLanguageControl({
   const hasError = useRef(false);
 
   const [selectedLanguage, setSelectedLanguage] = useState(!loading ? value : undefined);
-
-  /**
-   * Event to handle when the language is clicked.
-   *
-   * @param {object} event The event object.
-   */
-  const handleLanguageClick = (event) => {
-    setSelectedLanguage(event.nativeEvent.target.innerText);
-    if (onChange) onChange(event.nativeEvent.target.innerText);
-  };
 
   /**
    * Method to get the styling to use for the buttons.
@@ -124,16 +98,6 @@ function ADSLanguageControl({
     if (!loading && value) setSelectedLanguage(value);
   }, [errorText, loading, value]);
 
-  useEffect(() => {
-    let element = null;
-
-    if (isFocused) {
-      element = document.getElementById("eng-button");
-    }
-
-    if (element) element.focus();
-  });
-
   return (
     <Box sx={FormBoxRowStyle(hasError.current)}>
       <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
@@ -144,26 +108,19 @@ function ADSLanguageControl({
             align="left"
             sx={controlLabelStyle}
           >
-            {`${label}${isRequired ? "*" : ""}`}
+            {`${label}*`}
           </Typography>
         </Grid>
         <Grid item xs={9}>
           {loading ? (
             <Skeleton variant="rectangular" animation="wave" height="30px" width="100%" />
           ) : helperText && helperText.length > 0 ? (
-            <Tooltip
-              title={isRequired ? helperText + " This is a required field." : helperText}
-              arrow
-              placement="right"
-              sx={tooltipStyle}
-            >
+            <Tooltip title={helperText + " This is a required field."} arrow placement="right" sx={tooltipStyle}>
               <ButtonGroup>
                 <Button
                   id="eng-button"
-                  disabled={!isEditable}
                   variant="outlined"
                   sx={getButtonStyle(selectedLanguage === "ENG")}
-                  onClick={handleLanguageClick}
                   aria-labelledby={`ads-text-label-${label.toLowerCase().replaceAll(" ", "-")}`}
                 >
                   ENG
@@ -171,10 +128,8 @@ function ADSLanguageControl({
                 {settingsContext.isScottish && (
                   <Button
                     id="gae-button"
-                    disabled={!isEditable}
                     variant="outlined"
                     sx={getButtonStyle(selectedLanguage === "GAE")}
-                    onClick={handleLanguageClick}
                     aria-labelledby={`ads-text-label-${label.toLowerCase().replaceAll(" ", "-")}`}
                   >
                     GAE
@@ -183,10 +138,8 @@ function ADSLanguageControl({
                 {settingsContext.isWelsh && (
                   <Button
                     id="cym-button"
-                    disabled={!isEditable}
                     variant="outlined"
                     sx={getButtonStyle(selectedLanguage === "CYM")}
-                    onClick={handleLanguageClick}
                     aria-labelledby={`ads-text-label-${label.toLowerCase().replaceAll(" ", "-")}`}
                   >
                     CYM
@@ -198,10 +151,8 @@ function ADSLanguageControl({
             <ButtonGroup>
               <Button
                 id="eng-button"
-                disabled={!isEditable}
                 variant="outlined"
                 sx={getButtonStyle(selectedLanguage === "ENG")}
-                onClick={handleLanguageClick}
                 aria-labelledby={`ads-text-label-${label.toLowerCase().replaceAll(" ", "-")}`}
               >
                 ENG
@@ -209,10 +160,8 @@ function ADSLanguageControl({
               {settingsContext.isScottish && (
                 <Button
                   id="gae-button"
-                  disabled={!isEditable}
                   variant="outlined"
                   sx={getButtonStyle(selectedLanguage === "GAE")}
-                  onClick={handleLanguageClick}
                   aria-labelledby={`ads-text-label-${label.toLowerCase().replaceAll(" ", "-")}`}
                 >
                   GAE
@@ -221,10 +170,8 @@ function ADSLanguageControl({
               {settingsContext.isWelsh && (
                 <Button
                   id="cym-button"
-                  disabled={!isEditable}
                   variant="outlined"
                   sx={getButtonStyle(selectedLanguage === "CYM")}
-                  onClick={handleLanguageClick}
                   aria-labelledby={`ads-text-label-${label.toLowerCase().replaceAll(" ", "-")}`}
                 >
                   CYM

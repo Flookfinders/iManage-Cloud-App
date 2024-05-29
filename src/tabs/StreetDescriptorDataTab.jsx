@@ -28,7 +28,7 @@
 //    015   25.04.24 Joel Benford     IMANN-275 Allow any language in lookups
 //    016   29.04.24 Sean Flook       IMANN-413 Only filter lookups on language for Welsh authorities.
 //    017   03.05.24 Joel Benford               Fix index on new descriptors
-
+//    018   29.05.24 Sean Flook       IMANN-489 Prevent the user from changing the language.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -109,16 +109,6 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
   const UpdateSandbox = (field, newValue) => {
     const newDescriptorData = GetCurrentData(field, newValue);
     sandboxContext.onSandboxChange("streetDescriptor", newDescriptorData);
-  };
-
-  /**
-   * Event to handle when the language flag changes.
-   *
-   * @param {string|null} newValue The new language flag.
-   */
-  const handleLanguageChangeEvent = (newValue) => {
-    setLanguage(newValue);
-    UpdateSandbox("language", newValue);
   };
 
   /**
@@ -445,14 +435,10 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
       <Box sx={dataFormStyle("StreetDescriptorDataTab")}>
         <ADSLanguageControl
           label="Language"
-          isEditable={userCanEdit}
-          isRequired
-          isFocused={focusedField ? focusedField === "Language" : false}
           loading={loading}
           value={language}
           errorText={languageError}
           helperText="The language in use for the descriptive identifier."
-          onChange={handleLanguageChangeEvent}
         />
         <ADSTextControl
           id="street_descriptor"

@@ -41,6 +41,7 @@
 //    028   23.04.24 Joshua McCormick IMANN-386 changed LPI index&title to wrap correctly, formatted code
 //    029   29.04.24 Sean Flook       IMANN-413 Only filter lookups on language for Welsh authorities.
 //    030   22.05.24 Sean Flook       IMANN-473 Prevent controls from being edited under certain conditions for Scottish authorities.
+//    031   29.05.24 Sean Flook       IMANN-489 Prevent the user from changing the language.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -227,16 +228,6 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           : updatedAddress
       );
     }
-  };
-
-  /**
-   * Event to handle when the language is changed.
-   *
-   * @param {string|null} newValue The new language.
-   */
-  const handleLanguageChangeEvent = (newValue) => {
-    setLanguage(newValue);
-    UpdateSandbox("language", newValue);
   };
 
   /**
@@ -1070,14 +1061,10 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
       <Box sx={dataFormStyle("PropertyLPITab")}>
         <ADSLanguageControl
           label="Language"
-          isEditable={userCanEdit}
-          isRequired
-          isFocused={focusedField ? focusedField === "Language" : false}
           loading={loading}
           value={language}
           helperText="The language in use for the descriptive identifier."
           errorText={languageError}
-          onChange={handleLanguageChangeEvent}
         />
         <ADSSelectControl
           label="LPI logical status"
