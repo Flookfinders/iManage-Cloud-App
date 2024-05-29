@@ -39,6 +39,7 @@
 //    026   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //    027   30.04.24 Sean Flook                 Handle nulls being returned by the Scottish API for ASD records when none are present.
 //    028   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
+//    029   29.05.24 Sean Flook       IMANN-411 Added missing else statement.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -925,6 +926,9 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
               onSelectChange(newValue);
             })
             .catch(() => {});
+        } else {
+          ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
+          onSelectChange(newValue);
         }
       } else if (sandboxContext.currentSandbox.sourceProperty) {
         const propertyChanged = hasPropertyChanged(
