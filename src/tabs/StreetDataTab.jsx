@@ -35,6 +35,7 @@
 //    022   05.04.24 Sean Flook       IMANN-326 If state is changed to 4 set the surface to 2.
 //    023   17.05.24 Joshua McCormick           Added noWrap to street title for when too many characters overflow
 //    024   23.05.24 Sean Flook       IMANN-485 When state changes set the state date to current date.
+//    025   29.05.24 Sean Flook       IMANN-490 Modified USRN to be read only, but able to be edited via button and dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -42,18 +43,22 @@
 
 import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
+
 import StreetContext from "../context/streetContext";
 import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 import MapContext from "../context/mapContext";
 import SettingsContext from "../context/settingsContext";
+
 import { HasASD } from "../configuration/ADSConfig";
 import { copyTextToClipboard, GetLookupLabel, ConvertDate, GetCurrentDate } from "../utils/HelperUtils";
 import { streetToTitleCase, FilteredStreetType, DisplayStreetInStreetView } from "../utils/StreetUtils";
+
 import DETRCodes from "../data/DETRCodes";
 import StreetState from "../data/StreetState";
 import StreetSurface from "../data/StreetSurface";
 import StreetClassification from "../data/StreetClassification";
+
 import {
   Chip,
   Grid,
@@ -71,15 +76,20 @@ import {
   Skeleton,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
+
 import ADSNumberControl from "../components/ADSNumberControl";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSDateControl from "../components/ADSDateControl";
 import ADSSwitchControl from "../components/ADSSwitchControl";
 import ADSCoordinateControl from "../components/ADSCoordinateControl";
+import ADSReadOnlyControl from "../components/ADSReadOnlyControl";
+
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+
 import ActionsIcon from "@mui/icons-material/MoreVert";
 import AddCircleIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import { CopyIcon } from "../utils/ADSIcons";
+
 import { adsBlueA, adsRed10, adsRed20, adsWhite, adsLightBlue10 } from "../utils/ADSColours";
 import {
   toolbarStyle,
@@ -91,6 +101,7 @@ import {
   tooltipStyle,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
+import EditUsrnDialog from "../dialogs/EditUsrnDialog";
 
 StreetDataTab.propTypes = {
   data: PropTypes.object,
@@ -150,6 +161,7 @@ function StreetDataTab({
 
   const [userCanEdit, setUserCanEdit] = useState(false);
   const [adminUser, setAdminUser] = useState(false);
+  const [showEditUsrnDialog, setShowEditUsrnDialog] = useState(false);
 
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
 
@@ -268,14 +280,10 @@ function StreetDataTab({
   };
 
   /**
-   * Event to handle when the USRN is changed.
-   *
-   * @param {string|null} newValue The new USRN value.
+   * Event to handle when the user has clicked the button to edit the USRN.
    */
-  const handleUSRNChangeEvent = (newValue) => {
-    console.log("handleUSRNChangeEvent", { newUsrn: newValue });
-    setUsrn(parseInt(newValue));
-    updateCurrentData(parseInt(newValue), "usrn", false);
+  const handleEditUSRNEvent = () => {
+    setShowEditUsrnDialog(true);
   };
 
   /**
@@ -662,6 +670,19 @@ function StreetDataTab({
 
     if (deleteConfirmed && pkId && pkId > 0 && onDelete) {
       onDelete(pkId);
+    }
+  };
+
+  /**
+   * Event to handle the closing of the edit USRN dialog.
+   *
+   * @param {Number} newUsrn The updated USRN to use.
+   */
+  const handleCloseEditUsrnDialog = (newUsrn) => {
+    setShowEditUsrnDialog(false);
+    if (newUsrn) {
+      setUsrn(parseInt(newUsrn));
+      updateCurrentData(parseInt(newUsrn), "usrn", false);
     }
   };
 
@@ -1112,16 +1133,14 @@ function StreetDataTab({
             )}
           </Grid>
         </Grid>
-        <ADSNumberControl
-          label="USRN"
-          isEditable={adminUser}
-          isRequired
-          isFocused={focusedField ? focusedField === "Usrn" : false}
+        <ADSReadOnlyControl
           loading={loading}
+          label="USRN"
           value={usrn}
+          noLeftPadding
           errorText={usrnError}
-          helperText="This is the USRN for the street."
-          onChange={handleUSRNChangeEvent}
+          buttonVariant={adminUser ? "edit" : "none"}
+          onButtonClick={handleEditUSRNEvent}
         />
         <ADSSelectControl
           label="Type"
@@ -1325,6 +1344,7 @@ function StreetDataTab({
           childCount={childCount}
           onClose={handleCloseDeleteConfirmation}
         />
+        <EditUsrnDialog isOpen={showEditUsrnDialog} usrn={usrn} onClose={handleCloseEditUsrnDialog} />
       </div>
     </Fragment>
   );

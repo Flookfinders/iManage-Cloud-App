@@ -17,6 +17,7 @@
 //    004   27.10.23 Sean Flook                 Updated call to FormRowStyle.
 //    005   27.02.24 Sean Flook           MUL16 Added ability to display a button.
 //    006   18.03.24 Sean Flook      STRFRM4_OS Added nullString parameter.
+//    007   29.05.24 Sean Flook       IMANN-490 Modified for USRN.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,12 +25,13 @@
 
 /* #region imports */
 
-import React, { Fragment } from "react";
+import React, { useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 
-import { Button, Grid, Typography, Skeleton, Tooltip } from "@mui/material";
+import { Button, Grid, Typography, Skeleton, Tooltip, Stack, Box } from "@mui/material";
 
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import EditIcon from "@mui/icons-material/Edit";
 
 import {
   FormRowStyle,
@@ -37,8 +39,10 @@ import {
   boldControlLabelStyle,
   transparentButtonStyle,
   tooltipStyle,
+  FormBoxRowStyle,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
+import ADSErrorDisplay from "./ADSErrorDisplay";
 
 /* #endregion imports */
 
@@ -49,7 +53,8 @@ ADSReadOnlyControl.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.string,
   nullString: PropTypes.string,
-  buttonVariant: PropTypes.oneOf(["none", "viewRelated"]),
+  buttonVariant: PropTypes.oneOf(["none", "viewRelated", "edit"]),
+  errorText: PropTypes.array,
   onButtonClick: PropTypes.func,
 };
 
@@ -69,9 +74,13 @@ function ADSReadOnlyControl({
   value,
   nullString,
   buttonVariant,
+  errorText,
   onButtonClick,
 }) {
   const theme = useTheme();
+
+  const [displayError, setDisplayError] = useState("");
+  const hasError = useRef(false);
 
   /**
    * Event to handle the button click
@@ -98,6 +107,9 @@ function ADSReadOnlyControl({
       case "viewRelated":
         return "View all related records";
 
+      case "edit":
+        return `Edit ${label}`;
+
       default:
         return "";
     }
@@ -113,6 +125,9 @@ function ADSReadOnlyControl({
       case "viewRelated":
         return <ArrowForwardIcon />;
 
+      case "edit":
+        return <EditIcon />;
+
       default:
         return null;
     }
@@ -123,39 +138,106 @@ function ADSReadOnlyControl({
       case "viewRelated":
         return "All related";
 
+      case "edit":
+        return `Edit ${label}`;
+
       default:
         return "";
     }
   };
 
+  const getButton = () => {
+    switch (buttonVariant) {
+      case "viewRelated":
+        return (
+          <Fragment>
+            <Grid item xs={9}>
+              <Typography
+                id={`${label.toLowerCase().replaceAll(" ", "-")}-read-only`}
+                variant="body1"
+                align="left"
+                color="textPrimary"
+                sx={getValueStyle()}
+                aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+              >
+                {loading ? <Skeleton animation="wave" /> : value ? value : nullString}
+              </Typography>
+            </Grid>
+            <Grid item xs={3} />
+            <Grid item xs={9}>
+              <Tooltip title={getButtonTooltip()} arrow placement="right" sx={tooltipStyle}>
+                <Button
+                  variant="contained"
+                  onClick={handleButtonClick}
+                  sx={{ ...transparentButtonStyle, pt: "0px", pb: "0px" }}
+                  startIcon={getButtonIcon()}
+                >
+                  {getButtonText()}
+                </Button>
+              </Tooltip>
+            </Grid>
+          </Fragment>
+        );
+
+      case "edit":
+        return (
+          <Fragment>
+            <Grid item xs={9}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography
+                  id={`${label.toLowerCase().replaceAll(" ", "-")}-read-only`}
+                  variant="body1"
+                  align="left"
+                  color="textPrimary"
+                  sx={getValueStyle()}
+                  aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+                >
+                  {loading ? <Skeleton animation="wave" /> : value ? value : nullString}
+                </Typography>
+                <Tooltip title={getButtonTooltip()} arrow placement="right" sx={tooltipStyle}>
+                  <Button
+                    variant="contained"
+                    onClick={handleButtonClick}
+                    sx={{ ...transparentButtonStyle, pt: "0px", pb: "0px" }}
+                    startIcon={getButtonIcon()}
+                  >
+                    {getButtonText()}
+                  </Button>
+                </Tooltip>
+              </Stack>
+            </Grid>
+          </Fragment>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  useEffect(() => {
+    hasError.current = errorText && errorText.length > 0;
+
+    if (hasError.current) {
+      if (Array.isArray(errorText)) setDisplayError(errorText.join(", "));
+      else setDisplayError(errorText);
+    } else setDisplayError(null);
+  }, [errorText]);
+
   return (
-    <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(false)}>
-      <Grid item xs={3}>
-        <Typography
-          id={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-          variant="body2"
-          align="left"
-          color="textPrimary"
-          sx={boldLabel ? boldControlLabelStyle : controlLabelStyle}
-        >
-          {label}
-        </Typography>
-      </Grid>
-      {buttonVariant === "none" ? (
-        <Grid item xs={9}>
+    <Box sx={FormBoxRowStyle(hasError.current)}>
+      <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(false)}>
+        <Grid item xs={3}>
           <Typography
-            id={`${label.toLowerCase().replaceAll(" ", "-")}-read-only`}
-            variant="body1"
+            id={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+            variant="body2"
             align="left"
             color="textPrimary"
-            sx={getValueStyle()}
-            aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+            sx={boldLabel ? boldControlLabelStyle : controlLabelStyle}
           >
-            {loading ? <Skeleton animation="wave" /> : value ? value : nullString}
+            {label}
           </Typography>
         </Grid>
-      ) : (
-        <Fragment>
+        {buttonVariant === "none" ? (
           <Grid item xs={9}>
             <Typography
               id={`${label.toLowerCase().replaceAll(" ", "-")}-read-only`}
@@ -168,22 +250,12 @@ function ADSReadOnlyControl({
               {loading ? <Skeleton animation="wave" /> : value ? value : nullString}
             </Typography>
           </Grid>
-          <Grid item xs={3} />
-          <Grid item xs={9}>
-            <Tooltip title={getButtonTooltip()} arrow placement="right" sx={tooltipStyle}>
-              <Button
-                variant="contained"
-                onClick={handleButtonClick}
-                sx={{ ...transparentButtonStyle, pt: "0px", pb: "0px" }}
-                startIcon={getButtonIcon()}
-              >
-                {getButtonText()}
-              </Button>
-            </Tooltip>
-          </Grid>
-        </Fragment>
-      )}
-    </Grid>
+        ) : (
+          getButton()
+        )}
+        <ADSErrorDisplay errorText={displayError} id={`${label.toLowerCase().replaceAll(" ", "-")}-read-only-error`} />
+      </Grid>
+    </Box>
   );
 }
 
