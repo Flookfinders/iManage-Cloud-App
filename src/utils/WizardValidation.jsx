@@ -30,6 +30,7 @@
 //    013   21.05.24 Sean Flook       IMANN-473 Added missing checks and fixed some logic.
 //    014   22.05.24 Sean Flook       IMANN-473 Added missing checks for Scottish authorities.
 //    015   29.05.24 Sean Flook       IMANN-494 Corrected check 2400087 and removed checks that cannot be done here.
+//    016   29.05.24 Sean Flook       IMANN-504 Added new classification checks.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1136,6 +1137,28 @@ export function ValidatePropertyDetails(
       currentCheck = GetCheck(3200018, currentLookups, methodName, true, showDebugMessages);
       if (includeCheck(currentCheck, true) && !classificationData.startDate) {
         classificationStartDateErrors.push(GetErrorMessage(currentCheck, true));
+      }
+
+      // Commercial tertiary classification required for BLPU.
+      currentCheck = GetCheck(3200022, currentLookups, methodName, true, showDebugMessages);
+      if (
+        includeCheck(currentCheck, true) &&
+        classificationData.classification &&
+        classificationData.classification[0] === "C" &&
+        classificationData.classification.length < 3
+      ) {
+        blpuClassificationErrors.push(GetErrorMessage(currentCheck, true));
+      }
+
+      // Residential tertiary classification required for BLPU.
+      currentCheck = GetCheck(3200023, currentLookups, methodName, true, showDebugMessages);
+      if (
+        includeCheck(currentCheck, true) &&
+        classificationData.classification &&
+        classificationData.classification[0] === "R" &&
+        classificationData.classification.length < 3
+      ) {
+        blpuClassificationErrors.push(GetErrorMessage(currentCheck, true));
       }
     }
   }

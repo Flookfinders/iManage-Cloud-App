@@ -24,6 +24,7 @@
 //    011   21.05.24 Sean Flook       IMANN-473 Split out the Scottish classification errors to a separate variable.
 //    012   22.05.24 Sean Flook       IMANN-473 Changes required for Scottish authorities.
 //    013   29.05.24 Sean Flook       IMANN-494 Pass through the scottish flag when calling getLpiOfficialAddress.
+//    014   29.05.24 Sean Flook       IMANN-504 Corrected names for BLPU level.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -123,6 +124,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
   const [excludeFromExportError, setExcludeFromExportError] = useState(false);
   const [siteVisitError, setSiteVisitError] = useState(false);
   const [blpuStartDateError, setBlpuStartDateError] = useState(false);
+  const [blpuLevelError, setBlpuLevelError] = useState(false);
   const [lpiStatusError, setLpiStatusError] = useState(false);
   const [lpiLevelError, setLpiLevelError] = useState(false);
   const [lpiOfficialAddressError, setLpiOfficialAddressError] = useState(false);
@@ -233,7 +235,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                     rpc: updatedData.rpc,
                     state: updatedData.state,
                     stateDate: updatedData.stateDate,
-                    level: updatedData.level,
+                    level: updatedData.blpuLevel,
                     excludeFromExport: updatedData.excludeFromExport,
                     siteVisit: updatedData.siteVisit,
                     startDate: updatedData.startDate,
@@ -429,7 +431,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
     setBlpuClassificationError(false);
     setExcludeFromExportError(false);
     setSiteVisitError(false);
-    setLpiLevelError(false);
+    setBlpuLevelError(false);
     setBlpuStartDateError(false);
 
     if (blpuErrors && blpuErrors.length > 0) {
@@ -470,8 +472,8 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
             setHaveBlpuErrors(true);
             break;
 
-          case "level":
-            setLpiLevelError(true);
+          case "blpulevel":
+            setBlpuLevelError(true);
             setHaveBlpuErrors(true);
             break;
 
@@ -727,10 +729,10 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                           <Typography variant="body2">Level*</Typography>
                         </Grid>
                         <Grid item xs={1}>
-                          {lpiLevelError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
+                          {blpuLevelError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
                         </Grid>
                         <Grid item xs={7}>
-                          <Typography variant="body2" sx={getWizardValueStyle(lpiLevelError)}>
+                          <Typography variant="body2" sx={getWizardValueStyle(blpuLevelError)}>
                             {lpiLevel}
                           </Typography>
                         </Grid>

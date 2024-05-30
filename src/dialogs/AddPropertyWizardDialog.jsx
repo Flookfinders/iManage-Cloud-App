@@ -37,6 +37,7 @@
 //    024   25.04.24 Sean Flook       IMANN-390 Display a message dialog if there are no available UPRNs to use to create the properties.
 //    025   25.04.24 Sean Flook       IMANN-390 If a property is failed by the API return the UPRN back to the API so it can be reused.
 //    026   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit.
+//    027   29.05.24 Sean Flook       IMANN-504 Only create second language for Welsh authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1046,7 +1047,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
    * @returns {boolean} True if the address details are valid; otherwise false.
    */
   const addressDetailsValid = () => {
-    if (settingsContext.isScottish || settingsContext.isWelsh) {
+    if (settingsContext.isWelsh) {
       const engRecord = addressDetails.current.find((x) => x.language === "ENG");
       const altRecord = addressDetails.current.find((x) => x.language !== "ENG");
 

@@ -17,6 +17,7 @@
 //    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    006   17.01.24 Sean Flook                 Included sub-locality.
+//    007   29.05.24 Sean Flook       IMANN-504 Only create second language for Welsh authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -907,7 +908,7 @@ function WizardAddressDetailsPage({
       (x) => x.subLocalityRef === singleData.subLocalityRef && x.language === singleData.language
     );
 
-    if (settingsContext.isScottish || settingsContext.isWelsh) {
+    if (settingsContext.isWelsh) {
       if (language === "ENG") {
         const dataAlt = {
           language: altLangSingleData.language,
