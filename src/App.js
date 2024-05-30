@@ -58,6 +58,7 @@
 //    045   01.05.24 Sean Flook                 Only reload contexts if required.
 //    046   14.05.24 Joshua McCormick IMANN-270 Typo in Validation  for errors with hww & prow
 //    047   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
+//    048   30.05.24 Sean Flook       IMANN-499 Include settingsNode in the settingsContext reload.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -209,7 +210,7 @@ function App() {
 
   const [searchFilter, setSearchFilter] = useState({});
 
-  const [settingsNode, setSettingsNode] = useState({});
+  const [settingsNode, setSettingsNode] = useState("");
 
   const [authorityDetails, setAuthorityDetails] = useState({
     userOrgName: null,
@@ -1190,6 +1191,7 @@ function App() {
    */
   function HandleNodeChange(nodeId) {
     setSettingsNode(nodeId);
+    sessionStorage.setItem("settingsNode", JSON.stringify(nodeId));
   }
 
   /**
@@ -1266,6 +1268,10 @@ function App() {
    * Event to handle reloading the settings context data from storage
    */
   function HandleSettingsReload() {
+    if (sessionStorage.getItem("settingsNode") !== null) {
+      setSettingsNode(JSON.parse(sessionStorage.getItem("settingsNode")));
+    }
+
     if (sessionStorage.getItem("authorityDetails") !== null && !authorityDetails.dataProviderCode) {
       HandleAuthorityDetailsChange(JSON.parse(sessionStorage.getItem("authorityDetails")), true);
     }
