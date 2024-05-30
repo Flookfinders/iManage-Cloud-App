@@ -52,6 +52,7 @@
 //    039   17.05.24 Sean Flook       IMANN-309 Only check all ESUs if geometry has changed and this is not a new street.
 //    040   17.05.24 Joshua McCormick IMANN-460 Added PUT to call English with Welsh ref  
 //    041   23.05.24 Sean Flook       IMANN-478 Include usedByFrontEnd in includeCheck.
+//    042   30.05.24 Joel Benford     IMANN-496 Add GetOSClassificationAvatarAndText
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -742,6 +743,35 @@ export function copyTextToClipboard(text) {
       console.log("Async: Could not copy text:", err);
     }
   );
+}
+
+/**
+ * Get the OS classification avatar and text
+ *
+ * @param {object} params In Scotland params.row.blpuClass will hold the OS classification code (from CLASSIFICATION table).
+ * @return {JSX.Element|null} Cell containing classification avatar and text.
+ */
+export function GetOSClassificationAvatarAndText(params) {
+  const osCode = params.row.blpuClass;
+  const classificationInfo = OSGClassification.filter((x) => x.id === osCode)[0];
+
+  if (params && osCode && classificationInfo) {
+    return (
+      <Stack direction="row" spacing={1}>
+        <Avatar
+          variant="rounded"
+          sx={{
+            height: "24px",
+            width: `${Math.max(osCode.length, 2) * 12}px`,
+            backgroundColor: classificationInfo.colour,
+          }}
+        >
+          <Typography variant="caption">{osCode}</Typography>
+        </Avatar>
+        <Typography variant="body2">{classificationInfo.display || "OSGClassification not found"}</Typography>
+      </Stack>
+    );
+  } else return null;
 }
 
 /**

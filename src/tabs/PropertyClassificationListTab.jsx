@@ -25,6 +25,7 @@
 //    012   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    013   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
 //    014   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    015   30.05.24 Joel Benford     IMANN-496 Add classification code avatar
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -47,10 +48,10 @@ import {
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
-import OSGClassification from "../data/OSGClassification";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectionControl from "../components/ADSSelectionControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+import { GetOSClassificationAvatarAndText } from "../utils/HelperUtils";
 import { AddCircleOutlineOutlined as AddCircleIcon } from "@mui/icons-material";
 import { adsBlueA, adsLightBlue10, adsLightGreyC, adsMidGreyA } from "../utils/ADSColours";
 import { toolbarStyle, ActionIconStyle, dataFormStyle, tooltipStyle, gridRowStyle } from "../utils/ADSStyles";
@@ -166,29 +167,6 @@ function PropertyClassificationListTab({
   };
 
   /**
-   * Method to get the classification for the given row.
-   *
-   * @param {object} params The grid row parameters.
-   * @returns {JSX.Element} The classification for the row.
-   */
-  function getClassificationDisplay(params) {
-    function getClassificationText(code) {
-      const rec = OSGClassification.find((x) => x.id === code);
-
-      if (rec) return rec.display;
-      else return null;
-    }
-
-    if (params) {
-      return (
-        <Stack direction="row" spacing={1}>
-          <Typography variant="body1">{getClassificationText(params.row.blpuClass)}</Typography>
-        </Stack>
-      );
-    } else return null;
-  }
-
-  /**
    * Array of fields (columns) to be displayed in the data grid.
    */
   const classificationColumns = [
@@ -201,7 +179,7 @@ function PropertyClassificationListTab({
       headerClassName: "idox-classification-data-grid-header",
       headerName: "Classification",
       flex: 30,
-      renderCell: getClassificationDisplay,
+      renderCell: GetOSClassificationAvatarAndText,
     },
     { field: "classificationScheme" },
     { field: "entryDate" },
