@@ -7,13 +7,13 @@
 //
 //  Maximum validation numbers
 //  =================================
-//  BLPU:                             2100069
+//  BLPU:                             2100074
 //  BLPU Provenance:                  2200020
 //  BLPU Application Cross Reference: 2300033
-//  LPI:                              2400094
+//  LPI:                              2400101
 //  Successor Cross Reference:        3000017
-//  Organisation:                     3100017
-//  Classification:                   3200019
+//  Organisation:                     3100020
+//  Classification:                   3200026
 //  Note:                             7100014
 //
 //--------------------------------------------------------------------------------------------------
@@ -45,6 +45,7 @@
 //    021   21.05.24 Sean Flook       IMANN-473 Fixed some logic.
 //    022   22.05.24 Sean Flook       IMANN-473 Added new Scottish checks.
 //    023   22.05.24 Sean Flook       IMANN-459 Corrected field name for BLPU state checks.
+//    024   29.05.24 Sean Flook       IMANN-221 Added new checks.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -442,6 +443,12 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
     currentCheck = GetCheck(2100068, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && !data.level && data.level !== 0) {
       levelErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Where a BLPU end date is set the BLPU state must be 4 (closed).
+    currentCheck = GetCheck(2100073, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && data.endDate && data.blpuState && data.blpuState !== 4) {
+      blpuStateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     if (showDebugMessages) console.log("[DEBUG] ValidateBlpuData - Finished checks");
@@ -1075,6 +1082,34 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // PAO text must not contain only a number, use PAO start number for the number.
+    currentCheck = GetCheck(2400095, currentLookups, methodName, isScottish, showDebugMessages);
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.paoText &&
+      !isNaN(data.paoText) &&
+      !isNaN(parseFloat(data.paoText))
+    ) {
+      paoTextErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // SAO text must not contain only a number, use SAO start number for the number.
+    currentCheck = GetCheck(2400096, currentLookups, methodName, isScottish, showDebugMessages);
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.saoText &&
+      !isNaN(data.saoText) &&
+      !isNaN(parseFloat(data.saoText))
+    ) {
+      saoTextErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // PAO text begins with a space.
+    currentCheck = GetCheck(2400100, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && data.paoText && data.paoText[0] === " ") {
+      paoTextErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateLpiData - Finished checks");
 
     if (startDateErrors.length > 0)
@@ -1536,6 +1571,12 @@ export function ValidateOrganisationData(data, index, currentLookups) {
       organisationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // Organisation cannot start with a space.
+    currentCheck = GetCheck(3100019, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.organisation && data.organisation[0] === " ") {
+      organisationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateOrganisationData - Finished checks");
 
     if (startDateErrors.length > 0)
@@ -1633,6 +1674,18 @@ export function ValidateClassificationData(data, index, currentLookups) {
     currentCheck = GetCheck(3200018, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, true) && !data.startDate) {
       startDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Commercial tertiary classification required for BLPU.
+    currentCheck = GetCheck(3200022, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.blpuClass && data.blpuClass[0] === "C" && data.blpuClass.length < 3) {
+      blpuClassErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Residential tertiary classification required for BLPU.
+    currentCheck = GetCheck(3200023, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.blpuClass && data.blpuClass[0] === "R" && data.blpuClass.length < 3) {
+      blpuClassErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     if (showDebugMessages) console.log("[DEBUG] ValidateOrganisationData - Finished checks");

@@ -7,18 +7,18 @@
 //
 //  Maximum validation numbers
 //  =================================
-//  Street:                     1100059
-//  ESU:                        1300039
-//  Descriptor:                 1500040 - 1500041
-//  One Way Exemption:          1600023
-//  Highway Dedication:         1700022
+//  Street:                     1100061
+//  ESU:                        1300041
+//  Descriptor:                 1500045
+//  One Way Exemption:          1600025
+//  Highway Dedication:         1700029
 //  Successor Cross Reference:  3000017
-//  Maintenance Responsibility: 5100030
-//  Reinstatement Category:     5200027
-//  OS Special Designation:     5300029
+//  Maintenance Responsibility: 5100034
+//  Reinstatement Category:     5200033
+//  OS Special Designation:     5300036
 //  Interest:                   6100052
-//  Construction:               6200053
-//  Special Designation:        6300051
+//  Construction:               6200055
+//  Special Designation:        6300052
 //  Height Width Weight:        6400048
 //  Public Right of Way:        6600064
 //  Note:                       7200012
@@ -49,6 +49,7 @@
 //    018   16.04.24 Sean Flook       IMANN-388 Corrected bug.
 //    019   23.05.24 Joshua McCormick IMANN-478 Removed 6600052 PRoW district ref consultant is missing. as not used in API or GUI
 //    020   20.04.24 Sean Flook       IMANN-221 Use the correct table when checking Scottish ASD custodian and authorities.
+//    021   29.05.24 Sean Flook       IMANN-221 Added new checks.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -334,6 +335,12 @@ export function ValidateStreetData(data, currentLookups, isScottish, authorityCo
       swaOrgRefNamingErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Street authority is missing.
+    currentCheck = GetCheck(1100060, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && !data.swaOrgRefNaming) {
+      swaOrgRefNamingErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateStreetData - Finished checks");
 
     if (endDateErrors.length > 0)
@@ -571,6 +578,34 @@ export function ValidateDescriptorData(data, index, currentLookups, isScottish, 
       townRefErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Street Descriptor should not begin with a space.
+    currentCheck = GetCheck(1500042, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && data.streetDescriptor && data.streetDescriptor[0] === " ") {
+      descriptorErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Street Descriptor should not end with a space (open streets).
+    currentCheck = GetCheck(1500043, currentLookups, methodName, isScottish, showDebugMessages);
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.streetDescriptor &&
+      data.streetDescriptor[data.streetDescriptor.length - 1] === " "
+    ) {
+      descriptorErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
+    // Street descriptor island and administrative area should not be the same.
+    currentCheck = GetCheck(1500045, currentLookups, methodName, isScottish, showDebugMessages);
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.islandRef &&
+      data.adminAreaRef &&
+      adminAreaData.administrativeArea.toLowerCase() === islandData.island.toLowerCase()
+    ) {
+      islandRefErrors.push(GetErrorMessage(currentCheck, isScottish));
+      adminAreaRefErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateDescriptorData - Finished checks");
 
     if (descriptorErrors.length > 0)
@@ -643,6 +678,9 @@ export function ValidateEsuData(data, index, currentLookups, isScottish) {
   let currentCheck;
 
   if (data) {
+    const esuStartDate = isScottish ? data.startDate : data.esuStartDate;
+    const esuEndDate = isScottish ? data.endDate : data.esuEndDate;
+
     // Geometry is missing.
     currentCheck = GetCheck(1300002, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && !data.wktGeometry) {
@@ -678,75 +716,46 @@ export function ValidateEsuData(data, index, currentLookups, isScottish) {
     if (
       includeCheck(currentCheck, isScottish) &&
       data.state &&
-      data.startDate &&
-      isEndBeforeStart(data.startDate, data.stateDate)
+      esuStartDate &&
+      isEndBeforeStart(esuStartDate, data.stateDate)
     ) {
       stateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // State is 4 but ESU end date is not set.
     currentCheck = GetCheck(1300016, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && data.state && data.state === 4 && !data.endDate) {
+    if (includeCheck(currentCheck, isScottish) && data.state && data.state === 4 && !esuEndDate) {
       stateErrors.push(GetErrorMessage(currentCheck, isScottish));
       endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // Start date is missing.
     currentCheck = GetCheck(1300017, currentLookups, methodName, isScottish, showDebugMessages);
-    if (isScottish) {
-      if (includeCheck(currentCheck, isScottish) && !data.startDate) {
-        startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
-      }
-    } else {
-      if (includeCheck(currentCheck, isScottish) && !data.esuStartDate) {
-        startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
-      }
+    if (includeCheck(currentCheck, isScottish) && !esuStartDate) {
+      startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // Start date cannot be in the future.
     currentCheck = GetCheck(1300020, currentLookups, methodName, isScottish, showDebugMessages);
-    if (isScottish) {
-      if (includeCheck(currentCheck, isScottish) && data.startDate && isFutureDate(data.startDate)) {
-        startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
-      }
-    } else {
-      if (includeCheck(currentCheck, isScottish) && data.esuStartDate && isFutureDate(data.esuStartDate)) {
-        startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
-      }
+    if (includeCheck(currentCheck, isScottish) && esuStartDate && isFutureDate(esuStartDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // End date cannot be in the future.
     currentCheck = GetCheck(1300021, currentLookups, methodName, isScottish, showDebugMessages);
-    if (isScottish) {
-      if (includeCheck(currentCheck, isScottish) && data.endDate && isFutureDate(data.endDate)) {
-        endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
-      }
-    } else {
-      if (includeCheck(currentCheck, isScottish) && data.esuEndDate && isFutureDate(data.esuEndDate)) {
-        endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
-      }
+    if (includeCheck(currentCheck, isScottish) && esuEndDate && isFutureDate(esuEndDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // End date cannot be before the start date.
     currentCheck = GetCheck(1300022, currentLookups, methodName, isScottish, showDebugMessages);
-    if (isScottish) {
-      if (
-        includeCheck(currentCheck, isScottish) &&
-        data.startDate &&
-        data.endDate &&
-        isEndBeforeStart(data.startDate, data.endDate)
-      ) {
-        endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
-      }
-    } else {
-      if (
-        includeCheck(currentCheck, isScottish) &&
-        data.esuStartDate &&
-        data.esuEndDate &&
-        isEndBeforeStart(data.esuStartDate, data.esuEndDate)
-      ) {
-        endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
-      }
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      esuStartDate &&
+      esuEndDate &&
+      isEndBeforeStart(esuStartDate, esuEndDate)
+    ) {
+      endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // Classification is missing.
@@ -775,16 +784,16 @@ export function ValidateEsuData(data, index, currentLookups, isScottish) {
     currentCheck = GetCheck(1300026, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
-      data.startDate &&
+      esuStartDate &&
       data.classificationDate &&
-      isEndBeforeStart(data.startDate, data.classificationDate)
+      isEndBeforeStart(esuStartDate, data.classificationDate)
     ) {
       classificationDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // ESU end date is set but state is not 4.
     currentCheck = GetCheck(1300028, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && data.endDate && data.state !== 4) {
+    if (includeCheck(currentCheck, isScottish) && esuEndDate && data.state !== 4) {
       stateErrors.push(GetErrorMessage(currentCheck, isScottish));
       endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -1141,6 +1150,17 @@ export function ValidateHighwayDedicationData(data, index, esuIndex, currentLook
       hdSeasonalEndDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
+    // Highway dedication seasonal end date cannot be before the seasonal start date.
+    currentCheck = GetCheck(1700029, currentLookups, methodName, isScottish, showDebugMessages);
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.hdSeasonalStartDate &&
+      data.hdSeasonalEndDate &&
+      isEndBeforeStart(data.hdSeasonalStartDate, data.hdSeasonalEndDate)
+    ) {
+      hdSeasonalEndDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateHighwayDedicationData - Finished checks");
 
     if (hdCodeErrors.length > 0)
@@ -1294,6 +1314,7 @@ export function ValidateMaintenanceResponsibilityData(data, index, currentLookup
   let endDateErrors = [];
   let startDateErrors = [];
   let wholeRoadErrors = [];
+  let wktGeometryErrors = [];
 
   if (data) {
     // Specific location is too long.
@@ -1427,6 +1448,32 @@ export function ValidateMaintenanceResponsibilityData(data, index, currentLookup
       maintainingAuthorityErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // Maintenance responsibility geometry is missing.
+    currentCheck = GetCheck(5100032, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && !data.wktGeometry) {
+      wktGeometryErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Maintenance responsibility specify location cannot end with a backslash (\\).
+    currentCheck = GetCheck(5100033, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.specificLocation &&
+      data.specificLocation[data.specificLocation.length - 1] === "\\"
+    ) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Maintenance responsibility specify location cannot end with a hyphen (-).
+    currentCheck = GetCheck(5100034, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.specificLocation &&
+      data.specificLocation[data.specificLocation.length - 1] === "-"
+    ) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateMaintenanceResponsibilityData - Finished checks");
 
     if (specificLocationErrors.length > 0)
@@ -1484,6 +1531,13 @@ export function ValidateMaintenanceResponsibilityData(data, index, currentLookup
         field: "WholeRoad",
         errors: wholeRoadErrors,
       });
+
+    if (wktGeometryErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "WholeRoad",
+        errors: wktGeometryErrors,
+      });
   }
 
   return validationErrors;
@@ -1509,6 +1563,7 @@ export function ValidateReinstatementCategoryData(data, index, currentLookups) {
   let endDateErrors = [];
   let startDateErrors = [];
   let wholeRoadErrors = [];
+  let wktGeometryErrors = [];
 
   if (data) {
     // Specific location is too long.
@@ -1632,6 +1687,38 @@ export function ValidateReinstatementCategoryData(data, index, currentLookups) {
       custodianErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // Reinstatement category state is 1 but end date is set.
+    currentCheck = GetCheck(5200030, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.state && data.state === 1 && data.endDate) {
+      endDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Reinstatement category geometry is missing.
+    currentCheck = GetCheck(5200031, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && !data.wktGeometry) {
+      wktGeometryErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Reinstatement category specify location cannot end with a backslash (\\).
+    currentCheck = GetCheck(5200032, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.specificLocation &&
+      data.specificLocation[data.specificLocation.length - 1] === "\\"
+    ) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Reinstatement category specify location cannot end with a hyphen (-).
+    currentCheck = GetCheck(5200033, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.specificLocation &&
+      data.specificLocation[data.specificLocation.length - 1] === "-"
+    ) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateReinstatementCategoryData - Finished checks");
 
     if (specificLocationErrors.length > 0)
@@ -1689,6 +1776,13 @@ export function ValidateReinstatementCategoryData(data, index, currentLookups) {
         field: "WholeRoad",
         errors: wholeRoadErrors,
       });
+
+    if (wktGeometryErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "WholeRoad",
+        errors: wktGeometryErrors,
+      });
   }
 
   return validationErrors;
@@ -1715,6 +1809,7 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
   let startDateErrors = [];
   let specificLocationErrors = [];
   let wholeRoadErrors = [];
+  let wktGeometryErrors = [];
 
   if (data) {
     // Custodian code is missing.
@@ -1847,6 +1942,44 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
       custodianErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // Special designation description contains invalid characters.
+    currentCheck = GetCheck(5300032, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.description && !isIso885914(data.description)) {
+      descriptionErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Special designation geometry is missing.
+    currentCheck = GetCheck(5300033, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && !data.wktGeometry) {
+      wktGeometryErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Special designation specify location cannot end with a backslash (\\).
+    currentCheck = GetCheck(5300034, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.specificLocation &&
+      data.specificLocation[data.specificLocation.length - 1] === "\\"
+    ) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Special designation specific location cannot end with a hyphen (-).
+    currentCheck = GetCheck(5300035, currentLookups, methodName, true, showDebugMessages);
+    if (
+      includeCheck(currentCheck, true) &&
+      data.specificLocation &&
+      data.specificLocation[data.specificLocation.length - 1] === "-"
+    ) {
+      specificLocationErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // Special designation state is 1 but end date is set.
+    currentCheck = GetCheck(5300036, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && data.state && data.state === 1 && data.endDate) {
+      endDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateOSSpecialDesignationData - Finished checks");
 
     if (custodianErrors.length > 0)
@@ -1910,6 +2043,13 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
         index: index,
         field: "WholeRoad",
         errors: wholeRoadErrors,
+      });
+
+    if (wktGeometryErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "WholeRoad",
+        errors: wktGeometryErrors,
       });
   }
 
@@ -2322,6 +2462,7 @@ export function ValidateConstructionData(data, index, currentLookups) {
   let recordEndDateErrors = [];
   let wholeRoadErrors = [];
   let constructionDescriptionErrors = [];
+  let wktGeometryErrors = [];
 
   if (data) {
     // Start X value is invalid.
@@ -2584,6 +2725,12 @@ export function ValidateConstructionData(data, index, currentLookups) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // Construction geometry is missing.
+    currentCheck = GetCheck(6200055, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, false) && !data.wktGeometry) {
+      wktGeometryErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateConstructionData - Finished checks");
 
     if (reinstatementTypeCodeErrors.length > 0)
@@ -2684,6 +2831,13 @@ export function ValidateConstructionData(data, index, currentLookups) {
         errors: wholeRoadErrors,
       });
 
+    if (wktGeometryErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "WholeRoad",
+        errors: wktGeometryErrors,
+      });
+
     if (constructionDescriptionErrors.length > 0)
       validationErrors.push({
         index: index,
@@ -2725,6 +2879,7 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
   let swaOrgRefConsultantCodeErrors = [];
   let districtRefConsultantErrors = [];
   let specialDesigSourceTextErrors = [];
+  let wktGeometryErrors = [];
 
   if (data) {
     // Start X value is invalid.
@@ -3036,6 +3191,12 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
       districtRefConsultantErrors.push(GetErrorMessage(currentCheck, true));
     }
 
+    // Special designation geometry is missing.
+    currentCheck = GetCheck(6300052, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, false) && !data.wktGeometry) {
+      wktGeometryErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     if (showDebugMessages) console.log("[DEBUG] ValidateSpecialDesignationData - Finished checks");
 
     if (streetSpecialDesigCodeErrors.length > 0)
@@ -3141,6 +3302,13 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
         index: index,
         field: "WholeRoad",
         errors: wholeRoadErrors,
+      });
+
+    if (wktGeometryErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        field: "WholeRoad",
+        errors: wktGeometryErrors,
       });
 
     if (swaOrgRefConsultantCodeErrors.length > 0)
