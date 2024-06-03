@@ -60,6 +60,7 @@
 //    047   15.05.24 Sean Flook       IMANN-131 Ensure NeverExport is always set.
 //    048   21.05.24 Sean Flook       IMANN-469 Modified GetStreetUpdateData to set streetSurface, highwayDedicationCode, hdProw and changeType of ASD records when state is closed.
 //    049   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
+//    050   03.06.24 Sean Flook       IMANN-281 Do not send null for required integer fields.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1403,10 +1404,10 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
     return {
       changeType: "I",
       usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
-      swaOrgRefNaming: streetData.swaOrgRefNaming,
+      swaOrgRefNaming: streetData.swaOrgRefNaming ? streetData.swaOrgRefNaming : 0,
       streetStartDate: streetData.streetStartDate,
       neverExport: streetData.neverExport ? streetData.neverExport : false,
-      recordType: streetData.recordType,
+      recordType: streetData.recordType ? streetData.recordType : 0,
       streetEndDate: streetData.streetEndDate,
       successorCrossRefs: streetData.successorCrossRefs.map((x) => {
         return {
@@ -1516,7 +1517,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
                 : sd.language === "GAE"
                 ? unassignedGaeAdminArea.administrativeAreaRef
                 : unassignedEngAdminArea.administrativeAreaRef,
-              administrativeArea: sd.adminAreaRef ? sd.administrativeArea : "",
+              administrativeArea: sd.adminAreaRef && sd.administrativeArea ? sd.administrativeArea : "",
               language: sd.language,
               neverExport: streetData.neverExport ? streetData.neverExport : false,
               islandRef: sd.islandRef
@@ -1552,12 +1553,12 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
     if (!HasASD()) {
       return {
         version: 1,
-        recordType: streetData.recordType,
-        state: streetData.state,
+        recordType: streetData.recordType ? streetData.recordType : 0,
+        state: streetData.state ? streetData.state : 0,
         stateDate: streetData.stateDate,
         streetEndDate: streetData.streetEndDate,
         streetClassification: streetData.streetClassification,
-        streetSurface: streetData.streetSurface,
+        streetSurface: streetData.streetSurface ? streetData.streetSurface : 0,
         streetTolerance: streetData.streetTolerance,
         streetStartX: streetData.streetStartX ? streetData.streetStartX : 0,
         streetStartY: streetData.streetStartY ? streetData.streetStartY : 0,
@@ -1654,19 +1655,19 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
           : [],
         changeType: "I",
         usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
-        swaOrgRefNaming: streetData.swaOrgRefNaming,
+        swaOrgRefNaming: streetData.swaOrgRefNaming ? streetData.swaOrgRefNaming : 0,
         streetStartDate: streetData.streetStartDate,
         neverExport: streetData.neverExport ? streetData.neverExport : false,
       };
     } else {
       return {
         version: 1,
-        recordType: streetData.recordType,
-        state: streetData.state,
+        recordType: streetData.recordType ? streetData.recordType : 0,
+        state: streetData.state ? streetData.state : 0,
         stateDate: streetData.stateDate,
         streetEndDate: streetData.streetEndDate,
         streetClassification: streetData.streetClassification,
-        streetSurface: streetData.streetSurface,
+        streetSurface: streetData.streetSurface ? streetData.streetSurface : 0,
         streetTolerance: streetData.streetTolerance,
         streetStartX: streetData.streetStartX ? streetData.streetStartX : 0,
         streetStartY: streetData.streetStartY ? streetData.streetStartY : 0,
@@ -1899,7 +1900,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
           : [],
         changeType: "I",
         usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
-        swaOrgRefNaming: streetData.swaOrgRefNaming,
+        swaOrgRefNaming: streetData.swaOrgRefNaming ? streetData.swaOrgRefNaming : 0,
         streetStartDate: streetData.streetStartDate,
         neverExport: streetData.neverExport ? streetData.neverExport : false,
       };
