@@ -36,6 +36,7 @@
 //    023   17.05.24 Joshua McCormick           Added noWrap to street title for when too many characters overflow
 //    024   23.05.24 Sean Flook       IMANN-485 When state changes set the state date to current date.
 //    025   29.05.24 Sean Flook       IMANN-490 Modified USRN to be read only, but able to be edited via button and dialog.
+//    026   30.05.24 Joel Benford     IMANN-493 Hide "Add language version" menu unless in dev
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -957,15 +958,16 @@ function StreetDataTab({
             TransitionComponent={Fade}
             sx={menuStyle}
           >
-            {((data && data.streetDescriptors && data.streetDescriptors.length === 0) ||
-              ((settingsContext.isWelsh || settingsContext.isScottish) &&
-                data &&
-                data.streetDescriptors &&
-                data.streetDescriptors.length === 1)) && (
-              <MenuItem dense disabled onClick={handleAddLanguage} sx={menuItemStyle(false)}>
-                <Typography variant="inherit">Add language version</Typography>
-              </MenuItem>
-            )}
+            {process.env.NODE_ENV === "development" &&
+              ((data && data.streetDescriptors && data.streetDescriptors.length === 0) ||
+                ((settingsContext.isWelsh || settingsContext.isScottish) &&
+                  data &&
+                  data.streetDescriptors &&
+                  data.streetDescriptors.length === 1)) && (
+                <MenuItem dense disabled onClick={handleAddLanguage} sx={menuItemStyle(false)}>
+                  <Typography variant="inherit">Add language version</Typography>
+                </MenuItem>
+              )}
             <MenuItem dense disabled={!userCanEdit} onClick={handleAddProperty} sx={menuItemStyle(true)}>
               <Typography variant="inherit">Add property on street</Typography>
             </MenuItem>
