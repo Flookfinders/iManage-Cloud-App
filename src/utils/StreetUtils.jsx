@@ -61,6 +61,7 @@
 //    048   21.05.24 Sean Flook       IMANN-469 Modified GetStreetUpdateData to set streetSurface, highwayDedicationCode, hdProw and changeType of ASD records when state is closed.
 //    049   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    050   03.06.24 Sean Flook       IMANN-281 Do not send null for required integer fields.
+//    051   04.06.24 Sean Flook       IMANN-281 Default to current date if start date is null when creating a new street.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1374,6 +1375,8 @@ export function GetCurrentStreetData(streetData, sandboxContext, lookupContext, 
  * @return {object} The create street object.
  */
 export function GetStreetCreateData(streetData, lookupContext, isScottish) {
+  const currentDate = GetCurrentDate();
+
   const unassignedEngLocality = lookupContext.currentLookups.localities.find(
     (x) => x.locality === "Unassigned" && x.language === "ENG"
   );
@@ -1405,7 +1408,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
       changeType: "I",
       usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
       swaOrgRefNaming: streetData.swaOrgRefNaming ? streetData.swaOrgRefNaming : 0,
-      streetStartDate: streetData.streetStartDate,
+      streetStartDate: streetData.streetStartDate ? streetData.streetStartDate : currentDate,
       neverExport: streetData.neverExport ? streetData.neverExport : false,
       recordType: streetData.recordType ? streetData.recordType : 0,
       streetEndDate: streetData.streetEndDate,
@@ -1656,7 +1659,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
         changeType: "I",
         usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
         swaOrgRefNaming: streetData.swaOrgRefNaming ? streetData.swaOrgRefNaming : 0,
-        streetStartDate: streetData.streetStartDate,
+        streetStartDate: streetData.streetStartDate ? streetData.streetStartDate : currentDate,
         neverExport: streetData.neverExport ? streetData.neverExport : false,
       };
     } else {
@@ -1901,7 +1904,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
         changeType: "I",
         usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
         swaOrgRefNaming: streetData.swaOrgRefNaming ? streetData.swaOrgRefNaming : 0,
-        streetStartDate: streetData.streetStartDate,
+        streetStartDate: streetData.streetStartDate ? streetData.streetStartDate : currentDate,
         neverExport: streetData.neverExport ? streetData.neverExport : false,
       };
     }

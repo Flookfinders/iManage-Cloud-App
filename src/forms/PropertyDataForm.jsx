@@ -65,6 +65,7 @@
 //    052   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //    053   17.05.24 Sean Flook       IMANN-458 Pass isActive to the GetTabIconStyle method.
 //    054   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
+//    055   04.06.24 Sean Flook       IMANN-281 Always validate the data before trying to save.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2354,7 +2355,16 @@ function PropertyDataForm({ data, loading }) {
           }
         })
         .catch(() => {});
-    } else HandlePropertySave(currentProperty);
+    } else {
+      if (propertyContext.validateData()) {
+        failedValidation.current = false;
+        HandlePropertySave(currentProperty);
+      } else {
+        failedValidation.current = true;
+        saveResult.current = false;
+        setSaveOpen(true);
+      }
+    }
 
     provenanceChanged.current = false;
   };

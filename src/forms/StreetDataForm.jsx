@@ -95,6 +95,7 @@
 //    081   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    082   23.05.24 Sean Flook       IMANN-484 When adding a new ESU to a street call GetNewEsuStreetData to ensure the geometry on any ASD records are updated as well.
 //    083   04.06.24 Sean Flook       IMANN-507 Error trapping.
+//    084   04.06.24 Sean Flook       IMANN-281 Always validate the data before trying to save.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4367,7 +4368,16 @@ function StreetDataForm({ data, loading }) {
           }
         })
         .catch(() => {});
-    } else HandleStreetSave(currentStreet);
+    } else {
+      if (streetContext.validateData()) {
+        failedValidation.current = false;
+        HandleStreetSave(currentStreet);
+      } else {
+        failedValidation.current = true;
+        saveResult.current = false;
+        setSaveOpen(true);
+      }
+    }
   }
 
   /**
