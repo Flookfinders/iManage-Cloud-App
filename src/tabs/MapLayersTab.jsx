@@ -23,6 +23,7 @@
 //    010   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    011   27.03.24 Sean Flook                 Further changes to fix warnings.
 //    012   20.05.24 Sean Flook       IMANN-445 Display API errors.
+//    013   04.06.24 Sean Flook       IMANN-445 Show save data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -578,18 +579,8 @@ function MapLayersTab(props) {
     const isNewLayer = newLayer.current;
 
     if (mapLayerApiUrl) {
-      if (process.env.NODE_ENV === "development")
-        console.log(
-          "[DEBUG] handleDoneEditLayer",
-          {
-            newLayer: newLayer.current,
-            isNewLayer: isNewLayer,
-            mapLayerApiUrl: mapLayerApiUrl,
-            updatedData: updatedData,
-            saveData: saveData,
-          },
-          JSON.stringify(saveData)
-        );
+      // if (process.env.NODE_ENV === "development")
+      console.log("[DEBUG] saveData", JSON.stringify(saveData));
 
       fetch(mapLayerApiUrl.url, {
         headers: mapLayerApiUrl.headers,
