@@ -28,6 +28,7 @@
 //    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    016   09.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
 //    017   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title nowrapping with width restrictions
+//    018   04.06.24 Joel Benford     IMANN-505 Fix enabling OK button
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -40,7 +41,6 @@ import SandboxContext from "../context/sandboxContext";
 import UserContext from "./../context/userContext";
 import SettingsContext from "../context/settingsContext";
 import { ConvertDate } from "../utils/HelperUtils";
-import ObjectComparison, { blpuAppCrossRefKeysToIgnore } from "./../utils/ObjectComparison";
 import { Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
@@ -107,6 +107,11 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onHomeClick,
    * @param {string|null} newValue The new source id.
    */
   const handleSourceIdChangeEvent = (newValue) => {
+    const appXrefBeforehand = sandboxContext.currentSandbox.sourceProperty.blpuAppCrossRefs.find(
+      (x) => x.pkId === data.xrefData.id
+    );
+    const fieldBeforehand = appXrefBeforehand && appXrefBeforehand.sourceId;
+    setDataChanged(fieldBeforehand !== newValue);
     setSourceId(newValue);
     UpdateSandbox("sourceId", newValue);
   };
@@ -117,6 +122,11 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onHomeClick,
    * @param {string|null} newValue The new cross reference.
    */
   const handleCrossReferenceChangeEvent = (newValue) => {
+    const appXrefBeforehand = sandboxContext.currentSandbox.sourceProperty.blpuAppCrossRefs.find(
+      (x) => x.pkId === data.xrefData.id
+    );
+    const fieldBeforehand = appXrefBeforehand && appXrefBeforehand.crossReference;
+    setDataChanged(fieldBeforehand !== newValue);
     setCrossReference(newValue);
     UpdateSandbox("crossReference", newValue);
   };
@@ -127,6 +137,11 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onHomeClick,
    * @param {Date|null} newValue The new start date.
    */
   const handleStartDateChangeEvent = (newValue) => {
+    const appXrefBeforehand = sandboxContext.currentSandbox.sourceProperty.blpuAppCrossRefs.find(
+      (x) => x.pkId === data.xrefData.id
+    );
+    const fieldBeforehand = appXrefBeforehand && appXrefBeforehand.startDate;
+    setDataChanged(fieldBeforehand !== ConvertDate(newValue));
     setStartDate(newValue);
     UpdateSandbox("startDate", newValue);
   };
@@ -137,6 +152,11 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onHomeClick,
    * @param {Date|null} newValue The new end date.
    */
   const handleEndDateChangeEvent = (newValue) => {
+    const appXrefBeforehand = sandboxContext.currentSandbox.sourceProperty.blpuAppCrossRefs.find(
+      (x) => x.pkId === data.xrefData.id
+    );
+    const fieldBeforehand = appXrefBeforehand && appXrefBeforehand.endDate;
+    setDataChanged(fieldBeforehand !== ConvertDate(newValue));
     setEndDate(newValue);
     UpdateSandbox("endDate", newValue);
   };
@@ -257,27 +277,6 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onHomeClick,
       setEndDate(data.xrefData.endDate);
     }
   }, [loading, data]);
-
-  useEffect(() => {
-    if (
-      sandboxContext.currentSandbox.sourceProperty &&
-      sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef
-    ) {
-      const sourceCrossRef = sandboxContext.currentSandbox.sourceProperty.blpuAppCrossRefs.find(
-        (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.pkId
-      );
-
-      if (sourceCrossRef) {
-        setDataChanged(
-          !ObjectComparison(
-            sourceCrossRef,
-            sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef,
-            blpuAppCrossRefKeysToIgnore
-          )
-        );
-      } else if (sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef.pkId < 0) setDataChanged(true);
-    }
-  }, [sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef, sandboxContext.currentSandbox.sourceProperty]);
 
   useEffect(() => {
     if (
