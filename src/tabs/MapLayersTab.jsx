@@ -24,6 +24,7 @@
 //    011   27.03.24 Sean Flook                 Further changes to fix warnings.
 //    012   20.05.24 Sean Flook       IMANN-445 Display API errors.
 //    013   04.06.24 Sean Flook       IMANN-445 Show save data.
+//    014   04.06.24 Sean Flook       IMANN-445 Only close the edit dialog if the save was successful.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -602,6 +603,7 @@ function MapLayersTab(props) {
             else editedData = [result];
           }
           settingsContext.onMapLayersChange(editedData);
+          setShowEditDialog(false);
         })
         .catch((res) => {
           switch (res.status) {
@@ -700,7 +702,6 @@ function MapLayersTab(props) {
     }
 
     newLayer.current = false;
-    setShowEditDialog(false);
   };
 
   /**
