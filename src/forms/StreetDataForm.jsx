@@ -94,6 +94,7 @@
 //    080   20.05.24 Sean Flook       IMANN-467 Only set second language details if one exists for Scottish authorities.
 //    081   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    082   23.05.24 Sean Flook       IMANN-484 When adding a new ESU to a street call GetNewEsuStreetData to ensure the geometry on any ASD records are updated as well.
+//    083   04.06.24 Sean Flook       IMANN-507 Error trapping.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -7730,11 +7731,12 @@ function StreetDataForm({ data, loading }) {
     if (mapContext.currentLineGeometry) {
       switch (mapContext.currentLineGeometry.objectType) {
         case 13:
-          const currentEsu = sandboxContext.currentSandbox.currentStreetRecords.esu
-            ? sandboxContext.currentSandbox.currentStreetRecords.esu
-            : streetData.esus
-            ? streetData.esus.find((x) => x.esuId === mapContext.currentLineGeometry.objectId)
-            : null;
+          const currentEsu =
+            sandboxContext.currentSandbox.currentStreetRecords && sandboxContext.currentSandbox.currentStreetRecords.esu
+              ? sandboxContext.currentSandbox.currentStreetRecords.esu
+              : streetData && streetData.esus
+              ? streetData.esus.find((x) => x.esuId === mapContext.currentLineGeometry.objectId)
+              : null;
 
           // Only update if geometry has changed
           if (currentEsu && currentEsu.wktGeometry !== mapContext.currentLineGeometry.wktGeometry) {

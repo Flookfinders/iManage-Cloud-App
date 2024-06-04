@@ -75,6 +75,7 @@
 //    061   20.05.24 Sean Flook       IMANN-444 Refresh the snap layers after loading a SHP file.
 //    062   20.05.24 Sean Flook       IMANN-476 Check view has been created first in fadeVisibilityOn.
 //    063   21.05.24 Sean Flook       IMANN-462 Moved loading of base mapping into its own method and wait for details before we try and load it.
+//    064   04.06.24 Sean Flook       IMANN-507 After redrawing a street or property if we are editing the graphic ensure the popup is disabled and the edit graphics layer is on top.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -5170,17 +5171,52 @@ function ADSEsriMap(startExtent) {
     mapRef.current.remove(mapRef.current.findLayerById(propertyLayerName));
     mapRef.current.remove(mapRef.current.findLayerById(zoomGraphicLayerName));
 
-    if (streetDataRef && streetDataRef.length > 0) mapRef.current.add(streetLayer);
-    if (asdType51DataRef && asdType51DataRef.length > 0) mapRef.current.add(asd51Layer);
-    if (asdType52DataRef && asdType52DataRef.length > 0) mapRef.current.add(asd52Layer);
-    if (asdType53DataRef && asdType53DataRef.length > 0) mapRef.current.add(asd53Layer);
-    if (asdType61DataRef && asdType61DataRef.length > 0) mapRef.current.add(asd61Layer);
-    if (asdType62DataRef && asdType62DataRef.length > 0) mapRef.current.add(asd62Layer);
-    if (asdType63DataRef && asdType63DataRef.length > 0) mapRef.current.add(asd63Layer);
-    if (asdType64DataRef && asdType64DataRef.length > 0) mapRef.current.add(asd64Layer);
-    if (asdType66DataRef && asdType66DataRef.length > 0) mapRef.current.add(asd66Layer);
-    if (extentData.current && extentData.current.length > 0) mapRef.current.add(extentLayer);
-    if (propertyDataRef && propertyDataRef.length > 0) mapRef.current.add(propertyLayer);
+    const editingGraphic = editingObject.current && editingObject.current.objectType;
+
+    if (streetDataRef && streetDataRef.length > 0) {
+      mapRef.current.add(streetLayer);
+      if (editingGraphic) streetLayer.popupEnabled = false;
+    }
+    if (asdType51DataRef && asdType51DataRef.length > 0) {
+      mapRef.current.add(asd51Layer);
+      if (editingGraphic) asd51Layer.popupEnabled = false;
+    }
+    if (asdType52DataRef && asdType52DataRef.length > 0) {
+      mapRef.current.add(asd52Layer);
+      if (editingGraphic) asd52Layer.popupEnabled = false;
+    }
+    if (asdType53DataRef && asdType53DataRef.length > 0) {
+      mapRef.current.add(asd53Layer);
+      if (editingGraphic) asd53Layer.popupEnabled = false;
+    }
+    if (asdType61DataRef && asdType61DataRef.length > 0) {
+      mapRef.current.add(asd61Layer);
+      if (editingGraphic) asd61Layer.popupEnabled = false;
+    }
+    if (asdType62DataRef && asdType62DataRef.length > 0) {
+      mapRef.current.add(asd62Layer);
+      if (editingGraphic) asd62Layer.popupEnabled = false;
+    }
+    if (asdType63DataRef && asdType63DataRef.length > 0) {
+      mapRef.current.add(asd63Layer);
+      if (editingGraphic) asd63Layer.popupEnabled = false;
+    }
+    if (asdType64DataRef && asdType64DataRef.length > 0) {
+      mapRef.current.add(asd64Layer);
+      if (editingGraphic) asd64Layer.popupEnabled = false;
+    }
+    if (asdType66DataRef && asdType66DataRef.length > 0) {
+      mapRef.current.add(asd66Layer);
+      if (editingGraphic) asd66Layer.popupEnabled = false;
+    }
+    if (extentData.current && extentData.current.length > 0) {
+      mapRef.current.add(extentLayer);
+      if (editingGraphic) extentLayer.popupEnabled = false;
+    }
+    if (propertyDataRef && propertyDataRef.length > 0) {
+      mapRef.current.add(propertyLayer);
+      if (editingGraphic) propertyLayer.popupEnabled = false;
+    }
     mapRef.current.add(zoomGraphicsLayer.current);
 
     setASDLayerVisibility(51, asd51Layer, streetContext.currentRecord);
@@ -5191,6 +5227,13 @@ function ADSEsriMap(startExtent) {
     setASDLayerVisibility(63, asd63Layer, streetContext.currentRecord);
     setASDLayerVisibility(64, asd64Layer, streetContext.currentRecord);
     setASDLayerVisibility(66, asd66Layer, streetContext.currentRecord);
+
+    // Check we do not need to move the edit layer back to the top
+    if (editingGraphic && editGraphicsLayer.current) {
+      const currentEditIndex = mapRef.current.layers.indexOf(editGraphicsLayer.current);
+      const requiredEditIndex = mapRef.current.layers.length - 1;
+      if (currentEditIndex !== requiredEditIndex) mapRef.current.reorder(editGraphicsLayer.current, requiredEditIndex);
+    }
 
     zoomGraphicsLayer.current.graphics.removeAll();
 
@@ -6880,6 +6923,12 @@ function ADSEsriMap(startExtent) {
     const currentPropertyIndex = mapRef.current.layers.indexOf(propertyLayer);
     const requiredPropertyIndex = levelAboveBase++;
     if (currentPropertyIndex !== requiredPropertyIndex) mapRef.current.reorder(propertyLayer, requiredPropertyIndex);
+
+    if (editingObject.current && editingObject.current.objectType && editGraphicsLayer.current) {
+      const currentEditIndex = mapRef.current.layers.indexOf(editGraphicsLayer.current);
+      const requiredEditIndex = mapRef.current.layers.length - 1;
+      if (currentEditIndex !== requiredEditIndex) mapRef.current.reorder(editGraphicsLayer.current, requiredEditIndex);
+    }
   });
 
   // Edit graphics layer & setting sketch tools
@@ -7529,65 +7578,66 @@ function ADSEsriMap(startExtent) {
           break;
 
         default:
+          const editingGraphic = editingObject.current && editingObject.current.objectType;
           if (backgroundStreetLayerRef.current) {
             backgroundStreetLayerRef.current.opacity = 0.5;
-            backgroundStreetLayerRef.current.popupEnabled = true;
+            if (!editingGraphic) backgroundStreetLayerRef.current.popupEnabled = true;
           }
           if (unassignedEsusLayerRef.current) {
             unassignedEsusLayerRef.current.opacity = 0.5;
-            unassignedEsusLayerRef.current.popupEnabled = true;
+            if (!editingGraphic) unassignedEsusLayerRef.current.popupEnabled = true;
           }
           if (streetLayer) {
             streetLayer.opacity = 1;
-            streetLayer.popupEnabled = true;
+            if (!editingGraphic) streetLayer.popupEnabled = true;
           }
           if (asd51Layer) {
             asd51Layer.opacity = 1;
-            asd51Layer.popupEnabled = true;
+            if (!editingGraphic) asd51Layer.popupEnabled = true;
           }
           if (asd52Layer) {
             asd52Layer.opacity = 1;
-            asd52Layer.popupEnabled = true;
+            if (!editingGraphic) asd52Layer.popupEnabled = true;
           }
           if (asd53Layer) {
             asd53Layer.opacity = 1;
-            asd53Layer.popupEnabled = true;
+            if (!editingGraphic) asd53Layer.popupEnabled = true;
           }
           if (asd61Layer) {
             asd61Layer.opacity = 1;
-            asd61Layer.popupEnabled = true;
+            if (!editingGraphic) asd61Layer.popupEnabled = true;
           }
           if (asd62Layer) {
             asd62Layer.opacity = 1;
-            asd62Layer.popupEnabled = true;
+            if (!editingGraphic) asd62Layer.popupEnabled = true;
           }
           if (asd63Layer) {
             asd63Layer.opacity = 1;
-            asd63Layer.popupEnabled = true;
+            if (!editingGraphic) asd63Layer.popupEnabled = true;
           }
           if (asd64Layer) {
             asd64Layer.opacity = 1;
-            asd64Layer.popupEnabled = true;
+            if (!editingGraphic) asd64Layer.popupEnabled = true;
           }
           if (asd66Layer) {
             asd66Layer.opacity = 1;
-            asd66Layer.popupEnabled = true;
+            if (!editingGraphic) asd66Layer.popupEnabled = true;
           }
           if (backgroundProvenanceLayerRef.current) {
             backgroundProvenanceLayerRef.current.opacity = 0.5;
-            backgroundProvenanceLayerRef.current.popupEnabled = true;
+            if (!editingGraphic) backgroundProvenanceLayerRef.current.popupEnabled = true;
           }
           if (backgroundPropertyLayerRef.current) {
             backgroundPropertyLayerRef.current.opacity = 0.5;
-            backgroundPropertyLayerRef.current.popupEnabled = true;
+            if (!editingGraphic) backgroundPropertyLayerRef.current.popupEnabled = true;
           }
           if (propertyLayer) {
             propertyLayer.opacity = 1;
-            propertyLayer.popupEnabled = true;
+            if (!editingGraphic) propertyLayer.popupEnabled = true;
           }
           if (extentLayer) {
             extentLayer.opacity = 1;
-            extentLayer.popupEnabled = true;
+            if (!editingGraphic) extentLayer.popupEnabled = true;
           }
           editGraphicsLayer.current.listMode = "hide";
           sketchRef.current.availableCreateTools = [];
@@ -8059,19 +8109,20 @@ function ADSEsriMap(startExtent) {
     } else {
       coordinateConversionRef.current.mode = "live";
       currentPointCaptureModeRef.current = null;
-      if (backgroundStreetLayerRef.current && !backgroundStreetLayerRef.current.popupEnabled)
+      const editingGraphic = editingObject.current && editingObject.current.objectType;
+      if (backgroundStreetLayerRef.current && !editingGraphic && !backgroundStreetLayerRef.current.popupEnabled)
         backgroundStreetLayerRef.current.popupEnabled = true;
-      if (unassignedEsusLayerRef.current && !unassignedEsusLayerRef.current.popupEnabled)
+      if (unassignedEsusLayerRef.current && !editingGraphic && !unassignedEsusLayerRef.current.popupEnabled)
         unassignedEsusLayerRef.current.popupEnabled = true;
-      if (streetLayer && !streetLayer.popupEnabled) streetLayer.popupEnabled = true;
-      if (asd51Layer && !asd51Layer.popupEnabled) asd51Layer.popupEnabled = true;
-      if (asd52Layer && !asd52Layer.popupEnabled) asd52Layer.popupEnabled = true;
-      if (asd53Layer && !asd53Layer.popupEnabled) asd53Layer.popupEnabled = true;
-      if (asd61Layer && !asd61Layer.popupEnabled) asd61Layer.popupEnabled = true;
-      if (asd62Layer && !asd62Layer.popupEnabled) asd62Layer.popupEnabled = true;
-      if (asd63Layer && !asd63Layer.popupEnabled) asd63Layer.popupEnabled = true;
-      if (asd64Layer && !asd64Layer.popupEnabled) asd64Layer.popupEnabled = true;
-      if (asd66Layer && !asd66Layer.popupEnabled) asd66Layer.popupEnabled = true;
+      if (streetLayer && !editingGraphic && !streetLayer.popupEnabled) streetLayer.popupEnabled = true;
+      if (asd51Layer && !editingGraphic && !asd51Layer.popupEnabled) asd51Layer.popupEnabled = true;
+      if (asd52Layer && !editingGraphic && !asd52Layer.popupEnabled) asd52Layer.popupEnabled = true;
+      if (asd53Layer && !editingGraphic && !asd53Layer.popupEnabled) asd53Layer.popupEnabled = true;
+      if (asd61Layer && !editingGraphic && !asd61Layer.popupEnabled) asd61Layer.popupEnabled = true;
+      if (asd62Layer && !editingGraphic && !asd62Layer.popupEnabled) asd62Layer.popupEnabled = true;
+      if (asd63Layer && !editingGraphic && !asd63Layer.popupEnabled) asd63Layer.popupEnabled = true;
+      if (asd64Layer && !editingGraphic && !asd64Layer.popupEnabled) asd64Layer.popupEnabled = true;
+      if (asd66Layer && !editingGraphic && !asd66Layer.popupEnabled) asd66Layer.popupEnabled = true;
     }
   }, [mapContext.currentPointCaptureMode]);
 
