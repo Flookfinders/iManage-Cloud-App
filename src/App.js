@@ -60,6 +60,7 @@
 //    047   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //    048   30.05.24 Sean Flook       IMANN-499 Include settingsNode in the settingsContext reload.
 //    049   04.06.24 Sean Flook       IMANN-510 Include the level field when validating the BLPU data.
+//    050   04.06.24 Sean Flook       IMANN-511 Handle when we do not have an internet connection.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -81,6 +82,7 @@ import PropertyContext from "./context/propertyContext";
 import MapContext from "./context/mapContext";
 import SandboxContext from "./context/sandboxContext";
 import InformationContext from "./context/informationContext";
+import { Offline, Online } from "react-detect-offline";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import {
   GetBackgroundStreetsUrl,
@@ -117,15 +119,21 @@ import {
   ValidateSuccessorCrossRefData,
   ValidatePropertyNoteData,
 } from "./utils/PropertyValidation";
+import { Typography, Box, Stack } from "@mui/material";
 import LoginDialog from "./dialogs/LoginDialog";
+
 import DETRCodes from "./data/DETRCodes";
+
+import WifiOffIcon from "@mui/icons-material/WifiOff";
+
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { ThemeProvider, StyledEngineProvider, createTheme } from "@mui/material/styles";
+import { appBarHeight } from "./utils/ADSStyles";
 import StylesProvider from "@mui/styles/StylesProvider";
 import { SaveConfirmationServiceProvider } from "./pages/SaveConfirmationPage";
 import CssBaseline from "@mui/material/CssBaseline";
 import "./App.css";
-import { appBarHeight } from "./utils/ADSStyles";
+import { adsLightGreyD } from "./utils/ADSColours";
 
 function App() {
   const theme = createTheme();
@@ -3678,28 +3686,56 @@ function App() {
                               <StyledEngineProvider injectFirst>
                                 <ThemeProvider theme={theme}>
                                   <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                    <Fragment>
-                                      <div style={{ display: "flex" }}>
-                                        <CssBaseline />
-                                        <ADSAppBar />
-                                        <ADSNavContent uprn={property.uprn} />
-                                        <main
-                                          style={{
-                                            flexGrow: 1,
-                                            pl: "0px",
-                                            pr: "0px",
-                                          }}
+                                    <Online>
+                                      <Fragment>
+                                        <div style={{ display: "flex" }}>
+                                          <CssBaseline />
+                                          <ADSAppBar />
+                                          <ADSNavContent uprn={property.uprn} />
+                                          <main
+                                            style={{
+                                              flexGrow: 1,
+                                              pl: "0px",
+                                              pr: "0px",
+                                            }}
+                                          >
+                                            <div style={{ height: `${appBarHeight}px` }} />
+                                            <PageRouting />
+                                          </main>
+                                        </div>
+                                        <LoginDialog
+                                          isOpen={loginOpen}
+                                          title="iManage Cloud Login"
+                                          message="Enter your credentials."
+                                        />
+                                      </Fragment>
+                                    </Online>
+                                    <Offline>
+                                      <Box
+                                        sx={{
+                                          paddingTop: "30px",
+                                          textAlign: "center",
+                                          backgroundColor: adsLightGreyD,
+                                          height: "100vh",
+                                        }}
+                                      >
+                                        <Stack
+                                          direction="column"
+                                          spacing={2}
+                                          justifyContent="center"
+                                          alignItems="center"
+                                          sx={{ height: "100vh" }}
                                         >
-                                          <div style={{ height: `${appBarHeight}px` }} />
-                                          <PageRouting />
-                                        </main>
-                                      </div>
-                                      <LoginDialog
-                                        isOpen={loginOpen}
-                                        title="iManage Cloud Login"
-                                        message="Enter your credentials."
-                                      />
-                                    </Fragment>
+                                          <WifiOffIcon sx={{ height: "100px", width: "100px" }} />
+                                          <Typography variant="h1" sx={{ marginBottom: "5px" }}>
+                                            Couldn't connect
+                                          </Typography>
+                                          <Typography variant="h4" sx={{ margin: "0" }}>
+                                            Check your internet connection and try again.
+                                          </Typography>
+                                        </Stack>
+                                      </Box>
+                                    </Offline>
                                   </LocalizationProvider>
                                 </ThemeProvider>
                               </StyledEngineProvider>
