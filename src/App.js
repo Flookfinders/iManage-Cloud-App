@@ -59,6 +59,7 @@
 //    046   14.05.24 Joshua McCormick IMANN-270 Typo in Validation  for errors with hww & prow
 //    047   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //    048   30.05.24 Sean Flook       IMANN-499 Include settingsNode in the settingsContext reload.
+//    049   04.06.24 Sean Flook       IMANN-510 Include the level field when validating the BLPU data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2444,6 +2445,7 @@ function App() {
               parentUprn: sandbox.currentProperty.parentUprn,
               logicalStatus: sandbox.currentProperty.logicalStatus,
               blpuState: sandbox.currentProperty.blpuState,
+              level: sandbox.currentProperty.level,
               blpuClass: sandbox.currentProperty.blpuClass,
               organisation: sandbox.currentProperty.organisation,
               xcoordinate: sandbox.currentProperty.xcoordinate,
