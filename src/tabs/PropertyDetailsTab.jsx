@@ -46,6 +46,7 @@
 //    033   17.04.24 Joshua McCormick IMANN-207 endDate set to null if logical status is less than 7
 //    034   08.05.24 Joel Benford     IMANN-398 BLPU State is now mandatory
 //    035   23.05.24 Sean Flook       IMANN-485 When state changes set the state date to current date.
+//    036   05.06.24 Sean Flook       IMANN-485 Make above change for Scottish authorities as well.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -321,7 +322,9 @@ function PropertyDetailsTab({
           logicalStatus: fieldName && fieldName === "logicalStatus" ? newValue : blpuLogicalStatus,
           blpuState: fieldName && fieldName === "state" ? newValue : state,
           blpuStateDate:
-            fieldName && fieldName === "stateDate"
+            fieldName && fieldName === "state"
+              ? GetCurrentDate()
+              : fieldName && fieldName === "stateDate"
               ? newValue && ConvertDate(newValue)
               : stateDate && ConvertDate(stateDate),
           xcoordinate: fieldName && fieldName === "easting" ? newValue : easting,
