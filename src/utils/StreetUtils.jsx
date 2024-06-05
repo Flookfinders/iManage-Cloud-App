@@ -62,6 +62,7 @@
 //    049   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    050   03.06.24 Sean Flook       IMANN-281 Do not send null for required integer fields.
 //    051   04.06.24 Sean Flook       IMANN-281 Default to current date if start date is null when creating a new street.
+//    052   04.06.24 Sean Flook       IMANN-515 Ensure the end dates are set on all the ESUs, HDs and OWEs when the state is set to closed.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1920,6 +1921,8 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
  * @return {object} The update street object.
  */
 export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
+  const currentDate = GetCurrentDate();
+
   const unassignedEngLocality = lookupContext.currentLookups.localities.find(
     (x) => x.locality === "Unassigned" && x.language === "ENG"
   );
@@ -2104,7 +2107,12 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                 esuVersionNumber: esu.esuVersionNumber,
                 esuTolerance: esu.esuTolerance,
                 esuStartDate: esu.esuStartDate,
-                esuEndDate: esu.esuEndDate,
+                esuEndDate:
+                  !esu.esuEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType)
+                    ? !!streetData.stateDate
+                      ? streetData.stateDate
+                      : currentDate
+                    : esu.esuEndDate,
                 esuDirection: esu.esuDirection,
                 wktGeometry: esu.wktGeometry,
                 assignUnassign: esu.assignUnassign,
@@ -2115,7 +2123,14 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                     seqNum: hd.seqNum,
                     changeType: esu.changeType === "D" && hd.changeType !== "D" ? "D" : hd.changeType,
                     highwayDedicationCode: streetData.state === 4 ? 12 : hd.highwayDedicationCode,
-                    recordEndDate: esu.changeType === "D" && hd.changeType !== "D" ? esu.endDate : hd.recordEndDate,
+                    recordEndDate:
+                      esu.changeType === "D" && hd.changeType !== "D"
+                        ? esu.endDate
+                        : !hd.recordEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType)
+                        ? !!streetData.stateDate
+                          ? streetData.stateDate
+                          : currentDate
+                        : hd.recordEndDate,
                     hdStartDate: hd.hdStartDate,
                     hdEndDate: hd.hdEndDate,
                     hdSeasonalStartDate: hd.hdSeasonalStartDate,
@@ -2135,9 +2150,19 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                     pkId: owe.pkId > 0 ? owe.pkId : 0,
                     esuId: owe.esuId > 0 ? owe.esuId : 0,
                     sequenceNumber: owe.sequenceNumber,
-                    changeType: esu.changeType === "D" && owe.changeType !== "D" ? "D" : owe.changeType,
+                    changeType:
+                      (esu.changeType === "D" || [4, 5].includes(streetData.state)) && owe.changeType !== "D"
+                        ? "D"
+                        : owe.changeType,
                     oneWayExemptionTypeCode: owe.oneWayExemptionTypeCode,
-                    recordEndDate: esu.changeType === "D" && owe.changeType !== "D" ? esu.endDate : owe.recordEndDate,
+                    recordEndDate:
+                      esu.changeType === "D" && owe.changeType !== "D"
+                        ? esu.endDate
+                        : !owe.recordEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType)
+                        ? !!streetData.stateDate
+                          ? streetData.stateDate
+                          : currentDate
+                        : owe.recordEndDate,
                     oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
                     oneWayExemptionEndDate: owe.oneWayExemptionEndDate,
                     oneWayExemptionStartTime: owe.oneWayExemptionStartTime,
@@ -2219,7 +2244,12 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                 esuVersionNumber: esu.esuVersionNumber,
                 esuTolerance: esu.esuTolerance,
                 esuStartDate: esu.esuStartDate,
-                esuEndDate: esu.esuEndDate,
+                esuEndDate:
+                  !esu.esuEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType)
+                    ? !!streetData.stateDate
+                      ? streetData.stateDate
+                      : currentDate
+                    : esu.esuEndDate,
                 esuDirection: esu.esuDirection,
                 wktGeometry: esu.wktGeometry,
                 assignUnassign: esu.assignUnassign,
@@ -2231,7 +2261,14 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                         seqNum: hd.seqNum,
                         changeType: esu.changeType === "D" && hd.changeType !== "D" ? "D" : hd.changeType,
                         highwayDedicationCode: streetData.state === 4 ? 12 : hd.highwayDedicationCode,
-                        recordEndDate: esu.changeType === "D" && hd.changeType !== "D" ? esu.endDate : hd.recordEndDate,
+                        recordEndDate:
+                          esu.changeType === "D" && hd.changeType !== "D"
+                            ? esu.endDate
+                            : !hd.recordEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType)
+                            ? !!streetData.stateDate
+                              ? streetData.stateDate
+                              : currentDate
+                            : hd.recordEndDate,
                         hdStartDate: hd.hdStartDate,
                         hdEndDate: hd.hdEndDate,
                         hdSeasonalStartDate: hd.hdSeasonalStartDate,
@@ -2253,10 +2290,19 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                         pkId: owe.pkId > 0 ? owe.pkId : 0,
                         esuId: owe.esuId > 0 ? owe.esuId : 0,
                         sequenceNumber: owe.sequenceNumber,
-                        changeType: esu.changeType === "D" && owe.changeType !== "D" ? "D" : owe.changeType,
+                        changeType:
+                          (esu.changeType === "D" || [4, 5].includes(streetData.state)) && owe.changeType !== "D"
+                            ? "D"
+                            : owe.changeType,
                         oneWayExemptionTypeCode: owe.oneWayExemptionTypeCode,
                         recordEndDate:
-                          esu.changeType === "D" && owe.changeType !== "D" ? esu.endDate : owe.recordEndDate,
+                          esu.changeType === "D" && owe.changeType !== "D"
+                            ? esu.endDate
+                            : !owe.recordEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType)
+                            ? !!streetData.stateDate
+                              ? streetData.stateDate
+                              : currentDate
+                            : owe.recordEndDate,
                         oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
                         oneWayExemptionEndDate: owe.oneWayExemptionEndDate,
                         oneWayExemptionStartTime: owe.oneWayExemptionStartTime,
