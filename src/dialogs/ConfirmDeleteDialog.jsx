@@ -24,6 +24,7 @@
 //    011   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle.
 //    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    013   04.04.24 Sean Flook                 Changes to allow for the user to decide to also delete ESUs for streets and child properties for parent properties.
+//    014   05.06.24 Sean Flook       IMANN-517 Corrected typo.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -201,7 +202,7 @@ function ConfirmDeleteDialog({ open, variant, recordCount, childCount, associate
                   </ListItemIcon>
                   <ListItemText
                     primary={`do you want to also delete the ${childCount > 1 ? childCount : ""} ESU record${
-                      associatedRecords.length > 1 ? "s" : ""
+                      childCount > 1 ? "s" : ""
                     }?`}
                   />
                 </ListItem>
