@@ -26,7 +26,8 @@
 //    013   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    014   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
 //    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    016   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title nowrapping with width restrictions
+//    016   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title no wrapping with width restrictions
+//    017   05.06.24 Sean Flook       IMANN-523 Use the provenance colour for the avatar.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -189,10 +190,20 @@ function PropertyBLPUProvenanceListTab({
       else return null;
     }
 
+    function getProvenanceColour(code) {
+      const rec = BLPUProvenance.find((x) => x.id === code);
+
+      if (rec) return rec.colour;
+      else return "#BDBDBD";
+    }
+
     if (params) {
       return (
         <Stack direction="row" spacing={1}>
-          <Avatar variant="rounded" sx={{ height: "24px", width: "24px" }}>
+          <Avatar
+            variant="rounded"
+            sx={{ height: "24px", width: "24px", backgroundColor: getProvenanceColour(params.row.provenanceCode) }}
+          >
             <Typography variant="caption">{params.row.provenanceCode}</Typography>
           </Avatar>
           <Typography variant="body1">{getProvenanceText(params.row.provenanceCode)}</Typography>
