@@ -76,6 +76,7 @@
 //    062   20.05.24 Sean Flook       IMANN-476 Check view has been created first in fadeVisibilityOn.
 //    063   21.05.24 Sean Flook       IMANN-462 Moved loading of base mapping into its own method and wait for details before we try and load it.
 //    064   04.06.24 Sean Flook       IMANN-507 After redrawing a street or property if we are editing the graphic ensure the popup is disabled and the edit graphics layer is on top.
+//    065   06.06.24 Sean Flook       IMANN-522 Always allow editing of provenances.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -6965,77 +6966,74 @@ function ADSEsriMap(startExtent) {
       switch (mapContext.currentEditObject.objectType) {
         case 13:
           canContinue =
-            streetLayer ||
+            !!streetLayer ||
             (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
             (streetContext.currentRecord && streetContext.currentRecord.newRecord);
           break;
 
         case 21:
           canContinue =
-            propertyLayer ||
+            !!propertyLayer ||
             (propertyContext.currentProperty && propertyContext.currentProperty.newProperty) ||
             (propertyContext.currentRecord && propertyContext.currentRecord.newRecord);
           break;
 
         case 22:
-          canContinue =
-            extentLayer ||
-            (propertyContext.currentProperty && propertyContext.currentProperty.newProperty) ||
-            (propertyContext.currentRecord && propertyContext.currentRecord.newRecord);
+          canContinue = true;
           break;
 
         case 51:
           canContinue =
-            asd51Layer ||
+            !!asd51Layer ||
             (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
             (streetContext.currentRecord && streetContext.currentRecord.newRecord);
           break;
 
         case 52:
           canContinue =
-            asd52Layer ||
+            !!asd52Layer ||
             (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
             (streetContext.currentRecord && streetContext.currentRecord.newRecord);
           break;
 
         case 53:
           canContinue =
-            asd53Layer ||
+            !!asd53Layer ||
             (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
             (streetContext.currentRecord && streetContext.currentRecord.newRecord);
           break;
 
         case 61:
           canContinue =
-            asd61Layer ||
+            !!asd61Layer ||
             (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
             (streetContext.currentRecord && streetContext.currentRecord.newRecord);
           break;
 
         case 62:
           canContinue =
-            asd62Layer ||
+            !!asd62Layer ||
             (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
             (streetContext.currentRecord && streetContext.currentRecord.newRecord);
           break;
 
         case 63:
           canContinue =
-            asd63Layer ||
+            !!asd63Layer ||
             (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
             (streetContext.currentRecord && streetContext.currentRecord.newRecord);
           break;
 
         case 64:
           canContinue =
-            asd64Layer ||
+            !!asd64Layer ||
             (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
             (streetContext.currentRecord && streetContext.currentRecord.newRecord);
           break;
 
         case 66:
           canContinue =
-            asd66Layer ||
+            !!asd66Layer ||
             (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
             (streetContext.currentRecord && streetContext.currentRecord.newRecord);
           break;
