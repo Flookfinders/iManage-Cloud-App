@@ -66,6 +66,7 @@
 //    053   17.05.24 Sean Flook       IMANN-458 Pass isActive to the GetTabIconStyle method.
 //    054   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    055   04.06.24 Sean Flook       IMANN-281 Always validate the data before trying to save.
+//    056   06.06.24 Sean Flook       IMANN-524 Correctly update the sandbox when changing the extent geometry.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3904,6 +3905,8 @@ function PropertyDataForm({ data, loading }) {
           wktGeometry: mapContext.currentPolygonGeometry.wktGeometry,
         };
 
+        sandboxContext.onSandboxChange("provenance", updatedProvenance);
+
         const newProvenances = propertyData.blpuProvenances.map(
           (x) => [updatedProvenance].find((rec) => rec.pkId === x.pkId) || x
         );
@@ -3985,7 +3988,7 @@ function PropertyDataForm({ data, loading }) {
 
           setPropertyData(newPropertyData);
           clearingType.current = "provenance";
-          sandboxContext.onUpdateAndClear("currentProperty", newPropertyData, "provenance");
+          sandboxContext.onSandboxChange("currentProperty", newPropertyData);
           provenanceChanged.current = true;
           propertyContext.onProvenanceDataChange(true);
         }

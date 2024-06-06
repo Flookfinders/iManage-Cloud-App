@@ -61,6 +61,7 @@
 //    048   30.05.24 Sean Flook       IMANN-499 Include settingsNode in the settingsContext reload.
 //    049   04.06.24 Sean Flook       IMANN-510 Include the level field when validating the BLPU data.
 //    050   04.06.24 Sean Flook       IMANN-511 Handle when we do not have an internet connection.
+//    051   06.06.24 Sean Flook       IMANN-524 Ensure the sandbox has the current data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -166,7 +167,7 @@ function App() {
 
   const [districtUpdated, setDistrictUpdated] = useState(false);
 
-  const [sandbox, setSandbox] = useState({
+  const sandboxRef = useRef({
     sourceStreet: null,
     currentStreet: null,
     sourceProperty: null,
@@ -197,6 +198,7 @@ function App() {
       note: null,
     },
   });
+  const [sandbox, setSandbox] = useState(sandboxRef.current);
 
   const [propertyTab, setPropertyTab] = useState(0);
   const [streetTab, setStreetTab] = useState(0);
@@ -719,72 +721,91 @@ function App() {
    */
   function HandleSandboxChange(type, updatedData) {
     const newSandbox = {
-      sourceStreet: type === "sourceStreet" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.sourceStreet,
-      currentStreet: type === "currentStreet" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentStreet,
-      sourceProperty: type === "sourceProperty" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.sourceProperty,
-      currentProperty: type === "currentProperty" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentProperty,
+      sourceStreet: type === "sourceStreet" ? JSON.parse(JSON.stringify(updatedData)) : sandboxRef.current.sourceStreet,
+      currentStreet:
+        type === "currentStreet" ? JSON.parse(JSON.stringify(updatedData)) : sandboxRef.current.currentStreet,
+      sourceProperty:
+        type === "sourceProperty" ? JSON.parse(JSON.stringify(updatedData)) : sandboxRef.current.sourceProperty,
+      currentProperty:
+        type === "currentProperty" ? JSON.parse(JSON.stringify(updatedData)) : sandboxRef.current.currentProperty,
       currentStreetRecords: {
         streetDescriptor:
           type === "streetDescriptor"
             ? JSON.parse(JSON.stringify(updatedData))
-            : sandbox.currentStreetRecords.streetDescriptor,
-        esu: type === "esu" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentStreetRecords.esu,
+            : sandboxRef.current.currentStreetRecords.streetDescriptor,
+        esu: type === "esu" ? JSON.parse(JSON.stringify(updatedData)) : sandboxRef.current.currentStreetRecords.esu,
         highwayDedication:
           type === "highwayDedication" || (type === "esu" && !updatedData)
             ? JSON.parse(JSON.stringify(updatedData))
-            : sandbox.currentStreetRecords.highwayDedication,
+            : sandboxRef.current.currentStreetRecords.highwayDedication,
         oneWayExemption:
           type === "oneWayExemption" || (type === "esu" && !updatedData)
             ? JSON.parse(JSON.stringify(updatedData))
-            : sandbox.currentStreetRecords.oneWayExemption,
+            : sandboxRef.current.currentStreetRecords.oneWayExemption,
         successorCrossRef:
           type === "successorCrossRef"
             ? JSON.parse(JSON.stringify(updatedData))
-            : sandbox.currentStreetRecords.successorCrossRef,
+            : sandboxRef.current.currentStreetRecords.successorCrossRef,
         maintenanceResponsibility:
           type === "maintenanceResponsibility"
             ? JSON.parse(JSON.stringify(updatedData))
-            : sandbox.currentStreetRecords.maintenanceResponsibility,
+            : sandboxRef.current.currentStreetRecords.maintenanceResponsibility,
         reinstatementCategory:
           type === "reinstatementCategory"
             ? JSON.parse(JSON.stringify(updatedData))
-            : sandbox.currentStreetRecords.reinstatementCategory,
+            : sandboxRef.current.currentStreetRecords.reinstatementCategory,
         osSpecialDesignation:
           type === "osSpecialDesignation"
             ? JSON.parse(JSON.stringify(updatedData))
-            : sandbox.currentStreetRecords.osSpecialDesignation,
-        interest: type === "interest" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentStreetRecords.interest,
+            : sandboxRef.current.currentStreetRecords.osSpecialDesignation,
+        interest:
+          type === "interest"
+            ? JSON.parse(JSON.stringify(updatedData))
+            : sandboxRef.current.currentStreetRecords.interest,
         construction:
-          type === "construction" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentStreetRecords.construction,
+          type === "construction"
+            ? JSON.parse(JSON.stringify(updatedData))
+            : sandboxRef.current.currentStreetRecords.construction,
         specialDesignation:
           type === "specialDesignation"
             ? JSON.parse(JSON.stringify(updatedData))
-            : sandbox.currentStreetRecords.specialDesignation,
-        hww: type === "hww" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentStreetRecords.hww,
-        prow: type === "prow" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentStreetRecords.prow,
-        note: type === "streetNote" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentStreetRecords.note,
+            : sandboxRef.current.currentStreetRecords.specialDesignation,
+        hww: type === "hww" ? JSON.parse(JSON.stringify(updatedData)) : sandboxRef.current.currentStreetRecords.hww,
+        prow: type === "prow" ? JSON.parse(JSON.stringify(updatedData)) : sandboxRef.current.currentStreetRecords.prow,
+        note:
+          type === "streetNote"
+            ? JSON.parse(JSON.stringify(updatedData))
+            : sandboxRef.current.currentStreetRecords.note,
       },
       currentPropertyRecords: {
-        lpi: type === "lpi" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentPropertyRecords.lpi,
+        lpi: type === "lpi" ? JSON.parse(JSON.stringify(updatedData)) : sandboxRef.current.currentPropertyRecords.lpi,
         appCrossRef:
-          type === "appCrossRef" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentPropertyRecords.appCrossRef,
+          type === "appCrossRef"
+            ? JSON.parse(JSON.stringify(updatedData))
+            : sandboxRef.current.currentPropertyRecords.appCrossRef,
         provenance:
-          type === "provenance" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentPropertyRecords.provenance,
+          type === "provenance"
+            ? JSON.parse(JSON.stringify(updatedData))
+            : sandboxRef.current.currentPropertyRecords.provenance,
         classification:
           type === "classification"
             ? JSON.parse(JSON.stringify(updatedData))
-            : sandbox.currentPropertyRecords.classification,
+            : sandboxRef.current.currentPropertyRecords.classification,
         organisation:
           type === "organisation"
             ? JSON.parse(JSON.stringify(updatedData))
-            : sandbox.currentPropertyRecords.organisation,
+            : sandboxRef.current.currentPropertyRecords.organisation,
         successorCrossRef:
           type === "successorCrossRef"
             ? JSON.parse(JSON.stringify(updatedData))
-            : sandbox.currentPropertyRecords.successorCrossRef,
-        note: type === "propertyNote" ? JSON.parse(JSON.stringify(updatedData)) : sandbox.currentPropertyRecords.note,
+            : sandboxRef.current.currentPropertyRecords.successorCrossRef,
+        note:
+          type === "propertyNote"
+            ? JSON.parse(JSON.stringify(updatedData))
+            : sandboxRef.current.currentPropertyRecords.note,
       },
     };
+    sandboxRef.current = newSandbox;
     setSandbox(newSandbox);
     sessionStorage.setItem("sandbox", JSON.stringify(newSandbox));
   }
@@ -803,32 +824,32 @@ function App() {
           ? JSON.parse(JSON.stringify(updatedData))
           : ["sourceStreet", "allProperty"].includes(clearType)
           ? null
-          : sandbox.sourceStreet,
+          : sandboxRef.current.sourceStreet,
       currentStreet:
         updateType === "currentStreet"
           ? JSON.parse(JSON.stringify(updatedData))
           : ["currentStreet", "allProperty", "allStreet"].includes(clearType)
           ? null
-          : sandbox.currentStreet,
+          : sandboxRef.current.currentStreet,
       sourceProperty:
         updateType === "sourceProperty"
           ? JSON.parse(JSON.stringify(updatedData))
           : ["sourceProperty", "allStreet"].includes(clearType)
           ? null
-          : sandbox.sourceProperty,
+          : sandboxRef.current.sourceProperty,
       currentProperty:
         updateType === "currentProperty"
           ? JSON.parse(JSON.stringify(updatedData))
           : ["currentProperty", "allProperty", "allStreet"].includes(clearType)
           ? null
-          : sandbox.currentProperty,
+          : sandboxRef.current.currentProperty,
       currentStreetRecords: {
         streetDescriptor:
           updateType === "streetDescriptor"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["streetDescriptor", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentStreetRecords.streetDescriptor,
+            : sandboxRef.current.currentStreetRecords.streetDescriptor,
         esu:
           updateType === "esu"
             ? JSON.parse(JSON.stringify(updatedData))
@@ -840,73 +861,73 @@ function App() {
             ? JSON.parse(JSON.stringify(updatedData))
             : ["esu", "highwayDedication", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentStreetRecords.highwayDedication,
+            : sandboxRef.current.currentStreetRecords.highwayDedication,
         oneWayExemption:
           updateType === "oneWayExemption"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["esu", "oneWayExemption", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentStreetRecords.oneWayExemption,
+            : sandboxRef.current.currentStreetRecords.oneWayExemption,
         successorCrossRef:
           updateType === "successorCrossRef"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["successorCrossRef", "allAssociatedProperty", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentStreetRecords.successorCrossRef,
+            : sandboxRef.current.currentStreetRecords.successorCrossRef,
         maintenanceResponsibility:
           updateType === "maintenanceResponsibility"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["maintenanceResponsibility", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentStreetRecords.maintenanceResponsibility,
+            : sandboxRef.current.currentStreetRecords.maintenanceResponsibility,
         reinstatementCategory:
           updateType === "reinstatementCategory"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["reinstatementCategory", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentStreetRecords.reinstatementCategory,
+            : sandboxRef.current.currentStreetRecords.reinstatementCategory,
         osSpecialDesignation:
           updateType === "osSpecialDesignation"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["osSpecialDesignation", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentStreetRecords.osSpecialDesignation,
+            : sandboxRef.current.currentStreetRecords.osSpecialDesignation,
         interest:
           updateType === "interest"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["interest", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentStreetRecords.interest,
+            : sandboxRef.current.currentStreetRecords.interest,
         construction:
           updateType === "construction"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["construction", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentStreetRecords.construction,
+            : sandboxRef.current.currentStreetRecords.construction,
         specialDesignation:
           updateType === "specialDesignation"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["specialDesignation", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentStreetRecords.specialDesignation,
+            : sandboxRef.current.currentStreetRecords.specialDesignation,
         hww:
           updateType === "hww"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["hww", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentStreetRecords.hww,
+            : sandboxRef.current.currentStreetRecords.hww,
         prow:
           updateType === "prow"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["prow", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentStreetRecords.prow,
+            : sandboxRef.current.currentStreetRecords.prow,
         note:
           updateType === "streetNote"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["streetNote", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentStreetRecords.note,
+            : sandboxRef.current.currentStreetRecords.note,
       },
       currentPropertyRecords: {
         lpi:
@@ -914,45 +935,46 @@ function App() {
             ? JSON.parse(JSON.stringify(updatedData))
             : ["lpi", "allAssociatedProperty", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentPropertyRecords.lpi,
+            : sandboxRef.current.currentPropertyRecords.lpi,
         appCrossRef:
           updateType === "appCrossRef"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["appCrossRef", "allAssociatedProperty", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentPropertyRecords.appCrossRef,
+            : sandboxRef.current.currentPropertyRecords.appCrossRef,
         provenance:
           updateType === "provenance"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["provenance", "allAssociatedProperty", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentPropertyRecords.provenance,
+            : sandboxRef.current.currentPropertyRecords.provenance,
         classification:
           updateType === "classification"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["classification", "allAssociatedProperty", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentPropertyRecords.classification,
+            : sandboxRef.current.currentPropertyRecords.classification,
         organisation:
           updateType === "organisation"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["organisation", "allAssociatedProperty", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentPropertyRecords.organisation,
+            : sandboxRef.current.currentPropertyRecords.organisation,
         successorCrossRef:
           updateType === "successorCrossRef"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["successorCrossRef", "allAssociatedProperty", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentPropertyRecords.successorCrossRef,
+            : sandboxRef.current.currentPropertyRecords.successorCrossRef,
         note:
           updateType === "propertyNote"
             ? JSON.parse(JSON.stringify(updatedData))
             : ["propertyNote", "allAssociatedProperty", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentPropertyRecords.note,
+            : sandboxRef.current.currentPropertyRecords.note,
       },
     };
+    sandboxRef.current = newSandbox;
     setSandbox(newSandbox);
     sessionStorage.setItem("sandbox", JSON.stringify(newSandbox));
   }
@@ -1014,6 +1036,7 @@ function App() {
         note: null,
       },
     };
+    sandboxRef.current = resetSandbox;
     setSandbox(resetSandbox);
     setStreetTab(["street", "property"].includes(sourceType) ? 0 : streetTab);
     setPropertyTab(["street", "property"].includes(sourceType) ? 0 : propertyTab);
@@ -1057,7 +1080,8 @@ function App() {
       !sandbox.currentPropertyRecords.successorCrossRef &&
       !sandbox.currentPropertyRecords.note
     ) {
-      setSandbox(JSON.parse(sessionStorage.getItem("sandbox")));
+      sandboxRef.current = JSON.parse(sessionStorage.getItem("sandbox"));
+      setSandbox(sandboxRef.current);
       setStreetTab(JSON.parse(sessionStorage.getItem("streetTab")));
       setPropertyTab(JSON.parse(sessionStorage.getItem("propertyTab")));
     }
@@ -3237,14 +3261,15 @@ function App() {
    */
   function HandleSetPolygonGeometry(wktGeometry) {
     // Only set a polygon if we have a minimum of 3 unique points (triangle)
-    if (!wktGeometry || !wktGeometry.includes(",") || (wktGeometry.match(/,/g) || []).length < 4)
+    if (!wktGeometry || !wktGeometry.includes(",") || (wktGeometry.match(/,/g) || []).length < 3) {
       setMapPolygonGeometry(null);
-    else
+    } else {
       setMapPolygonGeometry({
         wktGeometry: wktGeometry,
         objectType: editObjectRef.current ? editObjectRef.current.objectType : null,
         objectId: editObjectRef.current ? editObjectRef.current.objectId : null,
       });
+    }
   }
 
   /**
