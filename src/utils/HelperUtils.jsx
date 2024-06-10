@@ -53,6 +53,7 @@
 //    040   17.05.24 Joshua McCormick IMANN-460 Added PUT to call English with Welsh ref  
 //    041   23.05.24 Sean Flook       IMANN-478 Include usedByFrontEnd in includeCheck.
 //    042   30.05.24 Joel Benford     IMANN-496 Add GetOSClassificationAvatarAndText
+//    043   06.06.24 Joel Benford     IMANN-497 Add data to xrefs in addLookup
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2130,14 +2131,15 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
 
         case "crossReference":
           return {
-            xrefSourceRef: null,
-            altXrefSourceRef: null,
+            xrefSourceRef: data.lookupData.xrefSourceRef73,
+            altXrefSourceRef: data.lookupData.xrefSourceRef73,
             xrefSourceRef73: data.lookupData.xrefSourceRef73,
-            iSearchWebLinkUrl: null,
+            xrefDescription: data.lookupData.xrefDescription,
+            iSearchWebLinkUrl: "www.dummy.domain",
             enabled: data.lookupData.enabled,
             historic: data.lookupData.historic,
-            showSourceiSearchWeb: null,
-            showXrefiSearchWeb: null,
+            showSourceiSearchWeb: false,
+            showXrefiSearchWeb: false,
             export: data.lookupData.export,
           };
 

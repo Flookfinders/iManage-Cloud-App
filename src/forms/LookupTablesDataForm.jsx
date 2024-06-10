@@ -29,6 +29,7 @@
 //    016   09.02.24 Joel Benford    IM-227/228 Fix ward/parish URL calls
 //    017   17.05.24 Sean Flook       IMANN-176 Display dialog to allow for spatially updating BLPU ward and parish codes.
 //    018   09.02.24 Joel Benford    IM-227/228 Fix ward/parish update, and various array pushes
+//    019   06.06.24 Joel Benford     IMANN-497 Interim check-in
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -973,7 +974,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
               (x) => [updatedLookup].find((rec) => rec.postTownRef === x.postTownRef) || x
             );
 
-        case "subLocalities":
+        case "subLocality":
           if (lookupInUse) {
             const historicSubLocality = lookupContext.currentLookups.subLocalities.find(
               (x) => x.subLocalityRef === originalId
@@ -1059,6 +1060,35 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
           } else
             return lookupContext.currentLookups.towns.map(
               (x) => [updatedLookup].find((rec) => rec.townRef === x.townRef) || x
+            );
+
+        case "administrativeArea":
+          if (lookupInUse) {
+            const historicArea = lookupContext.currentLookups.adminAuthorities.find(
+              (x) => x.administrativeAreaRefRef === originalId
+            );
+            if (historicArea) {
+              const updatedHistoricArea = lookupContext.currentLookups.adminAuthorities.map(
+                (x) =>
+                  [
+                    {
+                      administrativeAreaRef: historicArea.administrativeAreaRef,
+                      administrativeArea: historicArea.administrativeArea,
+                      language: historicArea.language,
+                      historic: true,
+                      linkedRef: historicArea.linkedRef,
+                    },
+                  ].find((rec) => rec.administrativeAreaRef === x.administrativeAreaRef) || x
+              );
+              updatedHistoricArea.push(updatedLookup);
+              return updatedHistoricArea;
+            } else {
+              lookupContext.currentLookups.adminAuthorities.push(updatedLookup);
+              return lookupContext.currentLookups.adminAuthorities;
+            }
+          } else
+            return lookupContext.currentLookups.adminAuthorities.map(
+              (x) => [updatedLookup].find((rec) => rec.administrativeAreaRef === x.administrativeAreaRef) || x
             );
 
         case "island":
@@ -1888,6 +1918,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
       let newEngLookup = null;
       let newCymLookup = null;
 
+      console.log("[JB]", lookupUrl.url, JSON.stringify(getEngPutData()));
       if (lookupUrl) {
         await fetch(lookupUrl.url, {
           headers: lookupUrl.headers,
@@ -2275,7 +2306,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 postTown: postTownRecord.postTown,
                 historic: true,
                 language: "ENG",
-                linkedRef: linkedRef,
+                linkedRef: postTownRecord.linkedRef === 0 ? 0 : -1,
               };
             else {
               const engPostTownRecord = lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === linkedRef);
@@ -2296,34 +2327,20 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
             (x) => x.subLocalityRef === lookupId
           );
           if (subLocalityRecord) {
-            if (subLocalityRecord.language === "ENG") {
-              return {
-                subLocalityRef: lookupId,
-                subLocality: subLocalityRecord.subLocality,
-                historic: true,
-                language: "ENG",
-                linkedRef: linkedRef,
-              };
-            } else {
-              const engSubLocalityRecord = lookupContext.currentLookups.subLocalities.find(
-                (x) => x.subLocalityRef === linkedRef
-              );
-              if (engSubLocalityRecord) {
-                return {
-                  subLocalityRef: linkedRef,
-                  subLocality: engSubLocalityRecord.subLocality,
-                  historic: true,
-                  language: "ENG",
-                  linkedRef: lookupId,
-                };
-              } else return null;
-            }
+            return {
+              subLocalityRef: lookupId,
+              subLocality: subLocalityRecord.subLocality,
+              historic: true,
+              language: "ENG",
+              linkedRef: subLocalityRecord.linkedRef === 0 ? 0 : -1,
+            };
           } else return null;
 
         case "crossReference":
           const crossReferenceRecord = lookupContext.currentLookups.appCrossRefs.find((x) => x.pkId === lookupId);
           if (crossReferenceRecord)
             return {
+              pkId: crossReferenceRecord.pkId,
               xrefSourceRef: crossReferenceRecord.xrefSourceRef,
               altXrefSourceRef: crossReferenceRecord.altXrefSourceRef,
               xrefSourceRef73: crossReferenceRecord.xrefSourceRef73,
@@ -2346,7 +2363,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 locality: localityRecord.locality,
                 historic: true,
                 language: "ENG",
-                linkedRef: linkedRef,
+                linkedRef: localityRecord.linkedRef === 0 ? 0 : -1,
               };
             } else {
               const engLocalityRecord = lookupContext.currentLookups.localities.find(
@@ -2373,7 +2390,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 town: townRecord.town,
                 historic: true,
                 language: "ENG",
-                linkedRef: linkedRef,
+                linkedRef: townRecord.linkedRef === 0 ? 0 : -1,
               };
             } else {
               const engTownRecord = lookupContext.currentLookups.towns.find((x) => x.townRef === linkedRef);
@@ -2391,28 +2408,15 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
         case "island":
           const islandRecord = lookupContext.currentLookups.islands.find((x) => x.islandRef === lookupId);
-          if (islandRecord) {
-            if (islandRecord.language === "ENG") {
-              return {
-                islandRef: lookupId,
-                island: islandRecord.island,
-                historic: true,
-                language: "ENG",
-                linkedRef: linkedRef,
-              };
-            } else {
-              const engIslandRecord = lookupContext.currentLookups.islands.find((x) => x.islandRef === linkedRef);
-              if (engIslandRecord)
-                return {
-                  islandRef: linkedRef,
-                  island: engIslandRecord.island,
-                  historic: true,
-                  language: "ENG",
-                  linkedRef: lookupId,
-                };
-              else return null;
-            }
-          } else return null;
+          if (islandRecord)
+            return {
+              islandRef: lookupId,
+              island: islandRecord.island,
+              historic: true,
+              language: "ENG",
+              linkedRef: islandRecord.linkedRef === 0 ? 0 : -1,
+            };
+          else return null;
 
         case "administrativeArea":
           const administrativeAreaRecord = lookupContext.currentLookups.adminAuthorities.find(
@@ -2425,7 +2429,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 administrativeArea: administrativeAreaRecord.administrativeArea,
                 historic: true,
                 language: "ENG",
-                linkedRef: linkedRef,
+                linkedRef: administrativeAreaRecord.linkedRef === 0 ? 0 : -1,
               };
             } else {
               const engAdministrativeAreaRecord = lookupContext.currentLookups.adminAuthorities.find(
@@ -2660,6 +2664,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
     let newEngLookup = null;
     let newCymLookup = null;
+    console.log("[JB]", lookupUrl.url, JSON.stringify(getEngPutData()));
 
     if (lookupUrl) {
       await fetch(lookupUrl.url, {
@@ -2706,14 +2711,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
         });
 
       if (newEngLookup) {
-        const canHaveMultiLanguage = [
-          "postTown",
-          "subLocality",
-          "locality",
-          "town",
-          "island",
-          "administrativeArea",
-        ].includes(variant);
+        const canHaveMultiLanguage = ["postTown", "locality", "town", "administrativeArea"].includes(variant);
 
         if (canHaveMultiLanguage && settingsContext.isWelsh) {
           lookupEdited = false;

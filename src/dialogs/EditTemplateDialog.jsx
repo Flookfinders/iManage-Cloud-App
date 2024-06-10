@@ -41,6 +41,7 @@
 //    028   23.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft to ADSTextControl fields
 //    029   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //    030   22.05.24 Sean Flook       IMANN-473 Corrected label for Scottish authorities.
+//    031   23.04.24 Joshua McCormick IMANN-94  Edit Dialog title from Edit Title to Rename Template
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1489,7 +1490,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const getDialogTitle = () => {
     switch (variant) {
       case "title":
-        return "Edit title";
+        return "Rename Template";
 
       case "description":
         return "Edit description";
