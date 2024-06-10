@@ -31,6 +31,7 @@
 //    018   08.03.24 Sean Flook       IMANN-338 If the save fails do not leave the current page.
 //    019   11.03.24 Sean Flook           GLB12 Correctly set widths.
 //    020   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    021   10.06.24 Sean Flook       IMANN-509 Allow a user to change their password.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -98,6 +99,7 @@ import {
   dataFormStyle,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
+import LoginDialog from "../dialogs/LoginDialog";
 
 /* #endregion imports */
 
@@ -137,6 +139,8 @@ const ADSNavContent = (props) => {
   const settingsPopoverId = settingsOpen ? "ads-settings-popover" : undefined;
 
   const saveConfirmDialog = useSaveConfirmation();
+
+  const [loginOpen, setLoginOpen] = useState(false);
 
   /**
    * Event to handle when the user button is clicked.
@@ -184,6 +188,7 @@ const ADSNavContent = (props) => {
                   <ADSActionButton variant="user" buttonLabel="My profile" onClick={handleMyProfileClick} />
                 )}
                 <ADSActionButton variant="logout" buttonLabel="Log out" onClick={handleLogout} />
+                <ADSActionButton variant="password" buttonLabel="Change password" onClick={handleChangePassword} />
               </Stack>
             </CardActions>
           </Card>
@@ -565,6 +570,15 @@ const ADSNavContent = (props) => {
   };
 
   /**
+   * Event to handle logging out of the system.
+   */
+  const handleChangePassword = () => {
+    setAnchorEl(null);
+    informationContext.onClearInformation();
+    setLoginOpen(true);
+  };
+
+  /**
    * Method to display the administrator settings page.
    *
    * @param {number} initialNodeId The initial node to be displayed.
@@ -733,6 +747,7 @@ const ADSNavContent = (props) => {
         >
           {GetSettingCards()}
         </Popover>
+        <LoginDialog isOpen={loginOpen} title="Change Password" message="" changePassword />
       </div>
     </Fragment>
   );

@@ -24,12 +24,19 @@
 //    011   09.02.24 Joel Benford    IM-227/228 Generalize ward/parish URL
 //    012   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //    013   17.05.24 Sean Flook       IMANN-176 Added a new endpoints used for spatially updating BLPU ward and parish codes.
+//    014   10.06.24 Sean Flook       IMANN-509 Added new security URLs and ability to handle API versions.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
 
 var currentConfig = null;
+
+const apiVersion = "";
+// const securityVersion = process.env.NODE_ENV === "development" ? "v1/" : "v2/";
+const securityVersion = "v2/";
+const settingsVersion = "";
+const lookupVersion = "";
 
 /**
  * Return the configuration information object for the application.
@@ -123,13 +130,63 @@ const getUrl = (url, endPointType, contentType, userToken) => {
 };
 
 /**
- * Get the URL used to log a user in to the system.
+ * Get the URL used to log an user in to the system.
  *
  * @return {object} The URL object used in FETCH calls.
  */
 export function PostUserLoginUrl() {
-  const url = GetApiSite("security", "/api/v1/Authority/Login");
+  const url = GetApiSite("security", `/api/${securityVersion}Authority/Login`);
   return getUrl(url, "POST", "application/json", null);
+}
+
+/**
+ * Get the URL used to authenticate an user in to the system.
+ *
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function GetAuthenticateUserUrl() {
+  const url = GetApiSite("security", `/api/${securityVersion}Authority/Authenticate`);
+  return getUrl(url, "POST", "application/json", null);
+}
+
+/**
+ * Get the URL used to resent the authentication email.
+ *
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function GetResendEmailUrl() {
+  const url = GetApiSite("security", `/api/${securityVersion}Authority/ResendEmail`);
+  return getUrl(url, "POST", "application/json", null);
+}
+
+/**
+ * Get the URL used to send a reset password code.
+ *
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function GetPasswordResetCodeUrl() {
+  const url = GetApiSite("security", `/api/${securityVersion}Authority/SendPasswordResetCode`);
+  return getUrl(url, "POST", "application/json", null);
+}
+
+/**
+ * Get the URL used to reset the users password.
+ *
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function GetResetMyPasswordUrl() {
+  const url = GetApiSite("security", `/api/${securityVersion}Authority/ResetMyPassword`);
+  return getUrl(url, "POST", "application/json", null);
+}
+
+/**
+ * Get the URL used to validate a new password.
+ *
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function GetPasswordValidateUrl() {
+  const url = GetApiSite("security", `/api/${securityVersion}Password/Validate`);
+  return getUrl(url, "GET", "application/json", null);
 }
 
 /**
@@ -139,7 +196,7 @@ export function PostUserLoginUrl() {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetWhoAmIUrl(userToken) {
-  const url = GetApiSite("security", "/api/v1/Authority/WhoAmI");
+  const url = GetApiSite("security", `/api/${securityVersion}Authority/WhoAmI`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -150,7 +207,7 @@ export function GetWhoAmIUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetUserUrl(userToken) {
-  const url = GetApiSite("security", "/api/v1/User");
+  const url = GetApiSite("security", `/api/${securityVersion}User`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -161,7 +218,7 @@ export function GetUserUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetUsersUrl(userToken) {
-  const url = GetApiSite("security", "/api/v1/User");
+  const url = GetApiSite("security", `/api/${securityVersion}User`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -172,7 +229,7 @@ export function GetUsersUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function UpdateMyPasswordUrl(userToken) {
-  const url = GetApiSite("security", "/api/v1/Authority/UpdateMyPassword");
+  const url = GetApiSite("security", `/api/${securityVersion}Authority/UpdateMyPassword`);
   return getUrl(url, "PUT", "application/json", userToken);
 }
 
@@ -183,7 +240,7 @@ export function UpdateMyPasswordUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function UpdateAnyUserPasswordUrl(userToken) {
-  const url = GetApiSite("security", "/api/v1/Authority/UpdateAnyUserPassword");
+  const url = GetApiSite("security", `/api/${securityVersion}Authority/UpdateAnyUserPassword`);
   return getUrl(url, "PUT", "application/json", userToken);
 }
 
@@ -194,7 +251,7 @@ export function UpdateAnyUserPasswordUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetSearchURL(userToken) {
-  const url = GetApiSite("main", "/api/Search/MultiSearchProperty");
+  const url = GetApiSite("main", `/api/${apiVersion}Search/MultiSearchProperty`);
   return getUrl(url, "GET", "text/plain", userToken);
 }
 
@@ -205,7 +262,7 @@ export function GetSearchURL(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetMultiEditSearchUrl(userToken) {
-  const url = GetApiSite("main", "/api/Search/MultiSearchPropertyList");
+  const url = GetApiSite("main", `/api/${apiVersion}Search/MultiSearchPropertyList`);
   return getUrl(url, "GET", "text/plain", userToken);
 }
 
@@ -217,7 +274,7 @@ export function GetMultiEditSearchUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetCreateStreetUrl(userToken, isScottish) {
-  const url = !isScottish && HasASD() ? GetApiSite("main", "/api/StreetWithAsd") : GetApiSite("main", "/api/Street");
+  const url = GetApiSite("main", `/api/${apiVersion}Street${!isScottish && HasASD() ? "WithAsd" : ""}`);
   return getUrl(url, "POST", "application/json", userToken);
 }
 
@@ -229,7 +286,7 @@ export function GetCreateStreetUrl(userToken, isScottish) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetStreetByUSRNUrl(userToken, isScottish) {
-  const url = !isScottish && HasASD() ? GetApiSite("main", "/api/StreetWithAsd") : GetApiSite("main", "/api/Street");
+  const url = GetApiSite("main", `/api/${apiVersion}Street${!isScottish && HasASD() ? "WithAsd" : ""}`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -240,7 +297,7 @@ export function GetStreetByUSRNUrl(userToken, isScottish) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetEsuByIdUrl(userToken) {
-  const url = GetApiSite("main", "/api/MappableData/GetEsu");
+  const url = GetApiSite("main", `/api/${apiVersion}MappableData/GetEsu`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -251,7 +308,7 @@ export function GetEsuByIdUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetMultipleEsusByIdUrl(userToken) {
-  const url = GetApiSite("main", "/api/MappableData/GetMultipleEsusById");
+  const url = GetApiSite("main", `/api/${apiVersion}MappableData/GetMultipleEsusById`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -262,7 +319,7 @@ export function GetMultipleEsusByIdUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetRelatedPropertyByUSRNUrl(userToken) {
-  const url = GetApiSite("main", "/api/Related/GetRelatedPropertyByUsrn");
+  const url = GetApiSite("main", `/api/${apiVersion}Related/GetRelatedPropertyByUsrn`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -273,7 +330,7 @@ export function GetRelatedPropertyByUSRNUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetRelatedPropertyByUPRNUrl(userToken) {
-  const url = GetApiSite("main", "/api/Related/GetRelatedPropertyByUPRN");
+  const url = GetApiSite("main", `/api/${apiVersion}Related/GetRelatedPropertyByUPRN`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -284,7 +341,7 @@ export function GetRelatedPropertyByUPRNUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetRelatedStreetByUSRNUrl(userToken) {
-  const url = GetApiSite("main", "/api/Related/GetRelatedStreetByUSRN");
+  const url = GetApiSite("main", `/api/${apiVersion}Related/GetRelatedStreetByUSRN`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -295,7 +352,7 @@ export function GetRelatedStreetByUSRNUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetRelatedStreetByUPRNUrl(userToken) {
-  const url = GetApiSite("main", "/api/Related/GetRelatedStreetByUPRN");
+  const url = GetApiSite("main", `/api/${apiVersion}Related/GetRelatedStreetByUPRN`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -306,7 +363,7 @@ export function GetRelatedStreetByUPRNUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetRelatedStreetWithASDByUSRNUrl(userToken) {
-  const url = GetApiSite("main", "/api/Related/GetRelatedStreetWithASDByUSRN");
+  const url = GetApiSite("main", `/api/${apiVersion}Related/GetRelatedStreetWithASDByUSRN`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -317,7 +374,7 @@ export function GetRelatedStreetWithASDByUSRNUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetRelatedStreetWithASDByUPRNUrl(userToken) {
-  const url = GetApiSite("main", "/api/Related/GetRelatedStreetWithASDByUPRN");
+  const url = GetApiSite("main", `/api/${apiVersion}Related/GetRelatedStreetWithASDByUPRN`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -328,7 +385,7 @@ export function GetRelatedStreetWithASDByUPRNUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetPropertyHistoryByUPRNUrl(userToken) {
-  const url = GetApiSite("main", "/api/History/PropertySummaryGroup");
+  const url = GetApiSite("main", `/api/${apiVersion}History/PropertySummaryGroup`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -339,7 +396,7 @@ export function GetPropertyHistoryByUPRNUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetStreetHistoryByUSRNUrl(userToken) {
-  const url = GetApiSite("main", "/api/History/StreetSummaryGroup");
+  const url = GetApiSite("main", `/api/${apiVersion}History/StreetSummaryGroup`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -350,7 +407,7 @@ export function GetStreetHistoryByUSRNUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetHomepageUrl(userToken) {
-  const url = GetApiSite("main", "/api/Homepage");
+  const url = GetApiSite("main", `/api/${apiVersion}Homepage`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -362,7 +419,7 @@ export function GetHomepageUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetUpdateStreetUrl(userToken, isScottish) {
-  const url = !isScottish && HasASD() ? GetApiSite("main", "/api/StreetWithAsd") : GetApiSite("main", "/api/Street");
+  const url = GetApiSite("main", `/api/${apiVersion}Street${!isScottish && HasASD() ? "WithAsd" : ""}`);
   return getUrl(url, "PUT", "application/json", userToken);
 }
 
@@ -374,7 +431,7 @@ export function GetUpdateStreetUrl(userToken, isScottish) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetDeleteStreetUrl(userToken, isScottish) {
-  const url = !isScottish && HasASD() ? GetApiSite("main", "/api/StreetWithAsd") : GetApiSite("main", "/api/Street");
+  const url = GetApiSite("main", `/api/${apiVersion}Street${!isScottish && HasASD() ? "WithAsd" : ""}`);
   return getUrl(url, "DELETE", "application/json", userToken);
 }
 
@@ -385,7 +442,7 @@ export function GetDeleteStreetUrl(userToken, isScottish) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetBackgroundStreetsUrl(userToken) {
-  const url = GetApiSite("main", "/api/MappableData/GetStreets");
+  const url = GetApiSite("main", `/api/${apiVersion}MappableData/GetStreets`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -396,7 +453,7 @@ export function GetBackgroundStreetsUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetUnassignedEsusUrl(userToken) {
-  const url = GetApiSite("main", "/api/MappableData/GetUnassignedEsus");
+  const url = GetApiSite("main", `/api/${apiVersion}MappableData/GetUnassignedEsus`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -407,7 +464,7 @@ export function GetUnassignedEsusUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetBackgroundPropertiesUrl(userToken) {
-  const url = GetApiSite("main", "/api/MappableData/GetProperties");
+  const url = GetApiSite("main", `/api/${apiVersion}MappableData/GetProperties`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -418,7 +475,7 @@ export function GetBackgroundPropertiesUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetBackgroundProvenancesUrl(userToken) {
-  const url = GetApiSite("main", "/api/MappableData/GetBlpuProvenances");
+  const url = GetApiSite("main", `/api/${apiVersion}MappableData/GetBlpuProvenances`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -429,7 +486,7 @@ export function GetBackgroundProvenancesUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetCreatePropertyUrl(userToken) {
-  const url = GetApiSite("main", "/api/Property");
+  const url = GetApiSite("main", `/api/${apiVersion}Property`);
   return getUrl(url, "POST", "application/json", userToken);
 }
 
@@ -440,7 +497,7 @@ export function GetCreatePropertyUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetPropertyFromUPRNUrl(userToken) {
-  const url = GetApiSite("main", "/api/Property");
+  const url = GetApiSite("main", `/api/${apiVersion}Property`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -451,7 +508,7 @@ export function GetPropertyFromUPRNUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetUpdatePropertyUrl(userToken) {
-  const url = GetApiSite("main", "/api/Property");
+  const url = GetApiSite("main", `/api/${apiVersion}Property`);
   return getUrl(url, "PUT", "application/json", userToken);
 }
 
@@ -462,7 +519,7 @@ export function GetUpdatePropertyUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetDeletePropertyUrl(userToken) {
-  const url = GetApiSite("main", "/api/Property");
+  const url = GetApiSite("main", `/api/${apiVersion}Property`);
   return getUrl(url, "DELETE", "application/json", userToken);
 }
 
@@ -473,7 +530,7 @@ export function GetDeletePropertyUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetListOfUprnsUrl(userToken) {
-  const url = GetApiSite("main", "/api/Property/GetListOfUprns");
+  const url = GetApiSite("main", `/api/${apiVersion}Property/GetListOfUprns`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -484,7 +541,7 @@ export function GetListOfUprnsUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetAddUprnsBackUrl(userToken) {
-  const url = GetApiSite("main", "/api/Property/AddUprnsBackToAvailableUprns");
+  const url = GetApiSite("main", `/api/${apiVersion}Property/AddUprnsBackToAvailableUprns`);
   return getUrl(url, "POST", "application/json", userToken);
 }
 
@@ -495,7 +552,7 @@ export function GetAddUprnsBackUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetValidationMessagesUrl(userToken) {
-  const url = GetApiSite("lookup", "/api/Admin");
+  const url = GetApiSite("lookup", `/api/${lookupVersion}Admin`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -507,7 +564,7 @@ export function GetValidationMessagesUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetAppCrossRefUrl(endPointType, userToken) {
-  const url = GetApiSite("lookup", "/api/AppCrossRef");
+  const url = GetApiSite("lookup", `/api/${lookupVersion}AppCrossRef`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -519,7 +576,7 @@ export function GetAppCrossRefUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetStreetDescriptorUrl(endPointType, userToken) {
-  const url = GetApiSite("lookup", "/api/StreetDescriptor");
+  const url = GetApiSite("lookup", `/api/${lookupVersion}StreetDescriptor`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -531,7 +588,7 @@ export function GetStreetDescriptorUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetPostcodeUrl(endPointType, userToken) {
-  const url = GetApiSite("lookup", "/api/Postcode");
+  const url = GetApiSite("lookup", `/api/${lookupVersion}Postcode`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -543,7 +600,7 @@ export function GetPostcodeUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetPostTownUrl(endPointType, userToken) {
-  const url = GetApiSite("lookup", "/api/Posttown");
+  const url = GetApiSite("lookup", `/api/${lookupVersion}Posttown`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -555,7 +612,7 @@ export function GetPostTownUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetSubLocalityUrl(endPointType, userToken) {
-  const url = GetApiSite("lookup", "/api/SubLocality");
+  const url = GetApiSite("lookup", `/api/${lookupVersion}SubLocality`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -566,7 +623,7 @@ export function GetSubLocalityUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetIncorrectBoundariesCountUrl(userToken) {
-  const url = GetApiSite("main", "/api/Boundary/IncorrectBoundariesCount");
+  const url = GetApiSite("main", `/api/${apiVersion}Boundary/IncorrectBoundariesCount`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -577,7 +634,7 @@ export function GetIncorrectBoundariesCountUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetUpdateBlpuBoundaryCodesUrl(userToken) {
-  const url = GetApiSite("main", "/api/Boundary/UpdateBLPUBoundaryCodes");
+  const url = GetApiSite("main", `/api/${apiVersion}Boundary/UpdateBLPUBoundaryCodes`);
   return getUrl(url, "PUT", "application/json", userToken);
 }
 
@@ -591,7 +648,9 @@ export function GetUpdateBlpuBoundaryCodesUrl(userToken) {
  */
 export function GetParishesUrl(endPointType, userToken, authorityCode) {
   const url =
-    endPointType === "GET" ? GetApiSite("lookup", `/api/Parish/${authorityCode}`) : GetApiSite("lookup", `/api/Parish`);
+    endPointType === "GET"
+      ? GetApiSite("lookup", `/api/${lookupVersion}Parish/${authorityCode}`)
+      : GetApiSite("lookup", `/api/${lookupVersion}Parish`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -605,7 +664,9 @@ export function GetParishesUrl(endPointType, userToken, authorityCode) {
  */
 export function GetWardsUrl(endPointType, userToken, authorityCode) {
   const url =
-    endPointType === "GET" ? GetApiSite("lookup", `/api/Ward/${authorityCode}`) : GetApiSite("lookup", `/api/Ward`);
+    endPointType === "GET"
+      ? GetApiSite("lookup", `/api/${lookupVersion}Ward/${authorityCode}`)
+      : GetApiSite("lookup", `/api/${lookupVersion}Ward`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -617,7 +678,7 @@ export function GetWardsUrl(endPointType, userToken, authorityCode) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetLocalityUrl(endPointType, userToken) {
-  const url = GetApiSite("lookup", "/api/Locality");
+  const url = GetApiSite("lookup", `/api/${lookupVersion}Locality`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -629,7 +690,7 @@ export function GetLocalityUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetDbAuthorityUrl(endPointType, userToken) {
-  const url = GetApiSite("lookup", "/api/DbAuthority");
+  const url = GetApiSite("lookup", `/api/${lookupVersion}DbAuthority`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -641,7 +702,7 @@ export function GetDbAuthorityUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetIslandUrl(endPointType, userToken) {
-  const url = GetApiSite("lookup", "/api/Island");
+  const url = GetApiSite("lookup", `/api/${lookupVersion}Island`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -653,7 +714,7 @@ export function GetIslandUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetTownUrl(endPointType, userToken) {
-  const url = GetApiSite("lookup", "/api/Town");
+  const url = GetApiSite("lookup", `/api/${lookupVersion}Town`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -665,7 +726,7 @@ export function GetTownUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetAdministrativeAreaUrl(endPointType, userToken) {
-  const url = GetApiSite("lookup", "/api/AdministrativeArea");
+  const url = GetApiSite("lookup", `/api/${lookupVersion}AdministrativeArea`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -677,7 +738,7 @@ export function GetAdministrativeAreaUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetOperationalDistrictUrl(endPointType, userToken) {
-  const url = GetApiSite("lookup", "/api/OperationalDistrict");
+  const url = GetApiSite("lookup", `/api/${lookupVersion}OperationalDistrict`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -688,7 +749,7 @@ export function GetOperationalDistrictUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetTempAddressUrl(userToken) {
-  const url = GetApiSite("main", "/api/TempAddress");
+  const url = GetApiSite("main", `/api/${apiVersion}TempAddress`);
   return getUrl(url, "POST", "application/json", userToken);
 }
 
@@ -699,7 +760,7 @@ export function GetTempAddressUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetApiMetadataUrl(userToken) {
-  const url = GetApiSite("main", "/api/Version");
+  const url = GetApiSite("main", `/api/${apiVersion}Version`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -710,7 +771,7 @@ export function GetApiMetadataUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetLookupMetadataUrl(userToken) {
-  const url = GetApiSite("lookup", "/api/Version");
+  const url = GetApiSite("lookup", `/api/${lookupVersion}Version`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -721,7 +782,7 @@ export function GetLookupMetadataUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetSettingsMetadataUrl(userToken) {
-  const url = GetApiSite("settings", "/api/Version");
+  const url = GetApiSite("settings", `/api/${settingsVersion}Version`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
@@ -733,7 +794,7 @@ export function GetSettingsMetadataUrl(userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetAuthorityDetailsUrl(endPointType, userToken) {
-  const url = GetApiSite("settings", "/api/AuthorityDetail");
+  const url = GetApiSite("settings", `/api/${settingsVersion}AuthorityDetail`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -745,7 +806,7 @@ export function GetAuthorityDetailsUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetLSGMetadataUrl(endPointType, userToken) {
-  const url = GetApiSite("settings", "/api/LSGMetadata");
+  const url = GetApiSite("settings", `/api/${settingsVersion}LSGMetadata`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -757,7 +818,7 @@ export function GetLSGMetadataUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetASDMetadataUrl(endPointType, userToken) {
-  const url = GetApiSite("settings", "/api/ASDMetadata");
+  const url = GetApiSite("settings", `/api/${settingsVersion}ASDMetadata`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -770,9 +831,7 @@ export function GetASDMetadataUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetLLPGMetadataUrl(endPointType, userToken, isScottish) {
-  const url = isScottish
-    ? GetApiSite("settings", "/api/OSGazetteerMetadata")
-    : GetApiSite("settings", "/api/GPLLPGMetadata");
+  const url = GetApiSite("settings", `/api/${settingsVersion}${isScottish ? "OSGazetteerMetadata" : "GPLLPGMetadata"}`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -784,7 +843,7 @@ export function GetLLPGMetadataUrl(endPointType, userToken, isScottish) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetPropertyTemplatesUrl(endPointType, userToken) {
-  const url = GetApiSite("settings", "/api/PropertyTemplate");
+  const url = GetApiSite("settings", `/api/${settingsVersion}PropertyTemplate`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -796,7 +855,7 @@ export function GetPropertyTemplatesUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetStreetTemplateUrl(endPointType, userToken) {
-  const url = GetApiSite("settings", "/api/StreetTemplate");
+  const url = GetApiSite("settings", `/api/${settingsVersion}StreetTemplate`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 
@@ -808,7 +867,7 @@ export function GetStreetTemplateUrl(endPointType, userToken) {
  * @return {object} The URL object used in FETCH calls.
  */
 export function GetMapLayersUrl(endPointType, userToken) {
-  const url = GetApiSite("settings", "/api/MapLayer");
+  const url = GetApiSite("settings", `/api/${settingsVersion}MapLayer`);
   return getUrl(url, endPointType, "application/json", userToken);
 }
 

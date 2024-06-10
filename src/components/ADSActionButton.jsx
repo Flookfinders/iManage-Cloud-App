@@ -16,6 +16,7 @@
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    004   10.01.24 Sean Flook                 Fix warnings.
 //    005   04.04.24 Sean Flook                 Added propType for missing parameter.
+//    006   10.06.24 Sean Flook       IMANN-509 Added the password variant.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -43,6 +44,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import PasswordIcon from "@mui/icons-material/Password";
 import { CopyIcon, MoveIcon } from "../utils/ADSIcons";
 import { adsBlueA, adsMidGreyA, adsWhite } from "../utils/ADSColours";
 import { tooltipStyle } from "../utils/ADSStyles";
@@ -72,6 +74,7 @@ ADSActionButton.propTypes = {
     "settings",
     "user",
     "users",
+    "password",
   ]),
   buttonLabel: PropTypes.string,
   disabled: PropTypes.bool,
@@ -283,6 +286,14 @@ function ADSActionButton({
           iconComp = <EditIcon fontSize={fontSize} />;
         } else {
           iconComp = <EditIcon />;
+        }
+        break;
+
+      case "password":
+        if (fontSize && fontSize !== "") {
+          iconComp = <PasswordIcon fontSize={fontSize} />;
+        } else {
+          iconComp = <PasswordIcon />;
         }
         break;
 

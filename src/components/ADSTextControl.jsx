@@ -29,6 +29,7 @@
 //    017   13.02.24 Sean Flook                 For multi-line controls display the characters left at the same level as the label.
 //    018   21.02.24 Sean Flook           MUL16 Added noLeftPadding parameter.
 //    019   02.04.24 Joshua McCormick IMANN-277 Removed not multiline check for displayCharactersLeft
+//    020   10.06.24 Sean Flook       IMANN-509 Fix for use with passwords.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -100,6 +101,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { adsBlueA } from "../utils/ADSColours";
 import { FormBoxRowStyle, FormRowStyle, FormInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
+import { isEdgeChromium } from "../utils/HelperUtils";
 
 /* #endregion imports */
 
@@ -364,7 +366,7 @@ function ADSTextControl({
                   size="small"
                   InputProps={{
                     maxLength: `${maxLength}`,
-                    endAdornment: (
+                    endAdornment: !isEdgeChromium && (
                       <InputAdornment position="end">
                         <IconButton
                           aria-label="toggle password visibility"
@@ -420,6 +422,43 @@ function ADSTextControl({
               margin="dense"
               size="small"
               inputProps={{ maxLength: `${maxLength}` }}
+              value={value}
+              onChange={handleChangeEvent}
+              aria-labelledby={`ads-text-label-${label ? label.toLowerCase().replaceAll(" ", "-") : id}`}
+            />
+          ) : isHidden ? (
+            <TextField
+              id={`ads-text-textfield-${label ? label.toLowerCase().replaceAll(" ", "-") : id}`}
+              sx={FormInputStyle(hasError.current)}
+              type={showPassword ? "text" : "password"}
+              error={hasError.current}
+              rows={1}
+              fullWidth
+              disabled={!isEditable}
+              required={isRequired}
+              variant="outlined"
+              margin="dense"
+              size="small"
+              InputProps={{
+                maxLength: `${maxLength}`,
+                endAdornment: !isEdgeChromium && (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleShowPasswordClick}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                      sx={{
+                        "&:hover": {
+                          color: adsBlueA,
+                        },
+                      }}
+                    >
+                      {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
               value={value}
               onChange={handleChangeEvent}
               aria-labelledby={`ads-text-label-${label ? label.toLowerCase().replaceAll(" ", "-") : id}`}
