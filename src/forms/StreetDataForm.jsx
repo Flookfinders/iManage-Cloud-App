@@ -96,6 +96,7 @@
 //    082   23.05.24 Sean Flook       IMANN-484 When adding a new ESU to a street call GetNewEsuStreetData to ensure the geometry on any ASD records are updated as well.
 //    083   04.06.24 Sean Flook       IMANN-507 Error trapping.
 //    084   04.06.24 Sean Flook       IMANN-281 Always validate the data before trying to save.
+//    085   11.06.24 Sean Flook       IMANN-490 Added code to update the USRN.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -139,6 +140,7 @@ import {
   updateMapStreetData,
   hasStreetChanged,
   StreetDelete,
+  GetStreetValidationErrors,
 } from "../utils/StreetUtils";
 import { UpdateRangeAfterSave, UpdateAfterSave, GetPropertyMapData } from "../utils/PropertyUtils";
 import ObjectComparison, {
@@ -157,7 +159,7 @@ import ObjectComparison, {
   streetDescriptorKeysToIgnore,
   successorCrossRefKeysToIgnore,
 } from "./../utils/ObjectComparison";
-import { HasASD } from "../configuration/ADSConfig";
+import { GetUpdateStreetUrl, HasASD } from "../configuration/ADSConfig";
 
 import { useEditConfirmation } from "../pages/EditConfirmationPage";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
@@ -284,6 +286,7 @@ function StreetDataForm({ data, loading }) {
   const mergedDividedEsus = useRef([]);
   const clearingType = useRef("");
   const lastOpenedId = useRef(0);
+  const newUsrnRef = useRef(0);
 
   const [streetErrors, setStreetErrors] = useState([]);
   const [descriptorErrors, setDescriptorErrors] = useState([]);
@@ -3059,6 +3062,374 @@ function StreetDataForm({ data, loading }) {
   };
 
   /**
+   * Event to handle when an USRN is updated.
+   *
+   * @param {Number} newUsrn The new USRN.
+   */
+  const handleUpdateUsrn = async (newUsrn) => {
+    const getStreetAddress = (descriptor, locRef, townRef, islandRef) => {
+      const locality = locRef ? lookupContext.currentLookups.localities.find((x) => x.localityRef === locRef) : null;
+      const town = townRef ? lookupContext.currentLookups.towns.find((x) => x.townRef === townRef) : null;
+      const island = islandRef ? lookupContext.currentLookups.islands.find((x) => x.islandRef === islandRef) : null;
+
+      return `${descriptor}${locality ? " " + locality.locality : ""}${town ? " " + town.town : ""}${
+        island ? " " + island.island : ""
+      }`;
+    };
+
+    const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
+
+    if (streetChanged && newUsrnRef.current === 0) {
+      newUsrnRef.current = newUsrn;
+      handleSaveClicked();
+    } else {
+      newUsrnRef.current = 0;
+
+      const updateUsrnUrl = GetUpdateStreetUrl(userContext.currentUser.token, settingsContext.isScottish);
+
+      if (updateUsrnUrl) {
+        console.log("[DEBUG] Update USRN", `${updateUsrnUrl.url}/${streetData.usrn}/${newUsrn}`);
+        await fetch(`${updateUsrnUrl.url}/${streetData.usrn}/${newUsrn}`, {
+          headers: updateUsrnUrl.headers,
+          crossDomain: true,
+          method: updateUsrnUrl.type,
+        })
+          .then((res) => (res.ok ? res : Promise.reject(res)))
+          .then((res) => res.json())
+          .then((result) => {
+            mapContext.onSetCoordinate(null);
+            streetContext.onStreetModified(false);
+            streetContext.resetStreetErrors();
+            sandboxContext.resetSandbox("street");
+
+            const searchAddresses = [];
+            let newSearchData = [];
+            const savedDescriptorLookups = [];
+            let streetAddress = "";
+            const returnedDescriptors = settingsContext.isWelsh
+              ? result.streetDescriptors
+                  .sort((a, b) => (a.language > b.language ? 1 : b.language > a.language ? -1 : 0))
+                  .reverse()
+              : result.streetDescriptors.sort((a, b) =>
+                  a.language > b.language ? 1 : b.language > a.language ? -1 : 0
+                );
+
+            for (const descriptor of returnedDescriptors) {
+              if (!searchAddresses.includes(descriptor.streetDescriptor)) {
+                searchAddresses.push(descriptor.streetDescriptor);
+                streetAddress = getStreetAddress(
+                  descriptor.streetDescriptor,
+                  descriptor.locRef,
+                  descriptor.townRef,
+                  settingsContext.isScottish ? descriptor.islandRef : null
+                );
+                const newData = {
+                  type: 15,
+                  id: `${descriptor.usrn}_${descriptor.language}`,
+                  uprn: "",
+                  usrn: descriptor.usrn,
+                  logical_status: result.recordType ? Number(result.recordType) + 10 : 10,
+                  language: descriptor.language,
+                  classification_code: null,
+                  isParent: false,
+                  parent_uprn: null,
+                  county: null,
+                  authority: null,
+                  longitude: null,
+                  latitude: null,
+                  easting: result.streetStartX,
+                  northing: result.streetStartY,
+                  full_building_desc: null,
+                  formattedaddress: null,
+                  organisation: null,
+                  secondary_name: null,
+                  sao_text: null,
+                  sao_nums: null,
+                  primary_name: null,
+                  pao_text: null,
+                  pao_nums: null,
+                  street: descriptor.streetDescriptor,
+                  locality: descriptor.locality,
+                  town: descriptor.town,
+                  post_town: null,
+                  postcode: null,
+                  crossref: null,
+                  address: streetAddress,
+                  sort_code: 0,
+                };
+
+                savedDescriptorLookups.push({
+                  usrn: descriptor.usrn,
+                  language: descriptor.language,
+                  address: streetAddress,
+                });
+
+                if (searchContext.currentSearchData.results && searchContext.currentSearchData.results.length > 0) {
+                  const i = searchContext.currentSearchData.results.findIndex(
+                    (x) => x.id === `${descriptor.usrn}_${descriptor.language}`
+                  );
+                  if (i > -1) {
+                    newSearchData = searchContext.currentSearchData.results.map(
+                      (x) => [newData].find((rec) => rec.id === x.id) || x
+                    );
+                  } else {
+                    newSearchData = JSON.parse(JSON.stringify(searchContext.currentSearchData.results));
+                    newSearchData.push(newData);
+                  }
+
+                  if (newSearchData)
+                    searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newSearchData);
+                }
+              }
+            }
+
+            let updatedDescriptorLookups = [];
+            if (streetContext.currentStreet.newStreet) {
+              updatedDescriptorLookups = lookupContext.currentLookups.streetDescriptors.concat(savedDescriptorLookups);
+            } else {
+              updatedDescriptorLookups = lookupContext.currentLookups.streetDescriptors.map(
+                (x) => savedDescriptorLookups.find((rec) => rec.usrn === x.usrn && rec.language === x.language) || x
+              );
+            }
+
+            lookupContext.onUpdateLookup("streetDescriptor", updatedDescriptorLookups);
+
+            const engDescriptor = result.streetDescriptors.find((x) => x.language === "ENG");
+
+            if (!!engDescriptor) {
+              streetContext.onStreetChange(result.usrn, engDescriptor.streetDescriptor, false);
+            }
+
+            updateMapStreetData(
+              result,
+              settingsContext.isScottish ? result.maintenanceResponsibilities : null,
+              settingsContext.isScottish ? result.reinstatementCategories : null,
+              settingsContext.isScottish ? result.specialDesignations : null,
+              !settingsContext.isScottish && HasASD() ? result.interests : null,
+              !settingsContext.isScottish && HasASD() ? result.constructions : null,
+              !settingsContext.isScottish && HasASD() ? result.specialDesignations : null,
+              !settingsContext.isScottish && HasASD() ? result.heightWidthWeights : null,
+              !settingsContext.isScottish && HasASD() ? result.publicRightOfWays : null,
+              settingsContext.isScottish,
+              mapContext,
+              lookupContext.currentLookups
+            );
+
+            setStreetData(result);
+
+            saveResult.current = true;
+            setSaveOpen(true);
+          })
+          .catch((res) => {
+            switch (res.status) {
+              case 400:
+                res.json().then((body) => {
+                  console.error(
+                    `[400 ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} street`,
+                    body.errors
+                  );
+                  const streetErrors = GetStreetValidationErrors(body, streetContext.currentStreet.newStreet);
+
+                  streetContext.onStreetErrors(
+                    streetErrors.street,
+                    streetErrors.descriptor,
+                    streetErrors.esu,
+                    streetErrors.successorCrossRef,
+                    streetErrors.highwayDedication,
+                    streetErrors.oneWayException,
+                    streetErrors.maintenanceResponsibility,
+                    streetErrors.reinstatementCategory,
+                    settingsContext.isScottish ? streetErrors.specialDesignation : null,
+                    streetErrors.interest,
+                    streetErrors.construction,
+                    !settingsContext.isScottish ? streetErrors.specialDesignation : null,
+                    streetErrors.hww,
+                    streetErrors.prow,
+                    streetErrors.note
+                  );
+                });
+                break;
+
+              case 401:
+                streetContext.onStreetErrors(
+                  [
+                    {
+                      field: "USRN",
+                      errors: [
+                        `You are not authorised to ${
+                          streetContext.currentStreet.newStreet ? "create" : "update"
+                        } this street.`,
+                      ],
+                    },
+                  ],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  []
+                );
+                break;
+
+              case 403:
+                streetContext.onStreetErrors(
+                  [
+                    {
+                      field: "USRN",
+                      errors: ["You do not have access to the database."],
+                    },
+                  ],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  []
+                );
+                break;
+
+              default:
+                const contentType = res.headers ? res.headers.get("content-type") : null;
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                  res.json().then((body) => {
+                    console.error(
+                      `[${res.status} ERROR] ${
+                        streetContext.currentStreet.newStreet ? "Creating" : "Updating"
+                      } street.`,
+                      body
+                    );
+
+                    streetContext.onStreetErrors(
+                      [
+                        {
+                          field: "USRN",
+                          errors: [
+                            `[${res.status} ERROR] ${body[0].errorTitle}: ${body[0].errorDescription}. Please report this error to support.`,
+                          ],
+                        },
+                      ],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      []
+                    );
+                  });
+                } else if (contentType && contentType.indexOf("text")) {
+                  res.text().then((response) => {
+                    console.error(
+                      `[${res.status} ERROR] ${
+                        streetContext.currentStreet.newStreet ? "Creating" : "Updating"
+                      } street.`,
+                      response,
+                      res
+                    );
+
+                    const responseData = response.replace("[{", "").replace("}]", "").split(',"');
+
+                    let errorTitle = "";
+                    let errorDescription = "";
+
+                    for (const errorData of responseData) {
+                      if (errorData.includes("errorTitle")) errorTitle = errorData.substr(13).replace('"', "");
+                      else if (errorData.includes("errorDescription"))
+                        errorDescription = errorData.substr(19).replace('"', "");
+
+                      if (errorTitle && errorTitle.length > 0 && errorDescription && errorDescription.length > 0) break;
+                    }
+
+                    // if (process.env.NODE_ENV === "development")
+                    streetContext.onStreetErrors(
+                      [
+                        {
+                          field: "USRN",
+                          errors: [
+                            `[${res.status} ERROR] ${errorTitle}: ${errorDescription}. Please report this error to support.`,
+                          ],
+                        },
+                      ],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      []
+                    );
+                  });
+                } else {
+                  console.error(
+                    `[ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} street (other)`,
+                    res
+                  );
+
+                  streetContext.onStreetErrors(
+                    [
+                      {
+                        field: "USRN",
+                        errors: [`[ERROR] ${res}. Please report this error to support.`],
+                      },
+                    ],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    []
+                  );
+                }
+                break;
+            }
+
+            failedValidation.current = false;
+            saveResult.current = false;
+            setSaveOpen(true);
+          });
+      }
+    }
+  };
+
+  /**
    * Event to handle adding a new ESU record.
    *
    */
@@ -4406,6 +4777,7 @@ function StreetDataForm({ data, loading }) {
 
         saveResult.current = true;
         setSaveOpen(true);
+        if (newUsrnRef.current !== 0) handleUpdateUsrn(newUsrnRef.current);
       } else {
         saveResult.current = false;
         setSaveOpen(true);
@@ -10494,6 +10866,7 @@ function StreetDataForm({ data, loading }) {
             onDataChanged={(srcData) => handleStreetDataChanged(srcData)}
             onDelete={(pkId) => handleStreetDelete(pkId)}
             onPropertyAdd={(usrn, parent, isRange) => handlePropertyAdd(usrn, parent, isRange)}
+            onUpdateUsrn={handleUpdateUsrn}
           />
         )}
       </TabPanel>

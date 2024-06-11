@@ -12,6 +12,7 @@
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   29.05.24 Sean Flook       IMANN-490 Initial version.
+//    002   11.06.24 Sean Flook       IMANN-490 Changed id.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -85,13 +86,7 @@ function EditUsrnDialog({ isOpen, usrn, onClose }) {
   }, [isOpen, usrn]);
 
   return (
-    <Dialog
-      open={showDialog}
-      aria-labelledby="multi-edit-single-field-dialog"
-      fullWidth
-      maxWidth="xs"
-      onClose={handleDialogClose}
-    >
+    <Dialog open={showDialog} aria-labelledby="edit-usrn-dialog" fullWidth maxWidth="xs" onClose={handleDialogClose}>
       <ADSDialogTitle title={"Edit USRN"} closeTooltip="Cancel" onClose={handleCancelClick} />
       <DialogContent sx={{ mt: theme.spacing(2) }}>
         <TextField

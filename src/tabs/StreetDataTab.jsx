@@ -37,6 +37,7 @@
 //    024   23.05.24 Sean Flook       IMANN-485 When state changes set the state date to current date.
 //    025   29.05.24 Sean Flook       IMANN-490 Modified USRN to be read only, but able to be edited via button and dialog.
 //    026   30.05.24 Joel Benford     IMANN-493 Hide "Add language version" menu unless in dev
+//    027   11.06.24 Sean Flook       IMANN-490 Added code to update the USRN.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -115,6 +116,7 @@ StreetDataTab.propTypes = {
   onDataChanged: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onPropertyAdd: PropTypes.func.isRequired,
+  onUpdateUsrn: PropTypes.func.isRequired,
 };
 
 function StreetDataTab({
@@ -128,6 +130,7 @@ function StreetDataTab({
   onDataChanged,
   onDelete,
   onPropertyAdd,
+  onUpdateUsrn,
 }) {
   const theme = useTheme();
 
@@ -681,10 +684,7 @@ function StreetDataTab({
    */
   const handleCloseEditUsrnDialog = (newUsrn) => {
     setShowEditUsrnDialog(false);
-    if (newUsrn) {
-      setUsrn(parseInt(newUsrn));
-      updateCurrentData(parseInt(newUsrn), "usrn", false);
-    }
+    if (onUpdateUsrn) onUpdateUsrn(newUsrn);
   };
 
   /**
