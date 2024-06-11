@@ -77,6 +77,7 @@
 //    063   21.05.24 Sean Flook       IMANN-462 Moved loading of base mapping into its own method and wait for details before we try and load it.
 //    064   04.06.24 Sean Flook       IMANN-507 After redrawing a street or property if we are editing the graphic ensure the popup is disabled and the edit graphics layer is on top.
 //    065   06.06.24 Sean Flook       IMANN-522 Always allow editing of provenances.
+//    066   11.06.24 Sean Flook       IMANN-527 Corrected values in streetRenderer.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -389,12 +390,12 @@ const streetRenderer = {
       label: "Unassigned ESU, Open",
     },
     {
-      value: "0, 3",
+      value: "0, 4",
       symbol: GetESUMapSymbol(),
       label: "Unassigned ESU, Permanently closed",
     },
     {
-      value: "0, 4",
+      value: "0, 5",
       symbol: GetESUMapSymbol(),
       label: "Unassigned ESU, Street for addressing purposes only",
     },
@@ -409,12 +410,12 @@ const streetRenderer = {
       label: "Official Designated Street Name, Open",
     },
     {
-      value: "1, 3",
+      value: "1, 4",
       symbol: GetStreetMapSymbol(),
       label: "Official Designated Street Name, Permanently closed",
     },
     {
-      value: "1, 4",
+      value: "1, 5",
       symbol: GetStreetMapSymbol(),
       label: "Official Designated Street Name, Street for addressing purposes only",
     },
@@ -429,12 +430,12 @@ const streetRenderer = {
       label: "Street Description, Open",
     },
     {
-      value: "2, 3",
+      value: "2, 4",
       symbol: GetStreetMapSymbol(),
       label: "Street Description, Permanently closed",
     },
     {
-      value: "2, 4",
+      value: "2, 5",
       symbol: GetStreetMapSymbol(),
       label: "Street Description, Street for addressing purposes only",
     },
@@ -449,12 +450,12 @@ const streetRenderer = {
       label: "Numbered Street, Open",
     },
     {
-      value: "3, 3",
+      value: "3, 4",
       symbol: GetStreetMapSymbol(),
       label: "Numbered Street, Permanently closed",
     },
     {
-      value: "3, 4",
+      value: "3, 5",
       symbol: GetStreetMapSymbol(),
       label: "Numbered Street, Street for addressing purposes only",
     },
@@ -469,12 +470,12 @@ const streetRenderer = {
       label: "Unofficial Street Description, Open",
     },
     {
-      value: "4, 3",
+      value: "4, 4",
       symbol: GetStreetMapSymbol(),
       label: "Unofficial Street Description, Permanently closed",
     },
     {
-      value: "4, 4",
+      value: "4, 5",
       symbol: GetStreetMapSymbol(),
       label: "Unofficial Street Description, Street for addressing purposes only",
     },
@@ -489,12 +490,12 @@ const streetRenderer = {
       label: "Description used for LLPG Access, Open",
     },
     {
-      value: "9, 3",
+      value: "9, 4",
       symbol: GetStreetMapSymbol(),
       label: "Description used for LLPG Access, Permanently closed",
     },
     {
-      value: "9, 4",
+      value: "9, 5",
       symbol: GetStreetMapSymbol(),
       label: "Description used for LLPG Access, Street for addressing purposes only",
     },
