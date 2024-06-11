@@ -27,6 +27,7 @@
 //    014   10.06.24 Sean Flook       IMANN-509 Added new security URLs and ability to handle API versions.
 //    015   10.06.24 Sean Flook       IMANN-509 Updated versions for api, settings and lookups.
 //    016   11.06.24 Sean Flook       IMANN-509 Reverted security API back to v1 for now.
+//    017   11.06.24 Sean Flook       IMANN-509 Undone above changes.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -36,8 +37,7 @@ var currentConfig = null;
 
 const apiVersion = "v1/";
 // const securityVersion = process.env.NODE_ENV === "development" ? "v1/" : "v2/";
-// const securityVersion = "v2/";
-const securityVersion = "v1/";
+const securityVersion = "v2/";
 const settingsVersion = "v1/";
 const lookupVersion = "v1/";
 
