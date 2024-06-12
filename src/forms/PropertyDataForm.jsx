@@ -67,6 +67,7 @@
 //    054   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    055   04.06.24 Sean Flook       IMANN-281 Always validate the data before trying to save.
 //    056   06.06.24 Sean Flook       IMANN-524 Correctly update the sandbox when changing the extent geometry.
+//    057   12.06.24 Sean Flook       IMANN-562 Correctly set the pkId when updating the provenance geometry.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3893,10 +3894,10 @@ function PropertyDataForm({ data, loading }) {
         const updatedProvenance = {
           entryDate: currentProvenance.entryDate ? currentProvenance.entryDate : currentDate,
           lastUpdateDate: currentDate,
-          pkId: currentProvenance.pkId,
+          pkId: mapContext.currentPolygonGeometry.objectId,
           provenanceKey: currentProvenance.provenanceKey,
           uprn: currentProvenance.uprn,
-          changeType: contextProperty.uprn === 0 || currentProvenance.pkId < 0 ? "I" : "U",
+          changeType: contextProperty.uprn === 0 || mapContext.currentPolygonGeometry.objectId < 0 ? "I" : "U",
           provenanceCode: currentProvenance.provenanceCode,
           annotation: currentProvenance.annotation,
           startDate: currentProvenance.startDate ? currentProvenance.startDate : currentDate,
