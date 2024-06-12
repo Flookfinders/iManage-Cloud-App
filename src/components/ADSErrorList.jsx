@@ -19,6 +19,7 @@
 //    006   14.12.23 Sean Flook                 Corrected note record type.
 //    007   05.01.24 Sean Flook                 use CSS shortcuts.
 //    008   08.03.24 Sean Flook       IMANN-348 Updated method to see if a street or property has changed and added in the missing Scottish records.
+//    009   12.06.24 Sean Flook       IMANN-515 Use a List to display the errors and display each error as a separate item.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -57,8 +58,8 @@ import { HasASD } from "../configuration/ADSConfig";
 import { GetNewStreetData } from "../utils/StreetUtils";
 import { GetNewPropertyData, getBilingualSource } from "../utils/PropertyUtils";
 import { useEditConfirmation } from "../pages/EditConfirmationPage";
-import { Grid, Typography, IconButton, Link, Divider, Snackbar, Alert } from "@mui/material";
-import { Box, Stack } from "@mui/system";
+import { Grid, Typography, IconButton, Link, Snackbar, Alert, List, ListItem, ListItemText } from "@mui/material";
+import { Box } from "@mui/system";
 import CloseIcon from "@mui/icons-material/Close";
 import { adsRed, adsDarkGrey, adsLightGreyB, adsOffWhite, adsLightGreyA50 } from "../utils/ADSColours";
 import { ActionIconStyle, GetAlertStyle, GetAlertIcon, GetAlertSeverity } from "../utils/ADSStyles";
@@ -106,9 +107,9 @@ function ADSErrorList({ onClose }) {
    * @param {object} error The error object.
    */
   const doErrorClick = (type, error) => {
-    const streetTypes = [11, 13, 15, 16, 17, 61, 62, 63, 64, 66, 71];
+    const streetTypes = [11, 13, 15, 16, 17, 51, 52, 53, 61, 62, 63, 64, 66, 72];
     const esuTypes = [16, 17];
-    const propertyTypes = [21, 22, 23, 24, 72];
+    const propertyTypes = [21, 22, 23, 24, 30, 31, 32, 71];
 
     if (streetTypes.includes(type)) {
       if (type === 11) streetContext.onGoToField(type, undefined, null, error.field);
@@ -198,6 +199,10 @@ function ADSErrorList({ onClose }) {
 
         case 24:
           updateLpiData();
+          break;
+
+        case 30:
+          updateSuccessorCrossRefData();
           break;
 
         case 31:
@@ -1486,6 +1491,39 @@ function ADSErrorList({ onClose }) {
     setValidationErrorOpen(false);
   };
 
+  /**
+   * A method to return the list item for an error.
+   *
+   * @param {Number} type The type of record
+   * @param {Object} error The error object
+   * @param {String} errorText The error text
+   * @param {Number} index The index for the error map
+   * @param {Number} indx The index for the error text map
+   * @returns {JSX.Element} The ListItem for the error.
+   */
+  const getErrorListItem = (type, error, errorText, index, indx) => {
+    return (
+      <ListItem dense disablePadding key={`${type}-error-${index}-${indx}`}>
+        <ListItemText
+          primary={
+            <Link
+              component="button"
+              variant="caption"
+              align="left"
+              color={adsRed}
+              key={`${type}|${index}|${indx}`}
+              onClick={() => handleErrorClick(type, error)}
+              sx={getIssueStyle}
+              underline="hover"
+            >
+              {errorText}
+            </Link>
+          }
+        />
+      </ListItem>
+    );
+  };
+
   return (
     <Fragment>
       <Box
@@ -1535,302 +1573,181 @@ function ADSErrorList({ onClose }) {
             </Grid>
           </Grid>
           <Grid item>
-            <Stack
-              direction="column"
-              justifyContent="center"
-              alignItems="flex-start"
-              spacing={1}
-              divider={<Divider orientation="horizontal" flexItem />}
-            >
+            <List component="div" disablePadding>
               {streetContext.currentStreetHasErrors &&
                 streetContext.currentErrors.street.length > 0 &&
                 streetContext.currentErrors.street.map((streetError, index) => {
-                  return (
-                    <Link
-                      component="button"
-                      variant="caption"
-                      align="left"
-                      color={adsRed}
-                      key={`11|${index}`}
-                      onClick={() => handleErrorClick(11, streetError)}
-                      sx={getIssueStyle}
-                      underline="hover"
-                    >
-                      {streetError.errors}
-                    </Link>
-                  );
+                  return streetError.errors.map((streetErrorText, indx) => {
+                    return getErrorListItem(11, streetError, streetErrorText, index, indx);
+                  });
                 })}
               {streetContext.currentStreetHasErrors &&
                 streetContext.currentErrors.descriptor.length > 0 &&
                 streetContext.currentErrors.descriptor.map((descriptorError, index) => {
-                  return (
-                    <Link
-                      component="button"
-                      variant="caption"
-                      align="left"
-                      color={adsRed}
-                      key={`15|${index}`}
-                      onClick={() => handleErrorClick(15, descriptorError)}
-                      sx={getIssueStyle}
-                      underline="hover"
-                    >
-                      {descriptorError.errors}
-                    </Link>
-                  );
+                  return descriptorError.errors.map((descriptorErrorText, indx) => {
+                    return getErrorListItem(15, descriptorError, descriptorErrorText, index, indx);
+                  });
                 })}
               {streetContext.currentStreetHasErrors &&
                 streetContext.currentErrors.esu.length > 0 &&
                 streetContext.currentErrors.esu.map((esuError, index) => {
-                  return (
-                    <Link
-                      component="button"
-                      variant="caption"
-                      align="left"
-                      color={adsRed}
-                      key={`13|${index}`}
-                      onClick={() => handleErrorClick(13, esuError)}
-                      sx={getIssueStyle}
-                      underline="hover"
-                    >
-                      {esuError.errors}
-                    </Link>
-                  );
+                  return esuError.errors.map((esuErrorText, indx) => {
+                    return getErrorListItem(13, esuError, esuErrorText, index, indx);
+                  });
                 })}
               {streetContext.currentStreetHasErrors &&
                 streetContext.currentErrors.highwayDedication.length > 0 &&
                 streetContext.currentErrors.highwayDedication.map((highwayDedicationError, index) => {
-                  return (
-                    <Link
-                      component="button"
-                      variant="caption"
-                      align="left"
-                      color={adsRed}
-                      key={`17|${index}`}
-                      onClick={() => handleErrorClick(17, highwayDedicationError)}
-                      sx={getIssueStyle}
-                      underline="hover"
-                    >
-                      {highwayDedicationError.errors}
-                    </Link>
-                  );
+                  return highwayDedicationError.errors.map((highwayDedicationErrorText, indx) => {
+                    return getErrorListItem(17, highwayDedicationError, highwayDedicationErrorText, index, indx);
+                  });
                 })}
               {streetContext.currentStreetHasErrors &&
                 streetContext.currentErrors.oneWayExemption.length > 0 &&
                 streetContext.currentErrors.oneWayExemption.map((oneWayExemptionError, index) => {
-                  return (
-                    <Link
-                      component="button"
-                      variant="caption"
-                      align="left"
-                      color={adsRed}
-                      key={`16|${index}`}
-                      onClick={() => handleErrorClick(16, oneWayExemptionError)}
-                      sx={getIssueStyle}
-                      underline="hover"
-                    >
-                      {oneWayExemptionError.errors}
-                    </Link>
-                  );
+                  return oneWayExemptionError.errors.map((oneWayExemptionErrorText, indx) => {
+                    return getErrorListItem(16, oneWayExemptionError, oneWayExemptionErrorText, index, indx);
+                  });
+                })}
+              {streetContext.currentStreetHasErrors &&
+                streetContext.currentErrors.successorCrossRef.length > 0 &&
+                streetContext.currentErrors.successorCrossRef.map((successorCrossRefError, index) => {
+                  return successorCrossRefError.errors.map((successorCrossRefErrorText, indx) => {
+                    return getErrorListItem(30, successorCrossRefError, successorCrossRefErrorText, index, indx);
+                  });
+                })}
+              {streetContext.currentStreetHasErrors &&
+                streetContext.currentErrors.maintenanceResponsibility.length > 0 &&
+                streetContext.currentErrors.maintenanceResponsibility.map((maintenanceResponsibilityError, index) => {
+                  return maintenanceResponsibilityError.errors.map((maintenanceResponsibilityErrorText, indx) => {
+                    return getErrorListItem(
+                      51,
+                      maintenanceResponsibilityError,
+                      maintenanceResponsibilityErrorText,
+                      index,
+                      indx
+                    );
+                  });
+                })}
+              {streetContext.currentStreetHasErrors &&
+                streetContext.currentErrors.reinstatementCategory.length > 0 &&
+                streetContext.currentErrors.reinstatementCategory.map((reinstatementCategoryError, index) => {
+                  return reinstatementCategoryError.errors.map((reinstatementCategoryErrorText, indx) => {
+                    return getErrorListItem(
+                      52,
+                      reinstatementCategoryError,
+                      reinstatementCategoryErrorText,
+                      index,
+                      indx
+                    );
+                  });
+                })}
+              {streetContext.currentStreetHasErrors &&
+                streetContext.currentErrors.osSpecialDesignation.length > 0 &&
+                streetContext.currentErrors.osSpecialDesignation.map((osSpecialDesignationError, index) => {
+                  return osSpecialDesignationError.errors.map((osSpecialDesignationErrorText, indx) => {
+                    return getErrorListItem(53, osSpecialDesignationError, osSpecialDesignationErrorText, index, indx);
+                  });
                 })}
               {streetContext.currentStreetHasErrors &&
                 streetContext.currentErrors.interest.length > 0 &&
                 streetContext.currentErrors.interest.map((interestError, index) => {
-                  return (
-                    <Link
-                      component="button"
-                      variant="caption"
-                      align="left"
-                      color={adsRed}
-                      key={`61|${index}`}
-                      onClick={() => handleErrorClick(61, interestError)}
-                      sx={getIssueStyle}
-                      underline="hover"
-                    >
-                      {interestError.errors}
-                    </Link>
-                  );
+                  return interestError.errors.map((interestErrorText, indx) => {
+                    return getErrorListItem(61, interestError, interestErrorText, index, indx);
+                  });
                 })}
               {streetContext.currentStreetHasErrors &&
                 streetContext.currentErrors.construction.length > 0 &&
                 streetContext.currentErrors.construction.map((constructionError, index) => {
-                  return (
-                    <Link
-                      component="button"
-                      variant="caption"
-                      align="left"
-                      color={adsRed}
-                      key={`62|${index}`}
-                      onClick={() => handleErrorClick(62, constructionError)}
-                      sx={getIssueStyle}
-                      underline="hover"
-                    >
-                      {constructionError.errors}
-                    </Link>
-                  );
+                  return constructionError.errors.map((constructionErrorText, indx) => {
+                    return getErrorListItem(62, constructionError, constructionErrorText, index, indx);
+                  });
                 })}
               {streetContext.currentStreetHasErrors &&
                 streetContext.currentErrors.specialDesignation.length > 0 &&
                 streetContext.currentErrors.specialDesignation.map((specialDesignationError, index) => {
-                  return (
-                    <Link
-                      component="button"
-                      variant="caption"
-                      align="left"
-                      color={adsRed}
-                      key={`63|${index}`}
-                      onClick={() => handleErrorClick(63, specialDesignationError)}
-                      sx={getIssueStyle}
-                      underline="hover"
-                    >
-                      {specialDesignationError.errors}
-                    </Link>
-                  );
+                  return specialDesignationError.errors.map((specialDesignationErrorText, indx) => {
+                    return getErrorListItem(63, specialDesignationError, specialDesignationErrorText, index, indx);
+                  });
                 })}
               {streetContext.currentStreetHasErrors &&
                 streetContext.currentErrors.heightWidthWeight.length > 0 &&
                 streetContext.currentErrors.heightWidthWeight.map((heightWidthWeightError, index) => {
-                  return (
-                    <Link
-                      component="button"
-                      variant="caption"
-                      align="left"
-                      color={adsRed}
-                      key={`64|${index}`}
-                      onClick={() => handleErrorClick(64, heightWidthWeightError)}
-                      sx={getIssueStyle}
-                      underline="hover"
-                    >
-                      {heightWidthWeightError.errors}
-                    </Link>
-                  );
+                  return heightWidthWeightError.errors.map((heightWidthWeightErrorText, indx) => {
+                    return getErrorListItem(64, heightWidthWeightError, heightWidthWeightErrorText, index, indx);
+                  });
                 })}
               {streetContext.currentStreetHasErrors &&
                 streetContext.currentErrors.publicRightOfWay.length > 0 &&
                 streetContext.currentErrors.publicRightOfWay.map((publicRightOfWayError, index) => {
-                  return (
-                    <Link
-                      component="button"
-                      variant="caption"
-                      align="left"
-                      color={adsRed}
-                      key={`66|${index}`}
-                      onClick={() => handleErrorClick(66, publicRightOfWayError)}
-                      sx={getIssueStyle}
-                      underline="hover"
-                    >
-                      {publicRightOfWayError.errors}
-                    </Link>
-                  );
+                  return publicRightOfWayError.errors.map((publicRightOfWayErrorText, indx) => {
+                    return getErrorListItem(66, publicRightOfWayError, publicRightOfWayErrorText, index, indx);
+                  });
                 })}
               {streetContext.currentStreetHasErrors &&
                 streetContext.currentErrors.note.length > 0 &&
                 streetContext.currentErrors.note.map((noteError, index) => {
-                  return (
-                    <Link
-                      component="button"
-                      variant="caption"
-                      align="left"
-                      color={adsRed}
-                      key={`71|${index}`}
-                      onClick={() => handleErrorClick(71, noteError)}
-                      sx={getIssueStyle}
-                      underline="hover"
-                    >
-                      {noteError.errors}
-                    </Link>
-                  );
+                  return noteError.errors.map((noteErrorText, indx) => {
+                    return getErrorListItem(72, noteError, noteErrorText, index, indx);
+                  });
                 })}
               {propertyContext.currentPropertyHasErrors &&
                 propertyContext.currentErrors.blpu.length > 0 &&
                 propertyContext.currentErrors.blpu.map((blpuError, index) => {
-                  return (
-                    <Link
-                      component="button"
-                      variant="caption"
-                      align="left"
-                      color={adsRed}
-                      key={`21|${index}`}
-                      onClick={() => handleErrorClick(21, blpuError)}
-                      sx={getIssueStyle}
-                      underline="hover"
-                    >
-                      {blpuError.errors}
-                    </Link>
-                  );
+                  return blpuError.errors.map((blpuErrorText, indx) => {
+                    return getErrorListItem(21, blpuError, blpuErrorText, index, indx);
+                  });
                 })}
               {propertyContext.currentPropertyHasErrors &&
                 propertyContext.currentErrors.lpi.length > 0 &&
                 propertyContext.currentErrors.lpi.map((lpiError, index) => {
-                  return (
-                    <Link
-                      component="button"
-                      variant="caption"
-                      align="left"
-                      color={adsRed}
-                      key={`24|${index}`}
-                      onClick={() => handleErrorClick(24, lpiError)}
-                      sx={getIssueStyle}
-                      underline="hover"
-                    >
-                      {lpiError.errors}
-                    </Link>
-                  );
+                  return lpiError.errors.map((lpiErrorText, indx) => {
+                    return getErrorListItem(24, lpiError, lpiErrorText, index, indx);
+                  });
                 })}
               {propertyContext.currentPropertyHasErrors &&
                 propertyContext.currentErrors.provenance.length > 0 &&
                 propertyContext.currentErrors.provenance.map((provenanceError, index) => {
-                  return (
-                    <Link
-                      component="button"
-                      variant="caption"
-                      align="left"
-                      color={adsRed}
-                      key={`22|${index}`}
-                      onClick={() => handleErrorClick(22, provenanceError)}
-                      sx={getIssueStyle}
-                      underline="hover"
-                    >
-                      {provenanceError.errors}
-                    </Link>
-                  );
+                  return provenanceError.errors.map((provenanceErrorText, indx) => {
+                    return getErrorListItem(22, provenanceError, provenanceErrorText, index, indx);
+                  });
                 })}
               {propertyContext.currentPropertyHasErrors &&
                 propertyContext.currentErrors.crossRef.length > 0 &&
                 propertyContext.currentErrors.crossRef.map((crossRefError, index) => {
-                  return (
-                    <Link
-                      component="button"
-                      variant="caption"
-                      align="left"
-                      color={adsRed}
-                      key={`23|${index}`}
-                      onClick={() => handleErrorClick(23, crossRefError)}
-                      sx={getIssueStyle}
-                      underline="hover"
-                    >
-                      {crossRefError.errors}
-                    </Link>
-                  );
+                  return crossRefError.errors.map((crossRefErrorText, indx) => {
+                    return getErrorListItem(23, crossRefError, crossRefErrorText, index, indx);
+                  });
+                })}
+              {propertyContext.currentPropertyHasErrors &&
+                propertyContext.currentErrors.successorCrossRef.length > 0 &&
+                propertyContext.currentErrors.successorCrossRef.map((successorCrossRefError, index) => {
+                  return successorCrossRefError.errors.map((successorCrossRefErrorText, indx) => {
+                    return getErrorListItem(30, successorCrossRefError, successorCrossRefErrorText, index, indx);
+                  });
+                })}
+              {propertyContext.currentPropertyHasErrors &&
+                propertyContext.currentErrors.organisation.length > 0 &&
+                propertyContext.currentErrors.organisation.map((organisationError, index) => {
+                  return organisationError.errors.map((organisationErrorText, indx) => {
+                    return getErrorListItem(31, organisationError, organisationErrorText, index, indx);
+                  });
+                })}
+              {propertyContext.currentPropertyHasErrors &&
+                propertyContext.currentErrors.classification.length > 0 &&
+                propertyContext.currentErrors.classification.map((classificationError, index) => {
+                  return classificationError.errors.map((classificationErrorText, indx) => {
+                    return getErrorListItem(32, classificationError, classificationErrorText, index, indx);
+                  });
                 })}
               {propertyContext.currentPropertyHasErrors &&
                 propertyContext.currentErrors.note.length > 0 &&
                 propertyContext.currentErrors.note.map((noteError, index) => {
-                  return (
-                    <Link
-                      component="button"
-                      variant="caption"
-                      align="left"
-                      color={adsRed}
-                      key={`72|${index}`}
-                      onClick={() => handleErrorClick(72, noteError)}
-                      sx={getIssueStyle}
-                      underline="hover"
-                    >
-                      {noteError.errors}
-                    </Link>
-                  );
+                  return noteError.errors.map((noteErrorText, indx) => {
+                    return getErrorListItem(71, noteError, noteErrorText, index, indx);
+                  });
                 })}
-            </Stack>
+            </List>
           </Grid>
         </Grid>
       </Box>

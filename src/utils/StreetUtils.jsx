@@ -63,6 +63,7 @@
 //    050   03.06.24 Sean Flook       IMANN-281 Do not send null for required integer fields.
 //    051   04.06.24 Sean Flook       IMANN-281 Default to current date if start date is null when creating a new street.
 //    052   04.06.24 Sean Flook       IMANN-515 Ensure the end dates are set on all the ESUs, HDs and OWEs when the state is set to closed.
+//    053   12.06.24 Sean Flook       IMANN-515 Correctly set the changeType and end dates when state is 4.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2103,7 +2104,13 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
               return {
                 pkId: esu.pkId > 0 ? esu.pkId : 0,
                 esuId: esu.esuId > 0 ? esu.esuId : 0,
-                changeType: esu.changeType,
+                changeType:
+                  esu.changeType &&
+                  streetData.state === 4 &&
+                  [1, 2].includes(streetData.recordType) &&
+                  esu.changeType !== "D"
+                    ? "D"
+                    : esu.changeType,
                 esuVersionNumber: esu.esuVersionNumber,
                 esuTolerance: esu.esuTolerance,
                 esuStartDate: esu.esuStartDate,
@@ -2121,7 +2128,11 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                     pkId: hd.pkId > 0 ? hd.pkId : 0,
                     esuId: hd.esuId > 0 ? hd.esuId : 0,
                     seqNum: hd.seqNum,
-                    changeType: esu.changeType === "D" && hd.changeType !== "D" ? "D" : hd.changeType,
+                    changeType:
+                      (esu.changeType === "D" || (streetData.state === 4 && [1, 2].includes(streetData.recordType))) &&
+                      hd.changeType !== "D"
+                        ? "D"
+                        : hd.changeType,
                     highwayDedicationCode: streetData.state === 4 ? 12 : hd.highwayDedicationCode,
                     recordEndDate:
                       esu.changeType === "D" && hd.changeType !== "D"
@@ -2240,7 +2251,13 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
               return {
                 pkId: esu.pkId > 0 ? esu.pkId : 0,
                 esuId: esu.esuId > 0 ? esu.esuId : 0,
-                changeType: esu.changeType,
+                changeType:
+                  esu.changeType &&
+                  streetData.state === 4 &&
+                  [1, 2].includes(streetData.recordType) &&
+                  esu.changeType !== "D"
+                    ? "D"
+                    : esu.changeType,
                 esuVersionNumber: esu.esuVersionNumber,
                 esuTolerance: esu.esuTolerance,
                 esuStartDate: esu.esuStartDate,
@@ -2259,7 +2276,12 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                         pkId: hd.pkId > 0 ? hd.pkId : 0,
                         esuId: hd.esuId > 0 ? hd.esuId : 0,
                         seqNum: hd.seqNum,
-                        changeType: esu.changeType === "D" && hd.changeType !== "D" ? "D" : hd.changeType,
+                        changeType:
+                          (esu.changeType === "D" ||
+                            (streetData.state === 4 && [1, 2].includes(streetData.recordType))) &&
+                          hd.changeType !== "D"
+                            ? "D"
+                            : hd.changeType,
                         highwayDedicationCode: streetData.state === 4 ? 12 : hd.highwayDedicationCode,
                         recordEndDate:
                           esu.changeType === "D" && hd.changeType !== "D"
@@ -2360,11 +2382,14 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
               return {
                 pkId: i.pkId > 0 ? i.pkId : 0,
                 seqNum: i.seqNum,
-                changeType: streetData.state === 4 ? "D" : i.changeType,
+                changeType: streetData.state === 4 && [1, 2].includes(streetData.recordType) ? "D" : i.changeType,
                 swaOrgRefAuthority: i.swaOrgRefAuthority,
                 districtRefAuthority: i.districtRefAuthority,
                 recordStartDate: i.recordStartDate,
-                recordEndDate: i.recordEndDate,
+                recordEndDate:
+                  !i.recordEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType)
+                    ? currentDate
+                    : i.recordEndDate,
                 swaOrgRefAuthMaintaining: i.swaOrgRefAuthMaintaining,
                 streetStatus: i.streetStatus,
                 interestType: i.interestType,
@@ -2379,14 +2404,17 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
         constructions: streetData.constructions
           ? streetData.constructions.map((c) => {
               return {
-                changeType: streetData.state === 4 ? "D" : c.changeType,
+                changeType: streetData.state === 4 && [1, 2].includes(streetData.recordType) ? "D" : c.changeType,
                 usrn: streetData.usrn,
                 seqNum: c.seqNum,
                 wholeRoad: c.wholeRoad,
                 specificLocation: c.specificLocation,
                 neverExport: streetData.neverExport ? streetData.neverExport : false,
                 recordStartDate: c.recordStartDate,
-                recordEndDate: c.recordEndDate,
+                recordEndDate:
+                  !c.recordEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType)
+                    ? currentDate
+                    : c.recordEndDate,
                 reinstatementTypeCode: c.reinstatementTypeCode,
                 constructionType: c.constructionType,
                 aggregateAbrasionVal: c.aggregateAbrasionVal,
@@ -2412,7 +2440,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
               return {
                 pkId: sd.pkId > 0 ? sd.pkId : 0,
                 seqNum: sd.seqNum,
-                changeType: streetData.state === 4 ? "D" : sd.changeType,
+                changeType: streetData.state === 4 && [1, 2].includes(streetData.recordType) ? "D" : sd.changeType,
                 streetSpecialDesigCode: sd.streetSpecialDesigCode,
                 asdCoordinate: sd.asdCoordinate,
                 asdCoordinateCount: sd.asdCoordinateCount,
@@ -2422,7 +2450,10 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                 specialDesigEndX: sd.specialDesigEndX && !sd.wholeRoad ? sd.specialDesigEndX : 0,
                 specialDesigEndY: sd.specialDesigEndY && !sd.wholeRoad ? sd.specialDesigEndY : 0,
                 recordStartDate: sd.recordStartDate,
-                recordEndDate: sd.recordEndDate,
+                recordEndDate:
+                  !sd.recordEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType)
+                    ? currentDate
+                    : sd.recordEndDate,
                 specialDesigStartDate: sd.specialDesigStartDate,
                 specialDesigEndDate: sd.specialDesigEndDate,
                 specialDesigStartTime: sd.specialDesigStartTime,
@@ -2455,7 +2486,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                 motAccess: prow.motAccess,
                 recordStartDate: prow.recordStartDate,
                 relevantStartDate: prow.relevantStartDate,
-                recordEndDate: prow.recordEndDate,
+                recordEndDate: !prow.recordEndDate && streetData.state === 4 ? currentDate : prow.recordEndDate,
                 prowStatus: prow.prowStatus,
                 consultStartDate: prow.consultStartDate,
                 consultEndDate: prow.consultEndDate,
@@ -2482,11 +2513,14 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
           ? streetData.heightWidthWeights.map((hww) => {
               return {
                 pkId: hww.pkId > 0 ? hww.pkId : 0,
-                changeType: streetData.state === 4 ? "D" : hww.changeType,
+                changeType: streetData.state === 4 && [1, 2].includes(streetData.recordType) ? "D" : hww.changeType,
                 seqNum: hww.seqNum,
                 hwwRestrictionCode: hww.hwwRestrictionCode,
                 recordStartDate: hww.recordStartDate,
-                recordEndDate: hww.recordEndDate,
+                recordEndDate:
+                  !hww.recordEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType)
+                    ? currentDate
+                    : hww.recordEndDate,
                 valueMetric: hww.valueMetric,
                 troText: hww.troText,
                 featureDescription: hww.featureDescription,
