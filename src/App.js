@@ -62,6 +62,7 @@
 //    049   04.06.24 Sean Flook       IMANN-510 Include the level field when validating the BLPU data.
 //    050   04.06.24 Sean Flook       IMANN-511 Handle when we do not have an internet connection.
 //    051   06.06.24 Sean Flook       IMANN-524 Ensure the sandbox has the current data.
+//    052   12.06.24 Sean Flook       IMANN-536 Added some additional checking to HandleMapReload.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3370,17 +3371,17 @@ function App() {
   function HandleMapReload() {
     if (
       sessionStorage.getItem("backgroundData") !== null &&
-      backgroundData.streets.length === 0 &&
-      backgroundData.properties.length === 0 &&
-      backgroundData.unassignedEsus.length === 0
+      (!backgroundData.streets || backgroundData.streets.length === 0) &&
+      (!backgroundData.properties || backgroundData.properties.length === 0) &&
+      (!backgroundData.unassignedEsus || backgroundData.unassignedEsus.length === 0)
     ) {
       setBackgroundData(JSON.parse(sessionStorage.getItem("backgroundData")));
     }
 
     if (
       sessionStorage.getItem("mapSearch") !== null &&
-      mapSearchData.streets.length === 0 &&
-      mapSearchData.properties.length === 0 &&
+      (!mapSearchData.streets || mapSearchData.streets.length === 0) &&
+      (!mapSearchData.properties || mapSearchData.properties.length === 0) &&
       !mapSearchData.editStreet &&
       !mapSearchData.editProperty
     ) {
@@ -3394,7 +3395,13 @@ function App() {
       );
     }
 
-    if (sessionStorage.getItem("map") !== null && map.extents.length === 0 && !map.zoomStreet && !map.zoomProperty) {
+    if (
+      sessionStorage.getItem("map") !== null &&
+      map.extents &&
+      map.extents.length === 0 &&
+      !map.zoomStreet &&
+      !map.zoomProperty
+    ) {
       setMap(JSON.parse(sessionStorage.getItem("map")));
     }
 

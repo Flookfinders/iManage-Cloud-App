@@ -38,6 +38,7 @@
 //    025   29.05.24 Sean Flook       IMANN-490 Modified USRN to be read only, but able to be edited via button and dialog.
 //    026   30.05.24 Joel Benford     IMANN-493 Hide "Add language version" menu unless in dev
 //    027   11.06.24 Sean Flook       IMANN-490 Added code to update the USRN.
+//    028   12.06.24 Sean Flook       IMANN-536 Removed a warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1138,7 +1139,7 @@ function StreetDataTab({
         <ADSReadOnlyControl
           loading={loading}
           label="USRN"
-          value={usrn}
+          value={usrn.toString()}
           noLeftPadding
           errorText={usrnError}
           buttonVariant={adminUser ? "edit" : "none"}
