@@ -63,6 +63,7 @@
 //    050   04.06.24 Sean Flook       IMANN-511 Handle when we do not have an internet connection.
 //    051   06.06.24 Sean Flook       IMANN-524 Ensure the sandbox has the current data.
 //    052   12.06.24 Sean Flook       IMANN-536 Added some additional checking to HandleMapReload.
+//    053   12.06.24 Sean Flook       IMANN-565 Handle polygon deletion.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3261,8 +3262,15 @@ function App() {
    * @param {string} wktGeometry The WKT geometry of the polygon.
    */
   function HandleSetPolygonGeometry(wktGeometry) {
-    // Only set a polygon if we have a minimum of 3 unique points (triangle)
-    if (!wktGeometry || !wktGeometry.includes(",") || (wktGeometry.match(/,/g) || []).length < 3) {
+    if (wktGeometry === "") {
+      // Deleting the geometry
+      setMapPolygonGeometry({
+        wktGeometry: "",
+        objectType: editObjectRef.current ? editObjectRef.current.objectType : null,
+        objectId: editObjectRef.current ? editObjectRef.current.objectId : null,
+      });
+    } else if (!wktGeometry || !wktGeometry.includes(",") || (wktGeometry.match(/,/g) || []).length < 3) {
+      // Only set a polygon if we have a minimum of 3 unique points (triangle)
       setMapPolygonGeometry(null);
     } else {
       setMapPolygonGeometry({

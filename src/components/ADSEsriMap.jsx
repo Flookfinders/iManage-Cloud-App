@@ -78,6 +78,7 @@
 //    064   04.06.24 Sean Flook       IMANN-507 After redrawing a street or property if we are editing the graphic ensure the popup is disabled and the edit graphics layer is on top.
 //    065   06.06.24 Sean Flook       IMANN-522 Always allow editing of provenances.
 //    066   11.06.24 Sean Flook       IMANN-527 Corrected values in streetRenderer.
+//    067   12.06.24 Sean Flook       IMANN-565 Handle polygon deletion.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1016,6 +1017,7 @@ function ADSEsriMap(startExtent) {
   const viewRef = useRef(null);
   const sketchRef = useRef(null);
   const sketchUpdateEvent = useRef(null);
+  const sketchDeleteEvent = useRef(null);
   const sketchCreateEvent = useRef(null);
   const layerListRef = useRef(null);
   const measurementRef = useRef(null);
@@ -6197,6 +6199,23 @@ function ADSEsriMap(startExtent) {
       }
     );
 
+    if (sketchDeleteEvent.current) sketchDeleteEvent.current.remove();
+
+    sketchDeleteEvent.current = sketchRef.current.on(["delete"], (event) => {
+      // get the graphic as it is being updated
+      const graphic = event.graphics[0];
+      if (graphic.geometry) {
+        switch (graphic.geometry.type) {
+          case "polygon":
+            handlePolygonUpdate("", true);
+            break;
+
+          default:
+            break;
+        }
+      }
+    });
+
     async function GetFeatures(layer, count, startIndex) {
       switch (layer.serviceProvider) {
         case "OS":
@@ -6719,7 +6738,9 @@ function ADSEsriMap(startExtent) {
     }
 
     function handlePolygonUpdate(graphic, canUpdate) {
-      if (graphic.geometry.rings) {
+      if (graphic === "" && canUpdate) {
+        mapContext.onSetPolygonGeometry("");
+      } else if (graphic.geometry.rings) {
         const intersectingPolygon = graphic.geometry.rings.length > 1;
         graphic.symbol =
           intersectingPolygon || (graphic.symbol && graphic.symbol.color === invalidPolygonSymbol.current.color)

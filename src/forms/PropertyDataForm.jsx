@@ -68,6 +68,7 @@
 //    055   04.06.24 Sean Flook       IMANN-281 Always validate the data before trying to save.
 //    056   06.06.24 Sean Flook       IMANN-524 Correctly update the sandbox when changing the extent geometry.
 //    057   12.06.24 Sean Flook       IMANN-562 Correctly set the pkId when updating the provenance geometry.
+//    058   12.06.24 Sean Flook       IMANN-565 Handle polygon deletion.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3882,7 +3883,10 @@ function PropertyDataForm({ data, loading }) {
     let newPropertyData = null;
     const currentDate = GetCurrentDate(false);
 
-    if (mapContext.currentPolygonGeometry && mapContext.currentPolygonGeometry.objectType === 22) {
+    if (
+      (mapContext.currentPolygonGeometry || mapContext.currentPolygonGeometry === "") &&
+      mapContext.currentPolygonGeometry.objectType === 22
+    ) {
       const currentProvenance = sandboxContext.currentSandbox.currentPropertyRecords.provenance
         ? sandboxContext.currentSandbox.currentPropertyRecords.provenance
         : propertyData.blpuProvenances.find((x) => x.pkId === mapContext.currentPolygonGeometry.objectId);
