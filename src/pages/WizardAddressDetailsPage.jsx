@@ -18,6 +18,7 @@
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    006   17.01.24 Sean Flook                 Included sub-locality.
 //    007   29.05.24 Sean Flook       IMANN-504 Only create second language for Welsh authorities.
+//    008   11.06.24 Joshua McCormick IMANN-451 fixed saving states changing lang, cleanup.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1096,7 +1097,7 @@ function WizardAddressDetailsPage({
       if (onDataChanged)
         onDataChanged([
           {
-            language: "ENG",
+            language: singleData.language === "ENG" ? "GAE" : "ENG",
             saoStartNumber: singleData.saoStartNumber,
             saoStartSuffix: singleData.saoStartSuffix,
             saoEndNumber: singleData.saoEndNumber,
@@ -1194,78 +1195,45 @@ function WizardAddressDetailsPage({
             boxShadow: "none",
           }}
         >
-          {settingsContext.isScottish && (
-            <Tabs
-              value={value}
-              onChange={handleTabChange}
-              TabIndicatorProps={{ style: { background: adsBlueA, height: "2px" } }}
-              variant="scrollable"
-              scrollButtons="auto"
-              selectionFollowsFocus
-              aria-label="address-tabs"
-              sx={{ backgroundColor: adsOffWhite, color: adsMidGreyA }}
-            >
-              <Tab
-                sx={wizardTabStyle}
-                label={
-                  <Typography variant="subtitle2" sx={tabLabelStyle(value === 0)}>
-                    English
-                  </Typography>
-                }
-                {...a11yProps(0)}
-              />
-              <Tab
-                sx={wizardTabStyle}
-                label={
-                  <Typography variant="subtitle2" sx={tabLabelStyle(value === 1)}>
-                    Gaelic
-                  </Typography>
-                }
-                {...a11yProps(1)}
-              />
-            </Tabs>
-          )}
-          {settingsContext.isWelsh && (
-            <Tabs
-              value={value}
-              onChange={handleTabChange}
-              TabIndicatorProps={{ style: { background: adsBlueA, height: "2px" } }}
-              variant="scrollable"
-              scrollButtons="auto"
-              selectionFollowsFocus
-              aria-label="address-tabs"
-              sx={{ backgroundColor: adsOffWhite, color: adsMidGreyA }}
-            >
-              <Tab
-                sx={wizardTabStyle}
-                label={
-                  <Typography variant="subtitle2" sx={tabLabelStyle(value === 0)}>
-                    English
-                  </Typography>
-                }
-                {...a11yProps(0)}
-              />
-              <Tab
-                sx={wizardTabStyle}
-                label={
-                  <Typography variant="subtitle2" sx={tabLabelStyle(value === 1)}>
-                    Welsh
-                  </Typography>
-                }
-                {...a11yProps(1)}
-              />
-            </Tabs>
-          )}
+          <Tabs
+            value={value}
+            onChange={handleTabChange}
+            TabIndicatorProps={{ style: { background: adsBlueA, height: "2px" } }}
+            variant="scrollable"
+            scrollButtons="auto"
+            selectionFollowsFocus
+            aria-label="address-tabs"
+            sx={{ backgroundColor: adsOffWhite, color: adsMidGreyA }}
+          >
+            <Tab
+              sx={wizardTabStyle}
+              label={
+                <Typography variant="subtitle2" sx={tabLabelStyle(value === 0)}>
+                  English
+                </Typography>
+              }
+              {...a11yProps(0)}
+            />
+            <Tab
+              sx={wizardTabStyle}
+              label={
+                <Typography variant="subtitle2" sx={tabLabelStyle(value === 1)}>
+                  {settingsContext.isWelsh ? "Welsh" : "Gaelic"}
+                </Typography>
+              }
+              {...a11yProps(1)}
+            />
+          </Tabs>
         </AppBar>
         {(settingsContext.isScottish || settingsContext.isWelsh) && (
-          <TabPanel value={value} index={0}>
-            {getAddressDetailsForm()}
-          </TabPanel>
-        )}
-        {(settingsContext.isScottish || settingsContext.isWelsh) && (
-          <TabPanel value={value} index={1}>
-            {getAddressDetailsForm()}
-          </TabPanel>
+          <>
+            <TabPanel value={value} index={0}>
+              {getAddressDetailsForm()}
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              {getAddressDetailsForm()}
+            </TabPanel>
+          </>
         )}
         {!settingsContext.isScottish && !settingsContext.isWelsh && getAddressDetailsForm()}
       </Stack>
