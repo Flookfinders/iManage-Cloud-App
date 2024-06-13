@@ -47,6 +47,7 @@
 //    034   08.05.24 Joel Benford     IMANN-398 BLPU State is now mandatory
 //    035   23.05.24 Sean Flook       IMANN-485 When state changes set the state date to current date.
 //    036   05.06.24 Sean Flook       IMANN-485 Make above change for Scottish authorities as well.
+//    037   12.06.24 Sean Flook       IMANN-553 correctly set the required flag for state and state date.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1400,7 +1401,10 @@ function PropertyDetailsTab({
         <ADSSelectControl
           label="State"
           isEditable={userCanEdit}
-          isRequired
+          isRequired={
+            (!settingsContext.isScottish && blpuLogicalStatus && [5, 6].includes(blpuLogicalStatus)) ||
+            (settingsContext.isScottish && blpuLogicalStatus && blpuLogicalStatus < 9)
+          }
           isFocused={focusedField ? focusedField === "BlpuState" : false}
           loading={loading}
           useRounded
@@ -1417,7 +1421,10 @@ function PropertyDetailsTab({
         <ADSDateControl
           label="State date"
           isEditable={userCanEdit}
-          isRequired={blpuLogicalStatus === 6}
+          isRequired={
+            (!settingsContext.isScottish && blpuLogicalStatus && [5, 6].includes(blpuLogicalStatus)) ||
+            (settingsContext.isScottish && blpuLogicalStatus && blpuLogicalStatus < 9)
+          }
           isFocused={focusedField ? focusedField === "BlpuStateDate" : false}
           loading={loading}
           value={stateDate}

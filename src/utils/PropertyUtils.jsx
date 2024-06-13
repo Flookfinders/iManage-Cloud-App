@@ -49,6 +49,7 @@
 //    036   15.05.24 Sean Flook       IMANN-131 Ensure NeverExport is always set.
 //    037   20.05.24 Sean Flook       IMANN-444 Prevent exceptions from occurring.
 //    038   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
+//    039   12.06.24 Sean Flook       IMANN-553 Added filter for blpu state for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -124,7 +125,22 @@ export const FilteredRepresentativePointCode = (isScottish, newOnly = false) => 
  */
 export const FilteredBLPUState = (isScottish, logicalStatus) => {
   if (isScottish) {
-    return BLPUState.filter((x) => x.osText);
+    switch (logicalStatus) {
+      case 1:
+        return BLPUState.filter((x) => x.osText && [0, 1, 2, 3].includes(x.id));
+
+      case 6:
+        return BLPUState.filter((x) => x.osText && x.id === 0);
+
+      case 8:
+        return BLPUState.filter((x) => x.osText && x.id === 4);
+
+      case 9:
+        return BLPUState.filter((x) => x.osText && [0, 4].includes(x.id));
+
+      default:
+        return BLPUState.filter((x) => x.osText);
+    }
   } else {
     switch (logicalStatus) {
       case 1:

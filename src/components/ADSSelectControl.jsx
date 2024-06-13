@@ -30,6 +30,7 @@
 //    017   06.02.23 Sean Flook       IMANN-264 If we have no lookup data ensure the options are cleared.
 //    018   14.03.24 Sean Flook        ESU19_GP Use the lookupColour for the icon background colour.
 //    019   09.04.24 Sean Flook       IMANN-376 Modified to show an add button if required.
+//    020   13.06.24 Sean Flook       IMANN-553 Changes required to handle values of 0.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -457,14 +458,20 @@ function ADSSelectControl({
   useEffect(() => {
     if ((!controlValue || currentValue !== value) && lookupData) {
       const selectedItem = lookupData.filter(
-        (x) => x[lookupId] && value && x[lookupId].toString() === value.toString()
+        (x) =>
+          (x[lookupId] || x[lookupId] === 0) && (value || value === 0) && x[lookupId].toString() === value.toString()
       );
+
       if (selectedItem && selectedItem.length > 0) {
         setControlValue(selectedItem[0][lookupLabel]);
-      } else setControlValue(null);
+      } else {
+        setControlValue(null);
+      }
 
       setCurrentValue(value);
-    } else if (!value) setControlValue(null);
+    } else if (!value && value !== 0) {
+      setControlValue(null);
+    }
   }, [lookupData, controlValue, currentValue, value, lookupId, lookupLabel]);
 
   useEffect(() => {

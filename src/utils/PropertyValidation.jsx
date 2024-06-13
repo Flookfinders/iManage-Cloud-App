@@ -47,6 +47,7 @@
 //    023   22.05.24 Sean Flook       IMANN-459 Corrected field name for BLPU state checks.
 //    024   29.05.24 Sean Flook       IMANN-221 Added new checks.
 //    025   12.06.24 Sean Flook       IMANN-553 Modified checks 2100011 and 2100046 to cater for Scottish authorities.
+//    026   12.06.24 Sean Flook       IMANN-553 Further modifications to checks 2100011 and 2100046 to cater for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -132,7 +133,9 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
           (data.logicalStatus === 8 && data.blpuState && ![4, 7].includes(data.blpuState)) ||
           (data.logicalStatus === 9 && data.blpuState && ![1, 2, 3, 4, 5, 6, 7].includes(data.blpuState)))) ||
         (isScottish &&
-          (([1, 6, 8].includes(data.logicalStatus) && (!data.blpuState || ![0, 1, 2, 3, 4].includes(data.blpuState))) ||
+          ((data.logicalStatus === 1 && (!data.blpuState || ![0, 1, 2, 3].includes(data.blpuState))) ||
+            (data.logicalStatus === 6 && (!data.blpuState || data.blpuState !== 0)) ||
+            (data.logicalStatus === 8 && (!data.blpuState || data.blpuState !== 4)) ||
             (data.logicalStatus === 9 && data.blpuState && ![0, 1, 2, 3, 4].includes(data.blpuState)))))
     ) {
       blpuStateErrors.push(GetErrorMessage(currentCheck, isScottish));
@@ -240,11 +243,19 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
 
     // Missing state or state date.
     currentCheck = GetCheck(2100024, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && !data.blpuState) {
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      (!isScottish || (isScottish && data.logicalStatus < 9)) &&
+      !data.blpuState
+    ) {
       blpuStateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
-    if (includeCheck(currentCheck, isScottish) && !data.blpuStateDate) {
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      (!isScottish || (isScottish && data.logicalStatus < 9)) &&
+      !data.blpuStateDate
+    ) {
       blpuStateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
@@ -341,7 +352,9 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
           (data.logicalStatus === 8 && data.blpuState && ![4, 7].includes(data.blpuState)) ||
           (data.logicalStatus === 9 && data.blpuState && ![1, 2, 3, 4, 5, 6, 7].includes(data.blpuState)))) ||
         (isScottish &&
-          (([1, 6, 8].includes(data.logicalStatus) && (!data.blpuState || ![0, 1, 2, 3, 4].includes(data.blpuState))) ||
+          ((data.logicalStatus === 1 && (!data.blpuState || ![0, 1, 2, 3].includes(data.blpuState))) ||
+            (data.logicalStatus === 6 && (!data.blpuState || data.blpuState !== 0)) ||
+            (data.logicalStatus === 8 && (!data.blpuState || data.blpuState !== 4)) ||
             (data.logicalStatus === 9 && data.blpuState && ![0, 1, 2, 3, 4].includes(data.blpuState)))))
     ) {
       logicalStatusErrors.push(GetErrorMessage(currentCheck, isScottish));
@@ -1881,8 +1894,8 @@ export function ValidateMultiEditLogicalStatus(data, currentLookups, isScottish)
         ((data.logicalStatus === 1 && data.blpuState && ![1, 2, 3, 4].includes(data.blpuState)) ||
           (data.logicalStatus === 8 && data.blpuState && ![4, 7].includes(data.blpuState)))) ||
         (isScottish &&
-          [1, 6, 8].includes(data.logicalStatus) &&
-          (!data.blpuState || ![0, 1, 2, 3, 4].includes(data.blpuState))))
+          ((data.logicalStatus === 1 && (!data.blpuState || ![0, 1, 2, 3].includes(data.blpuState))) ||
+            (data.logicalStatus === 8 && (!data.blpuState || data.blpuState !== 4)))))
     ) {
       blpuStateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
