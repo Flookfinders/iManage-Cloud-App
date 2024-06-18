@@ -23,6 +23,7 @@
 //    010   23.02.24 Joel Benford     IMANN-287 Correct hover blue
 //    011   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //    012   19.04.24 Sean Flook       IMANN-137 For Welsh authority allow 2 characters for the suffix.
+//    013   14.06.24 Sean Flook       IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -285,16 +286,16 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
     const selectedPostcode = updatedField === "postcodeRef" ? newValue : postcodeRef;
     const currentNumbering = updatedField === "numbering" ? newValue : numbering;
 
-    const streetDescriptorRecord = lookupContext.currentLookups.streetDescriptors.find(
-      (x) => x.usrn === selectedUsrn && x.language === language
-    );
-    const postTownRecord = lookupContext.currentLookups.postTowns.find(
-      (x) => x.postTownRef === selectedPostTown && x.language === language
-    );
-    const subLocalityRecord = settingsContext.isScottish
-      ? lookupContext.currentLookups.subLocalities.find(
-          (x) => x.subLocalityRef === selectedSubLocality && x.language === language
+    const streetDescriptorRecord = settingsContext.isWelsh
+      ? lookupContext.currentLookups.streetDescriptors.find((x) => x.usrn === selectedUsrn && x.language === language)
+      : lookupContext.currentLookups.streetDescriptors.find((x) => x.usrn === selectedUsrn);
+    const postTownRecord = settingsContext.isWelsh
+      ? lookupContext.currentLookups.postTowns.find(
+          (x) => x.postTownRef === selectedPostTown && x.language === language
         )
+      : lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === selectedPostTown);
+    const subLocalityRecord = settingsContext.isScottish
+      ? lookupContext.currentLookups.subLocalities.find((x) => x.subLocalityRef === selectedSubLocality)
       : null;
     const postcodeRecord = lookupContext.currentLookups.postcodes.find((x) => x.postcodeRef === selectedPostcode);
 
@@ -2075,7 +2076,9 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
             isEditable
             isRequired
             useRounded
-            lookupData={lookupContext.currentLookups.streetDescriptors.filter((x) => x.language === language)}
+            lookupData={lookupContext.currentLookups.streetDescriptors.filter(
+              (x) => x.language === (settingsContext.isScottish ? "ENG" : language)
+            )}
             lookupId="usrn"
             lookupLabel="address"
             value={usrn}
@@ -2091,7 +2094,7 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
             useRounded
             allowAddLookup
             lookupData={lookupContext.currentLookups.postTowns
-              .filter((x) => x.language === language && !x.historic)
+              .filter((x) => x.language === (settingsContext.isScottish ? "ENG" : language) && !x.historic)
               .sort(function (a, b) {
                 return a.postTown.localeCompare(b.postTown, undefined, {
                   numeric: true,
@@ -2114,7 +2117,7 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
             useRounded
             allowAddLookup
             lookupData={lookupContext.currentLookups.subLocalities
-              .filter((x) => x.language === language && !x.historic)
+              .filter((x) => x.language === (settingsContext.isScottish ? "ENG" : language) && !x.historic)
               .sort(function (a, b) {
                 return a.subLocality.localeCompare(b.subLocality, undefined, {
                   numeric: true,

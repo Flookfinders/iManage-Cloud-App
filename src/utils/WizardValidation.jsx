@@ -33,6 +33,7 @@
 //    016   29.05.24 Sean Flook       IMANN-504 Added new classification checks.
 //    017   12.06.24 Sean Flook       IMANN-553 Modified checks 2100011 and 2100046 to cater for Scottish authorities.
 //    018   12.06.24 Sean Flook       IMANN-553 Further modifications to checks 2100011 and 2100046 to cater for Scottish authorities.
+//    019   14.06.24 Sean Flook       IMANN-534 Added and fixed various checks.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -72,11 +73,14 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
   const saoStartNumberErrors = [];
   const usrnErrors = [];
   const rangeTypeErrors = [];
+  const rangeTextErrors = [];
   const rangeStartNumberErrors = [];
   const postcodeRefErrors = [];
   const postTownRefErrors = [];
   const addressListErrors = [];
   const paoDetailsErrors = [];
+  const paoTextErrors = [];
+  const saoTextErrors = [];
 
   // console.log("[SF] ValidateAddressDetails", {
   //   data: data,
@@ -91,8 +95,9 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
           case 1: // Single property
             // PAO details missing.
             currentCheck = GetCheck(2400040, currentLookups, methodName, isScottish, showDebugMessages);
-            if (includeCheck(currentCheck, isScottish))
+            if (includeCheck(currentCheck, isScottish)) {
               paoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
+            }
             break;
 
           case 3: // Single child
@@ -124,7 +129,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
             // PAO text is too long.
             currentCheck = GetCheck(2400035, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && data.paoText && data.paoText.length > 90)
-              paoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
+              paoTextErrors.push(GetErrorMessage(currentCheck, isScottish));
 
             // PAO start number is invalid.
             currentCheck = GetCheck(2400037, currentLookups, methodName, isScottish, showDebugMessages);
@@ -151,8 +156,9 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
 
             // PAO details missing.
             currentCheck = GetCheck(2400040, currentLookups, methodName, isScottish, showDebugMessages);
-            if (includeCheck(currentCheck, isScottish) && !data.paoStartNumber && !data.paoText)
-              paoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
+            if (includeCheck(currentCheck, isScottish) && !data.paoStartNumber && !data.paoText) {
+              paoTextErrors.push(GetErrorMessage(currentCheck, isScottish));
+            }
 
             // PAO start suffix supplied but no PAO start number.
             currentCheck = GetCheck(2400073, currentLookups, methodName, isScottish, showDebugMessages);
@@ -175,6 +181,18 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
               Number(data.paoStartNumber) > Number(data.paoEndNumber)
             )
               paoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
+
+            // PAO text must not contain only a number, use PAO start number for the number.
+            currentCheck = GetCheck(2400095, currentLookups, methodName, isScottish, showDebugMessages);
+            if (
+              isScottish &&
+              includeCheck(currentCheck, isScottish) &&
+              data.paoText &&
+              !isNaN(data.paoText) &&
+              !isNaN(parseFloat(data.paoText))
+            ) {
+              paoTextErrors.push(GetErrorMessage(currentCheck, isScottish));
+            }
             break;
 
           case 3: // Single child
@@ -186,12 +204,12 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
             // SAO text is too long.
             currentCheck = GetCheck(2400036, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && data.saoText && data.saoText.length > 90)
-              saoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
+              saoTextErrors.push(GetErrorMessage(currentCheck, isScottish));
 
             // SAO is missing.
             currentCheck = GetCheck(2400072, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish) && !data.saoStartNumber && !data.saoText)
-              saoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
+              saoTextErrors.push(GetErrorMessage(currentCheck, isScottish));
 
             // SAO start suffix supplied but no SAO start number.
             currentCheck = GetCheck(2400075, currentLookups, methodName, isScottish, showDebugMessages);
@@ -245,8 +263,9 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
 
             // PAO details missing.
             currentCheck = GetCheck(2400040, currentLookups, methodName, isScottish, showDebugMessages);
-            if (includeCheck(currentCheck, isScottish) && !data.paoStartNumber && !data.paoText)
+            if (includeCheck(currentCheck, isScottish) && !data.paoStartNumber && !data.paoText) {
               paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
+            }
 
             // PAO start suffix supplied but no PAO start number.
             currentCheck = GetCheck(2400073, currentLookups, methodName, isScottish, showDebugMessages);
@@ -269,6 +288,30 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
               Number(data.paoStartNumber) > Number(data.paoEndNumber)
             )
               paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
+
+            // PAO text must not contain only a number, use PAO start number for the number.
+            currentCheck = GetCheck(2400095, currentLookups, methodName, isScottish, showDebugMessages);
+            if (
+              isScottish &&
+              includeCheck(currentCheck, isScottish) &&
+              data.paoText &&
+              !isNaN(data.paoText) &&
+              !isNaN(parseFloat(data.paoText))
+            ) {
+              paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
+            }
+
+            // SAO text must not contain only a number, use SAO start number for the number.
+            currentCheck = GetCheck(2400096, currentLookups, methodName, isScottish, showDebugMessages);
+            if (
+              isScottish &&
+              includeCheck(currentCheck, isScottish) &&
+              data.saoText &&
+              !isNaN(data.saoText) &&
+              !isNaN(parseFloat(data.saoText))
+            ) {
+              saoTextErrors.push(GetErrorMessage(currentCheck, isScottish));
+            }
             break;
 
           default:
@@ -285,12 +328,12 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
         // Creating a range of properties using the PAO text needs some text.
         currentCheck = GetCheck(8800004, currentLookups, methodName, isScottish, showDebugMessages);
         if (includeCheck(currentCheck, isScottish) && data.rangeType === 2 && templateUseType === 2 && !data.rangeText)
-          rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
+          rangeTextErrors.push(GetErrorMessage(currentCheck, isScottish));
 
         // Creating a range of children using the SAO text needs some text.
         currentCheck = GetCheck(8800005, currentLookups, methodName, isScottish, showDebugMessages);
         if (includeCheck(currentCheck, isScottish) && data.rangeType === 2 && templateUseType === 4 && !data.rangeText)
-          rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
+          rangeTextErrors.push(GetErrorMessage(currentCheck, isScottish));
 
         // Some details are required to create a range of properties.
         currentCheck = GetCheck(8800002, currentLookups, methodName, isScottish, showDebugMessages);
@@ -400,7 +443,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
               : 0) >
             90
         )
-          rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
+          rangeTextErrors.push(GetErrorMessage(currentCheck, isScottish));
 
         // The generated SAO text will be too long, reduce the length of the text.
         currentCheck = GetCheck(8800014, currentLookups, methodName, isScottish, showDebugMessages);
@@ -426,7 +469,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
               : 0) >
             90
         )
-          rangeStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
+          rangeTextErrors.push(GetErrorMessage(currentCheck, isScottish));
 
         // At least 1 property needs to be included.
         currentCheck = GetCheck(8800015, currentLookups, methodName, isScottish, showDebugMessages);
@@ -470,8 +513,9 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
 
           // PAO details missing.
           currentCheck = GetCheck(2400040, currentLookups, methodName, isScottish, showDebugMessages);
-          if (includeCheck(currentCheck, isScottish) && !data.paoStartNumber && !data.paoText)
+          if (includeCheck(currentCheck, isScottish) && !data.paoStartNumber && !data.paoText) {
             paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
+          }
 
           // Pao start suffix supplied but no PAO start number.
           currentCheck = GetCheck(2400073, currentLookups, methodName, isScottish, showDebugMessages);
@@ -578,6 +622,12 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
       errors: rangeTypeErrors,
     });
 
+  if (rangeTextErrors.length > 0)
+    validationErrors.push({
+      field: "RangeText",
+      errors: rangeTextErrors,
+    });
+
   if (rangeStartNumberErrors.length > 0)
     validationErrors.push({
       field: "RangeStartNumber",
@@ -594,6 +644,18 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
     validationErrors.push({
       field: "PaoDetails",
       errors: paoDetailsErrors,
+    });
+
+  if (paoTextErrors.length > 0)
+    validationErrors.push({
+      field: "PaoText",
+      errors: paoTextErrors,
+    });
+
+  if (saoTextErrors.length > 0)
+    validationErrors.push({
+      field: "SaoText",
+      errors: saoTextErrors,
     });
 
   return validationErrors;
@@ -703,10 +765,10 @@ export function ValidatePropertyDetails(
             blpuData.blpuState &&
             ![1, 2, 3, 4, 5, 6, 7].includes(blpuData.blpuState)))) ||
         (isScottish &&
-          ((blpuData.logicalStatus === 1 && (!blpuData.blpuState || ![0, 1, 2, 3].includes(blpuData.blpuState))) ||
-            (blpuData.logicalStatus === 6 && (!blpuData.blpuState || blpuData.blpuState !== 0)) ||
-            (blpuData.logicalStatus === 8 && (!blpuData.blpuState || blpuData.blpuState !== 4)) ||
-            (blpuData.logicalStatus === 9 && blpuData.blpuState && ![0, 1, 2, 3, 4].includes(blpuData.blpuState)))))
+          ((blpuData.logicalStatus === 1 && (!blpuData.state || ![0, 1, 2, 3].includes(blpuData.state))) ||
+            (blpuData.logicalStatus === 6 && (!blpuData.state || blpuData.state !== 0)) ||
+            (blpuData.logicalStatus === 8 && (!blpuData.state || blpuData.state !== 4)) ||
+            (blpuData.logicalStatus === 9 && blpuData.state && ![0, 1, 2, 3, 4].includes(blpuData.state)))))
     ) {
       stateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -839,10 +901,10 @@ export function ValidatePropertyDetails(
             blpuData.blpuState &&
             ![1, 2, 3, 4, 5, 6, 7].includes(blpuData.blpuState)))) ||
         (isScottish &&
-          ((blpuData.logicalStatus === 1 && (!blpuData.blpuState || ![0, 1, 2, 3].includes(blpuData.blpuState))) ||
-            (blpuData.logicalStatus === 6 && (!blpuData.blpuState || blpuData.blpuState !== 0)) ||
-            (blpuData.logicalStatus === 8 && (!blpuData.blpuState || blpuData.blpuState !== 4)) ||
-            (blpuData.logicalStatus === 9 && blpuData.blpuState && ![0, 1, 2, 3, 4].includes(blpuData.blpuState)))))
+          ((blpuData.logicalStatus === 1 && (!blpuData.state || ![0, 1, 2, 3].includes(blpuData.state))) ||
+            (blpuData.logicalStatus === 6 && (!blpuData.state || blpuData.state !== 0)) ||
+            (blpuData.logicalStatus === 8 && (!blpuData.state || blpuData.state !== 4)) ||
+            (blpuData.logicalStatus === 9 && blpuData.state && ![0, 1, 2, 3, 4].includes(blpuData.state)))))
     ) {
       blpuStatusErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -1102,7 +1164,19 @@ export function ValidatePropertyDetails(
         includeCheck(currentCheck, isScottish) &&
         lpiData.postallyAddressable &&
         lpiData.postallyAddressable === "N" &&
-        (lpiData.postTownRef || lpiData.postcodeRef)
+        (postTownRef || postcodeRef)
+      ) {
+        postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+
+      // Postally addressable flag of 'Y' must have a Postcode and a Post Town.
+      currentCheck = GetCheck(2400092, currentLookups, methodName, isScottish, showDebugMessages);
+      if (
+        isScottish &&
+        includeCheck(currentCheck, isScottish) &&
+        lpiData.postallyAddressable &&
+        lpiData.postallyAddressable === "Y" &&
+        (!postTownRef || !postcodeRef)
       ) {
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }

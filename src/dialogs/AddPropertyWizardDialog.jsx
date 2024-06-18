@@ -38,6 +38,7 @@
 //    025   25.04.24 Sean Flook       IMANN-390 If a property is failed by the API return the UPRN back to the API so it can be reused.
 //    026   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit.
 //    027   29.05.24 Sean Flook       IMANN-504 Only create second language for Welsh authorities.
+//    028   14.06.24 Sean Flook       IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -155,6 +156,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
   const [creating, setCreating] = useState(false);
   const [openMessageDialog, setOpenMessageDialog] = useState(false);
   const [messageVariant, setMessageVariant] = useState("cancelWizard");
+  const [createAltLang, setCreateAltLang] = useState(settingsContext.isWelsh);
 
   const selectedTemplate = useRef(null);
   const addressDetails = useRef(null);
@@ -436,6 +438,63 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                 postalAddress: cymRecord.lpi.postallyAddressable,
                 officialFlag: cymRecord.lpi.officialAddress,
                 dualLanguageLink: dualLanguageLink,
+              });
+          }
+
+          if (settingsContext.isScottish && createAltLang) {
+            const gaePostTownRecord = lookupContext.currentLookups.postTowns.find(
+              (x) => x.postTownRef === address.addressDetails.postTownRef
+            );
+
+            const gaeSubLocalityRecord = lookupContext.currentLookups.subLocalities.find(
+              (x) => x.subLocalityRef === address.addressDetails.subLocalityRef
+            );
+
+            const gaeRecord = addressPoints.find((x) => x.id === `GAE_${address.addressDetails.id}`);
+
+            if (gaeRecord)
+              newLpis.push({
+                pkId: lpiPkId--,
+                changeType: "I",
+                language: "GAE",
+                startDate: gaeRecord.lpi.startDate,
+                endDate: null,
+                saoStartNumber:
+                  gaeRecord.addressDetails.saoStartNumber && Number(gaeRecord.addressDetails.saoStartNumber) > 0
+                    ? gaeRecord.addressDetails.saoStartNumber
+                    : null,
+                saoStartSuffix: gaeRecord.addressDetails.saoStartSuffix,
+                saoEndNumber:
+                  gaeRecord.addressDetails.saoEndNumber && Number(gaeRecord.addressDetails.saoEndNumber) > 0
+                    ? gaeRecord.addressDetails.saoEndNumber
+                    : null,
+                saoEndSuffix: gaeRecord.addressDetails.saoEndSuffix,
+                saoText: gaeRecord.addressDetails.saoText,
+                paoStartNumber:
+                  gaeRecord.addressDetails.paoStartNumber && Number(gaeRecord.addressDetails.paoStartNumber) > 0
+                    ? gaeRecord.addressDetails.paoStartNumber
+                    : null,
+                paoStartSuffix: gaeRecord.addressDetails.paoStartSuffix,
+                paoEndNumber:
+                  gaeRecord.addressDetails.paoEndNumber && Number(gaeRecord.addressDetails.paoEndNumber) > 0
+                    ? gaeRecord.addressDetails.paoEndNumber
+                    : null,
+                paoEndSuffix: gaeRecord.addressDetails.paoEndSuffix,
+                paoText: gaeRecord.addressDetails.paoText,
+                usrn: gaeRecord.addressDetails.usrn,
+                postcodeRef: gaeRecord.addressDetails.postcodeRef,
+                postTownRef: gaeRecord.addressDetails.postTownRef,
+                subLocalityRef: gaeRecord.addressDetails.subLocalityRef,
+                neverExport: false,
+                address: gaeRecord.addressDetails.address,
+                postTown: gaePostTownRecord ? gaePostTownRecord.postTown : null,
+                subLocality: gaeSubLocalityRecord ? gaeSubLocalityRecord.subLocality : null,
+                postcode: postcodeRecord ? postcodeRecord.postcode : null,
+                uprn: 0,
+                logicalStatus: gaeRecord.lpi.logicalStatus,
+                postallyAddressable: gaeRecord.lpi.postallyAddressable,
+                officialFlag: gaeRecord.lpi.officialAddress,
+                dualLanguageLink: 0,
               });
           }
 
@@ -908,9 +967,14 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
           }
 
           if (settingsContext.isScottish) {
-            const gaeParentLpi = returnValue.lpis
+            let gaeParentLpi = returnValue.lpis
               .sort((a, b) => a.logicalStatus - b.logicalStatus)
               .filter((x) => x.language === "GAE");
+
+            if (!gaeParentLpi || gaeParentLpi.length === 0)
+              gaeParentLpi = returnValue.lpis
+                .sort((a, b) => a.logicalStatus - b.logicalStatus)
+                .filter((x) => x.language === "ENG");
 
             if (isRange.current) {
               altLangData = {
@@ -1023,15 +1087,18 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
 
     if (selectedTemplate.current) isRange.current = ![1, 9].includes(selectedTemplate.current.numberingSystem);
 
-    const altLangPostTownRecord =
-      selectedTemplate.current && (settingsContext.isScottish || settingsContext.isWelsh)
+    const altLangPostTownRecord = selectedTemplate.current
+      ? settingsContext.isWelsh
         ? lookupContext.currentLookups.postTowns.find((x) => x.linkedRef === selectedTemplate.current.postTownRef)
-        : null;
+        : settingsContext.isScottish
+        ? lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === selectedTemplate.current.postTownRef)
+        : null
+      : null;
 
     const altLangSubLocalityRecord =
       selectedTemplate.current && settingsContext.isScottish
         ? lookupContext.currentLookups.subLocalities.find(
-            (x) => x.linkedRef === selectedTemplate.current.subLocalityRef
+            (x) => x.subLocalityRef === selectedTemplate.current.subLocalityRef
           )
         : null;
 
@@ -1416,12 +1483,14 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
    * @returns {string} The new address for the property.
    */
   const getNewAddress = (address, mapLabel) => {
-    const streetDescriptorRecord = lookupContext.currentLookups.streetDescriptors.find(
-      (x) => x.usrn === address.usrn && x.language === language
-    );
-    const postTownRecord = lookupContext.currentLookups.postTowns.find(
-      (x) => x.postTownRef === address.postTownRef && x.language === address.language
-    );
+    const streetDescriptorRecord = settingsContext.isWelsh
+      ? lookupContext.currentLookups.streetDescriptors.find((x) => x.usrn === address.usrn && x.language === language)
+      : lookupContext.currentLookups.streetDescriptors.find((x) => x.usrn === address.usrn);
+    const postTownRecord = settingsContext.isWelsh
+      ? lookupContext.currentLookups.postTowns.find(
+          (x) => x.postTownRef === address.postTownRef && x.language === address.language
+        )
+      : lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === address.postTownRef);
     const postcodeRecord = lookupContext.currentLookups.postcodes.find((x) => x.postcodeRef === address.postcodeRef);
 
     return `${mapLabel}${streetDescriptorRecord ? " " : ""}${
@@ -1882,6 +1951,15 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
   };
 
   /**
+   * Event to handle when the createAltLang is changed.
+   *
+   * @param {Boolean} newCreateAltLang If true then we are creating the alternative language record; otherwise false.
+   */
+  const handleCreateAltLangChanged = (newCreateAltLang) => {
+    setCreateAltLang(newCreateAltLang);
+  };
+
+  /**
    * Event to handle when the list of address detail errors change.
    *
    * @param {Array} addressDetailErrors The list of address detail errors.
@@ -1990,9 +2068,11 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                 engSingleData={engSingleAddressData}
                 altLangSingleData={altLangSingleAddressData}
                 streetUsrn={parent.usrn}
+                createAltLang={createAltLang}
                 errors={addressErrors}
                 onDataChanged={handleAddressDetailsChanged}
                 onLanguageChanged={handleLanguageChanged}
+                onCreateAltLangChanged={handleCreateAltLangChanged}
                 onErrorChanged={handleAddressDetailsErrorChanged}
               />
             );
@@ -2046,9 +2126,11 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                 altLangSingleData={altLangSingleAddressData}
                 streetUsrn={parent.usrn}
                 parentUprn={parent.uprn}
+                createAltLang={createAltLang}
                 errors={addressErrors}
                 onDataChanged={handleAddressDetailsChanged}
                 onLanguageChanged={handleLanguageChanged}
+                onCreateAltLangChanged={handleCreateAltLangChanged}
                 onErrorChanged={handleAddressDetailsErrorChanged}
               />
             );
@@ -2103,9 +2185,11 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                 altLangRangeData={altLangRangeAddressData}
                 streetUsrn={parent.usrn}
                 isRange
+                createAltLang={createAltLang}
                 errors={addressErrors}
                 onDataChanged={handleAddressDetailsChanged}
                 onLanguageChanged={handleLanguageChanged}
+                onCreateAltLangChanged={handleCreateAltLangChanged}
                 onErrorChanged={handleAddressDetailsErrorChanged}
               />
             );
@@ -2172,9 +2256,11 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                 streetUsrn={parent.usrn}
                 parentUprn={parent.uprn}
                 isRange
+                createAltLang={createAltLang}
                 errors={addressErrors}
                 onDataChanged={handleAddressDetailsChanged}
                 onLanguageChanged={handleLanguageChanged}
+                onCreateAltLangChanged={handleCreateAltLangChanged}
                 onErrorChanged={handleAddressDetailsErrorChanged}
               />
             );

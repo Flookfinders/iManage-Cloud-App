@@ -19,6 +19,7 @@
 //    006   17.01.24 Sean Flook                 Included sub-locality.
 //    007   29.05.24 Sean Flook       IMANN-504 Only create second language for Welsh authorities.
 //    008   11.06.24 Joshua McCormick IMANN-451 fixed saving states changing lang, cleanup.
+//    009   14.06.24 Sean Flook       IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,7 +31,7 @@ import PropTypes from "prop-types";
 import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
 
-import { Typography, AppBar, Tabs, Tab } from "@mui/material";
+import { Typography, AppBar, Tabs, Tab, FormControlLabel, Checkbox } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import WizardAddressDetails1Tab from "../tabs/WizardAddressDetails1Tab";
 import WizardAddressDetails2Tab from "../tabs/WizardAddressDetails2Tab";
@@ -79,15 +80,18 @@ WizardAddressDetailsPage.propTypes = {
   engRangeData: PropTypes.object,
   altLangRangeData: PropTypes.object,
   isRange: PropTypes.bool,
+  createAltLang: PropTypes.bool.isRequired,
   errors: PropTypes.array,
   onDataChanged: PropTypes.func.isRequired,
   onLanguageChanged: PropTypes.func.isRequired,
+  onCreateAltLangChanged: PropTypes.func.isRequired,
   onErrorChanged: PropTypes.func.isRequired,
 };
 
 WizardAddressDetailsPage.defaultProps = {
   language: "ENG",
   isRange: false,
+  createAltLang: false,
 };
 
 function WizardAddressDetailsPage({
@@ -98,9 +102,11 @@ function WizardAddressDetailsPage({
   engRangeData,
   altLangRangeData,
   isRange,
+  createAltLang,
   errors,
   onDataChanged,
   onLanguageChanged,
+  onCreateAltLangChanged,
   onErrorChanged,
 }) {
   const theme = useTheme();
@@ -110,6 +116,15 @@ function WizardAddressDetailsPage({
 
   const [value, setValue] = useState(0);
   const [data, setData] = useState(null);
+  const [createGaelicRecords, setCreateGaelicRecords] = useState(false);
+
+  /**
+   * Event to handle when the create gaelic records is clicked
+   */
+  const handleCreateGaelicRecordsChangeEvent = () => {
+    if (onCreateAltLangChanged) onCreateAltLangChanged(!createGaelicRecords);
+    else setCreateGaelicRecords(!createGaelicRecords);
+  };
 
   /**
    * Event to handle changing the tab.
@@ -169,11 +184,15 @@ function WizardAddressDetailsPage({
               ? altLangRangeData.postcodeRef
               : engRangeData.postcodeRef,
           postTownRef:
-            altLangRangePostTownRecord && engRangeData.postTownRef !== altLangRangePostTownRecord.linkedRef
+            settingsContext.isWelsh &&
+            altLangRangePostTownRecord &&
+            engRangeData.postTownRef !== altLangRangePostTownRecord.linkedRef
               ? altLangRangePostTownRecord.linkedRef
               : engRangeData.postTownRef,
           subLocalityRef:
-            altLangRangeSubLocalityRecord && engRangeData.subLocalityRef !== altLangRangeSubLocalityRecord.linkedRef
+            settingsContext.isWelsh &&
+            altLangRangeSubLocalityRecord &&
+            engRangeData.subLocalityRef !== altLangRangeSubLocalityRecord.linkedRef
               ? altLangRangeSubLocalityRecord.linkedRef
               : engRangeData.subLocalityRef,
           addressList: getSyncedAddressList(engRangeData, altLangRangeData),
@@ -232,9 +251,6 @@ function WizardAddressDetailsPage({
         const altLangSinglePostTownRecord = lookupContext.currentLookups.postTowns.find(
           (x) => x.postTownRef === altLangSingleData.postTownRef
         );
-        const altLangSingleSubLocalityRecord = lookupContext.currentLookups.subLocalities.find(
-          (x) => x.subLocalityRef === altLangSingleData.subLocalityRef
-        );
         const dataEng = {
           language: "ENG",
           saoStartNumber: !engSingleData.saoStartNumber
@@ -258,17 +274,16 @@ function WizardAddressDetailsPage({
           paoDetails: !engSingleData.paoDetails ? altLangSingleData.paoDetails : engSingleData.paoDetails,
           usrn: engSingleData.usrn !== altLangSingleData.usrn ? altLangSingleData.usrn : engSingleData.usrn,
           postcodeRef:
-            engSingleData.postcodeRef !== altLangSingleData.postcodeRef
+            settingsContext.isWelsh && engSingleData.postcodeRef !== altLangSingleData.postcodeRef
               ? altLangSingleData.postcodeRef
               : engSingleData.postcodeRef,
           postTownRef:
-            altLangSinglePostTownRecord && engSingleData.postTownRef !== altLangSinglePostTownRecord.linkedRef
+            settingsContext.isWelsh &&
+            altLangSinglePostTownRecord &&
+            engSingleData.postTownRef !== altLangSinglePostTownRecord.linkedRef
               ? altLangSinglePostTownRecord.linkedRef
               : engSingleData.postTownRef,
-          subLocalityRef:
-            altLangSingleSubLocalityRecord && engSingleData.subLocalityRef !== altLangSingleSubLocalityRecord.linkedRef
-              ? altLangSingleSubLocalityRecord.linkedRef
-              : engSingleData.subLocalityRef,
+          subLocalityRef: engSingleData.subLocalityRef,
         };
 
         if (onDataChanged)
@@ -362,15 +377,19 @@ function WizardAddressDetailsPage({
           paoDetails: !altLangRangeData.paoDetails ? engRangeData.paoDetails : altLangRangeData.paoDetails,
           usrn: altLangRangeData.usrn !== engRangeData.usrn ? engRangeData.usrn : altLangRangeData.usrn,
           postcodeRef:
-            altLangRangeData.postcodeRef !== engRangeData.postcodeRef
+            settingsContext.isWelsh && altLangRangeData.postcodeRef !== engRangeData.postcodeRef
               ? engRangeData.postcodeRef
               : altLangRangeData.postcodeRef,
           postTownRef:
-            engRangePostTownRecord && altLangRangeData.postTownRef !== engRangePostTownRecord.linkedRef
+            settingsContext.isWelsh &&
+            engRangePostTownRecord &&
+            altLangRangeData.postTownRef !== engRangePostTownRecord.linkedRef
               ? engRangePostTownRecord.linkedRef
               : altLangRangeData.postTownRef,
           subLocalityRef:
-            engRangeSubLocalityRecord && altLangRangeData.subLocalityRef !== engRangeSubLocalityRecord.linkedRef
+            settingsContext.isWelsh &&
+            engRangeSubLocalityRecord &&
+            altLangRangeData.subLocalityRef !== engRangeSubLocalityRecord.linkedRef
               ? engRangeSubLocalityRecord.linkedRef
               : altLangRangeData.subLocalityRef,
           addressList: getSyncedAddressList(altLangRangeData, engRangeData),
@@ -456,11 +475,15 @@ function WizardAddressDetailsPage({
           usrn: altLangSingleData.usrn,
           postcodeRef: altLangSingleData.postcodeRef,
           postTownRef:
-            engSinglePostTownRecord && altLangSingleData.postTownRef !== engSinglePostTownRecord.linkedRef
+            settingsContext.isWelsh &&
+            engSinglePostTownRecord &&
+            altLangSingleData.postTownRef !== engSinglePostTownRecord.linkedRef
               ? engSinglePostTownRecord.linkedRef
               : altLangSingleData.postTownRef,
           subLocalityRef:
-            engSingleSubLocalityRecord && altLangSingleData.subLocalityRef !== engSingleSubLocalityRecord.linkedRef
+            settingsContext.isWelsh &&
+            engSingleSubLocalityRecord &&
+            altLangSingleData.subLocalityRef !== engSingleSubLocalityRecord.linkedRef
               ? engSingleSubLocalityRecord.linkedRef
               : altLangSingleData.subLocalityRef,
         };
@@ -525,21 +548,46 @@ function WizardAddressDetailsPage({
     const selectedUsrn = updateData.usrn !== referenceData.usrn ? referenceData.usrn : updateData.usrn;
     const selectedPostcode =
       updateData.postcodeRef !== referenceData.postcodeRef ? referenceData.postcodeRef : updateData.postcodeRef;
-    const referencePostTownRecord =
+    let referencePostTownRecord =
       referenceData && referenceData.postTownRef
-        ? lookupContext.currentLookups.postTowns.find(
-            (x) => x.postTownRef === referenceData.postTownRef && x.language === referenceData.language
-          )
+        ? settingsContext.isWelsh
+          ? lookupContext.currentLookups.postTowns.find(
+              (x) => x.postTownRef === referenceData.postTownRef && x.language === referenceData.language
+            )
+          : lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === referenceData.postTownRef)
         : null;
 
-    const streetDescriptorRecord = lookupContext.currentLookups.streetDescriptors.find(
-      (x) => x.usrn === selectedUsrn && x.language === language
+    if (
+      settingsContext.isScottish &&
+      !referencePostTownRecord &&
+      referenceData &&
+      referenceData.postTownRef &&
+      referenceData.language === "GAE"
+    )
+      referencePostTownRecord = lookupContext.currentLookups.postTowns.find(
+        (x) => x.postTownRef === referenceData.postTownRef && x.language === "ENG"
+      );
+
+    let streetDescriptorRecord = lookupContext.currentLookups.streetDescriptors.find(
+      (x) => x.usrn === selectedUsrn && x.language === referenceData.language
     );
-    const postTownRecord = referencePostTownRecord
+
+    if (settingsContext.isScottish && !streetDescriptorRecord && referenceData && referenceData.language === "GAE")
+      streetDescriptorRecord = lookupContext.currentLookups.streetDescriptors.find(
+        (x) => x.usrn === selectedUsrn && x.language === "ENG"
+      );
+
+    let postTownRecord = referencePostTownRecord
       ? lookupContext.currentLookups.postTowns.find(
           (x) => x.postTownRef === referencePostTownRecord.linkedRef && x.language === updateData.language
         )
       : null;
+
+    if (settingsContext.isScottish && !postTownRecord && referencePostTownRecord && updateData.language === "GAE")
+      postTownRecord = lookupContext.currentLookups.postTowns.find(
+        (x) => x.postTownRef === referencePostTownRecord.postTownRef && x.language === "ENG"
+      );
+
     const postcodeRecord = lookupContext.currentLookups.postcodes.find((x) => x.postcodeRef === selectedPostcode);
 
     const getNewMapLabel = (address) => {
@@ -626,12 +674,14 @@ function WizardAddressDetailsPage({
    * @param {object} rangeData The range data.
    */
   const handleRangePropertyDataChange = (rangeData) => {
-    const postTownRecord = lookupContext.currentLookups.postTowns.find(
-      (x) => x.postTownRef === rangeData.postTownRef && x.language === rangeData.language
-    );
-    const subLocalityRecord = lookupContext.currentLookups.subLocalities.find(
-      (x) => x.subLocalityRef === rangeData.subLocalityRef && x.language === rangeData.language
-    );
+    const postTownRecord = settingsContext.isWelsh
+      ? lookupContext.currentLookups.postTowns.find(
+          (x) => x.postTownRef === rangeData.postTownRef && x.language === rangeData.language
+        )
+      : lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === rangeData.postTownRef);
+    const subLocalityRecord = settingsContext.isScottish
+      ? lookupContext.currentLookups.subLocalities.find((x) => x.subLocalityRef === rangeData.subLocalityRef)
+      : null;
 
     if (settingsContext.isScottish || settingsContext.isWelsh) {
       if (language === "ENG") {
@@ -690,11 +740,13 @@ function WizardAddressDetailsPage({
               ? rangeData.postcodeRef
               : altLangRangeData.postcodeRef,
           postTownRef:
-            postTownRecord && altLangRangeData.postTownRef !== postTownRecord.linkedRef
+            settingsContext.isWelsh && postTownRecord && altLangRangeData.postTownRef !== postTownRecord.linkedRef
               ? postTownRecord.linkedRef
               : altLangRangeData.postTownRef,
           subLocalityRef:
-            subLocalityRecord && altLangRangeData.subLocalityRef !== subLocalityRecord.linkedRef
+            settingsContext.isWelsh &&
+            subLocalityRecord &&
+            altLangRangeData.subLocalityRef !== subLocalityRecord.linkedRef
               ? subLocalityRecord.linkedRef
               : altLangRangeData.subLocalityRef,
           addressList: getSyncedAddressList(altLangRangeData, rangeData),
@@ -797,11 +849,11 @@ function WizardAddressDetailsPage({
           postcodeRef:
             engRangeData.postcodeRef !== rangeData.postcodeRef ? rangeData.postcodeRef : engRangeData.postcodeRef,
           postTownRef:
-            postTownRecord && engRangeData.postTownRef !== postTownRecord.linkedRef
+            settingsContext.isWelsh && postTownRecord && engRangeData.postTownRef !== postTownRecord.linkedRef
               ? postTownRecord.linkedRef
               : engRangeData.postTownRef,
           subLocalityRef:
-            subLocalityRecord && engRangeData.subLocalityRef !== subLocalityRecord.linkedRef
+            settingsContext.isWelsh && subLocalityRecord && engRangeData.subLocalityRef !== subLocalityRecord.linkedRef
               ? subLocalityRecord.linkedRef
               : engRangeData.subLocalityRef,
           addressList: getSyncedAddressList(engRangeData, rangeData),
@@ -902,14 +954,18 @@ function WizardAddressDetailsPage({
    * @param {object} singleData The single property data.
    */
   const handleSinglePropertyDataChange = (singleData) => {
-    const postTownRecord = lookupContext.currentLookups.postTowns.find(
-      (x) => x.postTownRef === singleData.postTownRef && x.language === singleData.language
-    );
-    const subLocalityRecord = lookupContext.currentLookups.subLocalities.find(
-      (x) => x.subLocalityRef === singleData.subLocalityRef && x.language === singleData.language
-    );
+    const postTownRecord = settingsContext.isWelsh
+      ? lookupContext.currentLookups.postTowns.find(
+          (x) => x.postTownRef === singleData.postTownRef && x.language === singleData.language
+        )
+      : lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === singleData.postTownRef);
+    const subLocalityRecord = settingsContext.isScottish
+      ? lookupContext.currentLookups.subLocalities.find(
+          (x) => x.subLocalityRef === singleData.subLocalityRef && x.language === singleData.language
+        )
+      : null;
 
-    if (settingsContext.isWelsh) {
+    if (settingsContext.isWelsh || createGaelicRecords) {
       if (language === "ENG") {
         const dataAlt = {
           language: altLangSingleData.language,
@@ -954,11 +1010,13 @@ function WizardAddressDetailsPage({
               ? singleData.postcodeRef
               : altLangSingleData.postcodeRef,
           postTownRef:
-            postTownRecord && altLangSingleData.postTownRef !== postTownRecord.linkedRef
+            settingsContext.isWelsh && postTownRecord && altLangSingleData.postTownRef !== postTownRecord.linkedRef
               ? postTownRecord.linkedRef
               : altLangSingleData.postTownRef,
           subLocalityRef:
-            subLocalityRecord && altLangSingleData.subLocalityRef !== postTownRecord.linkedRef
+            settingsContext.isWelsh &&
+            subLocalityRecord &&
+            altLangSingleData.subLocalityRef !== postTownRecord.linkedRef
               ? subLocalityRecord.linkedRef
               : altLangSingleData.subLocalityRef,
         };
@@ -1044,11 +1102,11 @@ function WizardAddressDetailsPage({
           postcodeRef:
             engSingleData.postcodeRef !== singleData.postcodeRef ? singleData.postcodeRef : engSingleData.postcodeRef,
           postTownRef:
-            postTownRecord && engSingleData.postTownRef !== postTownRecord.linkedRef
+            settingsContext.isWelsh && postTownRecord && engSingleData.postTownRef !== postTownRecord.linkedRef
               ? postTownRecord.linkedRef
               : engSingleData.postTownRef,
           subLocalityRef:
-            subLocalityRecord && engSingleData.subLocalityRef !== subLocalityRecord.linkedRef
+            settingsContext.isWelsh && subLocalityRecord && engSingleData.subLocalityRef !== subLocalityRecord.linkedRef
               ? subLocalityRecord.linkedRef
               : engSingleData.subLocalityRef,
         };
@@ -1097,7 +1155,7 @@ function WizardAddressDetailsPage({
       if (onDataChanged)
         onDataChanged([
           {
-            language: singleData.language === "ENG" ? "GAE" : "ENG",
+            language: (singleData.language = "ENG"),
             saoStartNumber: singleData.saoStartNumber,
             saoStartSuffix: singleData.saoStartSuffix,
             saoEndNumber: singleData.saoEndNumber,
@@ -1182,10 +1240,23 @@ function WizardAddressDetailsPage({
     else setData(language === "ENG" ? engSingleData : altLangSingleData);
   }, [isRange, language, engSingleData, altLangSingleData, engRangeData, altLangRangeData]);
 
+  useEffect(() => {
+    setCreateGaelicRecords(createAltLang);
+  }, [createAltLang]);
+
   return (
-    <Box id="wizard-address-details-page" sx={{ ml: "auto", mr: "auto", width: "750px" }}>
+    <Box id="wizard-address-details-page" sx={{ ml: "auto", mr: "auto", width: "1000px" }}>
       <Stack direction="column" spacing={2} sx={{ mt: theme.spacing(1), width: "100%" }}>
-        <Typography sx={{ fontSize: 24, flexGrow: 1, pl: theme.spacing(0) }}>Address details</Typography>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Typography sx={{ fontSize: 24, pl: theme.spacing(0) }}>Address details</Typography>
+          {settingsContext.isScottish && (
+            <FormControlLabel
+              control={<Checkbox checked={createGaelicRecords} onChange={handleCreateGaelicRecordsChangeEvent} />}
+              label={`Create Gaelic record${isRange ? "s" : ""}`}
+              labelPlacement="start"
+            />
+          )}
+        </Stack>
         <AppBar
           position="static"
           color="default"
@@ -1195,37 +1266,36 @@ function WizardAddressDetailsPage({
             boxShadow: "none",
           }}
         >
-          <Tabs
-            value={value}
-            onChange={handleTabChange}
-            TabIndicatorProps={{ style: { background: adsBlueA, height: "2px" } }}
-            variant="scrollable"
-            scrollButtons="auto"
-            selectionFollowsFocus
-            aria-label="address-tabs"
-            sx={{ backgroundColor: adsOffWhite, color: adsMidGreyA }}
-          >
-            <Tab
-              sx={wizardTabStyle}
-              label={
-                <Typography variant="subtitle2" sx={tabLabelStyle(value === 0)}>
-                  English
-                </Typography>
-              }
-              {...a11yProps(0)}
-            />
-            <Tab
-              sx={wizardTabStyle}
-              label={
-                <Typography variant="subtitle2" sx={tabLabelStyle(value === 1)}>
-                  {settingsContext.isWelsh ? "Welsh" : "Gaelic"}
-                </Typography>
-              }
-              {...a11yProps(1)}
-            />
-          </Tabs>
+          {((settingsContext.isScottish && createGaelicRecords) || settingsContext.isWelsh) && (
+            <Tabs
+              value={value}
+              onChange={handleTabChange}
+              TabIndicatorProps={{ style: { background: adsBlueA, height: "3px" } }}
+              aria-label="address-tabs"
+              sx={{ backgroundColor: adsOffWhite, color: adsMidGreyA, height: "50px" }}
+            >
+              <Tab
+                sx={wizardTabStyle}
+                label={
+                  <Typography variant="subtitle2" sx={tabLabelStyle(value === 0)}>
+                    English
+                  </Typography>
+                }
+                {...a11yProps(0)}
+              />
+              <Tab
+                sx={wizardTabStyle}
+                label={
+                  <Typography variant="subtitle2" sx={tabLabelStyle(value === 1)}>
+                    {settingsContext.isWelsh ? "Welsh" : "Gaelic"}
+                  </Typography>
+                }
+                {...a11yProps(1)}
+              />
+            </Tabs>
+          )}
         </AppBar>
-        {(settingsContext.isScottish || settingsContext.isWelsh) && (
+        {((settingsContext.isScottish && createGaelicRecords) || settingsContext.isWelsh) && (
           <>
             <TabPanel value={value} index={0}>
               {getAddressDetailsForm()}
@@ -1235,7 +1305,7 @@ function WizardAddressDetailsPage({
             </TabPanel>
           </>
         )}
-        {!settingsContext.isScottish && !settingsContext.isWelsh && getAddressDetailsForm()}
+        {(!settingsContext.isScottish || !createGaelicRecords) && !settingsContext.isWelsh && getAddressDetailsForm()}
       </Stack>
     </Box>
   );
