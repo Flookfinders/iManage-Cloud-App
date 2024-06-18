@@ -21,6 +21,7 @@
 //    008   05.03.24 Joel Benford     IMANN-242 Stop hiding authorities tab outside debug mode.
 //    009   27.03.24 Sean Flook                 Further changes to fix warnings.
 //    010   27.03.24 Sean Flook                 Make districts visible to GeoPlace authorities.
+//    011   14.06.24 Joshua McCormick IMANN-555 Authorities in lookup table set to hidden
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -647,6 +648,7 @@ function LookupTablesTab() {
                     />
                     <TreeItem
                       nodeId="AUTHORITIES"
+                      hidden
                       label={
                         <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                           Authorities

@@ -42,6 +42,8 @@
 //    029   29.04.24 Sean Flook       IMANN-413 Only filter lookups on language for Welsh authorities.
 //    030   22.05.24 Sean Flook       IMANN-473 Prevent controls from being edited under certain conditions for Scottish authorities.
 //    031   29.05.24 Sean Flook       IMANN-489 Prevent the user from changing the language.
+//    032   14.06.24 Joshua McCormick IMANN-543 Official Addresss field set to required.
+//    033   14.06.24 Joshua McCormick IMANN-543 Official Addresss field set to required for OS only
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1245,6 +1247,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
         <ADSSelectControl
           label="Official address"
           isEditable={userCanEdit}
+          isRequired={settingsContext.isScottish}
           isFocused={focusedField ? focusedField === "OfficialFlag" : false}
           loading={loading}
           useRounded

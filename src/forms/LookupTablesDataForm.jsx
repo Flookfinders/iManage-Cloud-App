@@ -30,6 +30,7 @@
 //    017   17.05.24 Sean Flook       IMANN-176 Display dialog to allow for spatially updating BLPU ward and parish codes.
 //    018   09.02.24 Joel Benford    IM-227/228 Fix ward/parish update, and various array pushes
 //    019   06.06.24 Joel Benford     IMANN-497 Interim check-in
+//    020   13.06.24 Joel Benford     IMANN-497 Various fixes mostly on making historic
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1514,6 +1515,115 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 x
             );
 
+        case "administrativeArea":
+          if (lookupInUse) {
+            const originalArea = lookupContext.currentLookups.adminAuthorities.find(
+              (x) => x.administrativeAreaRef === originalId
+            );
+            if (originalArea) {
+              if (originalArea.language === "ENG") {
+                const cymHistoricArea = lookupContext.currentLookups.adminAuthorities.find(
+                  (x) => x.administrativeAreaRef === originalArea.linkedRef
+                );
+                if (cymHistoricArea) {
+                  const updatedHistoricArea = lookupContext.currentLookups.adminAuthorities.map(
+                    (x) =>
+                      [
+                        {
+                          administrativeAreaRef: originalArea.administrativeAreaRef,
+                          administrativeArea: originalArea.administrativeArea,
+                          language: originalArea.language,
+                          historic: true,
+                          linkedRef: originalArea.linkedRef,
+                        },
+                      ].find((rec) => rec.administrativeAreaRef === x.administrativeAreaRef) ||
+                      [
+                        {
+                          administrativeAreaRef: cymHistoricArea.administrativeAreaRef,
+                          administrativeArea: cymHistoricArea.administrativeArea,
+                          language: cymHistoricArea.language,
+                          historic: true,
+                          linkedRef: cymHistoricArea.linkedRef,
+                        },
+                      ].find((rec) => rec.administrativeAreaRef === x.administrativeAreaRef) ||
+                      x
+                  );
+                  updatedHistoricArea.push(updatedEngLookup, updatedCymLookup);
+                  return updatedHistoricArea;
+                } else {
+                  const updatedHistoricArea = lookupContext.currentLookups.adminAuthorities.map(
+                    (x) =>
+                      [
+                        {
+                          administrativeAreaRef: originalArea.administrativeAreaRef,
+                          administrativeArea: originalArea.administrativeArea,
+                          language: originalArea.language,
+                          historic: true,
+                          linkedRef: originalArea.linkedRef,
+                        },
+                      ].find((rec) => rec.townRef === x.townRef) || x
+                  );
+                  updatedHistoricArea.push(updatedEngLookup, updatedCymLookup);
+                  return updatedHistoricArea;
+                }
+              } else {
+                const engHistoricArea = lookupContext.currentLookups.adminAuthorities.find(
+                  (x) => x.administrativeAreaRef === originalArea.linkedRef
+                );
+                if (engHistoricArea) {
+                  const updatedHistoricArea = lookupContext.currentLookups.adminAuthorities.map(
+                    (x) =>
+                      [
+                        {
+                          administrativeAreaRef: originalArea.administrativeAreaRef,
+                          administrativeArea: originalArea.administrativeArea,
+                          language: originalArea.language,
+                          historic: true,
+                          linkedRef: originalArea.linkedRef,
+                        },
+                      ].find((rec) => rec.administrativeAreaRef === x.administrativeAreaRef) ||
+                      [
+                        {
+                          administrativeAreaRef: engHistoricArea.administrativeAreaRef,
+                          administrativeArea: engHistoricArea.administrativeArea,
+                          language: engHistoricArea.language,
+                          historic: true,
+                          linkedRef: engHistoricArea.linkedRef,
+                        },
+                      ].find((rec) => rec.administrativeAreaRef === x.administrativeAreaRef) ||
+                      x
+                  );
+                  updatedHistoricArea.push(updatedEngLookup, updatedCymLookup);
+                  return updatedHistoricArea;
+                } else {
+                  const updatedHistoricArea = lookupContext.currentLookups.adminAuthorities.map(
+                    (x) =>
+                      [
+                        {
+                          administrativeAreaRef: originalArea.administrativeAreaRef,
+                          administrativeArea: originalArea.administrativeArea,
+                          language: originalArea.language,
+                          historic: true,
+                          linkedRef: originalArea.linkedRef,
+                        },
+                      ].find((rec) => rec.administrativeAreaRef === x.administrativeAreaRef) || x
+                  );
+                  updatedHistoricArea.push(updatedEngLookup, updatedCymLookup);
+                  return updatedHistoricArea;
+                }
+              }
+            } else {
+              lookupContext.currentLookups.adminAuthorities.push(updatedEngLookup, updatedCymLookup);
+              return lookupContext.currentLookups.adminAuthorities;
+            }
+          } else
+            return lookupContext.currentLookups.adminAuthorities.map(
+              (x) =>
+                [updatedEngLookup].find((rec) => rec.administrativeAreaRef === x.administrativeAreaRef) ||
+                [updatedCymLookup].find((rec) => rec.administrativeAreaRef === x.administrativeAreaRef) ||
+                x
+            );
+
         default:
           return null;
       }
@@ -1918,13 +2028,14 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
       let newEngLookup = null;
       let newCymLookup = null;
 
-      console.log("[JB]", lookupUrl.url, JSON.stringify(getEngPutData()));
+      const engPutData = getEngPutData();
+      //console.log(lookupUrl.type, JSON.stringify(engPutData));
       if (lookupUrl) {
         await fetch(lookupUrl.url, {
           headers: lookupUrl.headers,
           crossDomain: true,
           method: lookupUrl.type,
-          body: JSON.stringify(getEngPutData()),
+          body: JSON.stringify(engPutData),
         })
           .then((res) => (res.ok ? res : Promise.reject(res)))
           .then((res) => res.json())
@@ -2562,7 +2673,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                   postTown: cymPostTownRecord.postTown,
                   historic: true,
                   language: "CYM",
-                  linkedRef: lookupId,
+                  linkedRef: -1,
                 };
               else return null;
             } else {
@@ -2571,7 +2682,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 postTown: postTownRecord.postTown,
                 historic: true,
                 language: "CYM",
-                linkedRef: linkedRef,
+                linkedRef: -1,
               };
             }
           } else return null;
@@ -2589,7 +2700,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                   locality: cymLocalityRecord.locality,
                   historic: true,
                   language: "CYM",
-                  linkedRef: lookupId,
+                  linkedRef: -1,
                 };
               else return null;
             } else {
@@ -2598,7 +2709,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 locality: localityRecord.locality,
                 historic: true,
                 language: "CYM",
-                linkedRef: linkedRef,
+                linkedRef: -1,
               };
             }
           } else return null;
@@ -2614,7 +2725,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                   town: cymTownRecord.town,
                   historic: true,
                   language: "CYM",
-                  linkedRef: lookupId,
+                  linkedRef: -1,
                 };
               else return null;
             } else {
@@ -2623,7 +2734,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 town: townRecord.town,
                 historic: true,
                 language: "CYM",
-                linkedRef: linkedRef,
+                linkedRef: -1,
               };
             }
           } else return null;
@@ -2643,7 +2754,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                   administrativeArea: cymAdministrativeAreaRecord.administrativeArea,
                   historic: true,
                   language: "CYM",
-                  linkedRef: lookupId,
+                  linkedRef: -1,
                 };
               else return null;
             } else {
@@ -2652,7 +2763,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 administrativeArea: administrativeAreaRecord.administrativeArea,
                 historic: true,
                 language: "CYM",
-                linkedRef: linkedRef,
+                linkedRef: -1,
               };
             }
           } else return null;
@@ -2664,14 +2775,15 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
     let newEngLookup = null;
     let newCymLookup = null;
-    console.log("[JB]", lookupUrl.url, JSON.stringify(getEngPutData()));
 
+    const engPutData = getEngPutData();
+    //console.log(lookupUrl.type, JSON.stringify(engPutData));
     if (lookupUrl) {
       await fetch(lookupUrl.url, {
         headers: lookupUrl.headers,
         crossDomain: true,
         method: lookupUrl.type,
-        body: JSON.stringify(getEngPutData()),
+        body: JSON.stringify(engPutData),
       })
         .then((res) => (res.ok ? res : Promise.reject(res)))
         .then((res) => res.json())
@@ -2716,13 +2828,14 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
         if (canHaveMultiLanguage && settingsContext.isWelsh) {
           lookupEdited = false;
 
-          const cymData = getCymPutData();
-          if (cymData) {
+          const cymPutData = getCymPutData();
+          //console.log(lookupUrl.type, JSON.stringify(cymPutData));
+          if (cymPutData) {
             await fetch(lookupUrl.url, {
               headers: lookupUrl.headers,
               crossDomain: true,
               method: lookupUrl.type,
-              body: JSON.stringify(cymData),
+              body: JSON.stringify(cymPutData),
             })
               .then((res) => (res.ok ? res : Promise.reject(res)))
               .then((res) => res.json())
@@ -2780,6 +2893,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
         } else editResult.current = false;
       }
     }
+    setShowDeleteDialog(!editResult.current);
   };
 
   const handleCloseDeleteLookup = () => {
