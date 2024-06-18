@@ -34,6 +34,7 @@
 //    017   12.06.24 Sean Flook       IMANN-553 Modified checks 2100011 and 2100046 to cater for Scottish authorities.
 //    018   12.06.24 Sean Flook       IMANN-553 Further modifications to checks 2100011 and 2100046 to cater for Scottish authorities.
 //    019   14.06.24 Sean Flook       IMANN-534 Added and fixed various checks.
+//    020   18.06.24 Sean Flook       IMANN-534 Correctly handle blpuStates of 0.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -765,10 +766,14 @@ export function ValidatePropertyDetails(
             blpuData.blpuState &&
             ![1, 2, 3, 4, 5, 6, 7].includes(blpuData.blpuState)))) ||
         (isScottish &&
-          ((blpuData.logicalStatus === 1 && (!blpuData.state || ![0, 1, 2, 3].includes(blpuData.state))) ||
-            (blpuData.logicalStatus === 6 && (!blpuData.state || blpuData.state !== 0)) ||
-            (blpuData.logicalStatus === 8 && (!blpuData.state || blpuData.state !== 4)) ||
-            (blpuData.logicalStatus === 9 && blpuData.state && ![0, 1, 2, 3, 4].includes(blpuData.state)))))
+          ((blpuData.logicalStatus === 1 &&
+            ((!blpuData.blpuState && blpuData.blpuState !== 0) || ![0, 1, 2, 3].includes(blpuData.blpuState))) ||
+            (blpuData.logicalStatus === 6 && !blpuData.blpuState && blpuData.blpuState !== 0) ||
+            (blpuData.logicalStatus === 8 &&
+              ((!blpuData.blpuState && blpuData.blpuState !== 0) || blpuData.blpuState !== 4)) ||
+            (blpuData.logicalStatus === 9 &&
+              (blpuData.blpuState || blpuData.blpuState === 0) &&
+              ![0, 1, 2, 3, 4].includes(blpuData.blpuState)))))
     ) {
       stateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -901,10 +906,14 @@ export function ValidatePropertyDetails(
             blpuData.blpuState &&
             ![1, 2, 3, 4, 5, 6, 7].includes(blpuData.blpuState)))) ||
         (isScottish &&
-          ((blpuData.logicalStatus === 1 && (!blpuData.state || ![0, 1, 2, 3].includes(blpuData.state))) ||
-            (blpuData.logicalStatus === 6 && (!blpuData.state || blpuData.state !== 0)) ||
-            (blpuData.logicalStatus === 8 && (!blpuData.state || blpuData.state !== 4)) ||
-            (blpuData.logicalStatus === 9 && blpuData.state && ![0, 1, 2, 3, 4].includes(blpuData.state)))))
+          ((blpuData.logicalStatus === 1 &&
+            ((!blpuData.blpuState && blpuData.blpuState !== 0) || ![0, 1, 2, 3].includes(blpuData.blpuState))) ||
+            (blpuData.logicalStatus === 6 && !blpuData.blpuState && blpuData.blpuState !== 0) ||
+            (blpuData.logicalStatus === 8 &&
+              ((!blpuData.blpuState && blpuData.blpuState !== 0) || blpuData.blpuState !== 4)) ||
+            (blpuData.logicalStatus === 9 &&
+              (blpuData.blpuState || blpuData.blpuState === 0) &&
+              ![0, 1, 2, 3, 4].includes(blpuData.blpuState)))))
     ) {
       blpuStatusErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
