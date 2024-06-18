@@ -32,6 +32,7 @@
 //    019   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    020   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    021   27.03.24 Sean Flook                 Clear specific location if going back to whole road.
+//    022   18.06.24 Sean Flook       IMANN-595 Update the correct state variable for Feature description errors.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -491,7 +492,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, o
             break;
 
           case "featuredescription":
-            setTroTextError(error.errors);
+            setFeatureDescriptionError(error.errors);
             break;
 
           case "sourcetext":
