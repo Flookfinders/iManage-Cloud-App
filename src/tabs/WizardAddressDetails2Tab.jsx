@@ -24,6 +24,7 @@
 //    011   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //    012   19.04.24 Sean Flook       IMANN-137 For Welsh authority allow 2 characters for the suffix.
 //    013   14.06.24 Sean Flook       IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
+//    014   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ import ADSPaoDetailsControl from "../components/ADSPaoDetailsControl";
 import ADSErrorDisplay from "../components/ADSErrorDisplay";
 import AddLookupDialog from "../dialogs/AddLookupDialog";
 
-import { addLookup, getLookupVariantString, stringToSentenceCase } from "../utils/HelperUtils";
+import { addLookup, characterSetValidator, getLookupVariantString, stringToSentenceCase } from "../utils/HelperUtils";
 import { streetDescriptorToTitleCase } from "../utils/StreetUtils";
 
 import CheckBoxRoundedIcon from "@mui/icons-material/CheckBoxRounded";
@@ -1122,7 +1123,12 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
    * @param {object} event The event object.
    */
   const handleRangeTextChangeEvent = (event) => {
-    if (!/[^\w !.,&;:[\]()+\-/@£$ÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜŴÝŸŶ]+/giu.test(event.target.value)) {
+    if (
+      characterSetValidator(
+        event.target.value,
+        `${settingsContext.isScottish ? "OneScotlandProperty" : "GeoPlaceProperty2"}`
+      )
+    ) {
       setRangeText(event.target.value);
       if (onDataChanged && rangeText !== event.target.value)
         onDataChanged(getUpdatedData("rangeText", event.target.value));
@@ -1136,7 +1142,7 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
    * @param {object} event The event object.
    */
   const handleRangeStartPrefixChangeEvent = (event) => {
-    if (!/[^\w !.,&;:[\]()+\-/@£$ÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜŴÝŸŶ]+/giu.test(event.target.value)) {
+    if (characterSetValidator(event.target.value, "GeoPlaceAZOnly")) {
       setRangeStartPrefix(event.target.value.toUpperCase());
       if (onDataChanged && rangeStartPrefix !== event.target.value.toUpperCase())
         onDataChanged(getUpdatedData("rangeStartPrefix", event.target.value.toUpperCase()));
@@ -1162,7 +1168,7 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
    * @param {object} event The event object.
    */
   const handleRangeStartSuffixChangeEvent = (event) => {
-    if (!/[^\w !.,&;:[\]()+\-/@£$ÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜŴÝŸŶ]+/giu.test(event.target.value)) {
+    if (characterSetValidator(event.target.value, "GeoPlaceAZOnly")) {
       setRangeStartSuffix(event.target.value.toUpperCase());
       if (onDataChanged && rangeStartSuffix !== event.target.value.toUpperCase())
         onDataChanged(getUpdatedData("rangeStartSuffix", event.target.value.toUpperCase()));
@@ -1176,7 +1182,7 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
    * @param {object} event The event object.
    */
   const handleRangeEndPrefixChangeEvent = (event) => {
-    if (!/[^\w !.,&;:[\]()+\-/@£$ÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜŴÝŸŶ]+/giu.test(event.target.value)) {
+    if (characterSetValidator(event.target.value, "GeoPlaceAZOnly")) {
       setRangeEndPrefix(event.target.value.toUpperCase());
       if (onDataChanged && rangeEndPrefix !== event.target.value.toUpperCase())
         onDataChanged(getUpdatedData("rangeEndPrefix", event.target.value.toUpperCase()));
@@ -1202,7 +1208,7 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
    * @param {object} event The event object.
    */
   const handleRangeEndSuffixChangeEvent = (event) => {
-    if (!/[^\w !.,&;:[\]()+\-/@£$ÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜŴÝŸŶ]+/giu.test(event.target.value)) {
+    if (characterSetValidator(event.target.value, "GeoPlaceAZOnly")) {
       setRangeEndSuffix(event.target.value.toUpperCase());
       if (onDataChanged && rangeEndSuffix !== event.target.value.toUpperCase())
         onDataChanged(getUpdatedData("rangeEndSuffix", event.target.value.toUpperCase()));

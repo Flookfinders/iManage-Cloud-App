@@ -54,6 +54,8 @@
 //    041   23.05.24 Sean Flook       IMANN-478 Include usedByFrontEnd in includeCheck.
 //    042   30.05.24 Joel Benford     IMANN-496 Add GetOSClassificationAvatarAndText
 //    043   06.06.24 Joel Benford     IMANN-497 Add data to xrefs in addLookup
+//    044   18.06.24 Joel Benford     IMANN-560 Stop addLookups returning early on error
+//    045   16.06.24 Sean Flook       IMANN-577 Added characterSetValidator.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2342,59 +2344,47 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
     let newGaeLookup = null;
 
     if (lookupUrl) {
-      console.log("[JB]", getEngPostData(), JSON.stringify(getEngPostData()));
-      await fetch(lookupUrl.url, {
+      const engResponse = await fetch(lookupUrl.url, {
         headers: lookupUrl.headers,
         crossDomain: true,
         method: lookupUrl.type,
         body: JSON.stringify(getEngPostData()),
-      })
-        .then((res) => (res.ok ? res : Promise.reject(res)))
-        .then((res) => res.json())
-        .then((result) => {
-          newEngLookup = result;
-          lookupAdded = true;
-        })
-        .catch((res) => {
-          switch (res.status) {
-            case 400:
-              res.json().then((body) => {
-                console.error(`[400 ERROR] Creating ${getLookupVariantString(data.variant)} object`, body.errors);
-                let lookupEngErrors = [];
-                for (const [key, value] of Object.entries(body.errors)) {
-                  lookupEngErrors.push({ key: key, value: value });
-                }
+      });
+      if (engResponse.ok) {
+        newEngLookup = await engResponse.json();
+        lookupAdded = true;
+      } else {
+        const engBody = await engResponse.json();
+        switch (engResponse.status) {
+          case 400:
+            console.error(`[400 ERROR] Creating ${getLookupVariantString(data.variant)} object`, engBody.errors);
+            let lookupEngErrors = [];
+            for (const [key, value] of Object.entries(engBody.errors)) {
+              lookupEngErrors.push({ key: key, value: value });
+            }
+            if (lookupEngErrors.length > 0) engError = lookupEngErrors[0].value;
+            else engError = null;
+            break;
 
-                if (lookupEngErrors.length > 0) engError = lookupEngErrors[0].value;
-                else engError = null;
-              });
-              break;
+          case 401:
+            console.error(`[401 ERROR] Creating ${getLookupVariantString(data.variant)} object`, engBody);
+            break;
 
-            case 401:
-              res.json().then((body) => {
-                console.error(`[401 ERROR] Creating ${getLookupVariantString(data.variant)} object`, body);
-              });
-              break;
+          case 500:
+            console.error(`[500 ERROR] Creating ${getLookupVariantString(data.variant)} object`, engResponse);
+            break;
 
-            case 500:
-              console.error(`[500 ERROR] Creating ${getLookupVariantString(data.variant)} object`, res);
-              break;
-
-            default:
-              console.error(`[${res.status} ERROR] Creating ${getLookupVariantString(data.variant)} object`, res);
-              break;
-          }
-        });
+          default:
+            console.error(
+              `[${engResponse.status} ERROR] Creating ${getLookupVariantString(data.variant)} object`,
+              engResponse
+            );
+            break;
+        }
+      }
 
       if (newEngLookup) {
-        const canHaveMultiLanguage = [
-          "postTown",
-          "subLocality",
-          "locality",
-          "town",
-          "island",
-          "administrativeArea",
-        ].includes(data.variant);
+        const canHaveMultiLanguage = ["postTown", "locality", "town", "administrativeArea"].includes(data.variant);
         if (canHaveMultiLanguage && isWelsh) {
           lookupAdded = false;
           const cymData = getCymPostData(newEngLookup);
@@ -2405,48 +2395,45 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
             JSON: JSON.stringify(cymData),
           });
           if (cymData) {
-            await fetch(lookupUrl.url, {
+            const cymResponse = await fetch(lookupUrl.url, {
               headers: lookupUrl.headers,
               crossDomain: true,
               method: lookupUrl.type,
               body: JSON.stringify(cymData),
-            })
-              .then((res) => (res.ok ? res : Promise.reject(res)))
-              .then((res) => res.json())
-              .then((result) => {
-                newCymLookup = result;
-                lookupAdded = true;
-              })
-              .catch((res) => {
-                switch (res.status) {
-                  case 400:
-                    res.json().then((body) => {
-                      console.error(`[400 ERROR] Creating ${getLookupVariantString(data.variant)} object`, body.errors);
-                      let lookupCymErrors = [];
-                      for (const [key, value] of Object.entries(body.errors)) {
-                        lookupCymErrors.push({ key: key, value: value });
-                      }
+            });
+            if (cymResponse.ok) {
+              newCymLookup = await cymResponse.json();
+              lookupAdded = true;
+            } else {
+              const cymBody = await cymResponse.json();
+              switch (cymResponse.status) {
+                case 400:
+                  console.error(`[400 ERROR] Creating ${getLookupVariantString(data.variant)} object`, cymBody.errors);
+                  let lookupCymErrors = [];
+                  for (const [key, value] of Object.entries(cymBody.errors)) {
+                    lookupCymErrors.push({ key: key, value: value });
+                  }
 
-                      if (lookupCymErrors.length > 0) altLanguageError = lookupCymErrors[0].value;
-                      else altLanguageError = null;
-                    });
-                    break;
+                  if (lookupCymErrors.length > 0) altLanguageError = lookupCymErrors[0].value;
+                  else altLanguageError = null;
+                  break;
 
-                  case 401:
-                    res.json().then((body) => {
-                      console.error(`[401 ERROR] Creating ${getLookupVariantString(data.variant)} object`, body);
-                    });
-                    break;
+                case 401:
+                  console.error(`[401 ERROR] Creating ${getLookupVariantString(data.variant)} object`, cymBody);
+                  break;
 
-                  case 500:
-                    console.error(`[500 ERROR] Creating ${getLookupVariantString(data.variant)} object`, res);
-                    break;
+                case 500:
+                  console.error(`[500 ERROR] Creating ${getLookupVariantString(data.variant)} object`, cymResponse);
+                  break;
 
-                  default:
-                    console.error(`[${res.status} ERROR] Creating ${getLookupVariantString(data.variant)} object`, res);
-                    break;
-                }
-              });
+                default:
+                  console.error(
+                    `[${cymResponse.status} ERROR] Creating ${getLookupVariantString(data.variant)} object`,
+                    cymResponse
+                  );
+                  break;
+              }
+            }
           }
 
           if (newCymLookup) {
@@ -2454,53 +2441,50 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
             lookupUrl = GetLookupUrl(data.variant, "PUT", userToken, authorityCode);
 
             if (lookupUrl) {
-              await fetch(lookupUrl.url, {
+              const linkedResponse = await fetch(lookupUrl.url, {
                 headers: lookupUrl.headers,
                 crossDomain: true,
                 method: lookupUrl.type,
                 body: JSON.stringify(newEngLookup),
-              })
-                .then((res) => (res.ok ? res : Promise.reject(res)))
-                .then((res) => res.json())
-                .then((result) => {
-                  newEngLookup = result;
-                })
-                .catch((res) => {
-                  switch (res.status) {
-                    case 400:
-                      res.json().then((body) => {
-                        console.error(
-                          `[400 ERROR] Updating ${getLookupVariantString(data.variant)} object`,
-                          body.errors
-                        );
-                        let lookupEngErrors = [];
-                        for (const [key, value] of Object.entries(body.errors)) {
-                          lookupEngErrors.push({ key: key, value: value });
-                        }
+              });
+              if (linkedResponse.ok) {
+                newEngLookup = await linkedResponse.json();
+              } else {
+                const linkedBody = await linkedResponse.json();
+                switch (linkedResponse.status) {
+                  case 400:
+                    console.error(
+                      `[400 ERROR] Creating ${getLookupVariantString(data.variant)} object`,
+                      linkedBody.errors
+                    );
+                    let lookupLinkedErrors = [];
+                    for (const [key, value] of Object.entries(linkedBody.errors)) {
+                      lookupLinkedErrors.push({ key: key, value: value });
+                    }
 
-                        if (lookupEngErrors.length > 0) engError = lookupEngErrors[0].value;
-                        else engError = null;
-                      });
-                      break;
+                    if (lookupLinkedErrors.length > 0) engError = lookupLinkedErrors[0].value;
+                    else engError = null;
+                    break;
 
-                    case 401:
-                      res.json().then((body) => {
-                        console.error(`[401 ERROR] Updating ${getLookupVariantString(data.variant)} object`, body);
-                      });
-                      break;
+                  case 401:
+                    console.error(`[401 ERROR] Creating ${getLookupVariantString(data.variant)} object`, linkedBody);
+                    break;
 
-                    case 500:
-                      console.error(`[500 ERROR] Updating ${getLookupVariantString(data.variant)} object`, res);
-                      break;
+                  case 500:
+                    console.error(
+                      `[500 ERROR] Creating ${getLookupVariantString(data.variant)} object`,
+                      linkedResponse
+                    );
+                    break;
 
-                    default:
-                      console.error(
-                        `[${res.status} ERROR] Updating ${getLookupVariantString(data.variant)} object`,
-                        res
-                      );
-                      break;
-                  }
-                });
+                  default:
+                    console.error(
+                      `[${linkedResponse.status} ERROR] Creating ${getLookupVariantString(data.variant)} object`,
+                      linkedResponse
+                    );
+                    break;
+                }
+              }
             }
           }
         }
@@ -2616,6 +2600,126 @@ export const bracketValidator = (str) => {
 
   if (stack.length) return false;
   return true;
+};
+
+/**
+ * Method used to validate a string against a character set.
+ *
+ * @param {String} str The string to be checked.
+ * @param {String} characterSet The character set we need to check against
+ *
+ * ________________________________
+ * GeoPlaceProperty1 - Organisation
+ *
+ * The valid characters allowed are:
+ *
+ * • Upper and lower case: A-Z
+ *
+ * • Numbers: 0-9
+ *
+ * • Space character
+ *
+ * • Upper and lower case: ÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜŴÝŸŶ
+ *
+ * • Punctuation and special characters: . , & ; : [ ] ( ) + - / _ @ £ $
+ *
+ *
+ * ____________________________________
+ * GeoPlaceProperty2 - PAO and SAO Text
+ *
+ * The valid characters allowed are:
+ *
+ * • Upper and lower case: A-Z
+ *
+ * • Numbers: 0-9
+ *
+ * • Space character
+ *
+ * • Upper and lower case: ÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜŴÝŸŶ
+ *
+ * • Punctuation and special characters: ! . , & ; : [ ] ( ) + - / _ @ £ $
+ *
+ *
+ * ___________________________________
+ * GeoPlaceAZOnly - PAO and SAO suffix
+ *
+ * • A-Z
+ *
+ * _________________________________________________________________________________________________________________________________
+ * GeoPlaceStreet1 - Type 2, 3, 4 and 9 street descriptor, town and locality as well as OneScotland text fields not specified below.
+ *
+ * Valid characters are A-Z, a-z, 0-9 or any of ! # $ % “ & ' ( ) * - + , . / : ; < = > ? [ \ ] ^ _ | ~ @ { } £ © § ® ¶ Ŵ ŵ Ṫ ṫ Ŷ ŷ Ḃ ḃ Ċ ċ Ḋ ḋ Ẁ Ẃ Ỳ Ÿ Ḟ ḟ Ġ ġ Ṁ ṁ Ṗ ẁ ṗ ẃ Ṡ ṡ ỳ Ẅ ẅ À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ñ Ò Ó Ô Õ Ö Ø Ù Ú Û Ü Ý ß à á â ã ä å æ ç è é ê ë ì í î ï ñ ò ó ô õ ö ø ù ú û ü ý ÿ and the space character.
+ *
+ * _______________________________
+ * GeoPlaceStreet2 - Type 1 street
+ *
+ * Valid characters are A-Z, a-z, 0-9, ( ) and the space character.
+ *
+ * ___________________
+ * OneScotlandProperty
+ *
+ * Valid characters are A-Z, a-z, 0-9, ' - / \ & , and the space character.
+ *
+ * _________________
+ * OneScotlandStreet
+ *
+ * Valid characters are A-Z, a-z, 0-9, ' - . and the space character.
+ *
+ * _________________
+ * OneScotlandLookup
+ *
+ * Valid characters are A-Z, a-z, 0-9, ' - and the space character.
+ *
+ * @returns {Boolean} True if the string is valid; otherwise false.
+ */
+export const characterSetValidator = (str, characterSet) => {
+  let valid = true;
+
+  switch (characterSet) {
+    case "GeoPlaceProperty1":
+      valid =
+        isIso885914(str) && !/[^\w àáâäèéêëìíîïòóôöùúûüỳýŷÿŵÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜỲÝŸŶŴ_@$£!.,&;:[\]()+-/]+/giu.test(str);
+      break;
+
+    case "GeoPlaceProperty2":
+      valid =
+        isIso885914(str) && !/[^\w !.,&;:[\]()+\-/@£$àáâäèéêëìíîïòóôöùúûüỳýŷÿŵÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜỲÝŸŶŴ]+/giu.test(str);
+      break;
+
+    case "GeoPlaceAZOnly":
+      valid = !/[^A-Z]+/giu.test(str);
+      break;
+
+    case "GeoPlaceStreet1":
+      valid = isIso885914(str);
+      break;
+
+    case "GeoPlaceStreet2":
+      valid = !/[^a-zA-Z0-9 ()]+/giu.test(str);
+      break;
+
+    case "EsriLayerId":
+      valid = !/[^a-zA-Z0-9]+/giu.test(str);
+      break;
+
+    case "OneScotlandProperty":
+      valid = !/[^\w ',&\-/\\]+/giu.test(str);
+      break;
+
+    case "OneScotlandStreet":
+      valid = !/[^a-zA-Z0-9 \-'.]+/giu.test(str);
+      break;
+
+    case "OneScotlandLookup":
+      valid = !/[^a-zA-Z0-9 \-']+/giu.test(str);
+      break;
+
+    default:
+      valid = true;
+      break;
+  }
+
+  return valid;
 };
 
 /**

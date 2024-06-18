@@ -49,6 +49,7 @@
 //    025   12.06.24 Sean Flook       IMANN-553 Modified checks 2100011 and 2100046 to cater for Scottish authorities.
 //    026   12.06.24 Sean Flook       IMANN-553 Further modifications to checks 2100011 and 2100046 to cater for Scottish authorities.
 //    027   18.06.24 Sean Flook       IMANN-534 Correctly handle blpuStates of 0.
+//    028   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -63,6 +64,7 @@ import {
   GetErrorMessage,
   GetCheck,
   bracketValidator,
+  characterSetValidator,
 } from "./HelperUtils";
 
 import BLPULogicalStatus from "../data/BLPULogicalStatus";
@@ -180,9 +182,7 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
     if (
       includeCheck(currentCheck, isScottish) &&
       data.organisation &&
-      !/[a-zA-Z0-9 !.,&;:[\]()+-/_@£$ÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜŴÝŸŶàáâäèéêëìíîïòóôöúùûüŵýÿŷẁẃẅẀẂẄỳỲ]+/giu.test(
-        data.organisation
-      )
+      characterSetValidator(data.organisation, `${isScottish ? "OneScotlandLookup" : "GeoPlaceProperty1"}`)
     ) {
       organisationErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -1003,8 +1003,7 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
     if (
       includeCheck(currentCheck, isScottish) &&
       data.paoText &&
-      ((isScottish && /[^\w ',&\-/\\]+/giu.test(data.paoText)) ||
-        (!isScottish && /[^\w !.,&;:[\]()+\-/@£$ÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜŴÝŸŶ]+/giu.test(data.paoText)))
+      !characterSetValidator(data.paoText, `${isScottish ? "OneScotlandProperty" : "GeoPlaceProperty2"}`)
     ) {
       paoTextErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -1014,8 +1013,7 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
     if (
       includeCheck(currentCheck, isScottish) &&
       data.saoText &&
-      ((isScottish && /[^\w ',&\-/\\]+/giu.test(data.saoText)) ||
-        (!isScottish && /[^\w !.,&;:[\]()+\-/@£$ÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜŴÝŸŶ]+/giu.test(data.saoText)))
+      !characterSetValidator(data.saoText, `${isScottish ? "OneScotlandProperty" : "GeoPlaceProperty2"}`)
     ) {
       saoTextErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -1590,9 +1588,7 @@ export function ValidateOrganisationData(data, index, currentLookups) {
     if (
       includeCheck(currentCheck, true) &&
       data.organisation &&
-      !/[a-zA-Z0-9 !.,&;:[\]()+-/_@£$ÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜŴÝŸŶàáâäèéêëìíîïòóôöúùûüŵýÿŷẁẃẅẀẂẄỳỲ]+/giu.test(
-        data.organisation
-      )
+      !characterSetValidator(data.organisation, "OneScotlandLookup")
     ) {
       organisationErrors.push(GetErrorMessage(currentCheck, true));
     }

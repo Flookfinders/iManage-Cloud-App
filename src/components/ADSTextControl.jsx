@@ -30,6 +30,7 @@
 //    018   21.02.24 Sean Flook           MUL16 Added noLeftPadding parameter.
 //    019   02.04.24 Joshua McCormick IMANN-277 Removed not multiline check for displayCharactersLeft
 //    020   10.06.24 Sean Flook       IMANN-509 Fix for use with passwords.
+//    021   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -101,7 +102,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { adsBlueA } from "../utils/ADSColours";
 import { FormBoxRowStyle, FormRowStyle, FormInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
-import { isEdgeChromium } from "../utils/HelperUtils";
+import { characterSetValidator, isEdgeChromium } from "../utils/HelperUtils";
 
 /* #endregion imports */
 
@@ -207,53 +208,7 @@ function ADSTextControl({
    * @param {object} event The event object.
    */
   const handleChangeEvent = (event) => {
-    let valid = true;
-
-    switch (characterSet) {
-      case "GeoPlaceProperty1":
-        valid = !/[^\w àáâäèéêëìíîïòóôöúùûüŵýÿŷÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜŴÝŸŶẁẃẅẀẂẄỳỲ_@$£!.,&;:[\]()+-/]+/giu.test(
-          event.target.value
-        );
-        break;
-
-      case "GeoPlaceProperty2":
-        valid = !/[^\w !.,&;:[\]()+\-/@£$ÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜŴẀẂẄÝŸŶ]+/giu.test(event.target.value);
-        break;
-
-      case "GeoPlaceAZOnly":
-        valid = !/[^A-Z]+/giu.test(event.target.value);
-        break;
-
-      case "GeoPlaceStreet1":
-        valid = !/[^\w !#$%“&'()*-+,./:;<=>?[\\\]^|~@{}£©§®¶ŴṪŶḂĊḊẀẂỲŸḞĠṀṖṠẄÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]+/giu.test(
-          event.target.value
-        );
-        break;
-
-      case "GeoPlaceStreet2":
-        valid = !/[^a-zA-Z0-9 ()]+/giu.test(event.target.value);
-        break;
-
-      case "EsriLayerId":
-        valid = !/[^a-zA-Z0-9]+/giu.test(event.target.value);
-        break;
-
-      case "OneScotlandProperty":
-        valid = !/[^a-zA-Z0-9 '\-/\\&,]+/giu.test(event.target.value);
-        break;
-
-      case "OneScotlandStreet":
-        valid = !/[^a-zA-Z0-9 \-'.]+/giu.test(event.target.value);
-        break;
-
-      case "OneScotlandLookup":
-        valid = !/[^a-zA-Z0-9 \-']+/giu.test(event.target.value);
-        break;
-
-      default:
-        valid = true;
-        break;
-    }
+    const valid = characterSetValidator(event.target.value, characterSet);
 
     if (valid && onChange) onChange(event.target.value);
   };

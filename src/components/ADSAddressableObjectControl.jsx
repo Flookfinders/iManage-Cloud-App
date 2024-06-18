@@ -43,6 +43,7 @@
 //    008   16.04.24 Joshua McCormick IMAN-277  Changed TextField out for ADSTextControl
 //    009   16.04.24 Joshua McCormick IMAN-277  Revert 008 &   added props for setting displayCharactersLeft and maxLength
 //    010   17.04.24 Joshua McCormick IMAN-277  Removed maxLength and set to hardcoded 90
+//    011   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -56,6 +57,7 @@ import { Box } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { adsMidGreyA } from "../utils/ADSColours";
 import { FormBoxRowStyle, FormRowStyle, FormInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
+import { characterSetValidator } from "../utils/HelperUtils";
 
 ADSAddressableObjectControl.propTypes = {
   variant: PropTypes.string.isRequired,
@@ -182,9 +184,10 @@ function ADSAddressableObjectControl({
    */
   const handleTextChangeEvent = (event) => {
     if (
-      ((settingsContext.isScottish && !/[^\w ',&\-/\\]+/giu.test(event.target.value)) ||
-        (!settingsContext.isScottish &&
-          !/[^\w !.,&;:[\]()+\-/@£$ÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜŴÝŸŶ]+/giu.test(event.target.value))) &&
+      characterSetValidator(
+        event.target.value,
+        `${settingsContext.isScottish ? "OneScotlandProperty" : "GeoPlaceProperty2"}`
+      ) &&
       onTextChange
     )
       onTextChange(event.target.value);
