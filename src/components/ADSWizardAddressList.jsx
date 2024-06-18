@@ -27,9 +27,10 @@
 //    014   08.02.24 Joel Benford         RTAB3 Supply null street state to classification icon tooltip
 //    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    016   11.04.24 Sean Flook       IMANN-384 Hide information and selection control when updating.
-//    016   12.04.24 Sean Flook       IMANN-384 Clear checked when updating.
-//    017   25.04.24 Sean Flook                 Display the information control for the wizard as well.
-//    018   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
+//    017   12.04.24 Sean Flook       IMANN-384 Clear checked when updating.
+//    018   25.04.24 Sean Flook                 Display the information control for the wizard as well.
+//    019   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
+//    020   18.06.24 Sean Flook       IMANN-599 Use the correct classification when moving BLPUs for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1229,7 +1230,9 @@ function ADSWizardAddressList({
                         title={GetAvatarTooltip(
                           21,
                           rec.blpu.logicalStatus,
-                          settingsContext.isScottish ? rec.classification.classification : rec.blpu.classification,
+                          settingsContext.isScottish && !haveMoveBlpu
+                            ? rec.classification.classification
+                            : rec.blpu.classification,
                           null,
                           settingsContext.isScottish
                         )}
@@ -1238,7 +1241,7 @@ function ADSWizardAddressList({
                         sx={tooltipStyle}
                       >
                         {GetClassificationIcon(
-                          settingsContext.isScottish
+                          settingsContext.isScottish && !haveMoveBlpu
                             ? rec.classification.classification
                               ? rec.classification.classification
                               : "U"

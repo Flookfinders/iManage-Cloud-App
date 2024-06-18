@@ -29,6 +29,7 @@
 //    016   07.02.24 Sean Flook       IMANN-377 Changes required to support viaEuropa mapping for OneScotland.
 //    017   03.05.24 Sean Flook                 Call getBaseMapLayers.
 //    018   20.05.24 Sean Flook       IMANN-476 Check view has been created first in fadeVisibilityOn.
+//    019   18.06.24 Sean Flook       IMANN-599 Use the correct classification when moving BLPUs for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1983,12 +1984,13 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
                   Easting: Number(pointData[0].easting ? pointData[0].easting : initialMidX),
                   Northing: Number(pointData[0].northing ? pointData[0].northing : initialMidY),
                   LogicalStatus: pointData[0].blpu.logicalStatus,
-                  Classification: settingsContext.isScottish
-                    ? pointData[0].classification.classification
-                    : pointData[0].blpu.classification,
+                  Classification:
+                    settingsContext.isScottish && !moveBlpu
+                      ? pointData[0].classification.classification
+                      : pointData[0].blpu.classification,
                   MapLabel: isRange ? `${pointData.length} BLPU${pointData.length > 1 ? "s" : ""}` : "1 BLPU",
                   SymbolCode: `${pointData[0].blpu.logicalStatus}, ${
-                    settingsContext.isScottish
+                    settingsContext.isScottish && !moveBlpu
                       ? pointData[0].classification.classification.substring(0, 1)
                       : pointData[0].blpu.classification.substring(0, 1)
                   }`,
@@ -2008,12 +2010,11 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
                 Easting: Number(rec.easting ? rec.easting : initialMidX),
                 Northing: Number(rec.northing ? rec.northing : initialMidY),
                 LogicalStatus: rec.blpu.logicalStatus,
-                Classification: settingsContext.isScottish
-                  ? rec.classification.classification
-                  : rec.blpu.classification,
+                Classification:
+                  settingsContext.isScottish && !moveBlpu ? rec.classification.classification : rec.blpu.classification,
                 MapLabel: getMapLabel(rec),
                 SymbolCode: `${rec.blpu.logicalStatus}, ${
-                  settingsContext.isScottish
+                  settingsContext.isScottish && !moveBlpu
                     ? rec.classification.classification.substring(0, 1)
                     : rec.blpu.classification.substring(0, 1)
                 }`,
@@ -2117,7 +2118,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
               pointY,
               data[0].id,
               data[0].blpu.logicalStatus,
-              settingsContext.isScottish
+              settingsContext.isScottish && !moveBlpu
                 ? data[0].classification.classification.substring(0, 1)
                 : data[0].blpu.classification.substring(0, 1),
               false
@@ -2138,7 +2139,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
                   pointY,
                   property.id,
                   property.blpu.logicalStatus,
-                  settingsContext.isScottish
+                  settingsContext.isScottish && !moveBlpu
                     ? property.classification.classification.substring(0, 1)
                     : property.blpu.classification.substring(0, 1),
                   false
@@ -2149,7 +2150,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
 
       editGraphicsLayer.current.listMode = "show";
     } else editGraphicsLayer.current.listMode = "hide";
-  }, [data, placeStyle, isRange, view, settingsContext.isScottish]);
+  }, [data, placeStyle, isRange, view, settingsContext.isScottish, moveBlpu]);
 
   // Layer list tool
   useEffect(() => {
