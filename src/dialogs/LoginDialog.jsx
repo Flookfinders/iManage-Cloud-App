@@ -21,6 +21,7 @@
 //    008   23.04.24 Sean Flook       IMANN-366 If we are running on an Edge Chromium browser do not display our show password icon button.
 //    009   01.05.24 Sean Flook       IMANN-142 Removed the cancel button.
 //    010   10.06.24 Sean Flook       IMANN-509 Changes required for v2 of the security API and the multi-factor authentication.
+//    011   18.06.24 Sean Flook       IMANN-601 Display message when authentication code does not match.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -363,8 +364,16 @@ function LoginDialog({ isOpen, title, message, changePassword }) {
               else setAuthenticationError(["No user token was returned."]);
             },
             (error) => {
-              setAuthenticationError([`[${error.status} ERROR] ${error.statusText}`]);
-              console.error("[ERROR] Getting user authentication information", error);
+              switch (error.status) {
+                case 401:
+                  setAuthenticationError(["The authentication code entered does not match"]);
+                  break;
+
+                default:
+                  setAuthenticationError([`[${error.status} ERROR] ${error.statusText}`]);
+                  console.error("[ERROR] Getting user authentication information", error);
+                  break;
+              }
             }
           );
       } else {
