@@ -49,6 +49,7 @@
 //    036   05.04.24 Sean Flook                 Changes required to display errors even when records have not been edited (Delete and Get).
 //    037   01.05.24 Sean Flook                 Correctly set haveSearch.
 //    048   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
+//    049   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -359,7 +360,7 @@ function ADSAppBar(props) {
       currentProperty,
       propertyContext.currentProperty.newProperty,
       propertyContext,
-      userContext.currentUser.token,
+      userContext,
       lookupContext,
       searchContext,
       mapContext,
@@ -539,11 +540,7 @@ function ADSAppBar(props) {
         const foundStreet =
           discardChanges &&
           streetContext.currentStreet &&
-          (await GetStreetMapData(
-            streetContext.currentStreet.usrn,
-            userContext.currentUser.token,
-            settingsContext.isScottish
-          ));
+          (await GetStreetMapData(streetContext.currentStreet.usrn, userContext, settingsContext.isScottish));
 
         const foundStreetDescriptor =
           discardChanges && foundStreet && foundStreet.streetDescriptors.find((x) => x.language === "ENG");

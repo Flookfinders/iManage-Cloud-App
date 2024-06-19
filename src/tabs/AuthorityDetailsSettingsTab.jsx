@@ -20,6 +20,7 @@
 //    007   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    008   10.01.24 Sean Flook                 Fix warnings.
 //    009   25.01.24 Sean Flook                 Changes required after UX review.
+//    010   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -150,14 +151,7 @@ function AuthorityDetailsSettingsTab() {
               break;
 
             case 401:
-              res
-                .json()
-                .then((body) => {
-                  console.error(`[401 ERROR] ${newRecord ? "Creating" : "Updating"} authority details`, body);
-                })
-                .catch((err401) => {
-                  console.error(`[401 ERROR] ${newRecord ? "Creating" : "Updating"} authority details object.`, err401);
-                });
+              userContext.onExpired();
               break;
 
             case 500:

@@ -32,6 +32,7 @@
 //    019   11.03.24 Sean Flook           GLB12 Correctly set widths.
 //    020   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    021   10.06.24 Sean Flook       IMANN-509 Allow a user to change their password.
+//    022   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -307,7 +308,7 @@ const ADSNavContent = (props) => {
       currentProperty,
       propertyContext.currentProperty.newProperty,
       propertyContext,
-      userContext.currentUser.token,
+      userContext,
       lookupContext,
       searchContext,
       mapContext,

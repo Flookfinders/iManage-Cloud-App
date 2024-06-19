@@ -29,6 +29,7 @@
 //    016   09.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
 //    017   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title nowrapping with width restrictions
 //    018   04.06.24 Joel Benford     IMANN-505 Fix enabling OK button
+//    019   18.06.24 Joshua McCormick IMANN-598 Cross ref max set to 20 if scottish, else default 50
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -392,7 +393,7 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onHomeClick,
           loading={loading}
           value={crossReference}
           id="cross_reference"
-          maxLength={50}
+          maxLength={!settingsContext.isScottish ? 50 : 20}
           displayCharactersLeft
           errorText={crossReferenceError}
           helperText="Primary key of corresponding Record in an external data-set."

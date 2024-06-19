@@ -23,6 +23,7 @@
 //    010   24.01.24 Joel Benford               Save placeholder gazDate (will need adding to GUI)
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
 //    012   31.01.24 Joel Benford               Changes to as save and support OS
+//    013   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -759,14 +760,15 @@ function MetadataSettingsTab({ variant }) {
                 console.error(`[400 ERROR] Updating ${errorType} metadata.`, body.errors);
               });
               break;
+
             case 401:
-              res.json().then((body) => {
-                console.error(`[401 ERROR] Updating ${errorType} metadata.`, body);
-              });
+              userContext.onExpired();
               break;
+
             case 500:
               console.error(`[500 ERROR] Updating ${errorType} metadata.`, res);
               break;
+
             default:
               console.error(`[${res.status} ERROR] in saveGazetteerMetadata - updating ${errorType} metadata.`, res);
               break;
@@ -1043,7 +1045,11 @@ function MetadataSettingsTab({ variant }) {
               setContentNationalCycleRoute(result.contentNationalCycleRoute);
             },
             (error) => {
-              console.error("[ERROR] Getting street metadata", error);
+              if (error.status && error.status === 401) {
+                userContext.onExpired();
+              } else {
+                console.error("[ERROR] Getting street metadata", error);
+              }
             }
           )
           .then(() => {
@@ -1154,7 +1160,11 @@ function MetadataSettingsTab({ variant }) {
               setMdEmergencyRoute(result.mdEmergencyRoute);
             },
             (error) => {
-              console.error("[ERROR] Getting ASD metadata", error);
+              if (error.status && error.status === 401) {
+                userContext.onExpired();
+              } else {
+                console.error("[ERROR] Getting ASD metadata", error);
+              }
             }
           )
           .then(() => {
@@ -1221,7 +1231,11 @@ function MetadataSettingsTab({ variant }) {
               setCharacterSet(result.characterSet);
             },
             (error) => {
-              console.error("[ERROR] Getting property metadata", error);
+              if (error.status && error.status === 401) {
+                useContext.onExpired();
+              } else {
+                console.error("[ERROR] Getting property metadata", error);
+              }
             }
           )
           .then(() => {
@@ -1269,7 +1283,7 @@ function MetadataSettingsTab({ variant }) {
     streetApiUrl,
     asdApiUrl,
     propertyApiUrl,
-    userContext.currentUser.token,
+    userContext,
     variant,
   ]);
 

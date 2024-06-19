@@ -23,6 +23,11 @@
 //    010   12.03.24 Sean Flook           MUL10 Display errors in a list control.
 //    011   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    012   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
+//    013   19.06.24 Joshua McCormick IMANN-503 BLPU Level field max characters 30 and removed updown counter.
+//    014   19.06.24 Joshua McCormick IMANN-503 BLPU Level AdsNumberControl type set to text to hide updown
+//    015   19.06.24 Joshua McCormick IMANN-503 BLPU Level removed type prop
+//    016   19.06.24 Joshua McCormick IMANN-503 BLPU Level max set to 99.9
+//    017   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -314,6 +319,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
             <Grid item xs={12}>
               <ADSNumberControl
                 label="Level"
+                maximum={99.9}
                 isEditable
                 value={level}
                 errorText={null}
@@ -461,7 +467,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
       setFinaliseErrors([]);
 
       for (const propertyUprn of propertyUprns) {
-        const property = await GetPropertyMapData(propertyUprn, userContext.currentUser.token);
+        const property = await GetPropertyMapData(propertyUprn, userContext);
 
         if (property) {
           let updatedProperty = null;
@@ -832,19 +838,15 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
           }
 
           if (updatedProperty) {
-            SaveProperty(
-              updatedProperty,
-              false,
-              userContext.currentUser.token,
-              propertyContext,
-              settingsContext.isScottish
-            ).then((result) => {
-              if (result) {
-                updatedCount.current++;
-                savedProperty.current.push(result);
-                setRangeProcessedCount(updatedCount.current + failedCount.current);
+            SaveProperty(updatedProperty, false, userContext, propertyContext, settingsContext.isScottish).then(
+              (result) => {
+                if (result) {
+                  updatedCount.current++;
+                  savedProperty.current.push(result);
+                  setRangeProcessedCount(updatedCount.current + failedCount.current);
+                }
               }
-            });
+            );
           } else {
             failedCount.current++;
           }

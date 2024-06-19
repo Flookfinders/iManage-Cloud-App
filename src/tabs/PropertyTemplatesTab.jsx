@@ -27,6 +27,7 @@
 //    014   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    015   20.02.24 Sean Flook                 Default blpuLevel to 0 if null when saving.
 //    016   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
+//    017   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -159,9 +160,7 @@ function PropertyTemplatesTab() {
                 break;
 
               case 401:
-                res.json().then((body) => {
-                  console.error("[401 ERROR] Creating property template", body);
-                });
+                userContext.onExpired();
                 break;
 
               case 500:
@@ -266,7 +265,7 @@ function PropertyTemplatesTab() {
                 break;
 
               case 401:
-                setUpdateError("You do not have authorisation to update this template");
+                useContext.onExpired();
                 break;
 
               case 403:
@@ -335,7 +334,11 @@ function PropertyTemplatesTab() {
             setTemplateFormData(null);
           })
           .catch((res) => {
-            console.error("[ERROR] Deleting property template - response", res);
+            if (res.status && res.status === 401) {
+              userContext.onExpired();
+            } else {
+              console.error("[ERROR] Deleting property template - response", res);
+            }
           });
       }
     }

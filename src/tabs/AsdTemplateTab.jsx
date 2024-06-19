@@ -26,6 +26,7 @@
 //    013   13.02.24 Sean Flook                 Only set the data if it exists.
 //    014   01.03.24 Joel Benford               Restrict Districts to suit organisation
 //    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    016   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -771,9 +772,7 @@ function AsdTemplateTab() {
           .catch((res) => {
             switch (res.status) {
               case 400:
-                res.json().then((body) => {
-                  console.error("[400 ERROR] Updating ASD template", body.errors);
-                });
+                userContext.onExpired();
                 break;
 
               case 401:

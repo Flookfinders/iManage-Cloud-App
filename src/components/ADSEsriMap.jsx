@@ -79,6 +79,7 @@
 //    065   06.06.24 Sean Flook       IMANN-522 Always allow editing of provenances.
 //    066   11.06.24 Sean Flook       IMANN-527 Corrected values in streetRenderer.
 //    067   12.06.24 Sean Flook       IMANN-565 Handle polygon deletion.
+//    068   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1675,7 +1676,7 @@ function ADSEsriMap(startExtent) {
 
       const parentData =
         isRange && wizardData.savedProperty
-          ? await GetPropertyMapData(wizardData.savedProperty[0].parentUprn, userContext.current.currentUser.token)
+          ? await GetPropertyMapData(wizardData.savedProperty[0].parentUprn, userContext.current)
           : null;
       const engLpis = parentData && parentData.lpis ? parentData.lpis.filter((x) => x.language === "ENG") : null;
       const parent =
@@ -1725,7 +1726,7 @@ function ADSEsriMap(startExtent) {
           mapContext,
           streetContext,
           propertyContext,
-          userContext.current.currentUser.token,
+          userContext.current,
           isScottish.current
         );
       }
@@ -1887,7 +1888,7 @@ function ADSEsriMap(startExtent) {
         currentProperty,
         propertyContext.currentProperty.newProperty,
         propertyContext,
-        userContext.currentUser.token,
+        userContext,
         lookupContext,
         searchContext,
         mapContext,
@@ -2079,7 +2080,15 @@ function ADSEsriMap(startExtent) {
               return result;
             },
             (error) => {
-              console.error("[ERROR] Get Property data", error);
+              switch (error.status) {
+                case 401:
+                  userContext.current.onExpired();
+                  break;
+
+                default:
+                  console.error("[ERROR] Get Property data", error);
+                  break;
+              }
               return null;
             }
           );
@@ -2310,11 +2319,7 @@ function ADSEsriMap(startExtent) {
    */
   const handleStreetStreetView = useCallback(() => {
     if (recordAttributes.current && recordAttributes.current.USRN) {
-      DisplayStreetInStreetView(
-        Number(recordAttributes.current.USRN),
-        userContext.current.currentUser.token,
-        isScottish.current
-      );
+      DisplayStreetInStreetView(Number(recordAttributes.current.USRN), userContext.current, isScottish.current);
     }
   }, []);
 
@@ -2721,7 +2726,7 @@ function ADSEsriMap(startExtent) {
 
     // console.log("[SF] Base mapping");
     if (!baseMapLayers.current) {
-      getBaseMapLayers(userContext.current.currentUser.token).then((result) => {
+      getBaseMapLayers(userContext.current).then((result) => {
         baseMapLayers.current = result;
         loadBaseMapLayers();
       });
@@ -8182,7 +8187,7 @@ function ADSEsriMap(startExtent) {
                     mapContext,
                     streetContext,
                     propertyContext,
-                    userContext.current.currentUser.token,
+                    userContext.current,
                     isScottish.current
                   );
                   break;
@@ -8216,7 +8221,7 @@ function ADSEsriMap(startExtent) {
                       mapContext,
                       streetContext,
                       propertyContext,
-                      userContext.current.currentUser.token,
+                      userContext.current,
                       isScottish.current
                     );
                   break;
@@ -8246,7 +8251,7 @@ function ADSEsriMap(startExtent) {
                       mapContext,
                       streetContext,
                       propertyContext,
-                      userContext.current.currentUser.token,
+                      userContext.current,
                       isScottish.current
                     );
                   break;

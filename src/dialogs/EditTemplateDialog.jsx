@@ -42,6 +42,11 @@
 //    029   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //    030   22.05.24 Sean Flook       IMANN-473 Corrected label for Scottish authorities.
 //    031   23.04.24 Joshua McCormick IMANN-94  Edit Dialog title from Edit Title to Rename Template
+//    032   19.06.24 Joshua McCormick IMANN-503 BLPU Level field max characters 30 and removed updown counter.
+//    033   19.06.24 Joshua McCormick IMANN-503 BLPU Level AdsNumberControl type set to text to hide updown
+//    034   19.06.24 Joshua McCormick IMANN-503 BLPU Level removed type prop
+//    035   19.06.24 Joshua McCormick IMANN-503 BLPU Level max set to 99.9
+//    036   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1604,6 +1609,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             {settingsContext.isScottish && (
               <ADSNumberControl
                 label="Level"
+                maximum={99.9}
                 isEditable
                 value={level}
                 helperText="Code describing vertical position of BLPU."
@@ -1692,6 +1698,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             {!settingsContext.isScottish && (
               <ADSTextControl
                 label="Level"
+                maximum={99.9}
                 isEditable
                 value={level}
                 id="lpi_level_settings_template"
@@ -2829,6 +2836,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             {settingsContext.isScottish && (
               <ADSNumberControl
                 label="Level"
+                maximum={99.9}
                 isEditable
                 isRequired
                 value={level}
@@ -2890,6 +2898,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
             {!settingsContext.isScottish && (
               <ADSTextControl
                 label="Level"
+                maximum={99.9}
                 isEditable
                 value={level}
                 errorText={levelError}
@@ -3063,9 +3072,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
     const addResults = await addLookup(
       data,
       settingsContext.authorityCode,
-      userContext.currentUser.token,
+      userContext,
       settingsContext.isWelsh,
-      settingsContext.isScottish,
       lookupContext.currentLookups
     );
 

@@ -1,6 +1,26 @@
+/* #region header */
+/**************************************************************************************************
+//
+//  Description: The page routing form.
+//
+//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//
+//--------------------------------------------------------------------------------------------------
+//
+//  Modification History:
+//
+//  Version Date     Modifier            Issue# Description
+//#region Version 1.0.0.0 changes
+//    001            Sean Flook                 Initial Revision.
+//    002   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//#endregion Version 1.0.0.0 changes
+//
+//--------------------------------------------------------------------------------------------------
+/* #endregion header */
+
 /* #region imports */
 
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
 // import { Routes, Route } from "react-router-dom";
 import UserContext from "./context/userContext";
@@ -11,6 +31,7 @@ import StreetPage from "./pages/StreetPage";
 import PropertyPage from "./pages/PropertyPage";
 import UserAdminPage from "./pages/UserAdminPage";
 import SettingsPage from "./pages/SettingsPage";
+import { hasLoginExpired } from "./utils/HelperUtils";
 
 /* #endregion imports */
 
@@ -25,6 +46,18 @@ export const AdminSettingsRoute = "/settings";
 
 const PageRouting = () => {
   const userContext = useContext(UserContext);
+
+  useEffect(() => {
+    if (localStorage.getItem("currentUser") !== null) {
+      const savedUser = JSON.parse(localStorage.getItem("currentUser"));
+      if (savedUser.active && savedUser.expiry && hasLoginExpired(savedUser.expiry)) {
+        userContext.onDisplayLogin();
+      } else {
+        userContext.onReload();
+      }
+    }
+  }, [userContext]);
+
   return (
     userContext.currentUser && (
       <Switch>

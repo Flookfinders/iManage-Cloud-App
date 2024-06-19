@@ -31,6 +31,7 @@
 //    018   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
 //    019   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    020   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
+//    021   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -224,7 +225,7 @@ function ADSHomepageLatestEditsControl({ data }) {
       );
     } else {
       //else fetch what we need and pass to map
-      const streetData = await GetStreetMapData(usrn, userContext.currentUser.token, settingsContext.isScottish);
+      const streetData = await GetStreetMapData(usrn, userContext, settingsContext.isScottish);
       const esus =
         streetData && streetData.esus
           ? streetData.esus.map((rec) => ({
@@ -429,7 +430,7 @@ function ADSHomepageLatestEditsControl({ data }) {
    */
   const EditProperty = async (uprn) => {
     // fetch data we will need
-    const propertyData = await GetPropertyMapData(uprn, userContext.currentUser.token, settingsContext.isScottish);
+    const propertyData = await GetPropertyMapData(uprn, userContext, settingsContext.isScottish);
     const lpi = propertyData.lpis
       .filter((l) => l.language === "ENG")
       .sort((a, b) => a.logicalStatus - b.logicalStatus)[0];

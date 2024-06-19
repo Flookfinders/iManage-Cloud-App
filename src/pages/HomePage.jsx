@@ -21,6 +21,7 @@
 //    008   13.02.24 Sean Flook                 Correctly handle the response from the GET endpoints.
 //    009   26.02.24 Joel Benford     IMANN-242 Add DbAuthority to lookups context
 //    010   09.02.24 Joel Benford    IM-227/228 Generalize ward/parish URL
+//    011   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -112,8 +113,9 @@ const HomePage = () => {
    * Method to fetch the lookup data.
    *
    * @param {object} lookup The lookup object.
+   * @param {object} userContext The userContext object.
    */
-  const fetchData = async (lookup) => {
+  const fetchData = async (lookup, userContext) => {
     const url = lookup.url.url;
 
     const setData = (id, result) => {
@@ -243,7 +245,7 @@ const HomePage = () => {
               return [];
 
             case 401:
-              console.error("[401 ERROR] You are not authorized.", { lookup: lookup.id });
+              userContext.onExpired();
               setData(lookup.id, lookup.noRecords);
               break;
 
@@ -300,7 +302,7 @@ const HomePage = () => {
       Lookups.forEach(async (lookup) => {
         if (!isCancelled && !loadedLookups.current.includes(lookup.id)) {
           loadedLookups.current = loadedLookups.current.concat([lookup.id]);
-          await fetchData(lookup);
+          await fetchData(lookup, userContext);
         }
       });
     };

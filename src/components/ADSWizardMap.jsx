@@ -30,6 +30,7 @@
 //    017   03.05.24 Sean Flook                 Call getBaseMapLayers.
 //    018   20.05.24 Sean Flook       IMANN-476 Check view has been created first in fadeVisibilityOn.
 //    019   18.06.24 Sean Flook       IMANN-599 Use the correct classification when moving BLPUs for Scottish authorities.
+//    020   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -954,7 +955,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
     const featureLayer = [];
     let newBaseLayer;
 
-    if (!baseMapLayers.current) baseMapLayers.current = getBaseMapLayers(userContext.current.currentUser.token);
+    if (!baseMapLayers.current) baseMapLayers.current = getBaseMapLayers(userContext.current);
 
     baseMapLayers.current
       .sort((a, b) => a.layerPosition - b.layerPosition)

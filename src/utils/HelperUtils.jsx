@@ -56,6 +56,7 @@
 //    043   06.06.24 Joel Benford     IMANN-497 Add data to xrefs in addLookup
 //    044   18.06.24 Joel Benford     IMANN-560 Stop addLookups returning early on error
 //    045   16.06.24 Sean Flook       IMANN-577 Added characterSetValidator.
+//    046   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -80,7 +81,6 @@ import {
   GetSubLocalityUrl,
   GetTownUrl,
   GetWardsUrl,
-  GetWhoAmIUrl,
   HasASD,
 } from "../configuration/ADSConfig";
 import ObjectComparison, {
@@ -821,37 +821,6 @@ export function GetCrossRefAvatar(params) {
 export function GetHistoricAvatar(params) {
   if (params && params.row.endDate) {
     return <CheckIcon sx={{ color: adsDarkPink }} />;
-  } else return null;
-}
-
-/**
- * Get the user information for the current user.
- *
- * @param {string} userToken The token for the user who is calling the function.
- * @return {object|null} The user information object.
- */
-export async function GetUserInformation(userToken) {
-  const userUrl = await GetWhoAmIUrl(userToken);
-
-  if (userUrl) {
-    const returnValue = await fetch(`${userUrl.url}`, {
-      headers: userUrl.headers,
-      crossDomain: true,
-      method: "GET",
-    })
-      .then((res) => (res.ok ? res : Promise.reject(res)))
-      .then((res) => res.json())
-      .then(
-        (result) => {
-          return result;
-        },
-        (error) => {
-          console.error("[ERROR] Get user information", error);
-          return null;
-        }
-      );
-
-    return returnValue;
   } else return null;
 }
 
@@ -1632,14 +1601,14 @@ export const openInStreetView = (bngPoint) => {
 /**
  * Method to open the given record after closing the property create wizard.
  *
- * @param {object} rec The record that we want to open.
- * @param {object|null} openRelated If set it is the details of the property that should be highlighted in the related tab when opening the record.
- * @param {object} currentSearchData The current search data
- * @param {object} mapContext The map context object.
- * @param {object} streetContext The street context object.
- * @param {object} propertyContext The property context object.
- * @param {string} userToken The token for the user who is calling the function.
- * @param {boolean} isScottish If true return the field name used for OneScotland authorities; otherwise return the field name used by GeoPlace authorities.
+ * @param {Object} rec The record that we want to open.
+ * @param {Object|null} openRelated If set it is the details of the property that should be highlighted in the related tab when opening the record.
+ * @param {Object} currentSearchData The current search data
+ * @param {Object} mapContext The map context object.
+ * @param {Object} streetContext The street context object.
+ * @param {Object} propertyContext The property context object.
+ * @param {Object} userContext The user context object for the user who is calling the function.
+ * @param {Boolean} isScottish If true return the field name used for OneScotland authorities; otherwise return the field name used by GeoPlace authorities.
  */
 export async function doOpenRecord(
   rec,
@@ -1648,7 +1617,7 @@ export async function doOpenRecord(
   mapContext,
   streetContext,
   propertyContext,
-  userToken,
+  userContext,
   isScottish
 ) {
   if (rec.type === 15) {
@@ -1656,7 +1625,7 @@ export async function doOpenRecord(
     const currentSearchStreets = JSON.parse(JSON.stringify(mapContext.currentSearchData.streets));
 
     if (!foundStreet) {
-      const streetData = await GetStreetMapData(rec.usrn, userToken, isScottish);
+      const streetData = await GetStreetMapData(rec.usrn, userContext, isScottish);
       const engDescriptor = streetData.streetDescriptors.filter((x) => x.language === "ENG");
       streetContext.onStreetChange(rec.usrn, engDescriptor.streetDescriptor, false, openRelated);
       const esus = streetData
@@ -1833,7 +1802,7 @@ export async function doOpenRecord(
         classificationCode: rec.classification_code ? rec.classification_code.substring(0, 1) : "U",
       });
     }
-    const propertyData = await GetPropertyMapData(rec.uprn, userToken);
+    const propertyData = await GetPropertyMapData(rec.uprn, userContext);
     const extents = propertyData
       ? propertyData.blpuProvenances.map((provRec) => ({
           pkId: provRec.pkId,
@@ -2104,7 +2073,17 @@ export function GetOldLookups(variant, currentLookups) {
   }
 }
 
-export const addLookup = async (data, authorityCode, userToken, isWelsh, isScottish, currentLookups) => {
+/**
+ * Method used to add a new lookup.
+ *
+ * @param {Object} data The lookup data that needs to be added.
+ * @param {Number} authorityCode The code for the current authority
+ * @param {Object} userContext The user context object
+ * @param {Boolean} isWelsh True if this is a Welsh authority; otherwise false.
+ * @param {Object} currentLookups The current lookups object.
+ * @returns {Object} The new lookup that has been added.
+ */
+export const addLookup = async (data, authorityCode, userContext, isWelsh, currentLookups) => {
   let lookupAdded = false;
   let engError = null;
   let altLanguageError = null;
@@ -2331,7 +2310,7 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
   }
 
   if (data) {
-    let lookupUrl = GetLookupUrl(data.variant, "POST", userToken, authorityCode);
+    let lookupUrl = GetLookupUrl(data.variant, "POST", userContext.currentUser.token, authorityCode);
 
     // if (process.env.NODE_ENV === "development")
     console.log("[DEBUG] handleDoneAddLookup", {
@@ -2367,7 +2346,7 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
             break;
 
           case 401:
-            console.error(`[401 ERROR] Creating ${getLookupVariantString(data.variant)} object`, engBody);
+            userContext.onExpired();
             break;
 
           case 500:
@@ -2419,7 +2398,7 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
                   break;
 
                 case 401:
-                  console.error(`[401 ERROR] Creating ${getLookupVariantString(data.variant)} object`, cymBody);
+                  useContext.onExpired();
                   break;
 
                 case 500:
@@ -2438,7 +2417,7 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
 
           if (newCymLookup) {
             newEngLookup = UpdateEngLinkedRef(newEngLookup, newCymLookup);
-            lookupUrl = GetLookupUrl(data.variant, "PUT", userToken, authorityCode);
+            lookupUrl = GetLookupUrl(data.variant, "PUT", userContext.currentUser.token, authorityCode);
 
             if (lookupUrl) {
               const linkedResponse = await fetch(lookupUrl.url, {
@@ -2467,7 +2446,7 @@ export const addLookup = async (data, authorityCode, userToken, isWelsh, isScott
                     break;
 
                   case 401:
-                    console.error(`[401 ERROR] Creating ${getLookupVariantString(data.variant)} object`, linkedBody);
+                    userContext.onExpired();
                     break;
 
                   case 500:
@@ -2725,11 +2704,11 @@ export const characterSetValidator = (str, characterSet) => {
 /**
  * Method to get the list of base map layer objects to be used.
  *
- * @param {string} userToken The token for the user who is calling the function.
+ * @param {Object} userContext The user context for the user who is calling the function.
  * @returns  {Array} A list of the base map layer objects to be used.
  */
-export const getBaseMapLayers = async (userToken) => {
-  const mapLayerUrl = GetMapLayersUrl("GET", userToken);
+export const getBaseMapLayers = async (userContext) => {
+  const mapLayerUrl = GetMapLayersUrl("GET", userContext.currentUser.token);
 
   let baseMapLayers = [];
 
@@ -2746,11 +2725,28 @@ export const getBaseMapLayers = async (userToken) => {
           return result;
         },
         (error) => {
-          console.error("[ERROR] Getting base map layers", error);
+          if (error.status && error.status === 401) {
+            userContext.onExpired();
+          } else {
+            console.error("[ERROR] Getting base map layers", error);
+          }
           return null;
         }
       );
   }
 
   return baseMapLayers;
+};
+
+/**
+ * Method used to determine of a login has expired.
+ *
+ * @param {String} expiry The expiry date to check against.
+ * @returns {Boolean} True if the login token has expired; otherwise false.
+ */
+export const hasLoginExpired = (expiry) => {
+  const expiryDate = new Date(expiry);
+  const now = new Date();
+
+  return now.getTime > expiryDate.getTime();
 };

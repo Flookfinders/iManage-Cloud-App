@@ -18,6 +18,7 @@
 //    005   16.01.24 Sean Flook                 Changes required to fix warnings.
 //    006   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    007   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    008   18.06.24 Joshua McCormick IMANN-598 Cross ref max set to 20 if scottish, else default 50
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -251,7 +252,7 @@ function EditCrossReferenceDialog({ isOpen, isNew, data, onDone, onClose }) {
           isRequired
           value={crossReference}
           id="cross_reference"
-          maxLength={50}
+          maxLength={!settingsContext.isScottish ? 50 : 20}
           errorText={crossReferenceError}
           helperText="Primary key of corresponding Record in an external data-set."
           onChange={handleCrossReferenceChangeEvent}

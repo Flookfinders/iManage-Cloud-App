@@ -31,6 +31,7 @@
 //    018   09.02.24 Joel Benford    IM-227/228 Fix ward/parish update, and various array pushes
 //    019   06.06.24 Joel Benford     IMANN-497 Interim check-in
 //    020   13.06.24 Joel Benford     IMANN-497 Various fixes mostly on making historic
+//    021   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -578,9 +579,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
               break;
 
             case 401:
-              res.json().then((body) => {
-                console.error(`[401 ERROR] Getting ${getLookupVariantString(variant)} object`, body);
-              });
+              userContext.onExpired();
               break;
 
             case 500:
@@ -897,9 +896,8 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
     const addResults = await addLookup(
       data,
       settingsContext.authorityCode,
-      userContext.currentUser.token,
+      userContext,
       settingsContext.isWelsh,
-      settingsContext.isScottish,
       lookupContext.currentLookups
     );
 
@@ -2029,7 +2027,6 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
       let newCymLookup = null;
 
       const engPutData = getEngPutData();
-      //console.log(lookupUrl.type, JSON.stringify(engPutData));
       if (lookupUrl) {
         await fetch(lookupUrl.url, {
           headers: lookupUrl.headers,
@@ -2059,9 +2056,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 break;
 
               case 401:
-                res.json().then((body) => {
-                  console.error(`[401 ERROR] Updating ${getLookupVariantString(data.variant)} object`, body);
-                });
+                userContext.onExpired();
                 break;
 
               case 500:
@@ -2120,9 +2115,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                       break;
 
                     case 401:
-                      res.json().then((body) => {
-                        console.error(`[401 ERROR] Updating ${getLookupVariantString(data.variant)} object`, body);
-                      });
+                      userContext.onExpired();
                       break;
 
                     case 500:
@@ -2221,9 +2214,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
               break;
 
             case 401:
-              res.json().then((body) => {
-                console.error(`[401 ERROR] Deleting ${currentVariant.current} object`, body);
-              });
+              userContext.onExpired();
               break;
 
             case 500:
@@ -2268,9 +2259,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 break;
 
               case 401:
-                res.json().then((body) => {
-                  console.error(`[401 ERROR] Deleting ${currentVariant.current} object`, body);
-                });
+                userContext.onExpired();
                 break;
 
               case 500:
@@ -2777,7 +2766,6 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
     let newCymLookup = null;
 
     const engPutData = getEngPutData();
-    //console.log(lookupUrl.type, JSON.stringify(engPutData));
     if (lookupUrl) {
       await fetch(lookupUrl.url, {
         headers: lookupUrl.headers,
@@ -2807,9 +2795,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
               break;
 
             case 401:
-              res.json().then((body) => {
-                console.error(`[401 ERROR] Updating ${getLookupVariantString(variant)} object`, body);
-              });
+              userContext.onExpired();
               break;
 
             case 500:
@@ -2829,7 +2815,6 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
           lookupEdited = false;
 
           const cymPutData = getCymPutData();
-          //console.log(lookupUrl.type, JSON.stringify(cymPutData));
           if (cymPutData) {
             await fetch(lookupUrl.url, {
               headers: lookupUrl.headers,
@@ -2859,9 +2844,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                     break;
 
                   case 401:
-                    res.json().then((body) => {
-                      console.error(`[401 ERROR] Updating ${getLookupVariantString(variant)} object`, body);
-                    });
+                    userContext.onExpired();
                     break;
 
                   case 500:

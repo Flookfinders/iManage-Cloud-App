@@ -26,6 +26,7 @@
 //    013   13.02.24 Sean Flook                 Only set the data if it exists.
 //    014   19.02.24 Sean Flook       IMANN-307 Check for the ESU objects when trying to edit the ESU template.
 //    015   08.05.24 Sean Flook       IMANN-447 Added exclude from export.
+//    016   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -552,7 +553,7 @@ function StreetTemplateTab() {
                 break;
 
               case 401:
-                setUpdateError("You do not have authorisation to update the template");
+                useContext.onExpired();
                 break;
 
               case 403:

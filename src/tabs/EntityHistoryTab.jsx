@@ -23,6 +23,7 @@
 //    010   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    011   15.03.24 Sean Flook            GLB6 Use individual buttons to toggle between updates and edits.
 //    012   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    013   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -109,7 +110,11 @@ function EntityHistoryTab({ variant }) {
                 setData(result);
               },
               (error) => {
-                console.error(`[ERROR] Get ${variant} history`, error);
+                if (error.status && error.status === 401) {
+                  userContext.onExpired();
+                } else {
+                  console.error(`[ERROR] Get ${variant} history`, error);
+                }
               }
             )
             .then(() => {

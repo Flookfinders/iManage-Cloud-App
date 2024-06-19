@@ -16,6 +16,7 @@
 //    003   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate.
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
+//    006   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -232,7 +233,7 @@ const ADSNavHeader = () => {
       currentProperty,
       propertyContext.currentProperty.newProperty,
       propertyContext,
-      userContext.currentUser.token,
+      userContext,
       lookupContext,
       searchContext,
       mapContext,

@@ -25,6 +25,7 @@
 //    012   20.05.24 Sean Flook       IMANN-445 Display API errors.
 //    013   04.06.24 Sean Flook       IMANN-445 Show save data.
 //    014   04.06.24 Sean Flook       IMANN-445 Only close the edit dialog if the save was successful.
+//    015   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -218,9 +219,7 @@ function MapLayersTab(props) {
                 break;
 
               case 401:
-                res.json().then((body) => {
-                  console.error(`[401 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body);
-                });
+                useContext.onExpired();
                 break;
 
               default:
@@ -474,9 +473,7 @@ function MapLayersTab(props) {
                 break;
 
               case 401:
-                res.json().then((body) => {
-                  console.error(`[401 ERROR] Deleting map layer`, body);
-                });
+                userContext.onExpired();
                 break;
 
               default:
@@ -652,6 +649,7 @@ function MapLayersTab(props) {
               break;
 
             case 401:
+              useContext.onExpired();
               setMapLayerErrors([
                 {
                   field: "Title",

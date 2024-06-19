@@ -29,6 +29,7 @@
 //    016   29.04.24 Sean Flook       IMANN-413 Only filter lookups on language for Welsh authorities.
 //    017   03.05.24 Joel Benford               Fix index on new descriptors
 //    018   29.05.24 Sean Flook       IMANN-489 Prevent the user from changing the language.
+//    019   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -283,9 +284,8 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
     const addResults = await addLookup(
       data,
       settingsContext.authorityCode,
-      userContext.currentUser.token,
+      userContext,
       settingsContext.isWelsh,
-      settingsContext.isScottish,
       lookupContext.currentLookups
     );
 

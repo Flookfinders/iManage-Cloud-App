@@ -25,6 +25,7 @@
 //    012   19.04.24 Sean Flook       IMANN-137 For Welsh authority allow 2 characters for the suffix.
 //    013   14.06.24 Sean Flook       IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
 //    014   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
+//    015   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1388,9 +1389,8 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
     const addResults = await addLookup(
       data,
       settingsContext.authorityCode,
-      userContext.currentUser.token,
+      userContext,
       settingsContext.isWelsh,
-      settingsContext.isScottish,
       lookupContext.currentLookups
     );
 

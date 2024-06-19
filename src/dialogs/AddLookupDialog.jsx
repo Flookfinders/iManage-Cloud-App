@@ -23,6 +23,7 @@
 //    010   27.03.24 Sean Flook                 Added ADSDialogTitle and fixed some warnings.
 //    011   19.04.24 Sean Flook       IMANN-355 Use a dropdown list for selecting the authority.
 //    012   26.04.24 Sean Flook       IMANN-413 Removed Gaelic option.
+//    013   16.06.24 Joel Benford     IMANN-560 Make duplicate checks case insensitive
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -132,13 +133,15 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           setEngError("You cannot add an empty postcode.");
           validData = false;
         } else {
-          const postcodeRecord = lookupContext.currentLookups.postcodes.find((x) => x.postcode === engValue);
+          const postcodeRecord = lookupContext.currentLookups.postcodes.find(
+            (x) => x.postcode.toUpperCase() === engValue.toUpperCase()
+          );
           if (postcodeRecord) {
             setEngError("There is already an entry with this postcode in the table.");
             validData = false;
           }
           const postcodeRegEx = /^([A-Z][A-HJ-Y]?[0-9][A-Z0-9]? ?[0-9][A-Z]{2}|GIR ?0A{2})$/;
-          if (!postcodeRegEx.test(engValue)) {
+          if (!postcodeRegEx.test(engValue.toUpperCase())) {
             setEngError("This postcode does not have a valid format.");
             validData = false;
           }
@@ -151,7 +154,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           validData = false;
         } else {
           const engPostTownRecord = lookupContext.currentLookups.postTowns.find(
-            (x) => x.postTown === engValue && x.language === "ENG"
+            (x) => x.postTown.toUpperCase() === engValue.toUpperCase() && x.language === "ENG"
           );
           if (engPostTownRecord) {
             setEngError("There is already an English entry with this post town in the table.");
@@ -165,7 +168,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
             validData = false;
           } else {
             const cymPostTownRecord = lookupContext.currentLookups.postTowns.find(
-              (x) => x.postTown === cymValue && x.language === "CYM"
+              (x) => x.postTown.toUpperCase() === cymValue.toUpperCase() && x.language === "CYM"
             );
             if (cymPostTownRecord) {
               setCymError("There is already a Welsh entry with this post town in the table.");
@@ -181,7 +184,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           validData = false;
         } else {
           const engSubLocalityRecord = lookupContext.currentLookups.subLocalities.find(
-            (x) => x.subLocality === engValue && x.language === "ENG"
+            (x) => x.subLocality.toUpperCase() === engValue.toUpperCase() && x.language === "ENG"
           );
           if (engSubLocalityRecord) {
             setEngError("There is already an English entry with this sub-locality in the table.");
@@ -196,7 +199,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           validData = false;
         } else {
           const crossRefDescriptionRecord = lookupContext.currentLookups.appCrossRefs.find(
-            (x) => x.xrefDescription === crossRefDescription
+            (x) => x.xrefDescription.toUpperCase() === crossRefDescription.toUpperCase()
           );
           if (crossRefDescriptionRecord) {
             setCrossRefDescriptionError("There is already a cross reference with this description.");
@@ -209,7 +212,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           validData = false;
         } else {
           const crossRefSourceRecord = lookupContext.currentLookups.appCrossRefs.find(
-            (x) => x.xrefSourceRef73 === `${crossRefSourceAuthority}${crossRefSourceCode}`
+            (x) => x.xrefSourceRef73.toUpperCase() === `${crossRefSourceAuthority}${crossRefSourceCode}`.toUpperCase()
           );
           if (crossRefSourceRecord) {
             setCrossRefSourceCodeError("There is already a cross reference with this source.");
@@ -224,7 +227,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           validData = false;
         } else {
           const engLocalityRecord = lookupContext.currentLookups.localities.find(
-            (x) => x.locality === engValue && x.language === "ENG"
+            (x) => x.locality.toUpperCase() === engValue.toUpperCase() && x.language === "ENG"
           );
           if (engLocalityRecord) {
             setEngError("There is already an English entry with this locality in the table.");
@@ -238,7 +241,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
             validData = false;
           } else {
             const cymLocalityRecord = lookupContext.currentLookups.localities.find(
-              (x) => x.locality === cymValue && x.language === "CYM"
+              (x) => x.locality.toUpperCase() === cymValue.toUpperCase() && x.language === "CYM"
             );
             if (cymLocalityRecord) {
               setCymError("There is already a Welsh entry with this locality in the table.");
@@ -254,7 +257,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           validData = false;
         } else {
           const engTownRecord = lookupContext.currentLookups.towns.find(
-            (x) => x.town === engValue && x.language === "ENG"
+            (x) => x.town.toUpperCase() === engValue.toUpperCase() && x.language === "ENG"
           );
           if (engTownRecord) {
             setEngError("There is already an English entry with this town in the table.");
@@ -268,7 +271,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
             validData = false;
           } else {
             const cymTownRecord = lookupContext.currentLookups.towns.find(
-              (x) => x.town === cymValue && x.language === "CYM"
+              (x) => x.town.toUpperCase() === cymValue.toUpperCase() && x.language === "CYM"
             );
             if (cymTownRecord) {
               setCymError("There is already a Welsh entry with this town in the table.");
@@ -284,7 +287,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           validData = false;
         } else {
           const engIslandRecord = lookupContext.currentLookups.islands.find(
-            (x) => x.island === engValue && x.language === "ENG"
+            (x) => x.island.toUpperCase() === engValue.toUpperCase() && x.language === "ENG"
           );
           if (engIslandRecord) {
             setEngError("There is already an English entry with this island in the table.");
@@ -299,7 +302,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           validData = false;
         } else {
           const engAdministrativeAreaRecord = lookupContext.currentLookups.adminAuthorities.find(
-            (x) => x.administrativeArea === engValue && x.language === "ENG"
+            (x) => x.administrativeArea.toUpperCase() === engValue.toUpperCase() && x.language === "ENG"
           );
           if (engAdministrativeAreaRecord) {
             setEngError("There is already an English entry with this administrative area in the table.");
@@ -313,7 +316,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
             validData = false;
           } else {
             const cymAdministrativeAreaRecord = lookupContext.currentLookups.adminAuthorities.find(
-              (x) => x.town === cymValue && x.language === "CYM"
+              (x) => x.town.toUpperCase() === cymValue.toUpperCase() && x.language === "CYM"
             );
             if (cymAdministrativeAreaRecord) {
               setCymError("There is already a Welsh entry with this administrative area in the table.");
@@ -328,7 +331,9 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           setWardNameError("You cannot add an empty ward.");
           validData = false;
         } else {
-          const wardNameRecord = lookupContext.currentLookups.wards.find((x) => x.ward === wardName);
+          const wardNameRecord = lookupContext.currentLookups.wards.find(
+            (x) => x.ward.toUpperCase() === wardName.toUpperCase()
+          );
           if (wardNameRecord) {
             setWardNameError("There is already an entry with this ward in the table.");
           }
@@ -338,7 +343,9 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           setWardCodeError("You cannot add an empty code.");
           validData = false;
         } else {
-          const wardCodeRecord = lookupContext.currentLookups.wards.find((x) => x.wardCode === wardCode);
+          const wardCodeRecord = lookupContext.currentLookups.wards.find(
+            (x) => x.wardCode.toUpperCase() === wardCode.toUpperCase()
+          );
           if (wardCodeRecord) {
             setWardCodeError("There is already an entry with this code in the table.");
           }
@@ -350,7 +357,9 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           setParishNameError("You cannot add an empty parish.");
           validData = false;
         } else {
-          const parishNameRecord = lookupContext.currentLookups.parishes.find((x) => x.parish === parishName);
+          const parishNameRecord = lookupContext.currentLookups.parishes.find(
+            (x) => x.parish.toUpperCase() === parishName.toUpperCase()
+          );
           if (parishNameRecord) {
             setParishNameError("There is already an entry with this parish in the table.");
           }
@@ -360,7 +369,9 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           setParishCodeError("You cannot add an empty code.");
           validData = false;
         } else {
-          const parishCodeRecord = lookupContext.currentLookups.parishes.find((x) => x.parishCode === parishCode);
+          const parishCodeRecord = lookupContext.currentLookups.parishes.find(
+            (x) => x.parishCode.toUpperCase() === parishCode.toUpperCase()
+          );
           if (parishCodeRecord) {
             setParishCodeError("There is already an entry with this code in the table.");
           }
@@ -386,7 +397,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
           validData = false;
         } else {
           const dbAuthorityNameRecord = lookupContext.currentLookups.dbAuthorities.find(
-            (x) => x.authorityName === dbAuthorityName
+            (x) => x.authorityName.toUpperCase() === dbAuthorityName.toUpperCase()
           );
           if (dbAuthorityNameRecord) {
             setDbAuthorityError("There is already an entry with this authority name in the table.");

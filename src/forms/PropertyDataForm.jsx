@@ -69,6 +69,7 @@
 //    056   06.06.24 Sean Flook       IMANN-524 Correctly update the sandbox when changing the extent geometry.
 //    057   12.06.24 Sean Flook       IMANN-562 Correctly set the pkId when updating the provenance geometry.
 //    058   12.06.24 Sean Flook       IMANN-565 Handle polygon deletion.
+//    059   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2184,12 +2185,7 @@ function PropertyDataForm({ data, loading }) {
    * @param {boolean} deleteChildren True if the user has confirmed to delete the child properties when deleting a parent property; otherwise false.
    */
   const handleDeleteProperty = async (deleteChildren) => {
-    const result = await PropertyDelete(
-      propertyData.uprn,
-      deleteChildren,
-      userContext.currentUser.token,
-      propertyContext
-    );
+    const result = await PropertyDelete(propertyData.uprn, deleteChildren, userContext, propertyContext);
 
     deleteResult.current = result;
     alertType.current = "deleteProperty";
@@ -2382,7 +2378,7 @@ function PropertyDataForm({ data, loading }) {
       currentProperty,
       propertyContext.currentProperty.newProperty,
       propertyContext,
-      userContext.currentUser.token,
+      userContext,
       lookupContext,
       searchContext,
       mapContext,
@@ -3299,7 +3295,7 @@ function PropertyDataForm({ data, loading }) {
       newData,
       propertyData.organisation,
       lookupContext,
-      userContext.currentUser.token,
+      userContext,
       settingsContext.isScottish
     );
 
@@ -3310,7 +3306,7 @@ function PropertyDataForm({ data, loading }) {
           { ...newData, language: "ENG" },
           propertyData.organisation,
           lookupContext,
-          userContext.currentUser.token,
+          userContext,
           settingsContext.isScottish
         );
 
@@ -3443,7 +3439,8 @@ function PropertyDataForm({ data, loading }) {
         newSecondLpi,
         propertyData.organisation,
         lookupContext,
-        userContext.currentUser.token
+        userContext,
+        settingsContext.isScottish
       );
 
       // If we did not get the address try the English version of the address
@@ -3453,7 +3450,7 @@ function PropertyDataForm({ data, loading }) {
             { ...newSecondLpi, language: "ENG" },
             propertyData.organisation,
             lookupContext,
-            userContext.currentUser.token,
+            userContext,
             settingsContext.isScottish
           );
 
@@ -3688,7 +3685,7 @@ function PropertyDataForm({ data, loading }) {
 
       const parentData =
         isRange && wizardData.savedProperty
-          ? await GetPropertyMapData(wizardData.savedProperty[0].parentUprn, userContext.currentUser.token)
+          ? await GetPropertyMapData(wizardData.savedProperty[0].parentUprn, userContext)
           : null;
       const engLpis = parentData && parentData.lpis ? parentData.lpis.filter((x) => x.language === "ENG") : null;
       const parent =
@@ -3755,7 +3752,7 @@ function PropertyDataForm({ data, loading }) {
           mapContext,
           streetContext,
           propertyContext,
-          userContext.currentUser.token,
+          userContext,
           settingsContext.isScottish
         );
       }
@@ -4552,7 +4549,7 @@ function PropertyDataForm({ data, loading }) {
         case "createChild":
           await GetStreetMapData(
             propertyContext.leavingProperty.information.usrn,
-            userContext.currentUser.token,
+            userContext,
             settingsContext.isScottish
           ).then((result) => {
             if (result && result.state !== 4) {
@@ -4618,7 +4615,7 @@ function PropertyDataForm({ data, loading }) {
                   currentProperty,
                   propertyContext.currentProperty.newProperty,
                   propertyContext,
-                  userContext.currentUser.token,
+                  userContext,
                   lookupContext,
                   searchContext,
                   mapContext,
@@ -4661,7 +4658,7 @@ function PropertyDataForm({ data, loading }) {
     streetContext,
     settingsContext.isScottish,
     settingsContext.isWelsh,
-    userContext.currentUser.token,
+    userContext,
   ]);
 
   useEffect(() => {
@@ -4697,7 +4694,7 @@ function PropertyDataForm({ data, loading }) {
                     mapContext,
                     streetContext,
                     propertyContext,
-                    userContext.currentUser.token,
+                    userContext,
                     settingsContext.isScottish
                   );
                   break;
@@ -4731,7 +4728,7 @@ function PropertyDataForm({ data, loading }) {
                       mapContext,
                       streetContext,
                       propertyContext,
-                      userContext.currentUser.token,
+                      userContext,
                       settingsContext.isScottish
                     );
                   break;
@@ -4761,7 +4758,7 @@ function PropertyDataForm({ data, loading }) {
                       mapContext,
                       streetContext,
                       propertyContext,
-                      userContext.currentUser.token,
+                      userContext,
                       settingsContext.isScottish
                     );
                   break;
@@ -4799,7 +4796,7 @@ function PropertyDataForm({ data, loading }) {
     mapContext,
     propertyContext,
     streetContext,
-    userContext.currentUser.token,
+    userContext,
     searchContext.currentSearchData.results,
     settingsContext.isScottish,
   ]);

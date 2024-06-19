@@ -42,8 +42,9 @@
 //    029   29.04.24 Sean Flook       IMANN-413 Only filter lookups on language for Welsh authorities.
 //    030   22.05.24 Sean Flook       IMANN-473 Prevent controls from being edited under certain conditions for Scottish authorities.
 //    031   29.05.24 Sean Flook       IMANN-489 Prevent the user from changing the language.
-//    032   14.06.24 Joshua McCormick IMANN-543 Official Addresss field set to required.
-//    033   14.06.24 Joshua McCormick IMANN-543 Official Addresss field set to required for OS only
+//    032   14.06.24 Joshua McCormick IMANN-543 Official Address field set to required.
+//    033   14.06.24 Joshua McCormick IMANN-543 Official Address field set to required for OS only
+//    034   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -214,7 +215,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
         newLpiData,
         data.organisation,
         lookupContext,
-        userContext.currentUser.token,
+        userContext,
         settingsContext.isScottish
       );
       let currentPostcode = newLpiData.postcode;
@@ -748,9 +749,8 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
     const addResults = await addLookup(
       data,
       settingsContext.authorityCode,
-      userContext.currentUser.token,
+      userContext,
       settingsContext.isWelsh,
-      settingsContext.isScottish,
       lookupContext.currentLookups
     );
 

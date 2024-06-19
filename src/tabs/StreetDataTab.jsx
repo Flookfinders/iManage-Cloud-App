@@ -39,6 +39,7 @@
 //    026   30.05.24 Joel Benford     IMANN-493 Hide "Add language version" menu unless in dev
 //    027   11.06.24 Sean Flook       IMANN-490 Added code to update the USRN.
 //    028   12.06.24 Sean Flook       IMANN-536 Removed a warning.
+//    029   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -560,11 +561,7 @@ function StreetDataTab({
   const handleOpenInStreetview = () => {
     setAnchorEl(null);
     if (streetContext.currentStreet.usrn) {
-      DisplayStreetInStreetView(
-        streetContext.currentStreet.usrn,
-        userContext.currentUser.token,
-        settingsContext.isScottish
-      );
+      DisplayStreetInStreetView(streetContext.currentStreet.usrn, userContext, settingsContext.isScottish);
     }
   };
 

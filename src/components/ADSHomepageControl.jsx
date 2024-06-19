@@ -18,6 +18,7 @@
 //    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    007   25.01.24 Sean Flook                 Correctly handle status code 204.
+//    008   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -39,7 +40,6 @@ import { adsMidGreyA10 } from "../utils/ADSColours";
 
 function ADSHomepageControl() {
   const userContext = useContext(UserContext);
-  const token = userContext.currentUser.token;
   const [loaded, setLoaded] = useState(false);
   const [apiData, setApiData] = useState({ pieCharts: [], latestStreetAndPropertyEdits: [] });
 
@@ -56,7 +56,7 @@ function ADSHomepageControl() {
       const month = getMonthString(pDate.getMonth()).toLowerCase();
       const year = `${pDate.getFullYear()}`;
       const queryString = `?propertyEditsCutOffDate=${day}%20${month}%20${year}&maxLatestEditResults=${propertyMaxRows}`;
-      const endpoint = GetHomepageUrl(token);
+      const endpoint = GetHomepageUrl(userContext.currentUser.token);
 
       await fetch(endpoint.url + queryString, {
         headers: endpoint.headers,
@@ -73,7 +73,11 @@ function ADSHomepageControl() {
             setApiData(result);
           },
           (error) => {
-            console.error("[ERROR] Get Homepage data", error);
+            if (error.status && error.status === 401) {
+              userContext.onExpired();
+            } else {
+              console.error("[ERROR] Get Homepage data", error);
+            }
             setApiData({ pieCharts: [], latestStreetAndPropertyEdits: [] });
           }
         );
@@ -81,7 +85,7 @@ function ADSHomepageControl() {
 
     fetchToState();
     setLoaded(true);
-  }, [token, apiData, loaded]);
+  }, [apiData, loaded, userContext]);
 
   return (
     <Grid

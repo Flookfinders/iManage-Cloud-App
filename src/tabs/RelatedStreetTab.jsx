@@ -40,6 +40,7 @@
 //    027   26.04.24 Sean Flook       IMANN-166 Reset flag if the data changes.
 //    028   13.05.24 Sean Flook       IMANN-439 Changed to use grids to display th data as well as other display improvements.
 //    029   17.05.24 Sean Flook       IMANN-458 Correctly highlight the avatar when items are hovered.
+//    030   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -311,7 +312,7 @@ function RelatedStreetTab({
 
     const found = mapContext.currentSearchData.streets.find((rec) => rec.usrn === usrn);
 
-    const streetData = await GetStreetMapData(usrn, userContext.currentUser.token, settingsContext.isScottish);
+    const streetData = await GetStreetMapData(usrn, userContext, settingsContext.isScottish);
 
     const highlightStreet = {
       usrn: usrn,
@@ -378,7 +379,7 @@ function RelatedStreetTab({
     if (rec) {
       handleStreetActionsMenuClose(event);
 
-      await GetStreetMapData(rec.usrn, userContext.currentUser.token, settingsContext.isScottish).then((result) => {
+      await GetStreetMapData(rec.usrn, userContext, settingsContext.isScottish).then((result) => {
         if (result && result.esus && result.esus.length > 0) {
           const esuPoints = result.esus[0].wktGeometry.replace("LINESTRING (", "").replace(")").split(",");
 

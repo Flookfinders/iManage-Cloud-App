@@ -55,6 +55,7 @@
 //    041   26.04.24 Sean Flook                 Added some error handling.
 //    042   29.04.24 Sean Flook                 Replaced openPropertyRecord with call to doOpenRecord.
 //    043   29.05.24 Joshua McCormick IMANN-470 Nowrap street title & added tooltip with title
+//    044   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -307,7 +308,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   async function HandleAddProperty(event, rec) {
     handleStreetActionsMenuClose(event);
 
-    await GetStreetMapData(rec.usrn, userContext.currentUser.token, settingsContext.isScottish).then((result) => {
+    await GetStreetMapData(rec.usrn, userContext, settingsContext.isScottish).then((result) => {
       if (result && result.state !== 4) {
         propertyContext.resetPropertyErrors();
         propertyContext.onWizardDone(null, false, null, null);
@@ -331,7 +332,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   async function HandleAddRange(event, rec) {
     handleStreetActionsMenuClose(event);
 
-    await GetStreetMapData(rec.usrn, userContext.currentUser.token, settingsContext.isScottish).then((result) => {
+    await GetStreetMapData(rec.usrn, userContext, settingsContext.isScottish).then((result) => {
       if (result && result.state !== 4) {
         propertyContext.resetPropertyErrors();
         propertyContext.onWizardDone(null, false, null, null);
@@ -356,7 +357,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
     if (rec) {
       if (rec.type === 15) {
         handleStreetActionsMenuClose(event);
-        if (rec.usrn) DisplayStreetInStreetView(rec.usrn, userContext.currentUser.token, settingsContext.isScottish);
+        if (rec.usrn) DisplayStreetInStreetView(rec.usrn, userContext, settingsContext.isScottish);
       } else {
         handlePropertyActionsMenuClose(event);
         if (rec.easting && rec.northing) openInStreetView([rec.easting, rec.northing]);
@@ -399,7 +400,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
 
       const parentData =
         isRange && wizardData.savedProperty && wizardData.savedProperty.length > 0
-          ? await GetPropertyMapData(wizardData.savedProperty[0].parentUprn, userContext.currentUser.token)
+          ? await GetPropertyMapData(wizardData.savedProperty[0].parentUprn, userContext)
           : null;
       const engLpis = parentData && parentData.lpis ? parentData.lpis.filter((x) => x.language === "ENG") : null;
       const parent =
@@ -448,7 +449,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
           mapContext,
           streetContext,
           propertyContext,
-          userContext.currentUser.token,
+          userContext,
           settingsContext.isScottish
         );
       }
@@ -481,7 +482,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
       const currentSearchStreets = JSON.parse(JSON.stringify(mapContext.currentSearchData.streets));
 
       if (!foundStreet) {
-        const streetData = await GetStreetMapData(rec.usrn, userContext.currentUser.token, settingsContext.isScottish);
+        const streetData = await GetStreetMapData(rec.usrn, userContext, settingsContext.isScottish);
         const esus = streetData
           ? streetData.esus.map((esuRec) => ({
               esuId: esuRec.esuId,
@@ -638,7 +639,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
           mapContext,
           streetContext,
           propertyContext,
-          userContext.currentUser.token,
+          userContext,
           settingsContext.isScottish
         );
       }
@@ -726,7 +727,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
 
     const found = mapContext.currentSearchData.streets.find((rec) => rec.usrn === usrn);
 
-    const streetData = await GetStreetMapData(usrn, userContext.currentUser.token, settingsContext.isScottish);
+    const streetData = await GetStreetMapData(usrn, userContext, settingsContext.isScottish);
 
     const zoomStreet = {
       usrn: usrn,
@@ -807,7 +808,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
     deleteUSRN.current = usrn;
     deleteUPRN.current = null;
     await GetAssociatedRecords();
-    const deleteStreet = await GetStreetMapData(usrn, userContext.currentUser.token, settingsContext.isScottish);
+    const deleteStreet = await GetStreetMapData(usrn, userContext, settingsContext.isScottish);
     setChildCount(deleteStreet && deleteStreet.esus ? deleteStreet.esus.length : 0);
     setOpenDeleteConfirmation(true);
   }
@@ -939,7 +940,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
     deleteUSRN.current = null;
     deleteUPRN.current = uprn;
     await GetAssociatedRecords();
-    const deleteProperty = await GetPropertyMapData(uprn, userContext.currentUser.token);
+    const deleteProperty = await GetPropertyMapData(uprn, userContext);
     setChildCount(deleteProperty ? deleteProperty.childCount : 0);
     setOpenDeleteConfirmation(true);
   }
@@ -1043,18 +1044,13 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
           deleteChildren,
           lookupContext,
           streetContext,
-          userContext.currentUser.token,
+          userContext,
           settingsContext.isScottish
         );
 
         if (onSetDeleteOpen) onSetDeleteOpen(true, "Street", result, deleteUSRN.current, deleteChildren);
       } else if (deleteUPRN.current) {
-        const result = await PropertyDelete(
-          deleteUPRN.current,
-          deleteChildren,
-          userContext.currentUser.token,
-          propertyContext
-        );
+        const result = await PropertyDelete(deleteUPRN.current, deleteChildren, userContext, propertyContext);
 
         if (onSetDeleteOpen) onSetDeleteOpen(true, "Property", result, deleteUPRN.current, deleteChildren);
       }
@@ -1071,11 +1067,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   async function GetAssociatedRecords() {
     let associatedRecords = [];
     if (deleteUSRN.current) {
-      const streetData = await GetStreetMapData(
-        deleteUSRN.current,
-        userContext.currentUser.token,
-        settingsContext.isScottish
-      );
+      const streetData = await GetStreetMapData(deleteUSRN.current, userContext, settingsContext.isScottish);
 
       if (streetData) {
         if (streetData.streetDescriptors && streetData.streetDescriptors.length > 0)
@@ -1155,7 +1147,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
           });
       }
     } else if (deleteUPRN.current) {
-      const propertyData = await GetPropertyMapData(deleteUPRN.current, userContext.currentUser.token);
+      const propertyData = await GetPropertyMapData(deleteUPRN.current, userContext);
 
       if (propertyData) {
         if (propertyData.lpis && propertyData.lpis.length > 0)
@@ -1268,7 +1260,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                     mapContext,
                     streetContext,
                     propertyContext,
-                    userContext.currentUser.token,
+                    userContext,
                     settingsContext.isScottish
                   );
                   break;
@@ -1301,7 +1293,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                       mapContext,
                       streetContext,
                       propertyContext,
-                      userContext.currentUser.token,
+                      userContext,
                       settingsContext.isScottish
                     );
                   break;
@@ -1331,7 +1323,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                       mapContext,
                       streetContext,
                       propertyContext,
-                      userContext.currentUser.token,
+                      userContext,
                       settingsContext.isScottish
                     );
                   break;
@@ -1445,7 +1437,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
     mapContext,
     propertyContext,
     streetContext,
-    userContext.currentUser.token,
+    userContext,
     searchContext.currentSearchData.results,
     settingsContext.isScottish,
   ]);

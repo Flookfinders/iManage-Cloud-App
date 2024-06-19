@@ -22,6 +22,7 @@
 //    009   27.03.24 Sean Flook                 Further changes to fix warnings.
 //    010   27.03.24 Sean Flook                 Make districts visible to GeoPlace authorities.
 //    011   14.06.24 Joshua McCormick IMANN-555 Authorities in lookup table set to hidden
+//    012   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -242,9 +243,7 @@ function LookupTablesTab() {
                 break;
 
               case 401:
-                res.json().then((body) => {
-                  console.error("[401 ERROR] Updating operational district", body);
-                });
+                useContext.onExpired();
                 break;
 
               case 500:
@@ -514,9 +513,7 @@ function LookupTablesTab() {
                 break;
 
               case 401:
-                res.json().then((body) => {
-                  console.error("[401 ERROR] Creating operational district", body);
-                });
+                useContext.onExpired();
                 break;
 
               case 500:

@@ -40,6 +40,7 @@
 //    025   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    026   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    027   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
+//    028   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -268,7 +269,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
         null
       );
     } else {
-      const streetData = await GetStreetMapData(usrn, userContext.currentUser.token, settingsContext.isScottish);
+      const streetData = await GetStreetMapData(usrn, userContext, settingsContext.isScottish);
       const esus = streetData
         ? streetData.esus.map((rec) => ({
             esuId: rec.esuId,
@@ -511,7 +512,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
       currentProperty,
       propertyContext.currentProperty.newProperty,
       propertyContext,
-      userContext.currentUser.token,
+      userContext,
       lookupContext,
       searchContext,
       mapContext,
@@ -819,7 +820,11 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
                   else setStreetData(result);
                 },
                 (error) => {
-                  console.error(`[ERROR] Get ${relatedType} related data`, error);
+                  if (error.status && error.status === 401) {
+                    userContext.onExpired();
+                  } else {
+                    console.error(`[ERROR] Get ${relatedType} related data`, error);
+                  }
                 }
               )
               .then(() => {

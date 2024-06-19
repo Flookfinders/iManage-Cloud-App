@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   17.05.24 Sean Flook       IMANN-176 Initial version.
 //    002   20.05.24 Sean Flook       IMANN-176 Handle when there are no invalid codes found.
+//    003   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -91,6 +92,7 @@ function UpdateWardParishBoundariesDialog({ isOpen, variant, onClose }) {
                   break;
 
                 case 401:
+                  userContext.onExpired();
                   setErrorTitle(
                     `${
                       process.env.NODE_ENV === "development" ? "[401 ERROR] Getting" : "Error getting"
@@ -196,6 +198,7 @@ function UpdateWardParishBoundariesDialog({ isOpen, variant, onClose }) {
                   break;
 
                 case 401:
+                  userContext.onExpired();
                   setErrorTitle(
                     `${
                       process.env.NODE_ENV === "development" ? "[401 ERROR] Updating" : "Error updating"

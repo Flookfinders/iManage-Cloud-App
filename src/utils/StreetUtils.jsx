@@ -64,6 +64,7 @@
 //    051   04.06.24 Sean Flook       IMANN-281 Default to current date if start date is null when creating a new street.
 //    052   04.06.24 Sean Flook       IMANN-515 Ensure the end dates are set on all the ESUs, HDs and OWEs when the state is set to closed.
 //    053   12.06.24 Sean Flook       IMANN-515 Correctly set the changeType and end dates when state is 4.
+//    054   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -551,16 +552,16 @@ export function GetNewStreet(
 /**
  * Calls the API endpoint used to delete the given street.
  *
- * @param {number} usrn The USRN of the street that is being deleted.
- * @param {boolean} deleteEsus If true then the ESUs will also be deleted; otherwise they are left.
- * @param {object} lookupContext The lookup context object.
- * @param {object} streetContext The street context object.
- * @param {string} userToken The token for the user who is calling the endpoint.
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @return {boolean} True if the street was deleted successfully; otherwise false.
+ * @param {Number} usrn The USRN of the street that is being deleted.
+ * @param {Boolean} deleteEsus If true then the ESUs will also be deleted; otherwise they are left.
+ * @param {Object} lookupContext The lookup context object.
+ * @param {Object} streetContext The street context object.
+ * @param {Object} userContext The user context object for the user who is calling the endpoint.
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @return {Boolean} True if the street was deleted successfully; otherwise false.
  */
-export async function StreetDelete(usrn, deleteEsus, lookupContext, streetContext, userToken, isScottish) {
-  const deleteUrl = GetDeleteStreetUrl(userToken, isScottish);
+export async function StreetDelete(usrn, deleteEsus, lookupContext, streetContext, userContext, isScottish) {
+  const deleteUrl = GetDeleteStreetUrl(userContext.currentUser.token, isScottish);
 
   if (deleteUrl) {
     // if (process.env.NODE_ENV === "development")
@@ -630,28 +631,7 @@ export async function StreetDelete(usrn, deleteEsus, lookupContext, streetContex
             break;
 
           case 401:
-            streetContext.onStreetErrors(
-              [
-                {
-                  field: "USRN",
-                  errors: ["You are not authorized to delete this street."],
-                },
-              ],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              []
-            );
+            userContext.onExpired();
             break;
 
           case 403:
@@ -2749,15 +2729,15 @@ export function GetStreetValidationErrors(body, newStreet) {
 /**
  * Return the street record for use within the map.
  *
- * @param {number} usrn The USRN of the street we are interested in.
- * @param {string} userToken The token for the user who is calling the endpoint.
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @return {object} The street map object.
+ * @param {Number} usrn The USRN of the street we are interested in.
+ * @param {Object} userContext The user context object for the user who is calling the endpoint.
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @return {Object} The street map object.
  */
-export async function GetStreetMapData(usrn, userToken, isScottish) {
+export async function GetStreetMapData(usrn, userContext, isScottish) {
   if (usrn === 0) return null;
 
-  const streetUrl = GetStreetByUSRNUrl(userToken, isScottish);
+  const streetUrl = GetStreetByUSRNUrl(userContext.currentUser.token, isScottish);
 
   if (streetUrl) {
     const returnData = await fetch(`${streetUrl.url}/${usrn}`, {
@@ -2776,7 +2756,7 @@ export async function GetStreetMapData(usrn, userToken, isScottish) {
             return null;
 
           case 401:
-            console.error("[401 ERROR] GetStreetMapData: Authorization details are not valid or have expired.", res);
+            userContext.onExpired();
             return null;
 
           case 403:
@@ -2809,13 +2789,13 @@ export async function GetStreetMapData(usrn, userToken, isScottish) {
 /**
  * Method to display the given street in Google Street View.
  *
- * @param {number} usrn The USRN of the street we are interested in.
- * @param {string} userToken The token for the user who is calling the endpoint.
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {Number} usrn The USRN of the street we are interested in.
+ * @param {Object} userContext The user context object for the user who is calling the endpoint.
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
  */
-export async function DisplayStreetInStreetView(usrn, userToken, isScottish) {
+export async function DisplayStreetInStreetView(usrn, userContext, isScottish) {
   if (usrn && usrn > 0) {
-    await GetStreetMapData(usrn, userToken, isScottish).then((result) => {
+    await GetStreetMapData(usrn, userContext, isScottish).then((result) => {
       if (result) {
         if (isScottish) {
           // OneScotland does not have start and end coordinates on the street so need to get them from the ESUs
@@ -2841,14 +2821,14 @@ export async function DisplayStreetInStreetView(usrn, userToken, isScottish) {
 /**
  * Return the ESU data for the given id.
  *
- * @param {number} esuId The id of the ESU we are interested in.
- * @param {string} userToken The token for the user calling the end point.
- * @returns {object|null} The ESU data for the given id.
+ * @param {Number} esuId The id of the ESU we are interested in.
+ * @param {Object} userContext The user context object for the user calling the end point.
+ * @returns {Object|null} The ESU data for the given id.
  */
-export async function GetEsuData(esuId, userToken) {
+export async function GetEsuData(esuId, userContext) {
   if (!esuId || esuId === 0) return null;
 
-  const esuUrl = GetEsuByIdUrl(userToken);
+  const esuUrl = GetEsuByIdUrl(userContext.currentUser.token);
 
   if (esuUrl) {
     const returnData = await fetch(`${esuUrl.url}/${esuId}`, {
@@ -2863,7 +2843,11 @@ export async function GetEsuData(esuId, userToken) {
           return result;
         },
         (error) => {
-          console.error("[ERROR] Get Street data", error);
+          if (error.status && error.status === 401) {
+            userContext.onExpired();
+          } else {
+            console.error("[ERROR] Get Street data", error);
+          }
           return null;
         }
       );
@@ -2876,13 +2860,13 @@ export async function GetEsuData(esuId, userToken) {
  * Return the ESU data for the given list of ids.
  *
  * @param {Array} esuIds List of ESU ids that we want the data for.
- * @param {string} userToken The token for the user calling the end point.
- * @returns {object|null} The ESU data for the list of ids.
+ * @param {Object} userContext The user context object for the user calling the end point.
+ * @returns {Object|null} The ESU data for the list of ids.
  */
-export async function GetMultipleEsusData(esuIds, userToken) {
+export async function GetMultipleEsusData(esuIds, userContext) {
   if (!esuIds || !esuIds.length) return null;
 
-  const esuUrl = GetMultipleEsusByIdUrl(userToken);
+  const esuUrl = GetMultipleEsusByIdUrl(userContext.currentUser.token);
 
   if (esuUrl) {
     const returnData = await fetch(`${esuUrl.url}/${esuIds.join()}`, {
@@ -2900,7 +2884,11 @@ export async function GetMultipleEsusData(esuIds, userToken) {
           return result;
         },
         (error) => {
-          console.error("[ERROR] Get ESUs for assigning to street.", error);
+          if (error.status && error.status === 401) {
+            userContext.onExpired();
+          } else {
+            console.error("[ERROR] Get ESUs for assigning to street.", error);
+          }
           return null;
         }
       );
@@ -2912,13 +2900,13 @@ export async function GetMultipleEsusData(esuIds, userToken) {
 /**
  * Check to see if the street is closed or not.
  *
- * @param {number} usrn The USRN of the street we are interested in.
- * @param {string} userToken The token for the user who is calling the endpoint.
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @return {boolean} True if the street is closed; otherwise false.
+ * @param {Number} usrn The USRN of the street we are interested in.
+ * @param {Object} userContext The user context object for the user who is calling the endpoint.
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @return {Boolean} True if the street is closed; otherwise false.
  */
-export async function IsStreetClosed(usrn, userToken, isScottish) {
-  const streetRecord = usrn && (await GetStreetMapData(usrn, userToken, isScottish));
+export async function IsStreetClosed(usrn, userContext, isScottish) {
+  const streetRecord = usrn && (await GetStreetMapData(usrn, userContext, isScottish));
 
   return streetRecord && streetRecord.endDate;
 }
@@ -2926,16 +2914,16 @@ export async function IsStreetClosed(usrn, userToken, isScottish) {
 /**
  * Save any changes for the given street.
  *
- * @param {object} currentStreet The current street data.
- * @param {object} streetContext The street context object.
- * @param {object} userContext The user context object.
- * @param {object} lookupContext The lookup context object.
- * @param {object} searchContext The search context object.
- * @param {object} mapContext The map context object.
- * @param {object} sandboxContext The sandbox context object.
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @param {boolean} isWelsh True if the authority is a Welsh authority; otherwise false.
- * @return {object|null} If the save is successful the updated street object; otherwise null.
+ * @param {Object} currentStreet The current street data.
+ * @param {Object} streetContext The street context object.
+ * @param {Object} userContext The user context object.
+ * @param {Object} lookupContext The lookup context object.
+ * @param {Object} searchContext The search context object.
+ * @param {Object} mapContext The map context object.
+ * @param {Object} sandboxContext The sandbox context object.
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {Boolean} isWelsh True if the authority is a Welsh authority; otherwise false.
+ * @return {Object|null} If the save is successful the updated street object; otherwise null.
  */
 export async function SaveStreet(
   currentStreet,
@@ -3126,32 +3114,7 @@ export async function SaveStreet(
             break;
 
           case 401:
-            streetContext.onStreetErrors(
-              [
-                {
-                  field: "USRN",
-                  errors: [
-                    `You are not authorised to ${
-                      streetContext.currentStreet.newStreet ? "create" : "update"
-                    } this street.`,
-                  ],
-                },
-              ],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              []
-            );
+            userContext.onExpired();
             break;
 
           case 403:

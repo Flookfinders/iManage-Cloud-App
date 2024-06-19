@@ -22,6 +22,8 @@
 //    009   12.03.24 Sean Flook           MUL10 Display errors in a list control.
 //    010   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    011   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
+//    012   18.06.24 Joshua McCormick IMANN-598 Cross ref max set to 20 if scottish, else default 50
+//    013   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -297,7 +299,7 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
         const currentDate = GetCurrentDate();
 
         for (const propertyUprn of propertyUprns) {
-          const property = await GetPropertyMapData(propertyUprn, userContext.currentUser.token);
+          const property = await GetPropertyMapData(propertyUprn, userContext);
 
           if (property) {
             let updatedProperty = null;
@@ -434,19 +436,15 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
               };
 
             if (updatedProperty) {
-              SaveProperty(
-                updatedProperty,
-                false,
-                userContext.currentUser.token,
-                propertyContext,
-                settingsContext.isScottish
-              ).then((result) => {
-                if (result) {
-                  updatedCount.current++;
-                  savedProperty.current.push(result);
-                  setRangeProcessedCount(updatedCount.current + failedCount.current);
+              SaveProperty(updatedProperty, false, userContext, propertyContext, settingsContext.isScottish).then(
+                (result) => {
+                  if (result) {
+                    updatedCount.current++;
+                    savedProperty.current.push(result);
+                    setRangeProcessedCount(updatedCount.current + failedCount.current);
+                  }
                 }
-              });
+              );
             } else {
               failedCount.current++;
             }
@@ -635,7 +633,7 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
                   value={crossReference}
                   disabled={updating}
                   id="cross_reference"
-                  maxLength={50}
+                  maxLength={!settingsContext.isScottish ? 50 : 20}
                   errorText={crossReferenceError}
                   helperText="Primary key of corresponding Record in an external data-set."
                   onChange={handleCrossReferenceChangeEvent}

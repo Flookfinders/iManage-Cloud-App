@@ -18,6 +18,7 @@
 //    005   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    006   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //    007   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
+//    008   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -243,10 +244,10 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
       failedIds.current = [];
       setFinaliseErrors([]);
 
-      GetParentHierarchy(parentUprn, userContext.currentUser.token).then((parentProperties) => {
+      GetParentHierarchy(parentUprn, userContext).then((parentProperties) => {
         if (parentProperties) {
           selectedUPRNs.forEach((childUprn) => {
-            GetPropertyMapData(childUprn, userContext.currentUser.token).then((childProperty) => {
+            GetPropertyMapData(childUprn, userContext).then((childProperty) => {
               if (childProperty) {
                 if (!childProperty.parentUprn || action === "replace") {
                   if (parentProperties.parent.currentParentChildLevel === 4) {
@@ -437,7 +438,7 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
                     SaveProperty(
                       updatedChildProperty,
                       false,
-                      userContext.currentUser.token,
+                      userContext,
                       propertyContext,
                       settingsContext.isScottish
                     ).then((result) => {

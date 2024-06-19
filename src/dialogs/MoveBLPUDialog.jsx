@@ -24,6 +24,7 @@
 //    011   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //    012   11.04.24 Sean Flook       IMANN-384 Check we have a parent UPRN before changing it to a string.
 //    013   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
+//    014   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -209,7 +210,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
     setFinaliseErrors([]);
 
     for (const property of data) {
-      const currentProperty = await GetPropertyMapData(property.uprn, userContext.currentUser.token);
+      const currentProperty = await GetPropertyMapData(property.uprn, userContext);
 
       if (currentProperty) {
         const engLpi = currentProperty.lpis.filter((x) => x.language === "ENG");
@@ -308,19 +309,15 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
               };
 
           if (updatedProperty) {
-            SaveProperty(
-              updatedProperty,
-              false,
-              userContext.currentUser.token,
-              propertyContext,
-              settingsContext.isScottish
-            ).then((result) => {
-              if (result) {
-                updatedCount.current++;
-                savedProperty.current.push(result);
-                setRangeProcessedCount(updatedCount.current + failedCount.current);
+            SaveProperty(updatedProperty, false, userContext, propertyContext, settingsContext.isScottish).then(
+              (result) => {
+                if (result) {
+                  updatedCount.current++;
+                  savedProperty.current.push(result);
+                  setRangeProcessedCount(updatedCount.current + failedCount.current);
+                }
               }
-            });
+            );
           } else {
             failedCount.current++;
           }
@@ -361,7 +358,11 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
               return result;
             },
             (error) => {
-              console.error("[ERROR] Getting selected properties", error);
+              if (error.status && error.status === 401) {
+                userContext.onExpired();
+              } else {
+                console.error("[ERROR] Getting selected properties", error);
+              }
               return null;
             }
           );
@@ -452,7 +453,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
     isOpen,
     propertyUprns,
     currentUprns,
-    userContext.currentUser.token,
+    userContext,
     showDialog,
     lookupContext.currentLookups.postcodes,
     lookupContext.currentLookups.postTowns,

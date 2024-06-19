@@ -53,6 +53,7 @@
 //    039   13.05.24 Sean Flook       IMANN-439 Changed to use grids to display the data as well as other display improvements.
 //    040   17.05.24 Sean Flook       IMANN-458 Correctly highlight the avatar when items are hovered.
 //    041   20.05.24 Sean Flook       IMANN-450 Correctly get the USRN when creating a child/children.
+//    042   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -477,7 +478,7 @@ function RelatedPropertyTab({
   async function HandleAddChild(event, uprn) {
     handlePropertyActionsMenuClose(event);
 
-    const propertyData = await GetPropertyMapData(uprn, userContext.currentUser.token);
+    const propertyData = await GetPropertyMapData(uprn, userContext);
 
     if (propertyData) {
       const parent = getWizardParentDetails(propertyData, lookupContext.currentLookups.postcodes);
@@ -495,7 +496,7 @@ function RelatedPropertyTab({
   const handleAddChildren = async (event, uprn) => {
     handlePropertyActionsMenuClose(event);
 
-    const propertyData = await GetPropertyMapData(uprn, userContext.currentUser.token);
+    const propertyData = await GetPropertyMapData(uprn, userContext);
 
     if (propertyData) {
       const parent = getWizardParentDetails(propertyData, lookupContext.currentLookups.postcodes);

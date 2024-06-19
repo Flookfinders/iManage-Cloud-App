@@ -20,6 +20,7 @@
 //    007   11.04.24 Sean Flook       IMANN-351 Prevent infinite loops when creating a new record.
 //    008   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
 //    009   18.04.24 Sean Flook       IMANN-351 Corrected typo.
+//    010   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -140,22 +141,7 @@ function PropertyPage() {
                     return null;
 
                   case 401:
-                    propertyContext.onPropertyErrors(
-                      [
-                        {
-                          field: "UPRN",
-                          errors: ["Authorization details are not valid or have expired."],
-                        },
-                      ],
-                      [],
-                      [],
-                      [],
-                      [],
-                      [],
-                      [],
-                      [],
-                      0
-                    );
+                    userContext.onExpired();
                     return null;
 
                   case 403:

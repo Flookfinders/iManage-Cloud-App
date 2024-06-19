@@ -50,6 +50,7 @@
 //    037   20.05.24 Sean Flook       IMANN-444 Prevent exceptions from occurring.
 //    038   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    039   12.06.24 Sean Flook       IMANN-553 Added filter for blpu state for Scottish authorities.
+//    040   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -259,11 +260,11 @@ export function GetProvenanceLabel(provenanceCode, isScottish) {
  * @param {Object} lpiRecord The LPI record for which we need the temporary address for.
  * @param {String} organisation The organisation, used for creating the return object.
  * @param {Object} lookupContext The lookup context object
- * @param {String} userToken The token for the user who is calling the endpoint.
+ * @param {Object} userContext The user context for the user who is calling the endpoint.
  * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
  * @return {String} The temporary address from the supplied data.
  */
-export async function GetTempAddress(lpiRecord, organisation, lookupContext, userToken, isScottish) {
+export async function GetTempAddress(lpiRecord, organisation, lookupContext, userContext, isScottish) {
   const postcode = lpiRecord.postcodeRef
     ? lookupContext.currentLookups.postcodes.find((x) => x.postcodeRef === lpiRecord.postcodeRef).postcode
     : "";
@@ -317,7 +318,7 @@ export async function GetTempAddress(lpiRecord, organisation, lookupContext, use
         postallyAddressable: lpiRecord.postalAddress,
       };
 
-  const tempAddressUrl = GetTempAddressUrl(userToken);
+  const tempAddressUrl = GetTempAddressUrl(userContext.currentUser.token);
 
   // if (process.env.NODE_ENV === "development")
   console.log("[DEBUG] GetTempAddress", tempAddressUrl, JSON.stringify(addressData));
@@ -344,7 +345,7 @@ export async function GetTempAddress(lpiRecord, organisation, lookupContext, use
             return null;
 
           case 401:
-            console.error("[401 ERROR] GetTempAddress: Authorization details are not valid or have expired.", res);
+            userContext.onExpired();
             return null;
 
           case 403:
@@ -770,14 +771,14 @@ export function GetNewProperty(isWelsh, isScottish, authorityCode, usrn, parent,
 /**
  * Calls the API endpoint used to delete the given property.
  *
- * @param {number} uprn The UPRN of the property being deleted.
- * @param {boolean} deleteChildProperties True if child properties should also be deleted; otherwise false.
- * @param {string} userToken The token for the user who is calling the endpoint.
- * @param {object} propertyContext The property context object.
- * @return {boolean} True if the property was deleted successfully; otherwise false.
+ * @param {Number} uprn The UPRN of the property being deleted.
+ * @param {Boolean} deleteChildProperties True if child properties should also be deleted; otherwise false.
+ * @param {Object} userContext The user context object for the user who is calling the endpoint.
+ * @param {Object} propertyContext The property context object.
+ * @return {Boolean} True if the property was deleted successfully; otherwise false.
  */
-export async function PropertyDelete(uprn, deleteChildProperties, userToken, propertyContext) {
-  const deleteUrl = GetDeletePropertyUrl(userToken);
+export async function PropertyDelete(uprn, deleteChildProperties, userContext, propertyContext) {
+  const deleteUrl = GetDeletePropertyUrl(userContext.currentUser.token);
 
   if (deleteUrl) {
     return await fetch(`${deleteUrl.url}/${uprn}/${deleteChildProperties ? "true" : "false"}`, {
@@ -830,22 +831,7 @@ export async function PropertyDelete(uprn, deleteChildProperties, userToken, pro
             break;
 
           case 401:
-            propertyContext.onPropertyErrors(
-              [
-                {
-                  field: "UPRN",
-                  errors: ["You are not authorized to delete this property"],
-                },
-              ],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              0
-            );
+            userContext.onExpired();
             break;
 
           case 403:
@@ -1769,12 +1755,12 @@ export function GetPropertyValidationErrors(body, newProperty) {
 /**
  * Return the property record for use within the map.
  *
- * @param {number} uprn The UPRN of the street we are interested in.
- * @param {string} userToken The token for the user who is calling the endpoint.
- * @return {object} The property map object.
+ * @param {Number} uprn The UPRN of the street we are interested in.
+ * @param {Object} userContext The user context object for the user who is calling the endpoint.
+ * @return {Object} The property map object.
  */
-export async function GetPropertyMapData(uprn, userToken) {
-  const propertyUrl = GetPropertyFromUPRNUrl(userToken);
+export async function GetPropertyMapData(uprn, userContext) {
+  const propertyUrl = GetPropertyFromUPRNUrl(userContext.currentUser.token);
 
   if (propertyUrl && uprn) {
     const returnValue = await fetch(`${propertyUrl.url}/${uprn}`, {
@@ -1793,7 +1779,7 @@ export async function GetPropertyMapData(uprn, userToken) {
             return null;
 
           case 401:
-            console.error("[401 ERROR] GetPropertyMapData: Authorization details are not valid or have expired.", res);
+            userContext.onExpired();
             return null;
 
           case 403:
@@ -1826,18 +1812,18 @@ export async function GetPropertyMapData(uprn, userToken) {
 /**
  * Return the parent hierarchy for use in parent child relationships.
  *
- * @param {number} parentUprn The UPRN of the first parent.
- * @param {string} userToken The token for the user who is calling the endpoint.
- * @returns {object} The parent hierarchy object.
+ * @param {Number} parentUprn The UPRN of the first parent.
+ * @param {Object} userContext The user context object for the user who is calling the endpoint.
+ * @returns {Object} The parent hierarchy object.
  */
-export async function GetParentHierarchy(parentUprn, userToken) {
-  const parent = await GetPropertyMapData(parentUprn, userToken);
+export async function GetParentHierarchy(parentUprn, userContext) {
+  const parent = await GetPropertyMapData(parentUprn, userContext);
   if (parent) {
     if (parent.parentUprn) {
-      const grandParent = await GetPropertyMapData(parent.parentUprn, userToken);
+      const grandParent = await GetPropertyMapData(parent.parentUprn, userContext);
       if (grandParent) {
         if (grandParent.parentUprn) {
-          const greatGrandParent = await GetPropertyMapData(grandParent.parentUprn, userToken);
+          const greatGrandParent = await GetPropertyMapData(grandParent.parentUprn, userContext);
           return { parent: parent, grandParent: grandParent, greatGrandParent: greatGrandParent };
         } else return { parent: parent, grandParent: grandParent, greatGrandParent: null };
       } else return { parent: parent, grandParent: null, greatGrandParent: null };
@@ -1848,17 +1834,19 @@ export async function GetParentHierarchy(parentUprn, userToken) {
 /**
  * Save any changes for the given property.
  *
- * @param {object} currentProperty The current property data.
- * @param {boolean} newProperty True if this is a new property; otherwise false.
- * @param {string} userToken The token for the user who is calling the endpoint.
- * @param {object} propertyContext The property context object.
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @return {object|null} If the save was successful the updated property; otherwise null.
+ * @param {Object} currentProperty The current property data.
+ * @param {Boolean} newProperty True if this is a new property; otherwise false.
+ * @param {Object} userContext The user context object for the user who is calling the endpoint.
+ * @param {Object} propertyContext The property context object.
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @return {Object|null} If the save was successful the updated property; otherwise null.
  */
-export async function SaveProperty(currentProperty, newProperty, userToken, propertyContext, isScottish) {
+export async function SaveProperty(currentProperty, newProperty, userContext, propertyContext, isScottish) {
   propertyContext.resetPropertyErrors();
 
-  const saveUrl = newProperty ? GetCreatePropertyUrl(userToken) : GetUpdatePropertyUrl(userToken);
+  const saveUrl = newProperty
+    ? GetCreatePropertyUrl(userContext.currentUser.token)
+    : GetUpdatePropertyUrl(userContext.currentUser.token);
   const saveData = newProperty
     ? GetPropertyCreateData(currentProperty, isScottish)
     : GetPropertyUpdateData(currentProperty, isScottish);
@@ -1900,22 +1888,7 @@ export async function SaveProperty(currentProperty, newProperty, userToken, prop
             break;
 
           case 401:
-            propertyContext.onPropertyErrors(
-              [
-                {
-                  field: "UPRN",
-                  errors: [`You are not authorised to ${newProperty ? "create" : "update"} this property.`],
-                },
-              ],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              [],
-              currentProperty.pkId
-            );
+            userContext.onExpired();
             break;
 
           case 403:
@@ -2317,23 +2290,23 @@ export async function UpdateRangeAfterSave(
 /**
  * Save a property and then update everything after saving.
  *
- * @param {object} currentProperty The current property data.
- * @param {boolean} newProperty True if this is a new property; otherwise false.
- * @param {object} propertyContext The property context object.
- * @param {string} userToken The token for the user who is calling the endpoint.
- * @param {object} lookupContext The lookup context object.
- * @param {object} searchContext The search context object.
- * @param {object} mapContext The map context object.
- * @param {object} sandboxContext The sandbox context object.
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @param {boolean} isWelsh True if the authority is a Welsh authority; otherwise false.
- * @return {object} If the save was successful the updated property; otherwise null.
+ * @param {Object} currentProperty The current property data.
+ * @param {Boolean} newProperty True if this is a new property; otherwise false.
+ * @param {Object} propertyContext The property context object.
+ * @param {Object} userContext The user context object for the user who is calling the endpoint.
+ * @param {Object} lookupContext The lookup context object.
+ * @param {Object} searchContext The search context object.
+ * @param {Object} mapContext The map context object.
+ * @param {Object} sandboxContext The sandbox context object.
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {Boolean} isWelsh True if the authority is a Welsh authority; otherwise false.
+ * @return {Object} If the save was successful the updated property; otherwise null.
  */
 export async function SavePropertyAndUpdate(
   currentProperty,
   newProperty,
   propertyContext,
-  userToken,
+  userContext,
   lookupContext,
   searchContext,
   mapContext,
@@ -2341,7 +2314,7 @@ export async function SavePropertyAndUpdate(
   isScottish,
   isWelsh
 ) {
-  const propertySaved = await SaveProperty(currentProperty, newProperty, userToken, propertyContext, isScottish).then(
+  const propertySaved = await SaveProperty(currentProperty, newProperty, userContext, propertyContext, isScottish).then(
     (result) => {
       UpdateAfterSave(result, lookupContext, mapContext, propertyContext, sandboxContext, isWelsh, searchContext);
       return result;
@@ -2651,13 +2624,13 @@ export const getWizardParentDetails = (propertyData, postcodes) => {
  * Method used to return UPRNs of properties that failed to be created.
  *
  * @param {Array} uprns The array of UPRNs where the create has failed.
- * @param {String} userToken The token for the user who is calling the endpoint.
+ * @param {Object} userContext The user context object for the user who is calling the endpoint.
  * @returns
  */
-export const returnFailedUprns = async (uprns, userToken) => {
+export const returnFailedUprns = async (uprns, userContext) => {
   if (!Array.isArray(uprns) || uprns.length === 0) return;
 
-  const returnUrl = GetAddUprnsBackUrl(userToken);
+  const returnUrl = GetAddUprnsBackUrl(userContext.currentUser.token);
 
   console.log("[DEBUG] returnFailedUprns", returnUrl, JSON.stringify(uprns));
 
@@ -2673,6 +2646,10 @@ export const returnFailedUprns = async (uprns, userToken) => {
         switch (res.status) {
           case 200:
             return res;
+
+          case 401:
+            userContext.onExpired();
+            return null;
 
           default:
             const contentType = res && res.headers ? res.headers.get("content-type") : null;

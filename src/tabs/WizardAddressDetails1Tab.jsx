@@ -18,6 +18,7 @@
 //    005   27.03.24 Sean Flook                 Changes required to remove warnings.
 //    006   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //    007   14.06.24 Sean Flook       IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
+//    008   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -507,9 +508,8 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
     const addResults = await addLookup(
       data,
       settingsContext.authorityCode,
-      userContext.currentUser.token,
+      userContext,
       settingsContext.isWelsh,
-      settingsContext.isScottish,
       lookupContext.currentLookups
     );
 

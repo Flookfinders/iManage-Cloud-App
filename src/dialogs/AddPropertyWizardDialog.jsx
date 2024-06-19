@@ -39,6 +39,7 @@
 //    026   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit.
 //    027   29.05.24 Sean Flook       IMANN-504 Only create second language for Welsh authorities.
 //    028   14.06.24 Sean Flook       IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
+//    029   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -256,6 +257,11 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
           switch (res.status) {
             case 200:
               return res.json();
+
+            case 401:
+              userContext.onExpired();
+              haveEnoughUprns = false;
+              return [];
 
             default:
               haveEnoughUprns = false;
@@ -651,47 +657,39 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
             failedRangeUprns.current = null;
 
             for (const propertyRecord of propertyData) {
-              SaveProperty(
-                propertyRecord,
-                true,
-                userContext.currentUser.token,
-                propertyContext,
-                settingsContext.isScottish
-              ).then((result) => {
-                if (result) {
-                  createdCount.current++;
-                  savedProperty.current.push(result);
-                  setRangeProcessedCount(createdCount.current + failedCount.current);
-                } else {
-                  setHaveErrors(true);
-                  failedCount.current++;
-                  setRangeProcessedCount(createdCount.current + failedCount.current);
+              SaveProperty(propertyRecord, true, userContext, propertyContext, settingsContext.isScottish).then(
+                (result) => {
+                  if (result) {
+                    createdCount.current++;
+                    savedProperty.current.push(result);
+                    setRangeProcessedCount(createdCount.current + failedCount.current);
+                  } else {
+                    setHaveErrors(true);
+                    failedCount.current++;
+                    setRangeProcessedCount(createdCount.current + failedCount.current);
+                  }
                 }
-              });
+              );
             }
           }
           break;
 
         default:
           if (propertyData.length === 1) {
-            SaveProperty(
-              propertyData[0],
-              true,
-              userContext.currentUser.token,
-              propertyContext,
-              settingsContext.isScottish
-            ).then((result) => {
-              if (result) {
-                savedProperty.current = result;
-                createdCount.current = 1;
-                failedCount.current = 0;
-                setFinaliseErrors([]);
-                setFailedUprns([]);
-                setHaveErrors(false);
-                setCreating(false);
-                setFinaliseOpen(true);
+            SaveProperty(propertyData[0], true, userContext, propertyContext, settingsContext.isScottish).then(
+              (result) => {
+                if (result) {
+                  savedProperty.current = result;
+                  createdCount.current = 1;
+                  failedCount.current = 0;
+                  setFinaliseErrors([]);
+                  setFailedUprns([]);
+                  setHaveErrors(false);
+                  setCreating(false);
+                  setFinaliseOpen(true);
+                }
               }
-            });
+            );
           }
           break;
       }
@@ -906,7 +904,11 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                     return result;
                   },
                   (error) => {
-                    console.error("[ERROR] Get Property data", error);
+                    if (error.status && error.status === 401) {
+                      userContext.onExpired();
+                    } else {
+                      console.error("[ERROR] Get Property data", error);
+                    }
                     return null;
                   }
                 )
@@ -1344,7 +1346,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
     const addressDetailErrors = ValidateAddressDetails(
       addressDetails.current.find((x) => x.language === language.current),
       lookupContext.currentLookups,
-      userContext.currentUser.token,
+      userContext,
       settingsContext.isScottish,
       selectedTemplate.current.numberingSystem,
       selectedTemplate.current.templateUseType
@@ -2474,7 +2476,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
           else setFinaliseErrors([propertyContext.currentErrors]);
           if (errorId.current && errorId.current.length) {
             const uprn = errorId.current.find((x) => x.pkId === propertyContext.currentErrors.pkId).uprn;
-            returnFailedUprns([uprn], userContext.currentUser.token);
+            returnFailedUprns([uprn], userContext);
           }
           setHaveErrors(true);
           setCreating(false);
@@ -2482,7 +2484,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
           break;
       }
     }
-  }, [propertyContext.currentErrors, propertyContext.currentPropertyHasErrors, variant, userContext.currentUser.token]);
+  }, [propertyContext.currentErrors, propertyContext.currentPropertyHasErrors, variant, userContext]);
 
   useEffect(() => {
     if (
@@ -2508,16 +2510,9 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
 
         setAddressPoints(errorAddressPoints);
       }
-      if (failedUprns && failedUprns.length) returnFailedUprns(failedUprns, userContext.currentUser.token);
+      if (failedUprns && failedUprns.length) returnFailedUprns(failedUprns, userContext);
     }
-  }, [
-    viewErrors,
-    addressPoints,
-    settingsContext.isScottish,
-    settingsContext.isWelsh,
-    failedUprns,
-    userContext.currentUser.token,
-  ]);
+  }, [viewErrors, addressPoints, settingsContext.isScottish, settingsContext.isWelsh, failedUprns, userContext]);
 
   return (
     <Fragment>

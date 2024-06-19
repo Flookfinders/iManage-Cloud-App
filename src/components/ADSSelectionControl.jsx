@@ -37,6 +37,7 @@
 //    024   25.03.24 Sean Flook           MUL16 Removed option to remove from parent.
 //    025   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //    026   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options.
+//    027   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -245,20 +246,18 @@ function ADSSelectionControl({
    */
   async function HandleAddProperty() {
     if (currentUsrn) {
-      await GetStreetMapData(Number(currentUsrn), userContext.currentUser.token, settingsContext.isScottish).then(
-        (result) => {
-          if (result && result.state !== 4) {
-            propertyContext.resetPropertyErrors();
-            propertyContext.onWizardDone(null, false, null, null);
-            mapContext.onWizardSetCoordinate(null);
-            setPropertyWizardType("property");
-            setPropertyWizardParent(currentUsrn);
-            setOpenPropertyWizard(true);
-          } else {
-            if (onError) onError("invalidSingleState");
-          }
+      await GetStreetMapData(Number(currentUsrn), userContext, settingsContext.isScottish).then((result) => {
+        if (result && result.state !== 4) {
+          propertyContext.resetPropertyErrors();
+          propertyContext.onWizardDone(null, false, null, null);
+          mapContext.onWizardSetCoordinate(null);
+          setPropertyWizardType("property");
+          setPropertyWizardParent(currentUsrn);
+          setOpenPropertyWizard(true);
+        } else {
+          if (onError) onError("invalidSingleState");
         }
-      );
+      });
     }
   }
 
@@ -267,20 +266,18 @@ function ADSSelectionControl({
    */
   async function HandleAddRange() {
     if (currentUsrn) {
-      await GetStreetMapData(Number(currentUsrn), userContext.currentUser.token, settingsContext.isScottish).then(
-        (result) => {
-          if (result && result.state !== 4) {
-            propertyContext.resetPropertyErrors();
-            propertyContext.onWizardDone(null, false, null, null);
-            mapContext.onWizardSetCoordinate(null);
-            setPropertyWizardType("range");
-            setPropertyWizardParent(currentUsrn);
-            setOpenPropertyWizard(true);
-          } else {
-            if (onError) onError("invalidRangeState");
-          }
+      await GetStreetMapData(Number(currentUsrn), userContext, settingsContext.isScottish).then((result) => {
+        if (result && result.state !== 4) {
+          propertyContext.resetPropertyErrors();
+          propertyContext.onWizardDone(null, false, null, null);
+          mapContext.onWizardSetCoordinate(null);
+          setPropertyWizardType("range");
+          setPropertyWizardParent(currentUsrn);
+          setOpenPropertyWizard(true);
+        } else {
+          if (onError) onError("invalidRangeState");
         }
-      );
+      });
     }
   }
 
@@ -483,7 +480,7 @@ function ADSSelectionControl({
 
     const found = mapContext.currentSearchData.streets.find((rec) => rec.usrn === usrn);
 
-    const streetData = await GetStreetMapData(usrn, userContext.currentUser.token, settingsContext.isScottish);
+    const streetData = await GetStreetMapData(usrn, userContext, settingsContext.isScottish);
 
     const zoomStreet = {
       usrn: usrn,
@@ -666,7 +663,7 @@ function ADSSelectionControl({
    */
   async function HandleOpenProperty() {
     if (currentUprn) {
-      const propertyData = await GetPropertyMapData(Number(currentUprn), userContext.currentUser.token);
+      const propertyData = await GetPropertyMapData(Number(currentUprn), userContext);
 
       propertyContext.onPropertyChange(
         propertyData.uprn,
@@ -983,10 +980,7 @@ function ADSSelectionControl({
               return null;
 
             case 401:
-              console.error(
-                "[401 ERROR] handlePropertiesSelected: Authorization details are not valid or have expired.",
-                res
-              );
+              userContext.onExpired();
               return null;
 
             default:
@@ -1199,7 +1193,7 @@ function ADSSelectionControl({
       if (dataType === "USRN") {
         handleStreetActionsMenuClose(event);
 
-        await GetStreetMapData(dataId, userContext.currentUser.token, settingsContext.isScottish).then((result) => {
+        await GetStreetMapData(dataId, userContext, settingsContext.isScottish).then((result) => {
           if (result && result.esus && result.esus.length > 0) {
             const esuPoints = result.esus[0].wktGeometry.replace("LINESTRING (", "").replace(")").split(",");
 

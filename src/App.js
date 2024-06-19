@@ -64,6 +64,7 @@
 //    051   06.06.24 Sean Flook       IMANN-524 Ensure the sandbox has the current data.
 //    052   12.06.24 Sean Flook       IMANN-536 Added some additional checking to HandleMapReload.
 //    053   12.06.24 Sean Flook       IMANN-565 Handle polygon deletion.
+//    054   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -142,11 +143,12 @@ function App() {
   const theme = createTheme();
   const [currentUser, setCurrentUser] = useState(null);
 
-  const [loginOpen, setLoginOpen] = useState(true);
+  const [loginOpen, setLoginOpen] = useState(localStorage.getItem("currentUser") === null);
+  const loginMessage = useRef("Enter your credentials.");
 
   const currentMapExtent = useRef(null);
 
-  const guiVersion = "0.0.0.12";
+  const guiVersion = "0.0.1.00";
 
   const [lookups, setLookups] = useState({
     validationMessages: [],
@@ -470,13 +472,23 @@ function App() {
         ...userInfo,
         canEdit: userInfo.active && (userInfo.rights.includes("Administrator") || userInfo.rights.includes("User")),
         isAdministrator: userInfo.active && userInfo.rights.includes("Administrator"),
+        hasStreet:
+          userInfo.active && (userInfo.rights.includes("LSGReadOnly") || userInfo.rights.includes("LSGEditor")),
+        hasASD: userInfo.active && (userInfo.rights.includes("ASDReadOnly") || userInfo.rights.includes("ASDEditor")),
+        hasProperty:
+          userInfo.active && (userInfo.rights.includes("LLPGReadOnly") || userInfo.rights.includes("LLPGEditor")),
+        editStreet: userInfo.active && userInfo.rights.includes("LSGEditor"),
+        editASD: userInfo.active && userInfo.rights.includes("ASDEditor"),
+        editProperty: userInfo.active && userInfo.rights.includes("LLPGEditor"),
       };
 
       setCurrentUser(user);
       if (loginOpen) setLoginOpen(false);
-      sessionStorage.setItem("currentUser", JSON.stringify(userInfo));
+      localStorage.setItem("currentUser", JSON.stringify(user));
     } else {
       setCurrentUser(null);
+      localStorage.removeItem("currentUser");
+      loginMessage.current = "Enter your credentials.";
       setLoginOpen(true);
     }
   }
@@ -486,6 +498,26 @@ function App() {
    */
   function HandleDisplayLogin() {
     setLoginOpen(true);
+  }
+
+  /**
+   * Event to handle when the users authorisation has expired.
+   */
+  function HandleAuthorisationExpired() {
+    setCurrentUser(null);
+    localStorage.removeItem("currentUser");
+    loginMessage.current = "Authorisation has expired, re-enter your credentials.";
+    setLoginOpen(true);
+  }
+
+  /**
+   * Event to handle reloading the current user.
+   */
+  function HandleUserReload() {
+    if (localStorage.getItem("currentUser") !== null && !currentUser) {
+      const savedUser = JSON.parse(localStorage.getItem("currentUser"));
+      setCurrentUser(savedUser);
+    }
   }
 
   /**
@@ -2083,7 +2115,14 @@ function App() {
           method: "GET",
         })
           .then((res) => (res.ok ? res : Promise.reject(res)))
-          .then((res) => res.json())
+          .then((res) => {
+            if (res.status === 401) {
+              HandleAuthorisationExpired();
+              return null;
+            } else {
+              return res.json();
+            }
+          })
           .then(
             (result) => {
               return result.parentUprn;
@@ -2814,9 +2853,7 @@ function App() {
               return null;
 
             case 401:
-              res.json().then((body) => {
-                console.error(`[401 ERROR] Getting all Street data`, body);
-              });
+              HandleAuthorisationExpired();
               return null;
 
             case 500:
@@ -2870,9 +2907,7 @@ function App() {
               return null;
 
             case 401:
-              res.json().then((body) => {
-                console.error(`[401 ERROR] Getting all unassigned ESU data`, body);
-              });
+              HandleAuthorisationExpired();
               return null;
 
             case 500:
@@ -2926,9 +2961,7 @@ function App() {
               return null;
 
             case 401:
-              res.json().then((body) => {
-                console.error(`[401 ERROR] Getting all property data`, body);
-              });
+              HandleAuthorisationExpired();
               return null;
 
             case 500:
@@ -2982,9 +3015,7 @@ function App() {
               return null;
 
             case 401:
-              res.json().then((body) => {
-                console.error(`[401 ERROR] Getting all provenance data`, body);
-              });
+              HandleAuthorisationExpired();
               return null;
 
             case 500:
@@ -3516,7 +3547,13 @@ function App() {
     <StylesProvider injectFirst>
       <Router history={history}>
         <userContext.Provider
-          value={{ currentUser: currentUser, onUserChange: HandleUserChange, onDisplayLogin: HandleDisplayLogin }}
+          value={{
+            currentUser: currentUser,
+            onUserChange: HandleUserChange,
+            onDisplayLogin: HandleDisplayLogin,
+            onExpired: HandleAuthorisationExpired,
+            onReload: HandleUserReload,
+          }}
         >
           <LookupContext.Provider
             value={{
@@ -3746,7 +3783,7 @@ function App() {
                                         <LoginDialog
                                           isOpen={loginOpen}
                                           title="iManage Cloud Login"
-                                          message="Enter your credentials."
+                                          message={loginMessage.current}
                                         />
                                       </Fragment>
                                     </Online>

@@ -25,6 +25,7 @@
 //    012   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //    013   22.05.24 Sean Flook       IMANN-473 Corrected label for Scottish authorities.
 //    014   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
+//    015   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -279,7 +280,7 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
       setFinaliseErrors([]);
 
       for (const propertyUprn of propertyUprns) {
-        const property = await GetPropertyMapData(propertyUprn, userContext.currentUser.token);
+        const property = await GetPropertyMapData(propertyUprn, userContext);
 
         if (property) {
           let updatedProperty = null;
@@ -447,19 +448,15 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
           }
 
           if (updatedProperty) {
-            SaveProperty(
-              updatedProperty,
-              false,
-              userContext.currentUser.token,
-              propertyContext,
-              settingsContext.isScottish
-            ).then((result) => {
-              if (result) {
-                updatedCount.current++;
-                savedProperty.current.push(result);
-                setRangeProcessedCount(updatedCount.current + failedCount.current);
+            SaveProperty(updatedProperty, false, userContext, propertyContext, settingsContext.isScottish).then(
+              (result) => {
+                if (result) {
+                  updatedCount.current++;
+                  savedProperty.current.push(result);
+                  setRangeProcessedCount(updatedCount.current + failedCount.current);
+                }
               }
-            });
+            );
           } else {
             failedCount.current++;
           }
@@ -479,9 +476,8 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
     const addResults = await addLookup(
       data,
       settingsContext.authorityCode,
-      userContext.currentUser.token,
+      userContext,
       settingsContext.isWelsh,
-      settingsContext.isScottish,
       lookupContext.currentLookups
     );
 

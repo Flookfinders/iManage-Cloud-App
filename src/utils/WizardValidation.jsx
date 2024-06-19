@@ -35,6 +35,7 @@
 //    018   12.06.24 Sean Flook       IMANN-553 Further modifications to checks 2100011 and 2100046 to cater for Scottish authorities.
 //    019   14.06.24 Sean Flook       IMANN-534 Added and fixed various checks.
 //    020   18.06.24 Sean Flook       IMANN-534 Correctly handle blpuStates of 0.
+//    021   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -58,15 +59,22 @@ const showDebugMessages = false;
 /**
  * Validates the address details data
  *
- * @param {object} data - The address details data that needs to be validated
- * @param {object} currentLookups - The lookup context object.
- * @param {string} userToken - The token for the user who is calling the endpoint.
- * @param {boolean} isScottish - True if the authority is a Scottish authority; otherwise false.
- * @param {number} numberingSystem - A number indicating the numbering system that is going to be used.
- * @param {number} templateUseType - The use type for the template.
- * @return {array}
+ * @param {Object} data - The address details data that needs to be validated
+ * @param {Object} currentLookups - The lookup context object.
+ * @param {Object} userContext - The user context object for the user who is calling the endpoint.
+ * @param {Boolean} isScottish - True if the authority is a Scottish authority; otherwise false.
+ * @param {Number} numberingSystem - A number indicating the numbering system that is going to be used.
+ * @param {Number} templateUseType - The use type for the template.
+ * @return {Array}
  */
-export function ValidateAddressDetails(data, currentLookups, userToken, isScottish, numberingSystem, templateUseType) {
+export function ValidateAddressDetails(
+  data,
+  currentLookups,
+  userContext,
+  isScottish,
+  numberingSystem,
+  templateUseType
+) {
   const methodName = "ValidateAddressDetails";
   const validationErrors = [];
   let currentCheck;
@@ -573,7 +581,7 @@ export function ValidateAddressDetails(data, currentLookups, userToken, isScotti
 
     // Open BLPU/LPI on a closed street.
     currentCheck = GetCheck(2100013, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && data.usrn && !IsStreetClosed(data.usrn, userToken, isScottish))
+    if (includeCheck(currentCheck, isScottish) && data.usrn && !IsStreetClosed(data.usrn, userContext, isScottish))
       usrnErrors.push(GetErrorMessage(currentCheck, isScottish));
 
     // Classification is missing.

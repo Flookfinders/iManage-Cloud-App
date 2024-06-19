@@ -97,6 +97,8 @@
 //    083   04.06.24 Sean Flook       IMANN-507 Error trapping.
 //    084   04.06.24 Sean Flook       IMANN-281 Always validate the data before trying to save.
 //    085   11.06.24 Sean Flook       IMANN-490 Added code to update the USRN.
+//    086   17.06.24 Joel Benford     IMANN-546 Hide street successor tab, re-index later tabs (2nd attempt)
+//    087   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3251,32 +3253,7 @@ function StreetDataForm({ data, loading }) {
                 break;
 
               case 401:
-                streetContext.onStreetErrors(
-                  [
-                    {
-                      field: "USRN",
-                      errors: [
-                        `You are not authorised to ${
-                          streetContext.currentStreet.newStreet ? "create" : "update"
-                        } this street.`,
-                      ],
-                    },
-                  ],
-                  [],
-                  [],
-                  [],
-                  [],
-                  [],
-                  [],
-                  [],
-                  [],
-                  [],
-                  [],
-                  [],
-                  [],
-                  [],
-                  []
-                );
+                userContext.onExpired();
                 break;
 
               case 403:
@@ -3533,7 +3510,7 @@ function StreetDataForm({ data, loading }) {
         true,
         lookupContext,
         streetContext,
-        userContext.currentUser.token,
+        userContext,
         settingsContext.isScottish
       );
 
@@ -7005,7 +6982,7 @@ function StreetDataForm({ data, loading }) {
 
       const parentData =
         isRange && wizardData.savedProperty
-          ? await GetPropertyMapData(wizardData.savedProperty[0].parentUprn, userContext.currentUser.token)
+          ? await GetPropertyMapData(wizardData.savedProperty[0].parentUprn, userContext)
           : null;
       const engLpis = parentData && parentData.lpis ? parentData.lpis.filter((x) => x.language === "ENG") : null;
       const parent =
@@ -7062,7 +7039,7 @@ function StreetDataForm({ data, loading }) {
           mapContext,
           streetContext,
           propertyContext,
-          userContext.currentUser.token,
+          userContext,
           settingsContext.isScottish
         );
       }
@@ -7648,7 +7625,7 @@ function StreetDataForm({ data, loading }) {
         case "createProperty":
           await GetStreetMapData(
             streetContext.leavingStreet.information.usrn,
-            userContext.currentUser.token,
+            userContext,
             settingsContext.isScottish
           ).then((result) => {
             if (result && result.state !== 4) {
@@ -10339,7 +10316,7 @@ function StreetDataForm({ data, loading }) {
   useEffect(() => {
     if (streetContext.assignEsu) {
       const contextStreet = sandboxContext.currentSandbox.currentStreet || sandboxContext.currentSandbox.sourceStreet;
-      GetEsuData(streetContext.assignEsu, userContext.currentUser.token)
+      GetEsuData(streetContext.assignEsu, userContext)
         .then((result) => {
           if (!contextStreet.esus || !contextStreet.esus.find((x) => x.esuId === result.esuId)) {
             const newEsus = contextStreet.esus ? contextStreet.esus.map((x) => x) : [];
@@ -10372,7 +10349,7 @@ function StreetDataForm({ data, loading }) {
     }
   }, [
     streetContext.assignEsu,
-    userContext.currentUser,
+    userContext,
     mapContext,
     settingsContext.isScottish,
     sandboxContext,
@@ -10395,7 +10372,7 @@ function StreetDataForm({ data, loading }) {
       });
 
       if (newEsuIds && newEsuIds.length) {
-        GetMultipleEsusData(newEsuIds, userContext.currentUser.token).then((result) => {
+        GetMultipleEsusData(newEsuIds, userContext).then((result) => {
           result.forEach((esu) => {
             newEsus.push({ ...esu, assignUnassign: 1 });
           });
@@ -10423,7 +10400,7 @@ function StreetDataForm({ data, loading }) {
     }
   }, [
     streetContext.assignEsus,
-    userContext.currentUser,
+    userContext,
     mapContext,
     settingsContext.isScottish,
     sandboxContext,
@@ -10464,7 +10441,7 @@ function StreetDataForm({ data, loading }) {
                     mapContext,
                     streetContext,
                     propertyContext,
-                    userContext.currentUser.token,
+                    userContext,
                     settingsContext.isScottish
                   );
                   break;
@@ -10498,7 +10475,7 @@ function StreetDataForm({ data, loading }) {
                       mapContext,
                       streetContext,
                       propertyContext,
-                      userContext.currentUser.token,
+                      userContext,
                       settingsContext.isScottish
                     );
                   break;
@@ -10528,7 +10505,7 @@ function StreetDataForm({ data, loading }) {
                       mapContext,
                       streetContext,
                       propertyContext,
-                      userContext.currentUser.token,
+                      userContext,
                       settingsContext.isScottish
                     );
                   break;
@@ -10566,7 +10543,7 @@ function StreetDataForm({ data, loading }) {
     mapContext,
     propertyContext,
     streetContext,
-    userContext.currentUser.token,
+    userContext,
     searchContext.currentSearchData.results,
     settingsContext.isScottish,
   ]);
@@ -10651,7 +10628,8 @@ function StreetDataForm({ data, loading }) {
             }
             {...a11yProps(1)}
           />
-          {settingsContext.isScottish && (
+          {/* {settingsContext.isScottish && ( */}
+          {false && settingsContext.isScottish && (
             <Tab
               sx={tabStyle}
               label={
@@ -10946,7 +10924,8 @@ function StreetDataForm({ data, loading }) {
           />
         )}
       </TabPanel>
-      {settingsContext.isScottish && (
+      {/* {settingsContext.isScottish && ( */}
+      {false && settingsContext.isScottish && (
         <TabPanel value={value} index={2}>
           {successorCrossRefFormData ? (
             <SuccessorTab
@@ -11001,7 +10980,9 @@ function StreetDataForm({ data, loading }) {
       )}
       {displayAsdTab ? (
         <Fragment>
-          <TabPanel value={value} index={settingsContext.isScottish ? 3 : 2}>
+          {/* to revert to using street successors...  */}
+          {/* <TabPanel value={value} index={settingsContext.isScottish ? 3 : 2}>  */}
+          <TabPanel value={value} index={2}>
             {maintenanceResponsibilityFormData ? (
               <MaintenanceResponsibilityDataTab
                 data={maintenanceResponsibilityFormData}
@@ -11148,7 +11129,8 @@ function StreetDataForm({ data, loading }) {
               />
             )}
           </TabPanel>
-          <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 4 : 3) : displayAsdTab ? 3 : 2}>
+          {/* <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 4 : 3) : displayAsdTab ? 3 : 2}> */}
+          <TabPanel value={value} index={displayAsdTab ? 3 : 2}>
             <RelatedTab
               variant="street"
               propertyCount={streetData ? streetData.relatedPropertyCount : 0}
@@ -11157,7 +11139,8 @@ function StreetDataForm({ data, loading }) {
               onPropertyAdd={(usrn, parent, isRange) => handlePropertyAdd(usrn, parent, isRange)}
             />
           </TabPanel>
-          <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 5 : 4) : displayAsdTab ? 4 : 3}>
+          {/* <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 5 : 4) : displayAsdTab ? 4 : 3}> */}
+          <TabPanel value={value} index={displayAsdTab ? 4 : 3}>
             {notesFormData ? (
               <NotesDataTab
                 data={notesFormData}
@@ -11178,13 +11161,15 @@ function StreetDataForm({ data, loading }) {
               />
             )}
           </TabPanel>
-          <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 6 : 5) : displayAsdTab ? 5 : 4}>
+          {/* <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 6 : 5) : displayAsdTab ? 5 : 4}> */}
+          <TabPanel value={value} index={displayAsdTab ? 5 : 4}>
             <EntityHistoryTab variant="street" />
           </TabPanel>
         </Fragment>
       ) : (
         <Fragment>
-          <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 4 : 3) : displayAsdTab ? 3 : 2}>
+          {/* <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 4 : 3) : displayAsdTab ? 3 : 2}> */}
+          <TabPanel value={value} index={displayAsdTab ? 3 : 2}>
             <RelatedTab
               variant="street"
               propertyCount={streetData ? streetData.relatedPropertyCount : 0}
@@ -11193,7 +11178,8 @@ function StreetDataForm({ data, loading }) {
               onPropertyAdd={(usrn, parent, isRange) => handlePropertyAdd(usrn, parent, isRange)}
             />
           </TabPanel>
-          <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 5 : 4) : displayAsdTab ? 4 : 3}>
+          {/* <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 5 : 4) : displayAsdTab ? 4 : 3}> */}
+          <TabPanel value={value} index={displayAsdTab ? 4 : 3}>
             {notesFormData ? (
               <NotesDataTab
                 data={notesFormData}
@@ -11213,7 +11199,8 @@ function StreetDataForm({ data, loading }) {
               />
             )}
           </TabPanel>
-          <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 6 : 5) : displayAsdTab ? 5 : 4}>
+          {/* <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 6 : 5) : displayAsdTab ? 5 : 4}> */}
+          <TabPanel value={value} index={displayAsdTab ? 5 : 4}>
             <EntityHistoryTab variant="street" />
           </TabPanel>
         </Fragment>

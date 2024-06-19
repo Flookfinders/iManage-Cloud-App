@@ -24,6 +24,7 @@
 //    011   11.04.24 Sean Flook       IMANN-351 Prevent infinite loops when creating a new record.
 //    012   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
 //    017   08.05.24 Sean Flook       IMANN-447 Added exclude from export from template.
+//    018   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -153,28 +154,7 @@ function StreetPage() {
                     return null;
 
                   case 401:
-                    streetContext.onStreetErrors(
-                      [
-                        {
-                          field: "USRN",
-                          errors: ["Authorization details are not valid or have expired."],
-                        },
-                      ],
-                      [],
-                      [],
-                      [],
-                      [],
-                      [],
-                      [],
-                      [],
-                      [],
-                      [],
-                      [],
-                      [],
-                      [],
-                      [],
-                      []
-                    );
+                    userContext.onExpired();
                     return null;
 
                   case 403:
@@ -288,7 +268,7 @@ function StreetPage() {
           let newEsus = null;
           if (streetContext.createEsus && Array.isArray(streetContext.createEsus) && streetContext.createEsus.length) {
             newEsus = [];
-            GetMultipleEsusData(streetContext.createEsus, userContext.currentUser.token).then((result) => {
+            GetMultipleEsusData(streetContext.createEsus, userContext).then((result) => {
               result.forEach((esu) => {
                 newEsus.push({ ...esu, assignUnassign: 1 });
               });

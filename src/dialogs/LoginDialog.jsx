@@ -22,6 +22,7 @@
 //    009   01.05.24 Sean Flook       IMANN-142 Removed the cancel button.
 //    010   10.06.24 Sean Flook       IMANN-509 Changes required for v2 of the security API and the multi-factor authentication.
 //    011   18.06.24 Sean Flook       IMANN-601 Display message when authentication code does not match.
+//    012   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -96,7 +97,13 @@ function LoginDialog({ isOpen, title, message, changePassword }) {
   const [newPasswordError, setNewPasswordError] = useState([]);
   const [retypePasswordError, setRetypePasswordError] = useState([]);
 
-  const getUsersInfo = async (token) => {
+  /**
+   * Method to get the users information for the currently logged in user.
+   *
+   * @param {String} token The user token to use when calling the API.
+   * @param {String} expiry The expiration date and time for the users token.
+   */
+  const getUsersInfo = async (token, expiry) => {
     const userUrl = GetWhoAmIUrl(token);
 
     if (userUrl) {
@@ -121,6 +128,7 @@ function LoginDialog({ isOpen, title, message, changePassword }) {
         if (userInfo.active && !userInfo.isDeleted) {
           const loggedInUser = {
             token: token,
+            expiry: expiry,
             ...userInfo,
           };
           userContext.onUserChange(loggedInUser);
@@ -297,7 +305,7 @@ function LoginDialog({ isOpen, title, message, changePassword }) {
           setAuthorizeId(loginRes.authorizeId);
           setStep(1);
         } else if (!!loginRes.token) {
-          getUsersInfo(loginRes.token);
+          getUsersInfo(loginRes.token, loginRes.expiry);
         }
       } else {
         userContext.onUserChange(null);
@@ -360,7 +368,7 @@ function LoginDialog({ isOpen, title, message, changePassword }) {
           .then((res) => res.json())
           .then(
             (result) => {
-              if (!!result && !!result.token) getUsersInfo(result.token);
+              if (!!result && !!result.token) getUsersInfo(result.token, result.expiry);
               else setAuthenticationError(["No user token was returned."]);
             },
             (error) => {
@@ -626,12 +634,11 @@ function LoginDialog({ isOpen, title, message, changePassword }) {
       case 0:
         return (
           <>
-            {loginError ? (
+            <Typography variant="body1">{message}</Typography>
+            {loginError && (
               <Typography variant="body1" color="error">
                 {loginError}
               </Typography>
-            ) : (
-              <Typography variant="body1">{message}</Typography>
             )}
             <ADSTextControl
               label="Username"

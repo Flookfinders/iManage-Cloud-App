@@ -24,6 +24,7 @@
 //    011   12.03.24 Sean Flook           MUL10 Display errors in a list control.
 //    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    013   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
+//    014   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -278,7 +279,7 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
         const currentDate = GetCurrentDate();
 
         for (const propertyUprn of propertyUprns) {
-          const property = await GetPropertyMapData(propertyUprn, userContext.currentUser.token);
+          const property = await GetPropertyMapData(propertyUprn, userContext);
 
           if (property) {
             let updatedProperty = null;
@@ -427,19 +428,15 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
             };
 
             if (updatedProperty && !haveReplaceError) {
-              SaveProperty(
-                updatedProperty,
-                false,
-                userContext.currentUser.token,
-                propertyContext,
-                settingsContext.isScottish
-              ).then((result) => {
-                if (result) {
-                  updatedCount.current++;
-                  savedProperty.current.push(result);
-                  setRangeProcessedCount(updatedCount.current + failedCount.current);
+              SaveProperty(updatedProperty, false, userContext, propertyContext, settingsContext.isScottish).then(
+                (result) => {
+                  if (result) {
+                    updatedCount.current++;
+                    savedProperty.current.push(result);
+                    setRangeProcessedCount(updatedCount.current + failedCount.current);
+                  }
                 }
-              });
+              );
             } else {
               failedCount.current++;
             }
