@@ -23,6 +23,7 @@
 //    010   10.06.24 Sean Flook       IMANN-509 Changes required for v2 of the security API and the multi-factor authentication.
 //    011   18.06.24 Sean Flook       IMANN-601 Display message when authentication code does not match.
 //    012   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    013   19.06.24 Joshua McCormick IMANN-630 Cleared resend authentication code email errors
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -404,14 +405,17 @@ function LoginDialog({ isOpen, title, message, changePassword }) {
         method: "POST",
       })
         .then((res) => (res.ok ? res : Promise.reject(res)))
-        .then((res) => res.json())
         .then(
           (result) => {
             if (!result) setAuthenticationError(["Unable to resend the authentication email."]);
           },
           (error) => {
-            setAuthenticationError([`[${error.status} ERROR] ${error.statusText}`]);
-            console.error("[ERROR] Unable to resend authentication email.", error);
+            if (error.status) {
+              setAuthenticationError([`[${error.status} ERROR] ${error.statusText}`]);
+              console.error("[ERROR] Unable to resend authentication email.", error);
+            } else {
+              console.error(error);
+            }
           }
         );
     } else {
