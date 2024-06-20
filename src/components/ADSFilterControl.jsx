@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    004   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
+//    005   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -22,12 +23,11 @@
 
 /* #region imports */
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import FilterContext from "../context/filterContext";
-
-import { HasASD, HasProperties } from "../configuration/ADSConfig";
+import UserContext from "../context/userContext";
 
 import { AppBar, Tabs, Tab, Typography, Button, Badge } from "@mui/material";
 import { Box } from "@mui/system";
@@ -87,6 +87,7 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
   const theme = useTheme();
 
   const searchFilterContext = useContext(FilterContext);
+  const userContext = useContext(UserContext);
 
   const [value, setValue] = useState(0);
   const [resetLabel, setResetLabel] = useState("Reset location filters");
@@ -100,6 +101,9 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
   const [streetFilter, setStreetFilter] = useState();
   const [asdFilter, setASDFilter] = useState();
   const [scopeFilter, setScopeFilter] = useState();
+
+  const [hasASD, setHasASD] = useState(false);
+  const [hasProperty, setHasProperty] = useState(false);
 
   /**
    * Event to handle when the tab is changed.
@@ -266,22 +270,27 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
   const getIndexNumber = (nominalIndex) => {
     switch (nominalIndex) {
       case 2: // Street
-        if (HasProperties()) return 2;
+        if (hasProperty) return 2;
         else return 1;
 
       case 3: // ASD
-        if (HasProperties()) return 3;
+        if (hasProperty) return 3;
         else return 2;
 
       case 4: // Scope
-        if (HasProperties() && HasASD()) return 4;
-        else if (HasASD()) return 3;
+        if (hasProperty && hasASD) return 4;
+        else if (hasASD) return 3;
         else return 2;
 
       default:
         return nominalIndex;
     }
   };
+
+  useEffect(() => {
+    setHasASD(userContext.currentUser && userContext.currentUser.hasASD);
+    setHasProperty(userContext.currentUser && userContext.currentUser.hasProperty);
+  }, [userContext]);
 
   return (
     <Box
@@ -314,7 +323,7 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
             style={getStyle(value === 0)}
             {...a11yProps(0)}
           />
-          {HasProperties() && (
+          {hasProperty && (
             <Tab
               sx={{ textTransform: "none" }}
               label={
@@ -336,7 +345,7 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
             style={getStyle(value === 2)}
             {...a11yProps(2)}
           />
-          {HasASD() && (
+          {hasASD && (
             <Tab
               sx={{ textTransform: "none" }}
               label={
@@ -363,7 +372,7 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
       <TabPanel value={value} index={0}>
         <FilterLocationTab onSearchClick={handleSearchClick} onChange={handleLocationChange} />
       </TabPanel>
-      {HasProperties() && (
+      {hasProperty && (
         <TabPanel value={value} index={1}>
           <FilterPropertiesTab onSearchClick={handleSearchClick} onChange={handlePropertyChange} />
         </TabPanel>
@@ -371,7 +380,7 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
       <TabPanel value={value} index={getIndexNumber(2)}>
         <FilterStreetsTab onSearchClick={handleSearchClick} onChange={(filterData) => handleStreetChange(filterData)} />
       </TabPanel>
-      {HasASD() && (
+      {hasASD && (
         <TabPanel value={value} index={getIndexNumber(3)}>
           <FilterASDTab onSearchClick={handleSearchClick} onChange={(filterData) => handleASDChange(filterData)} />
         </TabPanel>

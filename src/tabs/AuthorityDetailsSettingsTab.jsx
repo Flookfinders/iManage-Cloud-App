@@ -21,6 +21,7 @@
 //    008   10.01.24 Sean Flook                 Fix warnings.
 //    009   25.01.24 Sean Flook                 Changes required after UX review.
 //    010   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    011   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -35,7 +36,7 @@ import { Box, Stack } from "@mui/system";
 
 import EditAuthorityDetailsDialog from "../dialogs/EditAuthorityDetailsDialog";
 
-import { HasProperties, GetAuthorityDetailsUrl } from "../configuration/ADSConfig";
+import { GetAuthorityDetailsUrl } from "../configuration/ADSConfig";
 import { getAuthorityText, getDisplayLanguage } from "../utils/HelperUtils";
 
 import EditIcon from "@mui/icons-material/Edit";
@@ -76,6 +77,8 @@ function AuthorityDetailsSettingsTab() {
   const [editAuthority, setEditAuthority] = useState(false);
   const [editData, setEditData] = useState({});
   const [showEditDialog, setShowEditDialog] = useState(false);
+
+  const [hasProperty, setHasProperty] = useState(false);
 
   /**
    * Event to handle when the mouse enters the card.
@@ -204,6 +207,10 @@ function AuthorityDetailsSettingsTab() {
     }
   }, [data]);
 
+  useEffect(() => {
+    setHasProperty(userContext.currentUser && userContext.currentUser.hasProperty);
+  }, [userContext]);
+
   return (
     <Box sx={{ ml: theme.spacing(1), mr: theme.spacing(4.5) }}>
       <Stack direction="column" spacing={0.5}>
@@ -274,12 +281,12 @@ function AuthorityDetailsSettingsTab() {
                         {`${minUsrn ? minUsrn : 0} - ${maxUsrn ? maxUsrn : 0}`}
                       </Typography>
                     </Grid>
-                    {HasProperties() && (
+                    {hasProperty && (
                       <Grid item xs={3}>
                         <Typography variant="body2">UPRN range</Typography>
                       </Grid>
                     )}
-                    {HasProperties() && (
+                    {hasProperty && (
                       <Grid item xs={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {`${minUprn ? minUprn : 0} - ${maxUprn ? maxUprn : 0}`}

@@ -80,6 +80,7 @@
 //    066   11.06.24 Sean Flook       IMANN-527 Corrected values in streetRenderer.
 //    067   12.06.24 Sean Flook       IMANN-565 Handle polygon deletion.
 //    068   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    069   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1918,7 +1919,11 @@ function ADSEsriMap(startExtent) {
   const checkForUnsavedChanges = useCallback(
     (functionAfterCheck) => {
       if (sandbox.current.sourceStreet) {
-        const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
+        const streetChanged = hasStreetChanged(
+          streetContext.currentStreet.newStreet,
+          sandboxContext.currentSandbox,
+          userContext.current && userContext.current.currentUser && userContext.current.currentUser.hasASD
+        );
 
         if (streetChanged) {
           associatedRecords.current = GetChangedAssociatedRecords(
@@ -1942,7 +1947,8 @@ function ADSEsriMap(startExtent) {
                       sandboxContext,
                       lookupContext,
                       isWelsh.current,
-                      isScottish.current
+                      isScottish.current,
+                      userContext.current && userContext.current.currentUser && userContext.current.currentUser.hasASD
                     );
                     handleSaveStreet(currentStreetData);
                   } else {

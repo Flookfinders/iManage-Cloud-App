@@ -24,6 +24,7 @@
 //    011   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    012   14.05.24 Joshua McCormick IMAN-364  Toolbar styling to prevent toolbar content overlapping
 //    013   14.05.24 Joshua McCormick IMANN-364 Removed unnecessary imports
+//    014   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -295,8 +296,12 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onHomeClic
   }, [variant, data, sandboxContext, sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
-  }, [userContext]);
+    if (variant === "street") {
+      setUserCanEdit(userContext.currentUser && userContext.currentUser.editStreet);
+    } else {
+      setUserCanEdit(userContext.currentUser && userContext.currentUser.editProperty);
+    }
+  }, [userContext, variant]);
 
   useEffect(() => {
     setSuccessorError(null);
@@ -374,6 +379,7 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onHomeClic
           isFocused={focusedField ? focusedField === "Successor" : false}
           loading={loading}
           value={successor}
+          maximum={variant === "property" ? 999999999999 : 99999999}
           errorText={successorError}
           helperText={variant === "property" ? "UPRN of successor BLPU." : "USRN of successor street."}
           onChange={handleSuccessorChangeEvent}
@@ -385,6 +391,7 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onHomeClic
           isFocused={focusedField ? focusedField === "Predecessor" : false}
           loading={loading}
           value={predecessor}
+          maximum={variant === "property" ? 999999999999 : 99999999}
           errorText={predecessorError}
           helperText={`Unique identifier (${variant === "property" ? "UPRN" : "USRN"}) for the predecessor.`}
           onChange={handlePredecessorChangeEvent}

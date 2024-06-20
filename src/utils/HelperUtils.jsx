@@ -57,6 +57,7 @@
 //    044   18.06.24 Joel Benford     IMANN-560 Stop addLookups returning early on error
 //    045   16.06.24 Sean Flook       IMANN-577 Added characterSetValidator.
 //    046   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    047   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -81,7 +82,6 @@ import {
   GetSubLocalityUrl,
   GetTownUrl,
   GetWardsUrl,
-  HasASD,
 } from "../configuration/ADSConfig";
 import ObjectComparison, {
   EsusComparison,
@@ -1620,6 +1620,8 @@ export async function doOpenRecord(
   userContext,
   isScottish
 ) {
+  const hasASD = userContext.currentUser && userContext.currentUser.hasASD;
+
   if (rec.type === 15) {
     const foundStreet = currentSearchData.find((x) => x.type === 15 && x.usrn === rec.usrn);
     const currentSearchStreets = JSON.parse(JSON.stringify(mapContext.currentSearchData.streets));
@@ -1679,7 +1681,7 @@ export async function doOpenRecord(
             }))
           : undefined;
       const asdType61 =
-        !isScottish && HasASD() && streetData
+        !isScottish && hasASD && streetData
           ? streetData.interests.map((asdRec) => ({
               type: 61,
               pkId: asdRec.pkId,
@@ -1694,7 +1696,7 @@ export async function doOpenRecord(
             }))
           : undefined;
       const asdType62 =
-        !isScottish && HasASD() && streetData
+        !isScottish && hasASD && streetData
           ? streetData.constructions.map((asdRec) => ({
               type: 62,
               pkId: asdRec.pkId,
@@ -1709,7 +1711,7 @@ export async function doOpenRecord(
             }))
           : undefined;
       const asdType63 =
-        !isScottish && HasASD() && streetData
+        !isScottish && hasASD && streetData
           ? streetData.specialDesignations.map((asdRec) => ({
               type: 63,
               pkId: asdRec.pkId,
@@ -1723,7 +1725,7 @@ export async function doOpenRecord(
             }))
           : undefined;
       const asdType64 =
-        !isScottish && HasASD() && streetData
+        !isScottish && hasASD && streetData
           ? streetData.heightWidthWeights.map((asdRec) => ({
               type: 64,
               pkId: asdRec.pkId,
@@ -1737,7 +1739,7 @@ export async function doOpenRecord(
             }))
           : undefined;
       const asdType66 =
-        !isScottish && HasASD() && streetData
+        !isScottish && hasASD && streetData
           ? streetData.publicRightOfWays.map((asdRec) => ({
               type: 66,
               pkId: asdRec.pkId,

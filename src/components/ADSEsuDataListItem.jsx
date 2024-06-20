@@ -27,6 +27,7 @@
 //    014   22.02.24 Joel Benford     IMANN-287 Blue on checked and hover
 //    015   27.02.24 Joshua McCormick IMANN-286 Using clippath for highway dedication indicator to alter appearance
 //    016   14.03.24 Sean Flook        ESU19_GP Moved getHighwayDedicationIconStyle to ADSStyles.
+//    017   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -637,7 +638,7 @@ function ADSEsuDataListItem({
   }, [itemState, streetContext, title, data, checked]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editStreet);
   }, [userContext]);
 
   useEffect(() => {
@@ -972,11 +973,11 @@ function ADSEsuDataListItem({
                           backgroundColor: adsLightBlue,
                         }}
                       >
-                        <Typography variant="caption">{d.oneWayExemptionTypeCode}</Typography>
+                        <Typography variant="caption">{d.oneWayExemptionType}</Typography>
                       </Avatar>
                     </ListItemAvatar>
                     <ListItemText
-                      primary={<Typography variant="body1">{GetOneWayExemption(d.oneWayExemptionTypeCode)}</Typography>}
+                      primary={<Typography variant="body1">{GetOneWayExemption(d.oneWayExemptionType)}</Typography>}
                     />
                   </ListItemButton>
                 </List>

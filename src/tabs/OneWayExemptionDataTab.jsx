@@ -23,6 +23,7 @@
 //    010   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    011   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    012   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    013   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -190,7 +191,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
   const handleCancelClicked = () => {
     if (dataChanged) {
       if (data && data.oweData) {
-        setOweType(data.oweData.oneWayExemptionTypeCode);
+        setOweType(data.oweData.oneWayExemptionType);
         setOweStartDate(data.oweData.oneWayExemptionStartDate);
         setOweEndDate(data.oweData.oneWayExemptionEndDate);
         setOweStartTime(data.oweData.oneWayExemptionStartTime);
@@ -211,7 +212,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
   function GetCurrentData(field, newValue) {
     return {
       changeType: field && field === "changeType" ? newValue : !data.oweData.pkId || data.oweData.pkId < 0 ? "I" : "U",
-      oneWayExemptionTypeCode: field && field === "oweType" ? newValue : oweType,
+      oneWayExemptionType: field && field === "oweType" ? newValue : oweType,
       recordEndDate: data.oweData.recordEndDate,
       oneWayExemptionStartDate:
         field && field === "startDate" ? newValue && ConvertDate(newValue) : oweStartDate && ConvertDate(oweStartDate),
@@ -258,7 +259,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
 
   useEffect(() => {
     if (!loading && data && data.oweData) {
-      setOweType(data.oweData.oneWayExemptionTypeCode);
+      setOweType(data.oweData.oneWayExemptionType);
       setOweStartDate(data.oweData.oneWayExemptionStartDate);
       setOweEndDate(data.oweData.oneWayExemptionEndDate);
       setOweStartTime(data.oweData.oneWayExemptionStartTime);
@@ -296,7 +297,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
   ]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editStreet);
   }, [userContext]);
 
   useEffect(() => {
@@ -310,7 +311,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
     if (errors && errors.length > 0) {
       for (const error of errors) {
         switch (error.field.toLowerCase()) {
-          case "onewayexemptiontypecode":
+          case "onewayexemptiontype":
             setOneWayExemptionTypeError(error.errors);
             break;
 
@@ -385,7 +386,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
           label="Type"
           isEditable={userCanEdit}
           isRequired
-          isFocused={focusedField ? focusedField === "OneWayExemptionTypeCode" : false}
+          isFocused={focusedField ? focusedField === "oneWayExemptionType" : false}
           loading={loading}
           useRounded
           doNotSetTitleCase

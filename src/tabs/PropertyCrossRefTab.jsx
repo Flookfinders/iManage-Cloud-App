@@ -27,9 +27,10 @@
 //    014   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
 //    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    016   09.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
-//    017   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title nowrapping with width restrictions
+//    017   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title no wrapping with width restrictions
 //    018   04.06.24 Joel Benford     IMANN-505 Fix enabling OK button
 //    019   18.06.24 Joshua McCormick IMANN-598 Cross ref max set to 20 if scottish, else default 50
+//    020   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -294,7 +295,7 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onHomeClick,
   useEffect(() => {
     const rec = lookupContext.currentLookups.appCrossRefs.find((x) => x.xrefSourceRef === "BILG");
     const bilingualCrossRef = rec && rec.pkId === data.xrefData.sourceId;
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit && !bilingualCrossRef);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editProperty && !bilingualCrossRef);
   }, [userContext, data, lookupContext.currentLookups.appCrossRefs]);
 
   useEffect(() => {

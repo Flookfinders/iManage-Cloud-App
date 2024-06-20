@@ -19,12 +19,11 @@
 //    006   07.03.24 Sean Flook       IMANN-348 Centralised keys to ignore and added missing record types to StreetComparison and PropertyComparison.
 //    007   28.03.24 Sean Flook                 Added EsusComparison and added additional keys to streetKeysToIgnore.
 //    008   09.04.24 Joel Benford     IMANN-363 Ignore neverExport on successor cross refs
+//    009   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
-
-import { HasASD } from "../configuration/ADSConfig";
 
 export const streetKeysToIgnore = [
   "maintenanceResponsibility",
@@ -409,11 +408,12 @@ export function EsusComparison(source, current) {
 /**
  * Method to compare 2 versions of a street.
  *
- * @param {object} source The source version of the street.
- * @param {object} current The current version of the street.
- * @returns {boolean} True if they are the same; otherwise false.
+ * @param {Object} source The source version of the street.
+ * @param {Object} current The current version of the street.
+ * @param {Boolean} hasASD True if the current user can see ASD; otherwise false.
+ * @returns {Boolean} True if they are the same; otherwise false.
  */
-export function StreetComparison(source, current) {
+export function StreetComparison(source, current, hasASD) {
   if (!source || !current) return false;
 
   // Compare street data
@@ -529,7 +529,7 @@ export function StreetComparison(source, current) {
     }
   }
 
-  if (HasASD()) {
+  if (hasASD) {
     // Compare Maintenance Responsibility records
     if (source.maintenanceResponsibilities && current.maintenanceResponsibilities) {
       if (source.maintenanceResponsibilities.length !== current.maintenanceResponsibilities.length) return false;

@@ -21,6 +21,11 @@
 //    008   10.08.23 Sean Flook                 Ensure we return a number from the control.
 //    009   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    010   11.01.24 Sean Flook                 Fix warnings.
+//    011   19.06.24 Joshua McCormick IMANN-503 BLPU Level field max characters 30, code cleanup, max char logic
+//    012   19.06.24 Joshua McCormick IMANN-503 option to remove type number from textfield to remove up down
+//    013   19.06.24 Joshua McCormick IMANN-503 Removed textfield changes, maximum change working
+//    014   19.06.24 Joshua McCormick IMANN-503 handleNumberChangeEvent change to allow for 99.9 maximum
+//    015   20.06.24 Sean Flook       IMANN-633 Allow numbers to be removed.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -64,7 +69,10 @@ function ADSNumberControl({ label, isEditable, isRequired, loading, helperText, 
    * @param {object} event The event object.
    */
   const handleNumberChangeEvent = (event) => {
-    if (onChange) onChange(Number(event.target.value));
+    const newValue = Number(event.target.value);
+    if (!event.target.value || !maximum || newValue <= maximum) {
+      onChange(newValue);
+    }
   };
 
   useEffect(() => {

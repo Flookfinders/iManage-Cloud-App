@@ -45,6 +45,8 @@
 //    032   14.06.24 Joshua McCormick IMANN-543 Official Address field set to required.
 //    033   14.06.24 Joshua McCormick IMANN-543 Official Address field set to required for OS only
 //    034   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    035   19.06.24 Joel Benford     IMANN-579 Show characters remaining on Level
+//    036   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -850,7 +852,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
   }, [data, sandboxContext, sandboxContext.currentSandbox.currentPropertyRecords.lpi]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editProperty);
   }, [userContext]);
 
   useEffect(() => {
@@ -1239,6 +1241,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
             value={level}
             id="lpi_level"
             maxLength={30}
+            displayCharactersLeft
             errorText={levelError}
             helperText="Memorandum of the vertical position of the BLPU."
             onChange={handleLevelChangeEvent}

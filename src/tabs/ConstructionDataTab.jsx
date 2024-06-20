@@ -33,6 +33,7 @@
 //    020   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    021   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    022   27.03.24 Sean Flook                 Clear specific location if going back to whole road.
+//    023   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -500,7 +501,7 @@ function ConstructionDataTab({ data, errors, loading, focusedField, onHomeClick,
   }, [sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreetRecords.construction]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editASD);
   }, [userContext]);
 
   useEffect(() => {

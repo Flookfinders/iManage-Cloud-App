@@ -42,11 +42,12 @@
 //    029   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //    030   22.05.24 Sean Flook       IMANN-473 Corrected label for Scottish authorities.
 //    031   23.04.24 Joshua McCormick IMANN-94  Edit Dialog title from Edit Title to Rename Template
-//    032   19.06.24 Joshua McCormick IMANN-503 BLPU Level field max characters 30 and removed updown counter.
-//    033   19.06.24 Joshua McCormick IMANN-503 BLPU Level AdsNumberControl type set to text to hide updown
+//    032   19.06.24 Joshua McCormick IMANN-503 BLPU Level field max characters 30 and removed up down counter.
+//    033   19.06.24 Joshua McCormick IMANN-503 BLPU Level AdsNumberControl type set to text to hide up down
 //    034   19.06.24 Joshua McCormick IMANN-503 BLPU Level removed type prop
 //    035   19.06.24 Joshua McCormick IMANN-503 BLPU Level max set to 99.9
 //    036   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    037   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -286,6 +287,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [lookupType, setLookupType] = useState("unknown");
   const [engError, setEngError] = useState(null);
   const [altLanguageError, setAltLanguageError] = useState(null);
+
+  const [hasProperty, setHasProperty] = useState(false);
 
   const addResult = useRef(null);
   const currentVariant = useRef(null);
@@ -1819,7 +1822,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               isEditable
               useRounded
               doNotSetTitleCase
-              lookupData={FilteredStreetType(settingsContext.isScottish)}
+              lookupData={FilteredStreetType(settingsContext.isScottish, hasProperty)}
               lookupId="id"
               lookupLabel={GetLookupLabel(settingsContext.isScottish)}
               lookupColour="colour"
@@ -3441,6 +3444,10 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
 
     setShowDialog(isOpen);
   }, [variant, data, isOpen, settingsContext.isScottish]);
+
+  useEffect(() => {
+    setHasProperty(userContext.currentUser && userContext.currentUser.hasProperty);
+  }, [userContext]);
 
   return (
     <>

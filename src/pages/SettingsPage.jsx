@@ -19,6 +19,7 @@
 //    006   24.01.24 Joel Benford               Add scottish metadata to tree.
 //    007   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    008   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
+//    009   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -26,7 +27,7 @@
 
 import React, { useEffect, useState, useContext } from "react";
 import SettingsContext from "../context/settingsContext";
-import { HasASD, HasProperties } from "../configuration/ADSConfig";
+import UserContext from "../context/userContext";
 
 import { Grid, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
@@ -43,12 +44,16 @@ import { TreeItemStyle, dataFormStyle } from "../utils/ADSStyles";
 
 function SettingsPage() {
   const settingsContext = useContext(SettingsContext);
+  const userContext = useContext(UserContext);
 
   const [selectedNode, setSelectedNode] = useState(null);
   const [expandedNodes, setExpandedNodes] = useState([]);
   const [defaultExpandedNode, setDefaultExpandedNode] = useState([]);
   const [defaultSelectedNode, setDefaultSelectedNode] = useState(null);
   const [reloadContexts, setReloadContexts] = useState(false);
+
+  const [hasASD, setHasASD] = useState(false);
+  const [hasProperty, setHasProperty] = useState(false);
 
   /**
    * Event to handle when a node is selected.
@@ -97,6 +102,11 @@ function SettingsPage() {
     }
   }, [settingsContext, selectedNode]);
 
+  useEffect(() => {
+    setHasASD(userContext.currentUser && userContext.currentUser.hasASD);
+    setHasProperty(userContext.currentUser && userContext.currentUser.hasProperty);
+  }, [userContext]);
+
   return (
     <div>
       <Grid container justifyContent="flex-start" spacing={0}>
@@ -137,7 +147,7 @@ function SettingsPage() {
                       }
                       sx={TreeItemStyle(selectedNode === "1.1")}
                     />
-                    {!settingsContext.isScottish && HasProperties() && (
+                    {!settingsContext.isScottish && hasProperty && (
                       <TreeItem
                         nodeId="1.2"
                         label={
@@ -159,7 +169,7 @@ function SettingsPage() {
                         sx={TreeItemStyle(selectedNode === "1.3")}
                       />
                     )}
-                    {!settingsContext.isScottish && HasASD() && (
+                    {!settingsContext.isScottish && hasASD && (
                       <TreeItem
                         nodeId="1.4"
                         label={
@@ -194,7 +204,7 @@ function SettingsPage() {
                     }
                     sx={TreeItemStyle(false)}
                   >
-                    {HasProperties() && (
+                    {hasProperty && (
                       <TreeItem
                         nodeId="2.1"
                         label={
@@ -214,7 +224,7 @@ function SettingsPage() {
                       }
                       sx={TreeItemStyle(selectedNode === "2.2")}
                     />
-                    {HasASD() && (
+                    {hasASD && (
                       <TreeItem
                         nodeId="2.3"
                         label={

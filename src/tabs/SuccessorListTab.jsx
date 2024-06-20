@@ -26,6 +26,7 @@
 //    013   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
 //    014   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    015   14.05.24 Joshua McCormick IMAN-364  noWrap & padding to prevent toolbar content overlapping
+//    016   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -323,14 +324,18 @@ function SuccessorListTab({
   };
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
-  }, [userContext]);
+    if (variant === "street") {
+      setUserCanEdit(userContext.currentUser && userContext.currentUser.editStreet);
+    } else {
+      setUserCanEdit(userContext.currentUser && userContext.currentUser.editProperty);
+    }
+  }, [userContext, variant]);
 
   return (
     <Fragment>
       <Box sx={toolbarStyle} id="ads-successor-data-grid">
         <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Typography variant="subtitle1" noWrap sx={{ pl: theme.spacing(1.5), pr: theme.spacing(2)}}>
+          <Typography variant="subtitle1" noWrap sx={{ pl: theme.spacing(1.5), pr: theme.spacing(2) }}>
             Successor cross references
           </Typography>
           <Tooltip title="Add new successor cross reference record" arrow placement="right" sx={tooltipStyle}>

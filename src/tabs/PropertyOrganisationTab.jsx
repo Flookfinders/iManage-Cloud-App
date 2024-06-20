@@ -23,8 +23,9 @@
 //    010   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
 //    011   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    012   11.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
-//    013   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title nowrapping with width restrictions
+//    013   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title no wrapping with width restrictions
 //    013   14.05.24 Joshua McCormick IMANN-386 Moved toolbar errors inside toolbar stack
+//    014   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -263,7 +264,7 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onHomeCl
   }, [data, sandboxContext, sandboxContext.currentSandbox.currentPropertyRecords.organisation]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editProperty);
   }, [userContext]);
 
   useEffect(() => {

@@ -56,6 +56,7 @@
 //    042   29.04.24 Sean Flook                 Replaced openPropertyRecord with call to doOpenRecord.
 //    043   29.05.24 Joshua McCormick IMANN-470 Nowrap street title & added tooltip with title
 //    044   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    045   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -118,7 +119,6 @@ import {
   UpdateRangeAfterSave,
   UpdateAfterSave,
 } from "../utils/PropertyUtils";
-import { HasASD } from "../configuration/ADSConfig";
 
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { CopyIcon } from "../utils/ADSIcons";
@@ -177,6 +177,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   const [propertyCount, setPropertyCount] = useState(0);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
+  const [hasASD, setHasASD] = useState(false);
 
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
   const [childCount, setChildCount] = useState(0);
@@ -534,7 +535,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
               }))
             : undefined;
         const asdType61 =
-          !settingsContext.isScottish && HasASD() && streetData
+          !settingsContext.isScottish && hasASD && streetData
             ? streetData.interests.map((asdRec) => ({
                 type: 61,
                 pkId: asdRec.pkId,
@@ -549,7 +550,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
               }))
             : undefined;
         const asdType62 =
-          !settingsContext.isScottish && HasASD() && streetData
+          !settingsContext.isScottish && hasASD && streetData
             ? streetData.constructions.map((asdRec) => ({
                 type: 62,
                 pkId: asdRec.pkId,
@@ -564,7 +565,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
               }))
             : undefined;
         const asdType63 =
-          !settingsContext.isScottish && HasASD() && streetData
+          !settingsContext.isScottish && hasASD && streetData
             ? streetData.specialDesignations.map((asdRec) => ({
                 type: 63,
                 pkId: asdRec.pkId,
@@ -578,7 +579,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
               }))
             : undefined;
         const asdType64 =
-          !settingsContext.isScottish && HasASD() && streetData
+          !settingsContext.isScottish && hasASD && streetData
             ? streetData.heightWidthWeights.map((asdRec) => ({
                 type: 64,
                 pkId: asdRec.pkId,
@@ -592,7 +593,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
               }))
             : undefined;
         const asdType66 =
-          !settingsContext.isScottish && HasASD() && streetData
+          !settingsContext.isScottish && hasASD && streetData
             ? streetData.publicRightOfWays.map((asdRec) => ({
                 type: 66,
                 pkId: asdRec.pkId,
@@ -1220,7 +1221,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   }, [checked, variant]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(
+      userContext.currentUser && (userContext.currentUser.editStreet || userContext.currentUser.editProperty)
+    );
   }, [userContext]);
 
   useEffect(() => {
@@ -1449,6 +1452,10 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
       mapContext.onHighlightClear();
     }
   }, [informationContext.informationSource, selectionAnchorEl, mapContext, checked]);
+
+  useEffect(() => {
+    setHasASD(userContext.currentUser && userContext.currentUser.hasASD);
+  }, [userContext]);
 
   return (
     <Fragment>

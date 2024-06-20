@@ -20,6 +20,7 @@
 //    008   10.01.24 Sean Flook                 Fix warnings.
 //    009   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    010   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    011   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -28,6 +29,7 @@
 import React, { useContext, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import SettingsContext from "../context/settingsContext";
+import UserContext from "../context/userContext";
 
 import { Dialog, DialogActions, DialogContent, Grid, Typography, Button } from "@mui/material";
 import { Box, Stack } from "@mui/system";
@@ -38,8 +40,6 @@ import ADSSwitchControl from "../components/ADSSwitchControl";
 import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import MinMaxDialog from "../dialogs/MinMaxDialog";
-
-import { HasProperties } from "../configuration/ADSConfig";
 
 import DETRCodes from "../data/DETRCodes";
 
@@ -60,6 +60,7 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
   const theme = useTheme();
 
   const settingsContext = useContext(SettingsContext);
+  const userContext = useContext(UserContext);
 
   const [showDialog, setShowDialog] = useState(false);
 
@@ -82,6 +83,8 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
   const minValue = useRef(0);
   const maxValue = useRef(0);
   const [maximum, setMaximum] = useState(99999999);
+
+  const [hasProperty, setHasProperty] = useState(false);
 
   const custodianCodes = DETRCodes.map(function (x) {
     return { id: x.id, text: `${x.id} - ${x.text}` };
@@ -310,6 +313,10 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
     setShowDialog(isOpen);
   }, [data, isOpen]);
 
+  useEffect(() => {
+    setHasProperty(userContext.currentUser && userContext.currentUser.hasProperty);
+  }, [userContext]);
+
   return (
     <div>
       <Dialog
@@ -371,7 +378,7 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
                     maxValue={maxUsrn}
                     onChange={handleMinMaxUsrnChangeEvent}
                   />
-                  {HasProperties() && (
+                  {hasProperty && (
                     <ADSMinMaxControl
                       label="UPRN range"
                       isEditable
@@ -391,7 +398,7 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
                       onChange={handleMinMaxEsuChangeEvent}
                     />
                   )}
-                  {HasProperties() && (
+                  {hasProperty && (
                     <ADSSwitchControl
                       label="Create street BLPU"
                       isEditable={!settingsContext.isScottish}

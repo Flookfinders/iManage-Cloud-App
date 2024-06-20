@@ -29,6 +29,7 @@
 //    016   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    017   16.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft to consultation and appeal refs and details input
 //    018   17.04.24 Joshua McCormick IMANN-277 Added dataTabToolBar styling for PRoW spacing
+//    019   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -678,7 +679,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
   }, [sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreetRecords.prow]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editASD);
   }, [userContext]);
 
   useEffect(() => {
@@ -837,7 +838,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
   return (
     <Fragment>
       <Box sx={toolbarStyle} id={"prow-data"}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={dataTabToolBar}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={dataTabToolBar}>
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center">
             {streetContext.currentRecord.type === 66 && streetContext.currentRecord.newRecord ? (
               <ADSActionButton
@@ -1003,6 +1004,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
           isFocused={focusedField ? focusedField === "ProwLength" : false}
           loading={loading}
           value={prowLength}
+          maximum={99999}
           errorText={prowLengthError}
           helperText="Length in metres."
           onChange={handleProwLengthChangeEvent}
@@ -1053,6 +1055,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
           isFocused={focusedField ? focusedField === "DivRelatedUsrn" : false}
           loading={loading}
           value={diversionRelatedUsrn}
+          maximum={99999999}
           errorText={diversionRelatedUsrnError}
           helperText="RECORD_TYPE = 3 Street USRN for the PRoW that is being diverted."
           onChange={handleDiversionRelatedUsrnChangeEvent}

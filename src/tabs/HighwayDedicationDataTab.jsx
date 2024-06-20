@@ -24,6 +24,7 @@
 //    011   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    012   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    014   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -555,7 +556,7 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
   ]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editStreet);
   }, [userContext]);
 
   useEffect(() => {

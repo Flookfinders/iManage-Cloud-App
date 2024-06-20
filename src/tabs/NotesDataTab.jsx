@@ -32,6 +32,7 @@
 //    019   30.04.24 Sean Flook       IMANN-425 Corrected logic for enabling OK button for new records.
 //    020   30.04.24 Sean Flook       IMANN-425 Corrected determine if the note has changed when creating a new note.
 //    021   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
+//    022   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -272,8 +273,12 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
   ]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
-  }, [userContext]);
+    if (data.variant === "street") {
+      setUserCanEdit(userContext.currentUser && userContext.currentUser.editStreet);
+    } else {
+      setUserCanEdit(userContext.currentUser && userContext.currentUser.editProperty);
+    }
+  }, [userContext, data.variant]);
 
   useEffect(() => {
     setNoteError(null);

@@ -41,6 +41,7 @@
 //    028   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //    029   29.05.24 Sean Flook       IMANN-411 Added missing else statement.
 //    030   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    031   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -80,7 +81,6 @@ import {
   GetBackgroundPropertiesUrl,
   GetBackgroundProvenancesUrl,
   GetSearchURL,
-  HasASD,
 } from "../configuration/ADSConfig";
 import { GetWktCoordinates, GetChangedAssociatedRecords, ResetContexts } from "../utils/HelperUtils";
 import { GetStreetMapData, GetCurrentStreetData, SaveStreet, hasStreetChanged } from "../utils/StreetUtils";
@@ -207,6 +207,8 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
   const [openHistoricProperty, setOpenHistoricProperty] = useState(false);
   const historicRec = useRef(null);
 
+  const [hasASD, setHasASD] = useState(false);
+
   /**
    * Method to get the API URL details.
    */
@@ -312,7 +314,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                     }))
                   : [];
               const asdType61 =
-                !settingsContext.isScottish && HasASD() && streetData && streetData.interests
+                !settingsContext.isScottish && hasASD && streetData && streetData.interests
                   ? streetData.interests.map((asdRec) => ({
                       type: 61,
                       pkId: asdRec.pkId,
@@ -329,7 +331,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                     }))
                   : [];
               const asdType62 =
-                !settingsContext.isScottish && HasASD() && streetData && streetData.constructions
+                !settingsContext.isScottish && hasASD && streetData && streetData.constructions
                   ? streetData.constructions.map((asdRec) => ({
                       type: 62,
                       pkId: asdRec.pkId,
@@ -346,7 +348,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                     }))
                   : [];
               const asdType63 =
-                !settingsContext.isScottish && HasASD() && streetData && streetData.specialDesignations
+                !settingsContext.isScottish && hasASD && streetData && streetData.specialDesignations
                   ? streetData.specialDesignations.map((asdRec) => ({
                       type: 63,
                       pkId: asdRec.pkId,
@@ -362,7 +364,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                     }))
                   : [];
               const asdType64 =
-                !settingsContext.isScottish && HasASD() && streetData && streetData.heightWidthWeights
+                !settingsContext.isScottish && hasASD && streetData && streetData.heightWidthWeights
                   ? streetData.heightWidthWeights.map((asdRec) => ({
                       type: 64,
                       pkId: asdRec.pkId,
@@ -378,7 +380,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                     }))
                   : [];
               const asdType66 =
-                !settingsContext.isScottish && HasASD() && streetData && streetData.publicRightOfWays
+                !settingsContext.isScottish && hasASD && streetData && streetData.publicRightOfWays
                   ? streetData.publicRightOfWays.map((asdRec) => ({
                       type: 66,
                       pkId: asdRec.pkId,
@@ -521,7 +523,11 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
    */
   async function handleSearchCheck() {
     if (sandboxContext.currentSandbox.sourceStreet) {
-      const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
+      const streetChanged = hasStreetChanged(
+        streetContext.currentStreet.newStreet,
+        sandboxContext.currentSandbox,
+        hasASD
+      );
 
       if (streetChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("street", sandboxContext, streetContext.esuDataChanged);
@@ -541,7 +547,8 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                     sandboxContext,
                     lookupContext,
                     settingsContext.isWelsh,
-                    settingsContext.isScottish
+                    settingsContext.isScottish,
+                    hasASD
                   );
                   HandleSaveStreet(currentStreetData);
                 } else {
@@ -796,7 +803,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
               }))
             : [];
         const asdType61 =
-          !settingsContext.isScottish && HasASD() && streetData && streetData.interests
+          !settingsContext.isScottish && hasASD && streetData && streetData.interests
             ? streetData.interests.map((asdRec) => ({
                 type: 61,
                 pkId: asdRec.pkId,
@@ -811,7 +818,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
               }))
             : [];
         const asdType62 =
-          !settingsContext.isScottish && HasASD() && streetData && streetData.constructions
+          !settingsContext.isScottish && hasASD && streetData && streetData.constructions
             ? streetData.constructions.map((asdRec) => ({
                 type: 62,
                 pkId: asdRec.pkId,
@@ -826,7 +833,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
               }))
             : [];
         const asdType63 =
-          !settingsContext.isScottish && HasASD() && streetData && streetData.specialDesignations
+          !settingsContext.isScottish && hasASD && streetData && streetData.specialDesignations
             ? streetData.specialDesignations.map((asdRec) => ({
                 type: 63,
                 pkId: asdRec.pkId,
@@ -840,7 +847,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
               }))
             : [];
         const asdType64 =
-          !settingsContext.isScottish && HasASD() && streetData && streetData.heightWidthWeights
+          !settingsContext.isScottish && hasASD && streetData && streetData.heightWidthWeights
             ? streetData.heightWidthWeights.map((asdRec) => ({
                 type: 64,
                 pkId: asdRec.pkId,
@@ -854,7 +861,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
               }))
             : [];
         const asdType66 =
-          !settingsContext.isScottish && HasASD() && streetData && streetData.publicRightOfWays
+          !settingsContext.isScottish && hasASD && streetData && streetData.publicRightOfWays
             ? streetData.publicRightOfWays.map((asdRec) => ({
                 type: 66,
                 pkId: asdRec.pkId,
@@ -914,7 +921,11 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
 
     if (variant === "appBar") {
       if (sandboxContext.currentSandbox.sourceStreet) {
-        const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
+        const streetChanged = hasStreetChanged(
+          streetContext.currentStreet.newStreet,
+          sandboxContext.currentSandbox,
+          hasASD
+        );
 
         if (streetChanged) {
           saveConfirmDialog(true)
@@ -1365,6 +1376,10 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
         break;
     }
   }, [variant]);
+
+  useEffect(() => {
+    setHasASD(userContext.currentUser && userContext.currentUser.hasASD);
+  }, [userContext]);
 
   return (
     <Fragment>

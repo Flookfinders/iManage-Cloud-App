@@ -28,6 +28,7 @@
 //    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    016   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title no wrapping with width restrictions
 //    017   05.06.24 Sean Flook       IMANN-523 Use the provenance colour for the avatar.
+//    018   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -368,7 +369,7 @@ function PropertyBLPUProvenanceListTab({
   };
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editProperty);
   }, [userContext]);
 
   return (

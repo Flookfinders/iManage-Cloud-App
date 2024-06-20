@@ -32,12 +32,13 @@
 //    019   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    020   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //    021   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    022   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import { React, useContext, useState, useRef } from "react";
+import { React, useContext, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import UserContext from "../context/userContext";
@@ -49,7 +50,6 @@ import MapContext from "../context/mapContext";
 import { GetStreetMapData, streetToTitleCase } from "../utils/StreetUtils";
 import { GetPropertyMapData, addressToTitleCase } from "../utils/PropertyUtils";
 import { GetWktCoordinates, FormatDate, StringAvatar } from "../utils/HelperUtils";
-import { HasASD } from "../configuration/ADSConfig";
 
 import HistoricPropertyDialog from "../dialogs/HistoricPropertyDialog";
 import { AppBar, Tabs, Tab, Typography, Avatar, Tooltip } from "@mui/material";
@@ -116,6 +116,7 @@ function ADSHomepageLatestEditsControl({ data }) {
 
   const [value, setValue] = useState(1);
   const [openHistoricProperty, setOpenHistoricProperty] = useState(false);
+  const [hasASD, setHasASD] = useState(false);
 
   const historicRec = useRef(null);
 
@@ -277,7 +278,7 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType61 =
-        !settingsContext.isScottish && HasASD() && streetData && streetData.interests
+        !settingsContext.isScottish && hasASD && streetData && streetData.interests
           ? streetData.interests.map((asdRec) => ({
               type: 61,
               pkId: asdRec.pkId,
@@ -292,7 +293,7 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType62 =
-        !settingsContext.isScottish && HasASD() && streetData && streetData.constructions
+        !settingsContext.isScottish && hasASD && streetData && streetData.constructions
           ? streetData.constructions.map((asdRec) => ({
               type: 62,
               pkId: asdRec.pkId,
@@ -307,7 +308,7 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType63 =
-        !settingsContext.isScottish && HasASD() && streetData && streetData.specialDesignations
+        !settingsContext.isScottish && hasASD && streetData && streetData.specialDesignations
           ? streetData.specialDesignations.map((asdRec) => ({
               type: 63,
               pkId: asdRec.pkId,
@@ -321,7 +322,7 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType64 =
-        !settingsContext.isScottish && HasASD() && streetData && streetData.heightWidthWeights
+        !settingsContext.isScottish && hasASD && streetData && streetData.heightWidthWeights
           ? streetData.heightWidthWeights.map((asdRec) => ({
               type: 64,
               pkId: asdRec.pkId,
@@ -335,7 +336,7 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType66 =
-        !settingsContext.isScottish && HasASD() && streetData && streetData.publicRightOfWays
+        !settingsContext.isScottish && hasASD && streetData && streetData.publicRightOfWays
           ? streetData.publicRightOfWays.map((asdRec) => ({
               type: 66,
               pkId: asdRec.pkId,
@@ -494,6 +495,10 @@ function ADSHomepageLatestEditsControl({ data }) {
     if (params.row.usrn) await doEditStreet(params.row.usrn, params.row.displayText);
     else await EditProperty(params.row.uprn);
   };
+
+  useEffect(() => {
+    setHasASD(userContext.currentUser && userContext.currentUser.hasASD);
+  }, [userContext]);
 
   return (
     <Box

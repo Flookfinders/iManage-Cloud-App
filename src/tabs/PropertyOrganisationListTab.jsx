@@ -24,6 +24,7 @@
 //    011   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    012   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
 //    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    014   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -314,7 +315,7 @@ function PropertyOrganisationListTab({
   };
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editProperty);
   }, [userContext]);
 
   return (

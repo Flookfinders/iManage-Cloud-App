@@ -50,6 +50,7 @@
 //    037   01.05.24 Sean Flook                 Correctly set haveSearch.
 //    048   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //    049   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    050   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -89,7 +90,6 @@ import {
   getClassificationCode,
   hasPropertyChanged,
 } from "../utils/PropertyUtils";
-import { HasASD } from "../configuration/ADSConfig";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
 import {
   AppBar,
@@ -166,8 +166,8 @@ function ADSAppBar(props) {
   const [haveMapProperties, setHaveMapProperties] = useState(false);
   const [havePropertyError, setHavePropertyError] = useState(false);
   const [haveAdminSettings, setHaveAdminSettings] = useState(false);
+  const [hasASD, setHasASD] = useState(false);
 
-  const [userCanEdit, setUserCanEdit] = useState(false);
   const [selectingProperties, setSelectingProperties] = useState(false);
 
   const [saveOpen, setSaveOpen] = useState(false);
@@ -423,7 +423,11 @@ function ADSAppBar(props) {
     if (haveAdminSettings) {
       PerformReturnAction(postCheckAction, false);
     } else if (sandboxContext.currentSandbox.sourceStreet) {
-      const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
+      const streetChanged = hasStreetChanged(
+        streetContext.currentStreet.newStreet,
+        sandboxContext.currentSandbox,
+        hasASD
+      );
 
       if (streetChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("street", sandboxContext, streetContext.esuDataChanged);
@@ -442,7 +446,8 @@ function ADSAppBar(props) {
                   sandboxContext,
                   lookupContext,
                   settingsContext.isWelsh,
-                  settingsContext.isScottish
+                  settingsContext.isScottish,
+                  hasASD
                 );
                 HandleSaveStreet(currentStreetData, postCheckAction, result === "discard");
               } else {
@@ -600,7 +605,7 @@ function ADSAppBar(props) {
               })),
             asdType61:
               !settingsContext.isScottish &&
-              HasASD() &&
+              hasASD &&
               foundStreet.interests.map((asdRec) => ({
                 type: 61,
                 pkId: asdRec.pkId,
@@ -614,7 +619,7 @@ function ADSAppBar(props) {
               })),
             asdType62:
               !settingsContext.isScottish &&
-              HasASD() &&
+              hasASD &&
               foundStreet.constructions.map((asdRec) => ({
                 type: 62,
                 pkId: asdRec.pkId,
@@ -628,7 +633,7 @@ function ADSAppBar(props) {
               })),
             asdType63:
               !settingsContext.isScottish &&
-              HasASD() &&
+              hasASD &&
               foundStreet.specialDesignations.map((asdRec) => ({
                 type: 63,
                 pkId: asdRec.pkId,
@@ -641,7 +646,7 @@ function ADSAppBar(props) {
               })),
             asdType64:
               !settingsContext.isScottish &&
-              HasASD() &&
+              hasASD &&
               foundStreet.heightWidthWeights.map((asdRec) => ({
                 type: 64,
                 pkId: asdRec.pkId,
@@ -654,7 +659,7 @@ function ADSAppBar(props) {
               })),
             asdType66:
               !settingsContext.isScottish &&
-              HasASD() &&
+              hasASD &&
               foundStreet.publicRightOfWays.map((asdRec) => ({
                 type: 66,
                 pkId: asdRec.pkId,
@@ -739,6 +744,7 @@ function ADSAppBar(props) {
       settingsContext.isScottish,
       streetContext,
       userContext,
+      hasASD,
     ]
   );
 
@@ -820,10 +826,6 @@ function ADSAppBar(props) {
   }, [haveStreetError, havePropertyError, haveAdminSettings]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
-  }, [userContext]);
-
-  useEffect(() => {
     if (selectingProperties !== mapContext.selectingProperties) setSelectingProperties(mapContext.selectingProperties);
   }, [selectingProperties, mapContext.selectingProperties]);
 
@@ -841,6 +843,10 @@ function ADSAppBar(props) {
       else handleHomeClick();
     }
   }, [searchContext, handleHomeClick, handleBackToListClick, haveAdminSettings, haveProperty, haveSearch, haveStreet]);
+
+  useEffect(() => {
+    setHasASD(userContext.currentUser && userContext.currentUser.hasASD);
+  }, [userContext]);
 
   return (
     <Fragment>
@@ -1094,7 +1100,9 @@ function ADSAppBar(props) {
             {!searchContext.hideSearch && (
               <ADSSearch variant="appBar" placeholder="Search…" onSearchClick={handleSearchClick} />
             )}
-            {userCanEdit && (haveSearch || haveStreet || haveProperty || location.pathname === GazetteerRoute) ? (
+            {userContext.currentUser &&
+            userContext.currentUser.editStreet &&
+            (haveSearch || haveStreet || haveProperty || location.pathname === GazetteerRoute) ? (
               <Tooltip title="Add street" arrow placement="bottom-end" sx={tooltipStyle}>
                 <Button
                   onClick={() => HandleChangeCheck("street")}
@@ -1108,7 +1116,8 @@ function ADSAppBar(props) {
             ) : (
               ""
             )}
-            {userCanEdit &&
+            {userContext.currentUser &&
+              userContext.currentUser.editProperty &&
               (haveMapProperties || haveSearch || location.pathname === GazetteerRoute) &&
               !haveStreet &&
               !haveProperty && (

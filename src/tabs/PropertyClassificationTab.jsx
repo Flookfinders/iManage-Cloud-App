@@ -25,8 +25,10 @@
 //    012   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
 //    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    014   17.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for the classification Scheme
-//    015   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title nowrapping with width restrictions
+//    015   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title no wrapping with width restrictions
 //    016   17.05.24 Joshua McCormick IMANN-364 Fixed Toolbar delete action button placement and alignment
+//    017   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -287,7 +289,7 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onHome
   }, [data, sandboxContext, sandboxContext.currentSandbox.currentPropertyRecords.classification]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editProperty);
   }, [userContext]);
 
   useEffect(() => {

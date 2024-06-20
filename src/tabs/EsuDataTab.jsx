@@ -38,6 +38,7 @@
 //    025   26.03.24 Joshua McCormick IMANN-280 Added divider on tab between back button and title
 //    026   14.05.24 Joshua McCormick IMANN-386 Toolbar styling for responsiveness
 //    027   17.05.24 Sean Flook       IMANN-458 Pass isActive to the GetTabIconStyle method.
+//    028   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -827,7 +828,7 @@ function EsuDataTab({
   }, [informationContext]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editStreet);
   }, [userContext]);
 
   useEffect(() => {
@@ -1447,12 +1448,12 @@ function EsuDataTab({
                                 backgroundColor: adsLightBlue,
                               }}
                             >
-                              <Typography variant="caption">{d.oneWayExemptionTypeCode}</Typography>
+                              <Typography variant="caption">{d.oneWayExemptionType}</Typography>
                             </Avatar>
                           </ListItemAvatar>
                           <ListItemText
                             primary={
-                              <Typography variant="body1">{GetOneWayExemption(d.oneWayExemptionTypeCode)}</Typography>
+                              <Typography variant="body1">{GetOneWayExemption(d.oneWayExemptionType)}</Typography>
                             }
                           />
                         </ListItemButton>

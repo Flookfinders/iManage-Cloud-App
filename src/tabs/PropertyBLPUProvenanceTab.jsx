@@ -30,7 +30,8 @@
 //    017   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    018   22.03.24 Sean Flook       PRFRM5_GP Display an information control for creating and modifying the geometry.
 //    019   09.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
-//    020   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title nowrapping with width restrictions
+//    020   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title no wrapping with width restrictions
+//    021   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -305,7 +306,7 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
   }, [data, sandboxContext, sandboxContext.currentSandbox.currentPropertyRecords.provenance]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editProperty);
   }, [userContext]);
 
   useEffect(() => {

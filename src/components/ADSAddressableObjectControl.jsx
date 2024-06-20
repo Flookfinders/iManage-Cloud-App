@@ -44,6 +44,7 @@
 //    009   16.04.24 Joshua McCormick IMAN-277  Revert 008 &   added props for setting displayCharactersLeft and maxLength
 //    010   17.04.24 Joshua McCormick IMAN-277  Removed maxLength and set to hardcoded 90
 //    011   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
+//    012   20.06.24 Sean Flook       IMANN-633 Enforce the maximum for the numbers.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -143,7 +144,9 @@ function ADSAddressableObjectControl({
    * @param {object} event The event object.
    */
   const handleStartNumberChangeEvent = (event) => {
-    if (onStartNumberChange) onStartNumberChange(event.target.value);
+    const newValue = Number(event.target.value);
+    if ((!event.target.value || (newValue >= 1 && newValue <= 9999)) && onStartNumberChange)
+      onStartNumberChange(event.target.value);
   };
 
   /**
@@ -163,7 +166,9 @@ function ADSAddressableObjectControl({
    * @param {object} event The event object.
    */
   const handleEndNumberChangeEvent = (event) => {
-    if (onEndNumberChange) onEndNumberChange(event.target.value);
+    const newValue = Number(event.target.value);
+    if (!event.target.value || (newValue >= 1 && newValue <= 9999 && onEndNumberChange))
+      onEndNumberChange(event.target.value);
   };
 
   /**

@@ -40,6 +40,7 @@
 //    027   11.06.24 Sean Flook       IMANN-490 Added code to update the USRN.
 //    028   12.06.24 Sean Flook       IMANN-536 Removed a warning.
 //    029   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    030   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -54,7 +55,6 @@ import UserContext from "../context/userContext";
 import MapContext from "../context/mapContext";
 import SettingsContext from "../context/settingsContext";
 
-import { HasASD } from "../configuration/ADSConfig";
 import { copyTextToClipboard, GetLookupLabel, ConvertDate, GetCurrentDate } from "../utils/HelperUtils";
 import { streetToTitleCase, FilteredStreetType, DisplayStreetInStreetView } from "../utils/StreetUtils";
 
@@ -145,7 +145,9 @@ function StreetDataTab({
   const [itemSelected, setItemSelected] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const [streetTypeLookup, setStreetTypeLookup] = useState(FilteredStreetType(settingsContext.isScottish));
+  const [streetTypeLookup, setStreetTypeLookup] = useState(
+    FilteredStreetType(settingsContext.isScottish, userContext.currentUser && userContext.currentUser.hasProperty)
+  );
 
   const [usrn, setUsrn] = useState(0);
   const [streetType, setStreetType] = useState(null);
@@ -755,7 +757,9 @@ function StreetDataTab({
       setStartDate(data.streetStartDate);
       setEndDate(data.streetEndDate);
 
-      setStreetTypeLookup(FilteredStreetType(settingsContext.isScottish));
+      setStreetTypeLookup(
+        FilteredStreetType(settingsContext.isScottish, userContext.currentUser && userContext.currentUser.hasProperty)
+      );
 
       let associatedRecords = [];
       if (data.streetDescriptors && data.streetDescriptors.length > 0)
@@ -790,7 +794,7 @@ function StreetDataTab({
       } else {
         setChildCount(0);
       }
-      if (HasASD()) {
+      if (userContext.currentUser && userContext.currentUser.hasASD) {
         if (data.interests && data.interests.length > 0)
           associatedRecords.push({
             type: "interested organisation",
@@ -826,10 +830,10 @@ function StreetDataTab({
       if (associatedRecords.length > 0) setStreetAssociatedRecords(associatedRecords);
       else setStreetAssociatedRecords(null);
     }
-  }, [data, settingsContext]);
+  }, [data, settingsContext, userContext.currentUser]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editStreet);
 
     setAdminUser(userContext.currentUser && userContext.currentUser.isAdministrator);
   }, [userContext]);
@@ -1294,6 +1298,7 @@ function StreetDataTab({
             loading={loading}
             isFocused={focusedField ? focusedField === "StreetTolerance" : false}
             value={tolerance}
+            maximum={50}
             errorText={toleranceError}
             helperText="This is the tolerance for the coordinates of the street."
             onChange={handleToleranceChangeEvent}

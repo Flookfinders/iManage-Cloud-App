@@ -30,6 +30,7 @@
 //    017   03.05.24 Joel Benford               Fix index on new descriptors
 //    018   29.05.24 Sean Flook       IMANN-489 Prevent the user from changing the language.
 //    019   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    020   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -362,7 +363,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
   }, [sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor, sandboxContext.currentSandbox.sourceStreet]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editStreet);
   }, [userContext]);
 
   useEffect(() => {

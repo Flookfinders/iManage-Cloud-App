@@ -25,6 +25,7 @@
 //    012   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
 //    017   08.05.24 Sean Flook       IMANN-447 Added exclude from export from template.
 //    018   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    019   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -352,7 +353,10 @@ function StreetPage() {
     };
 
     if (!apiUrl) {
-      const streetUrl = GetStreetByUSRNUrl(userContext.currentUser.token, settingsContext.isScottish);
+      const streetUrl = GetStreetByUSRNUrl(
+        userContext.currentUser.token,
+        !settingsContext.isScottish && userContext.currentUser && userContext.currentUser.hasASD
+      );
       setApiUrl(streetUrl);
     }
 

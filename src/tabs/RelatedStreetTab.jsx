@@ -41,6 +41,7 @@
 //    028   13.05.24 Sean Flook       IMANN-439 Changed to use grids to display th data as well as other display improvements.
 //    029   17.05.24 Sean Flook       IMANN-458 Correctly highlight the avatar when items are hovered.
 //    030   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    031   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -51,7 +52,6 @@ import MapContext from "../context/mapContext";
 import UserContext from "../context/userContext";
 import StreetContext from "../context/streetContext";
 import SettingsContext from "../context/settingsContext";
-import { HasASD } from "../configuration/ADSConfig";
 import PropTypes from "prop-types";
 import dateFormat from "dateformat";
 import {
@@ -176,6 +176,8 @@ function RelatedStreetTab({
   const [errorOpen, setErrorOpen] = useState(false);
   const errorType = useRef(null);
 
+  const [hasASD, setHasASD] = useState(false);
+
   /**
    * Event to handle when a node is selected.
    *
@@ -205,7 +207,7 @@ function RelatedStreetTab({
         const difference = nodeIds.filter((x) => !expanded.includes(x));
         if (difference && !difference.includes("esu") && !difference.includes("asd")) {
           let newNodeIds = nodeIds;
-          const newItems = HasASD() ? [`esu-root-${difference}`, `asd-root-${difference}`] : [`esu-root-${difference}`];
+          const newItems = hasASD ? [`esu-root-${difference}`, `asd-root-${difference}`] : [`esu-root-${difference}`];
           newNodeIds.push(...newItems);
           if (onNodeToggle) onNodeToggle(newNodeIds);
         }
@@ -703,7 +705,7 @@ function RelatedStreetTab({
   };
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editStreet);
   }, [userContext]);
 
   useEffect(() => {
@@ -724,6 +726,10 @@ function RelatedStreetTab({
       document.getElementById(`street-related-tree-${streetContext.currentStreet.usrn.toString()}`).scrollIntoView();
     initialStreetFocused.current = true;
   }, [streetContext.currentStreet.usrn]);
+
+  useEffect(() => {
+    setHasASD(userContext.currentUser && userContext.currentUser.hasASD);
+  }, [userContext]);
 
   return (
     <Fragment>
@@ -978,7 +984,7 @@ function RelatedStreetTab({
                           );
                         })}
                       </TreeItem>
-                      {HasASD() && (
+                      {hasASD && (
                         <TreeItem
                           key={"asd-root"}
                           nodeId={`asd-root-${rec.usrn}`}

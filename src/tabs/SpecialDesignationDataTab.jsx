@@ -33,6 +33,7 @@
 //    020   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    021   27.03.24 Sean Flook                 Clear specific location if going back to whole road.
 //    022   05.04.24 Sean Flook       IMANN-372 Corrected typo.
+//    023   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -567,7 +568,7 @@ function SpecialDesignationDataTab({ data, errors, loading, focusedField, onHome
   ]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editASD);
   }, [userContext]);
 
   useEffect(() => {

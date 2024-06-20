@@ -32,6 +32,7 @@
 //    019   18.04.24 Sean Flook       IMANN-351 Changes required to prevent crashes when refreshing the page.
 //    020   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //    021   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    022   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -48,7 +49,6 @@ import SettingsContext from "../context/settingsContext";
 
 import { GetWktCoordinates, mergeArrays } from "../utils/HelperUtils";
 import { GetStreetMapData } from "../utils/StreetUtils";
-import { HasASD } from "../configuration/ADSConfig";
 
 import {
   Checkbox,
@@ -149,6 +149,7 @@ function SearchDataForm() {
   const deleteResult = useRef(null);
 
   const [value, setValue] = useState(0);
+  const [hasASD, setHasASD] = useState(false);
 
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const filterOpen = Boolean(filterAnchorEl);
@@ -284,7 +285,7 @@ function SearchDataForm() {
                     }))
                   : undefined;
               let asdType61 =
-                !settingsContext.isScottish && HasASD() && streetData
+                !settingsContext.isScottish && hasASD && streetData
                   ? streetData.interests.map((asdRec) => ({
                       type: 61,
                       pkId: asdRec.pkId,
@@ -298,7 +299,7 @@ function SearchDataForm() {
                     }))
                   : undefined;
               let asdType62 =
-                !settingsContext.isScottish && HasASD() && streetData
+                !settingsContext.isScottish && hasASD && streetData
                   ? streetData.constructions.map((asdRec) => ({
                       type: 62,
                       pkId: asdRec.pkId,
@@ -312,7 +313,7 @@ function SearchDataForm() {
                     }))
                   : undefined;
               let asdType63 =
-                !settingsContext.isScottish && HasASD() && streetData
+                !settingsContext.isScottish && hasASD && streetData
                   ? streetData.specialDesignations.map((asdRec) => ({
                       type: 63,
                       pkId: asdRec.pkId,
@@ -325,7 +326,7 @@ function SearchDataForm() {
                     }))
                   : undefined;
               let asdType64 =
-                !settingsContext.isScottish && HasASD() && streetData
+                !settingsContext.isScottish && hasASD && streetData
                   ? streetData.heightWidthWeights.map((asdRec) => ({
                       type: 64,
                       pkId: asdRec.pkId,
@@ -338,7 +339,7 @@ function SearchDataForm() {
                     }))
                   : undefined;
               let asdType66 =
-                !settingsContext.isScottish && HasASD() && streetData
+                !settingsContext.isScottish && hasASD && streetData
                   ? streetData.publicRightOfWays.map((asdRec) => ({
                       type: 66,
                       pkId: asdRec.pkId,
@@ -457,7 +458,7 @@ function SearchDataForm() {
                     }))
                   : undefined;
               let asdType61 =
-                !settingsContext.isScottish && HasASD() && streetData
+                !settingsContext.isScottish && hasASD && streetData
                   ? streetData.interests.map((asdRec) => ({
                       type: 61,
                       pkId: asdRec.pkId,
@@ -471,7 +472,7 @@ function SearchDataForm() {
                     }))
                   : undefined;
               let asdType62 =
-                !settingsContext.isScottish && HasASD() && streetData
+                !settingsContext.isScottish && hasASD && streetData
                   ? streetData.constructions.map((asdRec) => ({
                       type: 62,
                       pkId: asdRec.pkId,
@@ -485,7 +486,7 @@ function SearchDataForm() {
                     }))
                   : undefined;
               let asdType63 =
-                !settingsContext.isScottish && HasASD() && streetData
+                !settingsContext.isScottish && hasASD && streetData
                   ? streetData.specialDesignations.map((asdRec) => ({
                       type: 63,
                       pkId: asdRec.pkId,
@@ -498,7 +499,7 @@ function SearchDataForm() {
                     }))
                   : undefined;
               let asdType64 =
-                !settingsContext.isScottish && HasASD() && streetData
+                !settingsContext.isScottish && hasASD && streetData
                   ? streetData.heightWidthWeights.map((asdRec) => ({
                       type: 64,
                       pkId: asdRec.pkId,
@@ -511,7 +512,7 @@ function SearchDataForm() {
                     }))
                   : undefined;
               let asdType66 =
-                !settingsContext.isScottish && HasASD() && streetData
+                !settingsContext.isScottish && hasASD && streetData
                   ? streetData.publicRightOfWays.map((asdRec) => ({
                       type: 66,
                       pkId: asdRec.pkId,
@@ -836,6 +837,10 @@ function SearchDataForm() {
       );
     }
   }, [searchContext.currentSearchData, searchFilteredData]);
+
+  useEffect(() => {
+    setHasASD(userContext.currentUser && userContext.currentUser.hasASD);
+  }, [userContext]);
 
   return (
     <Fragment>

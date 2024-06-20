@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Stack to @mui/system and use StringAvatar to display the user initials.
 //    004   05.01.24 Sean Flook                 use CSS shortcuts.
+//    005   20.06.24 Sean Flook       IMANN-634 Added error trapping.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -80,7 +81,9 @@ const ADSEntityHistoryList = ({ historySummaryData }) => {
   };
 
   return (
-    <Stack sx={{ ml: theme.spacing(2), mt: theme.spacing(1) }}>{historySummaryData.map((day) => DayGroup(day))}</Stack>
+    <Stack sx={{ ml: theme.spacing(2), mt: theme.spacing(1) }}>
+      {historySummaryData && historySummaryData.map((day) => DayGroup(day))}
+    </Stack>
   );
 };
 

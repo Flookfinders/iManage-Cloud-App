@@ -26,7 +26,8 @@
 //    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    014   26.03.24 Joshua McCormick IMANN-336 Added xrefKey field name to displayActionButtons to give same display properties, added flex25 to historic
 //    015   27.03.24 Sean Flook       IMANN-336 Undone above changes as already done under STRFRM3_OS.
-//    016   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title nowrapping with width restrictions
+//    016   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title no wrapping with width restrictions
+//    017   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -344,7 +345,7 @@ function PropertyCrossRefListTab({
   };
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editProperty);
   }, [userContext]);
 
   return (

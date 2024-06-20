@@ -33,6 +33,7 @@
 //    020   20.02.24 Joel Benford     IMANN-299 Finish earlier toolbar changes
 //    021   27.03.24 Sean Flook                 Clear specific location if going back to whole road.
 //    022   17.05.24 Joshua McCormick IMANN-400 OSSpecial desc char limit set to 255 from 250
+//    023   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -442,7 +443,7 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
   ]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editASD);
   }, [userContext]);
 
   useEffect(() => {

@@ -65,6 +65,7 @@
 //    052   12.06.24 Sean Flook       IMANN-536 Added some additional checking to HandleMapReload.
 //    053   12.06.24 Sean Flook       IMANN-565 Handle polygon deletion.
 //    054   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    055   20.06.24 Sean Flook       IMANN-636 Bug fix.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1764,9 +1765,9 @@ function App() {
         type === "street" ? newErrors : streetErrors.street,
         type === "descriptor" ? newErrors : streetErrors.descriptor,
         type === "esu" ? newErrors : streetErrors.esu,
+        type === "successorCrossRef" ? newErrors : streetErrors.successorCrossRef,
         type === "highwayDedication" ? newErrors : streetErrors.highwayDedication,
         type === "oneWayExemption" ? newErrors : streetErrors.oneWayExemption,
-        type === "successorCrossRef" ? newErrors : streetErrors.successorCrossRef,
         type === "maintenanceResponsibility" ? newErrors : streetErrors.maintenanceResponsibility,
         type === "reinstatementCategory" ? newErrors : streetErrors.reinstatementCategory,
         type === "osSpecialDesignation" ? newErrors : streetErrors.osSpecialDesignation,

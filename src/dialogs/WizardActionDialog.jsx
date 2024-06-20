@@ -25,8 +25,8 @@
 //    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    013   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //    014   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
-//    015   19.06.24 Joshua McCormick IMANN-503 BLPU Level field max characters 30 and removed updown counter.
-//    016   19.06.24 Joshua McCormick IMANN-503 BLPU Level AdsNumberControl type set to text to hide updown
+//    015   19.06.24 Joshua McCormick IMANN-503 BLPU Level field max characters 30 and removed up down counter.
+//    016   19.06.24 Joshua McCormick IMANN-503 BLPU Level AdsNumberControl type set to text to hide up down
 //    017   19.06.24 Joshua McCormick IMANN-503 BLPU Level removed type prop
 //    018   19.06.24 Joshua McCormick IMANN-503 BLPU Level max set to 99.9
 //    019   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.

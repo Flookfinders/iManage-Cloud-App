@@ -17,6 +17,7 @@
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   06.02.24 Sean Flook                 Updated street view icon.
 //    006   11.03.24 Sean Flook           GLB12 Correctly set width.
+//    007   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,17 +25,20 @@
 
 /* #region imports */
 
-import React, { Fragment } from "react";
+import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
+import UserContext from "../context/userContext";
+
 import { Drawer, Grid, Typography, List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { Box } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
+
 import StreetviewIcon from "@mui/icons-material/Streetview";
 import StarIcon from "@mui/icons-material/Star";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import WatchLaterIcon from "@mui/icons-material/WatchLater";
 import WarningIcon from "@mui/icons-material/Warning";
-import { HasASD, HasProperties } from "../configuration/ADSConfig";
+
 import { adsMidGreyB } from "../utils/ADSColours";
 import { drawerWidth } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
@@ -47,6 +51,11 @@ ADSBookmarkDrawer.propTypes = {
 
 function ADSBookmarkDrawer(props) {
   const theme = useTheme();
+
+  const userContext = useContext(UserContext);
+
+  const [hasASD, setHasASD] = useState(false);
+  const [hasProperty, setHasProperty] = useState(false);
 
   /**
    * Event handle when the property view button is clicked.
@@ -101,6 +110,11 @@ function ADSBookmarkDrawer(props) {
   const handleOtherViewClick = (index) => {
     console.log("DEBUG handleOtherViewClick", index);
   };
+
+  useEffect(() => {
+    setHasASD(userContext.currentUser && userContext.currentUser.hasASD);
+    setHasProperty(userContext.currentUser && userContext.currentUser.hasProperty);
+  }, [userContext]);
 
   return (
     <Drawer
@@ -162,7 +176,7 @@ function ADSBookmarkDrawer(props) {
             pl: theme.spacing(2),
           }}
         >
-          {HasProperties() && (
+          {hasProperty && (
             <Fragment>
               <Grid
                 item
@@ -262,7 +276,7 @@ function ADSBookmarkDrawer(props) {
               </ListItemButton>
             </List>
           </Grid>
-          {HasASD() && (
+          {hasASD && (
             <Fragment>
               <Grid
                 item
@@ -458,7 +472,7 @@ function ADSBookmarkDrawer(props) {
                 </ListItemIcon>
                 <ListItemText primary="Deleted" />
               </ListItemButton>
-              {HasProperties() && (
+              {hasProperty && (
                 <ListItemButton onClick={() => handleOtherViewClick(3)}>
                   <ListItemIcon>
                     <WarningIcon />

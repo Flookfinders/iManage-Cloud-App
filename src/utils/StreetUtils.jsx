@@ -65,6 +65,7 @@
 //    052   04.06.24 Sean Flook       IMANN-515 Ensure the end dates are set on all the ESUs, HDs and OWEs when the state is set to closed.
 //    053   12.06.24 Sean Flook       IMANN-515 Correctly set the changeType and end dates when state is 4.
 //    054   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    055   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -103,8 +104,6 @@ import {
   GetDeleteStreetUrl,
   GetCreateStreetUrl,
   GetUpdateStreetUrl,
-  HasProperties,
-  HasASD,
   GetEsuByIdUrl,
   GetMultipleEsusByIdUrl,
 } from "../configuration/ADSConfig";
@@ -124,14 +123,15 @@ import PRoWStatusCode from "../data/PRoWStatusCode";
 /**
  * Returns a list of street types depending on if the authority is Scottish or not.
  *
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @return {array} The filtered street types.
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {Boolean} hasProperty True if the current user can see properties; otherwise false.
+ * @return {Array} The filtered street types.
  */
-export const FilteredStreetType = (isScottish) => {
+export const FilteredStreetType = (isScottish, hasProperty) => {
   if (isScottish) {
     return StreetType.filter((x) => x.osText && x.id !== 0);
   } else {
-    return StreetType.filter((x) => x.gpText && x.id !== 0 && (HasProperties() || x.id !== 9));
+    return StreetType.filter((x) => x.gpText && x.id !== 0 && (hasProperty || x.id !== 9));
   }
 };
 
@@ -561,7 +561,10 @@ export function GetNewStreet(
  * @return {Boolean} True if the street was deleted successfully; otherwise false.
  */
 export async function StreetDelete(usrn, deleteEsus, lookupContext, streetContext, userContext, isScottish) {
-  const deleteUrl = GetDeleteStreetUrl(userContext.currentUser.token, isScottish);
+  const deleteUrl = GetDeleteStreetUrl(
+    userContext.currentUser.token,
+    !isScottish && userContext.currentUser && userContext.currentUser.hasASD
+  );
 
   if (deleteUrl) {
     // if (process.env.NODE_ENV === "development")
@@ -693,22 +696,23 @@ export async function StreetDelete(usrn, deleteEsus, lookupContext, streetContex
 /**
  * Return the full street object for a new street.
  *
- * @param {object} currentStreet The current street data.
- * @param {array|null} esuData The ESU data for the street.
- * @param {array|null} successorCrossRefData The successor cross reference data for the street.
- * @param {array|null} descriptorData The descriptor data for the street.
- * @param {array|null} noteData The note data for the street.
- * @param {array|null} maintenanceResponsibilityData The maintenance responsibility data for the street (OneScotland only).
- * @param {array|null} reinstatementCategoryData The reinstatement category data for the street (OneScotland only).
- * @param {array|null} osSpecialDesignationData The special designation data for the street (OneScotland only).
- * @param {array|null} interestData The interest data for the street (GeoPlace only).
- * @param {array|null} constructionData The construction data for the street (GeoPlace only).
- * @param {array|null} specialDesignationData The special designation data for the street (GeoPlace only).
- * @param {array|null} prowData The public rights of way data for the street (GeoPlace only).
- * @param {array|null} hwwData The height, width and weight restriction data for the street (GeoPlace only).
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @param {boolean} [updateStreetCoordinates=false] True if the street coordinates need to be updated; otherwise false.
- * @return {object} The new street object.
+ * @param {Object} currentStreet The current street data.
+ * @param {Array|null} esuData The ESU data for the street.
+ * @param {Array|null} successorCrossRefData The successor cross reference data for the street.
+ * @param {Array|null} descriptorData The descriptor data for the street.
+ * @param {Array|null} noteData The note data for the street.
+ * @param {Array|null} maintenanceResponsibilityData The maintenance responsibility data for the street (OneScotland only).
+ * @param {Array|null} reinstatementCategoryData The reinstatement category data for the street (OneScotland only).
+ * @param {Array|null} osSpecialDesignationData The special designation data for the street (OneScotland only).
+ * @param {Array|null} interestData The interest data for the street (GeoPlace only).
+ * @param {Array|null} constructionData The construction data for the street (GeoPlace only).
+ * @param {Array|null} specialDesignationData The special designation data for the street (GeoPlace only).
+ * @param {Array|null} prowData The public rights of way data for the street (GeoPlace only).
+ * @param {Array|null} hwwData The height, width and weight restriction data for the street (GeoPlace only).
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {Boolean} hasASD True if the current user can see ASD; otherwise false.
+ * @param {Boolean} [updateStreetCoordinates=false] True if the street coordinates need to be updated; otherwise false.
+ * @return {Object} The new street object.
  */
 export function GetNewStreetData(
   currentStreet,
@@ -725,6 +729,7 @@ export function GetNewStreetData(
   prowData,
   hwwData,
   isScottish,
+  hasASD,
   updateStreetCoordinates = false
 ) {
   let startX = currentStreet.streetStartX;
@@ -744,7 +749,7 @@ export function GetNewStreetData(
     }
   }
   const newStreetData =
-    !isScottish && !HasASD()
+    !isScottish && !hasASD
       ? {
           changeType: currentStreet.changeType,
           usrn: currentStreet.usrn,
@@ -774,7 +779,7 @@ export function GetNewStreetData(
           streetDescriptors: descriptorData,
           streetNotes: noteData,
         }
-      : !isScottish && HasASD()
+      : !isScottish && hasASD
       ? {
           changeType: currentStreet.changeType,
           usrn: currentStreet.usrn,
@@ -845,11 +850,12 @@ export function GetNewStreetData(
 /**
  * Method to get the current search streets array.
  *
- * @param {object} streetData The street data
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {Object} streetData The street data
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {Boolean} hasASD True if the current user can see ASD; otherwise false.
  * @return {Array} The new search street array.
  */
-export function GetCurrentSearchStreets(streetData, isScottish) {
+export function GetCurrentSearchStreets(streetData, isScottish, hasASD) {
   const engDescriptor = streetData.streetDescriptors.find((x) => x.language === "ENG");
 
   const currentSearchStreets = [
@@ -915,7 +921,7 @@ export function GetCurrentSearchStreets(streetData, isScottish) {
           })),
       asdType61:
         !isScottish &&
-        HasASD() &&
+        hasASD &&
         streetData.interests
           .filter((x) => x.changeType !== "D")
           .map((asdRec) => ({
@@ -932,7 +938,7 @@ export function GetCurrentSearchStreets(streetData, isScottish) {
           })),
       asdType62:
         !isScottish &&
-        HasASD() &&
+        hasASD &&
         streetData.constructions
           .filter((x) => x.changeType !== "D")
           .map((asdRec) => ({
@@ -949,7 +955,7 @@ export function GetCurrentSearchStreets(streetData, isScottish) {
           })),
       asdType63:
         !isScottish &&
-        HasASD() &&
+        hasASD &&
         streetData.specialDesignations
           .filter((x) => x.changeType !== "D")
           .map((asdRec) => ({
@@ -965,7 +971,7 @@ export function GetCurrentSearchStreets(streetData, isScottish) {
           })),
       asdType64:
         !isScottish &&
-        HasASD() &&
+        hasASD &&
         streetData.heightWidthWeights
           .filter((x) => x.changeType !== "D")
           .map((asdRec) => ({
@@ -981,7 +987,7 @@ export function GetCurrentSearchStreets(streetData, isScottish) {
           })),
       asdType66:
         !isScottish &&
-        HasASD() &&
+        hasASD &&
         streetData.publicRightOfWays
           .filter((x) => x.changeType !== "D")
           .map((asdRec) => ({
@@ -1026,14 +1032,15 @@ export function GetWholeRoadGeometry(esus) {
 /**
  * Method to get the new street data and current street search data for updated ESU data.
  *
- * @param {object} currentSandbox The current sandbox object.
+ * @param {Object} currentSandbox The current sandbox object.
  * @param {Array} newEsus The updated list of ESUs
- * @param {object} streetData The current street data.
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @param {boolean} [updateWholeRoad=false] True if the whole road geometries need to be updated; otherwise false.
- * @returns {object} An object containing the new street data and the current street search data.
+ * @param {Object} streetData The current street data.
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {Boolean} hasASD True if the current user can see ASD; otherwise false.
+ * @param {Boolean} [updateWholeRoad=false] True if the whole road geometries need to be updated; otherwise false.
+ * @returns {Object} An object containing the new street data and the current street search data.
  */
-export function GetNewEsuStreetData(currentSandbox, newEsus, streetData, isScottish, updateWholeRoad = false) {
+export function GetNewEsuStreetData(currentSandbox, newEsus, streetData, isScottish, hasASD, updateWholeRoad = false) {
   let updatedMaintenanceResponsibilities = isScottish ? [...streetData.maintenanceResponsibilities] : null;
   let updatedReinstatementCategories = isScottish ? [...streetData.reinstatementCategories] : null;
   let updatedOSSpecialDesignations = isScottish ? [...streetData.specialDesignations] : null;
@@ -1154,11 +1161,12 @@ export function GetNewEsuStreetData(currentSandbox, newEsus, streetData, isScott
     updatedPublicRightOfWays,
     updatedHeightWidthWeights,
     isScottish,
+    hasASD,
     updateWholeRoad
   );
 
   if (newStreetData) {
-    const currentSearchStreets = GetCurrentSearchStreets(newStreetData, isScottish);
+    const currentSearchStreets = GetCurrentSearchStreets(newStreetData, isScottish, hasASD);
 
     return { streetData: newStreetData, searchStreets: currentSearchStreets };
   } else return null;
@@ -1167,14 +1175,15 @@ export function GetNewEsuStreetData(currentSandbox, newEsus, streetData, isScott
 /**
  * Get the current street record object.
  *
- * @param {object} streetData The street data.
- * @param {object} sandboxContext The sandbox context object.
- * @param {object} lookupContext The lookup context object.
- * @param {boolean} isWelsh True if the authority is a Welsh authority; otherwise false.
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @return {object} The current street object.
+ * @param {Object} streetData The street data.
+ * @param {Object} sandboxContext The sandbox context object.
+ * @param {Object} lookupContext The lookup context object.
+ * @param {Boolean} isWelsh True if the authority is a Welsh authority; otherwise false.
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {Boolean} hasASD True if the current user can see ASD; otherwise false.
+ * @return {Object} The current street object.
  */
-export function GetCurrentStreetData(streetData, sandboxContext, lookupContext, isWelsh, isScottish) {
+export function GetCurrentStreetData(streetData, sandboxContext, lookupContext, isWelsh, isScottish, hasASD) {
   let descriptorData = streetData.streetDescriptors;
   if (sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor && isWelsh) {
     const secondLanguage =
@@ -1342,7 +1351,8 @@ export function GetCurrentStreetData(streetData, sandboxContext, lookupContext, 
     specialDesignationData,
     prowData,
     hwwData,
-    isScottish
+    isScottish,
+    hasASD
   );
 
   return currentStreetData;
@@ -1351,12 +1361,13 @@ export function GetCurrentStreetData(streetData, sandboxContext, lookupContext, 
 /**
  * Get the JSON object required to create a new street.
  *
- * @param {object} streetData The street data to use to create the object.
- * @param {object} lookupContext The lookup context used to get the required text.
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @return {object} The create street object.
+ * @param {Object} streetData The street data to use to create the object.
+ * @param {Object} lookupContext The lookup context used to get the required text.
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {Boolean} hasASD True if the current user can see ASD; otherwise false.
+ * @return {Object} The create street object.
  */
-export function GetStreetCreateData(streetData, lookupContext, isScottish) {
+export function GetStreetCreateData(streetData, lookupContext, isScottish, hasASD) {
   const currentDate = GetCurrentDate();
 
   const unassignedEngLocality = lookupContext.currentLookups.localities.find(
@@ -1535,7 +1546,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
       (x) => x.administrativeArea === "Unassigned" && x.language === "CYM"
     );
 
-    if (!HasASD()) {
+    if (!hasASD) {
       return {
         version: 1,
         recordType: streetData.recordType ? streetData.recordType : 0,
@@ -1587,7 +1598,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
                   ? esu.oneWayExemptions.map((owe) => {
                       return {
                         changeType: owe.changeType,
-                        oneWayExemptionTypeCode: owe.oneWayExemptionTypeCode,
+                        oneWayExemptionType: owe.oneWayExemptionType,
                         recordEndDate: owe.recordEndDate,
                         oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
                         oneWayExemptionEndDate: owe.oneWayExemptionEndDate,
@@ -1696,7 +1707,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
                   ? esu.oneWayExemptions.map((owe) => {
                       return {
                         changeType: owe.changeType,
-                        oneWayExemptionTypeCode: owe.oneWayExemptionTypeCode,
+                        oneWayExemptionType: owe.oneWayExemptionType,
                         recordEndDate: owe.recordEndDate,
                         oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
                         oneWayExemptionEndDate: owe.oneWayExemptionEndDate,
@@ -1896,12 +1907,13 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish) {
 /**
  * Get the JSON object required to update an existing street.
  *
- * @param {object} streetData The street data to use to create the object.
- * @param {object} lookupContext The lookup context used to get the required text.
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @return {object} The update street object.
+ * @param {Object} streetData The street data to use to create the object.
+ * @param {Object} lookupContext The lookup context used to get the required text.
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {Boolean} hasASD True if the current user can see ASD; otherwise false.
+ * @return {Object} The update street object.
  */
-export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
+export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasASD) {
   const currentDate = GetCurrentDate();
 
   const unassignedEngLocality = lookupContext.currentLookups.localities.find(
@@ -1995,7 +2007,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
               changeType: sd.changeType,
               custodianCode: sd.custodianCode,
               authorityCode: sd.authorityCode,
-              specialDesig: sd.specialDesig,
+              specialDesignationCode: sd.specialDesig,
               wktGeometry: sd.wktGeometry,
               description: sd.description,
               state: sd.state,
@@ -2064,7 +2076,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
       (x) => x.administrativeArea === "Unassigned" && x.language === "CYM"
     );
 
-    if (!HasASD()) {
+    if (!hasASD) {
       return {
         pkId: streetData.pkId,
         version: streetData.version,
@@ -2145,7 +2157,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                       (esu.changeType === "D" || [4, 5].includes(streetData.state)) && owe.changeType !== "D"
                         ? "D"
                         : owe.changeType,
-                    oneWayExemptionTypeCode: owe.oneWayExemptionTypeCode,
+                    oneWayExemptionType: owe.oneWayExemptionType,
                     recordEndDate:
                       esu.changeType === "D" && owe.changeType !== "D"
                         ? esu.endDate
@@ -2296,7 +2308,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish) {
                           (esu.changeType === "D" || [4, 5].includes(streetData.state)) && owe.changeType !== "D"
                             ? "D"
                             : owe.changeType,
-                        oneWayExemptionTypeCode: owe.oneWayExemptionTypeCode,
+                        oneWayExemptionType: owe.oneWayExemptionType,
                         recordEndDate:
                           esu.changeType === "D" && owe.changeType !== "D"
                             ? esu.endDate
@@ -2737,7 +2749,10 @@ export function GetStreetValidationErrors(body, newStreet) {
 export async function GetStreetMapData(usrn, userContext, isScottish) {
   if (usrn === 0) return null;
 
-  const streetUrl = GetStreetByUSRNUrl(userContext.currentUser.token, isScottish);
+  const streetUrl = GetStreetByUSRNUrl(
+    userContext.currentUser.token,
+    !isScottish && userContext.currentUser && userContext.currentUser.hasASD
+  );
 
   if (streetUrl) {
     const returnData = await fetch(`${streetUrl.url}/${usrn}`, {
@@ -2947,12 +2962,13 @@ export async function SaveStreet(
   };
 
   let streetSaved = null;
+  const hasASD = userContext.currentUser && userContext.currentUser.hasASD;
   const saveUrl = streetContext.currentStreet.newStreet
-    ? GetCreateStreetUrl(userContext.currentUser.token, isScottish)
-    : GetUpdateStreetUrl(userContext.currentUser.token, isScottish);
+    ? GetCreateStreetUrl(userContext.currentUser.token, !isScottish && hasASD)
+    : GetUpdateStreetUrl(userContext.currentUser.token, !isScottish && hasASD);
   const saveData = streetContext.currentStreet.newStreet
-    ? GetStreetCreateData(currentStreet, lookupContext, isScottish)
-    : GetStreetUpdateData(currentStreet, lookupContext, isScottish);
+    ? GetStreetCreateData(currentStreet, lookupContext, isScottish, hasASD)
+    : GetStreetUpdateData(currentStreet, lookupContext, isScottish, hasASD);
 
   // if (process.env.NODE_ENV === "development")
   console.log("[DEBUG] SaveStreet - JSON saveData", JSON.stringify(saveData));
@@ -3066,16 +3082,18 @@ export async function SaveStreet(
 
         streetContext.onStreetChange(result.usrn, engDescriptor.streetDescriptor, false);
 
+        const hasASD = userContext.currentUser && userContext.currentUser.hasASD;
+
         updateMapStreetData(
           result,
           isScottish ? result.maintenanceResponsibilities : null,
           isScottish ? result.reinstatementCategories : null,
           isScottish ? result.specialDesignations : null,
-          !isScottish && HasASD() ? result.interests : null,
-          !isScottish && HasASD() ? result.constructions : null,
-          !isScottish && HasASD() ? result.specialDesignations : null,
-          !isScottish && HasASD() ? result.heightWidthWeights : null,
-          !isScottish && HasASD() ? result.publicRightOfWays : null,
+          !isScottish && hasASD ? result.interests : null,
+          !isScottish && hasASD ? result.constructions : null,
+          !isScottish && hasASD ? result.specialDesignations : null,
+          !isScottish && hasASD ? result.heightWidthWeights : null,
+          !isScottish && hasASD ? result.publicRightOfWays : null,
           isScottish,
           mapContext,
           lookupContext.currentLookups
@@ -3099,7 +3117,7 @@ export async function SaveStreet(
                 streetErrors.esu,
                 streetErrors.successorCrossRef,
                 streetErrors.highwayDedication,
-                streetErrors.oneWayException,
+                streetErrors.oneWayExemption,
                 streetErrors.maintenanceResponsibility,
                 streetErrors.reinstatementCategory,
                 isScottish ? streetErrors.specialDesignation : null,
@@ -3421,18 +3439,19 @@ export function GetAsdSecondaryText(value, variant, isScottish) {
 /**
  * Method to update the map street data.
  *
- * @param {object|null} streetData The current street data.
- * @param {object|null} asdType51 The ASD type 51 data (OneScotland only).
- * @param {object|null} asdType52 The ASD type 52 data (OneScotland only).
- * @param {object|null} asdType53 The ASD type 53 data (OneScotland only).
- * @param {object|null} asdType61 The ASD type 61 data (GeoPlace only).
- * @param {object|null} asdType62 The ASD type 62 data (GeoPlace only).
- * @param {object|null} asdType63 The ASD type 63 data (GeoPlace only).
- * @param {object|null} asdType64 The ASD type 64 data (GeoPlace only).
- * @param {object|null} asdType66 The ASD type 66 data (GeoPlace only).
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @param {object} mapContext The map context object.
- * @param {object} currentlookups The current lookups.
+ * @param {Object|null} streetData The current street data.
+ * @param {Object|null} asdType51 The ASD type 51 data (OneScotland only).
+ * @param {Object|null} asdType52 The ASD type 52 data (OneScotland only).
+ * @param {Object|null} asdType53 The ASD type 53 data (OneScotland only).
+ * @param {Object|null} asdType61 The ASD type 61 data (GeoPlace only).
+ * @param {Object|null} asdType62 The ASD type 62 data (GeoPlace only).
+ * @param {Object|null} asdType63 The ASD type 63 data (GeoPlace only).
+ * @param {Object|null} asdType64 The ASD type 64 data (GeoPlace only).
+ * @param {Object|null} asdType66 The ASD type 66 data (GeoPlace only).
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {Boolean} hasASD True if the current user can see ASD; otherwise false.
+ * @param {Object} mapContext The map context object.
+ * @param {Object} currentlookups The current lookups.
  */
 export const updateMapStreetData = (
   streetData,
@@ -3445,6 +3464,7 @@ export const updateMapStreetData = (
   asdType64,
   asdType66,
   isScottish,
+  hasASD,
   mapContext,
   currentlookups
 ) => {
@@ -3521,7 +3541,7 @@ export const updateMapStreetData = (
               }))
           : [],
       asdType61:
-        !isScottish && HasASD() && asdType61
+        !isScottish && hasASD && asdType61
           ? asdType61
               .filter((asdRec) => asdRec.changeType !== "D")
               .map((asdRec) => ({
@@ -3538,7 +3558,7 @@ export const updateMapStreetData = (
               }))
           : [],
       asdType62:
-        !isScottish && HasASD() && asdType62
+        !isScottish && hasASD && asdType62
           ? asdType62
               .filter((asdRec) => asdRec.changeType !== "D")
               .map((asdRec) => ({
@@ -3555,7 +3575,7 @@ export const updateMapStreetData = (
               }))
           : [],
       asdType63:
-        !isScottish && HasASD() && asdType63
+        !isScottish && hasASD && asdType63
           ? asdType63
               .filter((asdRec) => asdRec.changeType !== "D")
               .map((asdRec) => ({
@@ -3571,7 +3591,7 @@ export const updateMapStreetData = (
               }))
           : [],
       asdType64:
-        !isScottish && HasASD() && asdType64
+        !isScottish && hasASD && asdType64
           ? asdType64
               .filter((asdRec) => asdRec.changeType !== "D")
               .map((asdRec) => ({
@@ -3587,7 +3607,7 @@ export const updateMapStreetData = (
               }))
           : [],
       asdType66:
-        !isScottish && HasASD() && asdType66
+        !isScottish && hasASD && asdType66
           ? asdType66
               .filter((asdRec) => asdRec.changeType !== "D")
               .map((asdRec) => ({
@@ -3612,11 +3632,12 @@ export const updateMapStreetData = (
 /**
  * Method used to determine if a street has been modified.
  *
- * @param {boolean} newStreet If true the street is being created.
- * @param {object} currentSandbox The current state of the sandbox.
+ * @param {Boolean} newStreet If true the street is being created.
+ * @param {Object} currentSandbox The current state of the sandbox.
+ * @param {Boolean} hasASD True if the current user can see ASD; otherwise false.
  * @returns {boolean} True if the street has been changed; otherwise false.
  */
-export const hasStreetChanged = (newStreet, currentSandbox) => {
+export const hasStreetChanged = (newStreet, currentSandbox, hasASD) => {
   return (
     newStreet ||
     (currentSandbox.currentStreetRecords.streetDescriptor &&
@@ -3725,7 +3746,8 @@ export const hasStreetChanged = (newStreet, currentSandbox) => {
         currentSandbox.currentStreetRecords.note,
         noteKeysToIgnore
       )) ||
-    (currentSandbox.currentStreet && !StreetComparison(currentSandbox.sourceStreet, currentSandbox.currentStreet))
+    (currentSandbox.currentStreet &&
+      !StreetComparison(currentSandbox.sourceStreet, currentSandbox.currentStreet, hasASD))
   );
 };
 

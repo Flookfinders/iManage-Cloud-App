@@ -99,6 +99,7 @@
 //    085   11.06.24 Sean Flook       IMANN-490 Added code to update the USRN.
 //    086   17.06.24 Joel Benford     IMANN-546 Hide street successor tab, re-index later tabs (2nd attempt)
 //    087   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    088   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -161,7 +162,7 @@ import ObjectComparison, {
   streetDescriptorKeysToIgnore,
   successorCrossRefKeysToIgnore,
 } from "./../utils/ObjectComparison";
-import { GetUpdateStreetUrl, HasASD } from "../configuration/ADSConfig";
+import { GetUpdateStreetUrl } from "../configuration/ADSConfig";
 
 import { useEditConfirmation } from "../pages/EditConfirmationPage";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
@@ -307,6 +308,7 @@ function StreetDataForm({ data, loading }) {
   const [noteErrors, setNoteErrors] = useState([]);
 
   const [saveDisabled, setSaveDisabled] = useState(true);
+  const [hasASD, setHasASD] = useState(false);
 
   const confirmDialog = useEditConfirmation();
   const saveConfirmDialog = useSaveConfirmation();
@@ -385,7 +387,8 @@ function StreetDataForm({ data, loading }) {
       specialDesignationData,
       prowData,
       hwwData,
-      settingsContext.isScottish
+      settingsContext.isScottish,
+      hasASD
     );
     updateStreetData(newStreetData);
   };
@@ -438,7 +441,8 @@ function StreetDataForm({ data, loading }) {
       specialDesignationData,
       prowData,
       hwwData,
-      settingsContext.isScottish
+      settingsContext.isScottish,
+      hasASD
     );
     updateStreetDataAndClear(newStreetData, clearType);
   };
@@ -688,7 +692,11 @@ function StreetDataForm({ data, loading }) {
         break;
     }
 
-    const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
+    const streetChanged = hasStreetChanged(
+      streetContext.currentStreet.newStreet,
+      sandboxContext.currentSandbox,
+      hasASD
+    );
 
     if (!streetChanged || streetContext.validateData()) {
       failedValidation.current = false;
@@ -1035,7 +1043,11 @@ function StreetDataForm({ data, loading }) {
       streetContext.onRecordChange(15, newPkId, newIdx, null, true);
       lastOpenedId.current = pkId;
     } else {
-      const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
+      const streetChanged = hasStreetChanged(
+        streetContext.currentStreet.newStreet,
+        sandboxContext.currentSandbox,
+        hasASD
+      );
 
       if (!streetChanged || streetContext.validateData()) {
         failedValidation.current = false;
@@ -1553,7 +1565,7 @@ function StreetDataForm({ data, loading }) {
         changeType: "I",
         esuId: esuId,
         sequenceNumber: newSeqNum,
-        oneWayExemptionTypeCode:
+        oneWayExemptionType:
           settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
             ? settingsContext.streetTemplate.esuTemplate.oneWayExemptionType
             : null,
@@ -1861,6 +1873,7 @@ function StreetDataForm({ data, loading }) {
         null,
         null,
         settingsContext.isScottish,
+        hasASD,
         mapContext,
         lookupContext.currentLookups
       );
@@ -1996,6 +2009,7 @@ function StreetDataForm({ data, loading }) {
         null,
         null,
         settingsContext.isScottish,
+        hasASD,
         mapContext,
         lookupContext.currentLookups
       );
@@ -2132,6 +2146,7 @@ function StreetDataForm({ data, loading }) {
         null,
         null,
         settingsContext.isScottish,
+        hasASD,
         mapContext,
         lookupContext.currentLookups
       );
@@ -2284,6 +2299,7 @@ function StreetDataForm({ data, loading }) {
         streetData.heightWidthWeights,
         streetData.publicRightOfWays,
         settingsContext.isScottish,
+        hasASD,
         mapContext,
         lookupContext.currentLookups
       );
@@ -2445,6 +2461,7 @@ function StreetDataForm({ data, loading }) {
         streetData.heightWidthWeights,
         streetData.publicRightOfWays,
         settingsContext.isScottish,
+        hasASD,
         mapContext,
         lookupContext.currentLookups
       );
@@ -2599,6 +2616,7 @@ function StreetDataForm({ data, loading }) {
         streetData.heightWidthWeights,
         streetData.publicRightOfWays,
         settingsContext.isScottish,
+        hasASD,
         mapContext,
         lookupContext.currentLookups
       );
@@ -2745,6 +2763,7 @@ function StreetDataForm({ data, loading }) {
         newHeightWidthWeights,
         streetData.publicRightOfWays,
         settingsContext.isScottish,
+        hasASD,
         mapContext,
         lookupContext.currentLookups
       );
@@ -2936,6 +2955,7 @@ function StreetDataForm({ data, loading }) {
         streetData.heightWidthWeights,
         newPublicRightOfWays,
         settingsContext.isScottish,
+        hasASD,
         mapContext,
         lookupContext.currentLookups
       );
@@ -3079,7 +3099,11 @@ function StreetDataForm({ data, loading }) {
       }`;
     };
 
-    const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
+    const streetChanged = hasStreetChanged(
+      streetContext.currentStreet.newStreet,
+      sandboxContext.currentSandbox,
+      hasASD
+    );
 
     if (streetChanged && newUsrnRef.current === 0) {
       newUsrnRef.current = newUsrn;
@@ -3087,7 +3111,7 @@ function StreetDataForm({ data, loading }) {
     } else {
       newUsrnRef.current = 0;
 
-      const updateUsrnUrl = GetUpdateStreetUrl(userContext.currentUser.token, settingsContext.isScottish);
+      const updateUsrnUrl = GetUpdateStreetUrl(userContext.currentUser.token, !settingsContext.isScottish && hasASD);
 
       if (updateUsrnUrl) {
         console.log("[DEBUG] Update USRN", `${updateUsrnUrl.url}/${streetData.usrn}/${newUsrn}`);
@@ -3207,12 +3231,13 @@ function StreetDataForm({ data, loading }) {
               settingsContext.isScottish ? result.maintenanceResponsibilities : null,
               settingsContext.isScottish ? result.reinstatementCategories : null,
               settingsContext.isScottish ? result.specialDesignations : null,
-              !settingsContext.isScottish && HasASD() ? result.interests : null,
-              !settingsContext.isScottish && HasASD() ? result.constructions : null,
-              !settingsContext.isScottish && HasASD() ? result.specialDesignations : null,
-              !settingsContext.isScottish && HasASD() ? result.heightWidthWeights : null,
-              !settingsContext.isScottish && HasASD() ? result.publicRightOfWays : null,
+              !settingsContext.isScottish && hasASD ? result.interests : null,
+              !settingsContext.isScottish && hasASD ? result.constructions : null,
+              !settingsContext.isScottish && hasASD ? result.specialDesignations : null,
+              !settingsContext.isScottish && hasASD ? result.heightWidthWeights : null,
+              !settingsContext.isScottish && hasASD ? result.publicRightOfWays : null,
               settingsContext.isScottish,
+              hasASD,
               mapContext,
               lookupContext.currentLookups
             );
@@ -3599,7 +3624,7 @@ function StreetDataForm({ data, loading }) {
           oneWayExemptions: deleteEsu.oneWayExemptions.map((x) => {
             return {
               changeType: "D",
-              oneWayExemptionTypeCode: x.oneWayExemptionTypeCode,
+              oneWayExemptionType: x.oneWayExemptionType,
               recordEndDate: GetCurrentDate(false),
               oneWayExemptionStartDate: x.oneWayExemptionStartDate,
               oneWayExemptionEndDate: x.oneWayExemptionEndDate,
@@ -3636,7 +3661,7 @@ function StreetDataForm({ data, loading }) {
 
     const contextStreet = sandboxContext.currentSandbox.currentStreet || sandboxContext.currentSandbox.sourceStreet;
     const newStreetData =
-      !settingsContext.isScottish && !HasASD()
+      !settingsContext.isScottish && !hasASD
         ? {
             changeType: contextStreet.changeType,
             usrn: contextStreet.usrn,
@@ -3666,7 +3691,7 @@ function StreetDataForm({ data, loading }) {
             streetDescriptors: contextStreet.streetDescriptors,
             streetNotes: contextStreet.streetNotes,
           }
-        : !settingsContext.isScottish && HasASD()
+        : !settingsContext.isScottish && hasASD
         ? {
             changeType: contextStreet.changeType,
             usrn: contextStreet.usrn,
@@ -3749,22 +3774,23 @@ function StreetDataForm({ data, loading }) {
         settingsContext.isScottish && newStreetData && newStreetData.recordType < 3
           ? newStreetData.specialDesignations
           : null,
-        !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+        !settingsContext.isScottish && hasASD && newStreetData && newStreetData.recordType < 4
           ? newStreetData.interests
           : null,
-        !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+        !settingsContext.isScottish && hasASD && newStreetData && newStreetData.recordType < 4
           ? newStreetData.constructions
           : null,
-        !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+        !settingsContext.isScottish && hasASD && newStreetData && newStreetData.recordType < 4
           ? newStreetData.specialDesignations
           : null,
-        !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+        !settingsContext.isScottish && hasASD && newStreetData && newStreetData.recordType < 4
           ? newStreetData.heightWidthWeights
           : null,
-        !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+        !settingsContext.isScottish && hasASD && newStreetData && newStreetData.recordType < 4
           ? newStreetData.publicRightOfWays
           : null,
         settingsContext.isScottish,
+        hasASD,
         mapContext,
         lookupContext.currentLookups
       );
@@ -3934,7 +3960,7 @@ function StreetDataForm({ data, loading }) {
           if (deleteOneWayException) {
             const deletedOneWayException = {
               changeType: "D",
-              oneWayExemptionTypeCode: deleteOneWayException.oneWayExemptionTypeCode,
+              oneWayExemptionType: deleteOneWayException.oneWayExemptionType,
               recordEndDate: GetCurrentDate(false),
               oneWayExemptionStartDate: deleteOneWayException.oneWayExemptionStartDate,
               oneWayExemptionEndDate: deleteOneWayException.oneWayExemptionEndDate,
@@ -4680,7 +4706,8 @@ function StreetDataForm({ data, loading }) {
                 sandboxContext,
                 lookupContext,
                 settingsContext.isWelsh,
-                settingsContext.isScottish
+                settingsContext.isScottish,
+                hasASD
               );
               HandleStreetSave(currentStreetData);
             } else {
@@ -4709,6 +4736,7 @@ function StreetDataForm({ data, loading }) {
                 !settingsContext.isScottish && displayAsdTab ? streetData.heightWidthWeights : null,
                 !settingsContext.isScottish && displayAsdTab ? streetData.publicRightOfWays : null,
                 settingsContext.isScottish,
+                hasASD,
                 mapContext,
                 lookupContext.currentLookups
               );
@@ -6319,7 +6347,7 @@ function StreetDataForm({ data, loading }) {
       };
     }
 
-    const newStreetData = !HasASD()
+    const newStreetData = !hasASD
       ? {
           changeType: streetData.changeType,
           usrn: streetData.usrn,
@@ -6402,7 +6430,7 @@ function StreetDataForm({ data, loading }) {
 
     const updatedOneWayExemption = {
       changeType: newData.changeType,
-      oneWayExemptionTypeCode: newData.oneWayExemptionTypeCode,
+      oneWayExemptionType: newData.oneWayExemptionType,
       recordEndDate: newData.recordEndDate,
       oneWayExemptionStartDate: newData.oneWayExemptionStartDate,
       oneWayExemptionEndDate: newData.oneWayExemptionEndDate,
@@ -6450,7 +6478,7 @@ function StreetDataForm({ data, loading }) {
       };
     }
 
-    const newStreetData = !HasASD()
+    const newStreetData = !hasASD
       ? {
           changeType: streetData.changeType,
           usrn: streetData.usrn,
@@ -6857,7 +6885,7 @@ function StreetDataForm({ data, loading }) {
           reinstatementCategories: streetData.recordType < 3 ? streetData.reinstatementCategories : null,
           specialDesignations: streetData.recordType < 3 ? streetData.specialDesignations : null,
         }
-      : !HasASD()
+      : !hasASD
       ? {
           changeType: streetData.changeType,
           usrn: srcData.usrn,
@@ -7407,7 +7435,7 @@ function StreetDataForm({ data, loading }) {
     if (streetContext.streetClosing && streetData && !streetData.streetEndDate) {
       const currentDate = GetCurrentDate(false);
       const newStreetData =
-        !settingsContext.isScottish && !HasASD()
+        !settingsContext.isScottish && !hasASD
           ? {
               changeType: streetData.changeType,
               usrn: streetData.usrn,
@@ -7437,7 +7465,7 @@ function StreetDataForm({ data, loading }) {
               streetDescriptors: streetData.streetDescriptors,
               streetNotes: streetData.streetNotes,
             }
-          : !settingsContext.isScottish && HasASD()
+          : !settingsContext.isScottish && hasASD
           ? {
               changeType: streetData.changeType,
               usrn: streetData.usrn,
@@ -7511,7 +7539,7 @@ function StreetDataForm({ data, loading }) {
       streetContext.onCloseStreet(false);
       sandboxContext.onSandboxChange("currentStreet", newStreetData);
     }
-  }, [streetContext, streetData, sandboxContext, mapContext, settingsContext.isScottish]);
+  }, [streetContext, streetData, sandboxContext, mapContext, settingsContext.isScottish, hasASD]);
 
   useEffect(() => {
     if (streetContext.creatingStreet) {
@@ -7541,77 +7569,93 @@ function StreetDataForm({ data, loading }) {
   ]);
 
   useEffect(() => {
-    if (streetContext.currentErrors) {
-      if (streetContext.currentErrors.street && streetContext.currentErrors.street.length > 0)
+    setStreetErrors([]);
+    setDescriptorErrors([]);
+    setEsuErrors([]);
+    setOneWayExemptionErrors([]);
+    setHighwayDedicationErrors([]);
+    setSuccessorCrossRefErrors([]);
+    setConstructionErrors([]);
+    setReinstatementCategoryErrors([]);
+    setOSSpecialDesignationErrors([]);
+    setInterestErrors([]);
+    setMaintenanceResponsibilityErrors([]);
+    setSpecialDesignationErrors([]);
+    setHeightWidthWeightErrors([]);
+    setPublicRightOfWayErrors([]);
+    setNoteErrors([]);
+
+    if (streetContext.currentErrors && streetContext.currentStreetHasErrors) {
+      if (streetContext.currentErrors.street && streetContext.currentErrors.street.length > 0) {
         setStreetErrors(streetContext.currentErrors.street);
-      else setStreetErrors([]);
+      }
 
       if (streetContext.currentErrors.descriptor && streetContext.currentErrors.descriptor.length > 0) {
         setDescriptorErrors(streetContext.currentErrors.descriptor);
-      } else setDescriptorErrors([]);
+      }
 
-      if (streetContext.currentErrors.esu && streetContext.currentErrors.esu.length > 0)
+      if (streetContext.currentErrors.esu && streetContext.currentErrors.esu.length > 0) {
         setEsuErrors(streetContext.currentErrors.esu);
-      else setEsuErrors([]);
+      }
 
-      if (streetContext.currentErrors.oneWayExemption && streetContext.currentErrors.oneWayExemption.length > 0)
+      if (streetContext.currentErrors.oneWayExemption && streetContext.currentErrors.oneWayExemption.length > 0) {
         setOneWayExemptionErrors(streetContext.currentErrors.oneWayExemption);
-      else setOneWayExemptionErrors([]);
+      }
 
-      if (streetContext.currentErrors.highwayDedication && streetContext.currentErrors.highwayDedication.length > 0)
+      if (streetContext.currentErrors.highwayDedication && streetContext.currentErrors.highwayDedication.length > 0) {
         setHighwayDedicationErrors(streetContext.currentErrors.highwayDedication);
-      else setHighwayDedicationErrors([]);
+      }
 
-      if (streetContext.currentErrors.successorCrossRef && streetContext.currentErrors.successorCrossRef.length > 0)
+      if (streetContext.currentErrors.successorCrossRef && streetContext.currentErrors.successorCrossRef.length > 0) {
         setSuccessorCrossRefErrors(streetContext.currentErrors.successorCrossRef);
-      else setSuccessorCrossRefErrors([]);
+      }
 
-      if (streetContext.currentErrors.construction && streetContext.currentErrors.construction.length > 0)
+      if (streetContext.currentErrors.construction && streetContext.currentErrors.construction.length > 0) {
         setConstructionErrors(streetContext.currentErrors.construction);
-      else setConstructionErrors([]);
+      }
 
       if (
         streetContext.currentErrors.reinstatementCategory &&
         streetContext.currentErrors.reinstatementCategory.length > 0
-      )
+      ) {
         setReinstatementCategoryErrors(streetContext.currentErrors.reinstatementCategory);
-      else setReinstatementCategoryErrors([]);
+      }
 
       if (
         streetContext.currentErrors.osSpecialDesignation &&
         streetContext.currentErrors.osSpecialDesignation.length > 0
-      )
+      ) {
         setOSSpecialDesignationErrors(streetContext.currentErrors.osSpecialDesignation);
-      else setOSSpecialDesignationErrors([]);
+      }
 
-      if (streetContext.currentErrors.interest && streetContext.currentErrors.interest.length > 0)
+      if (streetContext.currentErrors.interest && streetContext.currentErrors.interest.length > 0) {
         setInterestErrors(streetContext.currentErrors.interest);
-      else setInterestErrors([]);
+      }
 
       if (
         streetContext.currentErrors.maintenanceResponsibility &&
         streetContext.currentErrors.maintenanceResponsibility.length > 0
-      )
+      ) {
         setMaintenanceResponsibilityErrors(streetContext.currentErrors.maintenanceResponsibility);
-      else setMaintenanceResponsibilityErrors([]);
+      }
 
-      if (streetContext.currentErrors.specialDesignation && streetContext.currentErrors.specialDesignation.length > 0)
+      if (streetContext.currentErrors.specialDesignation && streetContext.currentErrors.specialDesignation.length > 0) {
         setSpecialDesignationErrors(streetContext.currentErrors.specialDesignation);
-      else setSpecialDesignationErrors([]);
+      }
 
-      if (streetContext.currentErrors.heightWidthWeight && streetContext.currentErrors.heightWidthWeight.length > 0)
+      if (streetContext.currentErrors.heightWidthWeight && streetContext.currentErrors.heightWidthWeight.length > 0) {
         setHeightWidthWeightErrors(streetContext.currentErrors.heightWidthWeight);
-      else setHeightWidthWeightErrors([]);
+      }
 
-      if (streetContext.currentErrors.publicRightOfWay && streetContext.currentErrors.publicRightOfWay.length > 0)
+      if (streetContext.currentErrors.publicRightOfWay && streetContext.currentErrors.publicRightOfWay.length > 0) {
         setPublicRightOfWayErrors(streetContext.currentErrors.publicRightOfWay);
-      else setPublicRightOfWayErrors([]);
+      }
 
-      if (streetContext.currentErrors.note && streetContext.currentErrors.note.length > 0)
+      if (streetContext.currentErrors.note && streetContext.currentErrors.note.length > 0) {
         setNoteErrors(streetContext.currentErrors.note);
-      else setNoteErrors([]);
+      }
     }
-  }, [streetContext.currentErrors]);
+  }, [streetContext.currentErrors, streetContext.currentStreetHasErrors]);
 
   useEffect(() => {
     const doAfterStep = async () => {
@@ -7666,7 +7710,11 @@ function StreetDataForm({ data, loading }) {
     };
 
     if (streetContext.leavingStreet) {
-      const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
+      const streetChanged = hasStreetChanged(
+        streetContext.currentStreet.newStreet,
+        sandboxContext.currentSandbox,
+        hasASD
+      );
 
       if (streetChanged) {
         const associatedRecords = GetChangedAssociatedRecords("street", sandboxContext, streetContext.esuDataChanged);
@@ -7681,7 +7729,8 @@ function StreetDataForm({ data, loading }) {
                   sandboxContext,
                   lookupContext,
                   settingsContext.isWelsh,
-                  settingsContext.isScottish
+                  settingsContext.isScottish,
+                  hasASD
                 );
 
                 SaveStreet(
@@ -7729,6 +7778,7 @@ function StreetDataForm({ data, loading }) {
     userContext,
     streetData,
     saveConfirmDialog,
+    hasASD,
   ]);
 
   useEffect(() => {
@@ -8042,7 +8092,7 @@ function StreetDataForm({ data, loading }) {
         case 72:
           setNoteFocusedField(streetContext.goToField.fieldName);
           if (
-            (HasASD() || settingsContext.isScottish) &&
+            (hasASD || settingsContext.isScottish) &&
             streetData &&
             streetData.recordType < (settingsContext.isScottish ? 3 : 4)
           ) {
@@ -8072,7 +8122,7 @@ function StreetDataForm({ data, loading }) {
 
       streetContext.onGoToField(null, null, null, null);
     }
-  }, [streetContext, streetContext.goToField, value, streetData, settingsContext.isScottish]);
+  }, [streetContext, streetContext.goToField, value, streetData, settingsContext.isScottish, hasASD]);
 
   // Update ESU/ASD geometry
   useEffect(() => {
@@ -8149,6 +8199,7 @@ function StreetDataForm({ data, loading }) {
               newEsus,
               streetData,
               settingsContext.isScottish,
+              hasASD,
               true
             );
 
@@ -8912,22 +8963,23 @@ function StreetDataForm({ data, loading }) {
           settingsContext.isScottish && newStreetData && newStreetData.recordType < 3
             ? newStreetData.specialDesignations
             : null,
-          !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+          !settingsContext.isScottish && hasASD && newStreetData && newStreetData.recordType < 4
             ? newStreetData.interests
             : null,
-          !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+          !settingsContext.isScottish && hasASD && newStreetData && newStreetData.recordType < 4
             ? newStreetData.constructions
             : null,
-          !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+          !settingsContext.isScottish && hasASD && newStreetData && newStreetData.recordType < 4
             ? newStreetData.specialDesignations
             : null,
-          !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+          !settingsContext.isScottish && hasASD && newStreetData && newStreetData.recordType < 4
             ? newStreetData.heightWidthWeights
             : null,
-          !settingsContext.isScottish && HasASD() && newStreetData && newStreetData.recordType < 4
+          !settingsContext.isScottish && hasASD && newStreetData && newStreetData.recordType < 4
             ? newStreetData.publicRightOfWays
             : null,
           settingsContext.isScottish,
+          hasASD,
           mapContext,
           lookupContext.currentLookups
         );
@@ -8990,6 +9042,7 @@ function StreetDataForm({ data, loading }) {
     streetContext,
     settingsContext,
     lookupContext,
+    hasASD,
   ]);
 
   // Create an ESU if the start and end coordinates are supplied
@@ -9126,7 +9179,7 @@ function StreetDataForm({ data, loading }) {
         }
 
         newStreetData =
-          !settingsContext.isScottish && !HasASD()
+          !settingsContext.isScottish && !hasASD
             ? {
                 changeType: contextStreet.changeType,
                 usrn: contextStreet.usrn,
@@ -9156,7 +9209,7 @@ function StreetDataForm({ data, loading }) {
                 streetDescriptors: contextStreet.streetDescriptors,
                 streetNotes: contextStreet.streetNotes,
               }
-            : !settingsContext.isScottish && HasASD()
+            : !settingsContext.isScottish && hasASD
             ? {
                 changeType: contextStreet.changeType,
                 usrn: contextStreet.usrn,
@@ -9354,7 +9407,7 @@ function StreetDataForm({ data, loading }) {
         }
 
         newStreetData =
-          !settingsContext.isScottish && !HasASD()
+          !settingsContext.isScottish && !hasASD
             ? {
                 changeType: contextStreet.changeType,
                 usrn: contextStreet.usrn,
@@ -9384,7 +9437,7 @@ function StreetDataForm({ data, loading }) {
                 streetDescriptors: contextStreet.streetDescriptors,
                 streetNotes: contextStreet.streetNotes,
               }
-            : !settingsContext.isScottish && HasASD()
+            : !settingsContext.isScottish && hasASD
             ? {
                 changeType: contextStreet.changeType,
                 usrn: contextStreet.usrn,
@@ -9520,7 +9573,7 @@ function StreetDataForm({ data, loading }) {
               })),
             asdType61:
               !settingsContext.isScottish &&
-              HasASD() &&
+              hasASD &&
               newStreetData.recordType < 4 &&
               newStreetData.interests.map((asdRec) => ({
                 type: 61,
@@ -9536,7 +9589,7 @@ function StreetDataForm({ data, loading }) {
               })),
             asdType62:
               !settingsContext.isScottish &&
-              HasASD() &&
+              hasASD &&
               newStreetData.recordType < 4 &&
               newStreetData.constructions.map((asdRec) => ({
                 type: 62,
@@ -9552,7 +9605,7 @@ function StreetDataForm({ data, loading }) {
               })),
             asdType63:
               !settingsContext.isScottish &&
-              HasASD() &&
+              hasASD &&
               newStreetData.recordType < 4 &&
               newStreetData.specialDesignations.map((asdRec) => ({
                 type: 63,
@@ -9567,7 +9620,7 @@ function StreetDataForm({ data, loading }) {
               })),
             asdType64:
               !settingsContext.isScottish &&
-              HasASD() &&
+              hasASD &&
               newStreetData.recordType < 4 &&
               newStreetData.heightWidthWeights.map((asdRec) => ({
                 type: 64,
@@ -9582,7 +9635,7 @@ function StreetDataForm({ data, loading }) {
               })),
             asdType66:
               !settingsContext.isScottish &&
-              HasASD() &&
+              hasASD &&
               newStreetData.recordType < 4 &&
               newStreetData.publicRightOfWays.map((asdRec) => ({
                 type: 66,
@@ -9612,6 +9665,7 @@ function StreetDataForm({ data, loading }) {
     sandboxContext,
     streetContext,
     settingsContext,
+    hasASD,
   ]);
 
   // Divide an ESU
@@ -9689,7 +9743,7 @@ function StreetDataForm({ data, loading }) {
                       esuId: owe.esuId,
                       sequenceNumber: owe.sequenceNumber,
                       changeType: "D",
-                      oneWayExemptionTypeCode: owe.oneWayExemptionTypeCode,
+                      oneWayExemptionType: owe.oneWayExemptionType,
                       recordEndDate: currentDate,
                       oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
                       oneWayExemptionEndDate: currentDate,
@@ -9768,7 +9822,7 @@ function StreetDataForm({ data, loading }) {
                       esuId: newPkId,
                       sequenceNumber: owe.sequenceNumber,
                       changeType: "I",
-                      oneWayExemptionTypeCode: owe.oneWayExemptionTypeCode,
+                      oneWayExemptionType: owe.oneWayExemptionType,
                       recordEndDate: owe.recordEndDate,
                       oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
                       oneWayExemptionEndDate: owe.oneWayExemptionEndDate,
@@ -9845,7 +9899,7 @@ function StreetDataForm({ data, loading }) {
                       esuId: newPkId,
                       sequenceNumber: owe.sequenceNumber,
                       changeType: "I",
-                      oneWayExemptionTypeCode: owe.oneWayExemptionTypeCode,
+                      oneWayExemptionType: owe.oneWayExemptionType,
                       recordEndDate: owe.recordEndDate,
                       oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
                       oneWayExemptionEndDate: owe.oneWayExemptionEndDate,
@@ -9863,7 +9917,8 @@ function StreetDataForm({ data, loading }) {
           sandboxContext.currentSandbox,
           newEsus,
           streetData,
-          settingsContext.isScottish
+          settingsContext.isScottish,
+          hasASD
         );
 
         if (newEsuStreetData) {
@@ -9896,6 +9951,7 @@ function StreetDataForm({ data, loading }) {
     streetContext,
     mapContext,
     esuFormData,
+    hasASD,
   ]);
 
   // merge ESus
@@ -9966,7 +10022,7 @@ function StreetDataForm({ data, loading }) {
                       esuId: owe.esuId,
                       sequenceNumber: owe.sequenceNumber,
                       changeType: "D",
-                      oneWayExemptionTypeCode: owe.oneWayExemptionTypeCode,
+                      oneWayExemptionType: owe.oneWayExemptionType,
                       recordEndDate: currentDate,
                       oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
                       oneWayExemptionEndDate: currentDate,
@@ -10036,7 +10092,7 @@ function StreetDataForm({ data, loading }) {
                       esuId: owe.esuId,
                       sequenceNumber: owe.sequenceNumber,
                       changeType: "D",
-                      oneWayExemptionTypeCode: owe.oneWayExemptionTypeCode,
+                      oneWayExemptionType: owe.oneWayExemptionType,
                       recordEndDate: currentDate,
                       oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
                       oneWayExemptionEndDate: owe.oneWayExemptionEndDate,
@@ -10160,7 +10216,7 @@ function StreetDataForm({ data, loading }) {
                         esuId: newPkId,
                         sequenceNumber: owe.sequenceNumber,
                         changeType: "I",
-                        oneWayExemptionTypeCode: owe.oneWayExemptionTypeCode,
+                        oneWayExemptionType: owe.oneWayExemptionType,
                         recordEndDate: owe.recordEndDate,
                         oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
                         oneWayExemptionEndDate: owe.oneWayExemptionEndDate,
@@ -10179,7 +10235,8 @@ function StreetDataForm({ data, loading }) {
           sandboxContext.currentSandbox,
           newEsus,
           streetData,
-          settingsContext.isScottish
+          settingsContext.isScottish,
+          hasASD
         );
 
         if (newEsuStreetData) {
@@ -10207,6 +10264,7 @@ function StreetDataForm({ data, loading }) {
     sandboxContext,
     streetContext,
     settingsContext.streetTemplate,
+    hasASD,
   ]);
 
   // Unassign ESUs
@@ -10254,6 +10312,7 @@ function StreetDataForm({ data, loading }) {
         newEsus,
         streetData,
         settingsContext.isScottish,
+        hasASD,
         true
       );
 
@@ -10310,6 +10369,7 @@ function StreetDataForm({ data, loading }) {
     streetContext,
     mapContext,
     esuFormData,
+    hasASD,
   ]);
 
   // Assign ESU
@@ -10327,6 +10387,7 @@ function StreetDataForm({ data, loading }) {
               newEsus,
               streetData,
               settingsContext.isScottish,
+              hasASD,
               true
             );
 
@@ -10355,6 +10416,7 @@ function StreetDataForm({ data, loading }) {
     sandboxContext,
     streetContext,
     streetData,
+    hasASD,
   ]);
 
   // Assign ESUs
@@ -10382,6 +10444,7 @@ function StreetDataForm({ data, loading }) {
             newEsus,
             streetData,
             settingsContext.isScottish,
+            hasASD,
             true
           );
 
@@ -10406,6 +10469,7 @@ function StreetDataForm({ data, loading }) {
     sandboxContext,
     streetContext,
     streetData,
+    hasASD,
   ]);
 
   useEffect(() => {
@@ -10549,7 +10613,11 @@ function StreetDataForm({ data, loading }) {
   ]);
 
   useEffect(() => {
-    const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
+    const streetChanged = hasStreetChanged(
+      streetContext.currentStreet.newStreet,
+      sandboxContext.currentSandbox,
+      hasASD
+    );
     setSaveDisabled(!streetChanged);
     streetContext.onStreetModified(streetChanged);
     if (
@@ -10557,15 +10625,19 @@ function StreetDataForm({ data, loading }) {
       !["streetStart", "streetEnd", "divideEsu", "assignEsu"].includes(mapContext.currentPointCaptureMode)
     )
       mapContext.onSetCoordinate(null);
-  }, [streetContext, sandboxContext.currentSandbox, mapContext]);
+  }, [streetContext, sandboxContext.currentSandbox, mapContext, hasASD]);
 
   useEffect(() => {
     setDisplayAsdTab(
-      (HasASD() || settingsContext.isScottish) &&
+      (hasASD || settingsContext.isScottish) &&
         streetData &&
         streetData.recordType < (settingsContext.isScottish ? 3 : 4)
     );
-  }, [settingsContext.isScottish, streetData]);
+  }, [settingsContext.isScottish, streetData, hasASD]);
+
+  useEffect(() => {
+    setHasASD(userContext.currentUser && userContext.currentUser.hasASD);
+  }, [userContext]);
 
   return (
     <div id="street-data-form">

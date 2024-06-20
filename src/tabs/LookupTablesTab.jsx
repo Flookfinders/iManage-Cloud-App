@@ -23,6 +23,7 @@
 //    010   27.03.24 Sean Flook                 Make districts visible to GeoPlace authorities.
 //    011   14.06.24 Joshua McCormick IMANN-555 Authorities in lookup table set to hidden
 //    012   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    013   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -41,7 +42,7 @@ import LookupTablesDataForm from "../forms/LookupTablesDataForm";
 import DistrictLookupTab from "../tabs/DistrictLookupTab";
 import EditDistrictLookupDialog from "../dialogs/EditDistrictLookupDialog";
 
-import { HasProperties, GetOperationalDistrictUrl } from "../configuration/ADSConfig";
+import { GetOperationalDistrictUrl } from "../configuration/ADSConfig";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -61,6 +62,8 @@ function LookupTablesTab() {
   const [showEditDistrictDialog, setShowEditDistrictDialog] = useState(false);
 
   const [selectedNode, setSelectedNode] = useState("POSTCODES");
+
+  const [hasProperty, setHasProperty] = useState(false);
 
   const newDistrictData = {
     id: 0,
@@ -537,6 +540,10 @@ function LookupTablesTab() {
     if (!selectedNode) setSelectedNode("POSTCODES");
   }, [selectedNode]);
 
+  useEffect(() => {
+    setHasProperty(userContext.currentUser && userContext.currentUser.hasProperty);
+  }, [userContext]);
+
   return (
     <div>
       {districtFormData ? (
@@ -561,7 +568,7 @@ function LookupTablesTab() {
                     sx={{ overflowY: "auto" }}
                     onNodeSelect={handleNodeSelect}
                   >
-                    {HasProperties() && (
+                    {hasProperty && (
                       <TreeItem
                         nodeId="POSTCODES"
                         label={
@@ -572,7 +579,7 @@ function LookupTablesTab() {
                         sx={TreeItemStyle(selectedNode === "POSTCODES")}
                       />
                     )}
-                    {HasProperties() && settingsContext.isScottish && (
+                    {hasProperty && settingsContext.isScottish && (
                       <TreeItem
                         nodeId="SUB_LOCALITIES"
                         label={
@@ -583,7 +590,7 @@ function LookupTablesTab() {
                         sx={TreeItemStyle(selectedNode === "SUB_LOCALITIES")}
                       />
                     )}
-                    {HasProperties() && (
+                    {hasProperty && (
                       <TreeItem
                         nodeId="POST_TOWNS"
                         label={
@@ -594,7 +601,7 @@ function LookupTablesTab() {
                         sx={TreeItemStyle(selectedNode === "POST_TOWNS")}
                       />
                     )}
-                    {HasProperties() && (
+                    {hasProperty && (
                       <TreeItem
                         nodeId="CROSS_REFERENCES"
                         label={
@@ -653,7 +660,7 @@ function LookupTablesTab() {
                       }
                       sx={TreeItemStyle(selectedNode === "AUTHORITIES")}
                     />
-                    {!settingsContext.isScottish && HasProperties() && (
+                    {!settingsContext.isScottish && hasProperty && (
                       <TreeItem
                         nodeId="WARDS"
                         label={
@@ -664,7 +671,7 @@ function LookupTablesTab() {
                         sx={TreeItemStyle(selectedNode === "WARDS")}
                       />
                     )}
-                    {!settingsContext.isScottish && HasProperties() && (
+                    {!settingsContext.isScottish && hasProperty && (
                       <TreeItem
                         nodeId="PARISHES"
                         label={

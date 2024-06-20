@@ -34,6 +34,7 @@
 //    021   18.03.24 Sean Flook         ASD3_OS Use the description as the secondary information for Scottish special designation records.
 //    022   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    023   14.05.24 Joshua McCormick IMAN-364  noWrap & padding to prevent toolbar content overlapping
+//    024   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -533,7 +534,7 @@ function AsdDataTab({
   };
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editASD);
   }, [userContext]);
 
   return (

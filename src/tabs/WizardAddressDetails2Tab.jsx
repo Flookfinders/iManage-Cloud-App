@@ -26,6 +26,7 @@
 //    013   14.06.24 Sean Flook       IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
 //    014   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
 //    015   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    016   20.06.24 Sean Flook       IMANN-633 Enforce the maximum for the numbers.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1158,9 +1159,12 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
    */
   const handleRangeStartNumberChangeEvent = (event) => {
     const newValue = event.target.value;
-    setRangeStartNumber(newValue);
-    if (onDataChanged && rangeStartNumber !== newValue) onDataChanged(getUpdatedData("rangeStartNumber", newValue));
-    if (onErrorChanged) onErrorChanged(getUpdatedErrors("rangeDetails"));
+    const newNumber = Number(newValue);
+    if (!newValue || (newNumber >= 1 && newNumber <= 9999)) {
+      setRangeStartNumber(newValue);
+      if (onDataChanged && rangeStartNumber !== newValue) onDataChanged(getUpdatedData("rangeStartNumber", newValue));
+      if (onErrorChanged) onErrorChanged(getUpdatedErrors("rangeDetails"));
+    }
   };
 
   /**
@@ -1198,9 +1202,12 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
    */
   const handleRangeEndNumberChangeEvent = (event) => {
     const newValue = event.target.value;
-    setRangeEndNumber(newValue);
-    if (onDataChanged && rangeEndNumber !== newValue) onDataChanged(getUpdatedData("rangeEndNumber", newValue));
-    if (onErrorChanged) onErrorChanged(getUpdatedErrors("rangeDetails"));
+    const newNumber = Number(newValue);
+    if (!newValue || (newNumber >= 1 && newNumber <= 9999)) {
+      setRangeEndNumber(newValue);
+      if (onDataChanged && rangeEndNumber !== newValue) onDataChanged(getUpdatedData("rangeEndNumber", newValue));
+      if (onErrorChanged) onErrorChanged(getUpdatedErrors("rangeDetails"));
+    }
   };
 
   /**
@@ -1358,8 +1365,12 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
    */
   const handlePaoDetailsChanged = (data) => {
     if (data) {
-      const numberStart = data.startNumber && Number(data.startNumber) > 0 ? Number(data.startNumber) : null;
-      const numberEnd = data.endNumber && Number(data.endNumber) > 0 ? Number(data.endNumber) : null;
+      const numberStart =
+        data.startNumber && Number(data.startNumber) > 0 && Number(data.startNumber) <= 9999
+          ? Number(data.startNumber)
+          : null;
+      const numberEnd =
+        data.endNumber && Number(data.endNumber) > 0 && Number(data.endNumber) <= 9999 ? Number(data.endNumber) : null;
       setPaoStartNumber(numberStart);
       if (onDataChanged && paoStartNumber !== numberStart) onDataChanged(getUpdatedData("paoStartNumber", numberStart));
       setPaoStartSuffix(data.startSuffix);

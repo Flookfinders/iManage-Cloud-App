@@ -23,6 +23,7 @@
 //    010   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
 //    011   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    012   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
+//    013   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -190,8 +191,12 @@ function NotesListTab({ data, errors, loading, variant, onNoteSelected, onNoteDe
   };
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
-  }, [userContext]);
+    if (variant === "street") {
+      setUserCanEdit(userContext.currentUser && userContext.currentUser.editStreet);
+    } else {
+      setUserCanEdit(userContext.currentUser && userContext.currentUser.editProperty);
+    }
+  }, [userContext, variant]);
 
   return (
     <Fragment>

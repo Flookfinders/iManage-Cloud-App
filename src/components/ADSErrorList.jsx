@@ -20,18 +20,20 @@
 //    007   05.01.24 Sean Flook                 use CSS shortcuts.
 //    008   08.03.24 Sean Flook       IMANN-348 Updated method to see if a street or property has changed and added in the missing Scottish records.
 //    009   12.06.24 Sean Flook       IMANN-515 Use a List to display the errors and display each error as a separate item.
+//    010   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import React, { useContext, useState, Fragment } from "react";
+import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 import PropertyContext from "../context/propertyContext";
 import StreetContext from "../context/streetContext";
 import SandboxContext from "../context/sandboxContext";
 import LookupContext from "../context/lookupContext";
 import SettingsContext from "../context/settingsContext";
+import UserContext from "../context/userContext";
 import ObjectComparison, {
   StreetComparison,
   PropertyComparison,
@@ -54,7 +56,6 @@ import ObjectComparison, {
   classificationKeysToIgnore,
   organisationKeysToIgnore,
 } from "../utils/ObjectComparison";
-import { HasASD } from "../configuration/ADSConfig";
 import { GetNewStreetData } from "../utils/StreetUtils";
 import { GetNewPropertyData, getBilingualSource } from "../utils/PropertyUtils";
 import { useEditConfirmation } from "../pages/EditConfirmationPage";
@@ -77,10 +78,13 @@ function ADSErrorList({ onClose }) {
   const sandboxContext = useContext(SandboxContext);
   const lookupContext = useContext(LookupContext);
   const settingsContext = useContext(SettingsContext);
+  const userContext = useContext(UserContext);
 
   const confirmDialog = useEditConfirmation(false);
 
   const [validationErrorOpen, setValidationErrorOpen] = useState(false);
+
+  const [hasASD, setHasASD] = useState(false);
 
   const getIssueStyle = {
     pl: theme.spacing(1),
@@ -272,7 +276,8 @@ function ADSErrorList({ onClose }) {
       specialDesignationData,
       prowData,
       hwwData,
-      settingsContext.isScottish
+      settingsContext.isScottish,
+      hasASD
     );
 
     sandboxContext.onUpdateAndClear("currentStreet", newStreetData, clearType);
@@ -431,8 +436,7 @@ function ADSErrorList({ onClose }) {
 
     const updatedOneWayExemption = {
       changeType: sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.changeType,
-      oneWayExemptionTypeCode:
-        sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.oneWayExemptionTypeCode,
+      oneWayExemptionType: sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.oneWayExemptionType,
       recordEndDate: sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.recordEndDate,
       oneWayExemptionStartDate:
         sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.oneWayExemptionStartDate,
@@ -475,7 +479,7 @@ function ADSErrorList({ onClose }) {
     };
     newEsus.push(updatedEsu);
 
-    const newStreetData = !HasASD()
+    const newStreetData = !hasASD
       ? {
           changeType: sandboxContext.currentSandbox.currentStreet.changeType,
           usrn: sandboxContext.currentSandbox.currentStreet.usrn,
@@ -612,7 +616,7 @@ function ADSErrorList({ onClose }) {
     };
     newEsus.push(updatedEsu);
 
-    const newStreetData = !HasASD()
+    const newStreetData = !hasASD
       ? {
           changeType: sandboxContext.currentSandbox.currentStreet.changeType,
           usrn: sandboxContext.currentSandbox.currentStreet.usrn,
@@ -1362,7 +1366,11 @@ function ADSErrorList({ onClose }) {
           )) ||
         (streetContext.currentRecord.type === 11 &&
           sandboxContext.currentSandbox.currentStreet &&
-          !StreetComparison(sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreet));
+          !StreetComparison(
+            sandboxContext.currentSandbox.sourceStreet,
+            sandboxContext.currentSandbox.currentStreet,
+            hasASD
+          ));
 
       if (streetChanged) {
         confirmDialog(true)
@@ -1523,6 +1531,10 @@ function ADSErrorList({ onClose }) {
       </ListItem>
     );
   };
+
+  useEffect(() => {
+    setHasASD(userContext.currentUser && userContext.currentUser.hasASD);
+  }, [userContext]);
 
   return (
     <Fragment>

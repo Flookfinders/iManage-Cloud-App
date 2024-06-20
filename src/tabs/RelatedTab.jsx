@@ -41,6 +41,7 @@
 //    026   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    027   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //    028   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    029   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -68,7 +69,6 @@ import {
   GetRelatedStreetByUPRNUrl,
   GetRelatedStreetWithASDByUSRNUrl,
   GetRelatedStreetWithASDByUPRNUrl,
-  HasASD,
 } from "../configuration/ADSConfig";
 import { GetWktCoordinates, GetChangedAssociatedRecords, ResetContexts } from "../utils/HelperUtils";
 import { GetStreetMapData, GetCurrentStreetData, SaveStreet, hasStreetChanged } from "../utils/StreetUtils";
@@ -132,6 +132,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
   const saveType = useRef(null);
   const failedValidation = useRef(null);
   const associatedRecords = useRef([]);
+  const [hasASD, setHasASD] = useState(false);
 
   const [openHistoricProperty, setOpenHistoricProperty] = useState(false);
   const historicRec = useRef(null);
@@ -320,7 +321,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
             }))
           : [];
       const asdType61 =
-        !settingsContext.isScottish && HasASD() && streetData
+        !settingsContext.isScottish && hasASD && streetData
           ? streetData.interests.map((asdRec) => ({
               type: 61,
               pkId: asdRec.pkId,
@@ -335,7 +336,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
             }))
           : [];
       const asdType62 =
-        !settingsContext.isScottish && HasASD() && streetData
+        !settingsContext.isScottish && hasASD && streetData
           ? streetData.constructions.map((asdRec) => ({
               type: 62,
               pkId: asdRec.pkId,
@@ -350,7 +351,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
             }))
           : [];
       const asdType63 =
-        !settingsContext.isScottish && HasASD() && streetData
+        !settingsContext.isScottish && hasASD && streetData
           ? streetData.specialDesignations.map((asdRec) => ({
               type: 63,
               pkId: asdRec.pkId,
@@ -364,7 +365,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
             }))
           : [];
       const asdType64 =
-        !settingsContext.isScottish && HasASD() && streetData
+        !settingsContext.isScottish && hasASD && streetData
           ? streetData.heightWidthWeights.map((asdRec) => ({
               type: 64,
               pkId: asdRec.pkId,
@@ -378,7 +379,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
             }))
           : [];
       const asdType66 =
-        !settingsContext.isScottish && HasASD() && streetData
+        !settingsContext.isScottish && hasASD && streetData
           ? streetData.publicRightOfWays.map((asdRec) => ({
               type: 66,
               pkId: asdRec.pkId,
@@ -540,7 +541,11 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
    */
   const handleTreeViewNodeSelect = (nodeType, nodeId) => {
     if (sandboxContext.currentSandbox.sourceStreet) {
-      const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
+      const streetChanged = hasStreetChanged(
+        streetContext.currentStreet.newStreet,
+        sandboxContext.currentSandbox,
+        hasASD
+      );
 
       if (streetChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("street", sandboxContext, streetContext.esuDataChanged);
@@ -560,7 +565,8 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
                     sandboxContext,
                     lookupContext,
                     settingsContext.isWelsh,
-                    settingsContext.isScottish
+                    settingsContext.isScottish,
+                    hasASD
                   );
                   HandleSaveStreet(currentStreetData);
                 } else {
@@ -785,7 +791,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
                 ? `${apiUrl.propertyUsrn.url}/${propertyContext.currentProperty.usrn}`
                 : null
               : variant === "street"
-              ? settingsContext.isScottish || HasASD()
+              ? settingsContext.isScottish || hasASD
                 ? streetContext.currentStreet.usrn > 0
                   ? `${apiUrl.streetWithASDUsrn.url}/${streetContext.currentStreet.usrn}`
                   : null
@@ -793,10 +799,10 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
                 ? `${apiUrl.streetUsrn.url}/${streetContext.currentStreet.usrn}`
                 : null
               : propertyContext.currentProperty.uprn > 0
-              ? settingsContext.isScottish || HasASD()
+              ? settingsContext.isScottish || hasASD
                 ? `${apiUrl.streetWithASDUprn.url}/${propertyContext.currentProperty.uprn}`
                 : `${apiUrl.streetUprn.url}/${propertyContext.currentProperty.uprn}`
-              : settingsContext.isScottish || HasASD()
+              : settingsContext.isScottish || hasASD
               ? propertyContext.currentProperty.usrn > 0
                 ? `${apiUrl.streetWithASDUsrn.url}/${propertyContext.currentProperty.usrn}`
                 : null
@@ -884,7 +890,12 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
     streetData,
     relatedType,
     settingsContext,
+    hasASD,
   ]);
+
+  useEffect(() => {
+    setHasASD(userContext.currentUser && userContext.currentUser.hasASD);
+  }, [userContext]);
 
   return (
     <Fragment>

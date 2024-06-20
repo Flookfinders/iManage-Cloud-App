@@ -26,6 +26,7 @@
 //    013   06.02.24 Sean Flook                 Set the partRoadColour on the wholeRoadIcon.
 //    014   22.02.24 Joel Benford     IMANN-287 Correct hover blue
 //    015   22.04.24 Sean Flook       IMANN-298 Do not display the delete button if more than 1 record is checked.
+//    016   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -258,7 +259,7 @@ function AsdDataListSubItem({
   }, [itemState, code, streetContext, title, variant, avatarVariant]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editASD);
   }, [userContext]);
 
   return (

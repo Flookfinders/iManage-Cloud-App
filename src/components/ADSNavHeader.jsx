@@ -17,6 +17,7 @@
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
 //    006   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    007   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -73,7 +74,11 @@ const ADSNavHeader = () => {
    */
   const handleClickEvent = () => {
     if (sandboxContext.currentSandbox.sourceStreet) {
-      const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
+      const streetChanged = hasStreetChanged(
+        streetContext.currentStreet.newStreet,
+        sandboxContext.currentSandbox,
+        userContext.currentUser && userContext.currentUser.hasASD
+      );
 
       if (streetChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("street", sandboxContext, streetContext.esuDataChanged);
@@ -93,7 +98,8 @@ const ADSNavHeader = () => {
                     sandboxContext,
                     lookupContext,
                     settingsContext.isWelsh,
-                    settingsContext.isScottish
+                    settingsContext.isScottish,
+                    userContext.currentUser && userContext.currentUser.hasASD
                   );
                   HandleSaveStreet(currentStreetData);
                 } else {

@@ -33,6 +33,7 @@
 //    020   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    021   10.06.24 Sean Flook       IMANN-509 Allow a user to change their password.
 //    022   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    023   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -379,7 +380,11 @@ const ADSNavContent = (props) => {
   const handlePageChangeClick = (page) => {
     const resetRequired = ["gazetteer", "home"].includes(page);
     if (sandboxContext.currentSandbox.sourceStreet) {
-      const streetChanged = hasStreetChanged(streetContext.currentStreet.newStreet, sandboxContext.currentSandbox);
+      const streetChanged = hasStreetChanged(
+        streetContext.currentStreet.newStreet,
+        sandboxContext.currentSandbox,
+        userContext.currentUser && userContext.currentUser.hasASD
+      );
 
       if (streetChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("street", sandboxContext, streetContext.esuDataChanged);
@@ -399,7 +404,8 @@ const ADSNavContent = (props) => {
                     sandboxContext,
                     lookupContext,
                     settingsContext.isWelsh,
-                    settingsContext.isScottish
+                    settingsContext.isScottish,
+                    userContext.currentUser && userContext.currentUser.hasASD
                   );
                   HandleSaveStreet(currentStreetData, resetRequired, page);
                 } else {

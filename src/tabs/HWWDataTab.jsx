@@ -33,6 +33,7 @@
 //    020   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    021   27.03.24 Sean Flook                 Clear specific location if going back to whole road.
 //    022   18.06.24 Sean Flook       IMANN-595 Update the correct state variable for Feature description errors.
+//    023   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -454,7 +455,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, o
   }, [sandboxContext.currentSandbox.sourceStreet, sandboxContext.currentSandbox.currentStreetRecords.hww]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.canEdit);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editASD);
   }, [userContext]);
 
   useEffect(() => {
@@ -640,6 +641,7 @@ function HWWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, o
           isFocused={focusedField ? focusedField === "ValueMetric" : false}
           loading={loading}
           value={valueMetric}
+          maximum={99.9}
           errorText={valueMetricError}
           helperText="Value in metric for the HWW Restriction. Metres or tonnes."
           onChange={handleValueMetricChangeEvent}

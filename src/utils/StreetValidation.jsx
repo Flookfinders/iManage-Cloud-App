@@ -50,6 +50,7 @@
 //    019   23.05.24 Joshua McCormick IMANN-478 Removed 6600052 PRoW district ref consultant is missing. as not used in API or GUI
 //    020   20.04.24 Sean Flook       IMANN-221 Use the correct table when checking Scottish ASD custodian and authorities.
 //    021   29.05.24 Sean Flook       IMANN-221 Added new checks.
+//    031   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -920,8 +921,8 @@ export function ValidateOneWayExemptionData(data, index, esuIndex, currentLookup
     currentCheck = GetCheck(1600001, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
-      data.oneWayExemptionTypeCode &&
-      !OneWayExemptionType.find((x) => x.id === data.oneWayExemptionTypeCode)
+      data.oneWayExemptionType &&
+      !OneWayExemptionType.find((x) => x.id === data.oneWayExemptionType)
     ) {
       oweTypeErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -1006,7 +1007,7 @@ export function ValidateOneWayExemptionData(data, index, esuIndex, currentLookup
 
     // One way exemption type is missing.
     currentCheck = GetCheck(1600018, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && !data.oneWayExemptionTypeCode) {
+    if (includeCheck(currentCheck, isScottish) && !data.oneWayExemptionType) {
       oweTypeErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
@@ -1022,7 +1023,7 @@ export function ValidateOneWayExemptionData(data, index, esuIndex, currentLookup
       validationErrors.push({
         index: index,
         esuIndex: esuIndex,
-        field: "OneWayExemptionTypeCode",
+        field: "oneWayExemptionType",
         errors: oweTypeErrors,
       });
 

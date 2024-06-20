@@ -28,6 +28,7 @@
 //    015   10.06.24 Sean Flook       IMANN-509 Updated versions for api, settings and lookups.
 //    016   11.06.24 Sean Flook       IMANN-509 Reverted security API back to v1 for now.
 //    017   11.06.24 Sean Flook       IMANN-509 Undone above changes.
+//    018   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -272,32 +273,32 @@ export function GetMultiEditSearchUrl(userToken) {
 /**
  * Get the URL used when creating a new street object.
  *
- * @param {string} userToken The token for the user who is calling the endpoint.
- * @param {boolean} isScottish Is the authority a Scottish authority.
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} userToken The token for the user who is calling the endpoint.
+ * @param {Boolean} hasAsd Can the user see ASD data.
+ * @return {Object} The URL object used in FETCH calls.
  */
-export function GetCreateStreetUrl(userToken, isScottish) {
-  const url = GetApiSite("main", `/api/${apiVersion}Street${!isScottish && HasASD() ? "WithAsd" : ""}`);
+export function GetCreateStreetUrl(userToken, hasAsd) {
+  const url = GetApiSite("main", `/api/${apiVersion}Street${hasAsd ? "WithAsd" : ""}`);
   return getUrl(url, "POST", "application/json", userToken);
 }
 
 /**
  * Ge the URL used to retrieve a street from a given USRN.
  *
- * @param {string} userToken The token for the user who is calling the endpoint.
- * @param {boolean} isScottish Is the authority a Scottish authority.
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} userToken The token for the user who is calling the endpoint.
+ * @param {Boolean} hasAsd Can the user see ASD data.
+ * @return {Object} The URL object used in FETCH calls.
  */
-export function GetStreetByUSRNUrl(userToken, isScottish) {
-  const url = GetApiSite("main", `/api/${apiVersion}Street${!isScottish && HasASD() ? "WithAsd" : ""}`);
+export function GetStreetByUSRNUrl(userToken, hasAsd) {
+  const url = GetApiSite("main", `/api/${apiVersion}Street${hasAsd ? "WithAsd" : ""}`);
   return getUrl(url, "GET", "application/json", userToken);
 }
 
 /**
  * Get the URL used to return the ESU from a given id.
  *
- * @param {string} userToken The token for the user who is calling the endpoint.
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} userToken The token for the user who is calling the endpoint.
+ * @return {Object} The URL object used in FETCH calls.
  */
 export function GetEsuByIdUrl(userToken) {
   const url = GetApiSite("main", `/api/${apiVersion}MappableData/GetEsu`);
@@ -417,24 +418,24 @@ export function GetHomepageUrl(userToken) {
 /**
  * Get the URL used to make updates to a given street.
  *
- * @param {string} userToken The token for the user who is calling the endpoint.
- * @param {boolean} isScottish Is the authority a Scottish authority.
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} userToken The token for the user who is calling the endpoint.
+ * @param {Boolean} hasAsd Can the user see ASD data.
+ * @return {Object} The URL object used in FETCH calls.
  */
-export function GetUpdateStreetUrl(userToken, isScottish) {
-  const url = GetApiSite("main", `/api/${apiVersion}Street${!isScottish && HasASD() ? "WithAsd" : ""}`);
+export function GetUpdateStreetUrl(userToken, hasAsd) {
+  const url = GetApiSite("main", `/api/${apiVersion}Street${hasAsd ? "WithAsd" : ""}`);
   return getUrl(url, "PUT", "application/json", userToken);
 }
 
 /**
  * Get the URL used to delete a given street.
  *
- * @param {string} userToken The token for the user who is calling the endpoint.
- * @param {boolean} isScottish Is the authority a Scottish authority.
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} userToken The token for the user who is calling the endpoint.
+ * @param {Boolean} hasAsd Can the user see ASD data.
+ * @return {Object} The URL object used in FETCH calls.
  */
-export function GetDeleteStreetUrl(userToken, isScottish) {
-  const url = GetApiSite("main", `/api/${apiVersion}Street${!isScottish && HasASD() ? "WithAsd" : ""}`);
+export function GetDeleteStreetUrl(userToken, hasAsd) {
+  const url = GetApiSite("main", `/api/${apiVersion}Street${hasAsd ? "WithAsd" : ""}`);
   return getUrl(url, "DELETE", "application/json", userToken);
 }
 
@@ -872,49 +873,4 @@ export function GetStreetTemplateUrl(endPointType, userToken) {
 export function GetMapLayersUrl(endPointType, userToken) {
   const url = GetApiSite("settings", `/api/${settingsVersion}MapLayer`);
   return getUrl(url, endPointType, "application/json", userToken);
-}
-
-/**
- * Used to determine if the application is registered.
- *
- * @return {boolean} True if they are registered; otherwise false.
- */
-export function IsRegistered() {
-  const registration = GetRegistration();
-  return registration.lsg || registration.llpg;
-}
-
-/**
- * Used to determine if the application is registered to deal with property data.
- *
- * @return {boolean} True if they have registered to handle properties; otherwise false.
- */
-export function HasProperties() {
-  const registration = GetRegistration();
-  return registration.llpg;
-}
-
-/**
- * Used to determine if the application is registered to deal with ASD data.
- *
- * @return {boolean} Tue if they are registered for ASD; otherwise false.
- */
-export function HasASD() {
-  const registration = GetRegistration();
-  return registration.asd;
-}
-
-/**
- * Returns the registration object for the application.
- *
- * @return {object} The registration object.
- */
-function GetRegistration() {
-  const regKey = process.env.REACT_APP_REG_KEY;
-
-  return {
-    lsg: regKey.includes("XJQ68B"),
-    llpg: regKey.includes("R8VZE8"),
-    asd: regKey.includes("PM10"),
-  };
 }
