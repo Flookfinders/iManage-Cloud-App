@@ -101,6 +101,7 @@
 //    087   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    088   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    089   21.06.24 Sean Flook       IMANN-636 Fixed warnings.
+//    090   21.06.24 Sean Flook       IMANN-561 Allow changing tabs if errors are not on current tab.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -504,8 +505,10 @@ function StreetDataForm({ data, loading }) {
    * @param {number} newValue The index of the tab the user wants to switch to.
    */
   const handleTabChange = (event, newValue) => {
+    let oldTab = "";
     const setAsdFormData = () => {
       if (maintenanceResponsibilityFormData) {
+        oldTab = "maintenanceResponsibility";
         setMaintenanceResponsibilityFormData({
           pkId: maintenanceResponsibilityFormData.pkId,
           maintenanceResponsibilityData: sandboxContext.currentSandbox.currentStreetRecords.maintenanceResponsibility
@@ -515,6 +518,7 @@ function StreetDataForm({ data, loading }) {
           totalRecords: maintenanceResponsibilityFormData.totalRecords,
         });
       } else if (reinstatementCategoryFormData) {
+        oldTab = "reinstatementCategory";
         setReinstatementCategoryFormData({
           pkId: reinstatementCategoryFormData.pkId,
           reinstatementCategoryData: sandboxContext.currentSandbox.currentStreetRecords.reinstatementCategory
@@ -524,6 +528,7 @@ function StreetDataForm({ data, loading }) {
           totalRecords: reinstatementCategoryFormData.totalRecords,
         });
       } else if (osSpecialDesignationFormData) {
+        oldTab = "osSpecialDesignation";
         setOSSpecialDesignationFormData({
           pkId: osSpecialDesignationFormData.pkId,
           osSpecialDesignationData: sandboxContext.currentSandbox.currentStreetRecords.osSpecialDesignation
@@ -533,6 +538,7 @@ function StreetDataForm({ data, loading }) {
           totalRecords: osSpecialDesignationFormData.totalRecords,
         });
       } else if (interestFormData) {
+        oldTab = "interest";
         setInterestFormData({
           pkId: interestFormData.pkId,
           interestData: sandboxContext.currentSandbox.currentStreetRecords.interest
@@ -542,6 +548,7 @@ function StreetDataForm({ data, loading }) {
           totalRecords: interestFormData.totalRecords,
         });
       } else if (constructionFormData) {
+        oldTab = "construction";
         setConstructionFormData({
           pkId: constructionFormData.pkId,
           constructionData: sandboxContext.currentSandbox.currentStreetRecords.construction
@@ -551,6 +558,7 @@ function StreetDataForm({ data, loading }) {
           totalRecords: constructionFormData.totalRecords,
         });
       } else if (specialDesignationFormData) {
+        oldTab = "specialDesignation";
         setSpecialDesignationFormData({
           pkId: specialDesignationFormData.pkId,
           specialDesignationData: sandboxContext.currentSandbox.currentStreetRecords.specialDesignation
@@ -560,6 +568,7 @@ function StreetDataForm({ data, loading }) {
           totalRecords: specialDesignationFormData.totalRecords,
         });
       } else if (hwwFormData) {
+        oldTab = "hww";
         setHwwFormData({
           pkId: hwwFormData.pkId,
           hwwData: sandboxContext.currentSandbox.currentStreetRecords.hww
@@ -569,6 +578,7 @@ function StreetDataForm({ data, loading }) {
           totalRecords: hwwFormData.totalRecords,
         });
       } else if (prowFormData) {
+        oldTab = "prow";
         setProwFormData({
           pkId: prowFormData.pkId,
           prowData: sandboxContext.currentSandbox.currentStreetRecords.prow
@@ -582,6 +592,7 @@ function StreetDataForm({ data, loading }) {
 
     const setNotesForm = () => {
       if (notesFormData) {
+        oldTab = "note";
         setNotesFormData({
           pkId: notesFormData.pkId,
           noteData: sandboxContext.currentSandbox.currentStreetRecords.note
@@ -597,6 +608,7 @@ function StreetDataForm({ data, loading }) {
     switch (value) {
       case 0: // Details
         if (descriptorFormData) {
+          oldTab = "description";
           setDescriptorFormData({
             pkId: descriptorFormData.pkId,
             sdData: sandboxContext.currentSandbox.currentStreetRecords.descriptor
@@ -611,6 +623,7 @@ function StreetDataForm({ data, loading }) {
 
       case 1: // ESU
         if (esuFormData) {
+          oldTab = "esu";
           setEsuFormData({
             pkId: esuFormData.pkId,
             esuData: sandboxContext.currentSandbox.currentStreetRecords.esu
@@ -620,6 +633,7 @@ function StreetDataForm({ data, loading }) {
             totalRecords: esuFormData.totalRecords,
           });
         } else if (oweFormData) {
+          oldTab = "owe";
           setOweFormData({
             pkId: oweFormData.pkId,
             oweData: sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption
@@ -630,6 +644,7 @@ function StreetDataForm({ data, loading }) {
             totalRecords: oweFormData.totalRecords,
           });
         } else if (hdFormData) {
+          oldTab = "hd";
           setHdFormData({
             pkId: hdFormData.pkId,
             hdData: sandboxContext.currentSandbox.currentStreetRecords.highwayDedication
@@ -648,6 +663,7 @@ function StreetDataForm({ data, loading }) {
       case 2: // Successors / ASD
         if (settingsContext.isScottish) {
           if (successorCrossRefFormData) {
+            oldTab = "successor";
             setSuccessorCrossRefFormData({
               id: successorCrossRefFormData.id,
               successorCrossRefData: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef
@@ -699,7 +715,7 @@ function StreetDataForm({ data, loading }) {
       hasASD
     );
 
-    if (!streetChanged || streetContext.validateData()) {
+    if (!streetChanged || !oldTab || streetContext.validateData()) {
       failedValidation.current = false;
       setValue(newValue);
       sandboxContext.onStreetTabChange(newValue);

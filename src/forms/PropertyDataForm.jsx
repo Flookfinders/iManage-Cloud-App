@@ -70,6 +70,7 @@
 //    057   12.06.24 Sean Flook       IMANN-562 Correctly set the pkId when updating the provenance geometry.
 //    058   12.06.24 Sean Flook       IMANN-565 Handle polygon deletion.
 //    059   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    060   21.06.24 Sean Flook       IMANN-561 Allow changing tabs if errors are not on current tab.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -378,9 +379,11 @@ function PropertyDataForm({ data, loading }) {
    * @param {number} newValue The index of the tab the user wants to switch to.
    */
   const handleTabChange = (event, newValue) => {
+    let oldTab = "";
     switch (value) {
       case 0: // Details
         if (lpiFormData) {
+          oldTab = "lpi";
           setLpiFormData({
             pkId: lpiFormData.pkId,
             lpiData: sandboxContext.currentSandbox.currentPropertyRecords.lpi
@@ -391,12 +394,15 @@ function PropertyDataForm({ data, loading }) {
             index: lpiFormData.index,
             totalRecords: lpiFormData.totalRecords,
           });
-        } else informationContext.onClearInformation();
+        } else {
+          informationContext.onClearInformation();
+        }
         break;
 
       case 1: // Classifications / Provenances
         if (settingsContext.isScottish) {
           if (classificationFormData) {
+            oldTab = "classification";
             setClassificationFormData({
               id: classificationFormData.id,
               classificationData: sandboxContext.currentSandbox.currentPropertyRecords.classification
@@ -421,6 +427,7 @@ function PropertyDataForm({ data, loading }) {
           }
         } else {
           if (provenanceFormData) {
+            oldTab = "provenance";
             setProvenanceFormData({
               id: provenanceFormData.id,
               provenanceData: sandboxContext.currentSandbox.currentPropertyRecords.provenance
@@ -450,6 +457,7 @@ function PropertyDataForm({ data, loading }) {
       case 2: // Organisations / Cross Refs
         if (settingsContext.isScottish) {
           if (organisationFormData) {
+            oldTab = "organisation";
             setOrganisationFormData({
               id: organisationFormData.id,
               organisationData: sandboxContext.currentSandbox.currentPropertyRecords.organisation
@@ -473,6 +481,7 @@ function PropertyDataForm({ data, loading }) {
           }
         } else {
           if (crossRefFormData) {
+            oldTab = "crossRef";
             setCrossRefFormData({
               id: crossRefFormData.id,
               xrefData: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef
@@ -501,6 +510,7 @@ function PropertyDataForm({ data, loading }) {
       case 3: // Successors / Notes
         if (settingsContext.isScottish) {
           if (successorCrossRefFormData) {
+            oldTab = "successor";
             setSuccessorCrossRefFormData({
               id: successorCrossRefFormData.id,
               successorCrossRefData: sandboxContext.currentSandbox.currentPropertyRecords.successorCrossRef
@@ -525,6 +535,7 @@ function PropertyDataForm({ data, loading }) {
           }
         } else {
           if (notesFormData) {
+            oldTab = "notes";
             setNotesFormData({
               pkId: notesFormData.pkId,
               noteData: sandboxContext.currentSandbox.currentPropertyRecords.note
@@ -540,6 +551,7 @@ function PropertyDataForm({ data, loading }) {
 
       case 4: // BLPU Provenances
         if (settingsContext.isScottish && provenanceFormData) {
+          oldTab = "provenance";
           setProvenanceFormData({
             id: provenanceFormData.id,
             provenanceData: sandboxContext.currentSandbox.currentPropertyRecords.provenance
@@ -566,6 +578,7 @@ function PropertyDataForm({ data, loading }) {
 
       case 5: // Cross Refs
         if (settingsContext.isScottish && crossRefFormData) {
+          oldTab = "crossRef";
           setCrossRefFormData({
             id: crossRefFormData.id,
             xrefData: sandboxContext.currentSandbox.currentPropertyRecords.appCrossRef
@@ -592,6 +605,7 @@ function PropertyDataForm({ data, loading }) {
 
       case 6: // Notes
         if (settingsContext.isScottish && notesFormData) {
+          oldTab = "note";
           setNotesFormData({
             pkId: notesFormData.pkId,
             noteData: sandboxContext.currentSandbox.currentPropertyRecords.note
@@ -613,7 +627,7 @@ function PropertyDataForm({ data, loading }) {
       sandboxContext.currentSandbox
     );
 
-    if (!propertyChanged || propertyContext.validateData()) {
+    if (!propertyChanged || !oldTab || propertyContext.validateData()) {
       failedValidation.current = false;
       setValue(newValue);
       sandboxContext.onPropertyTabChange(newValue);
