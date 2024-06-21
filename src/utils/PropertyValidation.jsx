@@ -50,6 +50,7 @@
 //    026   12.06.24 Sean Flook       IMANN-553 Further modifications to checks 2100011 and 2100046 to cater for Scottish authorities.
 //    027   18.06.24 Sean Flook       IMANN-534 Correctly handle blpuStates of 0.
 //    028   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
+//    029   21.06.24 Sean Flook       IMANN-577 Corrected logic.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -182,7 +183,7 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
     if (
       includeCheck(currentCheck, isScottish) &&
       data.organisation &&
-      characterSetValidator(data.organisation, `${isScottish ? "OneScotlandLookup" : "GeoPlaceProperty1"}`)
+      !characterSetValidator(data.organisation, `${isScottish ? "OneScotlandLookup" : "GeoPlaceProperty1"}`)
     ) {
       organisationErrors.push(GetErrorMessage(currentCheck, isScottish));
     }

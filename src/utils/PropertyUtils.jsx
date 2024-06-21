@@ -51,6 +51,7 @@
 //    038   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    039   12.06.24 Sean Flook       IMANN-553 Added filter for blpu state for Scottish authorities.
 //    040   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    041   21.06.24 Sean Flook       IMANN-614 After saving changes update the source data in the sandbox.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2034,7 +2035,7 @@ export async function UpdateAfterSave(
   mapContext.onSetCoordinate(null);
   propertyContext.onPropertyModified(false);
   propertyContext.resetPropertyErrors();
-  sandboxContext.resetSandbox("property");
+  sandboxContext.onUpdateAndClear("sourceProperty", result, "allProperty");
 
   const searchAddresses = [];
   let newSearchData = [];
