@@ -25,6 +25,7 @@
 //    012   22.05.24 Sean Flook       IMANN-473 Changes required for Scottish authorities.
 //    013   29.05.24 Sean Flook       IMANN-494 Pass through the scottish flag when calling getLpiOfficialAddress.
 //    014   29.05.24 Sean Flook       IMANN-504 Corrected names for BLPU level.
+//    015   21.06.24 Sean Flook       IMANN-578 Corrected name for LPI level.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -277,7 +278,7 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                   }
                 : {
                     logicalStatus: updatedData.lpiLogicalStatus,
-                    level: updatedData.level,
+                    level: updatedData.lpiLevel,
                     officialAddress: updatedData.officialAddressMaker,
                     postallyAddressable: updatedData.postallyAddressable,
                     startDate: updatedData.startDate,
