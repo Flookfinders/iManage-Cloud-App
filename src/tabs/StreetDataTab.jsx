@@ -41,6 +41,7 @@
 //    028   12.06.24 Sean Flook       IMANN-536 Removed a warning.
 //    029   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    030   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    031   21.06.24 Sean Flook       IMANN-636 Fixed warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1259,8 +1260,8 @@ function StreetDataTab({
             eastErrorText={startEastingError}
             northErrorText={startNorthingError}
             helperText="The coordinates for the start of the street."
-            eastValue={eastingStart}
-            northValue={northingStart}
+            eastValue={Number(eastingStart)}
+            northValue={Number(northingStart)}
             eastLabel="Easting:"
             northLabel="Northing:"
             buttonLabel="Select start"
@@ -1278,8 +1279,8 @@ function StreetDataTab({
             isNorthFocused={focusedField ? focusedField === "StreetEndY" : false}
             displayButton
             loading={loading}
-            eastErrorText={endEastingError}
-            northErrorText={endNorthingError}
+            eastErrorText={Number(endEastingError)}
+            northErrorText={Number(endNorthingError)}
             helperText="The coordinates for the end of the street."
             eastValue={eastingEnd}
             northValue={northingEnd}

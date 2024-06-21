@@ -66,6 +66,7 @@
 //    053   12.06.24 Sean Flook       IMANN-515 Correctly set the changeType and end dates when state is 4.
 //    054   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    055   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    056   21.06.24 Sean Flook       IMANN-636 Added hasASD to GetNewStreet.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -367,6 +368,7 @@ export function streetDescriptorToTitleCase(str) {
  * @param {Number|null} defaultSurface The default surface to use when creating the new street (GeoPlace only).
  * @param {Boolean} defaultExcludeFromExport The default exclude from export to use when creating the new street.
  * @param {Object} lookupContext The lookup context object.
+ * @param {Boolean} hasASD True if the user can see ASD; otherwise false.
  * @param {Array|null} [newEsus=null] The array of ESUs to use when creating the new street.
  * @return {Object} A new street object.
  */
@@ -384,6 +386,7 @@ export function GetNewStreet(
   defaultSurface,
   defaultExcludeFromExport,
   lookupContext,
+  hasASD,
   newEsus = null
 ) {
   const currentDate = GetCurrentDate();
@@ -545,7 +548,8 @@ export function GetNewStreet(
     specialDesignationData,
     prowData,
     hwwData,
-    isScottish
+    isScottish,
+    hasASD
   );
 }
 

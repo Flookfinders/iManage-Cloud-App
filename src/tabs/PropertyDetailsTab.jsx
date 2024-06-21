@@ -48,12 +48,13 @@
 //    035   23.05.24 Sean Flook       IMANN-485 When state changes set the state date to current date.
 //    036   05.06.24 Sean Flook       IMANN-485 Make above change for Scottish authorities as well.
 //    037   12.06.24 Sean Flook       IMANN-553 correctly set the required flag for state and state date.
-//    038   19.06.24 Joshua McCormick IMANN-503 BLPU Level field max characters 30 and removed updown counter.
-//    039   19.06.24 Joshua McCormick IMANN-503 BLPU Level AdsNumberControl type set to text to hide updown
+//    038   19.06.24 Joshua McCormick IMANN-503 BLPU Level field max characters 30 and removed up down counter.
+//    039   19.06.24 Joshua McCormick IMANN-503 BLPU Level AdsNumberControl type set to text to hide up down
 //    040   19.06.24 Joshua McCormick IMANN-503 BLPU Level removed type prop
 //    041   19.06.24 Joshua McCormick IMANN-503 BLPU Level max set to 99.9
 //    042   19.06.24 Joshua McCormick IMANN-548 Property Details options zoom fix
 //    043   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    044   21.06.24 Sean Flook       IMANN-636 Fixed warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -580,7 +581,7 @@ function PropertyDetailsTab({
       const found = mapContext.currentSearchData.properties.find(
         (rec) => rec.uprn === propertyContext.currentProperty.uprn
       );
-      
+
       const street = mapContext.currentSearchData;
       const highlightStreet = {
         minX: street.streetStartX < street.streetEndX ? street.streetStartX : street.streetEndX,
@@ -1491,7 +1492,6 @@ function PropertyDetailsTab({
             isFocused={focusedField ? focusedField === "Level" : false}
             loading={loading}
             value={level}
-            maximum={99.9}
             errorText={levelError}
             helperText="Code describing vertical position of BLPU."
             onChange={handleLevelChangeEvent}

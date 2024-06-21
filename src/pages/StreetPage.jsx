@@ -26,6 +26,7 @@
 //    017   08.05.24 Sean Flook       IMANN-447 Added exclude from export from template.
 //    018   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    019   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    020   21.06.24 Sean Flook       IMANN-636 Pass through hasASD to GetNewStreet.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -343,6 +344,7 @@ function StreetPage() {
           ? settingsContext.streetTemplate.streetTemplate.streetExcludeFromExport
           : false,
         lookupContext,
+        userContext.currentUser && userContext.currentUser.hasASD,
         newEsus
       );
       setData(newStreet);

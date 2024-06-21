@@ -100,6 +100,7 @@
 //    086   17.06.24 Joel Benford     IMANN-546 Hide street successor tab, re-index later tabs (2nd attempt)
 //    087   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    088   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    089   21.06.24 Sean Flook       IMANN-636 Fixed warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3951,7 +3952,7 @@ function StreetDataForm({ data, loading }) {
   const handleOneWayExceptionDeleted = (esuId, pkId) => {
     if (esuId) {
       const currentEsu = streetData.esus.find((x) => x.esuId === esuId);
-      let newOneWayExceptions = currentEsu.oneWayExceptions.map((x) => x);
+      let newOneWayExceptions = currentEsu.oneWayExceptions ? currentEsu.oneWayExceptions.map((x) => x) : [];
 
       if (currentEsu) {
         if (pkId && pkId > 0) {
@@ -6881,9 +6882,9 @@ function StreetDataForm({ data, loading }) {
           successorCrossRefs: streetData.successorCrossRefs,
           streetDescriptors: streetData.streetDescriptors,
           streetNotes: streetData.streetNotes,
-          maintenanceResponsibilities: streetData.recordType < 3 ? streetData.maintenanceResponsibilities : null,
-          reinstatementCategories: streetData.recordType < 3 ? streetData.reinstatementCategories : null,
-          specialDesignations: streetData.recordType < 3 ? streetData.specialDesignations : null,
+          maintenanceResponsibilities: streetData.recordType < 3 ? streetData.maintenanceResponsibilities : [],
+          reinstatementCategories: streetData.recordType < 3 ? streetData.reinstatementCategories : [],
+          specialDesignations: streetData.recordType < 3 ? streetData.specialDesignations : [],
         }
       : !hasASD
       ? {
@@ -6943,8 +6944,8 @@ function StreetDataForm({ data, loading }) {
           esus: streetData.esus,
           streetDescriptors: streetData.streetDescriptors,
           streetNotes: streetData.streetNotes,
-          interests: streetData.recordType < 4 ? streetData.interests : null,
-          constructions: streetData.recordType < 4 ? streetData.constructions : null,
+          interests: streetData.recordType < 4 ? streetData.interests : [],
+          constructions: streetData.recordType < 4 ? streetData.constructions : [],
           specialDesignations:
             streetData.recordType < 4
               ? streetData.state === 4
@@ -6952,9 +6953,9 @@ function StreetDataForm({ data, loading }) {
                   ? streetData.specialDesignations.map((x) => {
                       return { ...x, changeType: "D", recordEndDate: currentDate };
                     })
-                  : null
+                  : []
                 : streetData.specialDesignations
-              : null,
+              : [],
           publicRightOfWays:
             streetData.recordType < 4
               ? streetData.state === 4
@@ -6962,9 +6963,9 @@ function StreetDataForm({ data, loading }) {
                   ? streetData.publicRightOfWays.map((x) => {
                       return { ...x, changeType: "D", recordEndDate: currentDate };
                     })
-                  : null
+                  : []
                 : streetData.publicRightOfWays
-              : null,
+              : [],
           heightWidthWeights:
             streetData.recordType < 4
               ? streetData.state === 4
@@ -6972,9 +6973,9 @@ function StreetDataForm({ data, loading }) {
                   ? streetData.heightWidthWeights.map((x) => {
                       return { ...x, changeType: "D", recordEndDate: currentDate };
                     })
-                  : null
+                  : []
                 : streetData.heightWidthWeights
-              : null,
+              : [],
         };
 
     updateStreetData(newStreetData);

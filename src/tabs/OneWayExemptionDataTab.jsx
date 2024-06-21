@@ -24,6 +24,7 @@
 //    011   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    012   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    013   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    014   21.06.24 Sean Flook       IMANN-636 Fixed warnings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -403,7 +404,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
         <ADSDateTimeControl
           label="Start"
           isEditable={userCanEdit}
-          isRequired={(periodicity && periodicity === 15) || oweEndDate || oweEndTime}
+          isRequired={(periodicity && periodicity === 15) || !!oweEndDate || !!oweEndTime}
           isDateFocused={focusedField ? focusedField === "OneWayExemptionStartDate" : false}
           isTimeFocused={focusedField ? focusedField === "OneWayExemptionStartTime" : false}
           loading={loading}
@@ -419,7 +420,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
         <ADSDateTimeControl
           label="End"
           isEditable={userCanEdit}
-          isRequired={(periodicity && periodicity === 15) || oweStartDate || oweStartTime}
+          isRequired={(periodicity && periodicity === 15) || !!oweStartDate || !!oweStartTime}
           isDateFocused={focusedField ? focusedField === "OneWayExemptionEndDate" : false}
           isTimeFocused={focusedField ? focusedField === "OneWayExemptionEndTime" : false}
           loading={loading}
