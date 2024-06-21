@@ -68,6 +68,7 @@
 //    055   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    056   21.06.24 Sean Flook       IMANN-636 Added hasASD to GetNewStreet.
 //    057   21.06.24 Sean Flook       IMANN-614 After saving changes update the source data in the sandbox.
+//    058   21.06.24 Sean Flook       IMANN-636 Correctly call updateMapStreetData after saving a street.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3087,8 +3088,6 @@ export async function SaveStreet(
 
         streetContext.onStreetChange(result.usrn, engDescriptor.streetDescriptor, false);
 
-        const hasASD = userContext.currentUser && userContext.currentUser.hasASD;
-
         updateMapStreetData(
           result,
           isScottish ? result.maintenanceResponsibilities : null,
@@ -3100,6 +3099,7 @@ export async function SaveStreet(
           !isScottish && hasASD ? result.heightWidthWeights : null,
           !isScottish && hasASD ? result.publicRightOfWays : null,
           isScottish,
+          hasASD,
           mapContext,
           lookupContext.currentLookups
         );
