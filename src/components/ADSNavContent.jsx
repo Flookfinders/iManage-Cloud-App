@@ -34,6 +34,7 @@
 //    021   10.06.24 Sean Flook       IMANN-509 Allow a user to change their password.
 //    022   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    023   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    024   21.06.24 Sean Flook       IMANN-642 Changes required to redisplay the change password dialog after previously cancelling out.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -143,6 +144,7 @@ const ADSNavContent = (props) => {
   const saveConfirmDialog = useSaveConfirmation();
 
   const [loginOpen, setLoginOpen] = useState(false);
+  const [changePassword, setChangePassword] = useState(false);
 
   /**
    * Event to handle when the user button is clicked.
@@ -155,8 +157,19 @@ const ADSNavContent = (props) => {
     }
   };
 
+  /**
+   * Event to handle closing the settings.
+   */
   const handleSettingsClose = () => {
     setAnchorEl(null);
+  };
+
+  /**
+   * Event to handle when the login dialog closes.
+   */
+  const handleLoginDialogClose = () => {
+    setChangePassword(false);
+    setLoginOpen(false);
   };
 
   /**
@@ -582,6 +595,7 @@ const ADSNavContent = (props) => {
   const handleChangePassword = () => {
     setAnchorEl(null);
     informationContext.onClearInformation();
+    setChangePassword(true);
     setLoginOpen(true);
   };
 
@@ -754,7 +768,13 @@ const ADSNavContent = (props) => {
         >
           {GetSettingCards()}
         </Popover>
-        <LoginDialog isOpen={loginOpen} title="Change Password" message="" changePassword />
+        <LoginDialog
+          isOpen={loginOpen}
+          title="Change Password"
+          message=""
+          changePassword={changePassword}
+          onClose={handleLoginDialogClose}
+        />
       </div>
     </Fragment>
   );

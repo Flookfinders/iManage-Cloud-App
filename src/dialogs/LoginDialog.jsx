@@ -24,6 +24,7 @@
 //    011   18.06.24 Sean Flook       IMANN-601 Display message when authentication code does not match.
 //    012   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    013   19.06.24 Joshua McCormick IMANN-630 Cleared resend authentication code email errors
+//    014   21.06.24 Sean Flook       IMANN-642 Changes required to redisplay the change password dialog after previously cancelling out.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -71,13 +72,14 @@ LoginDialog.propTypes = {
   title: PropTypes.string.isRequired,
   message: PropTypes.string.isRequired,
   changePassword: PropTypes.bool,
+  onClose: PropTypes.func,
 };
 
 LoginDialog.defaultProps = {
   changePassword: false,
 };
 
-function LoginDialog({ isOpen, title, message, changePassword }) {
+function LoginDialog({ isOpen, title, message, changePassword, onClose }) {
   const theme = useTheme();
 
   const userContext = useContext(UserContext);
@@ -213,6 +215,13 @@ function LoginDialog({ isOpen, title, message, changePassword }) {
         return validationErrors;
       }
     } else return ["Unable to get validate password URL"];
+  };
+
+  /**
+   * Event to handle when the dialog closes.
+   */
+  const handleDialogClose = () => {
+    if (onClose) onClose();
   };
 
   /**
@@ -603,8 +612,8 @@ function LoginDialog({ isOpen, title, message, changePassword }) {
    * Method to handle when user cancels resetting their password
    */
   const handleCancelClick = () => {
-    if (changePassword) setShowDialog(false);
-    else setStep(0);
+    if (changePassword && onClose) onClose();
+    setStep(0);
   };
 
   /**
@@ -927,7 +936,7 @@ function LoginDialog({ isOpen, title, message, changePassword }) {
   }, [isOpen]);
 
   return (
-    <Dialog open={showDialog} aria-labelledby="user-login-dialog" fullWidth maxWidth="xs">
+    <Dialog open={showDialog} aria-labelledby="user-login-dialog" fullWidth maxWidth="xs" onClose={handleDialogClose}>
       <DialogTitle id="user-login-dialog" sx={{ color: adsWhite, backgroundColor: adsBlueA }}>
         {getTitle()}
       </DialogTitle>
