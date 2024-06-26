@@ -82,6 +82,7 @@
 //    068   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    069   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    070   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
+//    071   26.06.24 Sean Flook       IMANN-586 Reset the snapping layers after the edit graphics layer has been updated.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -6977,19 +6978,192 @@ function ADSEsriMap(startExtent) {
 
   // Edit graphics layer & setting sketch tools
   useEffect(() => {
-    if (
-      editingObject.current &&
-      mapContext.currentEditObject &&
-      mapContext.currentEditObject.objectType === editingObject.current.objectType &&
-      mapContext.currentEditObject.objectId === editingObject.current.objectId
-    )
-      return;
+    const setSnappingLayers = () => {
+      const LayersUsedForSnapping = [];
+      let baseLayer = null;
+
+      switch (mapContext.currentEditObject.objectType) {
+        case 13: // ESU
+          if (editGraphicsLayer.current)
+            LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
+          if (backgroundStreetLayerRef.current)
+            LayersUsedForSnapping.push({ layer: backgroundStreetLayerRef.current, enabled: true });
+          if (unassignedEsusLayerRef.current)
+            LayersUsedForSnapping.push({ layer: unassignedEsusLayerRef.current, enabled: true });
+          if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
+          baseLayersSnapEsu.current.forEach((layerId) => {
+            baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
+            if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
+          });
+          if (LayersUsedForSnapping.length > 0)
+            sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
+          break;
+
+        case 21: // BLPU
+          if (backgroundStreetLayerRef.current)
+            LayersUsedForSnapping.push({ layer: backgroundStreetLayerRef.current, enabled: true });
+          if (unassignedEsusLayerRef.current)
+            LayersUsedForSnapping.push({ layer: unassignedEsusLayerRef.current, enabled: true });
+          if (backgroundProvenanceLayerRef.current)
+            LayersUsedForSnapping.push({ layer: backgroundProvenanceLayerRef.current, enabled: true });
+          if (backgroundPropertyLayerRef.current)
+            LayersUsedForSnapping.push({ layer: backgroundPropertyLayerRef.current, enabled: true });
+          if (propertyLayer) LayersUsedForSnapping.push({ layer: propertyLayer, enabled: true });
+          baseLayersSnapBlpu.current.forEach((layerId) => {
+            baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
+            if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
+          });
+          if (LayersUsedForSnapping.length > 0)
+            sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
+          break;
+
+        case 22: // Extent
+          if (editGraphicsLayer.current)
+            LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
+          if (extentLayer) LayersUsedForSnapping.push({ layer: extentLayer, enabled: true });
+          baseLayersSnapExtent.current.forEach((layerId) => {
+            baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
+            if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
+          });
+          if (LayersUsedForSnapping.length > 0)
+            sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
+          break;
+
+        case 51: // Maintenance Responsibility
+          if (editGraphicsLayer.current)
+            LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
+          if (asd51Layer) LayersUsedForSnapping.push({ layer: asd51Layer, enabled: true });
+          if (asd52Layer) LayersUsedForSnapping.push({ layer: asd52Layer, enabled: true });
+          if (asd53Layer) LayersUsedForSnapping.push({ layer: asd53Layer, enabled: true });
+          if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
+          baseLayersSnapEsu.current.forEach((layerId) => {
+            baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
+            if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
+          });
+          if (LayersUsedForSnapping.length > 0)
+            sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
+          break;
+
+        case 52: // Reinstatement Category
+          if (editGraphicsLayer.current)
+            LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
+          if (asd51Layer) LayersUsedForSnapping.push({ layer: asd51Layer, enabled: true });
+          if (asd52Layer) LayersUsedForSnapping.push({ layer: asd52Layer, enabled: true });
+          if (asd53Layer) LayersUsedForSnapping.push({ layer: asd53Layer, enabled: true });
+          if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
+          baseLayersSnapEsu.current.forEach((layerId) => {
+            baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
+            if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
+          });
+          if (LayersUsedForSnapping.length > 0)
+            sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
+          break;
+
+        case 53: // Special Designation
+          if (editGraphicsLayer.current)
+            LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
+          if (asd51Layer) LayersUsedForSnapping.push({ layer: asd51Layer, enabled: true });
+          if (asd52Layer) LayersUsedForSnapping.push({ layer: asd52Layer, enabled: true });
+          if (asd53Layer) LayersUsedForSnapping.push({ layer: asd53Layer, enabled: true });
+          if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
+          baseLayersSnapEsu.current.forEach((layerId) => {
+            baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
+            if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
+          });
+          if (LayersUsedForSnapping.length > 0)
+            sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
+          break;
+
+        case 61: // Interest
+          if (editGraphicsLayer.current)
+            LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
+          if (asd61Layer) LayersUsedForSnapping.push({ layer: asd61Layer, enabled: true });
+          if (asd62Layer) LayersUsedForSnapping.push({ layer: asd62Layer, enabled: true });
+          if (asd63Layer) LayersUsedForSnapping.push({ layer: asd63Layer, enabled: true });
+          if (asd64Layer) LayersUsedForSnapping.push({ layer: asd64Layer, enabled: true });
+          if (asd66Layer) LayersUsedForSnapping.push({ layer: asd66Layer, enabled: true });
+          if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
+          baseLayersSnapEsu.current.forEach((layerId) => {
+            baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
+            if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
+          });
+          if (LayersUsedForSnapping.length > 0)
+            sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
+          break;
+
+        case 62: // Construction
+          if (editGraphicsLayer.current)
+            LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
+          if (asd61Layer) LayersUsedForSnapping.push({ layer: asd61Layer, enabled: true });
+          if (asd62Layer) LayersUsedForSnapping.push({ layer: asd62Layer, enabled: true });
+          if (asd63Layer) LayersUsedForSnapping.push({ layer: asd63Layer, enabled: true });
+          if (asd64Layer) LayersUsedForSnapping.push({ layer: asd64Layer, enabled: true });
+          if (asd66Layer) LayersUsedForSnapping.push({ layer: asd66Layer, enabled: true });
+          if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
+          baseLayersSnapEsu.current.forEach((layerId) => {
+            baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
+            if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
+          });
+          if (LayersUsedForSnapping.length > 0)
+            sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
+          break;
+
+        case 63: // Special Designation
+          if (editGraphicsLayer.current)
+            LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
+          if (asd61Layer) LayersUsedForSnapping.push({ layer: asd61Layer, enabled: true });
+          if (asd62Layer) LayersUsedForSnapping.push({ layer: asd62Layer, enabled: true });
+          if (asd63Layer) LayersUsedForSnapping.push({ layer: asd63Layer, enabled: true });
+          if (asd64Layer) LayersUsedForSnapping.push({ layer: asd64Layer, enabled: true });
+          if (asd66Layer) LayersUsedForSnapping.push({ layer: asd66Layer, enabled: true });
+          if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
+          baseLayersSnapEsu.current.forEach((layerId) => {
+            baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
+            if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
+          });
+          if (LayersUsedForSnapping.length > 0)
+            sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
+          break;
+
+        case 64: // Height, Width & Weight Restriction
+          if (editGraphicsLayer.current)
+            LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
+          if (asd61Layer) LayersUsedForSnapping.push({ layer: asd61Layer, enabled: true });
+          if (asd62Layer) LayersUsedForSnapping.push({ layer: asd62Layer, enabled: true });
+          if (asd63Layer) LayersUsedForSnapping.push({ layer: asd63Layer, enabled: true });
+          if (asd64Layer) LayersUsedForSnapping.push({ layer: asd64Layer, enabled: true });
+          if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
+          baseLayersSnapEsu.current.forEach((layerId) => {
+            baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
+            if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
+          });
+          if (LayersUsedForSnapping.length > 0)
+            sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
+          break;
+
+        case 66: // Public right of way
+          if (editGraphicsLayer.current)
+            LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
+          if (asd61Layer) LayersUsedForSnapping.push({ layer: asd61Layer, enabled: true });
+          if (asd62Layer) LayersUsedForSnapping.push({ layer: asd62Layer, enabled: true });
+          if (asd63Layer) LayersUsedForSnapping.push({ layer: asd63Layer, enabled: true });
+          if (asd64Layer) LayersUsedForSnapping.push({ layer: asd64Layer, enabled: true });
+          if (asd66Layer) LayersUsedForSnapping.push({ layer: asd66Layer, enabled: true });
+          if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
+          baseLayersSnapEsu.current.forEach((layerId) => {
+            baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
+            if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
+          });
+          if (LayersUsedForSnapping.length > 0)
+            sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
+          break;
+
+        default:
+          break;
+      }
+    };
 
     if (!mapRef.current || !mapRef.current.layers || !mapRef.current.layers.length) return;
-
-    // console.log("[SF] Edit graphics layer & setting sketch tools");
-    mapRef.current.remove(mapRef.current.findLayerById(editGraphicLayerName));
-    editGraphicsLayer.current.graphics.removeAll();
 
     const streetLayer = mapRef.current && mapRef.current.findLayerById(streetLayerName);
     const asd51Layer = mapRef.current && mapRef.current.findLayerById(asd51LayerName);
@@ -7003,687 +7177,555 @@ function ADSEsriMap(startExtent) {
     const propertyLayer = mapRef.current && mapRef.current.findLayerById(propertyLayerName);
     const extentLayer = mapRef.current && mapRef.current.findLayerById(extentLayerName);
 
-    let canContinue = false;
-
-    if (mapContext.currentEditObject && mapContext.currentEditObject.objectType) {
-      switch (mapContext.currentEditObject.objectType) {
-        case 13:
-          canContinue =
-            !!streetLayer ||
-            (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
-            (streetContext.currentRecord && streetContext.currentRecord.newRecord);
-          break;
-
-        case 21:
-          canContinue =
-            !!propertyLayer ||
-            (propertyContext.currentProperty && propertyContext.currentProperty.newProperty) ||
-            (propertyContext.currentRecord && propertyContext.currentRecord.newRecord);
-          break;
-
-        case 22:
-          canContinue = true;
-          break;
-
-        case 51:
-          canContinue =
-            !!asd51Layer ||
-            (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
-            (streetContext.currentRecord && streetContext.currentRecord.newRecord);
-          break;
-
-        case 52:
-          canContinue =
-            !!asd52Layer ||
-            (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
-            (streetContext.currentRecord && streetContext.currentRecord.newRecord);
-          break;
-
-        case 53:
-          canContinue =
-            !!asd53Layer ||
-            (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
-            (streetContext.currentRecord && streetContext.currentRecord.newRecord);
-          break;
-
-        case 61:
-          canContinue =
-            !!asd61Layer ||
-            (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
-            (streetContext.currentRecord && streetContext.currentRecord.newRecord);
-          break;
-
-        case 62:
-          canContinue =
-            !!asd62Layer ||
-            (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
-            (streetContext.currentRecord && streetContext.currentRecord.newRecord);
-          break;
-
-        case 63:
-          canContinue =
-            !!asd63Layer ||
-            (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
-            (streetContext.currentRecord && streetContext.currentRecord.newRecord);
-          break;
-
-        case 64:
-          canContinue =
-            !!asd64Layer ||
-            (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
-            (streetContext.currentRecord && streetContext.currentRecord.newRecord);
-          break;
-
-        case 66:
-          canContinue =
-            !!asd66Layer ||
-            (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
-            (streetContext.currentRecord && streetContext.currentRecord.newRecord);
-          break;
-
-        default:
-          canContinue = false;
-          break;
-      }
-    }
-
-    if (!canContinue) {
-      editingObject.current = null;
-
-      if (backgroundStreetLayerRef.current) {
-        backgroundStreetLayerRef.current.opacity = 0.5;
-        backgroundStreetLayerRef.current.popupEnabled = true;
-      }
-      if (unassignedEsusLayerRef.current) {
-        unassignedEsusLayerRef.current.opacity = 0.5;
-        unassignedEsusLayerRef.current.popupEnabled = true;
-      }
-      if (streetLayer) {
-        streetLayer.opacity = 1;
-        streetLayer.popupEnabled = true;
-      }
-      if (asd51Layer) {
-        asd51Layer.opacity = 1;
-        asd51Layer.popupEnabled = true;
-      }
-      if (asd52Layer) {
-        asd52Layer.opacity = 1;
-        asd52Layer.popupEnabled = true;
-      }
-      if (asd53Layer) {
-        asd53Layer.opacity = 1;
-        asd53Layer.popupEnabled = true;
-      }
-      if (asd61Layer) {
-        asd61Layer.opacity = 1;
-        asd61Layer.popupEnabled = true;
-      }
-      if (asd62Layer) {
-        asd62Layer.opacity = 1;
-        asd62Layer.popupEnabled = true;
-      }
-      if (asd63Layer) {
-        asd63Layer.opacity = 1;
-        asd63Layer.popupEnabled = true;
-      }
-      if (asd64Layer) {
-        asd64Layer.opacity = 1;
-        asd64Layer.popupEnabled = true;
-      }
-      if (asd66Layer) {
-        asd66Layer.opacity = 1;
-        asd66Layer.popupEnabled = true;
-      }
-      if (backgroundProvenanceLayerRef.current) {
-        backgroundProvenanceLayerRef.current.opacity = 0.5;
-        backgroundProvenanceLayerRef.current.popupEnabled = true;
-      }
-      if (backgroundPropertyLayerRef.current) {
-        backgroundPropertyLayerRef.current.opacity = 0.5;
-        backgroundPropertyLayerRef.current.popupEnabled = true;
-      }
-      if (propertyLayer) {
-        propertyLayer.opacity = 1;
-        propertyLayer.popupEnabled = true;
-      }
-      if (extentLayer) {
-        extentLayer.opacity = 1;
-        extentLayer.popupEnabled = true;
-      }
-
-      editGraphicsLayer.current.listMode = "hide";
-      sketchRef.current.availableCreateTools = [];
-      sketchRef.current.visible = false;
+    if (
+      editingObject.current &&
+      mapContext.currentEditObject &&
+      mapContext.currentEditObject.objectType === editingObject.current.objectType &&
+      mapContext.currentEditObject.objectId === editingObject.current.objectId
+    ) {
+      setSnappingLayers();
     } else {
-      editingObject.current = {
-        objectType: mapContext.currentEditObject.objectType,
-        objectId: mapContext.currentEditObject.objectId,
-      };
+      // console.log("[SF] Edit graphics layer & setting sketch tools");
+      mapRef.current.remove(mapRef.current.findLayerById(editGraphicLayerName));
+      editGraphicsLayer.current.graphics.removeAll();
 
-      mapRef.current.add(editGraphicsLayer.current);
-      sketchRef.current.layer = editGraphicsLayer.current;
+      let canContinue = false;
 
-      if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.popupEnabled = false;
-      if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.popupEnabled = false;
-      if (streetLayer) streetLayer.popupEnabled = false;
-      if (asd51Layer) asd51Layer.popupEnabled = false;
-      if (asd52Layer) asd52Layer.popupEnabled = false;
-      if (asd53Layer) asd53Layer.popupEnabled = false;
-      if (asd61Layer) asd61Layer.popupEnabled = false;
-      if (asd62Layer) asd62Layer.popupEnabled = false;
-      if (asd63Layer) asd63Layer.popupEnabled = false;
-      if (asd64Layer) asd64Layer.popupEnabled = false;
-      if (asd66Layer) asd66Layer.popupEnabled = false;
-      if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.popupEnabled = false;
-      if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.popupEnabled = false;
-      if (propertyLayer) propertyLayer.popupEnabled = false;
-      if (extentLayer) extentLayer.popupEnabled = false;
+      if (mapContext.currentEditObject && mapContext.currentEditObject.objectType) {
+        switch (mapContext.currentEditObject.objectType) {
+          case 13:
+            canContinue =
+              !!streetLayer ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord);
+            break;
 
-      sketchRef.current.visible = true;
-      let hasGeometry = false;
-      const LayersUsedForSnapping = [];
+          case 21:
+            canContinue =
+              !!propertyLayer ||
+              (propertyContext.currentProperty && propertyContext.currentProperty.newProperty) ||
+              (propertyContext.currentRecord && propertyContext.currentRecord.newRecord);
+            break;
 
-      switch (mapContext.currentEditObject.objectType) {
-        case 13: // ESU
-          if (mapContext.currentSearchData.editStreet) {
-            if (refStreetData.current && refStreetData.current.length > 0) {
-              refStreetData.current.forEach((street) => {
-                if (street.esuId === mapContext.currentEditObject.objectId) {
-                  editGraphicsLayer.current.graphics.add(createPolylineGraphic(street.geometry));
-                }
-              });
+          case 22:
+            canContinue = true;
+            break;
+
+          case 51:
+            canContinue =
+              !!asd51Layer ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord);
+            break;
+
+          case 52:
+            canContinue =
+              !!asd52Layer ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord);
+            break;
+
+          case 53:
+            canContinue =
+              !!asd53Layer ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord);
+            break;
+
+          case 61:
+            canContinue =
+              !!asd61Layer ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord);
+            break;
+
+          case 62:
+            canContinue =
+              !!asd62Layer ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord);
+            break;
+
+          case 63:
+            canContinue =
+              !!asd63Layer ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord);
+            break;
+
+          case 64:
+            canContinue =
+              !!asd64Layer ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord);
+            break;
+
+          case 66:
+            canContinue =
+              !!asd66Layer ||
+              (streetContext.currentStreet && streetContext.currentStreet.newStreet) ||
+              (streetContext.currentRecord && streetContext.currentRecord.newRecord);
+            break;
+
+          default:
+            canContinue = false;
+            break;
+        }
+      }
+
+      if (!canContinue) {
+        editingObject.current = null;
+
+        if (backgroundStreetLayerRef.current) {
+          backgroundStreetLayerRef.current.opacity = 0.5;
+          backgroundStreetLayerRef.current.popupEnabled = true;
+        }
+        if (unassignedEsusLayerRef.current) {
+          unassignedEsusLayerRef.current.opacity = 0.5;
+          unassignedEsusLayerRef.current.popupEnabled = true;
+        }
+        if (streetLayer) {
+          streetLayer.opacity = 1;
+          streetLayer.popupEnabled = true;
+        }
+        if (asd51Layer) {
+          asd51Layer.opacity = 1;
+          asd51Layer.popupEnabled = true;
+        }
+        if (asd52Layer) {
+          asd52Layer.opacity = 1;
+          asd52Layer.popupEnabled = true;
+        }
+        if (asd53Layer) {
+          asd53Layer.opacity = 1;
+          asd53Layer.popupEnabled = true;
+        }
+        if (asd61Layer) {
+          asd61Layer.opacity = 1;
+          asd61Layer.popupEnabled = true;
+        }
+        if (asd62Layer) {
+          asd62Layer.opacity = 1;
+          asd62Layer.popupEnabled = true;
+        }
+        if (asd63Layer) {
+          asd63Layer.opacity = 1;
+          asd63Layer.popupEnabled = true;
+        }
+        if (asd64Layer) {
+          asd64Layer.opacity = 1;
+          asd64Layer.popupEnabled = true;
+        }
+        if (asd66Layer) {
+          asd66Layer.opacity = 1;
+          asd66Layer.popupEnabled = true;
+        }
+        if (backgroundProvenanceLayerRef.current) {
+          backgroundProvenanceLayerRef.current.opacity = 0.5;
+          backgroundProvenanceLayerRef.current.popupEnabled = true;
+        }
+        if (backgroundPropertyLayerRef.current) {
+          backgroundPropertyLayerRef.current.opacity = 0.5;
+          backgroundPropertyLayerRef.current.popupEnabled = true;
+        }
+        if (propertyLayer) {
+          propertyLayer.opacity = 1;
+          propertyLayer.popupEnabled = true;
+        }
+        if (extentLayer) {
+          extentLayer.opacity = 1;
+          extentLayer.popupEnabled = true;
+        }
+
+        editGraphicsLayer.current.listMode = "hide";
+        sketchRef.current.availableCreateTools = [];
+        sketchRef.current.visible = false;
+      } else {
+        editingObject.current = {
+          objectType: mapContext.currentEditObject.objectType,
+          objectId: mapContext.currentEditObject.objectId,
+        };
+
+        mapRef.current.add(editGraphicsLayer.current);
+        sketchRef.current.layer = editGraphicsLayer.current;
+
+        if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.popupEnabled = false;
+        if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.popupEnabled = false;
+        if (streetLayer) streetLayer.popupEnabled = false;
+        if (asd51Layer) asd51Layer.popupEnabled = false;
+        if (asd52Layer) asd52Layer.popupEnabled = false;
+        if (asd53Layer) asd53Layer.popupEnabled = false;
+        if (asd61Layer) asd61Layer.popupEnabled = false;
+        if (asd62Layer) asd62Layer.popupEnabled = false;
+        if (asd63Layer) asd63Layer.popupEnabled = false;
+        if (asd64Layer) asd64Layer.popupEnabled = false;
+        if (asd66Layer) asd66Layer.popupEnabled = false;
+        if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.popupEnabled = false;
+        if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.popupEnabled = false;
+        if (propertyLayer) propertyLayer.popupEnabled = false;
+        if (extentLayer) extentLayer.popupEnabled = false;
+
+        sketchRef.current.visible = true;
+        let hasGeometry = false;
+
+        switch (mapContext.currentEditObject.objectType) {
+          case 13: // ESU
+            if (mapContext.currentSearchData.editStreet) {
+              if (refStreetData.current && refStreetData.current.length > 0) {
+                refStreetData.current.forEach((street) => {
+                  if (street.esuId === mapContext.currentEditObject.objectId) {
+                    editGraphicsLayer.current.graphics.add(createPolylineGraphic(street.geometry));
+                  }
+                });
+              }
+
+              if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
+              if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+              if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
+              if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
+              if (streetLayer) streetLayer.opacity = 0.5;
+
+              editGraphicsLayer.current.listMode = "show";
+              setSnappingLayers();
             }
 
-            if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
-            if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
-            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
-            if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
-            if (streetLayer) streetLayer.opacity = 0.5;
+            if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
+            else sketchRef.current.availableCreateTools = ["polyline"];
+            break;
 
-            editGraphicsLayer.current.listMode = "show";
+          case 21: // BLPU
+            if (mapContext.currentSearchData.editProperty) {
+              if (refPropertyData.current && refPropertyData.current.length > 0) {
+                refPropertyData.current.forEach((property) => {
+                  if (property.uprn.toString() === mapContext.currentEditObject.objectId.toString()) {
+                    editGraphicsLayer.current.graphics.add(
+                      createPointGraphic(
+                        property.easting,
+                        property.northing,
+                        property.logicalStatus,
+                        property.classificationCode.substring(0, 1),
+                        true
+                      )
+                    );
+                  }
+                });
+              }
 
-            if (editGraphicsLayer.current)
-              LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
-            if (backgroundStreetLayerRef.current)
-              LayersUsedForSnapping.push({ layer: backgroundStreetLayerRef.current, enabled: true });
-            if (unassignedEsusLayerRef.current)
-              LayersUsedForSnapping.push({ layer: unassignedEsusLayerRef.current, enabled: true });
-            if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
-            let baseLayer = null;
-            baseLayersSnapEsu.current.forEach((layerId) => {
-              baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
-              if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
-            });
-            if (LayersUsedForSnapping.length > 0)
-              sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
-          }
+              if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
+              if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+              if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
+              if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
+              if (propertyLayer) propertyLayer.opacity = 0.5;
 
-          if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
-          else sketchRef.current.availableCreateTools = ["polyline"];
-          break;
-
-        case 21: // BLPU
-          if (mapContext.currentSearchData.editProperty) {
-            if (refPropertyData.current && refPropertyData.current.length > 0) {
-              refPropertyData.current.forEach((property) => {
-                if (property.uprn.toString() === mapContext.currentEditObject.objectId.toString()) {
-                  editGraphicsLayer.current.graphics.add(
-                    createPointGraphic(
-                      property.easting,
-                      property.northing,
-                      property.logicalStatus,
-                      property.classificationCode.substring(0, 1),
-                      true
-                    )
-                  );
-                }
-              });
+              editGraphicsLayer.current.listMode = "show";
+              setSnappingLayers();
             }
 
-            if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
-            if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
-            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
-            if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
-            if (propertyLayer) propertyLayer.opacity = 0.5;
+            if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
+            else sketchRef.current.availableCreateTools = ["point"];
+            break;
 
-            editGraphicsLayer.current.listMode = "show";
+          case 22: // Extent
+            if (extentData.current && extentData.current.length > 0) {
+              extentData.current.forEach((extent) => {
+                if (extent.pkId === mapContext.currentEditObject.objectId) {
+                  hasGeometry = !!extent.geometry;
+                  editGraphicsLayer.current.graphics.add(createPolygonGraphic(extent.geometry, extent.code));
+                }
+              });
 
-            if (backgroundStreetLayerRef.current)
-              LayersUsedForSnapping.push({ layer: backgroundStreetLayerRef.current, enabled: true });
-            if (unassignedEsusLayerRef.current)
-              LayersUsedForSnapping.push({ layer: unassignedEsusLayerRef.current, enabled: true });
-            if (backgroundProvenanceLayerRef.current)
-              LayersUsedForSnapping.push({ layer: backgroundProvenanceLayerRef.current, enabled: true });
-            if (backgroundPropertyLayerRef.current)
-              LayersUsedForSnapping.push({ layer: backgroundPropertyLayerRef.current, enabled: true });
-            if (propertyLayer) LayersUsedForSnapping.push({ layer: propertyLayer, enabled: true });
-            let baseLayer = null;
-            baseLayersSnapBlpu.current.forEach((layerId) => {
-              baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
-              if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
-            });
-            if (LayersUsedForSnapping.length > 0)
-              sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
-          }
+              if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
+              if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+              if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
+              if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
+              if (extentLayer) extentLayer.opacity = 0.5;
+              if (propertyLayer) propertyLayer.opacity = 0.5;
 
-          if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
-          else sketchRef.current.availableCreateTools = ["point"];
-          break;
+              editGraphicsLayer.current.listMode = "show";
 
-        case 22: // Extent
-          if (extentData.current && extentData.current.length > 0) {
-            extentData.current.forEach((extent) => {
-              if (extent.pkId === mapContext.currentEditObject.objectId) {
-                hasGeometry = !!extent.geometry;
-                editGraphicsLayer.current.graphics.add(createPolygonGraphic(extent.geometry, extent.code));
-              }
-            });
+              setSnappingLayers();
+            }
 
-            if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
-            if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
-            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
-            if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
-            if (extentLayer) extentLayer.opacity = 0.5;
-            if (propertyLayer) propertyLayer.opacity = 0.5;
+            if (mapContext.currentEditObject.objectId > 0 && hasGeometry) sketchRef.current.availableCreateTools = [];
+            else sketchRef.current.availableCreateTools = ["polygon"];
+            break;
 
-            editGraphicsLayer.current.listMode = "show";
+          case 51: // Maintenance Responsibility
+            if (refAsd51Data.current && refAsd51Data.current.length > 0) {
+              refAsd51Data.current.forEach((asd) => {
+                if (asd.pkId === mapContext.currentEditObject.objectId) {
+                  hasGeometry = !!asd.geometry;
+                  editGraphicsLayer.current.graphics.add(createPolylineGraphic(asd.geometry));
+                }
+              });
 
-            if (editGraphicsLayer.current)
-              LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
-            if (extentLayer) LayersUsedForSnapping.push({ layer: extentLayer, enabled: true });
-            let baseLayer = null;
-            baseLayersSnapExtent.current.forEach((layerId) => {
-              baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
-              if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
-            });
-            if (LayersUsedForSnapping.length > 0)
-              sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
-          }
+              if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
+              if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+              if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
+              if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
+              if (asd51Layer) asd51Layer.opacity = 0.5;
+              if (asd52Layer) asd52Layer.opacity = 0.5;
+              if (asd53Layer) asd53Layer.opacity = 0.5;
 
-          if (mapContext.currentEditObject.objectId > 0 && hasGeometry) sketchRef.current.availableCreateTools = [];
-          else sketchRef.current.availableCreateTools = ["polygon"];
-          break;
+              editGraphicsLayer.current.listMode = "show";
 
-        case 51: // Maintenance Responsibility
-          if (refAsd51Data.current && refAsd51Data.current.length > 0) {
-            refAsd51Data.current.forEach((asd) => {
-              if (asd.pkId === mapContext.currentEditObject.objectId) {
-                hasGeometry = !!asd.geometry;
-                editGraphicsLayer.current.graphics.add(createPolylineGraphic(asd.geometry));
-              }
-            });
+              setSnappingLayers();
+            }
 
-            if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
-            if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
-            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
-            if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
-            if (asd51Layer) asd51Layer.opacity = 0.5;
-            if (asd52Layer) asd52Layer.opacity = 0.5;
-            if (asd53Layer) asd53Layer.opacity = 0.5;
+            sketchRef.current.availableCreateTools = ["polyline"];
+            break;
 
-            editGraphicsLayer.current.listMode = "show";
+          case 52: // Reinstatement Category
+            if (refAsd52Data.current && refAsd52Data.current.length > 0) {
+              refAsd52Data.current.forEach((asd) => {
+                if (asd.pkId === mapContext.currentEditObject.objectId) {
+                  hasGeometry = !!asd.geometry;
+                  editGraphicsLayer.current.graphics.add(createPolylineGraphic(asd.geometry));
+                }
+              });
 
-            if (editGraphicsLayer.current)
-              LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
-            if (asd51Layer) LayersUsedForSnapping.push({ layer: asd51Layer, enabled: true });
-            if (asd52Layer) LayersUsedForSnapping.push({ layer: asd52Layer, enabled: true });
-            if (asd53Layer) LayersUsedForSnapping.push({ layer: asd53Layer, enabled: true });
-            if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
-            let baseLayer = null;
-            baseLayersSnapEsu.current.forEach((layerId) => {
-              baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
-              if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
-            });
-            if (LayersUsedForSnapping.length > 0)
-              sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
-          }
+              if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
+              if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+              if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
+              if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
+              if (asd51Layer) asd51Layer.opacity = 0.5;
+              if (asd52Layer) asd52Layer.opacity = 0.5;
+              if (asd53Layer) asd53Layer.opacity = 0.5;
 
-          sketchRef.current.availableCreateTools = ["polyline"];
-          break;
+              editGraphicsLayer.current.listMode = "show";
 
-        case 52: // Reinstatement Category
-          if (refAsd52Data.current && refAsd52Data.current.length > 0) {
-            refAsd52Data.current.forEach((asd) => {
-              if (asd.pkId === mapContext.currentEditObject.objectId) {
-                hasGeometry = !!asd.geometry;
-                editGraphicsLayer.current.graphics.add(createPolylineGraphic(asd.geometry));
-              }
-            });
+              setSnappingLayers();
+            }
 
-            if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
-            if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
-            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
-            if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
-            if (asd51Layer) asd51Layer.opacity = 0.5;
-            if (asd52Layer) asd52Layer.opacity = 0.5;
-            if (asd53Layer) asd53Layer.opacity = 0.5;
+            sketchRef.current.availableCreateTools = ["polyline"];
+            break;
 
-            editGraphicsLayer.current.listMode = "show";
+          case 53: // Special Designation
+            if (refAsd53Data.current && refAsd53Data.current.length > 0) {
+              refAsd53Data.current.forEach((asd) => {
+                if (asd.pkId === mapContext.currentEditObject.objectId) {
+                  hasGeometry = !!asd.geometry;
+                  editGraphicsLayer.current.graphics.add(createPolylineGraphic(asd.geometry));
+                }
+              });
 
-            if (editGraphicsLayer.current)
-              LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
-            if (asd51Layer) LayersUsedForSnapping.push({ layer: asd51Layer, enabled: true });
-            if (asd52Layer) LayersUsedForSnapping.push({ layer: asd52Layer, enabled: true });
-            if (asd53Layer) LayersUsedForSnapping.push({ layer: asd53Layer, enabled: true });
-            if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
-            let baseLayer = null;
-            baseLayersSnapEsu.current.forEach((layerId) => {
-              baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
-              if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
-            });
-            if (LayersUsedForSnapping.length > 0)
-              sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
-          }
+              if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
+              if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+              if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
+              if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
+              if (asd51Layer) asd51Layer.opacity = 0.5;
+              if (asd52Layer) asd52Layer.opacity = 0.5;
+              if (asd53Layer) asd53Layer.opacity = 0.5;
 
-          sketchRef.current.availableCreateTools = ["polyline"];
-          break;
+              editGraphicsLayer.current.listMode = "show";
 
-        case 53: // Special Designation
-          if (refAsd53Data.current && refAsd53Data.current.length > 0) {
-            refAsd53Data.current.forEach((asd) => {
-              if (asd.pkId === mapContext.currentEditObject.objectId) {
-                hasGeometry = !!asd.geometry;
-                editGraphicsLayer.current.graphics.add(createPolylineGraphic(asd.geometry));
-              }
-            });
+              setSnappingLayers();
+            }
 
-            if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
-            if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
-            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
-            if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
-            if (asd51Layer) asd51Layer.opacity = 0.5;
-            if (asd52Layer) asd52Layer.opacity = 0.5;
-            if (asd53Layer) asd53Layer.opacity = 0.5;
+            sketchRef.current.availableCreateTools = ["polyline"];
+            break;
 
-            editGraphicsLayer.current.listMode = "show";
+          case 61: // Interest
+            if (refAsd61Data.current && refAsd61Data.current.length > 0) {
+              refAsd61Data.current.forEach((asd) => {
+                if (asd.pkId === mapContext.currentEditObject.objectId) {
+                  hasGeometry = !!asd.geometry;
+                  editGraphicsLayer.current.graphics.add(createPolylineGraphic(asd.geometry));
+                }
+              });
 
-            if (editGraphicsLayer.current)
-              LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
-            if (asd51Layer) LayersUsedForSnapping.push({ layer: asd51Layer, enabled: true });
-            if (asd52Layer) LayersUsedForSnapping.push({ layer: asd52Layer, enabled: true });
-            if (asd53Layer) LayersUsedForSnapping.push({ layer: asd53Layer, enabled: true });
-            if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
-            let baseLayer = null;
-            baseLayersSnapEsu.current.forEach((layerId) => {
-              baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
-              if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
-            });
-            if (LayersUsedForSnapping.length > 0)
-              sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
-          }
+              if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
+              if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+              if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
+              if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
+              if (asd61Layer) asd61Layer.opacity = 0.5;
+              if (asd62Layer) asd62Layer.opacity = 0.5;
+              if (asd63Layer) asd63Layer.opacity = 0.5;
+              if (asd64Layer) asd64Layer.opacity = 0.5;
+              if (asd66Layer) asd66Layer.opacity = 0.5;
 
-          sketchRef.current.availableCreateTools = ["polyline"];
-          break;
+              editGraphicsLayer.current.listMode = "show";
 
-        case 61: // Interest
-          if (refAsd61Data.current && refAsd61Data.current.length > 0) {
-            refAsd61Data.current.forEach((asd) => {
-              if (asd.pkId === mapContext.currentEditObject.objectId) {
-                hasGeometry = !!asd.geometry;
-                editGraphicsLayer.current.graphics.add(createPolylineGraphic(asd.geometry));
-              }
-            });
+              setSnappingLayers();
+            }
 
-            if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
-            if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
-            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
-            if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
-            if (asd61Layer) asd61Layer.opacity = 0.5;
-            if (asd62Layer) asd62Layer.opacity = 0.5;
-            if (asd63Layer) asd63Layer.opacity = 0.5;
-            if (asd64Layer) asd64Layer.opacity = 0.5;
-            if (asd66Layer) asd66Layer.opacity = 0.5;
+            sketchRef.current.availableCreateTools = ["polyline"];
+            break;
 
-            editGraphicsLayer.current.listMode = "show";
+          case 62: // Construction
+            if (refAsd62Data.current && refAsd62Data.current.length > 0) {
+              refAsd62Data.current.forEach((asd) => {
+                if (asd.pkId === mapContext.currentEditObject.objectId) {
+                  hasGeometry = !!asd.geometry;
+                  editGraphicsLayer.current.graphics.add(createPolylineGraphic(asd.geometry));
+                }
+              });
 
-            if (editGraphicsLayer.current)
-              LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
-            if (asd61Layer) LayersUsedForSnapping.push({ layer: asd61Layer, enabled: true });
-            if (asd62Layer) LayersUsedForSnapping.push({ layer: asd62Layer, enabled: true });
-            if (asd63Layer) LayersUsedForSnapping.push({ layer: asd63Layer, enabled: true });
-            if (asd64Layer) LayersUsedForSnapping.push({ layer: asd64Layer, enabled: true });
-            if (asd66Layer) LayersUsedForSnapping.push({ layer: asd66Layer, enabled: true });
-            if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
-            let baseLayer = null;
-            baseLayersSnapEsu.current.forEach((layerId) => {
-              baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
-              if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
-            });
-            if (LayersUsedForSnapping.length > 0)
-              sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
-          }
+              if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
+              if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+              if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
+              if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
+              if (asd61Layer) asd61Layer.opacity = 0.5;
+              if (asd62Layer) asd62Layer.opacity = 0.5;
+              if (asd63Layer) asd63Layer.opacity = 0.5;
+              if (asd64Layer) asd64Layer.opacity = 0.5;
+              if (asd66Layer) asd66Layer.opacity = 0.5;
 
-          sketchRef.current.availableCreateTools = ["polyline"];
-          break;
+              editGraphicsLayer.current.listMode = "show";
 
-        case 62: // Construction
-          if (refAsd62Data.current && refAsd62Data.current.length > 0) {
-            refAsd62Data.current.forEach((asd) => {
-              if (asd.pkId === mapContext.currentEditObject.objectId) {
-                hasGeometry = !!asd.geometry;
-                editGraphicsLayer.current.graphics.add(createPolylineGraphic(asd.geometry));
-              }
-            });
+              setSnappingLayers();
+            }
 
-            if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
-            if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
-            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
-            if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
-            if (asd61Layer) asd61Layer.opacity = 0.5;
-            if (asd62Layer) asd62Layer.opacity = 0.5;
-            if (asd63Layer) asd63Layer.opacity = 0.5;
-            if (asd64Layer) asd64Layer.opacity = 0.5;
-            if (asd66Layer) asd66Layer.opacity = 0.5;
+            sketchRef.current.availableCreateTools = ["polyline"];
+            break;
 
-            editGraphicsLayer.current.listMode = "show";
+          case 63: // Special Designation
+            if (refAsd63Data.current && refAsd63Data.current.length > 0) {
+              refAsd63Data.current.forEach((asd) => {
+                if (asd.pkId === mapContext.currentEditObject.objectId) {
+                  hasGeometry = !!asd.geometry;
+                  editGraphicsLayer.current.graphics.add(createPolylineGraphic(asd.geometry));
+                }
+              });
 
-            if (editGraphicsLayer.current)
-              LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
-            if (asd61Layer) LayersUsedForSnapping.push({ layer: asd61Layer, enabled: true });
-            if (asd62Layer) LayersUsedForSnapping.push({ layer: asd62Layer, enabled: true });
-            if (asd63Layer) LayersUsedForSnapping.push({ layer: asd63Layer, enabled: true });
-            if (asd64Layer) LayersUsedForSnapping.push({ layer: asd64Layer, enabled: true });
-            if (asd66Layer) LayersUsedForSnapping.push({ layer: asd66Layer, enabled: true });
-            if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
-            let baseLayer = null;
-            baseLayersSnapEsu.current.forEach((layerId) => {
-              baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
-              if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
-            });
-            if (LayersUsedForSnapping.length > 0)
-              sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
-          }
+              if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
+              if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+              if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
+              if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
+              if (asd61Layer) asd61Layer.opacity = 0.5;
+              if (asd62Layer) asd62Layer.opacity = 0.5;
+              if (asd63Layer) asd63Layer.opacity = 0.5;
+              if (asd64Layer) asd64Layer.opacity = 0.5;
+              if (asd66Layer) asd66Layer.opacity = 0.5;
 
-          sketchRef.current.availableCreateTools = ["polyline"];
-          break;
+              editGraphicsLayer.current.listMode = "show";
 
-        case 63: // Special Designation
-          if (refAsd63Data.current && refAsd63Data.current.length > 0) {
-            refAsd63Data.current.forEach((asd) => {
-              if (asd.pkId === mapContext.currentEditObject.objectId) {
-                hasGeometry = !!asd.geometry;
-                editGraphicsLayer.current.graphics.add(createPolylineGraphic(asd.geometry));
-              }
-            });
+              setSnappingLayers();
+            }
 
-            if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
-            if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
-            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
-            if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
-            if (asd61Layer) asd61Layer.opacity = 0.5;
-            if (asd62Layer) asd62Layer.opacity = 0.5;
-            if (asd63Layer) asd63Layer.opacity = 0.5;
-            if (asd64Layer) asd64Layer.opacity = 0.5;
-            if (asd66Layer) asd66Layer.opacity = 0.5;
+            sketchRef.current.availableCreateTools = ["polyline"];
+            break;
 
-            editGraphicsLayer.current.listMode = "show";
+          case 64: // Height, Width & Weight Restriction
+            if (refAsd64Data.current && refAsd64Data.current.length > 0) {
+              refAsd64Data.current.forEach((asd) => {
+                if (asd.pkId === mapContext.currentEditObject.objectId) {
+                  hasGeometry = !!asd.geometry;
+                  editGraphicsLayer.current.graphics.add(createPolylineGraphic(asd.geometry));
+                }
+              });
 
-            if (editGraphicsLayer.current)
-              LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
-            if (asd61Layer) LayersUsedForSnapping.push({ layer: asd61Layer, enabled: true });
-            if (asd62Layer) LayersUsedForSnapping.push({ layer: asd62Layer, enabled: true });
-            if (asd63Layer) LayersUsedForSnapping.push({ layer: asd63Layer, enabled: true });
-            if (asd64Layer) LayersUsedForSnapping.push({ layer: asd64Layer, enabled: true });
-            if (asd66Layer) LayersUsedForSnapping.push({ layer: asd66Layer, enabled: true });
-            if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
-            let baseLayer = null;
-            baseLayersSnapEsu.current.forEach((layerId) => {
-              baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
-              if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
-            });
-            if (LayersUsedForSnapping.length > 0)
-              sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
-          }
+              if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
+              if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+              if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
+              if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
+              if (asd61Layer) asd61Layer.opacity = 0.5;
+              if (asd62Layer) asd62Layer.opacity = 0.5;
+              if (asd63Layer) asd63Layer.opacity = 0.5;
+              if (asd64Layer) asd64Layer.opacity = 0.5;
 
-          sketchRef.current.availableCreateTools = ["polyline"];
-          break;
+              editGraphicsLayer.current.listMode = "show";
 
-        case 64: // Height, Width & Weight Restriction
-          if (refAsd64Data.current && refAsd64Data.current.length > 0) {
-            refAsd64Data.current.forEach((asd) => {
-              if (asd.pkId === mapContext.currentEditObject.objectId) {
-                hasGeometry = !!asd.geometry;
-                editGraphicsLayer.current.graphics.add(createPolylineGraphic(asd.geometry));
-              }
-            });
+              setSnappingLayers();
+            }
 
-            if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
-            if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
-            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
-            if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
-            if (asd61Layer) asd61Layer.opacity = 0.5;
-            if (asd62Layer) asd62Layer.opacity = 0.5;
-            if (asd63Layer) asd63Layer.opacity = 0.5;
-            if (asd64Layer) asd64Layer.opacity = 0.5;
+            sketchRef.current.availableCreateTools = ["polyline"];
+            break;
 
-            editGraphicsLayer.current.listMode = "show";
+          case 66: // Public right of way
+            if (refAsd66Data.current && refAsd66Data.current.length > 0) {
+              refAsd66Data.current.forEach((asd) => {
+                if (asd.pkId === mapContext.currentEditObject.objectId) {
+                  hasGeometry = !!asd.geometry;
+                  editGraphicsLayer.current.graphics.add(createPolylineGraphic(asd.geometry));
+                }
+              });
 
-            if (editGraphicsLayer.current)
-              LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
-            if (asd61Layer) LayersUsedForSnapping.push({ layer: asd61Layer, enabled: true });
-            if (asd62Layer) LayersUsedForSnapping.push({ layer: asd62Layer, enabled: true });
-            if (asd63Layer) LayersUsedForSnapping.push({ layer: asd63Layer, enabled: true });
-            if (asd64Layer) LayersUsedForSnapping.push({ layer: asd64Layer, enabled: true });
-            if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
-            let baseLayer = null;
-            baseLayersSnapEsu.current.forEach((layerId) => {
-              baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
-              if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
-            });
-            if (LayersUsedForSnapping.length > 0)
-              sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
-          }
+              if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
+              if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+              if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
+              if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
+              if (asd61Layer) asd61Layer.opacity = 0.5;
+              if (asd62Layer) asd62Layer.opacity = 0.5;
+              if (asd63Layer) asd63Layer.opacity = 0.5;
+              if (asd64Layer) asd64Layer.opacity = 0.5;
+              if (asd66Layer) asd66Layer.opacity = 0.5;
 
-          sketchRef.current.availableCreateTools = ["polyline"];
-          break;
+              editGraphicsLayer.current.listMode = "show";
 
-        case 66: // Public right of way
-          if (refAsd66Data.current && refAsd66Data.current.length > 0) {
-            refAsd66Data.current.forEach((asd) => {
-              if (asd.pkId === mapContext.currentEditObject.objectId) {
-                hasGeometry = !!asd.geometry;
-                editGraphicsLayer.current.graphics.add(createPolylineGraphic(asd.geometry));
-              }
-            });
+              setSnappingLayers();
+            }
 
-            if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
-            if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
-            if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
-            if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
-            if (asd61Layer) asd61Layer.opacity = 0.5;
-            if (asd62Layer) asd62Layer.opacity = 0.5;
-            if (asd63Layer) asd63Layer.opacity = 0.5;
-            if (asd64Layer) asd64Layer.opacity = 0.5;
-            if (asd66Layer) asd66Layer.opacity = 0.5;
+            sketchRef.current.availableCreateTools = ["polyline"];
+            break;
 
-            editGraphicsLayer.current.listMode = "show";
-
-            if (editGraphicsLayer.current)
-              LayersUsedForSnapping.push({ layer: editGraphicsLayer.current, enabled: true });
-            if (asd61Layer) LayersUsedForSnapping.push({ layer: asd61Layer, enabled: true });
-            if (asd62Layer) LayersUsedForSnapping.push({ layer: asd62Layer, enabled: true });
-            if (asd63Layer) LayersUsedForSnapping.push({ layer: asd63Layer, enabled: true });
-            if (asd64Layer) LayersUsedForSnapping.push({ layer: asd64Layer, enabled: true });
-            if (asd66Layer) LayersUsedForSnapping.push({ layer: asd66Layer, enabled: true });
-            if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
-            let baseLayer = null;
-            baseLayersSnapEsu.current.forEach((layerId) => {
-              baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
-              if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
-            });
-            if (LayersUsedForSnapping.length > 0)
-              sketchRef.current.snappingOptions.featureSources = LayersUsedForSnapping;
-          }
-
-          sketchRef.current.availableCreateTools = ["polyline"];
-          break;
-
-        default:
-          const editingGraphic = editingObject.current && editingObject.current.objectType;
-          if (backgroundStreetLayerRef.current) {
-            backgroundStreetLayerRef.current.opacity = 0.5;
-            if (!editingGraphic) backgroundStreetLayerRef.current.popupEnabled = true;
-          }
-          if (unassignedEsusLayerRef.current) {
-            unassignedEsusLayerRef.current.opacity = 0.5;
-            if (!editingGraphic) unassignedEsusLayerRef.current.popupEnabled = true;
-          }
-          if (streetLayer) {
-            streetLayer.opacity = 1;
-            if (!editingGraphic) streetLayer.popupEnabled = true;
-          }
-          if (asd51Layer) {
-            asd51Layer.opacity = 1;
-            if (!editingGraphic) asd51Layer.popupEnabled = true;
-          }
-          if (asd52Layer) {
-            asd52Layer.opacity = 1;
-            if (!editingGraphic) asd52Layer.popupEnabled = true;
-          }
-          if (asd53Layer) {
-            asd53Layer.opacity = 1;
-            if (!editingGraphic) asd53Layer.popupEnabled = true;
-          }
-          if (asd61Layer) {
-            asd61Layer.opacity = 1;
-            if (!editingGraphic) asd61Layer.popupEnabled = true;
-          }
-          if (asd62Layer) {
-            asd62Layer.opacity = 1;
-            if (!editingGraphic) asd62Layer.popupEnabled = true;
-          }
-          if (asd63Layer) {
-            asd63Layer.opacity = 1;
-            if (!editingGraphic) asd63Layer.popupEnabled = true;
-          }
-          if (asd64Layer) {
-            asd64Layer.opacity = 1;
-            if (!editingGraphic) asd64Layer.popupEnabled = true;
-          }
-          if (asd66Layer) {
-            asd66Layer.opacity = 1;
-            if (!editingGraphic) asd66Layer.popupEnabled = true;
-          }
-          if (backgroundProvenanceLayerRef.current) {
-            backgroundProvenanceLayerRef.current.opacity = 0.5;
-            if (!editingGraphic) backgroundProvenanceLayerRef.current.popupEnabled = true;
-          }
-          if (backgroundPropertyLayerRef.current) {
-            backgroundPropertyLayerRef.current.opacity = 0.5;
-            if (!editingGraphic) backgroundPropertyLayerRef.current.popupEnabled = true;
-          }
-          if (propertyLayer) {
-            propertyLayer.opacity = 1;
-            if (!editingGraphic) propertyLayer.popupEnabled = true;
-          }
-          if (extentLayer) {
-            extentLayer.opacity = 1;
-            if (!editingGraphic) extentLayer.popupEnabled = true;
-          }
-          editGraphicsLayer.current.listMode = "hide";
-          sketchRef.current.availableCreateTools = [];
-          sketchRef.current.visible = false;
-          break;
+          default:
+            const editingGraphic = editingObject.current && editingObject.current.objectType;
+            if (backgroundStreetLayerRef.current) {
+              backgroundStreetLayerRef.current.opacity = 0.5;
+              if (!editingGraphic) backgroundStreetLayerRef.current.popupEnabled = true;
+            }
+            if (unassignedEsusLayerRef.current) {
+              unassignedEsusLayerRef.current.opacity = 0.5;
+              if (!editingGraphic) unassignedEsusLayerRef.current.popupEnabled = true;
+            }
+            if (streetLayer) {
+              streetLayer.opacity = 1;
+              if (!editingGraphic) streetLayer.popupEnabled = true;
+            }
+            if (asd51Layer) {
+              asd51Layer.opacity = 1;
+              if (!editingGraphic) asd51Layer.popupEnabled = true;
+            }
+            if (asd52Layer) {
+              asd52Layer.opacity = 1;
+              if (!editingGraphic) asd52Layer.popupEnabled = true;
+            }
+            if (asd53Layer) {
+              asd53Layer.opacity = 1;
+              if (!editingGraphic) asd53Layer.popupEnabled = true;
+            }
+            if (asd61Layer) {
+              asd61Layer.opacity = 1;
+              if (!editingGraphic) asd61Layer.popupEnabled = true;
+            }
+            if (asd62Layer) {
+              asd62Layer.opacity = 1;
+              if (!editingGraphic) asd62Layer.popupEnabled = true;
+            }
+            if (asd63Layer) {
+              asd63Layer.opacity = 1;
+              if (!editingGraphic) asd63Layer.popupEnabled = true;
+            }
+            if (asd64Layer) {
+              asd64Layer.opacity = 1;
+              if (!editingGraphic) asd64Layer.popupEnabled = true;
+            }
+            if (asd66Layer) {
+              asd66Layer.opacity = 1;
+              if (!editingGraphic) asd66Layer.popupEnabled = true;
+            }
+            if (backgroundProvenanceLayerRef.current) {
+              backgroundProvenanceLayerRef.current.opacity = 0.5;
+              if (!editingGraphic) backgroundProvenanceLayerRef.current.popupEnabled = true;
+            }
+            if (backgroundPropertyLayerRef.current) {
+              backgroundPropertyLayerRef.current.opacity = 0.5;
+              if (!editingGraphic) backgroundPropertyLayerRef.current.popupEnabled = true;
+            }
+            if (propertyLayer) {
+              propertyLayer.opacity = 1;
+              if (!editingGraphic) propertyLayer.popupEnabled = true;
+            }
+            if (extentLayer) {
+              extentLayer.opacity = 1;
+              if (!editingGraphic) extentLayer.popupEnabled = true;
+            }
+            editGraphicsLayer.current.listMode = "hide";
+            sketchRef.current.availableCreateTools = [];
+            sketchRef.current.visible = false;
+            break;
+        }
       }
     }
   }, [
