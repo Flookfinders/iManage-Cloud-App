@@ -23,6 +23,7 @@
 //    010   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    011   04.04.24 Sean Flook                 Added cascadeLogicalStatus.
 //    012   25.04.24 Sean Flook       IMANN-390 Added noUprn and noUprnsRange.
+//    013   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -39,6 +40,7 @@ import ADSDialogTitle from "../components/ADSDialogTitle";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import SaveIcon from "@mui/icons-material/Save";
+import CheckIcon from "@mui/icons-material/Check";
 
 import { blueButtonStyle, whiteButtonStyle, tooltipStyle, redButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
@@ -53,6 +55,7 @@ MessageDialog.propTypes = {
     "cascadeLogicalStatus",
     "noUprn",
     "noUprnsRange",
+    "cascadePAOChanges",
   ]).isRequired,
   onClose: PropTypes.func.isRequired,
 };
@@ -111,6 +114,9 @@ function MessageDialog({ isOpen, variant, onClose }) {
       case "noUprnsRange":
         return "Not enough available UPRNs";
 
+      case "cascadePAOChanges":
+        return "PAO has changed";
+
       default:
         return `Unknown variant: ${variant}`;
     }
@@ -131,6 +137,9 @@ function MessageDialog({ isOpen, variant, onClose }) {
       case "noUprn":
       case "noUprnsRange":
         return "Close wizard";
+
+      case "cascadePAOChanges":
+        return undefined;
 
       default:
         return "Cancel exiting";
@@ -201,6 +210,14 @@ function MessageDialog({ isOpen, variant, onClose }) {
             <Typography variant="body2">{`Contact ${
               settingsContext.isScottish ? "OneScotland" : "GeoPlace"
             } to get more UPRNs and then try again?`}</Typography>
+          </Stack>
+        );
+
+      case "cascadePAOChanges":
+        return (
+          <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={1}>
+            <Typography variant="body2">You have modified the PAO details of this parent property.</Typography>
+            <Typography variant="body2">Do you want to cascade the changes to its children?</Typography>
           </Stack>
         );
 
@@ -308,6 +325,24 @@ function MessageDialog({ isOpen, variant, onClose }) {
           >
             Close
           </Button>
+        );
+
+      case "cascadePAOChanges":
+        return (
+          <>
+            <Button variant="contained" onClick={handleSaveClick} sx={blueButtonStyle} startIcon={<CheckIcon />}>
+              Yes
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleCloseClick}
+              autoFocus
+              sx={whiteButtonStyle}
+              startIcon={<CloseIcon />}
+            >
+              No
+            </Button>
+          </>
         );
 
       default:

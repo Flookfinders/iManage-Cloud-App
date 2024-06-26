@@ -66,6 +66,7 @@
 //    053   12.06.24 Sean Flook       IMANN-565 Handle polygon deletion.
 //    054   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    055   20.06.24 Sean Flook       IMANN-636 Bug fix.
+//    056   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -384,6 +385,8 @@ function App() {
     type: 21,
     index: null,
   });
+
+  const [childCount, setChildCount] = useState(0);
 
   const [provenanceDataChanged, setProvenanceDataChanged] = useState(false);
 
@@ -2081,17 +2084,17 @@ function App() {
   /**
    * Event to handle the changing of a property.
    *
-   * @param {number} uprn The UPRN of the property.
-   * @param {number} usrn The USRN of the street the property is on.
-   * @param {string} address The address of the property.
-   * @param {string} formattedAddress The formatted address for the property.
-   * @param {string} postcode The postcode for the address.
-   * @param {number} easting The easting of the property.
-   * @param {number} northing The northing of the property.
-   * @param {boolean} newProperty True if this is a new property; otherwise false.
-   * @param {object|null} parent The parent object for the property.
-   * @param {object|null} [openRelated=null] If present it contains the UPRN of the property that we need the the related tab opened.
-   * @param {boolean} [reloading=false] True if this is called from the reloading method; otherwise false.
+   * @param {Number} uprn The UPRN of the property.
+   * @param {Number} usrn The USRN of the street the property is on.
+   * @param {String} address The address of the property.
+   * @param {String} formattedAddress The formatted address for the property.
+   * @param {String} postcode The postcode for the address.
+   * @param {Number} easting The easting of the property.
+   * @param {Number} northing The northing of the property.
+   * @param {Boolean} newProperty True if this is a new property; otherwise false.
+   * @param {Object|null} parent The parent object for the property.
+   * @param {Object|null} [openRelated=null] If present it contains the UPRN of the property that we need the the related tab opened.
+   * @param {Boolean} [reloading=false] True if this is called from the reloading method; otherwise false.
    */
   async function HandlePropertyChange(
     uprn,
@@ -2206,15 +2209,15 @@ function App() {
   /**
    * Event to handle the changing of a property.
    *
-   * @param {number} uprn The UPRN of the property.
-   * @param {number} usrn The USRN of the street the property is on.
-   * @param {string} address The address of the property.
-   * @param {string} formattedAddress The formatted address for the property.
-   * @param {string} postcode The postcode for the address.
-   * @param {number} easting The easting of the property.
-   * @param {number} northing The northing of the property.
-   * @param {boolean} newProperty True if this is a new property; otherwise false.
-   * @param {object|null} parent The parent object for the property.
+   * @param {Number} uprn The UPRN of the property.
+   * @param {Number} usrn The USRN of the street the property is on.
+   * @param {String} address The address of the property.
+   * @param {String} formattedAddress The formatted address for the property.
+   * @param {String} postcode The postcode for the address.
+   * @param {Number} easting The easting of the property.
+   * @param {Number} northing The northing of the property.
+   * @param {Boolean} newProperty True if this is a new property; otherwise false.
+   * @param {Object|null} parent The parent object for the property.
    */
   function HandleUpdateCurrentProperty(
     uprn,
@@ -2379,6 +2382,16 @@ function App() {
   }
 
   /**
+   * Event to handle when the number of children the property has changes.
+   *
+   * @param {Number} childCount The number of children the property has.
+   */
+  function HandleChildCountChange(childCount) {
+    setChildCount(childCount);
+    sessionStorage.setItem("propertyChildCount", childCount);
+  }
+
+  /**
    * Event to handle setting a flag to say if the provenance record has been modified.
    *
    * @param {boolean} changed True if the provenance data has been modified; otherwise false.
@@ -2406,7 +2419,7 @@ function App() {
    */
   function HandleResetProperty() {
     previousProperty.current = property;
-    HandlePropertyChange(0, 0, "", "", "", 0, 0, false, null);
+    HandlePropertyChange(0, 0, "", "", "", 0, 0, false, null, 0);
     setLogicalStatus(null);
   }
 
@@ -2684,6 +2697,10 @@ function App() {
         index: savedPropertRecord.index,
         newRecord: savedPropertRecord.newRecord,
       });
+    }
+
+    if (sessionStorage.getItem("propertyChildCount") !== null) {
+      setChildCount(Number(sessionStorage.getItem("propertyChildCount")));
     }
 
     if (sessionStorage.getItem("wizardData") !== null && !wizardData) {
@@ -3682,6 +3699,7 @@ function App() {
                           leavingProperty: leavingProperty,
                           goToField: propertyGoToField,
                           currentRecord: propertyRecord,
+                          childCount: childCount,
                           provenanceDataChanged: provenanceDataChanged,
                           wizardData: wizardData,
                           onPropertyChange: HandlePropertyChange,
@@ -3692,6 +3710,7 @@ function App() {
                           onLeavingProperty: HandleLeavingProperty,
                           onGoToField: HandlePropertyGoToField,
                           onRecordChange: HandlePropertyRecordChange,
+                          onChildCountChange: HandleChildCountChange,
                           onProvenanceDataChange: HandleProvenanceDataChange,
                           onWizardDone: HandleWizardDone,
                           onRelatedOpened: HandlePropertyRelatedOpened,

@@ -3,7 +3,7 @@
 //
 //  Description: Confirm edit loss dialog
 //
-//  Copyright:    � 2021 - 2023 Idox Software Limited.
+//  Copyright:   © 2021 - 2024 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -14,14 +14,13 @@
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    004   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-/* #region imports */
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 
 import {
@@ -35,6 +34,8 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import { Box } from "@mui/system";
 
@@ -45,15 +46,16 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import { adsBlueA, adsWhite, adsLightBlue } from "../utils/ADSColours";
 
-/* #endregion imports */
-
 ConfirmEditLossDialog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   title: PropTypes.string.isRequired,
   message: PropTypes.string.isRequired,
   associatedRecords: PropTypes.array,
+  paoChanged: PropTypes.bool,
+  cascadeChanges: PropTypes.bool,
   saveText: PropTypes.string,
   disposeText: PropTypes.string,
+  handleCascadeChange: PropTypes.func.isRequired,
   handleSaveClick: PropTypes.func.isRequired,
   handleDisposeClick: PropTypes.func.isRequired,
   handleReturnClick: PropTypes.func.isRequired,
@@ -69,14 +71,21 @@ function ConfirmEditLossDialog({
   title,
   message,
   associatedRecords,
+  paoChanged,
+  cascadeChanges,
   saveText,
   disposeText,
+  handleCascadeChange,
   handleSaveClick,
   handleDisposeClick,
   handleReturnClick,
 }) {
   const [content, setContent] = useState(null);
   const maxContentHeight = "240px";
+
+  const updateCascadeChanges = useCallback(() => {
+    if (handleCascadeChange) handleCascadeChange();
+  }, [handleCascadeChange]);
 
   useEffect(() => {
     setContent(
@@ -94,9 +103,16 @@ function ConfirmEditLossDialog({
               </ListItem>
             </List>
           ))}
+        {paoChanged && (
+          <FormControlLabel
+            control={<Checkbox checked={cascadeChanges} onChange={updateCascadeChanges} />}
+            label={"PAO details have been changed, do you want the child records to also be updated?"}
+            labelPlacement="start"
+          />
+        )}
       </Box>
     );
-  }, [message, associatedRecords]);
+  }, [message, associatedRecords, paoChanged, cascadeChanges, updateCascadeChanges]);
 
   return (
     <Dialog open={isOpen} aria-labelledby="confirm-edit-loss-dialog" fullWidth maxWidth="xs">

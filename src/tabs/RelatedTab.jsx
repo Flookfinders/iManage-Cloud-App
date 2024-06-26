@@ -42,6 +42,7 @@
 //    027   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
 //    028   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    029   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    030   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -72,7 +73,12 @@ import {
 } from "../configuration/ADSConfig";
 import { GetWktCoordinates, GetChangedAssociatedRecords, ResetContexts } from "../utils/HelperUtils";
 import { GetStreetMapData, GetCurrentStreetData, SaveStreet, hasStreetChanged } from "../utils/StreetUtils";
-import { GetCurrentPropertyData, SavePropertyAndUpdate, hasPropertyChanged } from "../utils/PropertyUtils";
+import {
+  GetCurrentPropertyData,
+  SavePropertyAndUpdate,
+  hasParentPaoChanged,
+  hasPropertyChanged,
+} from "../utils/PropertyUtils";
 
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
 import HistoricPropertyDialog from "../dialogs/HistoricPropertyDialog";
@@ -506,9 +512,10 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
   /**
    * Event to handle the saving of a property.
    *
-   * @param {object} currentProperty The data for the current property.
+   * @param {Object} currentProperty The data for the current property.
+   * @param {Boolean} cascadeParentPaoChanges If true the child property PAO details need to be changed; otherwise they are not changed.
    */
-  function HandleSaveProperty(currentProperty) {
+  function HandleSaveProperty(currentProperty, cascadeParentPaoChanges) {
     SavePropertyAndUpdate(
       currentProperty,
       propertyContext.currentProperty.newProperty,
@@ -519,7 +526,8 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
       mapContext,
       sandboxContext,
       settingsContext.isScottish,
-      settingsContext.isWelsh
+      settingsContext.isWelsh,
+      cascadeParentPaoChanges
     ).then((result) => {
       if (result) {
         saveResult.current = true;
@@ -606,14 +614,20 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
       if (propertyChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);
 
+        const parentPaoChanged = hasParentPaoChanged(
+          propertyContext.childCount,
+          sandboxContext.currentSandbox.sourceProperty,
+          sandboxContext.currentSandbox.currentProperty
+        );
+
         const contextPropertyData = sandboxContext.currentSandbox.currentProperty
           ? sandboxContext.currentSandbox.currentProperty
           : sandboxContext.currentSandbox.sourceProperty;
 
         if (associatedRecords.current.length > 0) {
-          saveConfirmDialog(associatedRecords.current)
+          saveConfirmDialog(associatedRecords.current, parentPaoChanged)
             .then((result) => {
-              if (result === "save") {
+              if (result === "save" || result === "saveCascade") {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   const currentPropertyData = GetCurrentPropertyData(
@@ -623,7 +637,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
                     settingsContext.isWelsh,
                     settingsContext.isScottish
                   );
-                  HandleSaveProperty(currentPropertyData);
+                  HandleSaveProperty(currentPropertyData, result === "saveCascade");
                   ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
                   if (nodeType === "property") handlePropertyNodeSelect(nodeId);
                   else handleStreetNodeSelect(nodeId);
@@ -640,10 +654,10 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
             })
             .catch(() => {});
         } else {
-          saveConfirmDialog(true)
+          saveConfirmDialog(true, parentPaoChanged)
             .then((result) => {
-              if (result === "save") {
-                HandleSaveProperty(sandboxContext.currentSandbox.currentProperty);
+              if (result === "save" || result === "saveCascade") {
+                HandleSaveProperty(sandboxContext.currentSandbox.currentProperty, result === "saveCascade");
               }
               ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
               if (nodeType === "property") handlePropertyNodeSelect(nodeId);

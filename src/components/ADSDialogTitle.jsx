@@ -12,6 +12,7 @@
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   27.03.24 Sean Flook                 Initial version.
+//    002   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -29,7 +30,7 @@ import { dialogTitleStyle, dialogTitleTextStyle, tooltipStyle } from "../utils/A
 
 ADSDialogTitle.propTypes = {
   title: PropTypes.string.isRequired,
-  closeTooltip: PropTypes.string.isRequired,
+  closeTooltip: PropTypes.string,
   onClose: PropTypes.func.isRequired,
 };
 
@@ -41,15 +42,17 @@ function ADSDialogTitle({ title, closeTooltip, onClose }) {
   return (
     <DialogTitle id={`ads-dialog-title-${title ? title.toLowerCase().replaceAll(" ", "-") : ""}`} sx={dialogTitleStyle}>
       <Typography sx={dialogTitleTextStyle}>{`${title}`}</Typography>
-      <Tooltip title={`${closeTooltip}`} sx={tooltipStyle}>
-        <IconButton
-          aria-label="close"
-          onClick={handleCancelClick}
-          sx={{ position: "absolute", right: 12, top: 12, color: adsMidGreyA }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </Tooltip>
+      {closeTooltip && closeTooltip.length > 0 && (
+        <Tooltip title={`${closeTooltip}`} sx={tooltipStyle}>
+          <IconButton
+            aria-label="close"
+            onClick={handleCancelClick}
+            sx={{ position: "absolute", right: 12, top: 12, color: adsMidGreyA }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Tooltip>
+      )}
     </DialogTitle>
   );
 }

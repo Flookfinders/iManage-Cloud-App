@@ -52,6 +52,7 @@
 //    039   12.06.24 Sean Flook       IMANN-553 Added filter for blpu state for Scottish authorities.
 //    040   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    041   21.06.24 Sean Flook       IMANN-614 After saving changes update the source data in the sandbox.
+//    042   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1388,11 +1389,12 @@ export function GetPropertyCreateData(propertyData, isScottish) {
 /**
  * Get the JSON object required to update an existing property.
  *
- * @param {object} propertyData The property data to use to create the object.
- * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
- * @return {object} The update property object.
+ * @param {Object} propertyData The property data to use to create the object.
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {Boolean} cascadeParentPaoChanges True if the changes to the PAO details need to be cascaded down to the children; otherwise false.
+ * @return {Object} The update property object.
  */
-export function GetPropertyUpdateData(propertyData, isScottish) {
+export function GetPropertyUpdateData(propertyData, isScottish, cascadeParentPaoChanges) {
   if (isScottish)
     return {
       blpuStateDate: propertyData.blpuStateDate,
@@ -1411,6 +1413,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
       pkId: propertyData.pkId,
       changeType: propertyData.changeType,
       rpc: propertyData.rpc,
+      cascadeToChild: cascadeParentPaoChanges,
       blpuAppCrossRefs: propertyData.blpuAppCrossRefs
         ? propertyData.blpuAppCrossRefs.map((x) => {
             return {
@@ -1556,6 +1559,7 @@ export function GetPropertyUpdateData(propertyData, isScottish) {
       wardCode: propertyData.wardCode,
       parishCode: propertyData.parishCode,
       pkId: propertyData.pkId,
+      cascadeToChild: cascadeParentPaoChanges,
       blpuAppCrossRefs: propertyData.blpuAppCrossRefs
         ? propertyData.blpuAppCrossRefs.map((x) => {
             return {
@@ -1840,9 +1844,17 @@ export async function GetParentHierarchy(parentUprn, userContext) {
  * @param {Object} userContext The user context object for the user who is calling the endpoint.
  * @param {Object} propertyContext The property context object.
  * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @param {Boolean} [cascadeParentPaoChanges=false] True if the changes to the PAO details need to be cascaded down to the children; otherwise false.
  * @return {Object|null} If the save was successful the updated property; otherwise null.
  */
-export async function SaveProperty(currentProperty, newProperty, userContext, propertyContext, isScottish) {
+export async function SaveProperty(
+  currentProperty,
+  newProperty,
+  userContext,
+  propertyContext,
+  isScottish,
+  cascadeParentPaoChanges = false
+) {
   propertyContext.resetPropertyErrors();
 
   const saveUrl = newProperty
@@ -1850,7 +1862,7 @@ export async function SaveProperty(currentProperty, newProperty, userContext, pr
     : GetUpdatePropertyUrl(userContext.currentUser.token);
   const saveData = newProperty
     ? GetPropertyCreateData(currentProperty, isScottish)
-    : GetPropertyUpdateData(currentProperty, isScottish);
+    : GetPropertyUpdateData(currentProperty, isScottish, cascadeParentPaoChanges);
 
   // if (process.env.NODE_ENV === "development")
   console.log("[DEBUG] SaveProperty", saveUrl, JSON.stringify(saveData));
@@ -2301,6 +2313,7 @@ export async function UpdateRangeAfterSave(
  * @param {Object} sandboxContext The sandbox context object.
  * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
  * @param {Boolean} isWelsh True if the authority is a Welsh authority; otherwise false.
+ * @param {Boolean} [cascadeParentPaoChanges=false] True if the changes to the parent property PAO details need to be cascaded down to the children; otherwise false.
  * @return {Object} If the save was successful the updated property; otherwise null.
  */
 export async function SavePropertyAndUpdate(
@@ -2313,14 +2326,20 @@ export async function SavePropertyAndUpdate(
   mapContext,
   sandboxContext,
   isScottish,
-  isWelsh
+  isWelsh,
+  cascadeParentPaoChanges
 ) {
-  const propertySaved = await SaveProperty(currentProperty, newProperty, userContext, propertyContext, isScottish).then(
-    (result) => {
-      UpdateAfterSave(result, lookupContext, mapContext, propertyContext, sandboxContext, isWelsh, searchContext);
-      return result;
-    }
-  );
+  const propertySaved = await SaveProperty(
+    currentProperty,
+    newProperty,
+    userContext,
+    propertyContext,
+    isScottish,
+    cascadeParentPaoChanges
+  ).then((result) => {
+    UpdateAfterSave(result, lookupContext, mapContext, propertyContext, sandboxContext, isWelsh, searchContext);
+    return result;
+  });
 
   return propertySaved;
 }
@@ -2694,4 +2713,42 @@ export const returnFailedUprns = async (uprns, userContext) => {
         }
       });
   }
+};
+
+/**
+ * Method to determine if the user has changed the PAO details of a parent property.
+ *
+ * @param {Number} childCount The number of child records this property has.
+ * @param {Object} sourceProperty The source property object.
+ * @param {Object} currentProperty The current property object.
+ * @returns {Boolean} True if the parent PAO details have been changed; otherwise false.
+ */
+export const hasParentPaoChanged = (childCount, sourceProperty, currentProperty) => {
+  if (childCount > 0) {
+    const sourceLpis = sourceProperty.lpis.filter((x) => x.logicalStatus === sourceProperty.logicalStatus);
+    const currentLpis = currentProperty.lpis.filter((x) => x.logicalStatus === currentProperty.logicalStatus);
+
+    if (sourceLpis.length > 0 && currentLpis.length > 0) {
+      let paoChanged = false;
+      for (let i = 0; i < sourceLpis.length; i++) {
+        const lpi = sourceLpis[i];
+        paoChanged = false;
+        const currentLpi = currentLpis.find((x) => x.pkId === lpi.pkId);
+
+        if (currentLpi) {
+          paoChanged =
+            lpi.paoStartNum !== currentLpi.paoStartNum ||
+            lpi.paoStartSuffix !== currentLpi.paoStartSuffix ||
+            lpi.paoEndNumber !== currentLpi.paoEndNumber ||
+            lpi.paoText !== currentLpi.paoText;
+        } else {
+          paoChanged = true;
+        }
+
+        if (paoChanged) break;
+      }
+
+      return paoChanged;
+    } else return false;
+  } else return false;
 };

@@ -35,6 +35,7 @@
 //    022   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    023   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    024   21.06.24 Sean Flook       IMANN-642 Changes required to redisplay the change password dialog after previously cancelling out.
+//    025   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -55,7 +56,12 @@ import SettingsContext from "../context/settingsContext";
 import InformationContext from "../context/informationContext";
 import { GetChangedAssociatedRecords, StringAvatar, stringToSentenceCase, ResetContexts } from "../utils/HelperUtils";
 import { GetCurrentStreetData, SaveStreet, hasStreetChanged } from "../utils/StreetUtils";
-import { GetCurrentPropertyData, SavePropertyAndUpdate, hasPropertyChanged } from "../utils/PropertyUtils";
+import {
+  GetCurrentPropertyData,
+  SavePropertyAndUpdate,
+  hasParentPaoChanged,
+  hasPropertyChanged,
+} from "../utils/PropertyUtils";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
 import {
   Tooltip,
@@ -313,11 +319,12 @@ const ADSNavContent = (props) => {
   /**
    * Event to handle saving the property.
    *
-   * @param {object} currentProperty The data for the current property.
-   * @param {boolean} resetRequired True if all the contexts need to be reset; otherwise false.
-   * @param {string} page The page we are changing to.
+   * @param {Object} currentProperty The data for the current property.
+   * @param {Boolean} resetRequired True if all the contexts need to be reset; otherwise false.
+   * @param {String} page The page we are changing to.
+   * @param {Boolean} cascadeParentPaoChanges If true the child property PAO details need to be changed; otherwise they are not changed.
    */
-  function HandleSaveProperty(currentProperty, resetRequired, page) {
+  function HandleSaveProperty(currentProperty, resetRequired, page, cascadeParentPaoChanges) {
     SavePropertyAndUpdate(
       currentProperty,
       propertyContext.currentProperty.newProperty,
@@ -328,7 +335,8 @@ const ADSNavContent = (props) => {
       mapContext,
       sandboxContext,
       settingsContext.isScottish,
-      settingsContext.isWelsh
+      settingsContext.isWelsh,
+      cascadeParentPaoChanges
     ).then((result) => {
       if (result) {
         saveResult.current = true;
@@ -459,14 +467,20 @@ const ADSNavContent = (props) => {
       if (propertyChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);
 
+        const parentPaoChanged = hasParentPaoChanged(
+          propertyContext.childCount,
+          sandboxContext.currentSandbox.sourceProperty,
+          sandboxContext.currentSandbox.currentProperty
+        );
+
         const propertyData = sandboxContext.currentSandbox.currentProperty
           ? sandboxContext.currentSandbox.currentProperty
           : sandboxContext.currentSandbox.sourceProperty;
 
         if (associatedRecords.current.length > 0) {
-          saveConfirmDialog(associatedRecords.current)
+          saveConfirmDialog(associatedRecords.current, parentPaoChanged)
             .then((result) => {
-              if (result === "save") {
+              if (result === "save" || result === "saveCascade") {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   const currentPropertyData = GetCurrentPropertyData(
@@ -476,7 +490,7 @@ const ADSNavContent = (props) => {
                     settingsContext.isWelsh,
                     settingsContext.isScottish
                   );
-                  HandleSaveProperty(currentPropertyData, resetRequired, page);
+                  HandleSaveProperty(currentPropertyData, resetRequired, page, result === "saveCascade");
                 } else {
                   failedValidation.current = true;
                   saveResult.current = false;
@@ -491,10 +505,15 @@ const ADSNavContent = (props) => {
             })
             .catch(() => {});
         } else {
-          saveConfirmDialog(true)
+          saveConfirmDialog(true, parentPaoChanged)
             .then((result) => {
-              if (result === "save") {
-                HandleSaveProperty(sandboxContext.currentSandbox.currentProperty, resetRequired, page);
+              if (result === "save" || result === "saveCascade") {
+                HandleSaveProperty(
+                  sandboxContext.currentSandbox.currentProperty,
+                  resetRequired,
+                  page,
+                  result === "saveCascade"
+                );
               } else {
                 if (resetRequired)
                   ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);

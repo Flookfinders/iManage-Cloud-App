@@ -21,6 +21,7 @@
 //    008   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
 //    009   18.04.24 Sean Flook       IMANN-351 Corrected typo.
 //    010   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    011   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -225,9 +226,11 @@ function PropertyPage() {
                         : "",
                       result.xcoordinate,
                       result.ycoordinate,
-                      false
+                      false,
+                      null
                     );
                   }
+                  propertyContext.onChildCountChange(result.childCount);
                   sandboxContext.onUpdateAndClear("sourceProperty", result, "allProperty");
                 },
                 (error) => {
@@ -268,8 +271,10 @@ function PropertyPage() {
                 newProperty.lpis.filter((x) => x.language === "ENG")[0].postcode,
                 newProperty.xcoordinate,
                 newProperty.ycoordinate,
-                true
+                true,
+                null
               );
+            propertyContext.onChildCountChange(0);
             sandboxContext.onUpdateAndClear("sourceProperty", newProperty, "allProperty");
           }
           dataUprn.current = "0";

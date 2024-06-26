@@ -81,6 +81,7 @@
 //    067   12.06.24 Sean Flook       IMANN-565 Handle polygon deletion.
 //    068   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    069   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    070   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -141,6 +142,7 @@ import {
   UpdateAfterSave,
   GetPropertyMapData,
   hasPropertyChanged,
+  hasParentPaoChanged,
 } from "../utils/PropertyUtils";
 
 import shp from "shpjs";
@@ -1881,10 +1883,11 @@ function ADSEsriMap(startExtent) {
   /**
    * Method to handle saving changes to a property.
    *
-   * @param {object} currentProperty The current property.
+   * @param {Object} currentProperty The current property.
+   * @param {Boolean} cascadeParentPaoChanges If true the child property PAO details need to be changed; otherwise they are not changed.
    */
   const handleSaveProperty = useCallback(
-    (currentProperty) => {
+    (currentProperty, cascadeParentPaoChanges) => {
       SavePropertyAndUpdate(
         currentProperty,
         propertyContext.currentProperty.newProperty,
@@ -1895,7 +1898,8 @@ function ADSEsriMap(startExtent) {
         mapContext,
         sandboxContext,
         isScottish.current,
-        isWelsh.current
+        isWelsh.current,
+        cascadeParentPaoChanges
       ).then((result) => {
         if (result) {
           saveResult.current = true;
@@ -1991,14 +1995,20 @@ function ADSEsriMap(startExtent) {
         if (propertyChanged) {
           associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);
 
+          const parentPaoChanged = hasParentPaoChanged(
+            propertyContext.childCount,
+            sandboxContext.currentSandbox.sourceProperty,
+            sandboxContext.currentSandbox.currentProperty
+          );
+
           const propertyDataRef = sandbox.current.currentProperty
             ? sandbox.current.currentProperty
             : sandbox.current.sourceProperty;
 
           if (associatedRecords.current.length > 0) {
-            saveConfirmDialog(associatedRecords.current)
+            saveConfirmDialog(associatedRecords.current, parentPaoChanged)
               .then((result) => {
-                if (result === "save") {
+                if (result === "save" || result === "saveCascade") {
                   if (propertyContext.validateData()) {
                     failedValidation.current = false;
                     const currentPropertyData = GetCurrentPropertyData(
@@ -2008,7 +2018,7 @@ function ADSEsriMap(startExtent) {
                       isWelsh.current,
                       isScottish.current
                     );
-                    handleSaveProperty(currentPropertyData);
+                    handleSaveProperty(currentPropertyData, result === "saveCascade");
                     mapContext.onSetCoordinate(null);
                     propertyContext.onPropertyModified(false);
                     sandboxContext.resetSandbox("property");
@@ -2027,10 +2037,10 @@ function ADSEsriMap(startExtent) {
               })
               .catch(() => {});
           } else {
-            saveConfirmDialog(true)
+            saveConfirmDialog(true, parentPaoChanged)
               .then((result) => {
-                if (result === "save") {
-                  handleSaveProperty(sandbox.current.currentProperty);
+                if (result === "save" || result === "saveCascade") {
+                  handleSaveProperty(sandbox.current.currentProperty, result === "saveCascade");
                 }
                 mapContext.onSetCoordinate(null);
                 propertyContext.onPropertyModified(false);

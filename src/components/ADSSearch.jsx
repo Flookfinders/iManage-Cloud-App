@@ -42,6 +42,7 @@
 //    029   29.05.24 Sean Flook       IMANN-411 Added missing else statement.
 //    030   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    031   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    032   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -90,6 +91,7 @@ import {
   GetCurrentPropertyData,
   SavePropertyAndUpdate,
   hasPropertyChanged,
+  hasParentPaoChanged,
 } from "../utils/PropertyUtils";
 
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
@@ -491,9 +493,10 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
   /**
    * Event to handle saving a property.
    *
-   * @param {object} currentProperty The current property data.
+   * @param {Object} currentProperty The current property data.
+   * @param {Boolean} cascadeParentPaoChanges If true the child property PAO details need to be changed; otherwise they are not changed.
    */
-  function HandleSaveProperty(currentProperty) {
+  function HandleSaveProperty(currentProperty, cascadeParentPaoChanges) {
     SavePropertyAndUpdate(
       currentProperty,
       propertyContext.currentProperty.newProperty,
@@ -504,7 +507,8 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
       mapContext,
       sandboxContext,
       settingsContext.isScottish,
-      settingsContext.isWelsh
+      settingsContext.isWelsh,
+      cascadeParentPaoChanges
     ).then((result) => {
       if (result) {
         saveResult.current = true;
@@ -585,14 +589,20 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
       if (propertyChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);
 
+        const parentPaoChanged = hasParentPaoChanged(
+          propertyContext.childCount,
+          sandboxContext.currentSandbox.sourceProperty,
+          sandboxContext.currentSandbox.currentProperty
+        );
+
         const propertyData = sandboxContext.currentSandbox.currentProperty
           ? sandboxContext.currentSandbox.currentProperty
           : sandboxContext.currentSandbox.sourceProperty;
 
         if (associatedRecords.current.length > 0) {
-          saveConfirmDialog(associatedRecords.current)
+          saveConfirmDialog(associatedRecords.current, parentPaoChanged)
             .then((result) => {
-              if (result === "save") {
+              if (result === "save" || result === "saveCascade") {
                 if (propertyContext.validateData()) {
                   failedValidation.current = false;
                   const currentPropertyData = GetCurrentPropertyData(
@@ -602,7 +612,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                     settingsContext.isWelsh,
                     settingsContext.isScottish
                   );
-                  HandleSaveProperty(currentPropertyData);
+                  HandleSaveProperty(currentPropertyData, result === "saveCascade");
                   ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
                   handleSearchClick();
                 } else {
@@ -617,10 +627,10 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
             })
             .catch(() => {});
         } else {
-          saveConfirmDialog(true)
+          saveConfirmDialog(true, parentPaoChanged)
             .then((result) => {
-              if (result === "save") {
-                HandleSaveProperty(sandboxContext.currentSandbox.currentProperty);
+              if (result === "save" || result === "saveCascade") {
+                HandleSaveProperty(sandboxContext.currentSandbox.currentProperty, result === "saveCascade");
               }
               ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
               handleSearchClick();
@@ -950,14 +960,20 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
         if (propertyChanged) {
           associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);
 
+          const parentPaoChanged = hasParentPaoChanged(
+            propertyContext.childCount,
+            sandboxContext.currentSandbox.sourceProperty,
+            sandboxContext.currentSandbox.currentProperty
+          );
+
           const propertyData = sandboxContext.currentSandbox.currentProperty
             ? sandboxContext.currentSandbox.currentProperty
             : sandboxContext.currentSandbox.sourceProperty;
 
           if (associatedRecords.current.length > 0) {
-            saveConfirmDialog(associatedRecords.current)
+            saveConfirmDialog(associatedRecords.current, parentPaoChanged)
               .then((result) => {
-                if (result === "save") {
+                if (result === "save" || result === "saveCascade") {
                   const currentPropertyData = GetCurrentPropertyData(
                     propertyData,
                     sandboxContext,
@@ -965,17 +981,17 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                     settingsContext.isWelsh,
                     settingsContext.isScottish
                   );
-                  HandleSaveProperty(currentPropertyData);
+                  HandleSaveProperty(currentPropertyData, result === "saveCascade");
                 }
                 ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
                 handleSearchClick();
               })
               .catch(() => {});
           } else {
-            saveConfirmDialog(true)
+            saveConfirmDialog(true, parentPaoChanged)
               .then((result) => {
-                if (result === "save") {
-                  HandleSaveProperty(sandboxContext.currentSandbox.currentProperty);
+                if (result === "save" || result === "saveCascade") {
+                  HandleSaveProperty(sandboxContext.currentSandbox.currentProperty, result === "saveCascade");
                 }
                 ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
                 handleSearchClick();

@@ -71,6 +71,7 @@
 //    058   12.06.24 Sean Flook       IMANN-565 Handle polygon deletion.
 //    059   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    060   21.06.24 Sean Flook       IMANN-561 Allow changing tabs if errors are not on current tab.
+//    061   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -115,6 +116,7 @@ import {
   GetPropertyMapData,
   getWizardParentDetails,
   PropertyDelete,
+  hasParentPaoChanged,
 } from "../utils/PropertyUtils";
 import { GetStreetMapData } from "../utils/StreetUtils";
 import ObjectComparison, {
@@ -174,6 +176,7 @@ import {
   dataFormToolbarHeight,
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
+import MessageDialog from "../dialogs/MessageDialog";
 /* #endregion imports */
 
 function TabPanel(props) {
@@ -225,6 +228,7 @@ function PropertyDataForm({ data, loading }) {
   const [value, setValue] = useState(0);
   const [copyOpen, setCopyOpen] = useState(false);
   const [saveOpen, setSaveOpen] = useState(false);
+  const [messageOpen, setMessageOpen] = useState(false);
   const [lpiFormData, setLpiFormData] = useState(null);
   const [classificationFormData, setClassificationFormData] = useState(null);
   const [organisationFormData, setOrganisationFormData] = useState(null);
@@ -239,6 +243,7 @@ function PropertyDataForm({ data, loading }) {
   const provenanceChanged = useRef(false);
   const clearingType = useRef("");
   const lastOpenedId = useRef(0);
+  const saveCurrentProperty = useRef(null);
 
   const [blpuErrors, setBlpuErrors] = useState([]);
   const [lpiErrors, setLpiErrors] = useState([]);
@@ -2332,14 +2337,20 @@ function PropertyDataForm({ data, loading }) {
   const handleSaveClicked = () => {
     associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext, provenanceChanged.current);
 
+    const parentPaoChanged = hasParentPaoChanged(
+      propertyContext.childCount,
+      sandboxContext.currentSandbox.sourceProperty,
+      sandboxContext.currentSandbox.currentProperty
+    );
+
     const currentProperty = sandboxContext.currentSandbox.currentProperty
       ? sandboxContext.currentSandbox.currentProperty
       : sandboxContext.currentSandbox.sourceProperty;
 
     if (associatedRecords.current.length > 0) {
-      saveConfirmDialog(associatedRecords.current)
+      saveConfirmDialog(associatedRecords.current, parentPaoChanged)
         .then((result) => {
-          if (result === "save") {
+          if (result === "save" || result === "saveCascade") {
             if (propertyContext.validateData()) {
               failedValidation.current = false;
               const currentPropertyData = GetCurrentPropertyData(
@@ -2349,7 +2360,7 @@ function PropertyDataForm({ data, loading }) {
                 settingsContext.isWelsh,
                 settingsContext.isScottish
               );
-              HandlePropertySave(currentPropertyData);
+              HandlePropertySave(currentPropertyData, result === "saveCascade");
             } else {
               failedValidation.current = true;
               saveResult.current = false;
@@ -2371,7 +2382,12 @@ function PropertyDataForm({ data, loading }) {
     } else {
       if (propertyContext.validateData()) {
         failedValidation.current = false;
-        HandlePropertySave(currentProperty);
+        if (parentPaoChanged) {
+          saveCurrentProperty.current = currentProperty;
+          setMessageOpen(true);
+        } else {
+          HandlePropertySave(currentProperty, false);
+        }
       } else {
         failedValidation.current = true;
         saveResult.current = false;
@@ -2385,9 +2401,10 @@ function PropertyDataForm({ data, loading }) {
   /**
    * Method used to save changes to the property.
    *
-   * @param {object} currentProperty The data for the current property.
+   * @param {Object} currentProperty The data for the current property.
+   * @param {Boolean} cascadeParentPaoChanges True if the changes to the PAO details should be cascaded down to the children; otherwise false.
    */
-  function HandlePropertySave(currentProperty) {
+  function HandlePropertySave(currentProperty, cascadeParentPaoChanges) {
     SavePropertyAndUpdate(
       currentProperty,
       propertyContext.currentProperty.newProperty,
@@ -2398,7 +2415,8 @@ function PropertyDataForm({ data, loading }) {
       mapContext,
       sandboxContext,
       settingsContext.isScottish,
-      settingsContext.isWelsh
+      settingsContext.isWelsh,
+      cascadeParentPaoChanges
     ).then((result) => {
       if (result) {
         setPropertyData(result);
@@ -3773,6 +3791,16 @@ function PropertyDataForm({ data, loading }) {
     }
   };
 
+  /**
+   * Event to handle when the message dialog is closed.
+   *
+   * @param {String} action The action chosen from the message dialog.
+   */
+  const handleMessageDialogClose = (action) => {
+    setMessageOpen(false);
+    HandlePropertySave(saveCurrentProperty.current, action === "save");
+  };
+
   // Update BLPU coordinates
   useEffect(() => {
     const contextProperty =
@@ -4611,10 +4639,15 @@ function PropertyDataForm({ data, loading }) {
 
       if (propertyChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext, provenanceChanged.current);
+        const parentPaoChanged = hasParentPaoChanged(
+          propertyContext.childCount,
+          sandboxContext.currentSandbox.sourceProperty,
+          sandboxContext.currentSandbox.currentProperty
+        );
 
-        saveConfirmDialog(associatedRecords.current.length > 0 ? associatedRecords.current : true)
+        saveConfirmDialog(associatedRecords.current.length > 0 ? associatedRecords.current : true, parentPaoChanged)
           .then((result) => {
-            if (result === "save") {
+            if (result === "save" || result === "saveCascade") {
               if (propertyContext.validateData()) {
                 failedValidation.current = false;
                 const currentProperty = GetCurrentPropertyData(
@@ -4635,7 +4668,8 @@ function PropertyDataForm({ data, loading }) {
                   mapContext,
                   sandboxContext,
                   settingsContext.isScottish,
-                  settingsContext.isWelsh
+                  settingsContext.isWelsh,
+                  result === "saveCascade"
                 ).then((result) => {
                   if (result) {
                     setPropertyData(result);
@@ -5470,6 +5504,7 @@ function PropertyDataForm({ data, loading }) {
         onClose={handlePropertyWizardClose}
       />
       <HistoricPropertyDialog open={openHistoricProperty} onClose={handleHistoricPropertyClose} />
+      <MessageDialog isOpen={messageOpen} variant="cascadePAOChanges" onClose={handleMessageDialogClose} />
       <Snackbar
         open={alertOpen}
         autoHideDuration={6000}

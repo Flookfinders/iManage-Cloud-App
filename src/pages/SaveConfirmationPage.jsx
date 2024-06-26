@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001            Sean Flook                 Initial Revision.
 //    002   26.01.24 Sean Flook       IMANN-251 Reset associatedRecords when option is true.
+//    003   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -30,16 +31,19 @@ export const useSaveConfirmation = () => useContext(SaveConfirmationServiceConte
 export const SaveConfirmationServiceProvider = ({ children }) => {
   const [saveConfirmationState, setSaveConfirmationState] = useState(false);
   const [associatedRecords, setAssociatedRecords] = useState([]);
+  const [paoChanged, setPaoChanged] = useState(false);
+  const [cascadeChanges, setCascadeChanges] = useState(false);
 
   const awaitingSavePromiseRef = useRef();
 
   /**
    * Method to open the save confirmation dialog.
    *
-   * @param {object} options The options.
+   * @param {Object} options The options.
+   * @param {Boolean} [cascadeChanges=false] True if changes need to be cascaded down to children; otherwise false.
    * @returns {Promise}
    */
-  const openSaveConfirmation = (options) => {
+  const openSaveConfirmation = (options, cascadeChanges = false) => {
     if (options.constructor === Array) {
       setAssociatedRecords(options);
       setSaveConfirmationState(true);
@@ -47,6 +51,7 @@ export const SaveConfirmationServiceProvider = ({ children }) => {
       setAssociatedRecords([]);
       setSaveConfirmationState(options);
     }
+    setPaoChanged(cascadeChanges);
 
     return new Promise((resolve, reject) => {
       awaitingSavePromiseRef.current = { resolve, reject };
@@ -65,11 +70,18 @@ export const SaveConfirmationServiceProvider = ({ children }) => {
   };
 
   /**
+   * Event to handle when the cascade changes checkbox changes.
+   */
+  const handleCascadeChanges = () => {
+    setCascadeChanges(!cascadeChanges);
+  };
+
+  /**
    * Event to handle saving the changes.
    */
   const handleSaveChanges = () => {
     if (awaitingSavePromiseRef.current) {
-      awaitingSavePromiseRef.current.resolve("save");
+      awaitingSavePromiseRef.current.resolve(`${cascadeChanges ? "saveCascade" : "save"}`);
     }
 
     setSaveConfirmationState(false);
@@ -100,6 +112,9 @@ export const SaveConfirmationServiceProvider = ({ children }) => {
         }
         saveText="Save"
         associatedRecords={associatedRecords}
+        paoChanged={paoChanged}
+        cascadeChanges={cascadeChanges}
+        handleCascadeChange={handleCascadeChanges}
         handleSaveClick={handleSaveChanges}
         handleDisposeClick={handleAllowDispose}
         handleReturnClick={handleCancelMoveAway}

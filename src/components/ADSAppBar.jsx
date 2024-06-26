@@ -51,6 +51,7 @@
 //    048   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //    049   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    050   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    051   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -89,6 +90,7 @@ import {
   SavePropertyAndUpdate,
   getClassificationCode,
   hasPropertyChanged,
+  hasParentPaoChanged,
 } from "../utils/PropertyUtils";
 import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
 import {
@@ -351,11 +353,12 @@ function ADSAppBar(props) {
   /**
    * Event to handle saving a property.
    *
-   * @param {object} currentProperty The data for the current property.
-   * @param {string} action The action that needs to be performed.
-   * @param {boolean} discardChanges If true the changes are discarded; otherwise they are saved.
+   * @param {Object} currentProperty The data for the current property.
+   * @param {String} action The action that needs to be performed.
+   * @param {Boolean} discardChanges If true the changes are discarded; otherwise they are saved.
+   * @param {Boolean} cascadeParentPaoChanges If true the child property PAO details need to be changed; otherwise they are not changed.
    */
-  function HandleSaveProperty(currentProperty, action, discardChanges) {
+  function HandleSaveProperty(currentProperty, action, discardChanges, cascadeParentPaoChanges) {
     SavePropertyAndUpdate(
       currentProperty,
       propertyContext.currentProperty.newProperty,
@@ -366,7 +369,8 @@ function ADSAppBar(props) {
       mapContext,
       sandboxContext,
       settingsContext.isScottish,
-      settingsContext.isWelsh
+      settingsContext.isWelsh,
+      cascadeParentPaoChanges
     ).then((result) => {
       if (result) {
         saveResult.current = true;
@@ -476,13 +480,19 @@ function ADSAppBar(props) {
       if (propertyChanged) {
         associatedRecords.current = GetChangedAssociatedRecords("property", sandboxContext);
 
+        const parentPaoChanged = hasParentPaoChanged(
+          propertyContext.childCount,
+          sandboxContext.currentSandbox.sourceProperty,
+          sandboxContext.currentSandbox.currentProperty
+        );
+
         const propertyData = sandboxContext.currentSandbox.currentProperty
           ? sandboxContext.currentSandbox.currentProperty
           : sandboxContext.currentSandbox.sourceProperty;
 
-        saveConfirmDialog(associatedRecords.current.length > 0 ? associatedRecords.current : true)
+        saveConfirmDialog(associatedRecords.current.length > 0 ? associatedRecords.current : true, parentPaoChanged)
           .then((result) => {
-            if (result === "save") {
+            if (result === "save" || result === "saveCascade") {
               if (propertyContext.validateData()) {
                 failedValidation.current = false;
                 const currentPropertyData = GetCurrentPropertyData(
@@ -492,7 +502,12 @@ function ADSAppBar(props) {
                   settingsContext.isWelsh,
                   settingsContext.isScottish
                 );
-                HandleSaveProperty(currentPropertyData, postCheckAction, result === "discard");
+                HandleSaveProperty(
+                  currentPropertyData,
+                  postCheckAction,
+                  result === "discard",
+                  result === "saveCascade"
+                );
               } else {
                 failedValidation.current = true;
                 saveResult.current = false;
