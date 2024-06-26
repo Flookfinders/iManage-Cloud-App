@@ -19,6 +19,7 @@
 //    006   11.03.24 Sean Flook           GLB12 Correctly set width.
 //    007   02.04.24 Sean Flook                 Keep title in view when overflowing.
 //    008   21.05.24 Sean Flook                 Updated support email address.
+//    009   26.06.24 Peter Bryden               Added in help reference.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -41,6 +42,7 @@ import ForumIcon from "@mui/icons-material/ForumOutlined";
 import EmailIcon from "@mui/icons-material/EmailOutlined";
 import CallIcon from "@mui/icons-material/CallOutlined";
 import CircleIcon from "@mui/icons-material/Circle";
+import HelpIcon from "@mui/icons-material/HelpOutline";
 
 import { CopyIcon, SupportAgentIcon } from "../utils/ADSIcons";
 import { adsMidGreyA, adsOffWhite } from "../utils/ADSColours";
@@ -203,6 +205,42 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
               Get help
             </Typography>
           </Grid>
+
+
+          <Grid
+            container
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="flex-start"
+            sx={{
+              pt: theme.spacing(1),
+            }}
+          >
+            <Grid item xs={1}>
+              <HelpIcon
+                sx={{
+                  color: adsMidGreyA,
+                  display: "inline-flex",
+                }}
+              />
+            </Grid>
+            <Grid item>
+              <Typography align="left" variant="subtitle2" sx={drawerTextStyle}>
+                Help Documentation
+                <br />
+                <Link
+                  align={"left"}
+                  href="/help/"
+                  target="_blank"
+                  rel="noopener"
+                  variant="body2"
+                >
+                  Browse our Help
+                </Link>
+              </Typography>
+            </Grid>
+          </Grid>
+
           <Grid
             container
             direction="row"

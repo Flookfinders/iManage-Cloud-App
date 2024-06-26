@@ -1,0 +1,168 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+   <title>LPI details</title>
+   <meta name="generator" content="Help &amp; Manual" />
+   <meta name="keywords" content="Details,Details LPI,LPI,LPI Details" />
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   
+   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+   <link type="text/css" href="default.css" rel="stylesheet" />
+   <style type="text/css">
+     body { margin: 0px; background: #FFFFFF; }
+   </style>
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+   <script type="text/javascript">
+     HMSyncTOC("index.html", "lpi_attributes.html");
+   </script>
+   <script type="text/javascript" src="highlight.js"></script>
+   <script type="text/javascript">
+     $(document).ready(function(){highlight();});
+   </script>
+</head>
+<body>
+
+
+<table style="width:100%; border:none; border-spacing:0px; padding:5px; background:#FFFFFF">
+  <tr style="vertical-align:middle">
+    <td style="text-align:left">
+      <h1 class="p_Heading1"><span class="f_Heading1">LPI details</span></h1>
+
+    </td>
+    <td style="text-align:right">
+     <a href="introduction.html">Top</a>&nbsp;
+     <a href="blpu_attributes_2.html">Previous</a>&nbsp;
+     <a href="blpu_provenance_attributes.html">Next</a>
+    </td>
+  </tr>
+</table>
+
+
+<!-- Placeholder for topic body. -->
+<table style="width:100%;border:none;border-spacing:0px"><tr style="vertical-align:top"><td style="text-align:left;padding:5px">
+<p>LPIs (Type 24) are postal addresses or other descriptive names that can be used to identify a particular BLPU. There is no restriction on the number of LPIs that can be assigned to a BLPU, so the LPIs for a hotel could be its postal address 10 High Street , as well as its name &quot;The White Horse&quot;. Each BLPU point must have at least one LPI which has the same Logical Status as the BLPU. These are displayed on the <span style="font-weight: bold;">Details</span> tab of the Property form in a list at the top e.g.  </p>
+<p><img src="lpis.png" width="453" height="228" alt="LPIs" title="LPIs" style="border:none" /></p>
+<p>Click on an entry to display the following details. </p>
+<h3 class="p_Heading3"><span class="f_Heading3">Language</span></h3>
+<p>This is the language used for the descriptive identifier. This will always be English unless your authority is a dual language authority.</p>
+<h3 class="p_Heading3"><span class="f_Heading3">LPI logical status</span></h3>
+<p>This is the Logical Status for the LPI. It describes the current life-cycle state of a BLPU or LPI and provides information on the level of confidence with which the record can be treated. In the case of LPIs it is also possible to flag them as alternative addresses. These can be used for search purposes within the LLPG. It is intended that there will be gradual migration to one approved address. A code has also been allocated for provisional entries.</p>
+<h3 class="p_Heading3"><span class="f_Heading3">SAO</span></h3>
+<p>Secondary Addressable Object. This is the number, name or description used to identify a BLPU child within a larger BLPU such as a sub-building; it may be within the same premises as a flat in a house or a factory sub-unit etc. If there is an entry in the Parent UPRN, data should be present in at least one of the following SAO attributes in one LPI Record.</p>
+<p style="text-align: left; padding: 0px 0px 0px 13px; margin: 3px 0px 3px 24px;"><span style="font-size:11pt; font-family: 'Arial Unicode MS','Lucida Sans Unicode','Arial';color:#000000;display:inline-block;width:13px;margin-left:-13px">&#8226;</span>Start No</p><p style="text-align: left; padding: 0px 0px 0px 13px; margin: 3px 0px 3px 24px;"><span style="font-size:11pt; font-family: 'Arial Unicode MS','Lucida Sans Unicode','Arial';color:#000000;display:inline-block;width:13px;margin-left:-13px">&#8226;</span>Description</p><p>Both can exist if they are part of the address for the BLPU.</p>
+<p><span style="font-weight: bold;">Start no./suffix</span></p>
+<p>This is the number of the property. Where there is a range of property numbers e.g. 6-15 this is the start of the property number range. Start suffix may be used in cases such as &quot;6A&quot; Knights Road. Only one character is allowed unless the Metadata Language is set as <span style="font-weight: bold;">Bilingual</span> when two are allowed.</p>
+<p><span style="font-weight: bold;">End no./suffix</span></p>
+<p>Where there is a range of property numbers, this is the number at the end of the range. Where there is a range of suffix numbers, this is the suffix at the end of the range. Only one character is allowed unless the Metadata Language is set as <span style="font-weight: bold;">Bilingual</span> when two are allowed.</p>
+<p><span style="font-weight: bold;">Description</span></p>
+<p>This can be the premise name such as &quot;Garden Flat&quot;.</p>
+<h3 class="p_Heading3"><span class="f_Heading3">PAO</span></h3>
+<p>Primary Addressable Object. This is the number, name or description used to identify a Property. Data must be present in at least one of the following PAO attributes in each LPI Record.</p>
+<p style="text-align: left; padding: 0px 0px 0px 13px; margin: 3px 0px 3px 24px;"><span style="font-size:11pt; font-family: 'Arial Unicode MS','Lucida Sans Unicode','Arial';color:#000000;display:inline-block;width:13px;margin-left:-13px">&#8226;</span>Start No</p><p style="text-align: left; padding: 0px 0px 0px 13px; margin: 3px 0px 3px 24px;"><span style="font-size:11pt; font-family: 'Arial Unicode MS','Lucida Sans Unicode','Arial';color:#000000;display:inline-block;width:13px;margin-left:-13px">&#8226;</span>Description</p><p>Both can exist if they are part of the address for the BLPU.</p>
+<p><span style="font-weight: bold;">Start no./suffix</span></p>
+<p>This is the property number such as &quot;6&quot; Knights Road. Where there is a range of property numbers e.g. 6-15 this is the start of the property number range. </p>
+<p>Start suffix may be used in cases such as &quot;6A&quot; Knights Road. Only one character is allowed unless the Metadata Language is set as <span style="font-weight: bold;">Bilingual</span> when two are allowed.</p>
+<p><span style="font-weight: bold;">End no./suffix</span></p>
+<p>Where there is a range of property numbers, this is the number at the end of the range. Where there is a range of suffix numbers, this is the suffix at the end of the range. Only one character is allowed unless the Metadata Language is set as <span style="font-weight: bold;">Bilingual</span> when two are allowed.</p>
+<p><span style="font-weight: bold;">Description</span></p>
+<p>This can be the premise name such as &quot;Fairway Court&quot;, or the name of the organisation occupying the BLPU such as Idox Group plc or a description of the BLPU e.g. Land at corner of....</p>
+<h3 class="p_Heading3"><span class="f_Heading3">Street</span></h3>
+<p>The name of the street where the BLPU is located.</p>
+<h3 class="p_Heading3"><span class="f_Heading3">Post town</span></h3>
+<p>The name of the town in which the currently selected property is located. This is the name given by the Royal Mail as the Postal Town for the address.</p>
+<h3 class="p_Heading3"><span class="f_Heading3">Sub-locality</span></h3>
+<p><span style="font-style: italic;">(Scotland only)</span></p>
+<p>The third level of geographic area name. e.g. to record an island name or property group.</p>
+<h3 class="p_Heading3"><span class="f_Heading3">Postcode</span></h3>
+<p>The postcode for the property</p>
+<h3 class="p_Heading3"><span class="f_Heading3">Level</span></h3>
+<p><span style="font-style: italic;">(England &amp; Wales only)</span></p>
+<p>Memorandum of the vertical position of the BLPU e.g. Roof Garden</p>
+<h3 class="p_Heading3"><span class="f_Heading3">Official address</span></h3>
+<p>This flag indicates how this LPI corresponds to the form of property address approved by the Street Naming and Numbering Authority.</p>
+<p style="margin: 3px 0px 3px 24px;"><span style="font-weight: bold;">Y</span> = Official Address</p>
+<p style="margin: 3px 0px 3px 24px;"><span style="font-weight: bold;">N</span> = Unofficial Address</p>
+<p style="margin: 3px 0px 3px 24px;"><span style="font-weight: bold;">R</span> = Postcode and post town requested from the Royal Mail - <span style="font-style: italic;">not Scotland</span></p>
+<p style="margin: 3px 0px 3px 24px;"><span style="font-weight: bold;">C</span> = Postal Address confirmed and ready for notification - <span style="font-style: italic;">not Scotland</span></p>
+<p style="margin: 3px 0px 3px 24px;"><span style="font-weight: bold;">Blank</span> = Not defined</p>
+<h3 class="p_Heading3"><span class="f_Heading3">Postal address</span></h3>
+<p>This is to indicate that the address receives a delivery from the Royal Mail or other postal delivery service. Depending upon the value selected a Post Town or Postcode may be required e.g.</p>
+<div style="text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 3px 0px 3px 0px;"><table style="width:58%; border:none; border-spacing:0px; border-collapse:collapse;">
+<tr style="text-align:left;vertical-align:top;">
+<td style="vertical-align:top; width:23%; background-color:#0a1f8f; padding:1px; border:solid 1px #a0a0a0;"><p><span style="font-weight: bold; color: #ffffff;">Value</span></p>
+</td>
+<td style="vertical-align:top; width:35%; background-color:#0a1f8f; padding:1px; border:solid 1px #a0a0a0;"><p><span style="font-weight: bold; color: #ffffff;">Description</span></p>
+</td>
+<td style="vertical-align:top; width:21%; background-color:#0a1f8f; padding:1px; border:solid 1px #a0a0a0;"><p><span style="font-weight: bold; color: #ffffff;">Post Town</span></p>
+</td>
+<td style="vertical-align:top; width:19%; background-color:#0a1f8f; padding:1px; border:solid 1px #a0a0a0;"><p><span style="font-weight: bold; color: #ffffff;">Postcode</span></p>
+</td>
+</tr>
+<tr style="text-align:left;vertical-align:top;">
+<td style="vertical-align:top; width:23%; padding:1px; border:solid 1px #a0a0a0;"><p>Yes [Y]</p>
+</td>
+<td style="vertical-align:top; width:35%; padding:1px; border:solid 1px #a0a0a0;"><p>A Postal Address</p>
+<p>&nbsp;</p>
+</td>
+<td style="vertical-align:top; width:21%; padding:1px; border:solid 1px #a0a0a0;"><p>Mandatory</p>
+</td>
+<td style="vertical-align:top; width:19%; padding:1px; border:solid 1px #a0a0a0;"><p>Mandatory</p>
+</td>
+</tr>
+<tr style="text-align:left;vertical-align:top;">
+<td style="vertical-align:top; width:23%; padding:1px; border:solid 1px #a0a0a0;"><p>No [N]</p>
+</td>
+<td style="vertical-align:top; width:35%; padding:1px; border:solid 1px #a0a0a0;"><p>Not a Postal Address</p>
+</td>
+<td style="vertical-align:top; width:21%; padding:1px; border:solid 1px #a0a0a0;"><p>No data entered unless LPI Logical Status is set to Provisional LPI.</p>
+</td>
+<td style="vertical-align:top; width:19%; padding:1px; border:solid 1px #a0a0a0;"><p>No data entered unless LPI Logical Status is set to Provisional LPI.</p>
+</td>
+</tr>
+<tr style="text-align:left;vertical-align:top;">
+<td style="vertical-align:top; width:23%; padding:1px; border:solid 1px #a0a0a0;"><p>Large user postcode [L]</p>
+</td>
+<td style="vertical-align:top; width:35%; padding:1px; border:solid 1px #a0a0a0;"><p>Postcode and post town used as a large user Postal Address.</p>
+</td>
+<td style="vertical-align:top; width:21%; padding:1px; border:solid 1px #a0a0a0;"><p>Mandatory</p>
+</td>
+<td style="vertical-align:top; width:19%; padding:1px; border:solid 1px #a0a0a0;"><p>Mandatory</p>
+</td>
+</tr>
+<tr style="text-align:left;vertical-align:top;">
+<td style="vertical-align:top; width:23%; padding:1px; border:solid 1px #a0a0a0;"><p>Assumed post town and postcode [A] &nbsp;- <span style="font-style: italic;">not Scotland</span></p>
+</td>
+<td style="vertical-align:top; width:35%; padding:1px; border:solid 1px #a0a0a0;"><p>An Assumed post town and postcode for the Object if it is associated with an existing Postal Address, that is, an Object which can receive mail but the post town and postcode has not been officially allocated by the Royal Mail. For example bedsits within a</p>
+<p>house.</p>
+</td>
+<td style="vertical-align:top; width:21%; padding:1px; border:solid 1px #a0a0a0;"><p>Mandatory</p>
+</td>
+<td style="vertical-align:top; width:19%; padding:1px; border:solid 1px #a0a0a0;"><p>Mandatory</p>
+</td>
+</tr>
+<tr style="text-align:left;vertical-align:top;">
+<td style="vertical-align:top; width:23%; padding:1px; border:solid 1px #a0a0a0;"><p>Pseudo postcode [P] &nbsp;- <span style="font-style: italic;">not Scotland</span></p>
+</td>
+<td style="vertical-align:top; width:35%; padding:1px; border:solid 1px #a0a0a0;"><p>A Pseudo postcode for the Object if it is associated with a postcode in the vicinity of the Object to be described. It must not be used as a Postal &nbsp;Address. For example, a car park or an area of land.</p>
+</td>
+<td style="vertical-align:top; width:21%; padding:1px; border:solid 1px #a0a0a0;"><p>No data entered</p>
+</td>
+<td style="vertical-align:top; width:19%; padding:1px; border:solid 1px #a0a0a0;"><p>Mandatory</p>
+</td>
+</tr>
+</table>
+</div>
+<h3 class="p_Heading3"><span class="f_Heading3">Start date</span></h3>
+<p>The date on which this LPI was created.</p>
+<h3 class="p_Heading3"><span class="f_Heading3">End date</span></h3>
+<p>The date on which this LPI ceased to exist. This will only be displayed where the BLPU Logical Status is 8=Historic or 9=Rejected Internal.</p>
+<h3 class="p_Heading3"><span class="f_Heading3">LPI key</span></h3>
+<p>The unique key for the LPI record which is automatically generated when an LPI is created.</p>
+
+</td></tr></table>
+
+</body>
+</html>

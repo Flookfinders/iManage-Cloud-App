@@ -1,0 +1,61 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+   <title>Maintaining ASD Geometry</title>
+   <meta name="generator" content="Help &amp; Manual" />
+   <meta name="keywords" content="ASD,ASD Geometry" />
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   
+   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+   <link type="text/css" href="default.css" rel="stylesheet" />
+   <style type="text/css">
+     body { margin: 0px; background: #FFFFFF; }
+   </style>
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+   <script type="text/javascript">
+     HMSyncTOC("index.html", "maintaining_asd_geometry.html");
+   </script>
+   <script type="text/javascript" src="highlight.js"></script>
+   <script type="text/javascript">
+     $(document).ready(function(){highlight();});
+   </script>
+</head>
+<body>
+
+
+<table style="width:100%; border:none; border-spacing:0px; padding:5px; background:#FFFFFF">
+  <tr style="vertical-align:middle">
+    <td style="text-align:left">
+      <h1 class="p_Heading1"><span class="f_Heading1">Maintaining ASD Geometry</span></h1>
+
+    </td>
+    <td style="text-align:right">
+     <a href="introduction.html">Top</a>&nbsp;
+     <a href="maintaining_asd.html">Previous</a>&nbsp;
+     <a href="maintaining_street_notes.html">Next</a>
+    </td>
+  </tr>
+</table>
+
+
+<!-- Placeholder for topic body. -->
+<table style="width:100%;border:none;border-spacing:0px"><tr style="vertical-align:top"><td style="text-align:left;padding:5px">
+<p>ASD can cover the <span style="font-weight: bold;">Whole road</span>, in which case the geometry is taken from the ESUs making up the street and you don't need to draw the geometry, or <span style="font-weight: bold;">Part of road</span> where you need to draw the polyline detail for the part of the road that the ASD covers.</p>
+<p>The drawing of the geometry is the same for all types of ASD records.</p>
+<p>First you need to change the <span style="font-weight: bold;">Applied to</span> to be <span style="font-weight: bold;">Part of road</span>. Once you have done this the geometry drawing tools become available on the map. You may override the default snapping by selecting <a href="sketch_settings.html" class="topiclink">Sketch Settings</a>. </p>
+<h2 class="p_Heading2"><span class="f_Heading2">Modifying existing geometry</span></h2>
+<p>If you had already created a record as <span style="font-weight: bold;">Whole road</span>, then the geometry would already have been created so you just need to decide if you wish to modify the existing geometry or draw a brand new polyline for the section of the road that the ASD applies to. <span style="font-weight: bold;">Note:</span> If you need to move the map whilst you are drawing your polyline simply hold down the left mouse button and drag the map in the direction you require and then you can continue drawing.</p>
+<p style="text-align: left; padding: 0px 0px 0px 13px; margin: 3px 0px 3px 24px;"><span style="font-size:11pt; font-family: 'Arial Unicode MS','Lucida Sans Unicode','Arial';color:#000000;display:inline-block;width:13px;margin-left:-13px">&#8226;</span>First change the <span style="font-weight: bold;">Applied to</span> from <span style="font-weight: bold;">Whole road</span> to <span style="font-weight: bold;">Part of road</span>.</p><p style="text-align: left; padding: 0px 0px 0px 13px; margin: 3px 0px 3px 24px;"><span style="font-size:11pt; font-family: 'Arial Unicode MS','Lucida Sans Unicode','Arial';color:#000000;display:inline-block;width:13px;margin-left:-13px">&#8226;</span>Now click on one of the <span style="font-weight: bold;">Select</span> tools in the Map Toolbar to select the geometry. <br />
+<img src="map_select_tools.png" width="112" height="47" alt="map_select_tools" style="border:none" /><br />
+This displays the nodes on the polyline.</p><p style="text-align: left; padding: 0px 0px 0px 13px; margin: 3px 0px 3px 24px;"><span style="font-size:11pt; font-family: 'Arial Unicode MS','Lucida Sans Unicode','Arial';color:#000000;display:inline-block;width:13px;margin-left:-13px">&#8226;</span>To remove a node, select it with the mouse and press the <span style="font-weight: bold;">Delete</span> key on the keyboard.</p><p style="text-align: left; padding: 0px 0px 0px 13px; margin: 3px 0px 3px 24px;"><span style="font-size:11pt; font-family: 'Arial Unicode MS','Lucida Sans Unicode','Arial';color:#000000;display:inline-block;width:13px;margin-left:-13px">&#8226;</span>To move a node, select it with the mouse and drag it to a new location.</p><p style="text-align: left; padding: 0px 0px 0px 13px; margin: 3px 0px 3px 24px;"><span style="font-size:11pt; font-family: 'Arial Unicode MS','Lucida Sans Unicode','Arial';color:#000000;display:inline-block;width:13px;margin-left:-13px">&#8226;</span>To delete the entire feature you can either select it and then click the <span style="font-weight: bold;">Delete feature</span> from the <a href="street_form_map_tools.html" class="topiclink">Map tools</a> <br />
+<img src="map_delete_feature.png" width="238" height="41" alt="Delete feature" title="Delete feature" style="border:none" /><br />
+or you can select the <span style="font-weight: bold;">Draw a polyline</span> tool and draw a new polyline as you would if you were creating new geometry (see below for details). </p><p style="text-align: left; padding: 0px 0px 0px 13px; margin: 3px 0px 3px 24px;"><span style="font-size:11pt; font-family: 'Arial Unicode MS','Lucida Sans Unicode','Arial';color:#000000;display:inline-block;width:13px;margin-left:-13px">&#8226;</span>When you are happy click <span style="font-weight: bold;">OK</span> to validate your entry.</p><p style="text-align: left; padding: 0px 0px 0px 13px; margin: 3px 0px 3px 24px;"><span style="font-size:11pt; font-family: 'Arial Unicode MS','Lucida Sans Unicode','Arial';color:#000000;display:inline-block;width:13px;margin-left:-13px">&#8226;</span>Click <span style="font-weight: bold;">Save</span> to update the street with the ASD.</p><h2 class="p_Heading2"><span class="f_Heading2">Creating new geometry</span></h2>
+<p style="text-align: left; padding: 0px 0px 0px 13px; margin: 3px 0px 3px 24px;"><span style="font-size:11pt; font-family: 'Arial Unicode MS','Lucida Sans Unicode','Arial';color:#000000;display:inline-block;width:13px;margin-left:-13px">&#8226;</span>Select the <span style="font-weight: bold;">Draw a polyline</span> tool from the map toolbar e.g. <br />
+<img src="map_tools_draw_esu.png" width="281" height="42" alt="Draw a polyline" title="Draw a polyline" style="border:none" /></p><p style="text-align: left; padding: 0px 0px 0px 13px; margin: 3px 0px 3px 24px;"><span style="font-size:11pt; font-family: 'Arial Unicode MS','Lucida Sans Unicode','Arial';color:#000000;display:inline-block;width:13px;margin-left:-13px">&#8226;</span>Click on the map for the start of the ASD and click again each time you wish to change direction. Double click to end the polyline. If you wish to change the shape you can simply drag the nodes to a different location.</p><p style="text-align: left; padding: 0px 0px 0px 13px; margin: 3px 0px 3px 24px;"><span style="font-size:11pt; font-family: 'Arial Unicode MS','Lucida Sans Unicode','Arial';color:#000000;display:inline-block;width:13px;margin-left:-13px">&#8226;</span>When you are happy click <span style="font-weight: bold;">OK</span> to validate your entry.</p><p style="text-align: left; padding: 0px 0px 0px 13px; margin: 3px 0px 3px 24px;"><span style="font-size:11pt; font-family: 'Arial Unicode MS','Lucida Sans Unicode','Arial';color:#000000;display:inline-block;width:13px;margin-left:-13px">&#8226;</span>Click <span style="font-weight: bold;">Save</span> to update the street with the ASD.</p>
+</td></tr></table>
+
+</body>
+</html>
