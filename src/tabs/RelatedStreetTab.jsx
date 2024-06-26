@@ -42,6 +42,7 @@
 //    029   17.05.24 Sean Flook       IMANN-458 Correctly highlight the avatar when items are hovered.
 //    030   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    031   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    032   26.06.24 Sean Flook       IMANN-488 Correctly filter the data in getStreetFromId.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -683,7 +684,7 @@ function RelatedStreetTab({
    * @returns {object} The street object for the given USRN.
    */
   const getStreetFromId = (streetId) => {
-    const street = data.street.filter((x) => x.usrn === streetId);
+    const street = data.street.filter((x) => x.usrn.toString() === streetId.toString());
     if (street && street.length > 0)
       return { id: street[0].usrn, logical_status: street[0].stRefType > 0 ? street[0].stRefType + 10 : 11 };
     else return null;

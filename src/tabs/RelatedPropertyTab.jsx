@@ -55,6 +55,7 @@
 //    041   20.05.24 Sean Flook       IMANN-450 Correctly get the USRN when creating a child/children.
 //    042   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    043   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    044   26.06.24 Sean Flook       IMANN-488 Correctly filter the data in getPropertyFromId.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -720,7 +721,7 @@ function RelatedPropertyTab({
    * @returns {object|null} The required property information.
    */
   const getPropertyFromId = (propertyId) => {
-    const property = data.properties.filter((x) => x.uprn === propertyId);
+    const property = data.properties.filter((x) => x.uprn.toString() === propertyId.toString());
     if (property && property.length === 1)
       return { id: property[0].uprn, logical_status: property[0].primary.logicalStatus };
     else return null;
