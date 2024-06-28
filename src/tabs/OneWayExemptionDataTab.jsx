@@ -25,6 +25,7 @@
 //    012   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    013   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    014   21.06.24 Sean Flook       IMANN-636 Fixed warnings.
+//    015   27.06.24 Joel Benford     IMANN-685 OWE sequence numbers -> seqNum
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -224,7 +225,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
       oneWayExemptionPeriodicityCode: field && field === "periodicity" ? newValue : periodicity,
       pkId: data.oweData.pkId,
       esuId: data.oweData.esuId,
-      sequenceNumber: data.oweData.sequenceNumber,
+      seqNum: data.oweData.seqNum,
     };
   }
 

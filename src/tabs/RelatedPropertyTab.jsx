@@ -56,6 +56,7 @@
 //    042   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    043   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    044   26.06.24 Sean Flook       IMANN-488 Correctly filter the data in getPropertyFromId.
+//    045   26.06.24 Joshua McCormick IMANN-548 ZoomToProperty fix, properties correctly add to list
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -93,7 +94,12 @@ import ADSSelectionControl from "../components/ADSSelectionControl";
 import MakeChildDialog from "../dialogs/MakeChildDialog";
 
 import { GetAvatarColour, GetAvatarTooltip, copyTextToClipboard, openInStreetView } from "./../utils/HelperUtils";
-import { addressToTitleCase, GetPropertyMapData, getWizardParentDetails } from "./../utils/PropertyUtils";
+import {
+  addressToTitleCase,
+  getClassificationCode,
+  GetPropertyMapData,
+  getWizardParentDetails,
+} from "./../utils/PropertyUtils";
 
 import LPILogicalStatus from "./../data/LPILogicalStatus";
 
@@ -461,15 +467,34 @@ function RelatedPropertyTab({
    * @param {object} event The event object.
    * @param {number} uprn The UPRN of the property to zoom to.
    */
-  const zoomToProperty = (event, uprn) => {
+  async function zoomToProperty(event, uprn) {
     event.stopPropagation();
+    const found = mapContext.currentSearchData.properties.find((rec) => rec.uprn.toString() === uprn.toString());
 
-    const found = mapContext.currentSearchData.properties.find((rec) => rec.uprn === uprn);
+    if (!found) {
+      const propertyData = await GetPropertyMapData(Number(uprn), userContext);
+      const newMapSearchLpis = propertyData.lpis
+        .filter((x) => x.language === "ENG")
+        .map((x) => {
+          return {
+            uprn: x.uprn.toString(),
+            parentUprn: null,
+            address: x.address,
+            formattedAddress: x.address,
+            postcode: x.postcode,
+            easting: propertyData.xcoordinate,
+            northing: propertyData.ycoordinate,
+            logicalStatus: x.logicalStatus,
+            classificationCode: getClassificationCode(propertyData),
+          };
+        });
 
-    if (found) {
-      mapContext.onMapChange(mapContext.currentLayers.extents, null, uprn);
+      const newMapSearchProperties = mapContext.currentSearchData.properties;
+      newMapSearchProperties.push(...newMapSearchLpis);
+      mapContext.onSearchDataChange([], newMapSearchProperties, null, propertyData.uprn);
     }
-  };
+    mapContext.onMapChange(mapContext.currentLayers.extents, null, uprn);
+  }
 
   /**
    * Event to handle creating a child property.
@@ -879,7 +904,7 @@ function RelatedPropertyTab({
                 </IconButton>
               </Tooltip>
               <Tooltip title="Zoom to this" arrow placement="bottom" sx={tooltipStyle}>
-                <IconButton onClick={() => zoomToProperty(rec.uprn)} size="small">
+                <IconButton onClick={(event) => zoomToProperty(event, rec.uprn)} size="small">
                   <MyLocationIcon sx={ActionIconStyle()} />
                 </IconButton>
               </Tooltip>

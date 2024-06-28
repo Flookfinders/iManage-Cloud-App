@@ -69,6 +69,7 @@
 //    056   21.06.24 Sean Flook       IMANN-636 Added hasASD to GetNewStreet.
 //    057   21.06.24 Sean Flook       IMANN-614 After saving changes update the source data in the sandbox.
 //    058   21.06.24 Sean Flook       IMANN-636 Correctly call updateMapStreetData after saving a street.
+//    059   27.06.24 Joel Benford     IMANN-685 Saving OWE sequence number -> seqNum
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1604,6 +1605,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
                   ? esu.oneWayExemptions.map((owe) => {
                       return {
                         changeType: owe.changeType,
+                        seqNum: owe.seqNum,
                         oneWayExemptionType: owe.oneWayExemptionType,
                         recordEndDate: owe.recordEndDate,
                         oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
@@ -1713,6 +1715,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
                   ? esu.oneWayExemptions.map((owe) => {
                       return {
                         changeType: owe.changeType,
+                        seqNum: owe.seqNum,
                         oneWayExemptionType: owe.oneWayExemptionType,
                         recordEndDate: owe.recordEndDate,
                         oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
@@ -2158,7 +2161,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                   return {
                     pkId: owe.pkId > 0 ? owe.pkId : 0,
                     esuId: owe.esuId > 0 ? owe.esuId : 0,
-                    sequenceNumber: owe.sequenceNumber,
+                    seqNum: owe.seqNum,
                     changeType:
                       (esu.changeType === "D" || [4, 5].includes(streetData.state)) && owe.changeType !== "D"
                         ? "D"
@@ -2309,7 +2312,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                       return {
                         pkId: owe.pkId > 0 ? owe.pkId : 0,
                         esuId: owe.esuId > 0 ? owe.esuId : 0,
-                        sequenceNumber: owe.sequenceNumber,
+                        seqNum: owe.seqNum,
                         changeType:
                           (esu.changeType === "D" || [4, 5].includes(streetData.state)) && owe.changeType !== "D"
                             ? "D"

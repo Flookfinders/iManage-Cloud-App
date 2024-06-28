@@ -102,6 +102,8 @@
 //    088   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    089   21.06.24 Sean Flook       IMANN-636 Fixed warnings.
 //    090   21.06.24 Sean Flook       IMANN-561 Allow changing tabs if errors are not on current tab.
+//    091   26.06.24 Joel Benford     IMANN-680 Change tab index when opened from wizard now successor hidden 
+//    092   27.06.24 Joel Benford     IMANN-685 OWE sequence numbers -> seqNum
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1581,7 +1583,7 @@ function StreetDataForm({ data, loading }) {
         pkId: newPkId,
         changeType: "I",
         esuId: esuId,
-        sequenceNumber: newSeqNum,
+        seqNum: newSeqNum,
         oneWayExemptionType:
           settingsContext.streetTemplate && settingsContext.streetTemplate.esuTemplate
             ? settingsContext.streetTemplate.esuTemplate.oneWayExemptionType
@@ -3650,7 +3652,7 @@ function StreetDataForm({ data, loading }) {
               oneWayExemptionPeriodicityCode: x.oneWayExemptionPeriodicityCode,
               pkId: x.pkId,
               esuId: x.esuId,
-              sequenceNumber: x.sequenceNumber,
+              seqNum: x.seqNum,
             };
           }),
         };
@@ -3986,7 +3988,7 @@ function StreetDataForm({ data, loading }) {
               oneWayExemptionPeriodicityCode: deleteOneWayException.oneWayExemptionPeriodicityCode,
               pkId: deleteOneWayException.pkId,
               esuId: deleteOneWayException.esuId,
-              sequenceNumber: deleteOneWayException.sequenceNumber,
+              seqNum: deleteOneWayException.seqNum,
             };
 
             newOneWayExceptions = currentEsu.oneWayExceptions.map(
@@ -6456,7 +6458,7 @@ function StreetDataForm({ data, loading }) {
       oneWayExemptionPeriodicityCode: newData.oneWayExemptionPeriodicityCode,
       pkId: newData.pkId,
       esuId: newData.esuId,
-      sequenceNumber: newData.sequenceNumber,
+      seqNum: newData.seqNum,
     };
     newOneWayExemptions.push(updatedOneWayExemption);
 
@@ -7566,13 +7568,9 @@ function StreetDataForm({ data, loading }) {
   }, [streetContext]);
 
   useEffect(() => {
-    if (
-      streetData &&
-      streetContext.currentStreet.openRelated &&
-      sandboxContext.streetTab !== (settingsContext.isScottish ? 4 : displayAsdTab ? 3 : 2)
-    ) {
+    if (streetData && streetContext.currentStreet.openRelated && sandboxContext.streetTab !== (displayAsdTab ? 3 : 2)) {
       failedValidation.current = false;
-      sandboxContext.onStreetTabChange(settingsContext.isScottish ? 4 : displayAsdTab ? 3 : 2);
+      sandboxContext.onStreetTabChange(displayAsdTab ? 3 : 2);
       // setValue(displayAsdTab ? 3 : 2);
       mapContext.onEditMapObject(null, null);
     }
@@ -9758,7 +9756,7 @@ function StreetDataForm({ data, loading }) {
                     return {
                       pkId: owe.pkId,
                       esuId: owe.esuId,
-                      sequenceNumber: owe.sequenceNumber,
+                      seqNum: owe.seqNum,
                       changeType: "D",
                       oneWayExemptionType: owe.oneWayExemptionType,
                       recordEndDate: currentDate,
@@ -9837,7 +9835,7 @@ function StreetDataForm({ data, loading }) {
                     return {
                       pkId: newPkId,
                       esuId: newPkId,
-                      sequenceNumber: owe.sequenceNumber,
+                      seqNum: owe.seqNum,
                       changeType: "I",
                       oneWayExemptionType: owe.oneWayExemptionType,
                       recordEndDate: owe.recordEndDate,
@@ -9914,7 +9912,7 @@ function StreetDataForm({ data, loading }) {
                     return {
                       pkId: newPkId,
                       esuId: newPkId,
-                      sequenceNumber: owe.sequenceNumber,
+                      seqNum: owe.seqNum,
                       changeType: "I",
                       oneWayExemptionType: owe.oneWayExemptionType,
                       recordEndDate: owe.recordEndDate,
@@ -10037,7 +10035,7 @@ function StreetDataForm({ data, loading }) {
                     return {
                       pkId: owe.pkId,
                       esuId: owe.esuId,
-                      sequenceNumber: owe.sequenceNumber,
+                      seqNum: owe.seqNum,
                       changeType: "D",
                       oneWayExemptionType: owe.oneWayExemptionType,
                       recordEndDate: currentDate,
@@ -10107,7 +10105,7 @@ function StreetDataForm({ data, loading }) {
                     return {
                       pkId: owe.pkId,
                       esuId: owe.esuId,
-                      sequenceNumber: owe.sequenceNumber,
+                      seqNum: owe.seqNum,
                       changeType: "D",
                       oneWayExemptionType: owe.oneWayExemptionType,
                       recordEndDate: currentDate,
@@ -10231,7 +10229,7 @@ function StreetDataForm({ data, loading }) {
                       return {
                         pkId: newPkId,
                         esuId: newPkId,
-                        sequenceNumber: owe.sequenceNumber,
+                        seqNum: owe.seqNum,
                         changeType: "I",
                         oneWayExemptionType: owe.oneWayExemptionType,
                         recordEndDate: owe.recordEndDate,

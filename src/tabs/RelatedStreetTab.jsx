@@ -43,6 +43,7 @@
 //    030   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    031   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    032   26.06.24 Sean Flook       IMANN-488 Correctly filter the data in getStreetFromId.
+//    033   26.06.24 Joshua McCormick IMANN-548 ZoomToStreet fix, added setAnchorStreetActionsEl
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -311,6 +312,7 @@ function RelatedStreetTab({
    * @param {number} usrn The USRN of the street to zoom to.
    */
   async function zoomToStreet(event, usrn) {
+    setAnchorStreetActionsEl(null);
     event.stopPropagation();
 
     const found = mapContext.currentSearchData.streets.find((rec) => rec.usrn === usrn);
@@ -851,7 +853,7 @@ function RelatedStreetTab({
                                   </IconButton>
                                 </Tooltip>
                                 <Tooltip title="Zoom to this" arrow placement="bottom" sx={tooltipStyle}>
-                                  <IconButton onClick={() => zoomToStreet(rec.usrn)} size="small">
+                                  <IconButton onClick={(event) => zoomToStreet(event, rec.usrn)} size="small">
                                     <MyLocation sx={ActionIconStyle()} />
                                   </IconButton>
                                 </Tooltip>

@@ -21,6 +21,7 @@
 //    008   08.03.24 Sean Flook       IMANN-348 Updated method to see if a street or property has changed and added in the missing Scottish records.
 //    009   12.06.24 Sean Flook       IMANN-515 Use a List to display the errors and display each error as a separate item.
 //    010   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    011   27.06.24 Joel Benford     IMANN-685 OWE sequence numbers -> seqNum
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -448,7 +449,7 @@ function ADSErrorList({ onClose }) {
         sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.oneWayExemptionPeriodicityCode,
       pkId: sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.pkId,
       esuId: sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.esuId,
-      sequenceNumber: sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.sequenceNumber,
+      seqNum: sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption.seqNum,
     };
     newOneWayExemptions.push(updatedOneWayExemption);
 

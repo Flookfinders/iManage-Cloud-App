@@ -20,6 +20,7 @@
 //    007   28.03.24 Sean Flook                 Added EsusComparison and added additional keys to streetKeysToIgnore.
 //    008   09.04.24 Joel Benford     IMANN-363 Ignore neverExport on successor cross refs
 //    009   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    010   27.06.24 Joel Benford     IMANN-685 HD sequence numbers -> seqNum
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -88,7 +89,7 @@ export const mergeHighwayDedicationKeysToIgnore = [
   "recordEntryDate",
   "lastUpdateDate",
   "recordEndDate",
-  "sequenceNumber",
+  "seqNum",
 ];
 
 export const oneWayExemptionKeysToIgnore = ["changeType", "recordEntryDate", "lastUpdateDate"];

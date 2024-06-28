@@ -28,6 +28,7 @@
 //    015   20.02.24 Sean Flook                 Default blpuLevel to 0 if null when saving.
 //    016   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //    017   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    018   26.06.24 Joel Benford               Null never export and site visit -> false on save, string lpiLevel if Scottish
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -111,14 +112,14 @@ function PropertyTemplatesTab() {
         blpuLogicalStatus: newRecord.blpuLogicalStatus,
         rpc: newRecord.rpc,
         state: newRecord.state,
-        excludeFromExport: newRecord.excludeFromExport,
-        siteVisit: newRecord.siteVisit,
+        excludeFromExport: newRecord.excludeFromExport || false,
+        siteVisit: newRecord.siteVisit || false,
         classification: newRecord.classification,
         lpiLogicalStatus: newRecord.lpiLogicalStatus,
         postTownRef: newRecord.postTownRef,
         subLocalityRef: newRecord.subLocalityRef,
         blpuLevel: newRecord.blpuLevel ? newRecord.blpuLevel : 0,
-        lpiLevel: newRecord.lpiLevel,
+        lpiLevel: settingsContext.isScottish ? "" : newRecord.lpiLevel,
         officialAddressMaker: newRecord.officialAddressMaker,
         postallyAddressable: newRecord.postallyAddressable,
         classificationScheme: newRecord.classificationScheme,
@@ -222,15 +223,15 @@ function PropertyTemplatesTab() {
           blpuLevel: updatedData.blpuLevel ? updatedData.blpuLevel : 0,
           rpc: updatedData.rpc,
           state: updatedData.state,
-          excludeFromExport: updatedData.excludeFromExport,
-          siteVisit: updatedData.siteVisit,
+          excludeFromExport: updatedData.excludeFromExport || false,
+          siteVisit: updatedData.siteVisit || false,
           classification: updatedData.classification,
           classificationScheme: updatedData.classificationScheme,
           lpiTemplatePkId: updatedData.lpiTemplatePkId,
           lpiLogicalStatus: updatedData.lpiLogicalStatus,
           postTownRef: updatedData.postTownRef,
           subLocalityRef: updatedData.subLocalityRef,
-          lpiLevel: updatedData.lpiLevel,
+          lpiLevel: settingsContext.isScottish ? "" : updatedData.lpiLevel,
           officialAddressMaker: updatedData.officialAddressMaker,
           postallyAddressable: updatedData.postallyAddressable,
           miscTemplatePkId: updatedData.miscTemplatePkId,

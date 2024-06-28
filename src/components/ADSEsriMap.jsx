@@ -83,6 +83,7 @@
 //    069   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    070   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //    071   26.06.24 Sean Flook       IMANN-586 Reset the snapping layers after the edit graphics layer has been updated.
+//    072   26.06.24 Joshua McCormick IMANN-548 zoomStreet and property fix, zoomPropertyDataRef length > 0 check
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3632,11 +3633,11 @@ function ADSEsriMap(startExtent) {
       } else zoomStreetDataRef = null;
       setZoomStreetData(zoomStreetDataRef);
 
-      if (mapContext.currentLayers.zoomProperty)
+      if (mapContext.currentLayers.zoomProperty) {
         zoomPropertyDataRef = mapContext.currentSearchData.properties.filter(
           (x) => x.uprn.toString() === mapContext.currentLayers.zoomProperty.toString()
         );
-      else zoomPropertyDataRef = null;
+      } else zoomPropertyDataRef = null;
       setZoomPropertyData(zoomPropertyDataRef);
 
       if (mapContext.currentSearchData.properties && !mapContext.currentSearchData.editStreet) {
@@ -5366,7 +5367,7 @@ function ADSEsriMap(startExtent) {
       }
     });
 
-    if (mapContext.currentLayers.zoomProperty && zoomPropertyDataRef) {
+    if (mapContext.currentLayers.zoomProperty && zoomPropertyDataRef && zoomPropertyDataRef.length > 0) {
       backgroundExtent.current = {
         xmin: zoomPropertyDataRef[0].easting - extentBorder,
         ymin: zoomPropertyDataRef[0].northing - extentBorder,
@@ -5376,7 +5377,7 @@ function ADSEsriMap(startExtent) {
         zoomLevel: view.zoom,
       };
       view.extent = backgroundExtent.current;
-    } else if (mapContext.currentLayers.zoomStreet && zoomStreetDataRef) {
+    } else if (mapContext.currentLayers.zoomStreet && zoomStreetDataRef && zoomStreetDataRef.length > 0) {
       let minX = 9999999.999;
       let minY = 9999999.999;
       let maxX = 0.0;
