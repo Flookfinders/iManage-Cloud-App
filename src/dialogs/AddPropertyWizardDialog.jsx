@@ -40,6 +40,7 @@
 //    027   29.05.24 Sean Flook       IMANN-504 Only create second language for Welsh authorities.
 //    028   14.06.24 Sean Flook       IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
 //    029   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    030   28.06.24 Sean Flook       IMANN-676 Ensure failed UPRNs are always returned to the API.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2327,6 +2328,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
    * @param {string} type The type of closure.
    */
   const handleFinaliseClose = (type) => {
+    if (failedUprns && failedUprns.length && type !== "error") returnFailedUprns(failedUprns, userContext);
     if (onDone && type !== "error") onDone({ type: type, variant: variant, savedProperty: savedProperty.current });
     setViewErrors(type === "error");
     setFinaliseOpen(false);
