@@ -15,6 +15,7 @@
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    004   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
+//    005   28.06.24 Sean Flook       IMANN-170 Fixed warning.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -55,7 +56,7 @@ ConfirmEditLossDialog.propTypes = {
   cascadeChanges: PropTypes.bool,
   saveText: PropTypes.string,
   disposeText: PropTypes.string,
-  handleCascadeChange: PropTypes.func.isRequired,
+  handleCascadeChange: PropTypes.func,
   handleSaveClick: PropTypes.func.isRequired,
   handleDisposeClick: PropTypes.func.isRequired,
   handleReturnClick: PropTypes.func.isRequired,
