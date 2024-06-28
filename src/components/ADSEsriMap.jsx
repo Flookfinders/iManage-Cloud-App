@@ -84,6 +84,7 @@
 //    070   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //    071   26.06.24 Sean Flook       IMANN-586 Reset the snapping layers after the edit graphics layer has been updated.
 //    072   26.06.24 Joshua McCormick IMANN-548 zoomStreet and property fix, zoomPropertyDataRef length > 0 check
+//    073   28.06.24 Sean Flook                 Set the active tool in the sketch widget, needs to be uncommented once ESRI has been updated.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -7391,7 +7392,11 @@ function ADSEsriMap(startExtent) {
             }
 
             if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
-            else sketchRef.current.availableCreateTools = ["polyline"];
+            else {
+              sketchRef.current.availableCreateTools = ["polyline"];
+              // TODO: Uncomment following line once upgraded ESRI
+              // sketchRef.current._activeCreateTool("polyline");
+            }
             break;
 
           case 21: // BLPU
@@ -7423,7 +7428,11 @@ function ADSEsriMap(startExtent) {
             }
 
             if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
-            else sketchRef.current.availableCreateTools = ["point"];
+            else {
+              sketchRef.current.availableCreateTools = ["point"];
+              // TODO: Uncomment following line once upgraded ESRI
+              // sketchRef.current._activeCreateTool("point");
+            }
             break;
 
           case 22: // Extent
@@ -7448,7 +7457,11 @@ function ADSEsriMap(startExtent) {
             }
 
             if (mapContext.currentEditObject.objectId > 0 && hasGeometry) sketchRef.current.availableCreateTools = [];
-            else sketchRef.current.availableCreateTools = ["polygon"];
+            else {
+              sketchRef.current.availableCreateTools = ["polygon"];
+              // TODO: Uncomment following line once upgraded ESRI
+              // sketchRef.current._activeCreateTool("polygon");
+            }
             break;
 
           case 51: // Maintenance Responsibility
@@ -7474,6 +7487,8 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
+            // TODO: Uncomment following line once upgraded ESRI
+            // sketchRef.current._activeCreateTool("polyline");
             break;
 
           case 52: // Reinstatement Category
@@ -7499,6 +7514,8 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
+            // TODO: Uncomment following line once upgraded ESRI
+            // sketchRef.current._activeCreateTool("polyline");
             break;
 
           case 53: // Special Designation
@@ -7524,6 +7541,8 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
+            // TODO: Uncomment following line once upgraded ESRI
+            // sketchRef.current._activeCreateTool("polyline");
             break;
 
           case 61: // Interest
@@ -7551,6 +7570,8 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
+            // TODO: Uncomment following line once upgraded ESRI
+            // sketchRef.current._activeCreateTool("polyline");
             break;
 
           case 62: // Construction
@@ -7578,6 +7599,8 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
+            // TODO: Uncomment following line once upgraded ESRI
+            // sketchRef.current._activeCreateTool("polyline");
             break;
 
           case 63: // Special Designation
@@ -7605,6 +7628,8 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
+            // TODO: Uncomment following line once upgraded ESRI
+            // sketchRef.current._activeCreateTool("polyline");
             break;
 
           case 64: // Height, Width & Weight Restriction
@@ -7631,6 +7656,8 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
+            // TODO: Uncomment following line once upgraded ESRI
+            // sketchRef.current._activeCreateTool("polyline");
             break;
 
           case 66: // Public right of way
@@ -7658,6 +7685,8 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
+            // TODO: Uncomment following line once upgraded ESRI
+            // sketchRef.current._activeCreateTool("polyline");
             break;
 
           default:

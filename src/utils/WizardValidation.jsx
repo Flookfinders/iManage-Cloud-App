@@ -37,6 +37,7 @@
 //    020   18.06.24 Sean Flook       IMANN-534 Correctly handle blpuStates of 0.
 //    021   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    022   20.06.24 Sean Flook       IMANN-626 Corrected field name.
+//    023   28.06.24 Sean Flook                 Corrected error number.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -585,8 +586,8 @@ export function ValidateAddressDetails(
     if (includeCheck(currentCheck, isScottish) && data.usrn && !IsStreetClosed(data.usrn, userContext, isScottish))
       usrnErrors.push(GetErrorMessage(currentCheck, isScottish));
 
-    // Classification is missing.
-    currentCheck = GetCheck(2100016, currentLookups, methodName, isScottish, showDebugMessages);
+    // Missing street descriptor.
+    currentCheck = GetCheck(1100007, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
       data.usrn &&
