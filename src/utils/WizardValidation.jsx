@@ -38,6 +38,7 @@
 //    021   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    022   20.06.24 Sean Flook       IMANN-626 Corrected field name.
 //    023   28.06.24 Sean Flook                 Corrected error number.
+//    024   28.06.24 Joel Benford     IMANN-654 Fixed BLPU state validation treating 0 as falsy in dialogue
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -823,7 +824,7 @@ export function ValidatePropertyDetails(
       !haveMoveBlpu &&
       includeCheck(currentCheck, isScottish) &&
       (!isScottish || (isScottish && blpuData.logicalStatus < 9)) &&
-      !blpuData.state
+      (blpuData.state === undefined || blpuData.startDate === null)
     ) {
       stateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -946,7 +947,11 @@ export function ValidatePropertyDetails(
 
     // State missing.
     currentCheck = GetCheck(2100059, currentLookups, methodName, isScottish, showDebugMessages);
-    if (!haveMoveBlpu && includeCheck(currentCheck, isScottish) && !blpuData.state)
+    if (
+      !haveMoveBlpu &&
+      includeCheck(currentCheck, isScottish) &&
+      (blpuData.state === undefined || blpuData.state === null)
+    )
       stateErrors.push(GetErrorMessage(currentCheck, isScottish));
 
     // Approved BLPU more than a year old, can't be marked as unclassified.
