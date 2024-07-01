@@ -52,6 +52,7 @@
 //    028   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
 //    029   21.06.24 Sean Flook       IMANN-577 Corrected logic.
 //    030   01.07.24 Joel Benford     IMANN-654 Fix checking BLPU state 0 for property wizard
+//    031   01.07.24 Sean Flook       IMANN-674 Included logical status 7 in check 2400031.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -773,7 +774,7 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       includeCheck(currentCheck, isScottish) &&
       data.endDate &&
       data.logicalStatus &&
-      ![8, 9].includes(data.logicalStatus)
+      ![7, 8, 9].includes(data.logicalStatus)
     ) {
       endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
