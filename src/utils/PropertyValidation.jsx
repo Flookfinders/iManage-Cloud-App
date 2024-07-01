@@ -51,6 +51,7 @@
 //    027   18.06.24 Sean Flook       IMANN-534 Correctly handle blpuStates of 0.
 //    028   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
 //    029   21.06.24 Sean Flook       IMANN-577 Corrected logic.
+//    030   01.07.24 Joel Benford     IMANN-654 Fix checking BLPU state 0 for property wizard
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -260,7 +261,7 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
     if (
       includeCheck(currentCheck, isScottish) &&
       (!isScottish || (isScottish && data.logicalStatus < 9)) &&
-      !data.blpuStateDate
+      (data.blpuState === undefined || data.blpuState === null)
     ) {
       blpuStateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -415,7 +416,11 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
 
     // State missing.
     currentCheck = GetCheck(2100059, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && !data.blpuState && data.blpuState !== 0) {
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      !data.blpuState &&
+      (data.blpuState === undefined || data.blpuState === null)
+    ) {
       blpuStateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
