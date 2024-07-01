@@ -67,6 +67,7 @@
 //    054   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    055   20.06.24 Sean Flook       IMANN-636 Bug fix.
 //    056   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
+//    057   01.07.24 Sean Flook       IMANN-592 Use sandboxRef.current in HandleResetSandbox.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1044,9 +1045,9 @@ function App() {
    */
   function HandleResetSandbox(sourceType) {
     const resetSandbox = {
-      sourceStreet: sourceType !== "street" ? null : sandbox.sourceStreet,
+      sourceStreet: sourceType !== "street" ? null : sandboxRef.current.sourceStreet,
       currentStreet: null,
-      sourceProperty: sourceType !== "property" ? null : sandbox.sourceProperty,
+      sourceProperty: sourceType !== "property" ? null : sandboxRef.current.sourceProperty,
       currentProperty: null,
       currentStreetRecords: {
         streetDescriptor: null,

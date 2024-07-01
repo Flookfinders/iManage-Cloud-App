@@ -86,6 +86,7 @@
 //    072   26.06.24 Joshua McCormick IMANN-548 zoomStreet and property fix, zoomPropertyDataRef length > 0 check
 //    073   28.06.24 Sean Flook                 Set the active tool in the sketch widget, needs to be uncommented once ESRI has been updated.
 //    074   01.07.24 Sean Flook       IMANN-583 Only remove the graphics from the edit layer when required.
+//    075   01.07.24 Sean Flook       IMANN-592 When selecting to open a street or property that is not currently part of the map search data add it.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -135,6 +136,7 @@ import {
   DisplayStreetInStreetView,
   hasStreetChanged,
   setASDLayerVisibility,
+  GetStreetMapData,
 } from "../utils/StreetUtils";
 import {
   GetClassificationLabel,
@@ -147,6 +149,7 @@ import {
   GetPropertyMapData,
   hasPropertyChanged,
   hasParentPaoChanged,
+  getClassificationCode,
 } from "../utils/PropertyUtils";
 
 import shp from "shpjs";
@@ -1863,7 +1866,7 @@ function ADSEsriMap(startExtent) {
         currentStreet,
         streetContext,
         userContext,
-        lookupContext,
+        lookupContext.current,
         searchContext,
         mapContext,
         sandboxContext,
@@ -1897,7 +1900,7 @@ function ADSEsriMap(startExtent) {
         propertyContext.currentProperty.newProperty,
         propertyContext,
         userContext,
-        lookupContext,
+        lookupContext.current,
         searchContext,
         mapContext,
         sandboxContext,
@@ -1953,7 +1956,7 @@ function ADSEsriMap(startExtent) {
                     const currentStreetData = GetCurrentStreetData(
                       streetDataRef,
                       sandboxContext,
-                      lookupContext,
+                      lookupContext.current,
                       isWelsh.current,
                       isScottish.current,
                       userContext.current && userContext.current.currentUser && userContext.current.currentUser.hasASD
@@ -2018,7 +2021,7 @@ function ADSEsriMap(startExtent) {
                     const currentPropertyData = GetCurrentPropertyData(
                       propertyDataRef,
                       sandboxContext,
-                      lookupContext,
+                      lookupContext.current,
                       isWelsh.current,
                       isScottish.current
                     );
@@ -2122,12 +2125,41 @@ function ADSEsriMap(startExtent) {
             }))
           : undefined;
 
-        mapContext.onSearchDataChange(
-          mapContext.currentSearchData.streets,
-          mapContext.currentSearchData.properties,
-          null,
-          uprn
-        );
+        const findProperty = mapContext.currentSearchData.properties.find((x) => x.uprn.toString() === uprn.toString());
+
+        if (!findProperty && returnValue) {
+          const engLpi = returnValue.lpis.find(
+            (x) => x.language === "ENG" && x.logicalStatus === returnValue.logicalStatus
+          );
+
+          const newProperty = [
+            {
+              uprn: uprn,
+              parentUprn: returnValue.parentUprn,
+              address: engLpi.address,
+              postcode: engLpi.postcode,
+              easting: returnValue.xcoordinate,
+              northing: returnValue.ycoordinate,
+              logicalStatus: returnValue.logicalStatus,
+              classificationCode: getClassificationCode(returnValue),
+            },
+          ];
+
+          const currentSearchProperties = mergeArrays(
+            mapContext.currentSearchData.properties,
+            newProperty,
+            (a, b) => a.uprn === b.uprn
+          );
+
+          mapContext.onSearchDataChange(mapContext.currentSearchData.streets, currentSearchProperties, null, uprn);
+        } else {
+          mapContext.onSearchDataChange(
+            mapContext.currentSearchData.streets,
+            mapContext.currentSearchData.properties,
+            null,
+            uprn
+          );
+        }
         mapContext.onMapChange(extents, null, null);
       }
     },
@@ -2137,18 +2169,222 @@ function ADSEsriMap(startExtent) {
   /**
    * Method to handle opening a street from the feature dialog.
    */
-  const handleOpenStreet = useCallback(() => {
+  const handleOpenStreet = useCallback(async () => {
     if (recordAttributes.current) {
       propertyContext.onPropertyChange(0, 0, null, null, null, null, null, false, null);
 
       streetContext.onStreetChange(recordAttributes.current.USRN, recordAttributes.current.Description, false);
 
-      mapContext.onSearchDataChange(
-        mapContext.currentSearchData.streets,
-        mapContext.currentSearchData.properties,
-        recordAttributes.current.USRN,
-        null
+      const foundStreet = mapContext.currentSearchData.streets.find(
+        (x) => x.usrn.toString() === recordAttributes.current.USRN.toString()
       );
+
+      if (!foundStreet) {
+        const streetData = await GetStreetMapData(
+          Number(recordAttributes.current.USRN),
+          userContext.current,
+          isScottish.current
+        );
+
+        if (streetData) {
+          const engDescriptor = streetData.streetDescriptors.find((x) => x.language === "ENG");
+
+          const townRec = lookupContext.current.currentLookups.towns.find((x) => x.townRef === engDescriptor.townRef);
+          const localityRec = lookupContext.current.currentLookups.localities.find(
+            (x) => x.localityRef === engDescriptor.locRef
+          );
+
+          const newSearchStreet = [
+            {
+              usrn: streetData.usrn,
+              description: engDescriptor.streetDescriptor,
+              language: "ENG",
+              locality: localityRec ? localityRec.locality : engDescriptor.locality,
+              town: townRec ? townRec.town : engDescriptor.town,
+              state: !isScottish ? streetData.state : undefined,
+              type: streetData.recordType,
+              esus:
+                streetData && streetData.esus
+                  ? streetData.esus
+                      .filter((esu) => esu.changeType !== "D")
+                      .map((esu) => ({
+                        esuId: esu.esuId,
+                        state: isScottish ? esu.state : undefined,
+                        geometry:
+                          esu.wktGeometry && esu.wktGeometry !== "" ? GetWktCoordinates(esu.wktGeometry) : undefined,
+                      }))
+                  : [],
+              asdType51:
+                isScottish.current && streetData.maintenanceResponsibilities
+                  ? streetData.maintenanceResponsibilities
+                      .filter((asdRec) => asdRec.changeType !== "D")
+                      .map((asdRec) => ({
+                        type: 51,
+                        pkId: asdRec.pkId,
+                        usrn: asdRec.usrn,
+                        streetStatus: asdRec.streetStatus,
+                        custodianCode: asdRec.custodianCode,
+                        maintainingAuthorityCode: asdRec.maintainingAuthorityCode,
+                        wholeRoad: asdRec.wholeRoad,
+                        geometry:
+                          asdRec.wktGeometry && asdRec.wktGeometry !== ""
+                            ? GetWktCoordinates(asdRec.wktGeometry)
+                            : undefined,
+                      }))
+                  : [],
+              asdType52:
+                isScottish.current && streetData.reinstatementCategories
+                  ? streetData.reinstatementCategories
+                      .filter((asdRec) => asdRec.changeType !== "D")
+                      .map((asdRec) => ({
+                        type: 52,
+                        pkId: asdRec.pkId,
+                        usrn: asdRec.usrn,
+                        reinstatementCategoryCode: asdRec.reinstatementCategoryCode,
+                        custodianCode: asdRec.custodianCode,
+                        reinstatementAuthorityCode: asdRec.reinstatementAuthorityCode,
+                        wholeRoad: asdRec.wholeRoad,
+                        geometry:
+                          asdRec.wktGeometry && asdRec.wktGeometry !== ""
+                            ? GetWktCoordinates(asdRec.wktGeometry)
+                            : undefined,
+                      }))
+                  : [],
+              asdType53:
+                isScottish.current && streetData.specialDesignations
+                  ? streetData.specialDesignations
+                      .filter((asdRec) => asdRec.changeType !== "D")
+                      .map((asdRec) => ({
+                        type: 53,
+                        pkId: asdRec.pkId,
+                        usrn: asdRec.usrn,
+                        specialDesig: asdRec.specialDesig,
+                        custodianCode: asdRec.custodianCode,
+                        authorityCode: asdRec.authorityCode,
+                        wholeRoad: asdRec.wholeRoad,
+                        geometry:
+                          asdRec.wktGeometry && asdRec.wktGeometry !== ""
+                            ? GetWktCoordinates(asdRec.wktGeometry)
+                            : undefined,
+                      }))
+                  : [],
+              asdType61:
+                !isScottish.current && userContext.current.currentUser.hasASD && streetData.interests
+                  ? streetData.interests
+                      .filter((asdRec) => asdRec.changeType !== "D")
+                      .map((asdRec) => ({
+                        type: 61,
+                        pkId: asdRec.pkId,
+                        usrn: asdRec.usrn,
+                        streetStatus: asdRec.streetStatus,
+                        interestType: asdRec.interestType,
+                        districtRefAuthority: asdRec.districtRefAuthority,
+                        swaOrgRefAuthority: asdRec.swaOrgRefAuthority,
+                        wholeRoad: asdRec.wholeRoad,
+                        geometry:
+                          asdRec.wktGeometry && asdRec.wktGeometry !== ""
+                            ? GetWktCoordinates(asdRec.wktGeometry)
+                            : undefined,
+                      }))
+                  : [],
+              asdType62:
+                !isScottish.current && userContext.current.currentUser.hasASD && streetData.constructions
+                  ? streetData.constructions
+                      .filter((asdRec) => asdRec.changeType !== "D")
+                      .map((asdRec) => ({
+                        type: 62,
+                        pkId: asdRec.pkId,
+                        usrn: asdRec.usrn,
+                        constructionType: asdRec.constructionType,
+                        reinstatementTypeCode: asdRec.reinstatementTypeCode,
+                        swaOrgRefConsultant: asdRec.swaOrgRefConsultant,
+                        districtRefConsultant: asdRec.districtRefConsultant,
+                        wholeRoad: asdRec.wholeRoad,
+                        geometry:
+                          asdRec.wktGeometry && asdRec.wktGeometry !== ""
+                            ? GetWktCoordinates(asdRec.wktGeometry)
+                            : undefined,
+                      }))
+                  : [],
+              asdType63:
+                !isScottish.current && userContext.current.currentUser.hasASD && streetData.specialDesignations
+                  ? streetData.specialDesignations
+                      .filter((asdRec) => asdRec.changeType !== "D")
+                      .map((asdRec) => ({
+                        type: 63,
+                        pkId: asdRec.pkId,
+                        usrn: asdRec.usrn,
+                        streetSpecialDesigCode: asdRec.streetSpecialDesigCode,
+                        swaOrgRefConsultant: asdRec.swaOrgRefConsultant,
+                        districtRefConsultant: asdRec.districtRefConsultant,
+                        wholeRoad: asdRec.wholeRoad,
+                        geometry:
+                          asdRec.wktGeometry && asdRec.wktGeometry !== ""
+                            ? GetWktCoordinates(asdRec.wktGeometry)
+                            : undefined,
+                      }))
+                  : [],
+              asdType64:
+                !isScottish.current && userContext.current.currentUser.hasASD && streetData.heightWidthWeights
+                  ? streetData.heightWidthWeights
+                      .filter((asdRec) => asdRec.changeType !== "D")
+                      .map((asdRec) => ({
+                        type: 64,
+                        pkId: asdRec.pkId,
+                        usrn: asdRec.usrn,
+                        hwwRestrictionCode: asdRec.hwwRestrictionCode,
+                        swaOrgRefConsultant: asdRec.swaOrgRefConsultant,
+                        districtRefConsultant: asdRec.districtRefConsultant,
+                        wholeRoad: asdRec.wholeRoad,
+                        geometry:
+                          asdRec.wktGeometry && asdRec.wktGeometry !== ""
+                            ? GetWktCoordinates(asdRec.wktGeometry)
+                            : undefined,
+                      }))
+                  : [],
+              asdType66:
+                !isScottish.current && userContext.current.currentUser.hasASD && streetData.publicRightOfWays
+                  ? streetData.publicRightOfWays
+                      .filter((asdRec) => asdRec.changeType !== "D")
+                      .map((asdRec) => ({
+                        type: 66,
+                        pkId: asdRec.pkId,
+                        prowUsrn: asdRec.prowUsrn,
+                        prowRights: asdRec.prowRights,
+                        prowStatus: asdRec.prowStatus,
+                        prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
+                        prowDistrictRefConsultant: asdRec.prowDistrictRefConsultant,
+                        defMapGeometryType: asdRec.defMapGeometryType,
+                        geometry:
+                          asdRec.wktGeometry && asdRec.wktGeometry !== ""
+                            ? GetWktCoordinates(asdRec.wktGeometry)
+                            : undefined,
+                      }))
+                  : [],
+            },
+          ];
+
+          const currentSearchStreets = mergeArrays(
+            mapContext.currentSearchData.streets,
+            newSearchStreet,
+            (a, b) => a.usrn === b.usrn
+          );
+
+          mapContext.onSearchDataChange(
+            currentSearchStreets,
+            mapContext.currentSearchData.properties,
+            recordAttributes.current.USRN,
+            null
+          );
+        }
+      } else {
+        mapContext.onSearchDataChange(
+          mapContext.currentSearchData.streets,
+          mapContext.currentSearchData.properties,
+          recordAttributes.current.USRN,
+          null
+        );
+      }
 
       mapContext.onMapChange([], null, null);
 
