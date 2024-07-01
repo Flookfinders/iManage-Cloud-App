@@ -85,6 +85,7 @@
 //    071   26.06.24 Sean Flook       IMANN-586 Reset the snapping layers after the edit graphics layer has been updated.
 //    072   26.06.24 Joshua McCormick IMANN-548 zoomStreet and property fix, zoomPropertyDataRef length > 0 check
 //    073   28.06.24 Sean Flook                 Set the active tool in the sketch widget, needs to be uncommented once ESRI has been updated.
+//    074   01.07.24 Sean Flook       IMANN-583 Only remove the graphics from the edit layer when required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -8388,10 +8389,6 @@ function ADSEsriMap(startExtent) {
 
     if (mapContext.currentBackgroundData.properties && !(editingObject.current && editingObject.current.objectType)) {
       // console.log("[SF] Selecting properties");
-      mapRef.current.remove(mapRef.current.findLayerById(editGraphicLayerName));
-      editGraphicsLayer.current.graphics.removeAll();
-      editGraphicsLayer.current.listMode = "hide";
-
       const streetLayer = mapRef.current && mapRef.current.findLayerById(streetLayerName);
       const propertyLayer = mapRef.current && mapRef.current.findLayerById(propertyLayerName);
       const selectPropertyLayer = mapRef.current && mapRef.current.findLayerById(selectPropertyLayerName);
@@ -8402,6 +8399,10 @@ function ADSEsriMap(startExtent) {
 
           selectingProperties.current = true;
 
+          mapRef.current.remove(mapRef.current.findLayerById(editGraphicLayerName));
+          editGraphicsLayer.current.graphics.removeAll();
+          editGraphicsLayer.current.listMode = "hide";
+
           if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.visible = false;
           if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.visible = false;
           if (streetLayer) streetLayer.visible = false;
@@ -8410,21 +8411,21 @@ function ADSEsriMap(startExtent) {
           if (propertyLayer) propertyLayer.visible = false;
           if (selectPropertyLayer) selectPropertyLayer.visible = true;
 
-          mapRef.current.add(editGraphicsLayer.current);
-
           viewRef.current.whenLayerView(editGraphicsLayer.current).then((editGraphicsLayerView) => {
             editGraphicsLayerView.highlightOptions = {
               haloOpacity: 0,
               fillOpacity: 0,
             };
           });
-          sketchRef.current.layer = editGraphicsLayer.current;
 
           mapContext.currentBackgroundData.properties.forEach((property) => {
             editGraphicsLayer.current.graphics.add(
               createSelectablePointGraphic(property.easting, property.northing, property.uprn, property.logicalStatus)
             );
           });
+
+          mapRef.current.add(editGraphicsLayer.current);
+          sketchRef.current.layer = editGraphicsLayer.current;
 
           sketchRef.current.availableCreateTools = [];
           sketchRef.current.visibleElements = {
