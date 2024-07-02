@@ -21,6 +21,7 @@
 //    008   31.01.24 Joel Benford               Changes to as save and support OS
 //    009   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    010   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    011   02.07.24 Joel Benford     IMANN-663 Label "Data" -> "Linked data"
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -326,7 +327,7 @@ function EditMetadataGazetteerDialog({ isOpen, data, variant, onDone, onClose })
                   {!settingsContext.isScottish && (
                     <>
                       <ADSTextControl
-                        label="Data"
+                        label="Linked data"
                         isEditable
                         maxLength={100}
                         value={linkedData}

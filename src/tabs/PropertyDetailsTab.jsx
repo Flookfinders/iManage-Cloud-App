@@ -55,6 +55,8 @@
 //    042   19.06.24 Joshua McCormick IMANN-548 Property Details options zoom fix
 //    043   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    044   21.06.24 Sean Flook       IMANN-636 Fixed warning.
+//    045   01.07.24 Joel Benford     IMANN-603 Set displayed UPRN from param not context
+//    045   01.07.24 Joel Benford     IMANN-603 Handle undefined
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1144,7 +1146,7 @@ function PropertyDetailsTab({
           justifyContent="space-between"
           sx={{ pl: theme.spacing(2), mt: theme.spacing(0.25) }}
         >
-          <Typography variant="subtitle1">{propertyContext.currentProperty.uprn}</Typography>
+          <Typography variant="subtitle1">{(data && data.uprn) || ""}</Typography>
           <Tooltip title="Actions" arrow placement="right" sx={tooltipStyle}>
             <IconButton onClick={handleBLPUMenuClick} aria-controls="blpu-menu" aria-haspopup="true" size="small">
               <MoreVertIcon sx={ActionIconStyle()} />
