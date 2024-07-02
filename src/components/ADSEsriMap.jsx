@@ -88,6 +88,7 @@
 //    074   01.07.24 Sean Flook       IMANN-583 Only remove the graphics from the edit layer when required.
 //    075   01.07.24 Sean Flook       IMANN-592 When selecting to open a street or property that is not currently part of the map search data add it.
 //    076   02.07.24 Sean Flook       IMANN-507 Only add the edit graphics layer once.
+//    077   02.07.24 Sean Flook       IMANN-507 When editing a property ensure the edit layer is top of the list.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -5494,7 +5495,13 @@ function ADSEsriMap(startExtent) {
       if (editingGraphic) propertyLayer.popupEnabled = false;
     }
     mapRef.current.add(zoomGraphicsLayer.current);
-    if (!mapRef.current.findLayerById(editGraphicsLayerName)) mapRef.current.add(editGraphicsLayer.current);
+    if (!mapRef.current.findLayerById(editGraphicsLayerName)) {
+      mapRef.current.add(editGraphicsLayer.current);
+    } else if (mapContext.currentSearchData.editProperty) {
+      const currentEditIndex = mapRef.current.layers.indexOf(editGraphicsLayer.current);
+      const requiredEditIndex = mapRef.current.layers.length - 1;
+      if (currentEditIndex !== requiredEditIndex) mapRef.current.reorder(editGraphicsLayer.current, requiredEditIndex);
+    }
 
     setASDLayerVisibility(51, asd51Layer, streetContext.currentRecord);
     setASDLayerVisibility(52, asd52Layer, streetContext.currentRecord);
