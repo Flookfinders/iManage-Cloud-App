@@ -87,6 +87,7 @@
 //    073   28.06.24 Sean Flook                 Set the active tool in the sketch widget, needs to be uncommented once ESRI has been updated.
 //    074   01.07.24 Sean Flook       IMANN-583 Only remove the graphics from the edit layer when required.
 //    075   01.07.24 Sean Flook       IMANN-592 When selecting to open a street or property that is not currently part of the map search data add it.
+//    076   02.07.24 Sean Flook       IMANN-507 Only add the edit graphics layer once.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -219,8 +220,8 @@ const asd62LayerName = "asd62Layer";
 const asd63LayerName = "asd63Layer";
 const asd64LayerName = "asd64Layer";
 const asd66LayerName = "asd66Layer";
-const zoomGraphicLayerName = "zoomGraphicLayer";
-const editGraphicLayerName = "editGraphicLayer";
+const zoomGraphicsLayerName = "zoomGraphicsLayer";
+const editGraphicsLayerName = "editGraphicsLayer";
 const selectPropertyLayerName = "selectPropertyLayer";
 
 const defaultValidColour = [117, 112, 179]; // purple
@@ -1164,14 +1165,14 @@ function ADSEsriMap(startExtent) {
 
   const zoomGraphicsLayer = useRef(
     new GraphicsLayer({
-      id: zoomGraphicLayerName,
+      id: zoomGraphicsLayerName,
       title: "Zoom layer",
       listMode: "hide",
     })
   );
   const editGraphicsLayer = useRef(
     new GraphicsLayer({
-      id: editGraphicLayerName,
+      id: editGraphicsLayerName,
       title: "Edit layer",
       listMode: "hide",
     })
@@ -2952,6 +2953,16 @@ function ADSEsriMap(startExtent) {
       baseView.ui.add(baseCoordinateConversion, { position: "bottom-right" });
 
       baseSketch.activeTool = null;
+
+      // Uncomment below if need to know what layers are being added, moved and removed from the map
+      // baseMap.layers.on("change", function (event) {
+      //   const copiedEvent = JSON.parse(JSON.stringify(event));
+      //   console.log("[SF] layers changed", {
+      //     added: copiedEvent.added,
+      //     moved: copiedEvent.moved,
+      //     removed: copiedEvent.removed,
+      //   });
+      // });
 
       baseView.when((_) => {
         const plus = document.getElementsByClassName("esri-icon-plus");
@@ -5434,7 +5445,7 @@ function ADSEsriMap(startExtent) {
     mapRef.current.remove(mapRef.current.findLayerById(asd66LayerName));
     mapRef.current.remove(mapRef.current.findLayerById(extentLayerName));
     mapRef.current.remove(mapRef.current.findLayerById(propertyLayerName));
-    mapRef.current.remove(mapRef.current.findLayerById(zoomGraphicLayerName));
+    mapRef.current.remove(mapRef.current.findLayerById(zoomGraphicsLayerName));
 
     const editingGraphic = editingObject.current && editingObject.current.objectType;
 
@@ -5483,6 +5494,7 @@ function ADSEsriMap(startExtent) {
       if (editingGraphic) propertyLayer.popupEnabled = false;
     }
     mapRef.current.add(zoomGraphicsLayer.current);
+    if (!mapRef.current.findLayerById(editGraphicsLayerName)) mapRef.current.add(editGraphicsLayer.current);
 
     setASDLayerVisibility(51, asd51Layer, streetContext.currentRecord);
     setASDLayerVisibility(52, asd52Layer, streetContext.currentRecord);
@@ -5492,13 +5504,6 @@ function ADSEsriMap(startExtent) {
     setASDLayerVisibility(63, asd63Layer, streetContext.currentRecord);
     setASDLayerVisibility(64, asd64Layer, streetContext.currentRecord);
     setASDLayerVisibility(66, asd66Layer, streetContext.currentRecord);
-
-    // Check we do not need to move the edit layer back to the top
-    if (editingGraphic && editGraphicsLayer.current) {
-      const currentEditIndex = mapRef.current.layers.indexOf(editGraphicsLayer.current);
-      const requiredEditIndex = mapRef.current.layers.length - 1;
-      if (currentEditIndex !== requiredEditIndex) mapRef.current.reorder(editGraphicsLayer.current, requiredEditIndex);
-    }
 
     zoomGraphicsLayer.current.graphics.removeAll();
 
@@ -5530,7 +5535,11 @@ function ADSEsriMap(startExtent) {
     }
 
     streetLayer.when(function () {
-      if (!mapContext.currentLayers.zoomStreet && !mapContext.currentLayers.zoomProperty) {
+      if (
+        !mapContext.currentLayers.zoomStreet &&
+        !mapContext.currentLayers.zoomProperty &&
+        (!editingObject.current || editingObject.current.objectType !== 13)
+      ) {
         if (propertyLayer.fullExtent) {
           backgroundExtent.current = {
             xmin:
@@ -5568,7 +5577,11 @@ function ADSEsriMap(startExtent) {
     });
 
     propertyLayer.when(function () {
-      if (!mapContext.currentLayers.zoomStreet && !mapContext.currentLayers.zoomProperty) {
+      if (
+        !mapContext.currentLayers.zoomStreet &&
+        !mapContext.currentLayers.zoomProperty &&
+        (!editingObject.current || editingObject.current.objectType !== 22)
+      ) {
         if (streetLayer.fullExtent) {
           backgroundExtent.current = {
             xmin:
@@ -6176,36 +6189,6 @@ function ADSEsriMap(startExtent) {
           console.error("[ERROR] getting function", { error: error });
         });
     }
-
-    // function fadeVisibilityOn(layer) {
-    //   let animating = true;
-    //   let opacity = 0;
-    //   // fade layer's opacity from 0 to
-    //   // whichever value the user has configured
-    //   const finalOpacity = layer.opacity;
-    //   layer.opacity = opacity;
-
-    //   view.whenLayerView(layer).then((layerView) => {
-    //     function incrementOpacityByFrame() {
-    //       if (opacity >= finalOpacity && animating) {
-    //         animating = false;
-    //         return;
-    //       }
-
-    //       layer.opacity = opacity;
-    //       opacity += 0.02;
-
-    //       requestAnimationFrame(incrementOpacityByFrame);
-    //     }
-
-    //     // Wait for tiles to finish loading before beginning the fade
-    //     reactiveUtils
-    //       .whenOnce(() => !layerView.updating)
-    //       .then(() => {
-    //         requestAnimationFrame(incrementOpacityByFrame);
-    //       });
-    //   });
-    // }
 
     view.when().then(() => {
       // When the user toggles a layer on or off, transition
@@ -7425,7 +7408,6 @@ function ADSEsriMap(startExtent) {
       setSnappingLayers();
     } else {
       // console.log("[SF] Edit graphics layer & setting sketch tools");
-      mapRef.current.remove(mapRef.current.findLayerById(editGraphicLayerName));
       editGraphicsLayer.current.graphics.removeAll();
 
       let canContinue = false;
@@ -7585,7 +7567,6 @@ function ADSEsriMap(startExtent) {
           objectId: mapContext.currentEditObject.objectId,
         };
 
-        mapRef.current.add(editGraphicsLayer.current);
         sketchRef.current.layer = editGraphicsLayer.current;
 
         if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.popupEnabled = false;
@@ -8635,7 +8616,6 @@ function ADSEsriMap(startExtent) {
 
           selectingProperties.current = true;
 
-          mapRef.current.remove(mapRef.current.findLayerById(editGraphicLayerName));
           editGraphicsLayer.current.graphics.removeAll();
           editGraphicsLayer.current.listMode = "hide";
 
@@ -8660,7 +8640,6 @@ function ADSEsriMap(startExtent) {
             );
           });
 
-          mapRef.current.add(editGraphicsLayer.current);
           sketchRef.current.layer = editGraphicsLayer.current;
 
           sketchRef.current.availableCreateTools = [];
