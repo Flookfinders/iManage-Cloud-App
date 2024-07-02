@@ -34,6 +34,7 @@
 //    021   27.03.24 Sean Flook                 Clear specific location if going back to whole road.
 //    022   17.05.24 Joshua McCormick IMANN-400 OSSpecial desc char limit set to 255 from 250
 //    023   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    024   02.07.24 Joel Benford     IMANN-669 .specialDesig -> .specialDesignationCode
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -316,7 +317,7 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
   const handleCancelClicked = () => {
     if (dataChanged) {
       if (data && data.osSpecialDesignationData) {
-        setSpecialDesignation(data.osSpecialDesignationData.specialDesig);
+        setSpecialDesignation(data.osSpecialDesignationData.specialDesignationCode);
         setDescription(data.osSpecialDesignationData.description ? data.osSpecialDesignationData.description : "");
         setCustodian(data.osSpecialDesignationData.custodianCode);
         setAuthority(data.osSpecialDesignationData.authorityCode);
@@ -395,7 +396,7 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
 
   useEffect(() => {
     if (!loading && data && data.osSpecialDesignationData) {
-      setSpecialDesignation(data.osSpecialDesignationData.specialDesig);
+      setSpecialDesignation(data.osSpecialDesignationData.specialDesignationCode);
       setDescription(data.osSpecialDesignationData.description ? data.osSpecialDesignationData.description : "");
       setCustodian(data.osSpecialDesignationData.custodianCode);
       setAuthority(data.osSpecialDesignationData.authorityCode);
