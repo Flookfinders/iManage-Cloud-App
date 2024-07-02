@@ -89,6 +89,7 @@
 //    075   01.07.24 Sean Flook       IMANN-592 When selecting to open a street or property that is not currently part of the map search data add it.
 //    076   02.07.24 Sean Flook       IMANN-507 Only add the edit graphics layer once.
 //    077   02.07.24 Sean Flook       IMANN-507 When editing a property ensure the edit layer is top of the list.
+//    078   02.07.24 Sean Flook       IMANN-689 Set the unassigned ESUs layer visibility to true.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3354,7 +3355,7 @@ function ADSEsriMap(startExtent) {
       opacity: 0.75,
       spatialReference: { wkid: 27700 },
       title: "Unassigned ESU layer",
-      visible: process.env.NODE_ENV === "development" ? true : false,
+      visible: true,
     });
 
     mapRef.current.remove(mapRef.current.findLayerById(unassignedEsusLayerName));
@@ -7509,7 +7510,7 @@ function ADSEsriMap(startExtent) {
           backgroundStreetLayerRef.current.popupEnabled = true;
         }
         if (unassignedEsusLayerRef.current) {
-          unassignedEsusLayerRef.current.opacity = 0.5;
+          unassignedEsusLayerRef.current.opacity = 0.75;
           unassignedEsusLayerRef.current.popupEnabled = true;
         }
         if (streetLayer) {
@@ -7607,7 +7608,7 @@ function ADSEsriMap(startExtent) {
               }
 
               if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.opacity = 0.25;
-              if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.25;
+              if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.opacity = 0.5;
               if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
               if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
               if (streetLayer) streetLayer.opacity = 0.5;
@@ -7921,7 +7922,7 @@ function ADSEsriMap(startExtent) {
               if (!editingGraphic) backgroundStreetLayerRef.current.popupEnabled = true;
             }
             if (unassignedEsusLayerRef.current) {
-              unassignedEsusLayerRef.current.opacity = 0.5;
+              unassignedEsusLayerRef.current.opacity = 0.75;
               if (!editingGraphic) unassignedEsusLayerRef.current.popupEnabled = true;
             }
             if (streetLayer) {
