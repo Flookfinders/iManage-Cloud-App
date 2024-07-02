@@ -23,11 +23,12 @@
 //    010   12.03.24 Sean Flook           MUL10 Display errors in a list control.
 //    011   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    012   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
-//    013   19.06.24 Joshua McCormick IMANN-503 BLPU Level field max characters 30 and removed updown counter.
-//    014   19.06.24 Joshua McCormick IMANN-503 BLPU Level AdsNumberControl type set to text to hide updown
+//    013   19.06.24 Joshua McCormick IMANN-503 BLPU Level field max characters 30 and removed up down counter.
+//    014   19.06.24 Joshua McCormick IMANN-503 BLPU Level AdsNumberControl type set to text to hide up down
 //    015   19.06.24 Joshua McCormick IMANN-503 BLPU Level removed type prop
 //    016   19.06.24 Joshua McCormick IMANN-503 BLPU Level max set to 99.9
 //    017   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    018   02.07.24 Sean Flook       IMANN-582 Added state.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -59,8 +60,9 @@ import ADSNumberControl from "../components/ADSNumberControl";
 import ADSSwitchControl from "../components/ADSSwitchControl";
 import ADSDialogTitle from "../components/ADSDialogTitle";
 
-import { GetLookupLabel, renderErrorListItem } from "../utils/HelperUtils";
+import { GetCurrentDate, GetLookupLabel, renderErrorListItem } from "../utils/HelperUtils";
 import {
+  FilteredBLPUState,
   FilteredRepresentativePointCode,
   GetPropertyMapData,
   SaveProperty,
@@ -77,11 +79,13 @@ import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import { adsGreenC, adsRed, adsLightGreyC } from "../utils/ADSColours";
 import { blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
+import ADSDateControl from "../components/ADSDateControl";
 
 MultiEditSingleFieldDialog.propTypes = {
   variant: PropTypes.oneOf([
     "classification",
     "rpc",
+    "site",
     "level",
     "excludeFromExport",
     "siteVisitRequired",
@@ -103,6 +107,8 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
   const [showDialog, setShowDialog] = useState(false);
   const [classification, setClassification] = useState(null);
   const [rpc, setRpc] = useState(null);
+  const [state, setState] = useState(null);
+  const [stateDate, setStateDate] = useState(null);
   const [level, setLevel] = useState(null);
   const [excludeFromExport, setExcludeFromExport] = useState(false);
   const [siteVisitRequired, setSiteVisitRequired] = useState(false);
@@ -113,6 +119,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
   const [representativePointCodeLookup, setRepresentativePointCodeLookup] = useState(
     FilteredRepresentativePointCode(settingsContext.isScottish, false)
   );
+  const [blpuStateLookup, setBLPUStateLookup] = useState(FilteredBLPUState(settingsContext.isScottish, null));
 
   const [updating, setUpdating] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -180,7 +187,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
   /**
    * Event to handle when the classification value changes.
    *
-   * @param {string|null} newValue The new classification value.
+   * @param {String|null} newValue The new classification value.
    */
   const handleClassificationChangeEvent = (newValue) => {
     setClassification(newValue);
@@ -189,16 +196,37 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
   /**
    * Event to handle when the RPC value changes.
    *
-   * @param {number|null} newValue The new RPC value.
+   * @param {Number|null} newValue The new RPC value.
    */
   const handleRpcChangeEvent = (newValue) => {
     setRpc(newValue);
   };
 
   /**
+   * Event to handle when the state value changes.
+   *
+   * @param {Number|null} newValue The new state value.
+   */
+  const handleStateChangeEvent = (newValue) => {
+    setState(newValue);
+    if (!stateDate) {
+      setStateDate(GetCurrentDate());
+    }
+  };
+
+  /**
+   * Event to handle when the state date value changes.
+   *
+   * @param {Date|null} newValue The new state date value.
+   */
+  const handleStateDateChangeEvent = (newValue) => {
+    setStateDate(newValue);
+  };
+
+  /**
    * Event to handle when the level value changes.
    *
-   * @param {string|number|null} newValue The new level value.
+   * @param {String|Number|null} newValue The new level value.
    */
   const handleLevelChangeEvent = (newValue) => {
     setLevel(newValue);
@@ -207,7 +235,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
   /**
    * Event to handle when the exclude from export value changes.
    *
-   * @param {boolean} newValue The new exclude from export value.
+   * @param {Boolean} newValue The new exclude from export value.
    */
   const handleExcludeFromExportChangeEvent = (newValue) => {
     setExcludeFromExport(newValue);
@@ -216,7 +244,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
   /**
    * Event to handle when the site visit required value changes.
    *
-   * @param {boolean} newValue The new site visit required value.
+   * @param {Boolean} newValue The new site visit required value.
    */
   const handleSiteVisitRequiredChangeEvent = (newValue) => {
     setSiteVisitRequired(newValue);
@@ -225,7 +253,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
   /**
    * Event to handle when the note changes.
    *
-   * @param {object} event The event object.
+   * @param {Object} event The event object.
    */
   const handleNoteChangeEvent = (newValue) => {
     setNote(newValue);
@@ -303,6 +331,54 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   disabled={updating}
                   value={note}
                   id="rpc_note"
+                  maxLength={4000}
+                  minLines={2}
+                  maxLines={10}
+                  onChange={handleNoteChangeEvent}
+                />
+              </Grid>
+            )}
+          </Grid>
+        );
+
+      case "state":
+        return (
+          <Grid container justifyContent="center" alignItems="center">
+            <Grid item xs={12}>
+              <ADSSelectControl
+                label="State"
+                isEditable
+                useRounded
+                disabled={updating}
+                doNotSetTitleCase
+                lookupData={blpuStateLookup}
+                lookupId="id"
+                lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                lookupColour="colour"
+                value={state}
+                errorText={null}
+                onChange={handleStateChangeEvent}
+                helperText="A code identifying the current state of a BLPU."
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <ADSDateControl
+                label="State date"
+                isEditable
+                disabled={updating}
+                value={stateDate}
+                errorText={null}
+                onChange={handleStateDateChangeEvent}
+                helperText="Date at which the BLPU achieved its current state in the real-world."
+              />
+            </Grid>
+            {noteOpen && (
+              <Grid item xs={12}>
+                <ADSTextControl
+                  isEditable
+                  disabled={updating}
+                  value={note}
+                  id="state_note"
                   maxLength={4000}
                   minLines={2}
                   maxLines={10}
@@ -589,6 +665,34 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                 };
               break;
 
+            case "state":
+              updatedProperty = {
+                changeType: "U",
+                blpuStateDate: stateDate,
+                rpc: property.rpc,
+                startDate: property.startDate,
+                endDate: property.endDate,
+                parentUprn: property.parentUprn,
+                neverExport: property.neverExport,
+                siteSurvey: property.siteSurvey,
+                uprn: property.uprn,
+                logicalStatus: property.logicalStatus,
+                blpuState: state,
+                blpuClass: property.blpuClass,
+                localCustodianCode: property.localCustodianCode,
+                organisation: property.organisation,
+                xcoordinate: property.xcoordinate,
+                ycoordinate: property.ycoordinate,
+                wardCode: property.wardCode,
+                parishCode: property.parishCode,
+                pkId: property.pkId,
+                blpuAppCrossRefs: property.blpuAppCrossRefs,
+                blpuProvenances: property.blpuProvenances,
+                blpuNotes: updatedNotes,
+                lpis: property.lpis,
+              };
+              break;
+
             case "level":
               if (settingsContext.isScottish)
                 updatedProperty = {
@@ -857,6 +961,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
 
   useEffect(() => {
     setRepresentativePointCodeLookup(FilteredRepresentativePointCode(settingsContext.isScottish, false));
+    setBLPUStateLookup(FilteredBLPUState(settingsContext.isScottish, null));
 
     if (isOpen) {
       switch (variant) {
@@ -866,6 +971,10 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
 
         case "rpc":
           setTitle("Edit representative point code");
+          break;
+
+        case "state":
+          setTitle("Edit state");
           break;
 
         case "level":
@@ -1017,6 +1126,10 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
 
         case "rpc":
           setTitle("Edit representative point code: completed");
+          break;
+
+        case "state":
+          setTitle("Edit state: completed");
           break;
 
         case "level":

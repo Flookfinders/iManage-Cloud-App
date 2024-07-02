@@ -39,6 +39,7 @@
 //    026   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options.
 //    027   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    028   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    029   02.07.24 Sean Flook       IMANN-582 Added ability to edit state for multiple properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -883,6 +884,13 @@ function ADSSelectionControl({
    */
   const handleEditRpcClick = () => {
     displaySingleFieldDialog("rpc");
+  };
+
+  /**
+   * Event to handle when the edit state menu item is clicked
+   */
+  const handleEditStateClick = () => {
+    displaySingleFieldDialog("state");
   };
 
   /**
@@ -1733,6 +1741,9 @@ function ADSSelectionControl({
                     </MenuItem>
                     <MenuItem dense disabled={!userCanEdit} onClick={handleEditRpcClick} sx={menuItemStyle(false)}>
                       <Typography variant="inherit">Edit RPC</Typography>
+                    </MenuItem>
+                    <MenuItem dense disabled={!userCanEdit} onClick={handleEditStateClick} sx={menuItemStyle(false)}>
+                      <Typography variant="inherit">Edit State</Typography>
                     </MenuItem>
                     <MenuItem dense disabled={!userCanEdit} onClick={handleEditLevelClick} sx={menuItemStyle(false)}>
                       <Typography variant="inherit">Edit level</Typography>
