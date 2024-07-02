@@ -25,6 +25,7 @@
 //    012   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    013   19.06.24 Joshua McCormick IMANN-630 Cleared resend authentication code email errors
 //    014   21.06.24 Sean Flook       IMANN-642 Changes required to redisplay the change password dialog after previously cancelling out.
+//    015   02.07.24 Sean Flook       IMANN-642 If unauthorised set the step to 0.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -930,6 +931,10 @@ function LoginDialog({ isOpen, title, message, changePassword, onClose }) {
   useEffect(() => {
     if (changePassword) setStep(3);
   }, [changePassword]);
+
+  useEffect(() => {
+    if (message === "Authorisation has expired, re-enter your credentials.") setStep(0);
+  }, [message]);
 
   useEffect(() => {
     setShowDialog(isOpen);
