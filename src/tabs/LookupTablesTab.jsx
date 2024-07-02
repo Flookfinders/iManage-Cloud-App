@@ -24,6 +24,7 @@
 //    011   14.06.24 Joshua McCormick IMANN-555 Authorities in lookup table set to hidden
 //    012   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    013   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    014   02.07.24 Sean Flook       IMANN-666 Moved permit scheme id and out of hours arrangement.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -80,6 +81,8 @@ function LookupTablesTab() {
     districtPostalAddress3: "",
     districtPostalAddress4: "",
     districtPostalAddress5: "",
+    districtPermitSchemeId: "",
+    outOfHoursArrangements: false,
   };
 
   /**
@@ -395,7 +398,7 @@ function LookupTablesTab() {
           districtFaxNo: updatedData.districtFaxNo,
           districtPostcode: updatedData.districtPostcode,
           districtTelNo: updatedData.districtTelNo,
-          outOfHoursArrangements: false,
+          outOfHoursArrangements: updatedData.outOfHoursArrangements,
           fpnDeliveryUrl: "",
           fpnFaxNumber: "",
           fpnDeliveryPostcode: "",
@@ -430,7 +433,7 @@ function LookupTablesTab() {
           fpnPaymentAddress4: "",
           fpnPaymentAddress5: "",
           fpnDeliveryEmailAddress: "",
-          districtPermitSchemeId: "",
+          districtPermitSchemeId: updatedData.districtPermitSchemeId,
         };
 
         // if (process.env.NODE_ENV === "development")

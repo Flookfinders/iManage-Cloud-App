@@ -14,6 +14,7 @@
 //    001   01.02.24 Sean Flook                 Initial Revision.
 //    002   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    003   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    004   02.07.24 Sean Flook       IMANN-666 Moved permit scheme id and out of hours arrangement.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -181,6 +182,8 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
           districtPostalAddress3: districtPostalAddress3,
           districtPostalAddress4: districtPostalAddress4,
           districtPostalAddress5: districtPostalAddress5,
+          districtPermitSchemeId: districtPermitSchemeId,
+          outOfHoursArrangements: outOfHoursArrangements,
         };
 
       case "ftp":
@@ -231,8 +234,6 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
           fpnContactAddress3: fpnContactAddress3,
           fpnContactAddress4: fpnContactAddress4,
           fpnContactAddress5: fpnContactAddress5,
-          outOfHoursArrangements: outOfHoursArrangements,
-          districtPermitSchemeId: districtPermitSchemeId,
         };
 
       default:
@@ -263,7 +264,9 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
           districtPostalAddress2 !== data.districtPostalAddress2 ||
           districtPostalAddress3 !== data.districtPostalAddress3 ||
           districtPostalAddress4 !== data.districtPostalAddress4 ||
-          districtPostalAddress5 !== data.districtPostalAddress5;
+          districtPostalAddress5 !== data.districtPostalAddress5 ||
+          districtPermitSchemeId !== data.districtPermitSchemeId ||
+          outOfHoursArrangements !== data.outOfHoursArrangements;
         break;
 
       case "ftp":
@@ -313,9 +316,7 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
           fpnContactAddress2 !== data.fpnContactAddress2 ||
           fpnContactAddress3 !== data.fpnContactAddress3 ||
           fpnContactAddress4 !== data.fpnContactAddress4 ||
-          fpnContactAddress5 !== data.fpnContactAddress5 ||
-          outOfHoursArrangements !== data.outOfHoursArrangements ||
-          districtPermitSchemeId !== data.districtPermitSchemeId;
+          fpnContactAddress5 !== data.fpnContactAddress5;
         break;
 
       default:
@@ -359,6 +360,8 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
         let districtPostalAddress3Errors = [];
         let districtPostalAddress4Errors = [];
         let districtPostalAddress5Errors = [];
+        let districtPermitSchemeIdErrors = [];
+        let outOfHoursArrangementsErrors = [];
 
         if (organisationId) {
           if (!filteredLookup(SwaOrgRef, false).find((x) => x.id === organisationId)) {
@@ -444,6 +447,8 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
         setDistrictPostalAddress3Error(districtPostalAddress3Errors.length ? districtPostalAddress3Errors : null);
         setDistrictPostalAddress4Error(districtPostalAddress4Errors.length ? districtPostalAddress4Errors : null);
         setDistrictPostalAddress5Error(districtPostalAddress5Errors.length ? districtPostalAddress5Errors : null);
+        setDistrictPermitSchemeIdError(districtPermitSchemeIdErrors.length ? districtPermitSchemeIdErrors : null);
+        setOutOfHoursArrangementsError(outOfHoursArrangementsErrors.length ? outOfHoursArrangementsErrors : null);
         break;
 
       case "ftp":
@@ -603,8 +608,6 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
         let fpnContactAddress3Errors = [];
         let fpnContactAddress4Errors = [];
         let fpnContactAddress5Errors = [];
-        let outOfHoursArrangementsErrors = [];
-        let districtPermitSchemeIdErrors = [];
 
         if (fpnContactPostcode) {
           if (!postcodeRegEx.test(fpnContactPostcode)) {
@@ -628,8 +631,6 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
         setFpnContactAddress3Error(fpnContactAddress3Errors.length ? fpnContactAddress3Errors : null);
         setFpnContactAddress4Error(fpnContactAddress4Errors.length ? fpnContactAddress4Errors : null);
         setFpnContactAddress5Error(fpnContactAddress5Errors.length ? fpnContactAddress5Errors : null);
-        setOutOfHoursArrangementsError(outOfHoursArrangementsErrors.length ? outOfHoursArrangementsErrors : null);
-        setDistrictPermitSchemeIdError(districtPermitSchemeIdErrors.length ? districtPermitSchemeIdErrors : null);
         break;
 
       default:
@@ -1258,6 +1259,26 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
               onChange={handleDistrictClosedChangeEvent}
               helperText="The date on which the district was closed."
             />
+            <ADSTextControl
+              label="Permit scheme ID"
+              isEditable
+              value={districtPermitSchemeId}
+              id="district-permit-scheme-id"
+              maxLength={20}
+              errorText={districtPermitSchemeIdError}
+              onChange={handleDistrictPermitSchemeIdChangeEvent}
+              helperText="The national permit scheme reference"
+            />
+            <ADSSwitchControl
+              label="Out of hours arrangements made"
+              isEditable
+              checked={outOfHoursArrangements}
+              trueLabel="Yes"
+              falseLabel="No"
+              errorText={outOfHoursArrangementsError}
+              onChange={handleOutOfHoursArrangementsChangeEvent}
+              helperText="Applies to street authorities only. Indicates if the authority can receive and respond to notifications during non-working hours."
+            />
           </Stack>
         );
 
@@ -1647,26 +1668,6 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
               onChange={handleFpnContactTelNoChangeEvent}
               helperText="Telephone number for department, section or officer to whom representations should be made. Applies to street authorities only."
             />
-            <ADSTextControl
-              label="Permit scheme ID"
-              isEditable
-              value={districtPermitSchemeId}
-              id="district-permit-scheme-id"
-              maxLength={20}
-              errorText={districtPermitSchemeIdError}
-              onChange={handleDistrictPermitSchemeIdChangeEvent}
-              helperText="The national permit scheme reference"
-            />
-            <ADSSwitchControl
-              label="Out of hours arrangements made"
-              isEditable
-              checked={outOfHoursArrangements}
-              trueLabel="Yes"
-              falseLabel="No"
-              errorText={outOfHoursArrangementsError}
-              onChange={handleOutOfHoursArrangementsChangeEvent}
-              helperText="Applies to street authorities only. Indicates if the authority can receive and respond to notifications during non-working hours."
-            />
           </Stack>
         );
 
@@ -1693,6 +1694,8 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
           setDistrictPostalAddress3(data.districtPostalAddress3);
           setDistrictPostalAddress4(data.districtPostalAddress4);
           setDistrictPostalAddress5(data.districtPostalAddress5);
+          setDistrictPermitSchemeId(data.districtPermitSchemeId);
+          setOutOfHoursArrangements(data.outOfHoursArrangements);
         }
         break;
 
@@ -1743,7 +1746,6 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
       case "fpnContact":
         setLookupType("fixed penalty notice: contact");
         if (data) {
-          setOutOfHoursArrangements(data.outOfHoursArrangements);
           setFpnContactName(data.fpnContactName);
           setFpnContactPostcode(data.fpnContactPostcode);
           setFpnContactTelNo(data.fpnContactTelNo);
@@ -1752,7 +1754,6 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
           setFpnContactAddress3(data.fpnContactAddress3);
           setFpnContactAddress4(data.fpnContactAddress4);
           setFpnContactAddress5(data.fpnContactAddress5);
-          setDistrictPermitSchemeId(data.districtPermitSchemeId);
         }
         break;
 

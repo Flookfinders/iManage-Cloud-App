@@ -13,6 +13,7 @@
 //#region Version 1.0.0.0 changes
 //    001   01.02.24 Sean Flook                 Initial Revision.
 //    002   27.03.24 Sean Flook                 Further changes to fix warnings.
+//    003   02.07.24 Sean Flook       IMANN-666 Moved permit scheme id and out of hours arrangement.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -231,6 +232,8 @@ function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
       districtPostalAddress3: districtPostalAddress3,
       districtPostalAddress4: districtPostalAddress4,
       districtPostalAddress5: districtPostalAddress5,
+      districtPermitSchemeId: districtPermitSchemeId,
+      outOfHoursArrangements: outOfHoursArrangements,
     });
     setShowEditDialog(true);
   };
@@ -308,8 +311,6 @@ function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
       fpnContactAddress3: fpnContactAddress3,
       fpnContactAddress4: fpnContactAddress4,
       fpnContactAddress5: fpnContactAddress5,
-      outOfHoursArrangements: outOfHoursArrangements,
-      districtPermitSchemeId: districtPermitSchemeId,
     });
     setShowEditDialog(true);
   };
@@ -338,7 +339,7 @@ function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
         districtPostcode: editVariant === "district" ? updatedData.districtPostcode : districtPostcode,
         districtTelNo: editVariant === "district" ? updatedData.districtTelNo : districtTelNo,
         outOfHoursArrangements:
-          editVariant === "fpnContact" ? updatedData.outOfHoursArrangements : outOfHoursArrangements,
+          editVariant === "district" ? updatedData.outOfHoursArrangements : outOfHoursArrangements,
         fpnDeliveryUrl: editVariant === "fpnDelivery" ? updatedData.fpnDeliveryUrl : fpnDeliveryUrl,
         fpnFaxNumber: editVariant === "fpnDelivery" ? updatedData.fpnFaxNumber : fpnFaxNumber,
         fpnDeliveryPostcode: editVariant === "fpnDelivery" ? updatedData.fpnDeliveryPostcode : fpnDeliveryPostcode,
@@ -380,7 +381,7 @@ function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
         fpnDeliveryEmailAddress:
           editVariant === "fpnDelivery" ? updatedData.fpnDeliveryEmailAddress : fpnDeliveryEmailAddress,
         districtPermitSchemeId:
-          editVariant === "fpnContact" ? updatedData.districtPermitSchemeId : districtPermitSchemeId,
+          editVariant === "district" ? updatedData.districtPermitSchemeId : districtPermitSchemeId,
       };
 
       if (onUpdateData) onUpdateData(newData);
@@ -628,6 +629,22 @@ function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
                   <Grid item xs={9}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
                       {FormatDate(districtClosed)}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography variant="body2">Permit scheme ID</Typography>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {districtPermitSchemeId}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography variant="body2">Out of hours arrangements made</Typography>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {`${outOfHoursArrangements ? "Yes" : "No"}`}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -921,22 +938,6 @@ function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
                 <Grid item xs={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {fpnContactTelNo}
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="body2">Permit scheme ID</Typography>
-                </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {districtPermitSchemeId}
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="body2">Out of hours arrangements made</Typography>
-                </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {`${outOfHoursArrangements ? "Yes" : "No"}`}
                   </Typography>
                 </Grid>
               </Grid>
