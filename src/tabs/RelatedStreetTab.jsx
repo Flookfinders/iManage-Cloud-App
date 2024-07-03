@@ -44,6 +44,7 @@
 //    031   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    032   26.06.24 Sean Flook       IMANN-488 Correctly filter the data in getStreetFromId.
 //    033   26.06.24 Joshua McCormick IMANN-548 ZoomToStreet fix, added setAnchorStreetActionsEl
+//    034   03.07.24 Joshua McCormick IMANN-699 Renamed Add Property on Street to Add property
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -891,7 +892,7 @@ function RelatedStreetTab({
                                       onClick={(event) => HandleAddProperty(event, rec.usrn)}
                                       sx={menuItemStyle(true)}
                                     >
-                                      <Typography variant="inherit">Add property on street</Typography>
+                                      <Typography variant="inherit">Add property</Typography>
                                     </MenuItem>
                                   )}
                                   {process.env.NODE_ENV === "development" && (

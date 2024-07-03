@@ -42,6 +42,7 @@
 //    029   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    030   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    031   21.06.24 Sean Flook       IMANN-636 Fixed warnings.
+//    032   03.07.24 Joshua McCormick IMANN-699 Renamed Add Property on Street to Add property
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -972,7 +973,7 @@ function StreetDataTab({
                 </MenuItem>
               )}
             <MenuItem dense disabled={!userCanEdit} onClick={handleAddProperty} sx={menuItemStyle(true)}>
-              <Typography variant="inherit">Add property on street</Typography>
+              <Typography variant="inherit">Add property</Typography>
             </MenuItem>
             <MenuItem dense disabled={!userCanEdit} divider onClick={handleAddRange} sx={menuItemStyle(true)}>
               <Typography variant="inherit">Add properties</Typography>
