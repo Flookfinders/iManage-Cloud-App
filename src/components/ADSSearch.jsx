@@ -43,6 +43,7 @@
 //    030   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    031   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    032   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
+//    033   03.07.24 Joshua McCormick IMANN-542 Searching when inside a property will now directly open property instead of showing search list
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1000,7 +1001,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
           }
         } else {
           ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
-          handleSearchClick();
+          onSelectChange(newValue);
         }
       } else {
         ResetContexts("all", mapContext, streetContext, propertyContext, sandboxContext);
