@@ -53,6 +53,7 @@
 //    040   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    041   21.06.24 Sean Flook       IMANN-614 After saving changes update the source data in the sandbox.
 //    042   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
+//    043   03.07.24 Sean Flook       IMANN-697 Also check the single form of the key when handling errors.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1666,37 +1667,40 @@ export function GetPropertyValidationErrors(body, newProperty) {
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
         });
-      } else if (key.toLowerCase().includes("blpuprovenances[")) {
+      } else if (key.toLowerCase().includes("blpuprovenances[") || key.toLowerCase().includes("blpuprovenance[")) {
         errorProvenance.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
         });
-      } else if (key.toLowerCase().includes("blpuappcrossrefs[")) {
+      } else if (key.toLowerCase().includes("blpuappcrossrefs[") || key.toLowerCase().includes("blpuappcrossref[")) {
         errorCrossRef.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
         });
-      } else if (key.toLowerCase().includes("classifications[")) {
+      } else if (key.toLowerCase().includes("classifications[") || key.toLowerCase().includes("classification[")) {
         errorClassification.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
         });
-      } else if (key.toLowerCase().includes("organisations[")) {
+      } else if (key.toLowerCase().includes("organisations[") || key.toLowerCase().includes("organisation[")) {
         errorOrganisation.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
         });
-      } else if (key.toLowerCase().includes("successorcrossreferences[")) {
+      } else if (
+        key.toLowerCase().includes("successorcrossreferences[") ||
+        key.toLowerCase().includes("successorcrossreference[")
+      ) {
         errorSuccessorCrossRef.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
         });
-      } else if (key.toLowerCase().includes("blpunotes[")) {
+      } else if (key.toLowerCase().includes("blpunotes[") || key.toLowerCase().includes("blpunote[")) {
         errorNote.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),

@@ -70,6 +70,7 @@
 //    057   21.06.24 Sean Flook       IMANN-614 After saving changes update the source data in the sandbox.
 //    058   21.06.24 Sean Flook       IMANN-636 Correctly call updateMapStreetData after saving a street.
 //    059   27.06.24 Joel Benford     IMANN-685 Saving OWE sequence number -> seqNum
+//    060   03.07.24 Sean Flook       IMANN-697 Also check the single form of the key when handling errors.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2573,13 +2574,13 @@ export function GetStreetValidationErrors(body, newStreet) {
     if (!key.includes(".")) {
       errorStreet.push({ field: key, errors: value });
     } else {
-      if (key.toLowerCase().includes("streetdescriptors[")) {
+      if (key.toLowerCase().includes("streetdescriptors[") || key.toLowerCase().includes("streetdescriptor[")) {
         errorDescriptor.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
         });
-      } else if (key.toLowerCase().includes("esus[")) {
+      } else if (key.toLowerCase().includes("esus[") || key.toLowerCase().includes("esu[")) {
         const esuIndex = key.substring(key.indexOf("[") + 1, key.indexOf("]"));
         if (key.toLowerCase().includes("highwaydedications[")) {
           errorHighwayDedication.push({
@@ -2588,7 +2589,7 @@ export function GetStreetValidationErrors(body, newStreet) {
             field: key.substring(key.lastIndexOf(".") + 1),
             errors: value,
           });
-        } else if (key.toLowerCase().includes("onewayexemptions[")) {
+        } else if (key.toLowerCase().includes("onewayexemptions[") || key.toLowerCase().includes("onewayexemption[")) {
           errorOneWayException.push({
             esuIndex: Number(esuIndex),
             index: Number(key.substring(key.lastIndexOf("[") + 1, key.lastIndexOf("]"))),
@@ -2602,55 +2603,70 @@ export function GetStreetValidationErrors(body, newStreet) {
             errors: value,
           });
         }
-      } else if (key.toLowerCase().includes("successorcrossreferences[")) {
+      } else if (
+        key.toLowerCase().includes("successorcrossreferences[") ||
+        key.toLowerCase().includes("successorcrossreference[")
+      ) {
         errorSuccessorCrossReference.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
         });
-      } else if (key.toLowerCase().includes("maintenanceresponsibilities[")) {
+      } else if (
+        key.toLowerCase().includes("maintenanceResponsibilities[") ||
+        key.toLowerCase().includes("maintenanceResponsibility[")
+      ) {
         errorMaintenanceResponsibility.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
         });
-      } else if (key.toLowerCase().includes("reinstatementcatogories[")) {
+      } else if (
+        key.toLowerCase().includes("reinstatementcatogories[") ||
+        key.toLowerCase().includes("reinstatementcatogory[")
+      ) {
         errorReinstatementCategory.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
         });
-      } else if (key.toLowerCase().includes("interests[")) {
+      } else if (key.toLowerCase().includes("interests[") || key.toLowerCase().includes("interest[")) {
         errorInterest.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
         });
-      } else if (key.toLowerCase().includes("constructions[")) {
+      } else if (key.toLowerCase().includes("constructions[") || key.toLowerCase().includes("construction[")) {
         errorConstruction.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
         });
-      } else if (key.toLowerCase().includes("specialdesignations[")) {
+      } else if (
+        key.toLowerCase().includes("specialdesignations[") ||
+        key.toLowerCase().includes("specialdesignation[")
+      ) {
         errorSpecialDesignation.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
         });
-      } else if (key.toLowerCase().includes("publicrightofways[")) {
+      } else if (key.toLowerCase().includes("publicrightofways[") || key.toLowerCase().includes("publicrightofway[")) {
         errorProw.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
         });
-      } else if (key.toLowerCase().includes("heightwidthweights[")) {
+      } else if (
+        key.toLowerCase().includes("heightwidthweights[") ||
+        key.toLowerCase().includes("heightwidthweight[")
+      ) {
         errorHww.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
           errors: value,
         });
-      } else if (key.toLowerCase().includes("streetnotes[")) {
+      } else if (key.toLowerCase().includes("streetnotes[") || key.toLowerCase().includes("streetnote[")) {
         errorNote.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
           field: key.substring(key.indexOf(".") + 1),
