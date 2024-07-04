@@ -54,6 +54,7 @@
 //    030   01.07.24 Joel Benford     IMANN-654 Fix checking BLPU state 0 for property wizard
 //    031   01.07.24 Sean Flook       IMANN-674 Included logical status 7 in check 2400031.
 //    032   04.07.24 Sean Flook       IMANN-221 Added new checks and updated messages.
+//    033   04.07.24 Sean Flook       IMANN-221 Further updated messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -925,7 +926,7 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       postTownRefErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
-    // Postal address = 'N' must not have a postcode or post town.
+    // Postal address of 'N' must not have a postcode or post town.
     currentCheck = GetCheck(2400060, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
@@ -938,7 +939,7 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
-    // Postal address = 'Y', 'A' or 'L' must have a postcode and post town.
+    // Postal address of 'Y', 'A' or 'L' must have a postcode and post town.
     currentCheck = GetCheck(2400061, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
@@ -949,7 +950,7 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
-    // Postal address = 'P' must have a postcode and a post town.
+    // Postal address of 'P' must have a postcode and a post town.
     currentCheck = GetCheck(2400062, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
@@ -1063,7 +1064,7 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       subLocalityRefErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
-    // A LPI logical status of 8 or 9 requires an end date.
+    // An LPI logical status of 8 or 9 requires an end date.
     currentCheck = GetCheck(2400084, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
@@ -1098,7 +1099,7 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
-    // Postally addressable is invalid.
+    // Postal address is invalid.
     currentCheck = GetCheck(2400090, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
@@ -1665,7 +1666,7 @@ export function ValidateOrganisationData(data, index, currentLookups) {
       organisationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
-    // Organisation legal name is too long.
+    // Legal name is too long.
     currentCheck = GetCheck(3100015, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, true) && data.legalName && data.legalName.length > 60) {
       legalNameErrors.push(GetErrorMessage(currentCheck, true));
@@ -1796,7 +1797,7 @@ export function ValidateClassificationData(data, index, currentLookups) {
       classificationSchemeErrors.push(GetErrorMessage(currentCheck, true));
     }
 
-    // Enter a classification scheme.
+    // Enter a scheme.
     currentCheck = GetCheck(3200017, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, true) && !data.classificationScheme) {
       classificationSchemeErrors.push(GetErrorMessage(currentCheck, true));
@@ -2112,7 +2113,7 @@ export function ValidateMultiEditLogicalStatus(data, currentLookups, isScottish)
       postTownRefErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
-    // Postal address = 'N' must not have a postcode or post town.
+    // Postal address of 'N' must not have a postcode or post town.
     currentCheck = GetCheck(2400060, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
@@ -2125,7 +2126,7 @@ export function ValidateMultiEditLogicalStatus(data, currentLookups, isScottish)
       postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
-    // Postal address = 'Y', 'A' or 'L' must have a postcode and post town.
+    // Postal address of 'Y', 'A' or 'L' must have a postcode and post town.
     currentCheck = GetCheck(2400061, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
@@ -2136,7 +2137,7 @@ export function ValidateMultiEditLogicalStatus(data, currentLookups, isScottish)
       postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
-    // Postal address = 'P' must have a postcode and a post town.
+    // Postal address of 'P' must have a postcode and a post town.
     currentCheck = GetCheck(2400062, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&

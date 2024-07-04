@@ -52,6 +52,7 @@
 //    021   29.05.24 Sean Flook       IMANN-221 Added new checks.
 //    031   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    032   04.07.24 Sean Flook       IMANN-221 Added new checks and updated messages.
+//    033   04.07.24 Sean Flook       IMANN-221 Further updated messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -568,7 +569,7 @@ export function ValidateDescriptorData(data, index, currentLookups, isScottish, 
       islandRefErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
-    // A street descriptor must have a town must when a locality has been entered.
+    // A street descriptor must have a town when a locality has been entered.
     currentCheck = GetCheck(1500038, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && data.locRef && !data.townRef) {
       townRefErrors.push(GetErrorMessage(currentCheck, isScottish));

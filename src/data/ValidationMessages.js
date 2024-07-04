@@ -604,7 +604,7 @@ const ValidationMessages = [
     errorMessage: "Enter an authority code.",
     llpgCode: "S-6B",
     lsgCode: "LG11.004",
-    osgCode: "",
+    osgCode: "13.7.1",
     asdCode: "",
     idoxCode: "1100025",
     ignoreCheck: false,
@@ -1126,21 +1126,6 @@ const ValidationMessages = [
     osCheck: false,
   },
   {
-    messageId: 1100060,
-    errorMessage: "Enter an authority.",
-    llpgCode: "",
-    lsgCode: "",
-    osgCode: "13.7.1",
-    asdCode: "",
-    idoxCode: "1100060",
-    ignoreCheck: false,
-    risk: "M",
-    usedByApi: true,
-    usedByFrontEnd: true,
-    gpCheck: false,
-    osCheck: true,
-  },
-  {
     messageId: 1100061,
     errorMessage: "Street not linked to any ESU(s).",
     llpgCode: "",
@@ -1202,7 +1187,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100065,
-    errorMessage: "A type 1 or 2 street that TFL are responsible must not be permanently closed.",
+    errorMessage: "A type 1 or 2 street that TFL are responsible for must not be permanently closed.",
     llpgCode: "",
     lsgCode: "LG11.024",
     osgCode: "",
@@ -2572,7 +2557,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1500038,
-    errorMessage: "A street descriptor must have a town must when a locality has been entered.",
+    errorMessage: "A street descriptor must have a town when a locality has been entered.",
     llpgCode: "",
     lsgCode: "LG15.014",
     osgCode: "13.9.8.b",
@@ -6316,7 +6301,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400060,
-    errorMessage: "Postal address = 'N' must not have a postcode or post town.",
+    errorMessage: "Postal address of 'N' must not have a postcode or post town.",
     llpgCode: "AAU24.35",
     lsgCode: "",
     osgCode: "8.11.2.a / 8.11.2.b",
@@ -6331,7 +6316,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400061,
-    errorMessage: "Postal address = 'Y', 'A' or 'L' must have a postcode and post town.",
+    errorMessage: "Postal address of 'Y', 'A' or 'L' must have a postcode and post town.",
     llpgCode: "AAU24.34",
     lsgCode: "",
     osgCode: "",
@@ -6346,7 +6331,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400062,
-    errorMessage: "Postal address = 'P' must have a postcode and a post town.",
+    errorMessage: "Postal address of 'P' must have a postcode and a post town.",
     llpgCode: "AAU24.37",
     lsgCode: "",
     osgCode: "",
@@ -6661,7 +6646,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400084,
-    errorMessage: "A LPI logical status of 8 or 9 requires an end date.",
+    errorMessage: "An LPI logical status of 8 or 9 requires an end date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "7.4.3b",
@@ -6751,7 +6736,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400090,
-    errorMessage: "Postally addressable is invalid.",
+    errorMessage: "Postal address is invalid.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "8.10.1",
@@ -6916,7 +6901,7 @@ const ValidationMessages = [
   },
   {
     messageId: 2400103,
-    errorMessage: "Inavlid characters in suffix column/s.",
+    errorMessage: "Invalid characters in suffix column/s.",
     llpgCode: "AAU24.70",
     lsgCode: "",
     osgCode: "",
@@ -7171,7 +7156,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3000013,
-    errorMessage: "Enter a yype.",
+    errorMessage: "Enter a type.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7457,7 +7442,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3100015,
-    errorMessage: "Organisation legal name is too long.",
+    errorMessage: "Legal name is too long.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -7818,7 +7803,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3200017,
-    errorMessage: "Enter a classification scheme.",
+    errorMessage: "Enter a scheme.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",

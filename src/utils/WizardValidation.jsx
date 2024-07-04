@@ -40,6 +40,7 @@
 //    023   28.06.24 Sean Flook                 Corrected error number.
 //    024   28.06.24 Joel Benford     IMANN-654 Fixed BLPU state validation treating 0 as falsy in dialogue
 //    025   04.07.24 Sean Flook       IMANN-221 Updated messages.
+//    026   04.07.24 Sean Flook       IMANN-221 Further updated messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1076,7 +1077,7 @@ export function ValidatePropertyDetails(
         lpiStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
-      // Postal address = 'N' must not have a postcode or post town.
+      // Postal address of 'N' must not have a postcode or post town.
       currentCheck = GetCheck(2400060, currentLookups, methodName, isScottish, showDebugMessages);
       if (
         !isScottish &&
@@ -1090,7 +1091,7 @@ export function ValidatePropertyDetails(
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
-      // Postal address = 'Y', 'A' or 'L' must have a postcode and post town.
+      // Postal address of 'Y', 'A' or 'L' must have a postcode and post town.
       currentCheck = GetCheck(2400061, currentLookups, methodName, isScottish, showDebugMessages);
       if (
         !isScottish &&
@@ -1102,7 +1103,7 @@ export function ValidatePropertyDetails(
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
-      // Postal address = 'P' must have a postcode and a post town.
+      // Postal address of 'P' must have a postcode and a post town.
       currentCheck = GetCheck(2400062, currentLookups, methodName, isScottish, showDebugMessages);
       if (
         !isScottish &&
@@ -1165,7 +1166,7 @@ export function ValidatePropertyDetails(
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
 
-      // Postally addressable is invalid.
+      // Postal address is invalid.
       currentCheck = GetCheck(2400090, currentLookups, methodName, isScottish, showDebugMessages);
       if (
         isScottish &&
@@ -1224,7 +1225,7 @@ export function ValidatePropertyDetails(
         classificationSchemeErrors.push(GetErrorMessage(currentCheck, true));
       }
 
-      // Enter a classification scheme.
+      // Enter a scheme.
       currentCheck = GetCheck(3200017, currentLookups, methodName, true, showDebugMessages);
       if (includeCheck(currentCheck, true) && !classificationData.classificationScheme) {
         classificationSchemeErrors.push(GetErrorMessage(currentCheck, true));
