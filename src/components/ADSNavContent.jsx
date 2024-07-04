@@ -36,6 +36,7 @@
 //    023   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    024   21.06.24 Sean Flook       IMANN-642 Changes required to redisplay the change password dialog after previously cancelling out.
 //    025   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
+//    026   04.07.24 Sean Flook       IMANN-705 Use displayName for the user icon.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -190,7 +191,7 @@ const ADSNavContent = (props) => {
           <Card variant="outlined">
             <CardContent>
               <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
-                <Avatar {...StringAvatar(userContext.currentUser.auditName, false)} />
+                <Avatar {...StringAvatar(userContext.currentUser.displayName, false)} />
                 {userContext.currentUser && (
                   <Typography sx={{ fontWeight: "bold" }}>{`${stringToSentenceCase(
                     userContext.currentUser.firstName

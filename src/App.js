@@ -68,6 +68,7 @@
 //    055   20.06.24 Sean Flook       IMANN-636 Bug fix.
 //    056   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //    057   01.07.24 Sean Flook       IMANN-592 Use sandboxRef.current in HandleResetSandbox.
+//    058   04.07.24 Sean Flook       IMANN-705 Added displayName to contextUser.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -475,6 +476,7 @@ function App() {
     if (userInfo) {
       const user = {
         ...userInfo,
+        displayName: `${userInfo.firstName} ${userInfo.lastName}`.trim(),
         canEdit: userInfo.active && (userInfo.rights.includes("Administrator") || userInfo.rights.includes("User")),
         isAdministrator: userInfo.active && userInfo.rights.includes("Administrator"),
         hasStreet:

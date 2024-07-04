@@ -104,6 +104,7 @@
 //    090   21.06.24 Sean Flook       IMANN-561 Allow changing tabs if errors are not on current tab.
 //    091   26.06.24 Joel Benford     IMANN-680 Change tab index when opened from wizard now successor hidden 
 //    092   27.06.24 Joel Benford     IMANN-685 OWE sequence numbers -> seqNum
+//    093   04.07.24 Sean Flook       IMANN-705 Use displayName rather than auditName.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3045,7 +3046,7 @@ function StreetDataForm({ data, loading }) {
         usrn: streetData && streetData.usrn,
         note: null,
         changeType: "I",
-        lastUser: userContext.currentUser ? userContext.currentUser.auditName : null,
+        lastUser: userContext.currentUser ? userContext.currentUser.displayName : null,
       };
 
       const newNotes = streetData.streetNotes ? streetData.streetNotes : [];

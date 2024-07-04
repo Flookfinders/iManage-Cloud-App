@@ -15,6 +15,7 @@
 //    002   03.11.23 Sean Flook                 Modify to use the auditName.
 //    003   10.11.23 Sean Flook                 Modified call to StringAvatar.
 //    004   11.04.24 Sean Flook                 Do not adjust the auditname.
+//    005   04.07.24 Sean Flook       IMANN-705 Use displayName for the user icon.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -66,7 +67,7 @@ function ADSUserAvatar({ onUserClick }) {
           title={
             <Fragment>
               <Typography variant="caption" sx={{ fontWeight: "bold" }}>
-                {userContext.currentUser.auditName}
+                {userContext.currentUser.displayName}
               </Typography>
               <br />
               <Typography variant="caption">Settings & Admin</Typography>
@@ -78,7 +79,7 @@ function ADSUserAvatar({ onUserClick }) {
         >
           <Avatar
             id="imanage-user-settings"
-            {...StringAvatar(userContext.currentUser.auditName, false, true)}
+            {...StringAvatar(userContext.currentUser.displayName, false, true)}
             onClick={handleClick}
           />
         </Tooltip>
