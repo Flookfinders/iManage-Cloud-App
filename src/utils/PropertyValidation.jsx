@@ -55,6 +55,7 @@
 //    031   01.07.24 Sean Flook       IMANN-674 Included logical status 7 in check 2400031.
 //    032   04.07.24 Sean Flook       IMANN-221 Added new checks and updated messages.
 //    033   04.07.24 Sean Flook       IMANN-221 Further updated messages.
+//    034   04.07.24 Sean Flook       IMANN-221 Further updated messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1958,7 +1959,7 @@ export function ValidatePropertyNoteData(data, index, currentLookups, isScottish
   let noteErrors = [];
 
   if (data) {
-    // BLPU Note does not exist.
+    // Note does not exist.
     currentCheck = GetCheck(7100005, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && !data.note) {
       noteErrors.push(GetErrorMessage(currentCheck, isScottish));

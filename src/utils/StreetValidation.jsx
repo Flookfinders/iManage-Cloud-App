@@ -53,6 +53,7 @@
 //    031   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    032   04.07.24 Sean Flook       IMANN-221 Added new checks and updated messages.
 //    033   04.07.24 Sean Flook       IMANN-221 Further updated messages.
+//    034   04.07.24 Sean Flook       IMANN-221 Further updated messages.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2300,7 +2301,7 @@ export function ValidateInterestData(data, index, currentLookups) {
       startDateErrors.push(GetErrorMessage(currentCheck, false));
     }
 
-    // Interested organisation interest type of 1 must have a street status of 1, 2, 3 or 5.
+    // Interest type of 1 must have a street status of 1, 2, 3 or 5.
     currentCheck = GetCheck(6100050, currentLookups, methodName, true, showDebugMessages);
     if (
       includeCheck(currentCheck, false) &&
@@ -3492,7 +3493,7 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
       troTextErrors.push(GetErrorMessage(currentCheck, true));
     }
 
-    // Height, width, weight restriction TRO text contains invalid characters.
+    // TRO text contains invalid characters.
     currentCheck = GetCheck(6400027, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, false) && data.troText && !isIso885914(data.troText)) {
       troTextErrors.push(GetErrorMessage(currentCheck, true));
@@ -3553,19 +3554,19 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
       sourceTextErrors.push(GetErrorMessage(currentCheck, true));
     }
 
-    // Enter a record start date.
+    // Enter a start date.
     currentCheck = GetCheck(6400043, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, false) && !data.recordStartDate) {
       recordStartDateErrors.push(GetErrorMessage(currentCheck, true));
     }
 
-    // Record start date cannot be in the future.
+    // Start date cannot be in the future.
     currentCheck = GetCheck(6400044, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, false) && data.recordStartDate && isFutureDate(data.recordStartDate)) {
       recordStartDateErrors.push(GetErrorMessage(currentCheck, true));
     }
 
-    // Record start date prior to 1990 are not allowed.
+    // Start date prior to 1990 are not allowed.
     currentCheck = GetCheck(6400045, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, false) && data.recordStartDate && isPriorTo1990(data.recordStartDate)) {
       recordStartDateErrors.push(GetErrorMessage(currentCheck, true));
@@ -3800,19 +3801,19 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups, author
       prowLengthErrors.push(GetErrorMessage(currentCheck, false));
     }
 
-    // Enter a record start date.
+    // Enter a start date.
     currentCheck = GetCheck(6600027, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, false) && !data.recordStartDate) {
       recordStartDateErrors.push(GetErrorMessage(currentCheck, false));
     }
 
-    // Record start date cannot be in the future.
+    // Start date cannot be in the future.
     currentCheck = GetCheck(6600028, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, false) && data.recordStartDate && isFutureDate(data.recordStartDate)) {
       recordStartDateErrors.push(GetErrorMessage(currentCheck, false));
     }
 
-    // Record start date prior to 1990 are not allowed.
+    // Start date prior to 1990 are not allowed.
     currentCheck = GetCheck(6600029, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, false) && data.recordStartDate && isPriorTo1990(data.recordStartDate)) {
       recordStartDateErrors.push(GetErrorMessage(currentCheck, false));
@@ -3950,7 +3951,7 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups, author
       consultDetailsErrors.push(GetErrorMessage(currentCheck, false));
     }
 
-    // For status = C the consultation start date, end date, reference and details must be present.
+    // Status of 'C' the consultation start date, end date, reference and details must be present.
     currentCheck = GetCheck(6600053, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, false) && data.prowStatus && data.prowStatus === "C" && !data.consultStartDate) {
       consultStartDateErrors.push(GetErrorMessage(currentCheck, false));
@@ -3979,7 +3980,7 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups, author
       consultEndDateErrors.push(GetErrorMessage(currentCheck, false));
     }
 
-    // For status = A the Appeal reference, date and details must be present.
+    // Status of 'A' the Appeal reference, date and details must be present.
     currentCheck = GetCheck(6600055, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, false) && data.prowStatus && data.prowStatus === "A" && !data.appealDate) {
       appealDateErrors.push(GetErrorMessage(currentCheck, false));
@@ -3993,7 +3994,7 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups, author
       appealDetailsErrors.push(GetErrorMessage(currentCheck, false));
     }
 
-    // For status = D the diversion USRN must be present.
+    // Status of 'D' the diversion USRN must be present.
     currentCheck = GetCheck(6600056, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, false) && data.prowStatus && data.prowStatus === "D" && !data.divRelatedUsrn) {
       divRelatedUsrnErrors.push(GetErrorMessage(currentCheck, false));
@@ -4172,7 +4173,7 @@ export function ValidateStreetNoteData(data, index, currentLookups, isScottish) 
   let noteErrors = [];
 
   if (data) {
-    // Street note does not exist.
+    // Note does not exist.
     currentCheck = GetCheck(7200005, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && !data.note) {
       noteErrors.push(GetErrorMessage(currentCheck, isScottish));

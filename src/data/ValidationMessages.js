@@ -10255,7 +10255,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6100050,
-    errorMessage: "Interested organisation interest type of 1 must have a street status of 1, 2, 3 or 5.",
+    errorMessage: "Interest type of 1 must have a street status of 1, 2, 3 or 5.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12162,7 +12162,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6300054,
-    errorMessage: "Description is mandatory on all streets with a record entry date 1st April 2015.",
+    errorMessage: "Description is mandatory on all streets with a record entry date on/after 1st April 2015.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12182,7 +12182,7 @@ const ValidationMessages = [
     lsgCode: "",
     osgCode: "",
     asdCode: "",
-    idoxCode: "6200001",
+    idoxCode: "6400001",
     ignoreCheck: false,
     risk: "M",
     usedByApi: true,
@@ -12568,7 +12568,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400027,
-    errorMessage: "Height, width, weight restriction TRO text contains invalid characters.",
+    errorMessage: "TRO text contains invalid characters.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12778,7 +12778,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400043,
-    errorMessage: "Enter a record start date.",
+    errorMessage: "Enter a start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12793,7 +12793,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400044,
-    errorMessage: "Record start date cannot be in the future.",
+    errorMessage: "Start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -12808,7 +12808,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6400045,
-    errorMessage: "Record start date prior to 1990 are not allowed.",
+    errorMessage: "Start date prior to 1990 are not allowed.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -13273,7 +13273,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600027,
-    errorMessage: "Enter a record start date.",
+    errorMessage: "Enter a start date.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -13288,7 +13288,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600028,
-    errorMessage: "Record start date cannot be in the future.",
+    errorMessage: "Start date cannot be in the future.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -13303,7 +13303,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600029,
-    errorMessage: "Record start date prior to 1990 are not allowed.",
+    errorMessage: "Start date prior to 1990 are not allowed.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -13663,7 +13663,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600053,
-    errorMessage: "For status = C the consultation start date, end date, reference and details must be present.",
+    errorMessage: "Status of 'C' the consultation start date, end date, reference and details must be present.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -13693,7 +13693,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600055,
-    errorMessage: "For status = A the Appeal reference, date and details must be present.",
+    errorMessage: "Status of 'A' the Appeal reference, date and details must be present.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -13708,7 +13708,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600056,
-    errorMessage: "For status = D the diversion USRN must be present.",
+    errorMessage: "Status of 'D' the diversion USRN must be present.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -13723,7 +13723,7 @@ const ValidationMessages = [
   },
   {
     messageId: 6600057,
-    errorMessage: "For status = D the diversion USRN must be for a type 3 Street.",
+    errorMessage: "Status of 'D' the diversion USRN must be for a type 3 Street.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -13908,7 +13908,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7100005,
-    errorMessage: "BLPU Note does not exist.",
+    errorMessage: "Note does not exist.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -14103,7 +14103,7 @@ const ValidationMessages = [
   },
   {
     messageId: 7200005,
-    errorMessage: "Street note does not exist.",
+    errorMessage: "Note does not exist.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
