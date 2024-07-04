@@ -20,6 +20,7 @@
 //    007   02.04.24 Sean Flook                 Keep title in view when overflowing.
 //    008   21.05.24 Sean Flook                 Updated support email address.
 //    009   26.06.24 Peter Bryden               Added in help reference.
+//    010   04.07.24 Sean Flook                 Updated URL for the help for new location.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -206,7 +207,6 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
             </Typography>
           </Grid>
 
-
           <Grid
             container
             direction="row"
@@ -230,7 +230,7 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
                 <br />
                 <Link
                   align={"left"}
-                  href="/help/"
+                  href="https://imanage-help.idoxcloud.com"
                   target="_blank"
                   rel="noopener"
                   variant="body2"
