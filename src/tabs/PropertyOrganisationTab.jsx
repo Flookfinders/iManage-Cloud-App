@@ -26,6 +26,7 @@
 //    013   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title no wrapping with width restrictions
 //    013   14.05.24 Joshua McCormick IMANN-386 Moved toolbar errors inside toolbar stack
 //    014   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    015   04.07.24 Sean Flook                 Set the characterSet for the organisation.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -347,6 +348,7 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onHomeCl
           maxLength={60}
           displayCharactersLeft
           errorText={organisationError}
+          characterSet="GeoPlaceProperty1"
           helperText="Trading name used by organisation at the property."
           onChange={handleOrganisationChangeEvent}
         />
