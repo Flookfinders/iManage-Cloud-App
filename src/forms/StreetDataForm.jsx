@@ -105,6 +105,7 @@
 //    091   26.06.24 Joel Benford     IMANN-680 Change tab index when opened from wizard now successor hidden 
 //    092   27.06.24 Joel Benford     IMANN-685 OWE sequence numbers -> seqNum
 //    093   04.07.24 Sean Flook       IMANN-705 Use displayName rather than auditName.
+//    094   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -11358,7 +11359,13 @@ function StreetDataForm({ data, loading }) {
             <Typography variant="body2" sx={{ color: adsMidGreyA }}>{`Last updated ${
               streetData && streetData.streetLastUpdated ? FormatDateTime(streetData.streetLastUpdated) : ""
             }`}</Typography>
-            {streetData && streetData.streetLastUser && GetUserAvatar(streetData.streetLastUser)}
+            {streetData &&
+              streetData.streetLastUser &&
+              GetUserAvatar(
+                streetData.streetLastUser === userContext.currentUser.auditName
+                  ? userContext.currentUser.displayName
+                  : streetData.streetLastUser
+              )}
           </Stack>
           <Box sx={{ flexGrow: 1 }} />
           <Button

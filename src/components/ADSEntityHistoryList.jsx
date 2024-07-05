@@ -16,20 +16,29 @@
 //    003   24.11.23 Sean Flook                 Moved Stack to @mui/system and use StringAvatar to display the user initials.
 //    004   05.01.24 Sean Flook                 use CSS shortcuts.
 //    005   20.06.24 Sean Flook       IMANN-634 Added error trapping.
+//    006   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import React, { Fragment } from "react";
-import { StringAvatar } from "../utils/HelperUtils";
+import React, { useContext, Fragment } from "react";
+
+import UserContext from "./../context/userContext";
+
 import { Typography, Avatar } from "@mui/material";
 import { Stack } from "@mui/system";
+
+import { StringAvatar } from "../utils/HelperUtils";
+
 import { useTheme } from "@mui/styles";
 import { adsLightGreyA } from "../utils/ADSColours";
 
 const ADSEntityHistoryList = ({ historySummaryData }) => {
   const theme = useTheme();
+
+  const userContext = useContext(UserContext);
+
   let keySeq = 0;
 
   /**
@@ -41,7 +50,14 @@ const ADSEntityHistoryList = ({ historySummaryData }) => {
   const HistoryEntry = (historyEntry) => {
     return (
       <Stack direction="row" spacing={1} key={keySeq++}>
-        <Avatar {...StringAvatar(historyEntry.auditUser, false)} />
+        <Avatar
+          {...StringAvatar(
+            historyEntry.auditUser === userContext.currentUser.auditName
+              ? userContext.currentUser.displayName
+              : historyEntry.auditUser,
+            false
+          )}
+        />
         <Stack spacing={0} key={keySeq++}>
           <Typography variant="subtitle2" sx={{ mt: theme.spacing(0.5) }}>
             {historyEntry.entryDescription}

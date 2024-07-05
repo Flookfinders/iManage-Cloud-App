@@ -24,6 +24,7 @@
 //    011   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    012   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    013   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    014   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -296,7 +297,11 @@ function NotesListTab({ data, errors, loading, variant, onNoteSelected, onNoteDe
                     </Grid>
                     <Grid item xs={2}>
                       <Stack direction="row" justifyContent="center" alignItems="center">
-                        {GetUserAvatar(rec.lastUser)}
+                        {GetUserAvatar(
+                          rec.lastUser === userContext.currentUser.auditName
+                            ? userContext.currentUser.displayName
+                            : rec.lastUser
+                        )}
                       </Stack>
                     </Grid>
                     <Grid item xs={10}>

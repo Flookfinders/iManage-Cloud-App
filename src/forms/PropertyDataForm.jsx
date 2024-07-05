@@ -72,6 +72,7 @@
 //    059   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    060   21.06.24 Sean Flook       IMANN-561 Allow changing tabs if errors are not on current tab.
 //    061   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
+//    062   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -5481,7 +5482,13 @@ function PropertyDataForm({ data, loading }) {
             <Typography variant="body2" sx={{ color: adsMidGreyA }}>{`Last updated ${
               propertyData && propertyData.propertyLastUpdated ? FormatDateTime(propertyData.propertyLastUpdated) : ""
             }`}</Typography>
-            {propertyData && propertyData.propertyLastUser && GetUserAvatar(propertyData.propertyLastUser)}
+            {propertyData &&
+              propertyData.propertyLastUser &&
+              GetUserAvatar(
+                propertyData.propertyLastUser === userContext.currentUser.auditName
+                  ? userContext.currentUser.displayName
+                  : propertyData.propertyLastUser
+              )}
           </Stack>
           <Box sx={{ flexGrow: 1 }} />
           <Button
