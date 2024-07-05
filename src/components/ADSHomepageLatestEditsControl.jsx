@@ -34,6 +34,7 @@
 //    021   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    022   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    023   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
+//    024   04.07.24 Sean Flook       IMANN-705 Also change tooltip.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -142,7 +143,10 @@ function ADSHomepageLatestEditsControl({ data }) {
    */
   const lastEditAvatar = (lastUser) => {
     return (
-      <Tooltip title={lastUser} sx={tooltipStyle}>
+      <Tooltip
+        title={lastUser === userContext.currentUser.auditName ? userContext.currentUser.displayName : lastUser}
+        sx={tooltipStyle}
+      >
         <Avatar
           {...StringAvatar(
             lastUser === userContext.currentUser.auditName ? userContext.currentUser.displayName : lastUser,
