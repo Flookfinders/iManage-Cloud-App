@@ -106,6 +106,7 @@
 //    092   27.06.24 Joel Benford     IMANN-685 OWE sequence numbers -> seqNum
 //    093   04.07.24 Sean Flook       IMANN-705 Use displayName rather than auditName.
 //    094   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
+//    095   05.07.24 Sean Flook       IMANN-275 Corrected street descriptor array name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -873,14 +874,17 @@ function StreetDataForm({ data, loading }) {
       streetContext.onRecordChange(11, null, null, null);
       lastOpenedId.current = pkId;
     } else if (pkId === 0) {
-      const newIdx = streetData && streetData.streetDescriptors ? streetData.streetDescriptors.length : 1;
+      const newIdx =
+        streetData && streetData.streetDescriptors
+          ? streetData.streetDescriptors.filter((x) => x.changeType !== "D").length
+          : 0;
       const minPkId =
-        streetData.descriptor && streetData.descriptor.length > 0
-          ? streetData.descriptor.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
+        streetData.streetDescriptors && streetData.streetDescriptors.length > 0
+          ? streetData.streetDescriptors.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
           : null;
       const maxDualLanguageLink =
-        streetData.descriptor && streetData.descriptor.length > 0
-          ? streetData.descriptor.reduce((prev, curr) =>
+        streetData.streetDescriptors && streetData.streetDescriptors.length > 0
+          ? streetData.streetDescriptors.reduce((prev, curr) =>
               (prev.dualLanguageLink ? prev.dualLanguageLink : 0) > (curr.dualLanguageLink ? curr.dualLanguageLink : 0)
                 ? prev
                 : curr
@@ -1053,8 +1057,8 @@ function StreetDataForm({ data, loading }) {
         sdData: newRec,
         streetType: streetData.recordType,
         index: newIdx,
-        totalRecords: streetData.descriptor
-          ? streetData.descriptor.filter((x) => x.changeType !== "D").length
+        totalRecords: streetData.streetDescriptors
+          ? streetData.streetDescriptors.filter((x) => x.changeType !== "D").length
           : settingsContext.isWelsh
           ? 2
           : 1,
