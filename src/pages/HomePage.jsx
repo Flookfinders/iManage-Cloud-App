@@ -22,6 +22,7 @@
 //    009   26.02.24 Joel Benford     IMANN-242 Add DbAuthority to lookups context
 //    010   09.02.24 Joel Benford    IM-227/228 Generalize ward/parish URL
 //    011   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    012   05.07.24 Sean Flook       IMANN-629 If we cannot return the apiMetadata then it means we are looking at different database and need to expire the current user.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -540,28 +541,32 @@ const HomePage = () => {
         lookupDbAuthorities
       );
 
-      lookupsContext.onMetadataChange(
-        apiMetadata.iManageAPIVer,
-        apiMetadata.iManageCoreVer,
-        lookupMetadata.iManageAPIVer,
-        settingsMetadata.iManageAPIVer,
-        apiMetadata.iManageDBVer,
-        apiMetadata.iExchangeDBVer,
-        apiMetadata.iValidateDBVer,
-        apiMetadata.iManageIndexMeta
-      );
+      if (!apiMetadata) {
+        userContext.onExpired();
+      } else {
+        lookupsContext.onMetadataChange(
+          apiMetadata.iManageAPIVer,
+          apiMetadata.iManageCoreVer,
+          lookupMetadata.iManageAPIVer,
+          settingsMetadata.iManageAPIVer,
+          apiMetadata.iManageDBVer,
+          apiMetadata.iExchangeDBVer,
+          apiMetadata.iValidateDBVer,
+          apiMetadata.iManageIndexMeta
+        );
 
-      settingsContext.onAuthorityDetailsChange(authorityDetails);
+        settingsContext.onAuthorityDetailsChange(authorityDetails);
 
-      settingsContext.onPropertyTemplatesChange(propertyTemplates);
+        settingsContext.onPropertyTemplatesChange(propertyTemplates);
 
-      settingsContext.onStreetTemplateChange(streetTemplate);
+        settingsContext.onStreetTemplateChange(streetTemplate);
 
-      if (mapLayers) {
-        settingsContext.onMapLayersChange(mapLayers);
+        if (mapLayers) {
+          settingsContext.onMapLayersChange(mapLayers);
+        }
+
+        setIsLoaded(true);
       }
-
-      setIsLoaded(true);
     }
 
     return () => {
