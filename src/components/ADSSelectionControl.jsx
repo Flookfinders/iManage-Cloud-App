@@ -40,6 +40,7 @@
 //    027   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    028   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    029   02.07.24 Sean Flook       IMANN-582 Added ability to edit state for multiple properties.
+//    030   05.07.24 Sean Flook       IMANN-692 Added new parameter in call to UpdateRangeAfterSave.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -313,7 +314,8 @@ function ADSSelectionControl({
         propertyContext,
         sandboxContext,
         settingsContext.isWelsh,
-        searchContext
+        searchContext,
+        true
       );
     }
   };
@@ -334,7 +336,8 @@ function ADSSelectionControl({
         propertyContext,
         sandboxContext,
         settingsContext.isWelsh,
-        searchContext
+        searchContext,
+        true
       );
     }
   };
@@ -355,7 +358,8 @@ function ADSSelectionControl({
         propertyContext,
         sandboxContext,
         settingsContext.isWelsh,
-        searchContext
+        searchContext,
+        true
       );
     }
   };
@@ -376,7 +380,8 @@ function ADSSelectionControl({
         propertyContext,
         sandboxContext,
         settingsContext.isWelsh,
-        searchContext
+        searchContext,
+        true
       );
     }
   };
@@ -397,7 +402,8 @@ function ADSSelectionControl({
         propertyContext,
         sandboxContext,
         settingsContext.isWelsh,
-        searchContext
+        searchContext,
+        true
       );
     }
   };
@@ -418,7 +424,8 @@ function ADSSelectionControl({
         propertyContext,
         sandboxContext,
         settingsContext.isWelsh,
-        searchContext
+        searchContext,
+        true
       );
     }
   };

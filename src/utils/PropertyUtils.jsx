@@ -54,6 +54,7 @@
 //    041   21.06.24 Sean Flook       IMANN-614 After saving changes update the source data in the sandbox.
 //    042   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //    043   03.07.24 Sean Flook       IMANN-697 Also check the single form of the key when handling errors.
+//    044   05.07.24 Sean Flook       IMANN-692 Do not reset the sandbox if call to UpdateRangeAfterSave is from ADSSelectionControl.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2169,13 +2170,14 @@ export async function UpdateAfterSave(
 /**
  * Updates everything after creating a range of properties.
  *
- * @param {array} properties The array of properties that were created.
- * @param {object} lookupContext The lookup context object.
- * @param {object} mapContext The map context object.
- * @param {object} propertyContext The property context object.
- * @param {object} sandboxContext The sandbox context object.
- * @param {boolean} isWelsh True if the authority is a Welsh authority; otherwise false.
- * @param {object} searchContext The search context object.
+ * @param {Array} properties The array of properties that were created.
+ * @param {Object} lookupContext The lookup context object.
+ * @param {Object} mapContext The map context object.
+ * @param {Object} propertyContext The property context object.
+ * @param {Object} sandboxContext The sandbox context object.
+ * @param {Boolean} isWelsh True if the authority is a Welsh authority; otherwise false.
+ * @param {Object} searchContext The search context object.
+ * @param {Boolean} isSelection True if this is being called from ADSSelectionControl.
  */
 export async function UpdateRangeAfterSave(
   properties,
@@ -2184,14 +2186,15 @@ export async function UpdateRangeAfterSave(
   propertyContext,
   sandboxContext,
   isWelsh,
-  searchContext
+  searchContext,
+  isSelection = false
 ) {
   if (!properties || properties.length === 0) return;
 
   mapContext.onSetCoordinate(null);
   propertyContext.onPropertyModified(false);
   propertyContext.resetPropertyErrors();
-  sandboxContext.resetSandbox("property");
+  if (!isSelection) sandboxContext.resetSandbox("property");
 
   const searchAddresses = [];
   let newSearchData = JSON.parse(JSON.stringify(searchContext.currentSearchData.results));
