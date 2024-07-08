@@ -71,6 +71,7 @@
 //    058   21.06.24 Sean Flook       IMANN-636 Correctly call updateMapStreetData after saving a street.
 //    059   27.06.24 Joel Benford     IMANN-685 Saving OWE sequence number -> seqNum
 //    060   03.07.24 Sean Flook       IMANN-697 Also check the single form of the key when handling errors.
+//    061   08.07.24 Sean Flook       IMANN-596 Before doing the check on changes to the HD and OWE records ensure we have the ESU record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2613,8 +2614,8 @@ export function GetStreetValidationErrors(body, newStreet) {
           errors: value,
         });
       } else if (
-        key.toLowerCase().includes("maintenanceResponsibilities[") ||
-        key.toLowerCase().includes("maintenanceResponsibility[")
+        key.toLowerCase().includes("maintenanceresponsibilities[") ||
+        key.toLowerCase().includes("maintenanceresponsibility[")
       ) {
         errorMaintenanceResponsibility.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
@@ -2622,8 +2623,8 @@ export function GetStreetValidationErrors(body, newStreet) {
           errors: value,
         });
       } else if (
-        key.toLowerCase().includes("reinstatementcatogories[") ||
-        key.toLowerCase().includes("reinstatementcatogory[")
+        key.toLowerCase().includes("reinstatementcategories[") ||
+        key.toLowerCase().includes("reinstatementcategory[")
       ) {
         errorReinstatementCategory.push({
           index: Number(key.substring(key.indexOf("[") + 1, key.indexOf("]"))),
@@ -3679,21 +3680,25 @@ export const hasStreetChanged = (newStreet, currentSandbox, hasASD) => {
         esuKeysToIgnore
       )) ||
     (currentSandbox.currentStreetRecords.highwayDedication &&
-      !ObjectComparison(
-        currentSandbox.sourceStreet.esus
-          .find((x) => x.esuId === currentSandbox.currentStreetRecords.highwayDedication.esuId)
-          .highwayDedications.find((x) => x.pkId === currentSandbox.currentStreetRecords.highwayDedication.pkId),
-        currentSandbox.currentStreetRecords.highwayDedication,
-        highwayDedicationKeysToIgnore
-      )) ||
+      (!currentSandbox.sourceStreet.esus ||
+        currentSandbox.sourceStreet.esus.length === 0 ||
+        !ObjectComparison(
+          currentSandbox.sourceStreet.esus
+            .find((x) => x.esuId === currentSandbox.currentStreetRecords.highwayDedication.esuId)
+            .highwayDedications.find((x) => x.pkId === currentSandbox.currentStreetRecords.highwayDedication.pkId),
+          currentSandbox.currentStreetRecords.highwayDedication,
+          highwayDedicationKeysToIgnore
+        ))) ||
     (currentSandbox.currentStreetRecords.oneWayExemption &&
-      !ObjectComparison(
-        currentSandbox.sourceStreet.esus
-          .find((x) => x.esuId === currentSandbox.currentStreetRecords.oneWayExemption.esuId)
-          .oneWayExemptions.find((x) => x.pkId === currentSandbox.currentStreetRecords.oneWayExemption.pkId),
-        currentSandbox.currentStreetRecords.oneWayExemption,
-        oneWayExemptionKeysToIgnore
-      )) ||
+      (!currentSandbox.sourceStreet.esus ||
+        currentSandbox.sourceStreet.esus.length === 0 ||
+        !ObjectComparison(
+          currentSandbox.sourceStreet.esus
+            .find((x) => x.esuId === currentSandbox.currentStreetRecords.oneWayExemption.esuId)
+            .oneWayExemptions.find((x) => x.pkId === currentSandbox.currentStreetRecords.oneWayExemption.pkId),
+          currentSandbox.currentStreetRecords.oneWayExemption,
+          oneWayExemptionKeysToIgnore
+        ))) ||
     (currentSandbox.currentStreetRecords.successorCrossRef &&
       !ObjectComparison(
         currentSandbox.sourceStreet.successorCrossRefs.find(

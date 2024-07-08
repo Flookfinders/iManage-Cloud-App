@@ -107,6 +107,7 @@
 //    093   04.07.24 Sean Flook       IMANN-705 Use displayName rather than auditName.
 //    094   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
 //    095   05.07.24 Sean Flook       IMANN-275 Corrected street descriptor array name.
+//    096   08.07.24 Sean Flook       IMANN-596 When selecting HD and OWE records ensure we have the current ESU data saved.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1371,23 +1372,21 @@ function StreetDataForm({ data, loading }) {
    * @param {number|null} esuIndex The index for the ESU record within the array of ESU records for the street.
    */
   const handleHighwayDedicationSelected = (esuId, pkId, hdData, index, esuIndex) => {
-    const esuData = streetData.esus.find((x) => x.esuId === esuId);
+    const esuData = sandboxContext.currentSandbox.currentStreetRecords.esu
+      ? sandboxContext.currentSandbox.currentStreetRecords.esu
+      : streetData.esus.find((x) => x.esuId === esuId);
     const currentHighwayDedicationCount =
       esuData && esuData.highwayDedications ? esuData.highwayDedications.filter((x) => x.changeType !== "D").length : 0;
 
     mapContext.onEditMapObject(null, null);
 
-    if (pkId !== -1 && !currentEsuFormData.current) {
-      if (esuFormData) {
-        currentEsuFormData.current = esuFormData;
-      } else {
-        currentEsuFormData.current = {
-          pkId: esuData.pkId,
-          esuData: esuData,
-          index: esuIndex,
-          totalRecords: streetData.esus.filter((x) => x.changeType !== "D" && x.assignUnassign !== -1).length,
-        };
-      }
+    if (pkId !== -1) {
+      currentEsuFormData.current = {
+        pkId: esuData.pkId,
+        esuData: esuData,
+        index: esuIndex,
+        totalRecords: streetData.esus.filter((x) => x.changeType !== "D" && x.assignUnassign !== -1).length,
+      };
     }
 
     if (pkId === -1) {
@@ -1395,7 +1394,9 @@ function StreetDataForm({ data, loading }) {
       if (currentEsuFormData.current) resetEsuData();
       streetContext.onRecordChange(11, null, null, null);
     } else if (pkId === 0) {
-      currentStreetEsuData.current = JSON.parse(JSON.stringify(streetData.esus));
+      const updatedEsus = streetData.esus.map((x) => [esuData].find((rec) => rec.esuId === x.esuId) || x);
+
+      currentStreetEsuData.current = JSON.parse(JSON.stringify(updatedEsus));
 
       const currentDate = GetCurrentDate(false);
       const newIdx =
@@ -1546,23 +1547,21 @@ function StreetDataForm({ data, loading }) {
    * @param {number|null} esuIndex The index for the ESU record within the array of ESU records for the street.
    */
   const handleOneWayExemptionSelected = (esuId, pkId, oweData, index, esuIndex) => {
-    const esuData = streetData.esus.find((x) => x.esuId === esuId);
+    const esuData = sandboxContext.currentSandbox.currentStreetRecords.esu
+      ? sandboxContext.currentSandbox.currentStreetRecords.esu
+      : streetData.esus.find((x) => x.esuId === esuId);
     const currentOneWayExemptionCount =
       esuData && esuData.oneWayExemptions ? esuData.oneWayExemptions.filter((x) => x.changeType !== "D").length : 0;
 
     mapContext.onEditMapObject(null, null);
 
     if (pkId !== -1) {
-      if (esuFormData) {
-        currentEsuFormData.current = esuFormData;
-      } else {
-        currentEsuFormData.current = {
-          pkId: esuData.pkId,
-          esuData: esuData,
-          index: esuIndex,
-          totalRecords: streetData.esus.filter((x) => x.changeType !== "D" && x.assignUnassign !== -1).length,
-        };
-      }
+      currentEsuFormData.current = {
+        pkId: esuData.pkId,
+        esuData: esuData,
+        index: esuIndex,
+        totalRecords: streetData.esus.filter((x) => x.changeType !== "D" && x.assignUnassign !== -1).length,
+      };
     }
 
     if (pkId === -1) {
@@ -1570,8 +1569,9 @@ function StreetDataForm({ data, loading }) {
       if (currentEsuFormData.current) resetEsuData();
       streetContext.onRecordChange(11, null, null, null);
     } else if (pkId === 0) {
-      if (!esuFormData) currentEsuFormData.current = esuFormData;
-      currentStreetEsuData.current = JSON.parse(JSON.stringify(streetData.esus));
+      const updatedEsus = streetData.esus.map((x) => [esuData].find((rec) => rec.esuId === x.esuId) || x);
+
+      currentStreetEsuData.current = JSON.parse(JSON.stringify(updatedEsus));
 
       const newIdx =
         esuData && esuData.oneWayExemptions ? esuData.oneWayExemptions.filter((x) => x.changeType !== "D").length : 0;
@@ -3465,12 +3465,48 @@ function StreetDataForm({ data, loading }) {
   };
 
   /**
+   * Method used to update the ESU record when adding a highway dedication or one way exemption record.
+   */
+  // const updateCurrentEsu = () => {
+  //   if (sandboxContext.currentSandbox.currentStreetRecords.esu) {
+  //     const updatedEsus = streetData.esus.map(
+  //       (x) => [sandboxContext.currentSandbox.currentStreetRecords.esu].find((rec) => rec.esuId === x.esuId) || x
+  //     );
+
+  //     setAssociatedStreetData(
+  //       updatedEsus,
+  //       streetData.successorCrossRefs,
+  //       streetData.streetDescriptors,
+  //       streetData.streetNotes,
+  //       streetData.maintenanceResponsibilities,
+  //       streetData.reinstatementCategories,
+  //       settingsContext.isScottish ? streetData.specialDesignations : null,
+  //       streetData.interests,
+  //       streetData.constructions,
+  //       !settingsContext.isScottish ? streetData.specialDesignations : null,
+  //       streetData.publicRightOfWays,
+  //       streetData.heightWidthWeights
+  //     );
+  //   }
+
+  //   currentEsuFormData.current = {
+  //     pkId: esuFormData.pkId,
+  //     esuData: sandboxContext.currentSandbox.currentStreetRecords.esu
+  //       ? sandboxContext.currentSandbox.currentStreetRecords.esu
+  //       : esuFormData.esuData,
+  //     index: esuFormData.index,
+  //     totalRecords: esuFormData.totalRecords,
+  //   };
+  // };
+
+  /**
    * Event to handle adding a new highway dedication record.
    *
    * @param {number} esuId The id of the ESU record that the user is adding the highway dedication record to.
    * @param {number} esuIndex The index of the ESU record that the user is adding the highway dedication record to within the array of ESU records on the street.
    */
   const handleAddHighwayDedication = (esuId, esuIndex) => {
+    // updateCurrentEsu();
     handleHighwayDedicationSelected(esuId, 0, null, null, esuIndex);
   };
 
@@ -3481,6 +3517,7 @@ function StreetDataForm({ data, loading }) {
    * @param {number} esuIndex The index of the ESU record that the user is adding the one-way exemption record to within the array of ESU records on the street.
    */
   const handleAddOneWayExemption = (esuId, esuIndex) => {
+    // updateCurrentEsu();
     handleOneWayExemptionSelected(esuId, 0, null, null, esuIndex);
   };
 
