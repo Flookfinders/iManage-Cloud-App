@@ -28,6 +28,7 @@
 //    015   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title no wrapping with width restrictions
 //    016   17.05.24 Joshua McCormick IMANN-364 Fixed Toolbar delete action button placement and alignment
 //    017   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    018   08.07.24 Sean Flook       IMANN-718 Use the correct field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -301,6 +302,7 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onHome
     if (errors && errors.length > 0) {
       for (const error of errors) {
         switch (error.field.toLowerCase()) {
+          case "blpuclass":
           case "classification":
             setClassificationError(error.errors);
             break;
