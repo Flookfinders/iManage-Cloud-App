@@ -29,6 +29,7 @@
 //    016   19.06.24 Joshua McCormick IMANN-503 BLPU Level max set to 99.9
 //    017   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    018   02.07.24 Sean Flook       IMANN-582 Added state.
+//    019   08.07.24 Sean Flook       IMANN-716 Corrected Scottish property records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -610,31 +611,28 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
             case "rpc":
               if (settingsContext.isScottish)
                 updatedProperty = {
-                  changeType: "U",
                   blpuStateDate: property.blpuStateDate,
-                  rpc: rpc,
-                  startDate: property.startDate,
-                  endDate: property.endDate,
                   parentUprn: property.parentUprn,
                   neverExport: property.neverExport,
                   siteSurvey: property.siteSurvey,
                   uprn: property.uprn,
                   logicalStatus: property.logicalStatus,
+                  endDate: property.endDate,
+                  startDate: property.startDate,
                   blpuState: property.blpuState,
-                  blpuClass: property.blpuClass,
-                  localCustodianCode: property.localCustodianCode,
-                  organisation: property.organisation,
+                  custodianCode: property.custodianCode,
+                  level: property.level,
                   xcoordinate: property.xcoordinate,
                   ycoordinate: property.ycoordinate,
-                  wardCode: property.wardCode,
-                  parishCode: property.parishCode,
                   pkId: property.pkId,
+                  changeType: "U",
+                  rpc: rpc,
                   blpuAppCrossRefs: property.blpuAppCrossRefs,
                   blpuProvenances: property.blpuProvenances,
+                  blpuNotes: updatedNotes,
                   classifications: property.classifications,
                   organisations: property.organisations,
                   successorCrossRefs: property.successorCrossRefs,
-                  blpuNotes: updatedNotes,
                   lpis: property.lpis,
                 };
               else
@@ -666,38 +664,36 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
               break;
 
             case "state":
-              updatedProperty = {
-                changeType: "U",
-                blpuStateDate: stateDate,
-                rpc: property.rpc,
-                startDate: property.startDate,
-                endDate: property.endDate,
-                parentUprn: property.parentUprn,
-                neverExport: property.neverExport,
-                siteSurvey: property.siteSurvey,
-                uprn: property.uprn,
-                logicalStatus: property.logicalStatus,
-                blpuState: state,
-                blpuClass: property.blpuClass,
-                localCustodianCode: property.localCustodianCode,
-                organisation: property.organisation,
-                xcoordinate: property.xcoordinate,
-                ycoordinate: property.ycoordinate,
-                wardCode: property.wardCode,
-                parishCode: property.parishCode,
-                pkId: property.pkId,
-                blpuAppCrossRefs: property.blpuAppCrossRefs,
-                blpuProvenances: property.blpuProvenances,
-                blpuNotes: updatedNotes,
-                lpis: property.lpis,
-              };
-              break;
-
-            case "level":
               if (settingsContext.isScottish)
                 updatedProperty = {
+                  blpuStateDate: stateDate,
+                  parentUprn: property.parentUprn,
+                  neverExport: property.neverExport,
+                  siteSurvey: property.siteSurvey,
+                  uprn: property.uprn,
+                  logicalStatus: property.logicalStatus,
+                  endDate: property.endDate,
+                  startDate: property.startDate,
+                  blpuState: state,
+                  custodianCode: property.custodianCode,
+                  level: property.level,
+                  xcoordinate: property.xcoordinate,
+                  ycoordinate: property.ycoordinate,
+                  pkId: property.pkId,
                   changeType: "U",
-                  blpuStateDate: property.blpuStateDate,
+                  rpc: property.rpc,
+                  blpuAppCrossRefs: property.blpuAppCrossRefs,
+                  blpuProvenances: property.blpuProvenances,
+                  blpuNotes: updatedNotes,
+                  classifications: property.classifications,
+                  organisations: property.organisations,
+                  successorCrossRefs: property.successorCrossRefs,
+                  lpis: property.lpis,
+                };
+              else
+                updatedProperty = {
+                  changeType: "U",
+                  blpuStateDate: stateDate,
                   rpc: property.rpc,
                   startDate: property.startDate,
                   endDate: property.endDate,
@@ -706,7 +702,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   siteSurvey: property.siteSurvey,
                   uprn: property.uprn,
                   logicalStatus: property.logicalStatus,
-                  blpuState: property.blpuState,
+                  blpuState: state,
                   blpuClass: property.blpuClass,
                   localCustodianCode: property.localCustodianCode,
                   organisation: property.organisation,
@@ -717,17 +713,37 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   pkId: property.pkId,
                   blpuAppCrossRefs: property.blpuAppCrossRefs,
                   blpuProvenances: property.blpuProvenances,
+                  blpuNotes: updatedNotes,
+                  lpis: property.lpis,
+                };
+              break;
+
+            case "level":
+              if (settingsContext.isScottish)
+                updatedProperty = {
+                  blpuStateDate: stateDate,
+                  parentUprn: property.parentUprn,
+                  neverExport: property.neverExport,
+                  siteSurvey: property.siteSurvey,
+                  uprn: property.uprn,
+                  logicalStatus: property.logicalStatus,
+                  endDate: property.endDate,
+                  startDate: property.startDate,
+                  blpuState: state,
+                  custodianCode: property.custodianCode,
+                  level: level,
+                  xcoordinate: property.xcoordinate,
+                  ycoordinate: property.ycoordinate,
+                  pkId: property.pkId,
+                  changeType: "U",
+                  rpc: property.rpc,
+                  blpuAppCrossRefs: property.blpuAppCrossRefs,
+                  blpuProvenances: property.blpuProvenances,
+                  blpuNotes: updatedNotes,
                   classifications: property.classifications,
                   organisations: property.organisations,
                   successorCrossRefs: property.successorCrossRefs,
-                  blpuNotes: updatedNotes,
-                  lpis: property.lpis.map((lpi) => {
-                    return {
-                      ...lpi,
-                      changeType: "U",
-                      level: level,
-                    };
-                  }),
+                  lpis: property.lpis,
                 };
               else
                 updatedProperty = {
@@ -766,31 +782,28 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
             case "excludeFromExport":
               if (settingsContext.isScottish)
                 updatedProperty = {
-                  changeType: "U",
-                  blpuStateDate: property.blpuStateDate,
-                  rpc: property.rpc,
-                  startDate: property.startDate,
-                  endDate: property.endDate,
+                  blpuStateDate: stateDate,
                   parentUprn: property.parentUprn,
                   neverExport: excludeFromExport,
                   siteSurvey: property.siteSurvey,
                   uprn: property.uprn,
                   logicalStatus: property.logicalStatus,
-                  blpuState: property.blpuState,
-                  blpuClass: property.blpuClass,
-                  localCustodianCode: property.localCustodianCode,
-                  organisation: property.organisation,
+                  endDate: property.endDate,
+                  startDate: property.startDate,
+                  blpuState: state,
+                  custodianCode: property.custodianCode,
+                  level: property.level,
                   xcoordinate: property.xcoordinate,
                   ycoordinate: property.ycoordinate,
-                  wardCode: property.wardCode,
-                  parishCode: property.parishCode,
                   pkId: property.pkId,
+                  changeType: "U",
+                  rpc: property.rpc,
                   blpuAppCrossRefs: property.blpuAppCrossRefs,
                   blpuProvenances: property.blpuProvenances,
+                  blpuNotes: updatedNotes,
                   classifications: property.classifications,
                   organisations: property.organisations,
                   successorCrossRefs: property.successorCrossRefs,
-                  blpuNotes: updatedNotes,
                   lpis: property.lpis,
                 };
               else
@@ -824,31 +837,28 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
             case "siteVisitRequired":
               if (settingsContext.isScottish)
                 updatedProperty = {
-                  changeType: "U",
-                  blpuStateDate: property.blpuStateDate,
-                  rpc: property.rpc,
-                  startDate: property.startDate,
-                  endDate: property.endDate,
+                  blpuStateDate: stateDate,
                   parentUprn: property.parentUprn,
                   neverExport: property.neverExport,
                   siteSurvey: siteVisitRequired,
                   uprn: property.uprn,
                   logicalStatus: property.logicalStatus,
-                  blpuState: property.blpuState,
-                  blpuClass: property.blpuClass,
-                  localCustodianCode: property.localCustodianCode,
-                  organisation: property.organisation,
+                  endDate: property.endDate,
+                  startDate: property.startDate,
+                  blpuState: state,
+                  custodianCode: property.custodianCode,
+                  level: property.level,
                   xcoordinate: property.xcoordinate,
                   ycoordinate: property.ycoordinate,
-                  wardCode: property.wardCode,
-                  parishCode: property.parishCode,
                   pkId: property.pkId,
+                  changeType: "U",
+                  rpc: property.rpc,
                   blpuAppCrossRefs: property.blpuAppCrossRefs,
                   blpuProvenances: property.blpuProvenances,
+                  blpuNotes: updatedNotes,
                   classifications: property.classifications,
                   organisations: property.organisations,
                   successorCrossRefs: property.successorCrossRefs,
-                  blpuNotes: updatedNotes,
                   lpis: property.lpis,
                 };
               else
@@ -882,31 +892,28 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
             case "note":
               if (settingsContext.isScottish)
                 updatedProperty = {
-                  changeType: "U",
-                  blpuStateDate: property.blpuStateDate,
-                  rpc: property.rpc,
-                  startDate: property.startDate,
-                  endDate: property.endDate,
+                  blpuStateDate: stateDate,
                   parentUprn: property.parentUprn,
                   neverExport: property.neverExport,
                   siteSurvey: property.siteSurvey,
                   uprn: property.uprn,
                   logicalStatus: property.logicalStatus,
-                  blpuState: property.blpuState,
-                  blpuClass: property.blpuClass,
-                  localCustodianCode: property.localCustodianCode,
-                  organisation: property.organisation,
+                  endDate: property.endDate,
+                  startDate: property.startDate,
+                  blpuState: state,
+                  custodianCode: property.custodianCode,
+                  level: property.level,
                   xcoordinate: property.xcoordinate,
                   ycoordinate: property.ycoordinate,
-                  wardCode: property.wardCode,
-                  parishCode: property.parishCode,
                   pkId: property.pkId,
+                  changeType: "U",
+                  rpc: property.rpc,
                   blpuAppCrossRefs: property.blpuAppCrossRefs,
                   blpuProvenances: property.blpuProvenances,
+                  blpuNotes: updatedNotes,
                   classifications: property.classifications,
                   organisations: property.organisations,
                   successorCrossRefs: property.successorCrossRefs,
-                  blpuNotes: updatedNotes,
                   lpis: property.lpis,
                 };
               else
