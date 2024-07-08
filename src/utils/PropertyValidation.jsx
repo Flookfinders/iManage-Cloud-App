@@ -56,6 +56,7 @@
 //    032   04.07.24 Sean Flook       IMANN-221 Added new checks and updated messages.
 //    033   04.07.24 Sean Flook       IMANN-221 Further updated messages.
 //    034   04.07.24 Sean Flook       IMANN-221 Further updated messages.
+//    035   08.07.24 Sean Flook       IMANN-722 Corrected logic for check for duplicate punctuation.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -492,7 +493,7 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
     if (
       includeCheck(currentCheck, isScottish) &&
       data.organisation &&
-      !/[^a-z0-9](?=[^a-z0-9])/gi.test(data.organisation.replace(/\s+/g, ""))
+      !!/[^a-z0-9](?=[^a-z0-9])/gi.test(data.organisation.replace(/\s+/g, ""))
     ) {
       organisationErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -1700,7 +1701,7 @@ export function ValidateOrganisationData(data, index, currentLookups) {
     if (
       includeCheck(currentCheck, true) &&
       data.organisation &&
-      !/[^a-z0-9](?=[^a-z0-9])/gi.test(data.organisation.replace(/\s+/g, ""))
+      !!/[^a-z0-9](?=[^a-z0-9])/gi.test(data.organisation.replace(/\s+/g, ""))
     ) {
       organisationErrors.push(GetErrorMessage(currentCheck, true));
     }
