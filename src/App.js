@@ -69,6 +69,7 @@
 //    056   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //    057   01.07.24 Sean Flook       IMANN-592 Use sandboxRef.current in HandleResetSandbox.
 //    058   04.07.24 Sean Flook       IMANN-705 Added displayName to contextUser.
+//    059   08.07.24 Sean Flook       IMANN-728 Include the new user rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -477,16 +478,35 @@ function App() {
       const user = {
         ...userInfo,
         displayName: `${userInfo.firstName} ${userInfo.lastName}`.trim(),
-        canEdit: userInfo.active && (userInfo.rights.includes("Administrator") || userInfo.rights.includes("User")),
-        isAdministrator: userInfo.active && userInfo.rights.includes("Administrator"),
+        isAdministrator:
+          userInfo.active &&
+          (userInfo.rights.includes("LSGAdministrator") ||
+            userInfo.rights.includes("ASDAdministrator") ||
+            userInfo.rights.includes("LLPGAdministrator")),
         hasStreet:
-          userInfo.active && (userInfo.rights.includes("LSGReadOnly") || userInfo.rights.includes("LSGEditor")),
-        hasASD: userInfo.active && (userInfo.rights.includes("ASDReadOnly") || userInfo.rights.includes("ASDEditor")),
+          userInfo.active &&
+          (userInfo.rights.includes("LSGReadOnly") ||
+            userInfo.rights.includes("LSGEditor") ||
+            userInfo.rights.includes("LSGAdministrator")),
+        hasASD:
+          userInfo.active &&
+          (userInfo.rights.includes("ASDReadOnly") ||
+            userInfo.rights.includes("ASDEditor") ||
+            userInfo.rights.includes("ASDAdministrator")),
         hasProperty:
-          userInfo.active && (userInfo.rights.includes("LLPGReadOnly") || userInfo.rights.includes("LLPGEditor")),
-        editStreet: userInfo.active && userInfo.rights.includes("LSGEditor"),
-        editASD: userInfo.active && userInfo.rights.includes("ASDEditor"),
-        editProperty: userInfo.active && userInfo.rights.includes("LLPGEditor"),
+          userInfo.active &&
+          (userInfo.rights.includes("LLPGReadOnly") ||
+            userInfo.rights.includes("LLPGEditor") ||
+            userInfo.rights.includes("LLPGAdministrator")),
+        editStreet:
+          userInfo.active && (userInfo.rights.includes("LSGEditor") || userInfo.rights.includes("LSGAdministrator")),
+        adminStreet: userInfo.active && userInfo.rights.includes("LSGAdministrator"),
+        editASD:
+          userInfo.active && (userInfo.rights.includes("ASDEditor") || userInfo.rights.includes("ASDAdministrator")),
+        adminASD: userInfo.active && userInfo.rights.includes("ASDAdministrator"),
+        editProperty:
+          userInfo.active && (userInfo.rights.includes("LLPGEditor") || userInfo.rights.includes("LLPGAdministrator")),
+        adminProperty: userInfo.active && userInfo.rights.includes("LLPGAdministrator"),
       };
 
       setCurrentUser(user);
@@ -3090,7 +3110,7 @@ function App() {
         unassignedEsuData = [];
       }
 
-      if (extent.zoomLevel > 17) {
+      if (extent.hasProperties && extent.zoomLevel > 17) {
         backgroundPropertyData = await GetBackgroundPropertyData(extent);
         backgroundProvenanceData = await GetBackgroundProvenanceData(extent);
       } else {

@@ -43,6 +43,7 @@
 //    028   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    029   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    030   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
+//    031   08.07.24 Sean Flook       IMANN-728 Hide the property tab if the user does not have the right to see properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -126,7 +127,9 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
   const dataUsrn = useRef(null);
   const dataUprn = useRef(null);
   const [loading, setLoading] = useState(true);
-  const [relatedType, setRelatedType] = useState("property");
+  const [relatedType, setRelatedType] = useState(
+    userContext.currentUser && userContext.currentUser.hasProperty ? "property" : "street"
+  );
   const [expandAll, setExpandAll] = useState("Expand all");
   const [expanded, setExpanded] = useState([]);
 
@@ -878,7 +881,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
         streetWithASDUprn: relatedStreetWithASDUprnUrl,
       });
     } else if (!relatedType) {
-      setRelatedType("property");
+      setRelatedType(userContext.currentUser && userContext.currentUser.hasProperty ? "property" : "street");
     } else if (
       ((!propertyData || (Object.keys(propertyData).length === 0 && propertyData.constructor === Object)) &&
         relatedType === "property") ||
@@ -922,20 +925,22 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
           alignItems="center"
         >
           <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="center" sx={{ height: "30px" }}>
-            <Button
-              autoFocus
-              variant="contained"
-              startIcon={<HomeIcon />}
-              onClick={() => handleTabChange("property")}
-              sx={relatedType === "property" ? blueButtonStyle : greyButtonStyle}
-            >
-              <Typography variant="caption">Properties</Typography>
-              <Avatar variant="rounded" sx={relatedAvatarStyle(propertyCount, relatedType === "property")}>
-                <Typography variant="caption">
-                  <strong>{propertyCount}</strong>
-                </Typography>
-              </Avatar>
-            </Button>
+            {userContext.currentUser && userContext.currentUser.hasProperty && (
+              <Button
+                autoFocus
+                variant="contained"
+                startIcon={<HomeIcon />}
+                onClick={() => handleTabChange("property")}
+                sx={relatedType === "property" ? blueButtonStyle : greyButtonStyle}
+              >
+                <Typography variant="caption">Properties</Typography>
+                <Avatar variant="rounded" sx={relatedAvatarStyle(propertyCount, relatedType === "property")}>
+                  <Typography variant="caption">
+                    <strong>{propertyCount}</strong>
+                  </Typography>
+                </Avatar>
+              </Button>
+            )}
             <Button
               variant="contained"
               startIcon={
@@ -972,7 +977,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
       <Box sx={dataFormStyle(`${variant === "street" ? "StreetRelatedTab" : "PropertyRelatedTab"}`)}>
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
-        ) : relatedType === "property" ? (
+        ) : relatedType === "property" && userContext.currentUser && userContext.currentUser.hasProperty ? (
           <RelatedPropertyTab
             data={propertyData}
             variant={variant}

@@ -33,7 +33,8 @@
 //    020   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
 //    021   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    022   22.03.24 Sean Flook       PRFRM6_GP Ensure the information control is correctly displayed.
-//    023   14.05.24 Joshua McCormick IMAN-364  noWrap & padding to prevent toolbar content overlapping
+//    023   14.05.24 Joshua McCormick IMANN-364 noWrap & padding to prevent toolbar content overlapping
+//    024   08.07.24 Sean Flook       IMANN-728 Only show the Add or Assign ESU button if the user has the rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -46,6 +47,7 @@ import MapContext from "../context/mapContext";
 import StreetContext from "../context/streetContext";
 import SettingsContext from "../context/settingsContext";
 import InformationContext from "../context/informationContext";
+import UserContext from "./../context/userContext";
 
 import {
   FormControlLabel,
@@ -126,12 +128,15 @@ function EsuListTab({
   const streetContext = useContext(StreetContext);
   const settingsContext = useContext(SettingsContext);
   const informationContext = useContext(InformationContext);
+  const userContext = useContext(UserContext);
 
   const [allChecked, setAllChecked] = useState(false);
   const [expandCollapseLabel, setExpandCollapseLabel] = useState("Expand all");
   const [listState, setListState] = useState("stored");
   const [checked, setChecked] = useState([]);
   const [assigningEsus, setAssigningEsus] = useState(false);
+
+  const [userCanEdit, setUserCanEdit] = useState(false);
 
   const [selectionAnchorEl, setSelectionAnchorEl] = useState(null);
   const selectionOpen = Boolean(selectionAnchorEl);
@@ -418,6 +423,10 @@ function EsuListTab({
   }, [informationContext.informationSource]);
 
   useEffect(() => {
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editStreet);
+  }, [userContext]);
+
+  useEffect(() => {
     if (!informationContext.informationSource || informationContext.informationSource !== "ESUListTab") {
       informationContext.onDisplayInformation("manageESUs", "ESUListTab");
     }
@@ -438,8 +447,12 @@ function EsuListTab({
                 disabled={assigningEsus}
               />
             }
-            label={<Typography variant="subtitle1" noWrap>Elementary Street Units</Typography>}
-            sx={{ pl: theme.spacing(1.5), pr: theme.spacing(2)}}
+            label={
+              <Typography variant="subtitle1" noWrap>
+                Elementary Street Units
+              </Typography>
+            }
+            sx={{ pl: theme.spacing(1.5), pr: theme.spacing(2) }}
           />
           <Stack direction="row" alignItems="center" justifyContent="flex-end">
             {!settingsContext.isScottish && (
@@ -452,31 +465,35 @@ function EsuListTab({
                   disabled={assigningEsus}
                 >
                   {expandCollapseLabel === "Expand all" ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
-                  <Typography variant="body2" noWrap>{expandCollapseLabel}</Typography>
+                  <Typography variant="body2" noWrap>
+                    {expandCollapseLabel}
+                  </Typography>
                 </IconButton>
               </Tooltip>
             )}
-            <Tooltip title="Add or assign ESU record" arrow placement="bottom" sx={tooltipStyle}>
-              <IconButton
-                sx={ActionIconStyle()}
-                onClick={handleAddESUClick}
-                aria_controls="actions-menu"
-                aria-haspopup="true"
-                size="small"
-                disabled={assigningEsus}
-              >
-                <AddCircleIcon />
-                <Typography
-                  variant="subtitle1"
-                  sx={{
-                    pl: theme.spacing(1),
-                    pr: theme.spacing(1),
-                  }}
+            {userCanEdit && (
+              <Tooltip title="Add or assign ESU record" arrow placement="bottom" sx={tooltipStyle}>
+                <IconButton
+                  sx={ActionIconStyle()}
+                  onClick={handleAddESUClick}
+                  aria_controls="actions-menu"
+                  aria-haspopup="true"
+                  size="small"
+                  disabled={assigningEsus}
                 >
-                  Add ESU
-                </Typography>
-              </IconButton>
-            </Tooltip>
+                  <AddCircleIcon />
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      pl: theme.spacing(1),
+                      pr: theme.spacing(1),
+                    }}
+                  >
+                    Add ESU
+                  </Typography>
+                </IconButton>
+              </Tooltip>
+            )}
             <Menu
               id={`add-esu-menu`}
               elevation={2}

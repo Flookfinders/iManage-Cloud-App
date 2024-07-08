@@ -44,6 +44,7 @@
 //    031   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    032   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //    033   03.07.24 Joshua McCormick IMANN-542 Searching when inside a property will now directly open property instead of showing search list
+//    034   08.07.24 Sean Flook       IMANN-728 Only get the background properties and provenances if the user can see properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1364,7 +1365,9 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
       variant === "appBar" &&
       !backgroundPropertyData.current &&
       mapContext.currentExtent &&
-      mapContext.currentExtent.zoomLevel > 17
+      mapContext.currentExtent.zoomLevel > 17 &&
+      userContext.currentUser &&
+      userContext.currentUser.hasProperty
     )
       GetBackgroundPropertyData();
 
@@ -1372,7 +1375,9 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
       variant === "appBar" &&
       !backgroundProvenanceData.current &&
       mapContext.currentExtent &&
-      mapContext.currentExtent.zoomLevel > 17
+      mapContext.currentExtent.zoomLevel > 17 &&
+      userContext.currentUser &&
+      userContext.currentUser.hasProperty
     )
       GetBackgroundProvenanceData();
 

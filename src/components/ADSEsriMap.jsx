@@ -90,6 +90,7 @@
 //    076   02.07.24 Sean Flook       IMANN-507 Only add the edit graphics layer once.
 //    077   02.07.24 Sean Flook       IMANN-507 When editing a property ensure the edit layer is top of the list.
 //    078   02.07.24 Sean Flook       IMANN-689 Set the unassigned ESUs layer visibility to true.
+//    079   08.07.24 Sean Flook       IMANN-728 Pass in the new parameter to onExtentChange.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -7110,6 +7111,7 @@ function ADSEsriMap(startExtent) {
             ymax: view.extent.ymax,
             spatialReference: { wkid: 27700 },
             zoomLevel: view.zoom,
+            hasProperties: userContext.current.currentUser.hasProperty,
           });
         }
       }

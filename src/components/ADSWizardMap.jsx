@@ -31,6 +31,7 @@
 //    018   20.05.24 Sean Flook       IMANN-476 Check view has been created first in fadeVisibilityOn.
 //    019   18.06.24 Sean Flook       IMANN-599 Use the correct classification when moving BLPUs for Scottish authorities.
 //    020   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    021   08.07.24 Sean Flook       IMANN-728 Pass in the new parameter to onExtentChange.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1917,6 +1918,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
             ymax: view.extent.ymax,
             spatialReference: { wkid: 27700 },
             zoomLevel: view.zoom,
+            hasProperties: userContext.current.currentUser.hasProperty,
           });
         }
       }
