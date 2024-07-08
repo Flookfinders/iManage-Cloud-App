@@ -30,6 +30,7 @@
 //    017   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    018   02.07.24 Sean Flook       IMANN-582 Added state.
 //    019   08.07.24 Sean Flook       IMANN-716 Corrected Scottish property records.
+//    020   08.07.24 Sean Flook       IMANN-715 Increase the failed count if failed to save property.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -955,6 +956,8 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   updatedCount.current++;
                   savedProperty.current.push(result);
                   setRangeProcessedCount(updatedCount.current + failedCount.current);
+                } else {
+                  failedCount.current++;
                 }
               }
             );

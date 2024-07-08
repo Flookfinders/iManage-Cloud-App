@@ -26,6 +26,7 @@
 //    013   22.05.24 Sean Flook       IMANN-473 Corrected label for Scottish authorities.
 //    014   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    015   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    016   08.07.24 Sean Flook       IMANN-715 Corrected the Scottish property structure and increase the failed count if failed to save property.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -357,55 +358,39 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
               }),
             };
           } else if (settingsContext.isScottish) {
-            const gaePostTownRef = postTown
-              ? lookupContext.currentLookups.postTowns.find((x) => x.linkedRef === postTown && x.language === "GAE")
-                  .postTownRef
-              : null;
-
-            const gaeSubLocalityRef = subLocality
-              ? lookupContext.currentLookups.subLocalities.find(
-                  (x) => x.linkedRef === subLocality && x.language === "GAE"
-                ).subLocalityRef
-              : null;
-
             updatedProperty = {
-              changeType: property.changeType,
               blpuStateDate: property.blpuStateDate,
-              rpc: property.rpc,
-              startDate: property.startDate,
-              endDate: property.endDate,
               parentUprn: property.parentUprn,
               neverExport: property.neverExport,
               siteSurvey: property.siteSurvey,
               uprn: property.uprn,
               logicalStatus: property.logicalStatus,
+              endDate: property.endDate,
+              startDate: property.startDate,
               blpuState: property.blpuState,
-              blpuClass: property.blpuClass,
-              localCustodianCode: property.localCustodianCode,
-              organisation: property.organisation,
+              custodianCode: property.custodianCode,
+              level: property.level,
               xcoordinate: property.xcoordinate,
               ycoordinate: property.ycoordinate,
-              wardCode: property.wardCode,
-              parishCode: property.parishCode,
               pkId: property.pkId,
+              changeType: property.changeType,
+              rpc: property.rpc,
               blpuAppCrossRefs: property.blpuAppCrossRefs,
               blpuProvenances: property.blpuProvenances,
+              blpuNotes: updatedNotes,
               classifications: property.classifications,
               organisations: property.organisations,
               successorCrossRefs: property.successorCrossRefs,
-              blpuNotes: updatedNotes,
               lpis: property.lpis.map((lpi) => {
                 return {
                   ...lpi,
                   changeType: "U",
                   usrn: street ? street : lpi.usrn,
                   postcodeRef: postcode ? postcode : lpi.postcodeRef,
-                  postTownRef: postTown ? (lpi.language === "ENG" ? postTown : gaePostTownRef) : lpi.postTownRef,
-                  subLocalityRef: subLocality
-                    ? lpi.language === "ENG"
-                      ? subLocality
-                      : gaeSubLocalityRef
-                    : lpi.subLocalityRef,
+                  postTownRef: postTown ? postTown : lpi.postTownRef,
+                  subLocalityRef: subLocality ? subLocality : lpi.subLocalityRef,
+                  postallyAddressable: postalAddress ? postalAddress : lpi.postallyAddressable,
+                  officialFlag: officialFlag ? officialFlag : lpi.officialFlag,
                 };
               }),
             };
@@ -454,6 +439,8 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                   updatedCount.current++;
                   savedProperty.current.push(result);
                   setRangeProcessedCount(updatedCount.current + failedCount.current);
+                } else {
+                  failedCount.current++;
                 }
               }
             );

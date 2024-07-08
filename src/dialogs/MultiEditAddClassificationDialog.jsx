@@ -26,6 +26,7 @@
 //    013   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    014   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    015   08.07.24 Sean Flook       IMANN-714 Corrected field name.
+//    016   08.07.24 Sean Flook       IMANN-715 Increase the failed count if failed to save property.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -432,6 +433,8 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
                     updatedCount.current++;
                     savedProperty.current.push(result);
                     setRangeProcessedCount(updatedCount.current + failedCount.current);
+                  } else {
+                    failedCount.current++;
                   }
                 }
               );
