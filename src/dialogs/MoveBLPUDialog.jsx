@@ -25,6 +25,7 @@
 //    012   11.04.24 Sean Flook       IMANN-384 Check we have a parent UPRN before changing it to a string.
 //    013   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    014   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    015   09.07.24 Sean Flook       IMANN-731 Corrected Scottish data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -258,28 +259,28 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
 
           const updatedProperty = settingsContext.isScottish
             ? {
-                changeType: "U",
                 blpuStateDate: currentProperty.blpuStateDate,
-                rpc: property.blpu.rpc ? property.blpu.rpc : currentProperty.rpc,
-                startDate: currentProperty.startDate,
-                endDate: currentProperty.endDate,
                 parentUprn: currentProperty.parentUprn,
                 neverExport: currentProperty.neverExport,
                 siteSurvey: currentProperty.siteSurvey,
                 uprn: currentProperty.uprn,
                 logicalStatus: currentProperty.logicalStatus,
+                endDate: currentProperty.endDate,
+                startDate: currentProperty.startDate,
                 blpuState: currentProperty.blpuState,
-                localCustodianCode: currentProperty.localCustodianCode,
+                custodianCode: currentProperty.custodianCode,
                 level: currentProperty.level,
                 xcoordinate: property.easting,
                 ycoordinate: property.northing,
                 pkId: currentProperty.pkId,
+                changeType: "U",
+                rpc: property.blpu.rpc ? property.blpu.rpc : currentProperty.rpc,
                 blpuAppCrossRefs: currentProperty.blpuAppCrossRefs,
                 blpuProvenances: currentProperty.blpuProvenances,
+                blpuNotes: updatedNotes,
                 classifications: currentProperty.classifications,
                 organisations: currentProperty.organisations,
                 successorCrossRefs: currentProperty.successorCrossRefs,
-                blpuNotes: updatedNotes,
                 lpis: currentProperty.lpis,
               }
             : {

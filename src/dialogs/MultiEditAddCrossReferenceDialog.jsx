@@ -25,6 +25,7 @@
 //    012   18.06.24 Joshua McCormick IMANN-598 Cross ref max set to 20 if scottish, else default 50
 //    013   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    014   08.07.24 Sean Flook       IMANN-715 Increase the failed count if failed to save property.
+//    015   09.07.24 Sean Flook       IMANN-731 Corrected Scottish data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -382,31 +383,28 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
 
             if (settingsContext.isScottish)
               updatedProperty = {
-                changeType: property.changeType,
                 blpuStateDate: property.blpuStateDate,
-                rpc: property.rpc,
-                startDate: property.startDate,
-                endDate: property.endDate,
                 parentUprn: property.parentUprn,
                 neverExport: property.neverExport,
                 siteSurvey: property.siteSurvey,
                 uprn: property.uprn,
                 logicalStatus: property.logicalStatus,
+                endDate: property.endDate,
+                startDate: property.startDate,
                 blpuState: property.blpuState,
-                blpuClass: property.blpuClass,
-                localCustodianCode: property.localCustodianCode,
-                organisation: property.organisation,
+                custodianCode: property.custodianCode,
+                level: property.level,
                 xcoordinate: property.xcoordinate,
                 ycoordinate: property.ycoordinate,
-                wardCode: property.wardCode,
-                parishCode: property.parishCode,
                 pkId: property.pkId,
+                changeType: property.changeType,
+                rpc: property.rpc,
                 blpuAppCrossRefs: updatedBlpuAppCrossRefs,
                 blpuProvenances: property.blpuProvenances,
+                blpuNotes: updatedNotes,
                 classifications: property.classifications,
                 organisations: property.organisations,
                 successorCrossRefs: property.successorCrossRefs,
-                blpuNotes: updatedNotes,
                 lpis: property.lpis,
               };
             else

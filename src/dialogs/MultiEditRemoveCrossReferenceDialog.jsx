@@ -23,6 +23,7 @@
 //    010   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    011   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    012   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    013   09.07.24 Sean Flook       IMANN-731 Corrected Scottish data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -297,31 +298,28 @@ function MultiEditRemoveCrossReferenceDialog({ propertyUprns, isOpen, onClose })
 
           if (settingsContext.isScottish)
             updatedProperty = {
-              changeType: property.changeType,
               blpuStateDate: property.blpuStateDate,
-              rpc: property.rpc,
-              startDate: property.startDate,
-              endDate: property.endDate,
               parentUprn: property.parentUprn,
               neverExport: property.neverExport,
               siteSurvey: property.siteSurvey,
               uprn: property.uprn,
               logicalStatus: property.logicalStatus,
+              endDate: property.endDate,
+              startDate: property.startDate,
               blpuState: property.blpuState,
-              blpuClass: property.blpuClass,
-              localCustodianCode: property.localCustodianCode,
-              organisation: property.organisation,
+              custodianCode: property.custodianCode,
+              level: property.level,
               xcoordinate: property.xcoordinate,
               ycoordinate: property.ycoordinate,
-              wardCode: property.wardCode,
-              parishCode: property.parishCode,
               pkId: property.pkId,
+              changeType: property.changeType,
+              rpc: property.rpc,
               blpuAppCrossRefs: updatedBlpuAppCrossRefs,
               blpuProvenances: property.blpuProvenances,
+              blpuNotes: updatedNotes,
               classifications: property.classifications,
               organisations: property.organisations,
               successorCrossRefs: property.successorCrossRefs,
-              blpuNotes: updatedNotes,
               lpis: property.lpis,
             };
           else
