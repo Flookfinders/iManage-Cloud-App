@@ -31,8 +31,6 @@
 //    019   02.04.24 Joshua McCormick IMANN-277 Removed not multiline check for displayCharactersLeft
 //    020   10.06.24 Sean Flook       IMANN-509 Fix for use with passwords.
 //    021   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
-//    022   09.07.24 Sean Flook       IMANN-649 Remember the carat position and keep it.
-//    023   09.07.24 Sean Flook       IMANN-649 Removed debug code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -173,13 +171,9 @@ function ADSTextControl({
 }) {
   const multiline = useRef(minLines > 1);
 
-  const [displayValue, setDisplayValue] = useState(value);
   const [displayError, setDisplayError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const inputRef = useRef();
-  const selectionStart = useRef(0);
-  const selectionEnd = useRef(0);
   const hasError = useRef(false);
 
   /**
@@ -216,13 +210,7 @@ function ADSTextControl({
   const handleChangeEvent = (event) => {
     const valid = characterSetValidator(event.target.value, characterSet);
 
-    selectionStart.current = event.target.selectionStart;
-    selectionEnd.current = event.target.selectionEnd;
-
-    if (valid && onChange) {
-      setDisplayValue(value);
-      onChange(event.target.value);
-    }
+    if (valid && onChange) onChange(event.target.value);
   };
 
   useEffect(() => {
@@ -244,12 +232,6 @@ function ADSTextControl({
     if (element) element.focus();
   });
 
-  useEffect(() => {
-    inputRef.current.value = value;
-    inputRef.current.selectionStart = selectionStart.current;
-    inputRef.current.selectionEnd = selectionEnd.current;
-  }, [value]);
-
   return (
     <Box sx={FormBoxRowStyle(hasError.current)}>
       <Grid
@@ -259,7 +241,7 @@ function ADSTextControl({
         sx={FormRowStyle(hasError.current, noLeftPadding)}
       >
         {label ? (
-          multiline.current && displayValue && displayValue.length > 0 ? (
+          multiline.current && value && value.length > 0 ? (
             <Grid item xs={12}>
               <Stack direction="row" alignItems="center" justifyContent="space-between">
                 <Typography
@@ -276,7 +258,7 @@ function ADSTextControl({
                   align="right"
                   aria-labelledby={`ads-text-label-${label ? label.toLowerCase().replaceAll(" ", "-") : id}`}
                 >
-                  {maxLength - displayValue.length} characters left
+                  {maxLength - value.length} characters left
                 </Typography>
               </Stack>
             </Grid>
@@ -319,8 +301,8 @@ function ADSTextControl({
                   variant="outlined"
                   margin="dense"
                   size="small"
-                  inputProps={{ maxLength: `${maxLength}`, ref: inputRef }}
-                  value={displayValue}
+                  inputProps={{ maxLength: `${maxLength}` }}
+                  value={value}
                   onChange={handleChangeEvent}
                   aria-labelledby={`ads-text-label-${label ? label.toLowerCase().replaceAll(" ", "-") : id}`}
                 />
@@ -339,7 +321,6 @@ function ADSTextControl({
                   size="small"
                   InputProps={{
                     maxLength: `${maxLength}`,
-                    ref: inputRef,
                     endAdornment: !isEdgeChromium && (
                       <InputAdornment position="end">
                         <IconButton
@@ -358,7 +339,7 @@ function ADSTextControl({
                       </InputAdornment>
                     ),
                   }}
-                  value={displayValue}
+                  value={value}
                   onChange={handleChangeEvent}
                   aria-labelledby={`ads-text-label-${label ? label.toLowerCase().replaceAll(" ", "-") : id}`}
                 />
@@ -374,8 +355,8 @@ function ADSTextControl({
                   variant="outlined"
                   margin="dense"
                   size="small"
-                  inputProps={{ maxLength: `${maxLength}`, ref: inputRef }}
-                  value={displayValue}
+                  inputProps={{ maxLength: `${maxLength}` }}
+                  value={value}
                   onChange={handleChangeEvent}
                   aria-labelledby={`ads-text-label-${label ? label.toLowerCase().replaceAll(" ", "-") : id}`}
                 />
@@ -395,8 +376,8 @@ function ADSTextControl({
               variant="outlined"
               margin="dense"
               size="small"
-              inputProps={{ maxLength: `${maxLength}`, ref: inputRef }}
-              value={displayValue}
+              inputProps={{ maxLength: `${maxLength}` }}
+              value={value}
               onChange={handleChangeEvent}
               aria-labelledby={`ads-text-label-${label ? label.toLowerCase().replaceAll(" ", "-") : id}`}
             />
@@ -415,7 +396,6 @@ function ADSTextControl({
               size="small"
               InputProps={{
                 maxLength: `${maxLength}`,
-                ref: inputRef,
                 endAdornment: !isEdgeChromium && (
                   <InputAdornment position="end">
                     <IconButton
@@ -434,7 +414,7 @@ function ADSTextControl({
                   </InputAdornment>
                 ),
               }}
-              value={displayValue}
+              value={value}
               onChange={handleChangeEvent}
               aria-labelledby={`ads-text-label-${label ? label.toLowerCase().replaceAll(" ", "-") : id}`}
             />
@@ -450,14 +430,14 @@ function ADSTextControl({
               variant="outlined"
               margin="dense"
               size="small"
-              inputProps={{ maxLength: `${maxLength}`, ref: inputRef }}
-              value={displayValue}
+              inputProps={{ maxLength: `${maxLength}` }}
+              value={value}
               onChange={handleChangeEvent}
               aria-labelledby={`ads-text-label-${label ? label.toLowerCase().replaceAll(" ", "-") : id}`}
             />
           )}
         </Grid>
-        {displayCharactersLeft && displayValue && displayValue.length > 0 ? (
+        {displayCharactersLeft && value && value.length > 0 ? (
           <Grid item xs={12}>
             <Typography
               id={`ads-text-${label ? label.toLowerCase().replaceAll(" ", "-") : id}-characters-left`}
@@ -465,7 +445,7 @@ function ADSTextControl({
               align="right"
               aria-labelledby={`ads-text-label-${label ? label.toLowerCase().replaceAll(" ", "-") : id}`}
             >
-              {maxLength - displayValue.length} characters left
+              {maxLength - value.length} characters left
             </Typography>
           </Grid>
         ) : (
