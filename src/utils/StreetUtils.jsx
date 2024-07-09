@@ -72,6 +72,7 @@
 //    059   27.06.24 Joel Benford     IMANN-685 Saving OWE sequence number -> seqNum
 //    060   03.07.24 Sean Flook       IMANN-697 Also check the single form of the key when handling errors.
 //    061   08.07.24 Sean Flook       IMANN-596 Before doing the check on changes to the HD and OWE records ensure we have the ESU record.
+//    062   09.07.24 Sean Flook       IMANN-709 Handle new ESUs when checking HD and OWE records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3682,6 +3683,9 @@ export const hasStreetChanged = (newStreet, currentSandbox, hasASD) => {
     (currentSandbox.currentStreetRecords.highwayDedication &&
       (!currentSandbox.sourceStreet.esus ||
         currentSandbox.sourceStreet.esus.length === 0 ||
+        !currentSandbox.sourceStreet.esus.find(
+          (x) => x.esuId === currentSandbox.currentStreetRecords.highwayDedication.esuId
+        ) ||
         !ObjectComparison(
           currentSandbox.sourceStreet.esus
             .find((x) => x.esuId === currentSandbox.currentStreetRecords.highwayDedication.esuId)
@@ -3692,6 +3696,9 @@ export const hasStreetChanged = (newStreet, currentSandbox, hasASD) => {
     (currentSandbox.currentStreetRecords.oneWayExemption &&
       (!currentSandbox.sourceStreet.esus ||
         currentSandbox.sourceStreet.esus.length === 0 ||
+        !currentSandbox.sourceStreet.esus.find(
+          (x) => x.esuId === currentSandbox.currentStreetRecords.oneWayExemption.esuId
+        ) ||
         !ObjectComparison(
           currentSandbox.sourceStreet.esus
             .find((x) => x.esuId === currentSandbox.currentStreetRecords.oneWayExemption.esuId)
