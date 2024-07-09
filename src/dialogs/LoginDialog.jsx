@@ -26,6 +26,7 @@
 //    013   19.06.24 Joshua McCormick IMANN-630 Cleared resend authentication code email errors
 //    014   21.06.24 Sean Flook       IMANN-642 Changes required to redisplay the change password dialog after previously cancelling out.
 //    015   02.07.24 Sean Flook       IMANN-642 If unauthorised set the step to 0.
+//    016   09.07.24 Joshua McCormick IMANN-644 Changepassword error message handling shows errors.Password[0] instead of whole response
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -585,7 +586,7 @@ function LoginDialog({ isOpen, title, message, changePassword, onClose }) {
                 switch (error.status) {
                   case 400:
                     error.text().then((body) => {
-                      setNewPasswordError([body]);
+                      setNewPasswordError([JSON.parse(body).errors.Password[0]]);
                     });
                     break;
 
