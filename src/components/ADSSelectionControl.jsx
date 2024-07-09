@@ -41,6 +41,7 @@
 //    028   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    029   02.07.24 Sean Flook       IMANN-582 Added ability to edit state for multiple properties.
 //    030   05.07.24 Sean Flook       IMANN-692 Added new parameter in call to UpdateRangeAfterSave.
+//    031   09.07.24 Sean Flook       IMANN-582 Changed case.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1750,7 +1751,7 @@ function ADSSelectionControl({
                       <Typography variant="inherit">Edit RPC</Typography>
                     </MenuItem>
                     <MenuItem dense disabled={!userCanEdit} onClick={handleEditStateClick} sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Edit State</Typography>
+                      <Typography variant="inherit">Edit state</Typography>
                     </MenuItem>
                     <MenuItem dense disabled={!userCanEdit} onClick={handleEditLevelClick} sx={menuItemStyle(false)}>
                       <Typography variant="inherit">Edit level</Typography>
