@@ -32,6 +32,7 @@
 //    020   10.06.24 Sean Flook       IMANN-509 Fix for use with passwords.
 //    021   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
 //    022   09.07.24 Sean Flook       IMANN-649 Remember the carat position and keep it.
+//    023   09.07.24 Sean Flook       IMANN-649 Removed debug code.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -469,18 +470,6 @@ function ADSTextControl({
           </Grid>
         ) : (
           ""
-        )}
-        {selectionStart.current && (
-          <Grid item xs={12}>
-            <Typography
-              id={`ads-text-${label ? label.toLowerCase().replaceAll(" ", "-") : id}-cursor-position`}
-              variant="body2"
-              align="right"
-              aria-labelledby={`ads-text-label-${label ? label.toLowerCase().replaceAll(" ", "-") : id}`}
-            >
-              {`Current cursor position: ${selectionStart.current}`}
-            </Typography>
-          </Grid>
         )}
         <ADSErrorDisplay
           errorText={displayError}
