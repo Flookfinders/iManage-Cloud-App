@@ -30,6 +30,7 @@
 //    017   16.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft to consultation and appeal refs and details input
 //    018   17.04.24 Joshua McCormick IMANN-277 Added dataTabToolBar styling for PRoW spacing
 //    019   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    020   09.07.24 Joshua McCormick IMANN-594 Added displayCharactersLeft to PRoW source
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1042,6 +1043,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
           maxLength={120}
           minLines={1}
           maxLines={3}
+          displayCharactersLeft
           id="prow_source"
           characterSet="GeoPlaceStreet1"
           errorText={sourceTextError}

@@ -24,6 +24,7 @@
 //    011   08.02.24 Sean Flook                 Correctly set additional fields.
 //    012   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    013   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    014   09.07.24 Joshua McCormick IMANN-520 Property Names input set to required 
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -776,6 +777,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                     <ADSTextControl
                       label="Property names"
                       isEditable
+                      isRequired
                       maxLength={100}
                       value={propertyName}
                       id="layer_property_name"
