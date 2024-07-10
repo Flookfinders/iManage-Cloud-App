@@ -73,6 +73,7 @@
 //    060   03.07.24 Sean Flook       IMANN-697 Also check the single form of the key when handling errors.
 //    061   08.07.24 Sean Flook       IMANN-596 Before doing the check on changes to the HD and OWE records ensure we have the ESU record.
 //    062   09.07.24 Sean Flook       IMANN-709 Handle new ESUs when checking HD and OWE records.
+//    063   10.07.24 Sean Flook       IMANN-741 Do not try and iterate the ASD records if user does not have ASD rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1054,11 +1055,14 @@ export function GetNewEsuStreetData(currentSandbox, newEsus, streetData, isScott
   let updatedMaintenanceResponsibilities = isScottish ? [...streetData.maintenanceResponsibilities] : null;
   let updatedReinstatementCategories = isScottish ? [...streetData.reinstatementCategories] : null;
   let updatedOSSpecialDesignations = isScottish ? [...streetData.specialDesignations] : null;
-  let updatedInterests = !isScottish ? [...streetData.interests] : null;
-  let updatedConstructions = !isScottish ? [...streetData.constructions] : null;
-  let updatedSpecialDesignations = !isScottish ? [...streetData.specialDesignations] : null;
-  let updatedHeightWidthWeights = !isScottish ? [...streetData.heightWidthWeights] : null;
-  let updatedPublicRightOfWays = !isScottish ? [...streetData.publicRightOfWays] : null;
+  let updatedInterests = !isScottish && hasASD && streetData.interests ? [...streetData.interests] : null;
+  let updatedConstructions = !isScottish && hasASD && streetData.constructions ? [...streetData.constructions] : null;
+  let updatedSpecialDesignations =
+    !isScottish && hasASD && streetData.specialDesignations ? [...streetData.specialDesignations] : null;
+  let updatedHeightWidthWeights =
+    !isScottish && hasASD && streetData.heightWidthWeights ? [...streetData.heightWidthWeights] : null;
+  let updatedPublicRightOfWays =
+    !isScottish && hasASD && streetData.publicRightOfWays ? [...streetData.publicRightOfWays] : null;
 
   if (updateWholeRoad) {
     const newWholeRoadWkt = GetWholeRoadGeometry(newEsus);
