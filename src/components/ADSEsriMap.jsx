@@ -91,6 +91,7 @@
 //    077   02.07.24 Sean Flook       IMANN-507 When editing a property ensure the edit layer is top of the list.
 //    078   02.07.24 Sean Flook       IMANN-689 Set the unassigned ESUs layer visibility to true.
 //    079   08.07.24 Sean Flook       IMANN-728 Pass in the new parameter to onExtentChange.
+//    080   10.07.24 Sean Flook       IMANN-742 Only allow properties to be added to a street if the user has permission to do that.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3192,21 +3193,22 @@ function ADSEsriMap(startExtent) {
             ],
           },
         ],
-        actions: [
-          streetOpenAction,
-          streetAddProperty,
-          streetAddRangeProperties,
-          // streetDivideAction,
-          // streetAssignAction,
-          streetStreetViewAction,
-          // streetMenuAction,
-        ],
+        actions: [streetOpenAction, streetStreetViewAction],
       },
       renderer: streetRenderer,
       opacity: 0.4,
       spatialReference: { wkid: 27700 },
       title: "Background Street layer",
     });
+
+    if (userContext.current && userContext.current.currentUser.editProperty && backgroundStreetLayer) {
+      backgroundStreetLayer.popupTemplate.actions = [
+        streetOpenAction,
+        streetAddProperty,
+        streetAddRangeProperties,
+        streetStreetViewAction,
+      ];
+    }
 
     mapRef.current.remove(mapRef.current.findLayerById(backgroundStreetLayerName));
 
@@ -4611,20 +4613,21 @@ function ADSEsriMap(startExtent) {
             ],
           },
         ],
-        actions: [
-          streetOpenAction,
-          streetAddProperty,
-          streetAddRangeProperties,
-          // streetDivideAction,
-          // streetAssignAction,
-          streetStreetViewAction,
-          // streetMenuAction,
-        ],
+        actions: [streetOpenAction, streetStreetViewAction],
       },
       renderer: streetRenderer,
       spatialReference: { wkid: 27700 },
       title: "Street layer",
     });
+
+    if (userContext.current && userContext.current.currentUser.editProperty && streetLayer) {
+      streetLayer.popupTemplate.actions = [
+        streetOpenAction,
+        streetAddProperty,
+        streetAddRangeProperties,
+        streetStreetViewAction,
+      ];
+    }
 
     const asd51Layer = new FeatureLayer({
       id: asd51LayerName,
