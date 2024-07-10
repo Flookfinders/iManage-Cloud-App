@@ -45,6 +45,7 @@
 //    010   17.04.24 Joshua McCormick IMAN-277  Removed maxLength and set to hardcoded 90
 //    011   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
 //    012   20.06.24 Sean Flook       IMANN-633 Enforce the maximum for the numbers.
+//    013   10.07.24 Sean Flook       IMANN-649 Prevent carat from jumping to end of text.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -136,6 +137,9 @@ function ADSAddressableObjectControl({
 
   const [displayText, setDisplayText] = useState("");
 
+  const textRef = useRef();
+  const selectionStart = useRef(0);
+  const selectionEnd = useRef(0);
   const hasError = useRef(false);
 
   /**
@@ -188,15 +192,19 @@ function ADSAddressableObjectControl({
    * @param {object} event The event object.
    */
   const handleTextChangeEvent = (event) => {
+    selectionStart.current = event.target.selectionStart;
+    selectionEnd.current = event.target.selectionEnd;
+
     if (
       characterSetValidator(
         event.target.value,
         `${settingsContext.isScottish ? "OneScotlandProperty" : "GeoPlaceProperty2"}`
       ) &&
       onTextChange
-    )
+    ) {
+      setDisplayText(event.target.value);
       onTextChange(event.target.value);
-    else if (!textValue && !displayText) setDisplayText("");
+    } else if (!textValue && !displayText) setDisplayText("");
   };
 
   useEffect(() => {
@@ -238,7 +246,12 @@ function ADSAddressableObjectControl({
   });
 
   useEffect(() => {
-    setDisplayText(textValue ? textValue : "");
+    if (textRef.current) {
+      textRef.current.value = textValue ? textValue : "";
+
+      textRef.current.selectionStart = selectionStart.current;
+      textRef.current.selectionEnd = selectionEnd.current;
+    }
   }, [textValue]);
 
   return (
@@ -492,7 +505,7 @@ function ADSAddressableObjectControl({
                 variant="outlined"
                 margin="dense"
                 size="small"
-                inputProps={{ maxLength: 90 }}
+                inputProps={{ maxLength: 90, ref: textRef }}
                 placeholder="e.g. Unit 12"
                 value={displayText}
                 onChange={handleTextChangeEvent}
@@ -510,7 +523,7 @@ function ADSAddressableObjectControl({
               variant="outlined"
               margin="dense"
               size="small"
-              inputProps={{ maxLength: 90 }}
+              inputProps={{ maxLength: 90, ref: textRef }}
               placeholder="e.g. Unit 12"
               value={displayText}
               onChange={handleTextChangeEvent}
