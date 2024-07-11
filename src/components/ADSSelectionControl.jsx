@@ -42,6 +42,7 @@
 //    029   02.07.24 Sean Flook       IMANN-582 Added ability to edit state for multiple properties.
 //    030   05.07.24 Sean Flook       IMANN-692 Added new parameter in call to UpdateRangeAfterSave.
 //    031   09.07.24 Sean Flook       IMANN-582 Changed case.
+//    032   11.07.24 Sean Flook       IMANN-747 Only display menu items if the user has the rights to use them.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1388,23 +1389,31 @@ function ADSSelectionControl({
                     onClose={handleStreetActionsMenuClose}
                     sx={menuStyle}
                   >
-                    <MenuItem
-                      dense
-                      disabled={!userCanEdit || (currentStreet && ![11, 12, 19].includes(currentStreet.logical_status))}
-                      onClick={HandleAddProperty}
-                      sx={menuItemStyle(false)}
-                    >
-                      <Typography variant="inherit">Add property</Typography>
-                    </MenuItem>
-                    <MenuItem
-                      dense
-                      divider
-                      disabled={!userCanEdit || (currentStreet && ![11, 12, 19].includes(currentStreet.logical_status))}
-                      onClick={HandleAddRange}
-                      sx={menuItemStyle(true)}
-                    >
-                      <Typography variant="inherit">Add properties</Typography>
-                    </MenuItem>
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem
+                        dense
+                        disabled={
+                          !userCanEdit || (currentStreet && ![11, 12, 19].includes(currentStreet.logical_status))
+                        }
+                        onClick={HandleAddProperty}
+                        sx={menuItemStyle(false)}
+                      >
+                        <Typography variant="inherit">Add property</Typography>
+                      </MenuItem>
+                    )}
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem
+                        dense
+                        divider
+                        disabled={
+                          !userCanEdit || (currentStreet && ![11, 12, 19].includes(currentStreet.logical_status))
+                        }
+                        onClick={HandleAddRange}
+                        sx={menuItemStyle(true)}
+                      >
+                        <Typography variant="inherit">Add properties</Typography>
+                      </MenuItem>
+                    )}
                     <MenuItem dense onClick={(event) => itemCopy(event, currentUsrn, "USRN")} sx={menuItemStyle(false)}>
                       <Typography variant="inherit">Copy USRN</Typography>
                     </MenuItem>
@@ -1441,12 +1450,12 @@ function ADSSelectionControl({
                     <MenuItem dense divider onClick={handleRemoveFromList} sx={menuItemStyle(true)}>
                       <Typography variant="inherit">Remove from list</Typography>
                     </MenuItem>
-                    {process.env.NODE_ENV === "development" && (
+                    {process.env.NODE_ENV === "development" && userContext.currentUser.editStreet && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Close street</Typography>
                       </MenuItem>
                     )}
-                    {!settingsContext.isScottish && (
+                    {!settingsContext.isScottish && userContext.currentUser.editStreet && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit" color="error">
                           Delete
@@ -1490,12 +1499,12 @@ function ADSSelectionControl({
                     <MenuItem dense divider onClick={handleRemoveFromList} sx={menuItemStyle(true)}>
                       <Typography variant="inherit">Remove from list</Typography>
                     </MenuItem>
-                    {process.env.NODE_ENV === "development" && (
+                    {process.env.NODE_ENV === "development" && userContext.currentUser.editStreet && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Close street</Typography>
                       </MenuItem>
                     )}
-                    {!settingsContext.isScottish && (
+                    {!settingsContext.isScottish && userContext.currentUser.editStreet && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit" color="error">
                           Delete
@@ -1612,23 +1621,27 @@ function ADSSelectionControl({
                     onClose={handlePropertyActionsMenuClose}
                     sx={menuStyle}
                   >
-                    <MenuItem
-                      dense
-                      disabled={!userCanEdit || (currentProperty && currentProperty.logical_status > 6)}
-                      onClick={HandleAddChild}
-                      sx={menuItemStyle(false)}
-                    >
-                      <Typography variant="inherit">Add child</Typography>
-                    </MenuItem>
-                    <MenuItem
-                      dense
-                      divider
-                      disabled={!userCanEdit || (currentProperty && currentProperty.logical_status > 6)}
-                      onClick={HandleAddChildren}
-                      sx={menuItemStyle(true)}
-                    >
-                      <Typography variant="inherit">Add children</Typography>
-                    </MenuItem>
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem
+                        dense
+                        disabled={!userCanEdit || (currentProperty && currentProperty.logical_status > 6)}
+                        onClick={HandleAddChild}
+                        sx={menuItemStyle(false)}
+                      >
+                        <Typography variant="inherit">Add child</Typography>
+                      </MenuItem>
+                    )}
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem
+                        dense
+                        divider
+                        disabled={!userCanEdit || (currentProperty && currentProperty.logical_status > 6)}
+                        onClick={HandleAddChildren}
+                        sx={menuItemStyle(true)}
+                      >
+                        <Typography variant="inherit">Add children</Typography>
+                      </MenuItem>
+                    )}
                     <MenuItem dense onClick={(event) => itemCopy(event, currentUprn, "UPRN")} sx={menuItemStyle(false)}>
                       <Typography variant="inherit">Copy UPRN</Typography>
                     </MenuItem>
@@ -1673,35 +1686,43 @@ function ADSSelectionControl({
                     <MenuItem dense divider onClick={handleRemoveFromList} sx={menuItemStyle(true)}>
                       <Typography variant="inherit">Remove from list</Typography>
                     </MenuItem>
-                    {process.env.NODE_ENV === "development" && (
+                    {process.env.NODE_ENV === "development" && userContext.currentUser.editProperty && (
                       <MenuItem dense divider disabled sx={menuItemStyle(true)}>
                         <Typography variant="inherit">Export to...</Typography>
                       </MenuItem>
                     )}
-                    {process.env.NODE_ENV === "development" && (
+                    {process.env.NODE_ENV === "development" && userContext.currentUser.editProperty && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Move street</Typography>
                       </MenuItem>
                     )}
-                    <MenuItem dense onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Make child of...</Typography>
-                    </MenuItem>
-                    <MenuItem
-                      dense
-                      divider
-                      onClick={handleMoveBlpuClick}
-                      disabled={!userCanEdit}
-                      sx={menuItemStyle(true)}
-                    >
-                      <Typography variant="inherit">Move seed point</Typography>
-                    </MenuItem>
-                    <MenuItem dense disabled={!userCanEdit} onClick={RejectProperty} sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Reject</Typography>
-                    </MenuItem>
-                    <MenuItem dense disabled={!userCanEdit} onClick={HistoriciseProperty} sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Historicise</Typography>
-                    </MenuItem>
-                    {process.env.NODE_ENV === "development" && (
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem dense onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Make child of...</Typography>
+                      </MenuItem>
+                    )}
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem
+                        dense
+                        divider
+                        onClick={handleMoveBlpuClick}
+                        disabled={!userCanEdit}
+                        sx={menuItemStyle(true)}
+                      >
+                        <Typography variant="inherit">Move seed point</Typography>
+                      </MenuItem>
+                    )}
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem dense disabled={!userCanEdit} onClick={RejectProperty} sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Reject</Typography>
+                      </MenuItem>
+                    )}
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem dense disabled={!userCanEdit} onClick={HistoriciseProperty} sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Historicise</Typography>
+                      </MenuItem>
+                    )}
+                    {process.env.NODE_ENV === "development" && userContext.currentUser.editProperty && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit" color="error">
                           Delete
@@ -1727,112 +1748,141 @@ function ADSSelectionControl({
                     onClose={handlePropertyActionsMenuClose}
                     sx={menuStyle}
                   >
-                    <MenuItem dense disabled={!userCanEdit} onClick={handleSetApprovedClick} sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Set approved</Typography>
-                    </MenuItem>
-                    <MenuItem
-                      dense
-                      divider
-                      disabled={!userCanEdit}
-                      onClick={handleSetHistoricClick}
-                      sx={menuItemStyle(true)}
-                    >
-                      <Typography variant="inherit">Set historic</Typography>
-                    </MenuItem>
-                    <MenuItem
-                      dense
-                      disabled={!userCanEdit}
-                      onClick={handleEditClassificationClick}
-                      sx={menuItemStyle(false)}
-                    >
-                      <Typography variant="inherit">Edit classification</Typography>
-                    </MenuItem>
-                    <MenuItem dense disabled={!userCanEdit} onClick={handleEditRpcClick} sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Edit RPC</Typography>
-                    </MenuItem>
-                    <MenuItem dense disabled={!userCanEdit} onClick={handleEditStateClick} sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Edit state</Typography>
-                    </MenuItem>
-                    <MenuItem dense disabled={!userCanEdit} onClick={handleEditLevelClick} sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Edit level</Typography>
-                    </MenuItem>
-                    <MenuItem
-                      dense
-                      disabled={!userCanEdit}
-                      onClick={handleEditExcludeFromExportClick}
-                      sx={menuItemStyle(false)}
-                    >
-                      <Typography variant="inherit">Edit exclude from export</Typography>
-                    </MenuItem>
-                    <MenuItem
-                      dense
-                      divider
-                      disabled={!userCanEdit}
-                      onClick={handleEditSiteVisitRequiredClick}
-                      sx={menuItemStyle(true)}
-                    >
-                      <Typography variant="inherit">Edit site visit required</Typography>
-                    </MenuItem>
-                    <MenuItem dense disabled={!userCanEdit} onClick={handleAddNoteClick} sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Add note</Typography>
-                    </MenuItem>
-                    <MenuItem
-                      dense
-                      divider
-                      disabled={!userCanEdit}
-                      onClick={handleMoveBlpuClick}
-                      sx={menuItemStyle(true)}
-                    >
-                      <Typography variant="inherit">Move BLPU seed point</Typography>
-                    </MenuItem>
-                    <NestedMenuItem
-                      dense
-                      className="nestedMenuItem"
-                      disabled={!userCanEdit}
-                      rightIcon={<KeyboardArrowRightIcon />}
-                      label={<Typography variant="body2">Edit address</Typography>}
-                      parentMenuOpen={propertyActionsOpen}
-                    >
+                    {userContext.currentUser.editProperty && (
                       <MenuItem
                         dense
                         disabled={!userCanEdit}
-                        onClick={handleEditAddressFieldsClick}
+                        onClick={handleSetApprovedClick}
                         sx={menuItemStyle(false)}
                       >
-                        <Typography variant="inherit">Edit address fields</Typography>
+                        <Typography variant="inherit">Set approved</Typography>
                       </MenuItem>
-                      {process.env.NODE_ENV === "development" && (
-                        <MenuItem dense disabled onClick={handlePlotToAddressWizardClick} sx={menuItemStyle(false)}>
-                          <Typography variant="inherit">Plot to address wizard</Typography>
+                    )}
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem
+                        dense
+                        divider
+                        disabled={!userCanEdit}
+                        onClick={handleSetHistoricClick}
+                        sx={menuItemStyle(true)}
+                      >
+                        <Typography variant="inherit">Set historic</Typography>
+                      </MenuItem>
+                    )}
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem
+                        dense
+                        disabled={!userCanEdit}
+                        onClick={handleEditClassificationClick}
+                        sx={menuItemStyle(false)}
+                      >
+                        <Typography variant="inherit">Edit classification</Typography>
+                      </MenuItem>
+                    )}
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem dense disabled={!userCanEdit} onClick={handleEditRpcClick} sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Edit RPC</Typography>
+                      </MenuItem>
+                    )}
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem dense disabled={!userCanEdit} onClick={handleEditStateClick} sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Edit state</Typography>
+                      </MenuItem>
+                    )}
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem dense disabled={!userCanEdit} onClick={handleEditLevelClick} sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Edit level</Typography>
+                      </MenuItem>
+                    )}
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem
+                        dense
+                        disabled={!userCanEdit}
+                        onClick={handleEditExcludeFromExportClick}
+                        sx={menuItemStyle(false)}
+                      >
+                        <Typography variant="inherit">Edit exclude from export</Typography>
+                      </MenuItem>
+                    )}
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem
+                        dense
+                        divider
+                        disabled={!userCanEdit}
+                        onClick={handleEditSiteVisitRequiredClick}
+                        sx={menuItemStyle(true)}
+                      >
+                        <Typography variant="inherit">Edit site visit required</Typography>
+                      </MenuItem>
+                    )}
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem dense disabled={!userCanEdit} onClick={handleAddNoteClick} sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Add note</Typography>
+                      </MenuItem>
+                    )}
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem
+                        dense
+                        divider
+                        disabled={!userCanEdit}
+                        onClick={handleMoveBlpuClick}
+                        sx={menuItemStyle(true)}
+                      >
+                        <Typography variant="inherit">Move BLPU seed point</Typography>
+                      </MenuItem>
+                    )}
+                    {userContext.currentUser.editProperty && (
+                      <NestedMenuItem
+                        dense
+                        className="nestedMenuItem"
+                        disabled={!userCanEdit}
+                        rightIcon={<KeyboardArrowRightIcon />}
+                        label={<Typography variant="body2">Edit address</Typography>}
+                        parentMenuOpen={propertyActionsOpen}
+                      >
+                        <MenuItem
+                          dense
+                          disabled={!userCanEdit}
+                          onClick={handleEditAddressFieldsClick}
+                          sx={menuItemStyle(false)}
+                        >
+                          <Typography variant="inherit">Edit address fields</Typography>
                         </MenuItem>
-                      )}
-                    </NestedMenuItem>
-                    <NestedMenuItem
-                      dense
-                      divider={!settingsContext.isScottish}
-                      className={settingsContext.isScottish ? "nestedMenuItem" : "nestedMenuItemDivider"}
-                      disabled={!userCanEdit}
-                      rightIcon={<KeyboardArrowRightIcon />}
-                      label={<Typography variant="body2">Edit cross reference</Typography>}
-                      parentMenuOpen={propertyActionsOpen}
-                    >
-                      <MenuItem
+                        {process.env.NODE_ENV === "development" && (
+                          <MenuItem dense disabled onClick={handlePlotToAddressWizardClick} sx={menuItemStyle(false)}>
+                            <Typography variant="inherit">Plot to address wizard</Typography>
+                          </MenuItem>
+                        )}
+                      </NestedMenuItem>
+                    )}
+                    {userContext.currentUser.editProperty && (
+                      <NestedMenuItem
                         dense
+                        divider={!settingsContext.isScottish}
+                        className={settingsContext.isScottish ? "nestedMenuItem" : "nestedMenuItemDivider"}
                         disabled={!userCanEdit}
-                        onClick={handleAddCrossReferenceClick}
-                        sx={menuItemStyle(false)}
+                        rightIcon={<KeyboardArrowRightIcon />}
+                        label={<Typography variant="body2">Edit cross reference</Typography>}
+                        parentMenuOpen={propertyActionsOpen}
                       >
-                        <Typography variant="inherit">Add cross reference</Typography>
-                      </MenuItem>
-                      <MenuItem
-                        dense
-                        disabled={!userCanEdit}
-                        onClick={handleRemoveCrossReferenceClick}
-                        sx={menuItemStyle(false)}
-                      >
-                        <Typography variant="inherit">Remove cross reference</Typography>
-                      </MenuItem>
-                    </NestedMenuItem>
+                        <MenuItem
+                          dense
+                          disabled={!userCanEdit}
+                          onClick={handleAddCrossReferenceClick}
+                          sx={menuItemStyle(false)}
+                        >
+                          <Typography variant="inherit">Add cross reference</Typography>
+                        </MenuItem>
+                        <MenuItem
+                          dense
+                          disabled={!userCanEdit}
+                          onClick={handleRemoveCrossReferenceClick}
+                          sx={menuItemStyle(false)}
+                        >
+                          <Typography variant="inherit">Remove cross reference</Typography>
+                        </MenuItem>
+                      </NestedMenuItem>
+                    )}
                     {process.env.NODE_ENV === "development" && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Add to list</Typography>
@@ -1841,7 +1891,7 @@ function ADSSelectionControl({
                     <MenuItem dense divider onClick={handleRemoveFromList} sx={menuItemStyle(true)}>
                       <Typography variant="inherit">Remove from list</Typography>
                     </MenuItem>
-                    {process.env.NODE_ENV === "development" && (
+                    {process.env.NODE_ENV === "development" && userContext.currentUser.editProperty && (
                       <NestedMenuItem
                         dense
                         divider
@@ -1852,14 +1902,16 @@ function ADSSelectionControl({
                         parentMenuOpen={propertyActionsOpen}
                       ></NestedMenuItem>
                     )}
-                    {process.env.NODE_ENV === "development" && (
+                    {process.env.NODE_ENV === "development" && userContext.currentUser.editProperty && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Move street</Typography>
                       </MenuItem>
                     )}
-                    <MenuItem dense onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
-                      <Typography variant="inherit">Make child of...</Typography>
-                    </MenuItem>
+                    {userContext.currentUser.editProperty && (
+                      <MenuItem dense onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
+                        <Typography variant="inherit">Make child of...</Typography>
+                      </MenuItem>
+                    )}
                   </Menu>
                 )}
               </Fragment>
