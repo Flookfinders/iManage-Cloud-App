@@ -1052,7 +1052,7 @@ const ValidationMessages = [
   {
     messageId: 1100055,
     errorMessage:
-      "At least one construction record with construction type = 1 and reinstatement type between 1 and 12 must exist on a type 1 or 2 street.",
+      "At least one construction record with construction type of 1 and reinstatement type between 1 and 12 must exist on a type 1 or 2 street.",
     llpgCode: "",
     lsgCode: "LG11.021",
     osgCode: "",
@@ -1142,7 +1142,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1100062,
-    errorMessage: "Street with state = 2 not linked to any ESU(s).",
+    errorMessage: "Street with state of 2 is not linked to any ESU(s).",
     llpgCode: "",
     lsgCode: "LG11.035",
     osgCode: "",
@@ -3400,7 +3400,8 @@ const ValidationMessages = [
   },
   {
     messageId: 1700024,
-    errorMessage: "A highway dedication type = 12 must have a corresponding interest record with a street status = 3.",
+    errorMessage:
+      "A highway dedication type of 12 must have a corresponding interest record with a street status of 3.",
     llpgCode: "",
     lsgCode: "LG17.023",
     osgCode: "",
@@ -3415,7 +3416,7 @@ const ValidationMessages = [
   },
   {
     messageId: 1700025,
-    errorMessage: "A highway dedication type = 11 must be cross referenced to a type 3 street.",
+    errorMessage: "A highway dedication type of 11 must be cross referenced to a type 3 street.",
     llpgCode: "",
     lsgCode: "LG17.024",
     osgCode: "",
@@ -6327,7 +6328,7 @@ const ValidationMessages = [
     usedByApi: true,
     usedByFrontEnd: true,
     gpCheck: true,
-    osCheck: false,
+    osCheck: true,
   },
   {
     messageId: 2400062,
@@ -7833,7 +7834,7 @@ const ValidationMessages = [
   },
   {
     messageId: 3200019,
-    errorMessage: "Classification of 'PS' must have PAO = 'STREET RECORD'.",
+    errorMessage: "Classification of 'PS' must have PAO set to 'STREET RECORD'.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "12.4.1.b",
@@ -7974,6 +7975,21 @@ const ValidationMessages = [
     osgCode: "12.5.2.a",
     asdCode: "",
     idoxCode: "3200028",
+    ignoreCheck: false,
+    risk: "M",
+    usedByApi: true,
+    usedByFrontEnd: false,
+    gpCheck: false,
+    osCheck: true,
+  },
+  {
+    messageId: 3200029,
+    errorMessage: "If PAO is 'STREET RECORD', the classification must be 'PS'.",
+    llpgCode: "",
+    lsgCode: "",
+    osgCode: "",
+    asdCode: "",
+    idoxCode: "3200029",
     ignoreCheck: false,
     risk: "M",
     usedByApi: true,
@@ -9998,7 +10014,7 @@ const ValidationMessages = [
   {
     messageId: 6100033,
     errorMessage:
-      "If an interested organisation set to whole road exists, a second record set to part of road is only allowed if interest type = 8 or 9.",
+      "If an interested organisation set to whole road exists, a second record set to part of road is only allowed if interest type of 8 or 9.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
@@ -10014,7 +10030,7 @@ const ValidationMessages = [
   {
     messageId: 6100034,
     errorMessage:
-      "If an interest type = 1 set to whole road exists, a second record of interest type = 1 is not allowed.",
+      "If an interest type of 1 set to whole road exists, a second record with interest type of 1 is not allowed.",
     llpgCode: "",
     lsgCode: "",
     osgCode: "",
