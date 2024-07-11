@@ -46,6 +46,7 @@
 //    011   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
 //    012   20.06.24 Sean Flook       IMANN-633 Enforce the maximum for the numbers.
 //    013   10.07.24 Sean Flook       IMANN-649 Prevent carat from jumping to end of text.
+//    014   11.07.24 Sean Flook       IMANN-759 Set the display variable if we do not have the input reference.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -251,6 +252,8 @@ function ADSAddressableObjectControl({
 
       textRef.current.selectionStart = selectionStart.current;
       textRef.current.selectionEnd = selectionEnd.current;
+    } else {
+      setDisplayText(textValue);
     }
   }, [textValue]);
 
