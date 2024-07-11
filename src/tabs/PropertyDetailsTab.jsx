@@ -57,6 +57,7 @@
 //    044   21.06.24 Sean Flook       IMANN-636 Fixed warning.
 //    045   01.07.24 Joel Benford     IMANN-603 Set displayed UPRN from param not context
 //    045   01.07.24 Joel Benford     IMANN-603 Handle undefined
+//    046   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1163,15 +1164,21 @@ function PropertyDetailsTab({
             onClose={handleBLPUMenuClose}
             sx={menuStyle}
           >
-            <MenuItem dense disabled={!userCanEdit} onClick={handleAddLpi} sx={menuItemStyle(false)}>
-              <Typography variant="inherit">Add new LPI</Typography>
-            </MenuItem>
-            <MenuItem dense disabled={!userCanEdit} onClick={handleAddChild} sx={menuItemStyle(false)}>
-              <Typography variant="inherit">Add child</Typography>
-            </MenuItem>
-            <MenuItem dense disabled={!userCanEdit} divider onClick={handleAddChildren} sx={menuItemStyle(true)}>
-              <Typography variant="inherit">Add children</Typography>
-            </MenuItem>
+            {userCanEdit && (
+              <MenuItem dense onClick={handleAddLpi} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Add new LPI</Typography>
+              </MenuItem>
+            )}
+            {userCanEdit && (
+              <MenuItem dense onClick={handleAddChild} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Add child</Typography>
+              </MenuItem>
+            )}
+            {userCanEdit && (
+              <MenuItem dense divider onClick={handleAddChildren} sx={menuItemStyle(true)}>
+                <Typography variant="inherit">Add children</Typography>
+              </MenuItem>
+            )}
             <MenuItem dense onClick={handleZoomToProperty} sx={menuItemStyle(false)}>
               <Typography variant="inherit">Zoom to this</Typography>
             </MenuItem>
@@ -1196,35 +1203,41 @@ function PropertyDetailsTab({
                 <Typography variant="inherit">Add to List</Typography>
               </MenuItem>
             )}
-            {process.env.NODE_ENV === "development" && (
+            {process.env.NODE_ENV === "development" && userCanEdit && (
               <MenuItem dense disabled onClick={handleExportTo} divider sx={menuItemStyle(true)}>
                 <Typography variant="inherit">Export to...</Typography>
               </MenuItem>
             )}
-            {process.env.NODE_ENV === "development" && (
+            {process.env.NODE_ENV === "development" && userCanEdit && (
               <MenuItem dense disabled onClick={handleMoveBlpu} sx={menuItemStyle(false)}>
                 <Typography variant="inherit">Move BLPU</Typography>
               </MenuItem>
             )}
-            {process.env.NODE_ENV === "development" && (
+            {process.env.NODE_ENV === "development" && userCanEdit && (
               <MenuItem dense disabled onClick={handleMoveStreet} sx={menuItemStyle(false)}>
                 <Typography variant="inherit">Move street</Typography>
               </MenuItem>
             )}
-            <MenuItem dense onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
-              <Typography variant="inherit">Make child of...</Typography>
-            </MenuItem>
+            {userCanEdit && (
+              <MenuItem dense onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Make child of...</Typography>
+              </MenuItem>
+            )}
             <MenuItem dense disabled={!userCanEdit} onClick={handleRemoveFromParent} divider sx={menuItemStyle(true)}>
               <Typography variant="inherit">Remove from parent</Typography>
             </MenuItem>
-            <MenuItem dense disabled={!userCanEdit} onClick={handleReject} sx={menuItemStyle(false)}>
-              <Typography variant="inherit">Reject</Typography>
-            </MenuItem>
-            <MenuItem dense disabled={!userCanEdit} onClick={handleHistoricise} sx={menuItemStyle(false)}>
-              <Typography variant="inherit">Historicise</Typography>
-            </MenuItem>
-            {process.env.NODE_ENV === "development" && (
-              <MenuItem dense disabled={!userCanEdit} onClick={handleDelete} sx={menuItemStyle(false)}>
+            {userCanEdit && (
+              <MenuItem dense onClick={handleReject} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Reject</Typography>
+              </MenuItem>
+            )}
+            {userCanEdit && (
+              <MenuItem dense onClick={handleHistoricise} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Historicise</Typography>
+              </MenuItem>
+            )}
+            {process.env.NODE_ENV === "development" && userCanEdit && (
+              <MenuItem dense onClick={handleDelete} sx={menuItemStyle(false)}>
                 <Typography variant="inherit" color="error">
                   Delete
                 </Typography>

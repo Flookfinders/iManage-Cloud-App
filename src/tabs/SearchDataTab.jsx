@@ -58,6 +58,7 @@
 //    044   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    045   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    046   11.07.24 Sean Flook       IMANN-747 Only display menu items if the user has the rights to use them.
+//    047   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -177,7 +178,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   const [streetCount, setStreetCount] = useState(0);
   const [propertyCount, setPropertyCount] = useState(0);
 
-  const [userCanEdit, setUserCanEdit] = useState(false);
+  const [userCanEditStreet, setUserCanEditStreet] = useState(false);
+  const [userCanEditProperty, setUserCanEditProperty] = useState(false);
   const [hasASD, setHasASD] = useState(false);
 
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
@@ -1222,9 +1224,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   }, [checked, variant]);
 
   useEffect(() => {
-    setUserCanEdit(
-      userContext.currentUser && (userContext.currentUser.editStreet || userContext.currentUser.editProperty)
-    );
+    setUserCanEditStreet(userContext.currentUser && userContext.currentUser.editStreet);
+    setUserCanEditProperty(userContext.currentUser && userContext.currentUser.editProperty);
   }, [userContext]);
 
   useEffect(() => {
@@ -1579,21 +1580,21 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                               onClose={handleStreetActionsMenuClose}
                               sx={menuStyle}
                             >
-                              {userContext.currentUser.editProperty && (
+                              {userCanEditProperty && (
                                 <MenuItem
                                   dense
-                                  disabled={!userCanEdit || ![11, 12, 19].includes(rec.logical_status)}
+                                  disabled={![11, 12, 19].includes(rec.logical_status)}
                                   onClick={(event) => HandleAddProperty(event, rec)}
                                   sx={menuItemStyle(false)}
                                 >
                                   <Typography variant="inherit">Add property</Typography>
                                 </MenuItem>
                               )}
-                              {userContext.currentUser.editProperty && (
+                              {userCanEditProperty && (
                                 <MenuItem
                                   dense
                                   divider
-                                  disabled={!userCanEdit || ![11, 12, 19].includes(rec.logical_status)}
+                                  disabled={![11, 12, 19].includes(rec.logical_status)}
                                   onClick={(event) => HandleAddRange(event, rec)}
                                   sx={menuItemStyle(true)}
                                 >
@@ -1645,20 +1646,14 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                               >
                                 <Typography variant="inherit">Remove from list</Typography>
                               </MenuItem>
-                              {userContext.currentUser.editStreet && (
-                                <MenuItem
-                                  dense
-                                  disabled={!userCanEdit}
-                                  onClick={(event) => CloseStreet(event, rec)}
-                                  sx={menuItemStyle(false)}
-                                >
+                              {userCanEditStreet && (
+                                <MenuItem dense onClick={(event) => CloseStreet(event, rec)} sx={menuItemStyle(false)}>
                                   <Typography variant="inherit">Close street</Typography>
                                 </MenuItem>
                               )}
-                              {!settingsContext.isScottish && userContext.currentUser.editStreet && (
+                              {!settingsContext.isScottish && userCanEditStreet && (
                                 <MenuItem
                                   dense
-                                  disabled={!userCanEdit}
                                   onClick={(event) => DeleteStreet(event, rec.usrn)}
                                   sx={menuItemStyle(false)}
                                 >
@@ -1706,20 +1701,20 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                               onClose={handlePropertyActionsMenuClose}
                               sx={menuStyle}
                             >
-                              {userContext.currentUser.editProperty && (
+                              {userCanEditProperty && (
                                 <MenuItem
                                   dense
-                                  disabled={!userCanEdit || rec.logical_status > 6}
+                                  disabled={rec.logical_status > 6}
                                   onClick={(event) => HandleAddChild(event, rec)}
                                   sx={menuItemStyle(false)}
                                 >
                                   <Typography variant="inherit">Add child</Typography>
                                 </MenuItem>
                               )}
-                              {userContext.currentUser.editProperty && (
+                              {userCanEditProperty && (
                                 <MenuItem
                                   dense
-                                  disabled={!userCanEdit || rec.logical_status > 6}
+                                  disabled={rec.logical_status > 6}
                                   onClick={(event) => HandleAddChildren(event, rec)}
                                   divider
                                   sx={menuItemStyle(true)}
@@ -1780,17 +1775,17 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                               >
                                 <Typography variant="inherit">Remove from list</Typography>
                               </MenuItem>
-                              {process.env.NODE_ENV === "development" && userContext.currentUser.editProperty && (
+                              {process.env.NODE_ENV === "development" && userCanEditProperty && (
                                 <MenuItem dense disabled sx={menuItemStyle(true)}>
                                   <Typography variant="inherit">Export to...</Typography>
                                 </MenuItem>
                               )}
-                              {process.env.NODE_ENV === "development" && userContext.currentUser.editProperty && (
+                              {process.env.NODE_ENV === "development" && userCanEditProperty && (
                                 <MenuItem dense disabled sx={menuItemStyle(false)}>
                                   <Typography variant="inherit">Move street</Typography>
                                 </MenuItem>
                               )}
-                              {userContext.currentUser.editProperty && (
+                              {userCanEditProperty && (
                                 <MenuItem
                                   dense
                                   sx={menuItemStyle(false)}
@@ -1799,35 +1794,32 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                   <Typography variant="inherit">Make child of...</Typography>
                                 </MenuItem>
                               )}
-                              {process.env.NODE_ENV === "development" && userContext.currentUser.editProperty && (
+                              {process.env.NODE_ENV === "development" && userCanEditProperty && (
                                 <MenuItem dense divider disabled sx={menuItemStyle(true)}>
                                   <Typography variant="inherit">Move seed point</Typography>
                                 </MenuItem>
                               )}
-                              {userContext.currentUser.editProperty && (
+                              {userCanEditProperty && (
                                 <MenuItem
                                   dense
-                                  disabled={!userCanEdit}
                                   onClick={(event) => RejectProperty(event, rec)}
                                   sx={menuItemStyle(false)}
                                 >
                                   <Typography variant="inherit">Reject</Typography>
                                 </MenuItem>
                               )}
-                              {userContext.currentUser.editProperty && (
+                              {userCanEditProperty && (
                                 <MenuItem
                                   dense
-                                  disabled={!userCanEdit}
                                   onClick={(event) => HistoriciseProperty(event, rec)}
                                   sx={menuItemStyle(false)}
                                 >
                                   <Typography variant="inherit">Historicise</Typography>
                                 </MenuItem>
                               )}
-                              {userContext.currentUser.editProperty && (
+                              {userCanEditProperty && (
                                 <MenuItem
                                   dense
-                                  disabled={!userCanEdit}
                                   onClick={(event) => DeleteProperty(event, rec.uprn)}
                                   sx={menuItemStyle(false)}
                                 >
@@ -2139,21 +2131,19 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                       onClose={handleStreetActionsMenuClose}
                                       sx={menuStyle}
                                     >
-                                      {userContext.currentUser.editProperty && (
+                                      {userCanEditProperty && (
                                         <MenuItem
                                           dense
-                                          disabled={!userCanEdit}
                                           onClick={(event) => HandleAddProperty(event, rec)}
                                           sx={menuItemStyle(false)}
                                         >
                                           <Typography variant="inherit">Add property</Typography>
                                         </MenuItem>
                                       )}
-                                      {userContext.currentUser.editProperty && (
+                                      {userCanEditProperty && (
                                         <MenuItem
                                           dense
                                           divider
-                                          disabled={!userCanEdit}
                                           onClick={(event) => HandleAddRange(event, rec)}
                                           sx={menuItemStyle(true)}
                                         >
@@ -2197,20 +2187,18 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                           <Typography variant="inherit">Add to list</Typography>
                                         </MenuItem>
                                       )}
-                                      {userContext.currentUser.editStreet && (
+                                      {userCanEditStreet && (
                                         <MenuItem
                                           dense
-                                          disabled={!userCanEdit}
                                           onClick={(event) => CloseStreet(event, rec)}
                                           sx={menuItemStyle(false)}
                                         >
                                           <Typography variant="inherit">Close street</Typography>
                                         </MenuItem>
                                       )}
-                                      {!settingsContext.isScottish && userContext.currentUser.editStreet && (
+                                      {!settingsContext.isScottish && userCanEditStreet && (
                                         <MenuItem
                                           dense
-                                          disabled={!userCanEdit}
                                           onClick={(event) => DeleteStreet(event, rec.usrn)}
                                           sx={menuItemStyle(false)}
                                         >
@@ -2263,20 +2251,20 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                       onClose={handlePropertyActionsMenuClose}
                                       sx={menuStyle}
                                     >
-                                      {userContext.currentUser.editProperty && (
+                                      {userCanEditProperty && (
                                         <MenuItem
                                           dense
-                                          disabled={!userCanEdit || rec.logical_status > 6}
+                                          disabled={rec.logical_status > 6}
                                           onClick={(event) => HandleAddChild(event, rec)}
                                           sx={menuItemStyle(false)}
                                         >
                                           <Typography variant="inherit">Add child</Typography>
                                         </MenuItem>
                                       )}
-                                      {userContext.currentUser.editProperty && (
+                                      {userCanEditProperty && (
                                         <MenuItem
                                           dense
-                                          disabled={!userCanEdit || rec.logical_status > 6}
+                                          disabled={rec.logical_status > 6}
                                           onClick={(event) => HandleAddChildren(event, rec)}
                                           divider
                                           sx={menuItemStyle(true)}
@@ -2334,13 +2322,12 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                           <Typography variant="inherit">Export to...</Typography>
                                         </MenuItem>
                                       )}
-                                      {process.env.NODE_ENV === "development" &&
-                                        userContext.currentUser.editProperty && (
-                                          <MenuItem dense disabled sx={menuItemStyle(false)}>
-                                            <Typography variant="inherit">Move street</Typography>
-                                          </MenuItem>
-                                        )}
-                                      {userContext.currentUser.editProperty && (
+                                      {process.env.NODE_ENV === "development" && userCanEditProperty && (
+                                        <MenuItem dense disabled sx={menuItemStyle(false)}>
+                                          <Typography variant="inherit">Move street</Typography>
+                                        </MenuItem>
+                                      )}
+                                      {userCanEditProperty && (
                                         <MenuItem
                                           dense
                                           onClick={(event) => handleMakeChildOf(event, rec)}
@@ -2349,36 +2336,32 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                           <Typography variant="inherit">Make child of...</Typography>
                                         </MenuItem>
                                       )}
-                                      {process.env.NODE_ENV === "development" &&
-                                        userContext.currentUser.editProperty && (
-                                          <MenuItem dense divider disabled sx={menuItemStyle(true)}>
-                                            <Typography variant="inherit">Move seed point</Typography>
-                                          </MenuItem>
-                                        )}
-                                      {userContext.currentUser.editProperty && (
+                                      {process.env.NODE_ENV === "development" && userCanEditProperty && (
+                                        <MenuItem dense divider disabled sx={menuItemStyle(true)}>
+                                          <Typography variant="inherit">Move seed point</Typography>
+                                        </MenuItem>
+                                      )}
+                                      {userCanEditProperty && (
                                         <MenuItem
                                           dense
-                                          disabled={!userCanEdit}
                                           onClick={(event) => RejectProperty(event, rec)}
                                           sx={menuItemStyle(false)}
                                         >
                                           <Typography variant="inherit">Reject</Typography>
                                         </MenuItem>
                                       )}
-                                      {userContext.currentUser.editProperty && (
+                                      {userCanEditProperty && (
                                         <MenuItem
                                           dense
-                                          disabled={!userCanEdit}
                                           onClick={(event) => HistoriciseProperty(event, rec)}
                                           sx={menuItemStyle(false)}
                                         >
                                           <Typography variant="inherit">Historicise</Typography>
                                         </MenuItem>
                                       )}
-                                      {userContext.currentUser.editProperty && (
+                                      {userCanEditProperty && (
                                         <MenuItem
                                           dense
-                                          disabled={!userCanEdit}
                                           onClick={(event) => DeleteProperty(event, rec.uprn)}
                                           sx={menuItemStyle(false)}
                                         >

@@ -44,6 +44,7 @@
 //    031   21.06.24 Sean Flook       IMANN-636 Fixed warnings.
 //    032   03.07.24 Joshua McCormick IMANN-699 Renamed Add Property on Street to Add property
 //    033   08.07.24 Sean Flook       IMANN-728 Use the new user rights.
+//    034   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -973,12 +974,16 @@ function StreetDataTab({
                   <Typography variant="inherit">Add language version</Typography>
                 </MenuItem>
               )}
-            <MenuItem dense disabled={!userCanEdit} onClick={handleAddProperty} sx={menuItemStyle(true)}>
-              <Typography variant="inherit">Add property</Typography>
-            </MenuItem>
-            <MenuItem dense disabled={!userCanEdit} divider onClick={handleAddRange} sx={menuItemStyle(true)}>
-              <Typography variant="inherit">Add properties</Typography>
-            </MenuItem>
+            {userContext.currentUser && userContext.currentUser.editProperty && (
+              <MenuItem dense onClick={handleAddProperty} sx={menuItemStyle(true)}>
+                <Typography variant="inherit">Add property</Typography>
+              </MenuItem>
+            )}
+            {userContext.currentUser && userContext.currentUser.editProperty && (
+              <MenuItem dense divider onClick={handleAddRange} sx={menuItemStyle(true)}>
+                <Typography variant="inherit">Add properties</Typography>
+              </MenuItem>
+            )}
             <MenuItem dense onClick={handleZoomToStreet} sx={menuItemStyle(false)}>
               <Typography variant="inherit">Zoom to this</Typography>
             </MenuItem>
@@ -1008,11 +1013,13 @@ function StreetDataTab({
                 <Typography variant="inherit">Export to...</Typography>
               </MenuItem>
             )}
-            <MenuItem dense disabled={!userCanEdit} onClick={handleCloseStreet} sx={menuItemStyle(false)}>
-              <Typography variant="inherit">Close street</Typography>
-            </MenuItem>
-            {process.env.NODE_ENV === "development" && !settingsContext.isScottish && (
-              <MenuItem dense disabled={!userCanEdit} onClick={handleDeleteStreet} sx={menuItemStyle(false)}>
+            {userCanEdit && (
+              <MenuItem dense onClick={handleCloseStreet} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Close street</Typography>
+              </MenuItem>
+            )}
+            {process.env.NODE_ENV === "development" && !settingsContext.isScottish && userCanEdit && (
+              <MenuItem dense onClick={handleDeleteStreet} sx={menuItemStyle(false)}>
                 <Typography variant="inherit" color="error">
                   Delete
                 </Typography>

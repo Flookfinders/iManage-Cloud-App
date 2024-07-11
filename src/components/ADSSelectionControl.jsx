@@ -43,6 +43,7 @@
 //    030   05.07.24 Sean Flook       IMANN-692 Added new parameter in call to UpdateRangeAfterSave.
 //    031   09.07.24 Sean Flook       IMANN-582 Changed case.
 //    032   11.07.24 Sean Flook       IMANN-747 Only display menu items if the user has the rights to use them.
+//    033   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -216,7 +217,9 @@ function ADSSelectionControl({
 
   const [numberOfTypes, setNumberOfTypes] = useState(0);
 
-  const [userCanEdit, setUserCanEdit] = useState(false);
+  const [userCanEditStreet, setUserCanEditStreet] = useState(false);
+  const [userCanEditASD, setUserCanEditASD] = useState(false);
+  const [userCanEditProperty, setUserCanEditProperty] = useState(false);
 
   const [currentUsrn, setCurrentUsrn] = useState(null);
   const [currentUprn, setCurrentUprn] = useState(null);
@@ -1307,9 +1310,9 @@ function ADSSelectionControl({
   }, [currentProperty]);
 
   useEffect(() => {
-    setUserCanEdit(
-      userContext.currentUser && (userContext.currentUser.editStreet || userContext.currentUser.editProperty)
-    );
+    setUserCanEditStreet(userContext.currentUser && userContext.currentUser.editStreet);
+    setUserCanEditASD(userContext.currentUser && userContext.currentUser.editASD);
+    setUserCanEditProperty(userContext.currentUser && userContext.currentUser.editProperty);
   }, [userContext]);
 
   useEffect(() => {
@@ -1389,25 +1392,21 @@ function ADSSelectionControl({
                     onClose={handleStreetActionsMenuClose}
                     sx={menuStyle}
                   >
-                    {userContext.currentUser.editProperty && (
+                    {userCanEditProperty && (
                       <MenuItem
                         dense
-                        disabled={
-                          !userCanEdit || (currentStreet && ![11, 12, 19].includes(currentStreet.logical_status))
-                        }
+                        disabled={currentStreet && ![11, 12, 19].includes(currentStreet.logical_status)}
                         onClick={HandleAddProperty}
                         sx={menuItemStyle(false)}
                       >
                         <Typography variant="inherit">Add property</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
+                    {userCanEditProperty && (
                       <MenuItem
                         dense
                         divider
-                        disabled={
-                          !userCanEdit || (currentStreet && ![11, 12, 19].includes(currentStreet.logical_status))
-                        }
+                        disabled={currentStreet && ![11, 12, 19].includes(currentStreet.logical_status)}
                         onClick={HandleAddRange}
                         sx={menuItemStyle(true)}
                       >
@@ -1450,12 +1449,12 @@ function ADSSelectionControl({
                     <MenuItem dense divider onClick={handleRemoveFromList} sx={menuItemStyle(true)}>
                       <Typography variant="inherit">Remove from list</Typography>
                     </MenuItem>
-                    {process.env.NODE_ENV === "development" && userContext.currentUser.editStreet && (
+                    {process.env.NODE_ENV === "development" && userCanEditStreet && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Close street</Typography>
                       </MenuItem>
                     )}
-                    {!settingsContext.isScottish && userContext.currentUser.editStreet && (
+                    {!settingsContext.isScottish && userCanEditStreet && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit" color="error">
                           Delete
@@ -1499,12 +1498,12 @@ function ADSSelectionControl({
                     <MenuItem dense divider onClick={handleRemoveFromList} sx={menuItemStyle(true)}>
                       <Typography variant="inherit">Remove from list</Typography>
                     </MenuItem>
-                    {process.env.NODE_ENV === "development" && userContext.currentUser.editStreet && (
+                    {process.env.NODE_ENV === "development" && userCanEditStreet && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Close street</Typography>
                       </MenuItem>
                     )}
-                    {!settingsContext.isScottish && userContext.currentUser.editStreet && (
+                    {!settingsContext.isScottish && userCanEditStreet && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit" color="error">
                           Delete
@@ -1517,52 +1516,31 @@ function ADSSelectionControl({
             )}
             {numberOfTypes === 1 && haveEsu && (
               <Fragment>
-                {selectionCount === 1 ? (
+                {selectionCount === 1 && userCanEditStreet ? (
                   <ADSSelectionButton
                     variant="divide"
                     selectionCount={selectionCount}
-                    isDisabled={!userCanEdit}
                     isSelected={informationOpen}
                     onClick={handleDivideEsuClick}
                   />
-                ) : selectionCount === 2 ? (
-                  <ADSSelectionButton
-                    variant="merge"
-                    selectionCount={selectionCount}
-                    isDisabled={!userCanEdit}
-                    onClick={handleMergeEsusClick}
-                  />
+                ) : selectionCount === 2 && userCanEditStreet ? (
+                  <ADSSelectionButton variant="merge" selectionCount={selectionCount} onClick={handleMergeEsusClick} />
                 ) : null}
-                <ADSSelectionButton
-                  variant="unassign"
-                  selectionCount={selectionCount}
-                  onClick={handleUnassignEsuClick}
-                />
-                {/* <ADSSelectionButton
-                  variant="createStreet"
-                  isDisabled={!userCanEdit}
-                  selectionCount={selectionCount}
-                  onClick={handleCreateStreetClick}
-                /> */}
+                {userCanEditStreet && (
+                  <ADSSelectionButton
+                    variant="unassign"
+                    selectionCount={selectionCount}
+                    onClick={handleUnassignEsuClick}
+                  />
+                )}
               </Fragment>
             )}
-            {numberOfTypes === 1 && haveMapEsu && (
+            {numberOfTypes === 1 && haveMapEsu && userCanEditStreet && (
               <Fragment>
-                <ADSSelectionButton
-                  variant="assign"
-                  isDisabled={!userCanEdit}
-                  selectionCount={selectionCount}
-                  onClick={handleAssignEsuClick}
-                />
-                {/* <ADSSelectionButton
-                  variant="createStreet"
-                  isDisabled={!userCanEdit}
-                  selectionCount={selectionCount}
-                  onClick={handleCreateStreetClick}
-                /> */}
+                <ADSSelectionButton variant="assign" selectionCount={selectionCount} onClick={handleAssignEsuClick} />
               </Fragment>
             )}
-            {numberOfTypes === 1 && haveAsd && (
+            {numberOfTypes === 1 && haveAsd && userCanEditASD && (
               <ADSSelectionButton
                 variant="deleteAsd"
                 isDisabled
@@ -1621,21 +1599,21 @@ function ADSSelectionControl({
                     onClose={handlePropertyActionsMenuClose}
                     sx={menuStyle}
                   >
-                    {userContext.currentUser.editProperty && (
+                    {userCanEditProperty && (
                       <MenuItem
                         dense
-                        disabled={!userCanEdit || (currentProperty && currentProperty.logical_status > 6)}
+                        disabled={currentProperty && currentProperty.logical_status > 6}
                         onClick={HandleAddChild}
                         sx={menuItemStyle(false)}
                       >
                         <Typography variant="inherit">Add child</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
+                    {userCanEditProperty && (
                       <MenuItem
                         dense
                         divider
-                        disabled={!userCanEdit || (currentProperty && currentProperty.logical_status > 6)}
+                        disabled={currentProperty && currentProperty.logical_status > 6}
                         onClick={HandleAddChildren}
                         sx={menuItemStyle(true)}
                       >
@@ -1686,43 +1664,37 @@ function ADSSelectionControl({
                     <MenuItem dense divider onClick={handleRemoveFromList} sx={menuItemStyle(true)}>
                       <Typography variant="inherit">Remove from list</Typography>
                     </MenuItem>
-                    {process.env.NODE_ENV === "development" && userContext.currentUser.editProperty && (
+                    {process.env.NODE_ENV === "development" && userCanEditProperty && (
                       <MenuItem dense divider disabled sx={menuItemStyle(true)}>
                         <Typography variant="inherit">Export to...</Typography>
                       </MenuItem>
                     )}
-                    {process.env.NODE_ENV === "development" && userContext.currentUser.editProperty && (
+                    {process.env.NODE_ENV === "development" && userCanEditProperty && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Move street</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
+                    {userCanEditProperty && (
                       <MenuItem dense onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Make child of...</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
-                      <MenuItem
-                        dense
-                        divider
-                        onClick={handleMoveBlpuClick}
-                        disabled={!userCanEdit}
-                        sx={menuItemStyle(true)}
-                      >
+                    {userCanEditProperty && (
+                      <MenuItem dense divider onClick={handleMoveBlpuClick} sx={menuItemStyle(true)}>
                         <Typography variant="inherit">Move seed point</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
-                      <MenuItem dense disabled={!userCanEdit} onClick={RejectProperty} sx={menuItemStyle(false)}>
+                    {userCanEditProperty && (
+                      <MenuItem dense onClick={RejectProperty} sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Reject</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
-                      <MenuItem dense disabled={!userCanEdit} onClick={HistoriciseProperty} sx={menuItemStyle(false)}>
+                    {userCanEditProperty && (
+                      <MenuItem dense onClick={HistoriciseProperty} sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Historicise</Typography>
                       </MenuItem>
                     )}
-                    {process.env.NODE_ENV === "development" && userContext.currentUser.editProperty && (
+                    {process.env.NODE_ENV === "development" && userCanEditProperty && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit" color="error">
                           Delete
@@ -1748,104 +1720,65 @@ function ADSSelectionControl({
                     onClose={handlePropertyActionsMenuClose}
                     sx={menuStyle}
                   >
-                    {userContext.currentUser.editProperty && (
-                      <MenuItem
-                        dense
-                        disabled={!userCanEdit}
-                        onClick={handleSetApprovedClick}
-                        sx={menuItemStyle(false)}
-                      >
+                    {userCanEditProperty && (
+                      <MenuItem dense onClick={handleSetApprovedClick} sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Set approved</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
-                      <MenuItem
-                        dense
-                        divider
-                        disabled={!userCanEdit}
-                        onClick={handleSetHistoricClick}
-                        sx={menuItemStyle(true)}
-                      >
+                    {userCanEditProperty && (
+                      <MenuItem dense divider onClick={handleSetHistoricClick} sx={menuItemStyle(true)}>
                         <Typography variant="inherit">Set historic</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
-                      <MenuItem
-                        dense
-                        disabled={!userCanEdit}
-                        onClick={handleEditClassificationClick}
-                        sx={menuItemStyle(false)}
-                      >
+                    {userCanEditProperty && (
+                      <MenuItem dense onClick={handleEditClassificationClick} sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Edit classification</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
-                      <MenuItem dense disabled={!userCanEdit} onClick={handleEditRpcClick} sx={menuItemStyle(false)}>
+                    {userCanEditProperty && (
+                      <MenuItem dense onClick={handleEditRpcClick} sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Edit RPC</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
-                      <MenuItem dense disabled={!userCanEdit} onClick={handleEditStateClick} sx={menuItemStyle(false)}>
+                    {userCanEditProperty && (
+                      <MenuItem dense onClick={handleEditStateClick} sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Edit state</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
-                      <MenuItem dense disabled={!userCanEdit} onClick={handleEditLevelClick} sx={menuItemStyle(false)}>
+                    {userCanEditProperty && (
+                      <MenuItem dense onClick={handleEditLevelClick} sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Edit level</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
-                      <MenuItem
-                        dense
-                        disabled={!userCanEdit}
-                        onClick={handleEditExcludeFromExportClick}
-                        sx={menuItemStyle(false)}
-                      >
+                    {userCanEditProperty && (
+                      <MenuItem dense onClick={handleEditExcludeFromExportClick} sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Edit exclude from export</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
-                      <MenuItem
-                        dense
-                        divider
-                        disabled={!userCanEdit}
-                        onClick={handleEditSiteVisitRequiredClick}
-                        sx={menuItemStyle(true)}
-                      >
+                    {userCanEditProperty && (
+                      <MenuItem dense divider onClick={handleEditSiteVisitRequiredClick} sx={menuItemStyle(true)}>
                         <Typography variant="inherit">Edit site visit required</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
-                      <MenuItem dense disabled={!userCanEdit} onClick={handleAddNoteClick} sx={menuItemStyle(false)}>
+                    {userCanEditProperty && (
+                      <MenuItem dense onClick={handleAddNoteClick} sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Add note</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
-                      <MenuItem
-                        dense
-                        divider
-                        disabled={!userCanEdit}
-                        onClick={handleMoveBlpuClick}
-                        sx={menuItemStyle(true)}
-                      >
+                    {userCanEditProperty && (
+                      <MenuItem dense divider onClick={handleMoveBlpuClick} sx={menuItemStyle(true)}>
                         <Typography variant="inherit">Move BLPU seed point</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
+                    {userCanEditProperty && (
                       <NestedMenuItem
                         dense
                         className="nestedMenuItem"
-                        disabled={!userCanEdit}
                         rightIcon={<KeyboardArrowRightIcon />}
                         label={<Typography variant="body2">Edit address</Typography>}
                         parentMenuOpen={propertyActionsOpen}
                       >
-                        <MenuItem
-                          dense
-                          disabled={!userCanEdit}
-                          onClick={handleEditAddressFieldsClick}
-                          sx={menuItemStyle(false)}
-                        >
+                        <MenuItem dense onClick={handleEditAddressFieldsClick} sx={menuItemStyle(false)}>
                           <Typography variant="inherit">Edit address fields</Typography>
                         </MenuItem>
                         {process.env.NODE_ENV === "development" && (
@@ -1855,30 +1788,19 @@ function ADSSelectionControl({
                         )}
                       </NestedMenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
+                    {userCanEditProperty && (
                       <NestedMenuItem
                         dense
                         divider={!settingsContext.isScottish}
                         className={settingsContext.isScottish ? "nestedMenuItem" : "nestedMenuItemDivider"}
-                        disabled={!userCanEdit}
                         rightIcon={<KeyboardArrowRightIcon />}
                         label={<Typography variant="body2">Edit cross reference</Typography>}
                         parentMenuOpen={propertyActionsOpen}
                       >
-                        <MenuItem
-                          dense
-                          disabled={!userCanEdit}
-                          onClick={handleAddCrossReferenceClick}
-                          sx={menuItemStyle(false)}
-                        >
+                        <MenuItem dense onClick={handleAddCrossReferenceClick} sx={menuItemStyle(false)}>
                           <Typography variant="inherit">Add cross reference</Typography>
                         </MenuItem>
-                        <MenuItem
-                          dense
-                          disabled={!userCanEdit}
-                          onClick={handleRemoveCrossReferenceClick}
-                          sx={menuItemStyle(false)}
-                        >
+                        <MenuItem dense onClick={handleRemoveCrossReferenceClick} sx={menuItemStyle(false)}>
                           <Typography variant="inherit">Remove cross reference</Typography>
                         </MenuItem>
                       </NestedMenuItem>
@@ -1891,7 +1813,7 @@ function ADSSelectionControl({
                     <MenuItem dense divider onClick={handleRemoveFromList} sx={menuItemStyle(true)}>
                       <Typography variant="inherit">Remove from list</Typography>
                     </MenuItem>
-                    {process.env.NODE_ENV === "development" && userContext.currentUser.editProperty && (
+                    {process.env.NODE_ENV === "development" && userCanEditProperty && (
                       <NestedMenuItem
                         dense
                         divider
@@ -1902,12 +1824,12 @@ function ADSSelectionControl({
                         parentMenuOpen={propertyActionsOpen}
                       ></NestedMenuItem>
                     )}
-                    {process.env.NODE_ENV === "development" && userContext.currentUser.editProperty && (
+                    {process.env.NODE_ENV === "development" && userCanEditProperty && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Move street</Typography>
                       </MenuItem>
                     )}
-                    {userContext.currentUser.editProperty && (
+                    {userCanEditProperty && (
                       <MenuItem dense onClick={handleMakeChildOf} sx={menuItemStyle(false)}>
                         <Typography variant="inherit">Make child of...</Typography>
                       </MenuItem>
@@ -1916,82 +1838,64 @@ function ADSSelectionControl({
                 )}
               </Fragment>
             )}
-            {numberOfTypes === 1 && haveMapProperty && (
+            {numberOfTypes === 1 && haveMapProperty && userCanEditProperty && (
               <Fragment>
                 <ADSSelectionButton
                   variant="createList"
                   selectionCount={selectionCount}
-                  isDisabled={!userCanEdit}
                   onClick={handleCreateNewList}
                 />
                 <ADSSelectionButton
                   variant="existingList"
                   selectionCount={selectionCount}
-                  isDisabled={!userCanEdit}
                   onClick={handleAddToExistingList}
                 />
               </Fragment>
             )}
-            {numberOfTypes === 1 && haveClassification && (
+            {numberOfTypes === 1 && haveClassification && userCanEditProperty && (
               <ADSSelectionButton
                 variant="deleteClassification"
                 selectionCount={selectionCount}
-                isDisabled={!userCanEdit}
                 onClick={handleDeleteClassification}
               />
             )}
-            {numberOfTypes === 1 && haveOrganisation && (
+            {numberOfTypes === 1 && haveOrganisation && userCanEditProperty && (
               <ADSSelectionButton
                 variant="deleteOrganisation"
                 selectionCount={selectionCount}
-                isDisabled={!userCanEdit}
                 onClick={handleDeleteOrganisation}
               />
             )}
-            {numberOfTypes === 1 && haveSuccessorCrossRef && (
+            {numberOfTypes === 1 && haveSuccessorCrossRef && userCanEditProperty && (
               <ADSSelectionButton
                 variant="deleteSuccessorCrossRef"
                 selectionCount={selectionCount}
-                isDisabled={!userCanEdit}
                 onClick={handleDeleteSuccessorCrossRef}
               />
             )}
-            {numberOfTypes === 1 && haveProvenance && (
+            {numberOfTypes === 1 && haveProvenance && userCanEditProperty && (
               <ADSSelectionButton
                 variant="deleteProvenance"
                 selectionCount={selectionCount}
-                isDisabled={!userCanEdit}
                 onClick={handleDeleteProvenance}
               />
             )}
-            {numberOfTypes === 1 && haveMapExtent && (
-              <ADSSelectionButton
-                variant="mergeExtent"
-                selectionCount={selectionCount}
-                isDisabled={!userCanEdit}
-                onClick={handleMergeExtent}
-              />
+            {numberOfTypes === 1 && haveMapExtent && userCanEditProperty && (
+              <ADSSelectionButton variant="mergeExtent" selectionCount={selectionCount} onClick={handleMergeExtent} />
             )}
-            {numberOfTypes === 1 && haveCrossReference && (
+            {numberOfTypes === 1 && haveCrossReference && userCanEditProperty && (
               <ADSSelectionButton
                 variant="deleteCrossReference"
                 selectionCount={selectionCount}
-                isDisabled={!userCanEdit}
                 onClick={handleDeleteCrossReference}
               />
             )}
-            {numberOfTypes === 1 && haveWizard && (
+            {numberOfTypes === 1 && haveWizard && userCanEditProperty && (
               <Fragment>
-                <ADSSelectionButton
-                  variant="addNote"
-                  selectionCount={selectionCount}
-                  isDisabled={!userCanEdit}
-                  onClick={handleAddNote}
-                />
+                <ADSSelectionButton variant="addNote" selectionCount={selectionCount} onClick={handleAddNote} />
                 <ADSSelectionButton
                   variant="deleteWizard"
                   selectionCount={selectionCount}
-                  isDisabled={!userCanEdit}
                   onClick={handleDeleteWizard}
                 />
                 <ADSSelectionButton
@@ -2051,20 +1955,10 @@ function ADSSelectionControl({
                 </Menu>
               </Fragment>
             )}
-            {numberOfTypes === 1 && haveMoveBlpu && (
+            {numberOfTypes === 1 && haveMoveBlpu && userCanEditProperty && (
               <Fragment>
-                <ADSSelectionButton
-                  variant="addNote"
-                  selectionCount={selectionCount}
-                  isDisabled={!userCanEdit}
-                  onClick={handleAddNote}
-                />
-                <ADSSelectionButton
-                  variant="rpc"
-                  selectionCount={selectionCount}
-                  isDisabled={!userCanEdit}
-                  onClick={handleEditRpc}
-                />
+                <ADSSelectionButton variant="addNote" selectionCount={selectionCount} onClick={handleAddNote} />
+                <ADSSelectionButton variant="rpc" selectionCount={selectionCount} onClick={handleEditRpc} />
               </Fragment>
             )}
           </Stack>
