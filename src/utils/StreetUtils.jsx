@@ -74,6 +74,7 @@
 //    061   08.07.24 Sean Flook       IMANN-596 Before doing the check on changes to the HD and OWE records ensure we have the ESU record.
 //    062   09.07.24 Sean Flook       IMANN-709 Handle new ESUs when checking HD and OWE records.
 //    063   10.07.24 Sean Flook       IMANN-741 Do not try and iterate the ASD records if user does not have ASD rights.
+//    064   11.07.24 Sean Flook       IMANN-682 If whole road is true ensure specific location is empty.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1435,7 +1436,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
             return {
               usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
               wholeRoad: mr.wholeRoad,
-              specificLocation: mr.specificLocation,
+              specificLocation: mr.wholeRoad ? "" : mr.specificLocation,
               neverExport: streetData.neverExport ? streetData.neverExport : false,
               seqNum: mr.seqNum,
               changeType: "I",
@@ -1454,7 +1455,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
             return {
               usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
               wholeRoad: rc.wholeRoad,
-              specificLocation: rc.specificLocation,
+              specificLocation: rc.wholeRoad ? "" : rc.specificLocation,
               neverExport: streetData.neverExport ? streetData.neverExport : false,
               seqNum: rc.seqNum,
               changeType: "I",
@@ -1473,7 +1474,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
             return {
               usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
               wholeRoad: sd.wholeRoad,
-              specificLocation: sd.specificLocation,
+              specificLocation: sd.wholeRoad ? "" : sd.specificLocation,
               neverExport: streetData.neverExport ? streetData.neverExport : false,
               seqNum: sd.seqNum,
               changeType: "I",
@@ -1789,7 +1790,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
                 wktGeometry: i.wktGeometry,
                 usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
                 wholeRoad: i.wholeRoad,
-                specificLocation: i.specificLocation,
+                specificLocation: i.wholeRoad ? "" : i.specificLocation,
                 neverExport: streetData.neverExport ? streetData.neverExport : false,
               };
             })
@@ -1801,7 +1802,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
                 usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
                 seqNum: c.seqNum,
                 wholeRoad: c.wholeRoad,
-                specificLocation: c.specificLocation,
+                specificLocation: c.wholeRoad ? "" : c.specificLocation,
                 neverExport: streetData.neverExport ? streetData.neverExport : false,
                 recordStartDate: c.recordStartDate,
                 recordEndDate: c.recordEndDate,
@@ -1845,7 +1846,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
                 wktGeometry: sd.wktGeometry,
                 usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
                 wholeRoad: sd.wholeRoad,
-                specificLocation: sd.specificLocation,
+                specificLocation: sd.wholeRoad ? "" : sd.specificLocation,
                 neverExport: streetData.neverExport ? streetData.neverExport : false,
               };
             })
@@ -1905,7 +1906,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
                 wktGeometry: hww.wktGeometry,
                 usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
                 wholeRoad: hww.wholeRoad,
-                specificLocation: hww.specificLocation,
+                specificLocation: hww.wholeRoad ? "" : hww.specificLocation,
                 neverExport: streetData.neverExport ? streetData.neverExport : false,
               };
             })
