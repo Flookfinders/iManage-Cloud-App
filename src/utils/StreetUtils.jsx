@@ -75,6 +75,7 @@
 //    062   09.07.24 Sean Flook       IMANN-709 Handle new ESUs when checking HD and OWE records.
 //    063   10.07.24 Sean Flook       IMANN-741 Do not try and iterate the ASD records if user does not have ASD rights.
 //    064   11.07.24 Sean Flook       IMANN-682 If whole road is true ensure specific location is empty.
+//    065   11.07.24 Joel Benford     IMANN-727 Use unassignedEngIsland for both languages
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1405,9 +1406,6 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
     const unassignedEngIsland = lookupContext.currentLookups.islands.find(
       (x) => x.island === "Unassigned" && x.language === "ENG"
     );
-    const unassignedGaeIsland = lookupContext.currentLookups.islands.find(
-      (x) => x.island === "Unassigned" && x.language === "GAE"
-    );
     const unassignedGaeAdminArea = lookupContext.currentLookups.adminAuthorities.find(
       (x) => x.administrativeArea === "Unassigned" && x.language === "GAE"
     );
@@ -1534,7 +1532,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
               islandRef: sd.islandRef
                 ? sd.islandRef
                 : sd.language === "GAE"
-                ? unassignedGaeIsland.islandRef
+                ? unassignedEngIsland.islandRef
                 : unassignedEngIsland.islandRef,
               island: sd.islandRef ? sd.island : "",
             };
