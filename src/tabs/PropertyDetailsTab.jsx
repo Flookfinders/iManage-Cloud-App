@@ -58,6 +58,7 @@
 //    045   01.07.24 Joel Benford     IMANN-603 Set displayed UPRN from param not context
 //    045   01.07.24 Joel Benford     IMANN-603 Handle undefined
 //    046   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
+//    047   11.07.24 Sean Flook       IMANN-749 Do not display the add button if user cannot edit.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1318,11 +1319,13 @@ function PropertyDetailsTab({
                                 <CopyIcon sx={ActionIconStyle()} />
                               </IconButton>
                             </Tooltip>
-                            <Tooltip title="Add new LPI" arrow placement="bottom" sx={tooltipStyle}>
-                              <IconButton onClick={handleAddLpi} size="small" disabled={!userCanEdit}>
-                                <AddCircleIcon sx={ActionIconStyle()} />
-                              </IconButton>
-                            </Tooltip>
+                            {userCanEdit && (
+                              <Tooltip title="Add new LPI" arrow placement="bottom" sx={tooltipStyle}>
+                                <IconButton onClick={handleAddLpi} size="small" disabled={!userCanEdit}>
+                                  <AddCircleIcon sx={ActionIconStyle()} />
+                                </IconButton>
+                              </Tooltip>
+                            )}
                             <ADSActionButton
                               variant="delete"
                               disabled={!userCanEdit}

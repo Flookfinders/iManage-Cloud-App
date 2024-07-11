@@ -45,6 +45,7 @@
 //    032   03.07.24 Joshua McCormick IMANN-699 Renamed Add Property on Street to Add property
 //    033   08.07.24 Sean Flook       IMANN-728 Use the new user rights.
 //    034   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
+//    035   11.07.24 Sean Flook       IMANN-749 Do not display the add button if user cannot edit.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1096,9 +1097,10 @@ function StreetDataTab({
                               ((settingsContext.isWelsh || settingsContext.isScottish) &&
                                 data &&
                                 data.streetDescriptors &&
-                                data.streetDescriptors.length === 1)) && (
+                                data.streetDescriptors.length === 1 &&
+                                userCanEdit)) && (
                               <Tooltip title="Add language version" arrow placement="bottom" sx={tooltipStyle}>
-                                <IconButton onClick={handleAddLanguage} disabled={!userCanEdit} size="small">
+                                <IconButton onClick={handleAddLanguage} size="small">
                                   <AddCircleIcon sx={ActionIconStyle()} />
                                 </IconButton>
                               </Tooltip>
