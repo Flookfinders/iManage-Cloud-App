@@ -25,6 +25,7 @@
 //    012   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    013   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    014   09.07.24 Joshua McCormick IMANN-520 Property Names input set to required 
+//    015   15.07.24 Sean Flook                 Display non-field errors.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -57,8 +58,10 @@ import { ValidateMapLayer } from "../utils/SettingsValidation";
 import CloseIcon from "@mui/icons-material/Close";
 import DoneIcon from "@mui/icons-material/Done";
 import ErrorIcon from "@mui/icons-material/Error";
+import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 
 import { redButtonStyle, blueButtonStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import { adsRed } from "../utils/ADSColours";
 import { useTheme } from "@mui/styles";
 
 EditMapLayersDialog.propTypes = {
@@ -129,6 +132,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
   const [propertyNameError, setPropertyNameError] = useState(null);
   const [usePagingError, setUsePagingError] = useState(null);
   const [maxBatchSizeError, setMaxBatchSizeError] = useState(null);
+  const [mapLayerError, setMapLayerError] = useState(null);
 
   const [haveErrors, setHaveErrors] = useState(false);
 
@@ -660,6 +664,7 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
             break;
 
           default:
+            setMapLayerError(error.errors);
             break;
         }
       }
@@ -684,7 +689,22 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
           <Grid container justifyContent="flex-start" spacing={0} sx={{ pl: theme.spacing(3.5) }}>
             <Grid item xs={12}>
               <Stack direction="column" spacing={2}>
-                <Typography sx={{ fontSize: 24, flexGrow: 1 }}>Map layer</Typography>
+                <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={0.25}>
+                  <Typography sx={{ fontSize: 24, flexGrow: 1 }}>Map layer</Typography>
+                  {mapLayerError && (
+                    <>
+                      <PriorityHighIcon sx={{ color: adsRed, height: "16px", width: "16px" }} />
+                      <Typography
+                        variant="caption"
+                        color={adsRed}
+                        align="left"
+                        sx={{ fontWeight: 600, fontSize: "14px" }}
+                      >
+                        {mapLayerError}
+                      </Typography>
+                    </>
+                  )}
+                </Stack>
                 <Box>
                   <ADSTextControl
                     label="Title"
