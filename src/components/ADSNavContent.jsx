@@ -37,6 +37,7 @@
 //    024   21.06.24 Sean Flook       IMANN-642 Changes required to redisplay the change password dialog after previously cancelling out.
 //    025   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //    026   04.07.24 Sean Flook       IMANN-705 Use displayName for the user icon.
+//    027   15.07.24 Sean Flook       IMANN-762 If user cannot see properties default to street template when opening the settings.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -636,7 +637,7 @@ const ADSNavContent = (props) => {
    * Event to handle when the settings button is clicked.
    */
   const handleSettingsClick = () => {
-    displayAdminSettingsPage("2.1");
+    displayAdminSettingsPage(userContext.currentUser && userContext.currentUser.hasProperty ? "2.1" : "2.2");
   };
 
   /**

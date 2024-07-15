@@ -3189,7 +3189,7 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
       wktGeometryErrors.push(GetErrorMessage(currentCheck, true));
     }
 
-    // If type is 2 to 18, 20 or 22 to 30 and either start date or end date is present, both must be present.
+    // If type is 2 to 18, 20 or 22 to 30 and either operational start date or operational end date is present, both must be present.
     currentCheck = GetCheck(6300053, currentLookups, methodName, true, showDebugMessages);
     if (
       includeCheck(currentCheck, false) &&
