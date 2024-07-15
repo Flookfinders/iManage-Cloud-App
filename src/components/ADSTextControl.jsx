@@ -33,6 +33,7 @@
 //    021   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
 //    022   10.07.24 Sean Flook       IMANN-649 Prevent carat from jumping to end of text.
 //    023   11.07.24 Sean Flook       IMANN-759 Set the display variable if we do not have the input reference.
+//    024   15.07.24 Sean Flook       IMANN-759 Always set the display variable.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -244,13 +245,12 @@ function ADSTextControl({
   });
 
   useEffect(() => {
+    setDisplayValue(value);
     if (inputRef.current) {
       inputRef.current.value = value ? value : "";
 
       inputRef.current.selectionStart = selectionStart.current;
       inputRef.current.selectionEnd = selectionEnd.current;
-    } else {
-      setDisplayValue(value);
     }
   }, [value]);
 
