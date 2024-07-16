@@ -30,6 +30,7 @@
 //    017   19.06.24 Joshua McCormick IMANN-503 BLPU Level removed type prop
 //    018   19.06.24 Joshua McCormick IMANN-503 BLPU Level max set to 99.9
 //    019   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    020   16.07.24 Sean Flook       IMANN-581 Limit the RPC drop down list to values valid for new records.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -96,7 +97,7 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
   const userContext = useContext(UserContext);
 
   const [representativePointCodeLookup, setRepresentativePointCodeLookup] = useState(
-    FilteredRepresentativePointCode(settingsContext.isScottish)
+    FilteredRepresentativePointCode(settingsContext.isScottish, true)
   );
 
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -528,7 +529,7 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
         ? false
         : null
     );
-    setRepresentativePointCodeLookup(FilteredRepresentativePointCode(settingsContext.isScottish));
+    setRepresentativePointCodeLookup(FilteredRepresentativePointCode(settingsContext.isScottish, true));
   }, [data, variant, settingsContext.isScottish]);
 
   return (
