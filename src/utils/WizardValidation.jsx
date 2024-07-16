@@ -41,6 +41,7 @@
 //    024   28.06.24 Joel Benford     IMANN-654 Fixed BLPU state validation treating 0 as falsy in dialogue
 //    025   04.07.24 Sean Flook       IMANN-221 Updated messages.
 //    026   04.07.24 Sean Flook       IMANN-221 Further updated messages.
+//    027   16.07.24 Sean Flook       IMANN-786 Modified checks 8800004 & 8800005 to include all the range fields.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -341,12 +342,28 @@ export function ValidateAddressDetails(
 
         // Creating a range of properties using the PAO text needs some text.
         currentCheck = GetCheck(8800004, currentLookups, methodName, isScottish, showDebugMessages);
-        if (includeCheck(currentCheck, isScottish) && data.rangeType === 2 && templateUseType === 2 && !data.rangeText)
+        if (
+          includeCheck(currentCheck, isScottish) &&
+          data.rangeType === 2 &&
+          templateUseType === 2 &&
+          !data.rangeText &&
+          !data.rangeStartPrefix &&
+          !data.rangeStartNumber &&
+          !data.rangeSuffix
+        )
           rangeTextErrors.push(GetErrorMessage(currentCheck, isScottish));
 
         // Creating a range of children using the SAO text needs some text.
         currentCheck = GetCheck(8800005, currentLookups, methodName, isScottish, showDebugMessages);
-        if (includeCheck(currentCheck, isScottish) && data.rangeType === 2 && templateUseType === 4 && !data.rangeText)
+        if (
+          includeCheck(currentCheck, isScottish) &&
+          data.rangeType === 2 &&
+          templateUseType === 4 &&
+          !data.rangeText &&
+          !data.rangeStartPrefix &&
+          !data.rangeStartNumber &&
+          !data.rangeSuffix
+        )
           rangeTextErrors.push(GetErrorMessage(currentCheck, isScottish));
 
         // Some details are required to create a range of properties.
