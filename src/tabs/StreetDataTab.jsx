@@ -46,6 +46,7 @@
 //    033   08.07.24 Sean Flook       IMANN-728 Use the new user rights.
 //    034   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
 //    035   11.07.24 Sean Flook       IMANN-749 Do not display the add button if user cannot edit.
+//    036   17.07.24 Sean Flook       IMANN-782 Do not display create property menu items if the street is a type 3 or 4 street.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -975,12 +976,12 @@ function StreetDataTab({
                   <Typography variant="inherit">Add language version</Typography>
                 </MenuItem>
               )}
-            {userContext.currentUser && userContext.currentUser.editProperty && (
+            {userContext.currentUser && userContext.currentUser.editProperty && ![3, 4].includes(streetType) && (
               <MenuItem dense onClick={handleAddProperty} sx={menuItemStyle(true)}>
                 <Typography variant="inherit">Add property</Typography>
               </MenuItem>
             )}
-            {userContext.currentUser && userContext.currentUser.editProperty && (
+            {userContext.currentUser && userContext.currentUser.editProperty && ![3, 4].includes(streetType) && (
               <MenuItem dense divider onClick={handleAddRange} sx={menuItemStyle(true)}>
                 <Typography variant="inherit">Add properties</Typography>
               </MenuItem>
