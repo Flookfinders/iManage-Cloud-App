@@ -41,6 +41,7 @@
 //    028   14.06.24 Sean Flook       IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
 //    029   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    030   28.06.24 Sean Flook       IMANN-676 Ensure failed UPRNs are always returned to the API.
+//    031   17.07.24 Sean Flook       IMANN-797 After getting a validation error if user returns and clicks Back clear the errors.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1839,6 +1840,14 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
    * Event to handle when the back button is clicked.
    */
   const handleBack = () => {
+    // If we have had validation errors then clear them first
+    if (
+      (activeStep === 5 || (steps.length === 5 && activeStep === 4)) &&
+      propertyContext.currentPropertyHasErrors &&
+      propertyContext.currentErrors
+    ) {
+      propertyContext.resetPropertyErrors();
+    }
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
