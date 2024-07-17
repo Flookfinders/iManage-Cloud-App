@@ -70,6 +70,7 @@
 //    057   01.07.24 Sean Flook       IMANN-592 Use sandboxRef.current in HandleResetSandbox.
 //    058   04.07.24 Sean Flook       IMANN-705 Added displayName to contextUser.
 //    059   08.07.24 Sean Flook       IMANN-728 Include the new user rights.
+//    060   17.07.24 Sean Flook       IMANN-596 Modified HandleClearHighlight to set objects to empty arrays rather than null.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3240,37 +3241,37 @@ function App() {
    */
   function HandleClearHighlight() {
     setHighlight({
-      street: null,
-      esu: null,
-      asd51: null,
-      asd52: null,
-      asd53: null,
-      asd61: null,
-      asd62: null,
-      asd63: null,
-      asd64: null,
-      asd66: null,
-      property: null,
-      selectProperties: null,
-      extent: null,
+      street: [],
+      esu: [],
+      asd51: [],
+      asd52: [],
+      asd53: [],
+      asd61: [],
+      asd62: [],
+      asd63: [],
+      asd64: [],
+      asd66: [],
+      property: [],
+      selectProperties: [],
+      extent: [],
     });
 
     sessionStorage.setItem(
       "highlight",
       JSON.stringify({
-        street: null,
-        esu: null,
-        asd51: null,
-        asd52: null,
-        asd53: null,
-        asd61: null,
-        asd62: null,
-        asd63: null,
-        asd64: null,
-        asd66: null,
-        property: null,
-        selectProperties: null,
-        extent: null,
+        street: [],
+        esu: [],
+        asd51: [],
+        asd52: [],
+        asd53: [],
+        asd61: [],
+        asd62: [],
+        asd63: [],
+        asd64: [],
+        asd66: [],
+        property: [],
+        selectProperties: [],
+        extent: [],
       })
     );
   }
