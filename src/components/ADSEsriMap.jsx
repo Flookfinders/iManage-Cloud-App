@@ -92,6 +92,7 @@
 //    078   02.07.24 Sean Flook       IMANN-689 Set the unassigned ESUs layer visibility to true.
 //    079   08.07.24 Sean Flook       IMANN-728 Pass in the new parameter to onExtentChange.
 //    080   10.07.24 Sean Flook       IMANN-742 Only allow properties to be added to a street if the user has permission to do that.
+//    081   17.07.24 Sean Flook       IMANN-596 When selecting objects ensure at least 500 milliseconds have elapsed since the last selection, this is a work around for an ESRI bug.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1166,6 +1167,9 @@ function ADSEsriMap(startExtent) {
   const [selectionAnchorEl, setSelectionAnchorEl] = useState(null);
   const selectionOpen = Boolean(selectionAnchorEl);
   const selectionId = selectionOpen ? "esu-extent-selection-popper" : undefined;
+  const lastSelectedEsu = useRef(null);
+  const lastSelectedExtent = useRef(null);
+  const lastSelectedProperty = useRef(null);
 
   const zoomGraphicsLayer = useRef(
     new GraphicsLayer({
@@ -5866,7 +5870,16 @@ function ADSEsriMap(startExtent) {
                 break;
 
               case "polygon":
-                if (response.results.length) {
+                if (
+                  response.results.length &&
+                  (!lastSelectedExtent.current ||
+                    response.results[0].graphic.attributes.TOID !== lastSelectedExtent.current.toid ||
+                    performance.now() - lastSelectedExtent.current.time > 500)
+                ) {
+                  lastSelectedExtent.current = {
+                    toid: response.results[0].graphic.attributes.TOID,
+                    time: performance.now(),
+                  };
                   newGraphics = currentLayer.graphics.filter(
                     (x) => x.attributes && x.attributes.TOID !== response.results[0].graphic.attributes.TOID
                   );
@@ -6012,7 +6025,17 @@ function ADSEsriMap(startExtent) {
 
         if (streetLayer) {
           view.hitTest(event, opts).then(function (response) {
-            if (currentPointCaptureModeRef.current === "assignEsu" && response.results.length) {
+            if (
+              currentPointCaptureModeRef.current === "assignEsu" &&
+              response.results.length &&
+              (!lastSelectedEsu.current ||
+                Number(response.results[0].graphic.attributes.EsuId) !== lastSelectedEsu.current.esuId ||
+                performance.now() - lastSelectedEsu.current.time > 500)
+            ) {
+              lastSelectedEsu.current = {
+                esuId: Number(response.results[0].graphic.attributes.EsuId),
+                time: performance.now(),
+              };
               const currentIndex = selectedEsus.current.indexOf(Number(response.results[0].graphic.attributes.EsuId));
               const newList = [...selectedEsus.current];
 
@@ -6042,7 +6065,16 @@ function ADSEsriMap(startExtent) {
           if (backgroundStreetLayerRef.current) {
             opts = { include: backgroundStreetLayerRef.current };
             view.hitTest(event, opts).then(function (response) {
-              if (response.results.length) {
+              if (
+                response.results.length &&
+                (!lastSelectedEsu.current ||
+                  Number(response.results[0].graphic.attributes.EsuId) !== lastSelectedEsu.current.esuId ||
+                  performance.now() - lastSelectedEsu.current.time > 500)
+              ) {
+                lastSelectedEsu.current = {
+                  esuId: Number(response.results[0].graphic.attributes.EsuId),
+                  time: performance.now(),
+                };
                 const currentIndex = selectedEsus.current.indexOf(Number(response.results[0].graphic.attributes.EsuId));
                 const newList = [...selectedEsus.current];
 
@@ -6065,7 +6097,16 @@ function ADSEsriMap(startExtent) {
           if (unassignedEsusLayerRef.current) {
             opts = { include: unassignedEsusLayerRef.current };
             view.hitTest(event, opts).then(function (response) {
-              if (response.results.length) {
+              if (
+                response.results.length &&
+                (!lastSelectedEsu.current ||
+                  Number(response.results[0].graphic.attributes.EsuId) !== lastSelectedEsu.current.esuId ||
+                  performance.now() - lastSelectedEsu.current.time > 500)
+              ) {
+                lastSelectedEsu.current = {
+                  esuId: Number(response.results[0].graphic.attributes.EsuId),
+                  time: performance.now(),
+                };
                 const currentIndex = selectedEsus.current.indexOf(Number(response.results[0].graphic.attributes.EsuId));
                 const newList = [...selectedEsus.current];
 
@@ -6361,7 +6402,16 @@ function ADSEsriMap(startExtent) {
     sketchUpdateEvent.current = sketchRef.current.on(
       ["update", "undo", "redo", "vertex-add", "vertex-remove", "cursor-update", "draw-complete"],
       (event) => {
-        if (selectingProperties.current && event.graphics && event.graphics.length > 0 && event.state === "start") {
+        if (
+          selectingProperties.current &&
+          event.graphics &&
+          event.graphics.length > 0 &&
+          event.state === "start" &&
+          (!lastSelectedProperty.current ||
+            lastSelectedProperty.current.uprn !== event.graphics[0].attributes.uprn ||
+            performance.now() - lastSelectedProperty.current.time > 500)
+        ) {
+          lastSelectedProperty.current = { uprn: event.graphics[0].attributes.uprn, time: performance.now() };
           // Get the list of UPRNs of the selected properties
           const selectedUprns = [];
 
