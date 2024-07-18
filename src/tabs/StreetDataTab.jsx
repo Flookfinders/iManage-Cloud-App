@@ -46,7 +46,10 @@
 //    033   08.07.24 Sean Flook       IMANN-728 Use the new user rights.
 //    034   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
 //    035   11.07.24 Sean Flook       IMANN-749 Do not display the add button if user cannot edit.
-//    036   17.07.24 Sean Flook       IMANN-782 Do not display create property menu items if the street is a type 3 or 4 street.
+//    036   17.07.24 Joshua McCormick IMANN-548 zoomToStreet fix
+//    037   17.07.24 Joshua McCormick IMANN-548 changed FormatStreetData to getStreetSearchData
+//    038   17.07.24 Joshua McCormick IMANN-548 removed GetStreetMapData
+//    039   17.07.24 Sean Flook       IMANN-782 Do not display create property menu items if the street is a type 3 or 4 street.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -553,13 +556,26 @@ function StreetDataTab({
   };
 
   /**
-   * Event to handle when the user clicks on the zoom to street menu item.
+   * Event to handle zooming the map to a street.
    *
-   * @param {object} event
+   * @param {object} event The event object.
+   * @param {number} usrn The USRN of the street to zoom to.
    */
-  const handleZoomToStreet = () => {
+  async function zoomToStreet(event, usrn) {
     setAnchorEl(null);
-  };
+    alert('test')
+
+    const highlightStreet = data.streetStartX && data.streetEndX && data.streetStartY && data.streetEndY ? {
+      usrn: usrn,data,
+      minX: data.streetStartX < data.streetEndX ? data.streetStartX : data.streetEndX,
+      minY: data.streetStartY < data.streetEndY ? data.streetStartY : data.streetEndY,
+      maxX: data.streetStartX > data.streetEndX ? data.streetStartX : data.streetEndX,
+      maxY: data.streetStartY > data.streetEndY ? data.streetStartY : data.streetEndY,
+    } : null;
+
+    mapContext.onMapChange(mapContext.currentLayers.extents, highlightStreet, null);
+
+  }
 
   /**
    * Event to handle when the user clicks on the open in street view menu item.
@@ -986,7 +1002,7 @@ function StreetDataTab({
                 <Typography variant="inherit">Add properties</Typography>
               </MenuItem>
             )}
-            <MenuItem dense onClick={handleZoomToStreet} sx={menuItemStyle(false)}>
+            <MenuItem dense onClick={(event) => zoomToStreet(event, streetContext.currentStreet.usrn)} sx={menuItemStyle(false)}>
               <Typography variant="inherit">Zoom to this</Typography>
             </MenuItem>
             <MenuItem dense onClick={handleOpenInStreetview} sx={menuItemStyle(false)}>

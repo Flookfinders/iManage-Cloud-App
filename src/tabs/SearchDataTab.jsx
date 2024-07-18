@@ -59,6 +59,9 @@
 //    045   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    046   11.07.24 Sean Flook       IMANN-747 Only display menu items if the user has the rights to use them.
 //    047   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
+//    048   17.07.24 Joshua McCormick IMANN-548 zoomToStreet fix
+//    049   17.07.24 Joshua McCormick IMANN-548 Removed debug code, removed FormatStreetData, removed GetStreetMapData
+//    050   17.07.24 Joshua McCormick IMANN-548 Removed getStreetSearchData import
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -729,21 +732,15 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   async function zoomToStreet(event, usrn) {
     handleStreetActionsMenuClose(event);
 
-    const found = mapContext.currentSearchData.streets.find((rec) => rec.usrn === usrn);
+    const highlightStreet = data.streetStartX && data.streetEndX && data.streetStartY && data.streetEndY ? {
+      usrn: usrn,data,
+      minX: data.streetStartX < data.streetEndX ? data.streetStartX : data.streetEndX,
+      minY: data.streetStartY < data.streetEndY ? data.streetStartY : data.streetEndY,
+      maxX: data.streetStartX > data.streetEndX ? data.streetStartX : data.streetEndX,
+      maxY: data.streetStartY > data.streetEndY ? data.streetStartY : data.streetEndY,
+    } : null;
 
-    const streetData = await GetStreetMapData(usrn, userContext, settingsContext.isScottish);
-
-    const zoomStreet = {
-      usrn: usrn,
-      minX: streetData.streetStartX < streetData.streetEndX ? streetData.streetStartX : streetData.streetEndX,
-      minY: streetData.streetStartY < streetData.streetEndY ? streetData.streetStartY : streetData.streetEndY,
-      maxX: streetData.streetStartX > streetData.streetEndX ? streetData.streetStartX : streetData.streetEndX,
-      maxY: streetData.streetStartY > streetData.streetEndY ? streetData.streetStartY : streetData.streetEndY,
-    };
-
-    if (found) {
-      mapContext.onMapChange(mapContext.currentLayers.extents, zoomStreet, null);
-    }
+    mapContext.onMapChange(mapContext.currentLayers.extents, highlightStreet, null);
   }
 
   /**

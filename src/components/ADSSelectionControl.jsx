@@ -44,6 +44,8 @@
 //    031   09.07.24 Sean Flook       IMANN-582 Changed case.
 //    032   11.07.24 Sean Flook       IMANN-747 Only display menu items if the user has the rights to use them.
 //    033   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
+//    034   17.07.24 Joshua McCormick IMANN-548 zoomToStreet fix
+//    035   17.07.24 Joshua McCormick IMANN-548 changed FormatStreetData to getStreetSearchData, Removed find debug code in zoomToStreet 
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -79,7 +81,7 @@ import MultiEditAddClassificationDialog from "../dialogs/MultiEditAddClassificat
 import MoveBLPUDialog from "../dialogs/MoveBLPUDialog";
 
 import { copyTextToClipboard, GetWktCoordinates, openInStreetView } from "../utils/HelperUtils";
-import { GetStreetMapData } from "../utils/StreetUtils";
+import { GetStreetMapData, getStreetSearchData } from "../utils/StreetUtils";
 import { GetPropertyMapData, UpdateRangeAfterSave, getClassificationCode } from "../utils/PropertyUtils";
 import { GetMultiEditSearchUrl } from "../configuration/ADSConfig";
 
@@ -482,21 +484,18 @@ function ADSSelectionControl({
   };
 
   /**
-   * Method to zoom the map to a given street.
+   * Event to handle zooming the map to a street.
    *
    * @param {object} event The event object.
-   * @param {number} usrn The USRN of the street.
+   * @param {number} usrn The USRN of the street to zoom to.
    */
   async function zoomToStreet(event, usrn) {
     setAnchorStreetActionsEl(null);
 
-    event.stopPropagation();
-
     const found = mapContext.currentSearchData.streets.find((rec) => rec.usrn === usrn);
-
     const streetData = await GetStreetMapData(usrn, userContext, settingsContext.isScottish);
 
-    const zoomStreet = {
+    const highlightStreet = {
       usrn: usrn,
       minX: streetData.streetStartX < streetData.streetEndX ? streetData.streetStartX : streetData.streetEndX,
       minY: streetData.streetStartY < streetData.streetEndY ? streetData.streetStartY : streetData.streetEndY,
@@ -504,9 +503,12 @@ function ADSSelectionControl({
       maxY: streetData.streetStartY > streetData.streetEndY ? streetData.streetStartY : streetData.streetEndY,
     };
 
-    if (found) {
-      mapContext.onMapChange(mapContext.currentLayers.extents, zoomStreet, null);
+    if (!found) {
+      const newMapSearchProperties = mapContext.currentSearchData.streets;
+      newMapSearchProperties.push(await getStreetSearchData(streetData, settingsContext.isScottish));
     }
+    
+    mapContext.onMapChange(mapContext.currentLayers.extents, highlightStreet, null);
   }
 
   /**

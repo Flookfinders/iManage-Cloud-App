@@ -76,6 +76,8 @@
 //    063   10.07.24 Sean Flook       IMANN-741 Do not try and iterate the ASD records if user does not have ASD rights.
 //    064   11.07.24 Sean Flook       IMANN-682 If whole road is true ensure specific location is empty.
 //    065   11.07.24 Joel Benford     IMANN-727 Use unassignedEngIsland for both languages
+//    066   17.07.24 Joshua McCormick IMANN-548 Added formatStreetData util
+//    067   17.07.24 Joshua McCormick IMANN-548 Changed formatStreetData to getStreetSearchData
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2829,6 +2831,37 @@ export async function GetStreetMapData(usrn, userContext, isScottish) {
 
     return returnData;
   } else return null;
+}
+
+
+/**
+ * Return the formatted street from streetData
+ *
+ * @param {Object} streetData The streetData of the street.
+ * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
+ * @return {Object} The street map object.
+ */
+export function getStreetSearchData(streetData, isScottish) {
+  const foundStreetDescriptor = streetData.streetDescriptors.find((x) => x.language === "ENG");
+
+  const street = {
+    usrn: streetData.usrn,
+    description: foundStreetDescriptor.streetDescriptor,
+    language: foundStreetDescriptor.language,
+    locality: foundStreetDescriptor.locality,
+    town: foundStreetDescriptor.town,
+    state: isScottish ? streetData.state : undefined,
+    type: streetData.recordType,
+    esus: streetData.esus
+      ? streetData.esus.map((esu) => ({
+          esuId: esu.esuId,
+          state: isScottish ? esu.state : undefined,
+          geometry: esu.wktGeometry ? GetWktCoordinates(esu.wktGeometry) : undefined,
+        }))
+      : [],
+  };
+
+  return street;
 }
 
 /**

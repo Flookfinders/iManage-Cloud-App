@@ -45,6 +45,8 @@
 //    032   26.06.24 Sean Flook       IMANN-488 Correctly filter the data in getStreetFromId.
 //    033   26.06.24 Joshua McCormick IMANN-548 ZoomToStreet fix, added setAnchorStreetActionsEl
 //    034   03.07.24 Joshua McCormick IMANN-699 Renamed Add Property on Street to Add property
+//    035   17.07.24 Joshua McCormick IMANN-548 zoomToStreet fix
+//    036   17.07.24 Joshua McCormick IMANN-548 changed FormatStreetData to getStreetSearchData, Removed find debug code in zoomToStreet 
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -65,7 +67,7 @@ import {
   openInStreetView,
   GetAvatarTooltip,
 } from "../utils/HelperUtils";
-import { streetToTitleCase, GetStreetMapData } from "./../utils/StreetUtils";
+import { streetToTitleCase, GetStreetMapData, getStreetSearchData } from "./../utils/StreetUtils";
 import {
   Typography,
   Avatar,
@@ -317,7 +319,6 @@ function RelatedStreetTab({
     event.stopPropagation();
 
     const found = mapContext.currentSearchData.streets.find((rec) => rec.usrn === usrn);
-
     const streetData = await GetStreetMapData(usrn, userContext, settingsContext.isScottish);
 
     const highlightStreet = {
@@ -328,9 +329,12 @@ function RelatedStreetTab({
       maxY: streetData.streetStartY > streetData.streetEndY ? streetData.streetStartY : streetData.streetEndY,
     };
 
-    if (found) {
-      mapContext.onMapChange(mapContext.currentLayers.extents, highlightStreet, null);
+    if (!found) {
+      const newMapSearchProperties = mapContext.currentSearchData.streets;
+      newMapSearchProperties.push(await getStreetSearchData(streetData, settingsContext.isScottish));
     }
+
+    mapContext.onMapChange(mapContext.currentLayers.extents, highlightStreet, null);
   }
 
   /**
