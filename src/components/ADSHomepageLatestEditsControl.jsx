@@ -35,6 +35,7 @@
 //    022   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    023   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
 //    024   04.07.24 Sean Flook       IMANN-705 Also change tooltip.
+//    025   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -279,7 +280,7 @@ function ADSHomepageLatestEditsControl({ data }) {
               type: 53,
               pkId: asdRec.pkId,
               usrn: asdRec.usrn,
-              specialDesig: asdRec.specialDesig,
+              specialDesignationCode: asdRec.specialDesignationCode,
               custodianCode: asdRec.custodianCode,
               authorityCode: asdRec.authorityCode,
               wholeRoad: asdRec.wholeRoad,

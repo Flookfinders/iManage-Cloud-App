@@ -35,6 +35,7 @@
 //    022   17.05.24 Joshua McCormick IMANN-400 OSSpecial desc char limit set to 255 from 250
 //    023   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    024   02.07.24 Joel Benford     IMANN-669 .specialDesig -> .specialDesignationCode
+//    025   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -163,7 +164,7 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
       isLocal: data.osSpecialDesignationData.isLocal,
       custodianCode: field && field === "custodian" ? newValue : custodian,
       authorityCode: field && field === "authority" ? newValue : authority,
-      specialDesig: field && field === "designationType" ? newValue : specialDesignation,
+      specialDesignationCode: field && field === "designationType" ? newValue : specialDesignation,
       entryDate: data.osSpecialDesignationData.entryDate,
       wktGeometry: data.osSpecialDesignationData.wktGeometry,
       description: field && field === "description" ? newValue : description,
@@ -469,7 +470,7 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
     if (errors && errors.length > 0) {
       for (const error of errors) {
         switch (error.field.toLowerCase()) {
-          case "specialdesignation":
+          case "specialdesignationcode":
             setDesignationCategoryError(error.errors);
             break;
           case "description":

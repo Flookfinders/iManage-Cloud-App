@@ -54,6 +54,7 @@
 //    032   04.07.24 Sean Flook       IMANN-221 Added new checks and updated messages.
 //    033   04.07.24 Sean Flook       IMANN-221 Further updated messages.
 //    034   04.07.24 Sean Flook       IMANN-221 Further updated messages.
+//    035   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1836,7 +1837,7 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
 
     // Enter a special designation.
     currentCheck = GetCheck(5300013, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && !data.specialDesig) {
+    if (includeCheck(currentCheck, true) && !data.specialDesignationCode) {
       specialDesignationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -1844,8 +1845,8 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
     currentCheck = GetCheck(5300014, currentLookups, methodName, true, showDebugMessages);
     if (
       includeCheck(currentCheck, true) &&
-      data.specialDesig &&
-      !SpecialDesignationCode.find((x) => x.id === data.specialDesig && x.osText)
+      data.specialDesignationCode &&
+      !SpecialDesignationCode.find((x) => x.id === data.specialDesignationCode && x.osText)
     ) {
       specialDesignationErrors.push(GetErrorMessage(currentCheck, true));
     }

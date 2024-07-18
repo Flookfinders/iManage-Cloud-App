@@ -62,6 +62,8 @@
 //    048   17.07.24 Joshua McCormick IMANN-548 zoomToStreet fix
 //    049   17.07.24 Joshua McCormick IMANN-548 Removed debug code, removed FormatStreetData, removed GetStreetMapData
 //    050   17.07.24 Joshua McCormick IMANN-548 Removed getStreetSearchData import
+//    051   18.07.24 Joshua McCormick IMANN-548 zoomToStreet add street if not in newMapSearchProperties
+//    052   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -114,7 +116,7 @@ import {
   openInStreetView,
   doOpenRecord,
 } from "../utils/HelperUtils";
-import { GetStreetMapData, StreetDelete, DisplayStreetInStreetView } from "../utils/StreetUtils";
+import { GetStreetMapData, StreetDelete, DisplayStreetInStreetView, getStreetSearchData } from "../utils/StreetUtils";
 import {
   addressToTitleCase,
   GetPropertyMapData,
@@ -532,7 +534,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                 type: 53,
                 pkId: asdRec.pkId,
                 usrn: asdRec.usrn,
-                specialDesig: asdRec.specialDesig,
+                specialDesignationCode: asdRec.specialDesignationCode,
                 custodianCode: asdRec.custodianCode,
                 authorityCode: asdRec.authorityCode,
                 wholeRoad: asdRec.wholeRoad,
@@ -732,13 +734,21 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   async function zoomToStreet(event, usrn) {
     handleStreetActionsMenuClose(event);
 
-    const highlightStreet = data.streetStartX && data.streetEndX && data.streetStartY && data.streetEndY ? {
-      usrn: usrn,data,
-      minX: data.streetStartX < data.streetEndX ? data.streetStartX : data.streetEndX,
-      minY: data.streetStartY < data.streetEndY ? data.streetStartY : data.streetEndY,
-      maxX: data.streetStartX > data.streetEndX ? data.streetStartX : data.streetEndX,
-      maxY: data.streetStartY > data.streetEndY ? data.streetStartY : data.streetEndY,
-    } : null;
+    const found = mapContext.currentSearchData.streets.find((rec) => rec.usrn === usrn);
+    const streetData = await GetStreetMapData(usrn, userContext, settingsContext.isScottish);
+
+    const highlightStreet = {
+      usrn: usrn,
+      minX: streetData.streetStartX < streetData.streetEndX ? streetData.streetStartX : streetData.streetEndX,
+      minY: streetData.streetStartY < streetData.streetEndY ? streetData.streetStartY : streetData.streetEndY,
+      maxX: streetData.streetStartX > streetData.streetEndX ? streetData.streetStartX : streetData.streetEndX,
+      maxY: streetData.streetStartY > streetData.streetEndY ? streetData.streetStartY : streetData.streetEndY,
+    };
+
+    if (!found) {
+      const newMapSearchProperties = mapContext.currentSearchData.streets;
+      newMapSearchProperties.push(await getStreetSearchData(streetData, settingsContext.isScottish));
+    }
 
     mapContext.onMapChange(mapContext.currentLayers.extents, highlightStreet, null);
   }

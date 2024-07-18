@@ -45,6 +45,7 @@
 //    032   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //    033   03.07.24 Joshua McCormick IMANN-542 Searching when inside a property will now directly open property instead of showing search list
 //    034   08.07.24 Sean Flook       IMANN-728 Only get the background properties and provenances if the user can see properties.
+//    035   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -307,7 +308,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                       type: 53,
                       pkId: asdRec.pkId,
                       usrn: asdRec.usrn,
-                      specialDesig: asdRec.specialDesig,
+                      specialDesignationCode: asdRec.specialDesignationCode,
                       custodianCode: asdRec.custodianCode,
                       authorityCode: asdRec.authorityCode,
                       wholeRoad: asdRec.wholeRoad,
@@ -806,7 +807,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                 type: 53,
                 pkId: asdRec.pkId,
                 usrn: asdRec.usrn,
-                specialDesig: asdRec.specialDesig,
+                specialDesignationCode: asdRec.specialDesignationCode,
                 custodianCode: asdRec.custodianCode,
                 authorityCode: asdRec.authorityCode,
                 wholeRoad: asdRec.wholeRoad,

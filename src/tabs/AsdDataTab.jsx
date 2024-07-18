@@ -35,6 +35,7 @@
 //    022   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    023   14.05.24 Joshua McCormick IMAN-364  noWrap & padding to prevent toolbar content overlapping
 //    024   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    025   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -802,7 +803,7 @@ function AsdDataTab({
                 iconColour={adsBlack}
                 iconBackgroundColour={adsYellow}
                 iconBorderColour={`${adsBlack}  !important`}
-                primaryCodeField="specialDesig"
+                primaryCodeField="specialDesignationCode"
                 secondaryCodeField="description"
                 onToggleItem={(id) => handleToggleItem(id)}
                 onItemClicked={(specialDesignationData, index) =>

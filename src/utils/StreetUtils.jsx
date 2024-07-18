@@ -78,6 +78,7 @@
 //    065   11.07.24 Joel Benford     IMANN-727 Use unassignedEngIsland for both languages
 //    066   17.07.24 Joshua McCormick IMANN-548 Added formatStreetData util
 //    067   17.07.24 Joshua McCormick IMANN-548 Changed formatStreetData to getStreetSearchData
+//    068   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -927,7 +928,7 @@ export function GetCurrentSearchStreets(streetData, isScottish, hasASD) {
             type: 53,
             pkId: asdRec.pkId,
             usrn: asdRec.usrn,
-            specialDesig: asdRec.specialDesig,
+            specialDesignationCode: asdRec.specialDesignationCode,
             custodianCode: asdRec.custodianCode,
             authorityCode: asdRec.authorityCode,
             wholeRoad: asdRec.wholeRoad,
@@ -1480,7 +1481,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
               changeType: "I",
               custodianCode: sd.custodianCode,
               authorityCode: sd.authorityCode,
-              specialDesignationCode: sd.specialDesig,
+              specialDesignationCode: sd.specialDesignationCode,
               wktGeometry: sd.wktGeometry,
               description: sd.description,
               state: sd.state,
@@ -2024,7 +2025,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
               changeType: sd.changeType,
               custodianCode: sd.custodianCode,
               authorityCode: sd.authorityCode,
-              specialDesignationCode: sd.specialDesig,
+              specialDesignationCode: sd.specialDesignationCode,
               wktGeometry: sd.wktGeometry,
               description: sd.description,
               state: sd.state,
@@ -2833,7 +2834,6 @@ export async function GetStreetMapData(usrn, userContext, isScottish) {
   } else return null;
 }
 
-
 /**
  * Return the formatted street from streetData
  *
@@ -3594,7 +3594,7 @@ export const updateMapStreetData = (
                 type: 53,
                 pkId: asdRec.pkId,
                 usrn: asdRec.usrn,
-                specialDesig: asdRec.specialDesig,
+                specialDesignationCode: asdRec.specialDesignationCode,
                 custodianCode: asdRec.custodianCode,
                 authorityCode: asdRec.authorityCode,
                 wholeRoad: asdRec.wholeRoad,

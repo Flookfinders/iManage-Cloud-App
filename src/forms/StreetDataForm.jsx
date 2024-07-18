@@ -109,6 +109,7 @@
 //    095   05.07.24 Sean Flook       IMANN-275 Corrected street descriptor array name.
 //    096   08.07.24 Sean Flook       IMANN-596 When selecting HD and OWE records ensure we have the current ESU data saved.
 //    097   18.07.24 Sean Flook       IMANN-449 Do not set the oneWayExemptionEndDate when merging or dividing ESUs.
+//    098   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2130,7 +2131,7 @@ function StreetDataForm({ data, loading }) {
           settingsContext.streetTemplate.scoSpecialDesignationTemplate.authorityCode
             ? settingsContext.streetTemplate.scoSpecialDesignationTemplate.authorityCode
             : null,
-        specialDesig:
+        specialDesignationCode:
           settingsContext.streetTemplate &&
           settingsContext.streetTemplate.scoSpecialDesignationTemplate &&
           settingsContext.streetTemplate.scoSpecialDesignationTemplate.specialDesignation
@@ -4304,7 +4305,7 @@ function StreetDataForm({ data, loading }) {
           changeType: "D",
           custodianCode: deleteSpecialDesignation.custodianCode,
           authorityCode: deleteSpecialDesignation.authorityCode,
-          specialDesig: deleteSpecialDesignation.specialDesig,
+          specialDesignationCode: deleteSpecialDesignation.specialDesignationCode,
           wktGeometry: deleteSpecialDesignation.wktGeometry,
           description: deleteSpecialDesignation.description,
           state: deleteSpecialDesignation.state,
@@ -8441,7 +8442,7 @@ function StreetDataForm({ data, loading }) {
               changeType: contextStreet.usrn === 0 || currentAsd53.pkId < 0 ? "I" : "U",
               custodianCode: currentAsd53.custodianCode,
               authorityCode: currentAsd53.authorityCode,
-              specialDesig: currentAsd53.specialDesig,
+              specialDesignationCode: currentAsd53.specialDesignationCode,
               wktGeometry: mapContext.currentLineGeometry.wktGeometry,
               description: currentAsd53.description,
               state: currentAsd53.state,
@@ -9623,7 +9624,7 @@ function StreetDataForm({ data, loading }) {
                 type: 53,
                 pkId: asdRec.pkId,
                 usrn: asdRec.usrn,
-                specialDesig: asdRec.specialDesig,
+                specialDesignationCode: asdRec.specialDesignationCode,
                 custodianCode: asdRec.custodianCode,
                 authorityCode: asdRec.authorityCode,
                 wholeRoad: asdRec.wholeRoad,

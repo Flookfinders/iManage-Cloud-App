@@ -58,6 +58,7 @@
 //    045   16.06.24 Sean Flook       IMANN-577 Added characterSetValidator.
 //    046   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    047   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    048   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1672,7 +1673,7 @@ export async function doOpenRecord(
               type: 53,
               pkId: asdRec.pkId,
               usrn: asdRec.usrn,
-              specialDesig: asdRec.specialDesig,
+              specialDesignationCode: asdRec.specialDesignationCode,
               custodianCode: asdRec.custodianCode,
               authorityCode: asdRec.authorityCode,
               wholeRoad: asdRec.wholeRoad,

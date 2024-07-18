@@ -33,6 +33,7 @@
 //    020   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
 //    021   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    022   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    023   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -277,7 +278,7 @@ function SearchDataForm() {
                       type: 53,
                       pkId: asdRec.pkId,
                       usrn: asdRec.usrn,
-                      specialDesig: asdRec.specialDesig,
+                      specialDesignationCode: asdRec.specialDesignationCode,
                       custodianCode: asdRec.custodianCode,
                       authorityCode: asdRec.authorityCode,
                       wholeRoad: asdRec.wholeRoad,
@@ -450,7 +451,7 @@ function SearchDataForm() {
                       type: 53,
                       pkId: asdRec.pkId,
                       usrn: asdRec.usrn,
-                      specialDesig: asdRec.specialDesig,
+                      specialDesignationCode: asdRec.specialDesignationCode,
                       custodianCode: asdRec.custodianCode,
                       authorityCode: asdRec.authorityCode,
                       wholeRoad: asdRec.wholeRoad,

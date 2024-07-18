@@ -44,6 +44,7 @@
 //    029   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    030   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //    031   08.07.24 Sean Flook       IMANN-728 Hide the property tab if the user does not have the right to see properties.
+//    032   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -321,7 +322,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
               type: 53,
               pkId: asdRec.pkId,
               usrn: asdRec.usrn,
-              specialDesig: asdRec.specialDesig,
+              specialDesignationCode: asdRec.specialDesignationCode,
               custodianCode: asdRec.custodianCode,
               authorityCode: asdRec.authorityCode,
               wholeRoad: asdRec.wholeRoad,

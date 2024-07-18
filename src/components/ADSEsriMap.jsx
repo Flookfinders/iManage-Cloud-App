@@ -93,6 +93,7 @@
 //    079   08.07.24 Sean Flook       IMANN-728 Pass in the new parameter to onExtentChange.
 //    080   10.07.24 Sean Flook       IMANN-742 Only allow properties to be added to a street if the user has permission to do that.
 //    081   17.07.24 Sean Flook       IMANN-596 When selecting objects ensure at least 500 milliseconds have elapsed since the last selection, this is a work around for an ESRI bug.
+//    082   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2267,7 +2268,7 @@ function ADSEsriMap(startExtent) {
                         type: 53,
                         pkId: asdRec.pkId,
                         usrn: asdRec.usrn,
-                        specialDesig: asdRec.specialDesig,
+                        specialDesignationCode: asdRec.specialDesignationCode,
                         custodianCode: asdRec.custodianCode,
                         authorityCode: asdRec.authorityCode,
                         wholeRoad: asdRec.wholeRoad,
@@ -4003,7 +4004,7 @@ function ADSEsriMap(startExtent) {
                 return {
                   pkId: asd.pkId,
                   usrn: asd.usrn,
-                  specialDesig: asd.specialDesig,
+                  specialDesignationCode: asd.specialDesignationCode,
                   custodianCode: asd.custodianCode,
                   authorityCode: asd.authorityCode,
                   wholeRoad: asd.wholeRoad,
@@ -4315,7 +4316,11 @@ function ADSEsriMap(startExtent) {
           ObjectID: index,
           PkId: rec.pkId.toString(),
           USRN: rec.usrn.toString(),
-          Description: `Special designation - ${GetAsdPrimaryCodeText("53", rec.specialDesig, isScottish.current)}`,
+          Description: `Special designation - ${GetAsdPrimaryCodeText(
+            "53",
+            rec.specialDesignationCode,
+            isScottish.current
+          )}`,
           Authority: GetAuthorityLabel(rec.authorityCode, isScottish.current),
           Custodian: GetAuthorityLabel(rec.custodianCode, isScottish.current),
           WholeRoad: GetWholeRoadLabel(rec.wholeRoad),
