@@ -46,6 +46,7 @@
 //    033   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
 //    034   17.07.24 Joshua McCormick IMANN-548 zoomToStreet fix
 //    035   17.07.24 Joshua McCormick IMANN-548 changed FormatStreetData to getStreetSearchData, Removed find debug code in zoomToStreet 
+//    036   18.07.24 Sean Flook       IMANN-761 Remove the Close and Delete menu options for streets.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -507,7 +508,7 @@ function ADSSelectionControl({
       const newMapSearchProperties = mapContext.currentSearchData.streets;
       newMapSearchProperties.push(await getStreetSearchData(streetData, settingsContext.isScottish));
     }
-    
+
     mapContext.onMapChange(mapContext.currentLayers.extents, highlightStreet, null);
   }
 
@@ -1456,7 +1457,7 @@ function ADSSelectionControl({
                         <Typography variant="inherit">Close street</Typography>
                       </MenuItem>
                     )}
-                    {!settingsContext.isScottish && userCanEditStreet && (
+                    {process.env.NODE_ENV === "development" && !settingsContext.isScottish && userCanEditStreet && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit" color="error">
                           Delete
@@ -1505,7 +1506,7 @@ function ADSSelectionControl({
                         <Typography variant="inherit">Close street</Typography>
                       </MenuItem>
                     )}
-                    {!settingsContext.isScottish && userCanEditStreet && (
+                    {process.env.NODE_ENV === "development" && !settingsContext.isScottish && userCanEditStreet && (
                       <MenuItem dense disabled sx={menuItemStyle(false)}>
                         <Typography variant="inherit" color="error">
                           Delete
