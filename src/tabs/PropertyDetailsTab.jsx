@@ -59,6 +59,7 @@
 //    045   01.07.24 Joel Benford     IMANN-603 Handle undefined
 //    046   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
 //    047   11.07.24 Sean Flook       IMANN-749 Do not display the add button if user cannot edit.
+//    048   18.07.24 Sean Flook       IMANN-775 When changing the logical status of for Scottish authorities also set the state if new logical status is provisional or historic.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -332,9 +333,20 @@ function PropertyDetailsTab({
           level: fieldName && fieldName === "level" ? newValue : level,
           custodianCode: fieldName && fieldName === "localCustodian" ? newValue : localCustodian,
           logicalStatus: fieldName && fieldName === "logicalStatus" ? newValue : blpuLogicalStatus,
-          blpuState: fieldName && fieldName === "state" ? newValue : state,
+          blpuState:
+            fieldName && fieldName === "state"
+              ? newValue
+              : fieldName && fieldName === "logicalStatus" && newValue === 6 && state !== 0
+              ? 0
+              : fieldName && fieldName === "logicalStatus" && newValue === 8 && state !== 4
+              ? 4
+              : state,
           blpuStateDate:
             fieldName && fieldName === "state"
+              ? GetCurrentDate()
+              : fieldName && fieldName === "logicalStatus" && newValue === 6 && state !== 0
+              ? GetCurrentDate()
+              : fieldName && fieldName === "logicalStatus" && newValue === 8 && state !== 4
               ? GetCurrentDate()
               : fieldName && fieldName === "stateDate"
               ? newValue && ConvertDate(newValue)

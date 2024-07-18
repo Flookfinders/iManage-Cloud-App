@@ -55,6 +55,7 @@
 //    042   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //    043   03.07.24 Sean Flook       IMANN-697 Also check the single form of the key when handling errors.
 //    044   05.07.24 Sean Flook       IMANN-692 Do not reset the sandbox if call to UpdateRangeAfterSave is from ADSSelectionControl.
+//    045   18.07.24 Sean Flook       IMANN-775 For Scottish authorities when filtering BLPUState use the string of the index to handle the 0 state.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -132,16 +133,16 @@ export const FilteredBLPUState = (isScottish, logicalStatus) => {
   if (isScottish) {
     switch (logicalStatus) {
       case 1:
-        return BLPUState.filter((x) => x.osText && [0, 1, 2, 3].includes(x.id));
+        return BLPUState.filter((x) => x.osText && ["0", "1", "2", "3"].includes(x.id.toString()));
 
       case 6:
-        return BLPUState.filter((x) => x.osText && x.id === 0);
+        return BLPUState.filter((x) => x.osText && x.id.toString() === "0");
 
       case 8:
-        return BLPUState.filter((x) => x.osText && x.id === 4);
+        return BLPUState.filter((x) => x.osText && x.id.toString() === "4");
 
       case 9:
-        return BLPUState.filter((x) => x.osText && [0, 4].includes(x.id));
+        return BLPUState.filter((x) => x.osText && ["0", "4"].includes(x.id.toString()));
 
       default:
         return BLPUState.filter((x) => x.osText);
