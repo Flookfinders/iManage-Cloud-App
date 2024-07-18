@@ -50,6 +50,7 @@
 //    037   17.07.24 Joshua McCormick IMANN-548 changed FormatStreetData to getStreetSearchData
 //    038   17.07.24 Joshua McCormick IMANN-548 removed GetStreetMapData
 //    039   17.07.24 Sean Flook       IMANN-782 Do not display create property menu items if the street is a type 3 or 4 street.
+//    040   18.07.24 Joshua McCormick IMANN-548 removed debug code
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -563,7 +564,6 @@ function StreetDataTab({
    */
   async function zoomToStreet(event, usrn) {
     setAnchorEl(null);
-    alert('test')
 
     const highlightStreet = data.streetStartX && data.streetEndX && data.streetStartY && data.streetEndY ? {
       usrn: usrn,data,
