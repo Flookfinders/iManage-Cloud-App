@@ -73,6 +73,7 @@
 //    060   21.06.24 Sean Flook       IMANN-561 Allow changing tabs if errors are not on current tab.
 //    061   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //    062   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
+//    063   18.07.24 Sean Flook       IMANN-563 When historicising a property also set the BLPU state to 4.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2524,7 +2525,8 @@ function PropertyDataForm({ data, loading }) {
 
     const newPropertyData = !settingsContext.isScottish
       ? {
-          blpuStateDate: propertyData.blpuStateDate,
+          blpuStateDate:
+            newLogicalStatus === 8 && propertyData.blpuState !== 4 ? currentDate : propertyData.blpuStateDate,
           parentUprn: propertyData.parentUprn,
           parentAddress: propertyData.parentAddress,
           parentPostcode: propertyData.parentPostcode,
@@ -2536,7 +2538,7 @@ function PropertyDataForm({ data, loading }) {
           uprn: propertyData.uprn,
           logicalStatus: newLogicalStatus,
           endDate: currentDate,
-          blpuState: propertyData.blpuState,
+          blpuState: newLogicalStatus === 8 && propertyData.blpuState !== 4 ? 4 : propertyData.blpuState,
           startDate: propertyData.startDate,
           blpuClass: propertyData.blpuClass,
           localCustodianCode: propertyData.localCustodianCode,
@@ -2562,7 +2564,8 @@ function PropertyDataForm({ data, loading }) {
           }),
         }
       : {
-          blpuStateDate: propertyData.blpuStateDate,
+          blpuStateDate:
+            newLogicalStatus === 8 && propertyData.blpuState !== 4 ? currentDate : propertyData.blpuStateDate,
           parentUprn: propertyData.parentUprn,
           parentAddress: propertyData.parentAddress,
           parentPostcode: propertyData.parentPostcode,
@@ -2575,7 +2578,7 @@ function PropertyDataForm({ data, loading }) {
           logicalStatus: newLogicalStatus,
           endDate: currentDate,
           startDate: propertyData.startDate,
-          blpuState: propertyData.blpuState,
+          blpuState: newLogicalStatus === 8 && propertyData.blpuState !== 4 ? 4 : propertyData.blpuState,
           custodianCode: propertyData.custodianCode,
           level: propertyData.level,
           xcoordinate: propertyData.xcoordinate,
@@ -4306,14 +4309,14 @@ function PropertyDataForm({ data, loading }) {
 
       const newPropertyData = !settingsContext.isScottish
         ? {
-            blpuStateDate: propertyData.blpuStateDate,
+            blpuStateDate: propertyContext.newLogicalStatus === 8 ? today : propertyData.blpuStateDate,
             parentUprn: propertyData.parentUprn,
             neverExport: propertyData.neverExport,
             siteSurvey: propertyData.siteSurvey,
             uprn: propertyData.uprn,
             logicalStatus: propertyContext.newLogicalStatus,
             endDate: today,
-            blpuState: propertyData.blpuState,
+            blpuState: propertyContext.newLogicalStatus === 8 ? 4 : propertyData.blpuState,
             startDate: propertyData.startDate,
             blpuClass: propertyData.blpuClass,
             localCustodianCode: propertyData.localCustodianCode,
@@ -4337,7 +4340,7 @@ function PropertyDataForm({ data, loading }) {
             lpis: newLpis,
           }
         : {
-            blpuStateDate: propertyData.blpuStateDate,
+            blpuStateDate: propertyContext.newLogicalStatus === 8 ? today : propertyData.blpuStateDate,
             parentUprn: propertyData.parentUprn,
             neverExport: propertyData.neverExport,
             siteSurvey: propertyData.siteSurvey,
@@ -4345,7 +4348,7 @@ function PropertyDataForm({ data, loading }) {
             logicalStatus: propertyContext.newLogicalStatus,
             endDate: today,
             startDate: propertyData.startDate,
-            blpuState: propertyData.blpuState,
+            blpuState: propertyContext.newLogicalStatus === 8 ? 4 : propertyData.blpuState,
             custodianCode: propertyData.custodianCode,
             level: propertyData.level,
             xcoordinate: propertyData.xcoordinate,
