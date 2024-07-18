@@ -19,6 +19,7 @@
 //    006   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    007   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    008   30.04.24 Sean Flook       IMANN-418 Corrected logic.
+//    009   18.07.24 Sean Flook       IMANN-571 Corrected bug.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -134,7 +135,7 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
     } else setDescriptionError(null);
 
     if (isValid) {
-      const data = getData(duplicateId ? duplicateId : createFromValue ? createFromValue.id : null);
+      const data = getData(duplicateId ? duplicateId : createFromValue ? createFromValue : null);
       if (onDone) onDone(data);
     }
   };
