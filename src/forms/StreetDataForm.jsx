@@ -108,6 +108,7 @@
 //    094   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
 //    095   05.07.24 Sean Flook       IMANN-275 Corrected street descriptor array name.
 //    096   08.07.24 Sean Flook       IMANN-596 When selecting HD and OWE records ensure we have the current ESU data saved.
+//    097   18.07.24 Sean Flook       IMANN-449 Do not set the oneWayExemptionEndDate when merging or dividing ESUs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -9804,7 +9805,7 @@ function StreetDataForm({ data, loading }) {
                       oneWayExemptionType: owe.oneWayExemptionType,
                       recordEndDate: currentDate,
                       oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
-                      oneWayExemptionEndDate: currentDate,
+                      oneWayExemptionEndDate: owe.oneWayExemptionEndDate,
                       oneWayExemptionStartTime: owe.oneWayExemptionStartTime,
                       oneWayExemptionEndTime: owe.oneWayExemptionEndTime,
                       oneWayExemptionPeriodicityCode: owe.oneWayExemptionPeriodicityCode,
@@ -10083,7 +10084,7 @@ function StreetDataForm({ data, loading }) {
                       oneWayExemptionType: owe.oneWayExemptionType,
                       recordEndDate: currentDate,
                       oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
-                      oneWayExemptionEndDate: currentDate,
+                      oneWayExemptionEndDate: owe.oneWayExemptionEndDate,
                       oneWayExemptionStartTime: owe.oneWayExemptionStartTime,
                       oneWayExemptionEndTime: owe.oneWayExemptionEndTime,
                       oneWayExemptionPeriodicityCode: owe.oneWayExemptionPeriodicityCode,
