@@ -47,6 +47,7 @@
 //    034   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    035   19.06.24 Joel Benford     IMANN-579 Show characters remaining on Level
 //    036   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    037   18.07.24 Sean Flook       IMANN-678 After adding a new lookup call UpdateSandbox.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -190,10 +191,11 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
   /**
    * Method used to update the current sandbox record.
    *
-   * @param {string} field The name of the field that is being updated.
-   * @param {string|boolean|Date|number|null} newValue The value used to update the given field.
+   * @param {String} field The name of the field that is being updated.
+   * @param {String|Boolean|Date|Number|null} newValue The value used to update the given field.
+   * @param {Boolean} [newLookup=false] True if the lookup has just been added; otherwise false.
    */
-  const UpdateSandbox = async (field, newValue) => {
+  const UpdateSandbox = async (field, newValue, newLookup = false) => {
     const newLpiData = GetCurrentData(field, newValue);
     sandboxContext.onSandboxChange("lpi", newLpiData);
     if (
@@ -211,7 +213,8 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
         "usrn",
         "postTownRef",
         "postcodeRef",
-      ].includes(field)
+      ].includes(field) &&
+      !newLookup
     ) {
       const updatedAddress = await GetTempAddress(
         newLpiData,
@@ -763,14 +766,17 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
       switch (data.variant) {
         case "postcode":
           setPostcodeRef(addResults.newLookup.postcodeRef);
+          UpdateSandbox("postcodeRef", addResults.newLookup.postcodeRef, true);
           break;
 
         case "postTown":
           setPostTownRef(addResults.newLookup.postTownRef);
+          UpdateSandbox("postTownRef", addResults.newLookup.postTownRef, true);
           break;
 
         case "subLocality":
           setSubLocalityRef(addResults.newLookup.subLocalityRef);
+          UpdateSandbox("subLocalityRef", addResults.newLookup.subLocalityRef, true);
           break;
 
         default:

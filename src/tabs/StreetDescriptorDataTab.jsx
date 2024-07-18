@@ -31,6 +31,7 @@
 //    018   29.05.24 Sean Flook       IMANN-489 Prevent the user from changing the language.
 //    019   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    020   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    021   18.07.24 Sean Flook       IMANN-678 After adding a new lookup call UpdateSandbox.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -297,18 +298,22 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
       switch (data.variant) {
         case "locality":
           setLocality(addResults.newLookup.localityRef);
+          UpdateSandbox("locality", addResults.newLookup.localityRef);
           break;
 
         case "town":
           setTown(addResults.newLookup.townRef);
+          UpdateSandbox("town", addResults.newLookup.townRef);
           break;
 
         case "island":
           setIsland(addResults.newLookup.islandRef);
+          UpdateSandbox("island", addResults.newLookup.islandRef);
           break;
 
         case "administrativeArea":
           setAdministrativeArea(addResults.newLookup.adminAreaRef);
+          UpdateSandbox("administrativeArea", addResults.newLookup.adminAreaRef);
           break;
 
         default:
