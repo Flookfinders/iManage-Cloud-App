@@ -60,6 +60,7 @@
 //    046   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
 //    047   11.07.24 Sean Flook       IMANN-749 Do not display the add button if user cannot edit.
 //    048   18.07.24 Sean Flook       IMANN-775 When changing the logical status of for Scottish authorities also set the state if new logical status is provisional or historic.
+//    049   19.07.24 Sean Flook       IMANN-802 Added ability for Scottish authorities to add new Gaelic LPIs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -564,6 +565,16 @@ function PropertyDetailsTab({
    */
   const handleAddLpi = (event) => {
     onLpiSelected(0, null, null, null);
+    handleBLPUMenuClose(event);
+  };
+
+  /**
+   * Event to handle when the user selects to add a new Gaelic LPI.
+   *
+   * @param {object} event The event object
+   */
+  const handleAddGaeLpi = (event) => {
+    onLpiSelected(0, null, null, null, true);
     handleBLPUMenuClose(event);
   };
 
@@ -1177,7 +1188,17 @@ function PropertyDetailsTab({
             onClose={handleBLPUMenuClose}
             sx={menuStyle}
           >
-            {userCanEdit && (
+            {userCanEdit && settingsContext.isScottish && (
+              <MenuItem dense onClick={handleAddLpi} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Add new English LPI</Typography>
+              </MenuItem>
+            )}
+            {userCanEdit && settingsContext.isScottish && (
+              <MenuItem dense onClick={handleAddGaeLpi} sx={menuItemStyle(false)}>
+                <Typography variant="inherit">Add new Gaelic LPI</Typography>
+              </MenuItem>
+            )}
+            {userCanEdit && !settingsContext.isScottish && (
               <MenuItem dense onClick={handleAddLpi} sx={menuItemStyle(false)}>
                 <Typography variant="inherit">Add new LPI</Typography>
               </MenuItem>
@@ -1331,7 +1352,21 @@ function PropertyDetailsTab({
                                 <CopyIcon sx={ActionIconStyle()} />
                               </IconButton>
                             </Tooltip>
-                            {userCanEdit && (
+                            {userCanEdit && settingsContext.isScottish && (
+                              <Tooltip title="Add new English LPI" arrow placement="bottom" sx={tooltipStyle}>
+                                <IconButton onClick={handleAddLpi} size="small" disabled={!userCanEdit}>
+                                  <AddCircleIcon sx={ActionIconStyle()} />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                            {userCanEdit && settingsContext.isScottish && (
+                              <Tooltip title="Add new Gaelic LPI" arrow placement="bottom" sx={tooltipStyle}>
+                                <IconButton onClick={handleAddGaeLpi} size="small" disabled={!userCanEdit}>
+                                  <AddCircleIcon sx={ActionIconStyle()} />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                            {userCanEdit && !settingsContext.isScottish && (
                               <Tooltip title="Add new LPI" arrow placement="bottom" sx={tooltipStyle}>
                                 <IconButton onClick={handleAddLpi} size="small" disabled={!userCanEdit}>
                                   <AddCircleIcon sx={ActionIconStyle()} />

@@ -74,6 +74,7 @@
 //    061   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //    062   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
 //    063   18.07.24 Sean Flook       IMANN-563 When historicising a property also set the BLPU state to 4.
+//    064   19.07.24 Sean Flook       IMANN-802 Added ability for Scottish authorities to add new Gaelic LPIs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -710,12 +711,13 @@ function PropertyDataForm({ data, loading }) {
   /**
    * Event to handle when a LPI record is selected from the property details tab.
    *
-   * @param {number} pkId The primary key for the selected record. If -1 the data is cleared. 0 indicates a new LPI is required. Any number > 0 is existing data.
-   * @param {object|null} lpiData The LPI data for the selected record
-   * @param {number|null} dataIdx The index of the record within the array of LPI records.
-   * @param {number|null} dataLength The total number of records in the array of LPI records.
+   * @param {Number} pkId The primary key for the selected record. If -1 the data is cleared. 0 indicates a new LPI is required. Any number > 0 is existing data.
+   * @param {Object|null} lpiData The LPI data for the selected record
+   * @param {Number|null} dataIdx The index of the record within the array of LPI records.
+   * @param {Number|null} dataLength The total number of records in the array of LPI records.
+   * @param {Boolean} [createGae=false] If true and a Scottish authority create a new Gaelic LPI record; otherwise false.
    */
-  const handleLPISelected = (pkId, lpiData, dataIdx, dataLength) => {
+  const handleLPISelected = (pkId, lpiData, dataIdx, dataLength, createGae = false) => {
     mapContext.onEditMapObject(null, null);
 
     if (pkId === -1) {
@@ -747,7 +749,7 @@ function PropertyDataForm({ data, loading }) {
 
       const newEngRec = settingsContext.isScottish
         ? {
-            language: "ENG",
+            language: createGae ? "GAE" : "ENG",
             startDate: currentDate,
             endDate: null,
             saoStartNumber: 0,
@@ -5134,9 +5136,7 @@ function PropertyDataForm({ data, loading }) {
             focusedField={blpuFocusedField}
             onSetCopyOpen={(open, dataType) => handleCopyOpen(open, dataType)}
             onViewRelated={handleViewRelated}
-            onLpiSelected={(pkId, lpiData, dataIdx, dataLength) =>
-              handleLPISelected(pkId, lpiData, dataIdx, dataLength)
-            }
+            onLpiSelected={handleLPISelected}
             onLpiDeleted={(pkId) => handleDeleteLPI(pkId)}
             onDataChanged={handleBLPUDataChanged}
             onLogicalStatusChanged={handleLogicalStatusChanged}
