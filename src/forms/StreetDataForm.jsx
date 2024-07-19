@@ -110,6 +110,7 @@
 //    096   08.07.24 Sean Flook       IMANN-596 When selecting HD and OWE records ensure we have the current ESU data saved.
 //    097   18.07.24 Sean Flook       IMANN-449 Do not set the oneWayExemptionEndDate when merging or dividing ESUs.
 //    098   18.07.24 Sean Flook       IMANN-772 Corrected field name.
+//    099   19.07.24 Joel Benford     IMANN-760 Stop trying to copy ENG/GAE lookups after editing a descriptor.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -6245,38 +6246,14 @@ function StreetDataForm({ data, loading }) {
       );
 
       if (secondDescriptor) {
-        const secondLocality = lookupContext.currentLookups.localities.find(
-          (x) => x.locRef === newData.locRef && x.language === "ENG"
-        );
-        const secondTown = lookupContext.currentLookups.towns.find(
-          (x) => x.townRef === newData.townRef && x.language === "ENG"
-        );
-        const secondAdminAuthorities = lookupContext.currentLookups.adminAuthorities.find(
-          (x) => x.administrativeAreaRef === newData.adminAreaRef && x.language === "ENG"
-        );
-        const secondIsland = lookupContext.currentLookups.islands.find(
-          (x) => x.islandRef === newData.islandRef && x.language === "ENG "
-        );
-
         const newSecondDescriptor = {
-          changeType: secondDescriptor.changeType,
-          usrn: secondDescriptor.usrn,
+          ...secondDescriptor,
+          language: secondLanguage,
           streetDescriptor:
             secondDescriptor && secondDescriptor.streetDescriptor
               ? secondDescriptor.streetDescriptor
               : newData.streetDescriptor,
-          locRef: secondLocality ? secondLocality.localityRef : null,
-          locality: secondLocality ? secondLocality.locality : null,
-          townRef: secondTown ? secondTown.townRef : null,
-          town: secondTown ? secondTown.town : null,
-          islandRef: secondIsland ? secondIsland.islandRef : null,
-          island: secondIsland ? secondIsland.island : null,
-          adminAreaRef: secondAdminAuthorities ? secondAdminAuthorities.administrativeAreaRef : null,
-          administrativeArea: secondAdminAuthorities ? secondAdminAuthorities.administrativeArea : null,
-          language: secondLanguage,
           neverExport: newData.neverExport,
-          dualLanguageLink: secondDescriptor.dualLanguageLink,
-          pkId: secondDescriptor.pkId,
         };
 
         newDescriptors = streetData.streetDescriptors.map(
