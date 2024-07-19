@@ -55,6 +55,7 @@
 //    033   04.07.24 Sean Flook       IMANN-221 Further updated messages.
 //    034   04.07.24 Sean Flook       IMANN-221 Further updated messages.
 //    035   18.07.24 Sean Flook       IMANN-772 Corrected field name.
+//    036   19.07.24 Sean Flook       IMANN-812 Removed check 1600021.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1007,12 +1008,6 @@ export function ValidateOneWayExemptionData(data, index, esuIndex, currentLookup
     currentCheck = GetCheck(1600018, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && !data.oneWayExemptionType) {
       oweTypeErrors.push(GetErrorMessage(currentCheck, isScottish));
-    }
-
-    // End date cannot be in the future.
-    currentCheck = GetCheck(1600021, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && data.recordEndDate && isFutureDate(data.recordEndDate)) {
-      recordEndDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     if (showDebugMessages) console.log("[DEBUG] ValidateOneWayExemptionData - Finished checks");
