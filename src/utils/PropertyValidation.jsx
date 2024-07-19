@@ -57,6 +57,8 @@
 //    033   04.07.24 Sean Flook       IMANN-221 Further updated messages.
 //    034   04.07.24 Sean Flook       IMANN-221 Further updated messages.
 //    035   08.07.24 Sean Flook       IMANN-722 Corrected logic for check for duplicate punctuation.
+//    036   19.07.24 Joel Benford     IMANN-808 Handle GP postalAddress and OS postallyAddressable
+//    037   19.07.24 Sean Flook       IMANN-808 Deal with different field names for GP and OS for checks 2400060 & 2400061.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -728,19 +730,20 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
 
     // Enter a postal address flag.
     currentCheck = GetCheck(2400022, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && !data.postalAddress) {
+    if (!isScottish && includeCheck(currentCheck, isScottish) && !data.postalAddress) {
       postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // Postal address is too long.
     currentCheck = GetCheck(2400023, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && data.postalAddress && data.postalAddress.length > 1) {
+    if (!isScottish && includeCheck(currentCheck, isScottish) && data.postalAddress && data.postalAddress.length > 1) {
       postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // Postal address is invalid.
     currentCheck = GetCheck(2400024, currentLookups, methodName, isScottish, showDebugMessages);
     if (
+      !isScottish &&
       includeCheck(currentCheck, isScottish) &&
       data.postalAddress &&
       !PostallyAddressable.find((x) => x.id === data.postalAddress)
@@ -930,31 +933,56 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
 
     // Postal address of 'N' must not have a postcode or post town.
     currentCheck = GetCheck(2400060, currentLookups, methodName, isScottish, showDebugMessages);
-    if (
-      includeCheck(currentCheck, isScottish) &&
-      data.logicalStatus &&
-      data.logicalStatus !== 6 &&
-      data.postalAddress &&
-      data.postalAddress === "N" &&
-      (data.postTownRef || data.postcodeRef)
-    ) {
-      postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+    if (isScottish) {
+      if (
+        includeCheck(currentCheck, isScottish) &&
+        data.logicalStatus &&
+        data.logicalStatus !== 6 &&
+        data.postallyAddressable &&
+        data.postallyAddressable === "N" &&
+        (data.postTownRef || data.postcodeRef)
+      ) {
+        postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+    } else {
+      if (
+        includeCheck(currentCheck, isScottish) &&
+        data.logicalStatus &&
+        data.logicalStatus !== 6 &&
+        data.postalAddress &&
+        data.postalAddress === "N" &&
+        (data.postTownRef || data.postcodeRef)
+      ) {
+        postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
     }
 
     // Postal address of 'Y', 'A' or 'L' must have a postcode and post town.
     currentCheck = GetCheck(2400061, currentLookups, methodName, isScottish, showDebugMessages);
-    if (
-      includeCheck(currentCheck, isScottish) &&
-      data.postalAddress &&
-      ["Y", "A", "L"].includes(data.postalAddress) &&
-      (!data.postTownRef || !data.postcodeRef)
-    ) {
-      postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+    if (isScottish) {
+      if (
+        includeCheck(currentCheck, isScottish) &&
+        data.postallyAddressable &&
+        ["Y", "L"].includes(data.postallyAddressable) &&
+        (!data.postTownRef || !data.postcodeRef)
+      ) {
+        postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+    } else {
+      if (
+        includeCheck(currentCheck, isScottish) &&
+        data.postalAddress &&
+        ["Y", "A", "L"].includes(data.postalAddress) &&
+        (!data.postTownRef || !data.postcodeRef)
+      ) {
+        postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
     }
 
     // Postal address of 'P' must have a postcode and a post town.
     currentCheck = GetCheck(2400062, currentLookups, methodName, isScottish, showDebugMessages);
     if (
+      !isScottish &&
       includeCheck(currentCheck, isScottish) &&
       data.postalAddress &&
       data.postalAddress === "P" &&
@@ -1107,28 +1135,6 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       includeCheck(currentCheck, isScottish) &&
       data.postallyAddressable &&
       !["Y", "L", "N"].includes(data.postallyAddressable)
-    ) {
-      postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
-    }
-
-    // Postally addressable flag of 'N' must not have a Postcode or Post Town.
-    currentCheck = GetCheck(2400091, currentLookups, methodName, isScottish, showDebugMessages);
-    if (
-      includeCheck(currentCheck, isScottish) &&
-      data.postallyAddressable &&
-      data.postallyAddressable === "N" &&
-      (data.postTownRef || data.postcodeRef)
-    ) {
-      postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
-    }
-
-    // Postally addressable flag of 'Y' must have a Postcode and a Post Town.
-    currentCheck = GetCheck(2400092, currentLookups, methodName, isScottish, showDebugMessages);
-    if (
-      includeCheck(currentCheck, isScottish) &&
-      data.postallyAddressable &&
-      data.postallyAddressable === "Y" &&
-      (!data.postTownRef || !data.postcodeRef)
     ) {
       postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -2065,13 +2071,14 @@ export function ValidateMultiEditLogicalStatus(data, currentLookups, isScottish)
 
     // Postal address is too long.
     currentCheck = GetCheck(2400023, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && data.postalAddress && data.postalAddress.length > 1) {
+    if (!isScottish && includeCheck(currentCheck, isScottish) && data.postalAddress && data.postalAddress.length > 1) {
       postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // Postal address is invalid.
     currentCheck = GetCheck(2400024, currentLookups, methodName, isScottish, showDebugMessages);
     if (
+      !isScottish &&
       includeCheck(currentCheck, isScottish) &&
       data.postalAddress &&
       !PostallyAddressable.find((x) => x.id === data.postalAddress)
@@ -2117,31 +2124,56 @@ export function ValidateMultiEditLogicalStatus(data, currentLookups, isScottish)
 
     // Postal address of 'N' must not have a postcode or post town.
     currentCheck = GetCheck(2400060, currentLookups, methodName, isScottish, showDebugMessages);
-    if (
-      includeCheck(currentCheck, isScottish) &&
-      data.logicalStatus &&
-      data.logicalStatus !== 6 &&
-      data.postalAddress &&
-      data.postalAddress === "N" &&
-      (data.postTownRef || data.postcodeRef)
-    ) {
-      postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+    if (isScottish) {
+      if (
+        includeCheck(currentCheck, isScottish) &&
+        data.logicalStatus &&
+        data.logicalStatus !== 6 &&
+        data.postallyAddressable &&
+        data.postallyAddressable === "N" &&
+        (data.postTownRef || data.postcodeRef)
+      ) {
+        postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+    } else {
+      if (
+        includeCheck(currentCheck, isScottish) &&
+        data.logicalStatus &&
+        data.logicalStatus !== 6 &&
+        data.postalAddress &&
+        data.postalAddress === "N" &&
+        (data.postTownRef || data.postcodeRef)
+      ) {
+        postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
     }
 
     // Postal address of 'Y', 'A' or 'L' must have a postcode and post town.
     currentCheck = GetCheck(2400061, currentLookups, methodName, isScottish, showDebugMessages);
-    if (
-      includeCheck(currentCheck, isScottish) &&
-      data.postalAddress &&
-      ["Y", "A", "L"].includes(data.postalAddress) &&
-      (!data.postTownRef || !data.postcodeRef)
-    ) {
-      postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+    if (isScottish) {
+      if (
+        includeCheck(currentCheck, isScottish) &&
+        data.postallyAddressable &&
+        ["Y", "L"].includes(data.postallyAddressable) &&
+        (!data.postTownRef || !data.postcodeRef)
+      ) {
+        postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+    } else {
+      if (
+        includeCheck(currentCheck, isScottish) &&
+        data.postalAddress &&
+        ["Y", "A", "L"].includes(data.postalAddress) &&
+        (!data.postTownRef || !data.postcodeRef)
+      ) {
+        postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
     }
 
     // Postal address of 'P' must have a postcode and a post town.
     currentCheck = GetCheck(2400062, currentLookups, methodName, isScottish, showDebugMessages);
     if (
+      !isScottish &&
       includeCheck(currentCheck, isScottish) &&
       data.postalAddress &&
       data.postalAddress === "P" &&

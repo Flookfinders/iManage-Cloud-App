@@ -42,6 +42,7 @@
 //    025   04.07.24 Sean Flook       IMANN-221 Updated messages.
 //    026   04.07.24 Sean Flook       IMANN-221 Further updated messages.
 //    027   16.07.24 Sean Flook       IMANN-786 Modified checks 8800004 & 8800005 to include all the range fields.
+//    028   19.07.24 Sean Flook       IMANN-808 Deal with different field names for GP and OS for checks 2400060 & 2400061.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1097,7 +1098,6 @@ export function ValidatePropertyDetails(
       // Postal address of 'N' must not have a postcode or post town.
       currentCheck = GetCheck(2400060, currentLookups, methodName, isScottish, showDebugMessages);
       if (
-        !isScottish &&
         includeCheck(currentCheck, isScottish) &&
         lpiData.logicalStatus &&
         lpiData.logicalStatus !== 6 &&
@@ -1111,10 +1111,10 @@ export function ValidatePropertyDetails(
       // Postal address of 'Y', 'A' or 'L' must have a postcode and post town.
       currentCheck = GetCheck(2400061, currentLookups, methodName, isScottish, showDebugMessages);
       if (
-        !isScottish &&
         includeCheck(currentCheck, isScottish) &&
         lpiData.postallyAddressable &&
-        ["Y", "A", "L"].includes(lpiData.postallyAddressable) &&
+        ((isScottish && ["Y", "L"].includes(lpiData.postallyAddressable)) ||
+          (!isScottish && ["Y", "A", "L"].includes(lpiData.postallyAddressable))) &&
         (!postTownRef || !postcodeRef)
       ) {
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
