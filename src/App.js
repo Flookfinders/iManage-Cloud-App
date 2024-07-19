@@ -71,6 +71,7 @@
 //    058   04.07.24 Sean Flook       IMANN-705 Added displayName to contextUser.
 //    059   08.07.24 Sean Flook       IMANN-728 Include the new user rights.
 //    060   17.07.24 Sean Flook       IMANN-596 Modified HandleClearHighlight to set objects to empty arrays rather than null.
+//    061   19.07.24 Sean Flook       IMANN-801 Added polling objects to Offline and Online and changed the polling interval from every 5 seconds to every 60 seconds.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -155,6 +156,9 @@ function App() {
   const currentMapExtent = useRef(null);
 
   const guiVersion = "0.0.1.00";
+
+  const onlinePolling = { enabled: true, url: "https://ipv4.icanhazip.com", interval: 60000, timeout: 5000 };
+  const offlinePolling = { enabled: true, url: "https://ipv4.icanhazip.com", interval: 5000, timeout: 5000 };
 
   const [lookups, setLookups] = useState({
     validationMessages: [],
@@ -3807,7 +3811,7 @@ function App() {
                               <StyledEngineProvider injectFirst>
                                 <ThemeProvider theme={theme}>
                                   <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                    <Online>
+                                    <Online polling={onlinePolling}>
                                       <Fragment>
                                         <div style={{ display: "flex" }}>
                                           <CssBaseline />
@@ -3831,7 +3835,7 @@ function App() {
                                         />
                                       </Fragment>
                                     </Online>
-                                    <Offline>
+                                    <Offline polling={offlinePolling}>
                                       <Box
                                         sx={{
                                           paddingTop: "30px",
