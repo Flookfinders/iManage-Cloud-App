@@ -26,6 +26,7 @@
 //    013   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    014   21.06.24 Sean Flook       IMANN-636 Fixed warnings.
 //    015   27.06.24 Joel Benford     IMANN-685 OWE sequence numbers -> seqNum
+//    016   22.07.24 Sean Flook       IMANN-811 Added record end date.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -44,6 +45,7 @@ import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSDateTimeControl from "../components/ADSDateTimeControl";
+import ADSDateControl from "../components/ADSDateControl";
 import ADSOkCancelControl from "../components/ADSOkCancelControl";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import { useTheme } from "@mui/styles";
@@ -73,6 +75,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
   const [oweStartTime, setOweStartTime] = useState(null);
   const [oweEndTime, setOweEndTime] = useState(null);
   const [periodicity, setPeriodicity] = useState(null);
+  const [recordEndDate, setRecordEndDate] = useState(null);
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
@@ -84,6 +87,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
   const [oweStartTimeError, setOweStartTimeError] = useState(null);
   const [oweEndTimeError, setOweEndTimeError] = useState(null);
   const [periodicityError, setPeriodicityError] = useState(null);
+  const [recordEndDateError, setRecordEndDateError] = useState(null);
 
   /**
    * Method used to update the current sandbox record.
@@ -157,6 +161,16 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
   };
 
   /**
+   * Event to handle when the record end date is changed.
+   *
+   * @param {Date} newValue The new record end date.
+   */
+  const handleRecordEndDateChangeEvent = (newValue) => {
+    setRecordEndDate(newValue);
+    UpdateSandbox("recordEndDate", newValue);
+  };
+
+  /**
    * Event to handle when the home button is clicked.
    */
   const handleHomeClick = () => {
@@ -199,6 +213,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
         setOweStartTime(data.oweData.oneWayExemptionStartTime);
         setOweEndTime(data.oweData.oneWayExemptionEndTime);
         setPeriodicity(data.oweData.oneWayExemptionPeriodicityCode);
+        setRecordEndDate(data.oweData.recordEndDate);
       }
     }
     if (onHomeClick) onHomeClick("discard", data.oweData, null);
@@ -215,7 +230,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
     return {
       changeType: field && field === "changeType" ? newValue : !data.oweData.pkId || data.oweData.pkId < 0 ? "I" : "U",
       oneWayExemptionType: field && field === "oweType" ? newValue : oweType,
-      recordEndDate: data.oweData.recordEndDate,
+      recordEndDate: field && field === "recordEndDate" ? newValue : recordEndDate,
       oneWayExemptionStartDate:
         field && field === "startDate" ? newValue && ConvertDate(newValue) : oweStartDate && ConvertDate(oweStartDate),
       oneWayExemptionEndDate:
@@ -267,6 +282,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
       setOweStartTime(data.oweData.oneWayExemptionStartTime);
       setOweEndTime(data.oweData.oneWayExemptionEndTime);
       setPeriodicity(data.oweData.oneWayExemptionPeriodicityCode);
+      setRecordEndDate(data.oweData.recordEndDate);
     }
   }, [loading, data]);
 
@@ -309,6 +325,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
     setOweStartTimeError(null);
     setOweEndTimeError(null);
     setPeriodicityError(null);
+    setRecordEndDateError(null);
 
     if (errors && errors.length > 0) {
       for (const error of errors) {
@@ -335,6 +352,10 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
 
           case "onewayexemptionperiodicitycode":
             setPeriodicityError(error.errors);
+            break;
+
+          case "recordenddate":
+            setRecordEndDateError(error.errors);
             break;
 
           default:
@@ -451,6 +472,16 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
           errorText={periodicityError}
           onChange={handlePeriodicityChangeEvent}
           helperText="Code to identify the periodicity of the restriction."
+        />
+        <ADSDateControl
+          label="Record end"
+          isEditable={userCanEdit}
+          isFocused={focusedField ? focusedField === "RecordEndDate" : false}
+          loading={loading}
+          value={recordEndDate}
+          helperText="Date when the Record ended."
+          errorText={recordEndDateError}
+          onChange={handleRecordEndDateChangeEvent}
         />
         <ADSOkCancelControl
           okDisabled={!dataChanged}
