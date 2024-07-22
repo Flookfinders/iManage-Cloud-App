@@ -22,6 +22,7 @@
 //    009   12.06.24 Sean Flook       IMANN-515 Use a List to display the errors and display each error as a separate item.
 //    010   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    011   27.06.24 Joel Benford     IMANN-685 OWE sequence numbers -> seqNum
+//    012   22.07.24 Sean Flook       IMANN-766 Replace holding character ¬ with a comma.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1525,7 +1526,7 @@ function ADSErrorList({ onClose }) {
               sx={getIssueStyle}
               underline="hover"
             >
-              {errorText}
+              {errorText.replace("¬", ",")}
             </Link>
           }
         />
