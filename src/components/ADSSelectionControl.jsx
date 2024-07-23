@@ -47,12 +47,13 @@
 //    034   17.07.24 Joshua McCormick IMANN-548 zoomToStreet fix
 //    035   17.07.24 Joshua McCormick IMANN-548 changed FormatStreetData to getStreetSearchData, Removed find debug code in zoomToStreet 
 //    036   18.07.24 Sean Flook       IMANN-761 Remove the Close and Delete menu options for streets.
+//    036   18.07.24 Sean Flook       IMANN-773 Correctly set the parent information when creating property/ies.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import React, { useContext, useState, useEffect, Fragment } from "react";
+import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 
 import MapContext from "../context/mapContext";
@@ -227,8 +228,8 @@ function ADSSelectionControl({
   const [currentUsrn, setCurrentUsrn] = useState(null);
   const [currentUprn, setCurrentUprn] = useState(null);
 
-  const [propertyWizardType, setPropertyWizardType] = useState(null);
-  const [propertyWizardParent, setPropertyWizardParent] = useState(null);
+  const propertyWizardType = useRef(null);
+  const propertyWizardParent = useRef(null);
   const [openPropertyWizard, setOpenPropertyWizard] = useState(false);
 
   const [editLogicalStatusVariant, setEditLogicalStatusVariant] = useState("unknown");
@@ -262,8 +263,9 @@ function ADSSelectionControl({
           propertyContext.resetPropertyErrors();
           propertyContext.onWizardDone(null, false, null, null);
           mapContext.onWizardSetCoordinate(null);
-          setPropertyWizardType("property");
-          setPropertyWizardParent(currentUsrn);
+          propertyWizardType.current = "property";
+          const engDescriptor = result.streetDescriptors.filter((x) => x.language === "ENG");
+          propertyWizardParent.current = { usrn: currentUsrn, address: engDescriptor[0].streetDescriptor };
           setOpenPropertyWizard(true);
         } else {
           if (onError) onError("invalidSingleState");
@@ -282,8 +284,9 @@ function ADSSelectionControl({
           propertyContext.resetPropertyErrors();
           propertyContext.onWizardDone(null, false, null, null);
           mapContext.onWizardSetCoordinate(null);
-          setPropertyWizardType("range");
-          setPropertyWizardParent(currentUsrn);
+          propertyWizardType.current = "range";
+          const engDescriptor = result.streetDescriptors.filter((x) => x.language === "ENG");
+          propertyWizardParent.current = { usrn: currentUsrn, address: engDescriptor[0].streetDescriptor };
           setOpenPropertyWizard(true);
         } else {
           if (onError) onError("invalidRangeState");
@@ -658,20 +661,46 @@ function ADSSelectionControl({
    */
   async function HandleAddChild() {
     if (currentUprn) {
-      setPropertyWizardType("child");
-      setPropertyWizardParent(currentUprn);
-      setOpenPropertyWizard(true);
+      await GetPropertyMapData(Number(currentUprn), userContext).then((result) => {
+        propertyContext.resetPropertyErrors();
+        propertyContext.onWizardDone(null, false, null, null);
+        mapContext.onWizardSetCoordinate(null);
+        propertyWizardType.current = "child";
+        const engLpi = result.lpis.find((x) => x.logicalStatus === result.logicalStatus && x.language === "ENG");
+        propertyWizardParent.current = {
+          address: engLpi.address,
+          easting: result.easting,
+          northing: result.northing,
+          postcode: engLpi.postcode,
+          uprn: currentUprn,
+          usrn: engLpi.usrn,
+        };
+        setOpenPropertyWizard(true);
+      });
     }
   }
 
   /**
    * Event to handle adding a range of child properties.
    */
-  function HandleAddChildren() {
+  async function HandleAddChildren() {
     if (currentUprn) {
-      setPropertyWizardType("rangeChildren");
-      setPropertyWizardParent(currentUprn);
-      setOpenPropertyWizard(true);
+      await GetPropertyMapData(Number(currentUprn), userContext).then((result) => {
+        propertyContext.resetPropertyErrors();
+        propertyContext.onWizardDone(null, false, null, null);
+        mapContext.onWizardSetCoordinate(null);
+        propertyWizardType.current = "rangeChildren";
+        const engLpi = result.lpis.find((x) => x.logicalStatus === result.logicalStatus && x.language === "ENG");
+        propertyWizardParent.current = {
+          address: engLpi.address,
+          easting: result.easting,
+          northing: result.northing,
+          postcode: engLpi.postcode,
+          uprn: currentUprn,
+          usrn: engLpi.usrn,
+        };
+        setOpenPropertyWizard(true);
+      });
     }
   }
 
@@ -1968,8 +1997,8 @@ function ADSSelectionControl({
         </Stack>
       </Box>
       <AddPropertyWizardDialog
-        variant={propertyWizardType}
-        parent={propertyWizardParent}
+        variant={propertyWizardType.current}
+        parent={propertyWizardParent.current}
         isOpen={openPropertyWizard}
         onDone={handlePropertyWizardDone}
         onClose={handlePropertyWizardClose}
