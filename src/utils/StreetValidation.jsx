@@ -57,6 +57,7 @@
 //    035   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    036   19.07.24 Sean Flook       IMANN-812 Removed check 1600021.
 //    037   22.07.24 Sean Flook       IMANN-813 Report check 1700007 on the correct field.
+//    038   23.07.24 Sean Flook       IMANN-816 Fixed check 1600011.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -964,9 +965,10 @@ export function ValidateOneWayExemptionData(data, index, esuIndex, currentLookup
     currentCheck = GetCheck(1600011, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
-      ((data.recordEndDate && !data.recordStartDate) || (data.recordStartDate && !data.recordEndDate))
+      ((data.oneWayExemptionEndDate && !data.oneWayExemptionStartDate) ||
+        (data.oneWayExemptionStartDate && !data.oneWayExemptionEndDate))
     ) {
-      recordEndDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      oweEndDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // Start time and end time must either both be blank or both have a value.

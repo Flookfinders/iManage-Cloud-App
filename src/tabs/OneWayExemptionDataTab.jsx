@@ -27,6 +27,7 @@
 //    014   21.06.24 Sean Flook       IMANN-636 Fixed warnings.
 //    015   27.06.24 Joel Benford     IMANN-685 OWE sequence numbers -> seqNum
 //    016   22.07.24 Sean Flook       IMANN-811 Added record end date.
+//    017   23.07.24 Sean Flook       IMANN-811 Corrected field names.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -117,7 +118,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
    */
   const handleOweStartDateChangeEvent = (newValue) => {
     setOweStartDate(newValue);
-    UpdateSandbox("oweType", newValue);
+    UpdateSandbox("oweStartDate", newValue);
   };
 
   /**
@@ -232,9 +233,11 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
       oneWayExemptionType: field && field === "oweType" ? newValue : oweType,
       recordEndDate: field && field === "recordEndDate" ? newValue : recordEndDate,
       oneWayExemptionStartDate:
-        field && field === "startDate" ? newValue && ConvertDate(newValue) : oweStartDate && ConvertDate(oweStartDate),
+        field && field === "oweStartDate"
+          ? newValue && ConvertDate(newValue)
+          : oweStartDate && ConvertDate(oweStartDate),
       oneWayExemptionEndDate:
-        field && field === "startDate" ? newValue && ConvertDate(newValue) : oweEndDate && ConvertDate(oweEndDate),
+        field && field === "oweEndDate" ? newValue && ConvertDate(newValue) : oweEndDate && ConvertDate(oweEndDate),
       oneWayExemptionStartTime: field && field === "oweStartTime" ? newValue : oweStartTime,
       oneWayExemptionEndTime: field && field === "oweEndTime" ? newValue : oweEndTime,
       oneWayExemptionPeriodicityCode: field && field === "periodicity" ? newValue : periodicity,
