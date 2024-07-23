@@ -61,6 +61,7 @@
 //    047   11.07.24 Sean Flook       IMANN-749 Do not display the add button if user cannot edit.
 //    048   18.07.24 Sean Flook       IMANN-775 When changing the logical status of for Scottish authorities also set the state if new logical status is provisional or historic.
 //    049   19.07.24 Sean Flook       IMANN-802 Added ability for Scottish authorities to add new Gaelic LPIs.
+//    050   23.07.24 Sean Flook       IMANN-403 Only update the map if the coordinates are within the valid range.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -379,8 +380,24 @@ function PropertyDetailsTab({
       if (onDataChanged) onDataChanged(currentData);
     }
 
-    if (["logicalStatus", "classification", "easting", "northing"].includes(fieldName))
-      mapContext.onMapPropertyChange(currentData);
+    if (["logicalStatus", "classification"].includes(fieldName)) mapContext.onMapPropertyChange(currentData);
+    else if (["easting", "northing"].includes(fieldName)) {
+      const minEasting = settingsContext.isScottish ? 1 : 80000;
+      const maxEasting = settingsContext.isScottish ? 660000 : 656100;
+      const minNorthing = settingsContext.isScottish ? 1 : 5000;
+      const maxNorthing = settingsContext.isScottish ? 1300000 : 657700;
+      const tempEasting = fieldName && fieldName === "easting" ? newValue : easting;
+      const tempNorthing = fieldName && fieldName === "northing" ? newValue : northing;
+
+      // Only update the map if the coordinates are within the valid range
+      if (
+        tempEasting >= minEasting &&
+        tempEasting <= maxEasting &&
+        tempNorthing >= minNorthing &&
+        tempNorthing <= maxNorthing
+      )
+        mapContext.onMapPropertyChange(currentData);
+    }
   };
 
   /**
@@ -497,7 +514,7 @@ function PropertyDetailsTab({
    * @param {number|null} newValue The new easting value.
    */
   const handleEastingChangeEvent = (newValue) => {
-    setEasting(newValue);
+    // setEasting(newValue);
     updateCurrentData("easting", newValue);
   };
 
@@ -507,7 +524,7 @@ function PropertyDetailsTab({
    * @param {number|null} newValue The new northing value.
    */
   const handleNorthingChangeEvent = (newValue) => {
-    setNorthing(newValue);
+    // setNorthing(newValue);
     updateCurrentData("northing", newValue);
   };
 
