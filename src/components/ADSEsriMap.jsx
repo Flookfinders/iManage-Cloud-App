@@ -94,6 +94,7 @@
 //    080   10.07.24 Sean Flook       IMANN-742 Only allow properties to be added to a street if the user has permission to do that.
 //    081   17.07.24 Sean Flook       IMANN-596 When selecting objects ensure at least 500 milliseconds have elapsed since the last selection, this is a work around for an ESRI bug.
 //    082   18.07.24 Sean Flook       IMANN-772 Corrected field name.
+//    083   22.07.24 Sean Flook       IMANN-774 Added hack to cater for ESRI double event issue for when selecting ESUs.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1171,6 +1172,8 @@ function ADSEsriMap(startExtent) {
   const lastSelectedEsu = useRef(null);
   const lastSelectedExtent = useRef(null);
   const lastSelectedProperty = useRef(null);
+
+  const doubleEventWait = 500;
 
   const zoomGraphicsLayer = useRef(
     new GraphicsLayer({
@@ -5879,7 +5882,7 @@ function ADSEsriMap(startExtent) {
                   response.results.length &&
                   (!lastSelectedExtent.current ||
                     response.results[0].graphic.attributes.TOID !== lastSelectedExtent.current.toid ||
-                    performance.now() - lastSelectedExtent.current.time > 500)
+                    performance.now() - lastSelectedExtent.current.time > doubleEventWait)
                 ) {
                   lastSelectedExtent.current = {
                     toid: response.results[0].graphic.attributes.TOID,
@@ -6035,7 +6038,7 @@ function ADSEsriMap(startExtent) {
               response.results.length &&
               (!lastSelectedEsu.current ||
                 Number(response.results[0].graphic.attributes.EsuId) !== lastSelectedEsu.current.esuId ||
-                performance.now() - lastSelectedEsu.current.time > 500)
+                performance.now() - lastSelectedEsu.current.time > doubleEventWait)
             ) {
               lastSelectedEsu.current = {
                 esuId: Number(response.results[0].graphic.attributes.EsuId),
@@ -6059,10 +6062,22 @@ function ADSEsriMap(startExtent) {
             } else if (
               response.results.length &&
               streetContext.currentStreet &&
-              Number(response.results[0].graphic.attributes.USRN) === streetContext.currentStreet.usrn
+              response.results[0].graphic.attributes.USRN.toString() === streetContext.currentStreet.usrn.toString()
             ) {
-              streetContext.onEsuSelected(Number(response.results[0].graphic.attributes.EsuId));
-            } else streetContext.onEsuSelected(null);
+              if (
+                !lastSelectedEsu.current ||
+                Number(response.results[0].graphic.attributes.EsuId) !== lastSelectedEsu.current.esuId ||
+                performance.now() - lastSelectedEsu.current.time > doubleEventWait
+              ) {
+                lastSelectedEsu.current = {
+                  esuId: Number(response.results[0].graphic.attributes.EsuId),
+                  time: performance.now(),
+                };
+                streetContext.onEsuSelected(Number(response.results[0].graphic.attributes.EsuId));
+              }
+            } else {
+              streetContext.onEsuSelected(null);
+            }
           });
         }
 
@@ -6074,7 +6089,7 @@ function ADSEsriMap(startExtent) {
                 response.results.length &&
                 (!lastSelectedEsu.current ||
                   Number(response.results[0].graphic.attributes.EsuId) !== lastSelectedEsu.current.esuId ||
-                  performance.now() - lastSelectedEsu.current.time > 500)
+                  performance.now() - lastSelectedEsu.current.time > doubleEventWait)
               ) {
                 lastSelectedEsu.current = {
                   esuId: Number(response.results[0].graphic.attributes.EsuId),
@@ -6106,7 +6121,7 @@ function ADSEsriMap(startExtent) {
                 response.results.length &&
                 (!lastSelectedEsu.current ||
                   Number(response.results[0].graphic.attributes.EsuId) !== lastSelectedEsu.current.esuId ||
-                  performance.now() - lastSelectedEsu.current.time > 500)
+                  performance.now() - lastSelectedEsu.current.time > doubleEventWait)
               ) {
                 lastSelectedEsu.current = {
                   esuId: Number(response.results[0].graphic.attributes.EsuId),
@@ -6414,7 +6429,7 @@ function ADSEsriMap(startExtent) {
           event.state === "start" &&
           (!lastSelectedProperty.current ||
             lastSelectedProperty.current.uprn !== event.graphics[0].attributes.uprn ||
-            performance.now() - lastSelectedProperty.current.time > 500)
+            performance.now() - lastSelectedProperty.current.time > doubleEventWait)
         ) {
           lastSelectedProperty.current = { uprn: event.graphics[0].attributes.uprn, time: performance.now() };
           // Get the list of UPRNs of the selected properties
