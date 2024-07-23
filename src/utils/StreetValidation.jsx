@@ -58,6 +58,7 @@
 //    036   19.07.24 Sean Flook       IMANN-812 Removed check 1600021.
 //    037   22.07.24 Sean Flook       IMANN-813 Report check 1700007 on the correct field.
 //    038   23.07.24 Sean Flook       IMANN-816 Fixed check 1600011.
+//    039   23.07.24 Sean Flook       IMANN-812 Removed check 6600031.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3822,17 +3823,6 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups, author
     currentCheck = GetCheck(6600030, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, false) && data.relevantStartDate && isPriorTo1990(data.relevantStartDate)) {
       relevantStartDateErrors.push(GetErrorMessage(currentCheck, false));
-    }
-
-    // Record end date must be the same as or after the record entry date.
-    currentCheck = GetCheck(6600031, currentLookups, methodName, false, showDebugMessages);
-    if (
-      includeCheck(currentCheck, false) &&
-      data.recordStartDate &&
-      data.recordEndDate &&
-      isEndBeforeStart(data.recordStartDate, data.recordEndDate)
-    ) {
-      recordEndDateErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // Record end date prior to 1990 are not allowed.
