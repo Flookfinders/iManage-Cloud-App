@@ -51,6 +51,7 @@
 //    038   17.07.24 Joshua McCormick IMANN-548 removed GetStreetMapData
 //    039   17.07.24 Sean Flook       IMANN-782 Do not display create property menu items if the street is a type 3 or 4 street.
 //    040   18.07.24 Joshua McCormick IMANN-548 removed debug code
+//    041   24.07.24 Sean Flook       IMANN-830 When changing the type there is no need to update the map.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -311,7 +312,7 @@ function StreetDataTab({
    */
   const handleStreetTypeChangeEvent = (newValue) => {
     setStreetType(newValue);
-    updateCurrentData(newValue, "recordType", true);
+    updateCurrentData(newValue, "recordType", false);
   };
 
   /**
@@ -565,16 +566,19 @@ function StreetDataTab({
   async function zoomToStreet(event, usrn) {
     setAnchorEl(null);
 
-    const highlightStreet = data.streetStartX && data.streetEndX && data.streetStartY && data.streetEndY ? {
-      usrn: usrn,data,
-      minX: data.streetStartX < data.streetEndX ? data.streetStartX : data.streetEndX,
-      minY: data.streetStartY < data.streetEndY ? data.streetStartY : data.streetEndY,
-      maxX: data.streetStartX > data.streetEndX ? data.streetStartX : data.streetEndX,
-      maxY: data.streetStartY > data.streetEndY ? data.streetStartY : data.streetEndY,
-    } : null;
+    const highlightStreet =
+      data.streetStartX && data.streetEndX && data.streetStartY && data.streetEndY
+        ? {
+            usrn: usrn,
+            data,
+            minX: data.streetStartX < data.streetEndX ? data.streetStartX : data.streetEndX,
+            minY: data.streetStartY < data.streetEndY ? data.streetStartY : data.streetEndY,
+            maxX: data.streetStartX > data.streetEndX ? data.streetStartX : data.streetEndX,
+            maxY: data.streetStartY > data.streetEndY ? data.streetStartY : data.streetEndY,
+          }
+        : null;
 
     mapContext.onMapChange(mapContext.currentLayers.extents, highlightStreet, null);
-
   }
 
   /**
@@ -1002,7 +1006,11 @@ function StreetDataTab({
                 <Typography variant="inherit">Add properties</Typography>
               </MenuItem>
             )}
-            <MenuItem dense onClick={(event) => zoomToStreet(event, streetContext.currentStreet.usrn)} sx={menuItemStyle(false)}>
+            <MenuItem
+              dense
+              onClick={(event) => zoomToStreet(event, streetContext.currentStreet.usrn)}
+              sx={menuItemStyle(false)}
+            >
               <Typography variant="inherit">Zoom to this</Typography>
             </MenuItem>
             <MenuItem dense onClick={handleOpenInStreetview} sx={menuItemStyle(false)}>
