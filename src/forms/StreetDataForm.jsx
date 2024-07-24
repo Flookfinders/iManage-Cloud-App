@@ -111,6 +111,7 @@
 //    097   18.07.24 Sean Flook       IMANN-449 Do not set the oneWayExemptionEndDate when merging or dividing ESUs.
 //    098   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    099   19.07.24 Joel Benford     IMANN-760 Stop trying to copy ENG/GAE lookups after editing a descriptor.
+//    100   24.07.24 Sean Flook       IMANN-841 When closing a Scottish street set the ASD state and end date as well.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -7571,9 +7572,70 @@ function StreetDataForm({ data, loading }) {
               successorCrossRefs: streetData.successorCrossRefs,
               streetDescriptors: streetData.streetDescriptors,
               streetNotes: streetData.streetNotes,
-              maintenanceResponsibilities: streetData.recordType < 3 ? streetData.maintenanceResponsibilities : null,
-              reinstatementCategories: streetData.recordType < 3 ? streetData.reinstatementCategories : null,
-              specialDesignations: streetData.recordType < 3 ? streetData.specialDesignations : null,
+              maintenanceResponsibilities:
+                streetData.recordType < 3
+                  ? streetData.maintenanceResponsibilities.map((mr) => {
+                      return {
+                        usrn: streetData.usrn,
+                        wholeRoad: mr.wholeRoad,
+                        specificLocation: mr.specificLocation,
+                        neverExport: streetData.neverExport,
+                        pkId: mr.pkId,
+                        seqNum: mr.seqNum,
+                        changeType: mr.changeType,
+                        custodianCode: mr.custodianCode,
+                        maintainingAuthorityCode: mr.maintainingAuthorityCode,
+                        streetStatus: mr.streetStatus,
+                        state: 2,
+                        startDate: mr.startDate,
+                        endDate: currentDate,
+                        wktGeometry: mr.wktGeometry,
+                      };
+                    })
+                  : null,
+              reinstatementCategories:
+                streetData.recordType < 3
+                  ? streetData.reinstatementCategories.map((rc) => {
+                      return {
+                        usrn: streetData.usrn,
+                        wholeRoad: rc.wholeRoad,
+                        specificLocation: rc.specificLocation,
+                        neverExport: streetData.neverExport,
+                        pkId: rc.pkId,
+                        seqNum: rc.seqNum,
+                        changeType: rc.changeType,
+                        custodianCode: rc.custodianCode,
+                        reinstatementAuthorityCode: rc.reinstatementAuthorityCode,
+                        reinstatementCategoryCode: rc.reinstatementCategoryCode,
+                        state: 2,
+                        startDate: rc.startDate,
+                        endDate: currentDate,
+                        wktGeometry: rc.wktGeometry,
+                      };
+                    })
+                  : null,
+              specialDesignations:
+                streetData.recordType < 3
+                  ? streetData.specialDesignations.map((sd) => {
+                      return {
+                        usrn: streetData.usrn,
+                        wholeRoad: sd.wholeRoad,
+                        specificLocation: sd.specificLocation,
+                        neverExport: streetData.neverExport,
+                        pkId: sd.pkId,
+                        seqNum: sd.seqNum,
+                        changeType: sd.changeType,
+                        custodianCode: sd.custodianCode,
+                        authorityCode: sd.authorityCode,
+                        specialDesignationCode: sd.specialDesignationCode,
+                        wktGeometry: sd.wktGeometry,
+                        description: sd.description,
+                        state: 2,
+                        startDate: sd.startDate,
+                        endDate: currentDate,
+                      };
+                    })
+                  : null,
             };
 
       setStreetData(newStreetData);
