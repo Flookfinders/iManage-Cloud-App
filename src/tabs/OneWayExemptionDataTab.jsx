@@ -28,6 +28,7 @@
 //    015   27.06.24 Joel Benford     IMANN-685 OWE sequence numbers -> seqNum
 //    016   22.07.24 Sean Flook       IMANN-811 Added record end date.
 //    017   23.07.24 Sean Flook       IMANN-811 Corrected field names.
+//    018   25.07.24 Sean Flook       IMANN-834 Use ConvertDate on recordEndDate in GetCurrentData to ensure the correct date is used.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -231,7 +232,10 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
     return {
       changeType: field && field === "changeType" ? newValue : !data.oweData.pkId || data.oweData.pkId < 0 ? "I" : "U",
       oneWayExemptionType: field && field === "oweType" ? newValue : oweType,
-      recordEndDate: field && field === "recordEndDate" ? newValue : recordEndDate,
+      recordEndDate:
+        field && field === "recordEndDate"
+          ? newValue && ConvertDate(newValue)
+          : recordEndDate && ConvertDate(recordEndDate),
       oneWayExemptionStartDate:
         field && field === "oweStartDate"
           ? newValue && ConvertDate(newValue)
