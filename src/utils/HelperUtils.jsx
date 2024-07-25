@@ -59,6 +59,7 @@
 //    046   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    047   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    048   18.07.24 Sean Flook       IMANN-772 Corrected field name.
+//    049   25.07.24 Joshua McCormick IMANN-820 added mapContext.onEditMapObject in ResetContexts
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1523,6 +1524,7 @@ export const GeoPlaceCrossRefSources = ["BG", "CT", "ER", "IA", "ND", "OS", "PA"
  */
 export function ResetContexts(type, mapContext, streetContext, propertyContext, sandboxContext) {
   mapContext.onSetCoordinate(null);
+  mapContext.onEditMapObject(null, null);
 
   switch (type) {
     case "street":
