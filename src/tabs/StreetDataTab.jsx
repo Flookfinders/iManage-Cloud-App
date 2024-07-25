@@ -52,6 +52,7 @@
 //    039   17.07.24 Sean Flook       IMANN-782 Do not display create property menu items if the street is a type 3 or 4 street.
 //    040   18.07.24 Joshua McCormick IMANN-548 removed debug code
 //    041   24.07.24 Sean Flook       IMANN-830 When changing the type there is no need to update the map.
+//    042   25.07.24 Sean Flook       IMANN-849 Convert the correct variables to numbers.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1315,11 +1316,11 @@ function StreetDataTab({
             isNorthFocused={focusedField ? focusedField === "StreetEndY" : false}
             displayButton
             loading={loading}
-            eastErrorText={Number(endEastingError)}
-            northErrorText={Number(endNorthingError)}
+            eastErrorText={endEastingError}
+            northErrorText={endNorthingError}
             helperText="The coordinates for the end of the street."
-            eastValue={eastingEnd}
-            northValue={northingEnd}
+            eastValue={Number(eastingEnd)}
+            northValue={Number(northingEnd)}
             eastLabel="Easting:"
             northLabel="Northing:"
             buttonLabel="Select end"
