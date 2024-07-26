@@ -59,7 +59,8 @@
 //    037   22.07.24 Sean Flook       IMANN-813 Report check 1700007 on the correct field.
 //    038   23.07.24 Sean Flook       IMANN-816 Fixed check 1600011.
 //    039   23.07.24 Sean Flook       IMANN-812 Removed check 6600031.
-//    039   26.07.24 Sean Flook       IMANN-854 Handle 0 in check 5200013.
+//    040   26.07.24 Sean Flook       IMANN-854 Handle 0 in check 5200013.
+//    041   26.07.24 Sean Flook       IMANN-860 Report check 3000012 on the correct field.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1256,7 +1257,7 @@ export function ValidateStreetSuccessorCrossRefData(data, index, currentLookups)
     // Enter a predecessor.
     currentCheck = GetCheck(3000012, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, true) && !data.predecessor) {
-      endDateErrors.push(GetErrorMessage(currentCheck, true));
+      predecessorErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     if (showDebugMessages) console.log("[DEBUG] ValidateStreetSuccessorCrossRefData - Finished checks");

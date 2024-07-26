@@ -61,6 +61,7 @@
 //    037   19.07.24 Sean Flook       IMANN-808 Deal with different field names for GP and OS for checks 2400060 & 2400061.
 //    038   26.07.24 Sean Flook       IMANN-855 Modified checks 2400077 & 2400078.
 //    039   28.07.24 Sean Flook       IMANN-855 Removed check 2400106 as cannot be done in the GUI.
+//    040   26.07.24 Sean Flook       IMANN-860 Report check 3000012 on the correct field.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1895,7 +1896,7 @@ export function ValidateSuccessorCrossRefData(data, index, currentLookups) {
     // Enter a predecessor.
     currentCheck = GetCheck(3000012, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, true) && !data.predecessor) {
-      endDateErrors.push(GetErrorMessage(currentCheck, true));
+      predecessorErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     if (showDebugMessages) console.log("[DEBUG] ValidateSuccessorCrossRefData - Finished checks");
