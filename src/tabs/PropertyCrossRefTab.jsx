@@ -31,6 +31,7 @@
 //    018   04.06.24 Joel Benford     IMANN-505 Fix enabling OK button
 //    019   18.06.24 Joshua McCormick IMANN-598 Cross ref max set to 20 if scottish, else default 50
 //    020   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    021   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -207,7 +208,7 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onHomeClick,
     setOpenDeleteConfirmation(false);
     const id = data && data.id ? data.id : -1;
 
-    if (deleteConfirmed && id && id > 0) {
+    if (deleteConfirmed && id) {
       onDelete(id);
     }
   };

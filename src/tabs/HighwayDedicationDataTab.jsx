@@ -25,6 +25,7 @@
 //    012   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
 //    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    014   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    015   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -476,7 +477,7 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
     setOpenDeleteConfirmation(false);
     const pkId = data && data.pkId ? data.pkId : -1;
 
-    if (deleteConfirmed && pkId && pkId > 0) {
+    if (deleteConfirmed && pkId) {
       const currentData = GetCurrentData("changeType", "D");
       if (onHomeClick) onHomeClick("save", null, currentData);
       if (onDelete) onDelete(data.hdData.esuId, pkId);

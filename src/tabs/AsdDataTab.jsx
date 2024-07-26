@@ -36,6 +36,7 @@
 //    023   14.05.24 Joshua McCormick IMAN-364  noWrap & padding to prevent toolbar content overlapping
 //    024   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    025   18.07.24 Sean Flook       IMANN-772 Corrected field name.
+//    026   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -494,7 +495,7 @@ function AsdDataTab({
   const handleCloseDeleteConfirmation = (deleteConfirmed) => {
     setOpenDeleteConfirmation(false);
 
-    if (deleteConfirmed && deletePkId.current && deletePkId.current > 0 && deleteVariant.current) {
+    if (deleteConfirmed && deletePkId.current && deleteVariant.current) {
       switch (deleteVariant.current) {
         case "51":
           if (onMaintenanceResponsibilityDeleted) onMaintenanceResponsibilityDeleted(deletePkId.current);

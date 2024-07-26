@@ -39,6 +39,7 @@
 //    026   14.05.24 Joshua McCormick IMANN-386 Toolbar styling for responsiveness
 //    027   17.05.24 Sean Flook       IMANN-458 Pass isActive to the GetTabIconStyle method.
 //    028   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    029   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -607,7 +608,7 @@ function EsuDataTab({
     setOpenDeleteConfirmation(false);
     const pkId = data && data.pkId ? data.pkId : -1;
 
-    if (deleteConfirmed && pkId && pkId > 0) {
+    if (deleteConfirmed && pkId) {
       handleEndDateChangeEvent(GetCurrentDate(false));
       const currentData = GetCurrentData("changeType", "D");
       if (onHomeClick) onHomeClick("save", null, currentData);

@@ -53,6 +53,7 @@
 //    040   18.07.24 Joshua McCormick IMANN-548 removed debug code
 //    041   24.07.24 Sean Flook       IMANN-830 When changing the type there is no need to update the map.
 //    042   25.07.24 Sean Flook       IMANN-849 Convert the correct variables to numbers.
+//    043   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -699,7 +700,7 @@ function StreetDataTab({
     setOpenDeleteConfirmation(false);
     const pkId = data && data.pkId ? data.pkId : -1;
 
-    if (deleteConfirmed && pkId && pkId > 0 && onDelete) {
+    if (deleteConfirmed && pkId && onDelete) {
       onDelete(pkId);
     }
   };

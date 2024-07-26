@@ -29,6 +29,7 @@
 //    016   17.05.24 Joshua McCormick IMANN-364 Fixed Toolbar delete action button placement and alignment
 //    017   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    018   08.07.24 Sean Flook       IMANN-718 Use the correct field name.
+//    019   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -198,7 +199,7 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onHome
     setOpenDeleteConfirmation(false);
     const id = data && data.id ? data.id : -1;
 
-    if (deleteConfirmed && id && id > 0) {
+    if (deleteConfirmed && id) {
       const currentData = GetCurrentData("changeType", "D");
       if (onHomeClick) onHomeClick("save", null, currentData);
       if (onDelete) onDelete(id);

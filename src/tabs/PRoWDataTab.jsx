@@ -31,6 +31,7 @@
 //    018   17.04.24 Joshua McCormick IMANN-277 Added dataTabToolBar styling for PRoW spacing
 //    019   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    020   09.07.24 Joshua McCormick IMANN-594 Added displayCharactersLeft to PRoW source
+//    021   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -598,7 +599,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
     setOpenDeleteConfirmation(false);
     const pkId = data && data.pkId ? data.pkId : -1;
 
-    if (deleteConfirmed && pkId && pkId > 0) {
+    if (deleteConfirmed && pkId) {
       const currentData = GetCurrentData("changeType", "D");
       if (onHomeClick) onHomeClick("save", null, currentData);
       if (onDelete) onDelete(pkId);

@@ -27,6 +27,7 @@
 //    013   14.05.24 Joshua McCormick IMANN-386 Moved toolbar errors inside toolbar stack
 //    014   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    015   04.07.24 Sean Flook                 Set the characterSet for the organisation.
+//    016   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -192,7 +193,7 @@ function PropertyOrganisationTab({ data, errors, loading, focusedField, onHomeCl
     setOpenDeleteConfirmation(false);
     const id = data && data.id ? data.id : -1;
 
-    if (deleteConfirmed && id && id > 0) {
+    if (deleteConfirmed && id) {
       const currentData = GetCurrentData("changeType", "D");
       if (onHomeClick) onHomeClick("save", null, currentData);
       if (onDelete) onDelete(id);

@@ -25,6 +25,7 @@
 //    012   14.05.24 Joshua McCormick IMAN-364  Toolbar styling to prevent toolbar content overlapping
 //    013   14.05.24 Joshua McCormick IMANN-364 Removed unnecessary imports
 //    014   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    015   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -206,7 +207,7 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onHomeClic
     setOpenDeleteConfirmation(false);
     const id = data && data.id ? data.id : -1;
 
-    if (deleteConfirmed && id && id > 0) {
+    if (deleteConfirmed && id) {
       const currentData = GetCurrentData("changeType", "D");
       if (onHomeClick) onHomeClick("save", null, currentData);
       if (onDelete) onDelete(id);

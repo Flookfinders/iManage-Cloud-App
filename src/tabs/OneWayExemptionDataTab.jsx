@@ -29,6 +29,7 @@
 //    016   22.07.24 Sean Flook       IMANN-811 Added record end date.
 //    017   23.07.24 Sean Flook       IMANN-811 Corrected field names.
 //    018   25.07.24 Sean Flook       IMANN-834 Use ConvertDate on recordEndDate in GetCurrentData to ensure the correct date is used.
+//    019   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -274,7 +275,7 @@ function OneWayExemptionDataTab({ data, errors, loading, focusedField, onHomeCli
     setOpenDeleteConfirmation(false);
     const pkId = data && data.pkId ? data.pkId : -1;
 
-    if (deleteConfirmed && pkId && pkId > 0) {
+    if (deleteConfirmed && pkId) {
       const currentData = GetCurrentData("changeType", "D");
       if (onHomeClick) onHomeClick("save", null, currentData);
       if (onDelete) onDelete(data.oweData.esuId, pkId);

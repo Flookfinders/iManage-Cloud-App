@@ -36,6 +36,7 @@
 //    023   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    024   02.07.24 Joel Benford     IMANN-669 .specialDesig -> .specialDesignationCode
 //    025   18.07.24 Sean Flook       IMANN-772 Corrected field name.
+//    026   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -357,7 +358,7 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
     setOpenDeleteConfirmation(false);
     const pkId = data && data.pkId ? data.pkId : -1;
 
-    if (deleteConfirmed && pkId && pkId > 0) {
+    if (deleteConfirmed && pkId) {
       const currentData = GetCurrentData("changeType", "D");
       if (onHomeClick) onHomeClick("save", null, currentData);
       if (onDelete) onDelete(pkId);

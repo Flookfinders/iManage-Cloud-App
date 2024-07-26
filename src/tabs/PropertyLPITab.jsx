@@ -48,6 +48,7 @@
 //    035   19.06.24 Joel Benford     IMANN-579 Show characters remaining on Level
 //    036   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    037   18.07.24 Sean Flook       IMANN-678 After adding a new lookup call UpdateSandbox.
+//    038   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -684,7 +685,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
     setOpenDeleteConfirmation(false);
     const pkId = data && data.pkId ? data.pkId : -1;
 
-    if (deleteConfirmed && pkId && pkId > 0) {
+    if (deleteConfirmed && pkId) {
       const currentData = GetCurrentData("changeType", "D");
       if (onHomeClick) onHomeClick("save", null, currentData);
       if (onDelete) onDelete(pkId);

@@ -32,6 +32,7 @@
 //    019   09.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
 //    020   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title no wrapping with width restrictions
 //    021   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    022   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -238,7 +239,7 @@ function PropertyBLPUProvenanceTab({ data, errors, loading, focusedField, onData
     setOpenDeleteConfirmation(false);
     const id = data && data.id ? data.id : -1;
 
-    if (deleteConfirmed && id && id > 0) {
+    if (deleteConfirmed && id) {
       const currentData = GetCurrentData("changeType", "D");
       if (onHomeClick) onHomeClick("save", null, currentData);
       if (onDelete) onDelete(id);
