@@ -43,6 +43,7 @@
 //    026   04.07.24 Sean Flook       IMANN-221 Further updated messages.
 //    027   16.07.24 Sean Flook       IMANN-786 Modified checks 8800004 & 8800005 to include all the range fields.
 //    028   19.07.24 Sean Flook       IMANN-808 Deal with different field names for GP and OS for checks 2400060 & 2400061.
+//    029   26.07.24 Sean Flook       IMANN-855 Modified checks 2400077 & 2400078.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -55,7 +56,6 @@ import BLPULogicalStatus from "../data/BLPULogicalStatus";
 import BLPUState from "../data/BLPUState";
 import RepresentativePointCode from "../data/RepresentativePointCode";
 import BLPUClassification from "../data/BLPUClassification";
-// import OSGClassification from "../data/OSGClassification";
 import BLPUProvenance from "../data/BLPUProvenance";
 import PostallyAddressable from "../data/PostallyAddressable";
 import OfficialAddress from "../data/OfficialAddress";
@@ -194,7 +194,7 @@ export function ValidateAddressDetails(
               includeCheck(currentCheck, isScottish) &&
               data.paoStartNumber &&
               data.paoEndNumber &&
-              Number(data.paoStartNumber) > Number(data.paoEndNumber)
+              Number(data.paoStartNumber) >= Number(data.paoEndNumber)
             )
               paoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
@@ -245,7 +245,7 @@ export function ValidateAddressDetails(
               includeCheck(currentCheck, isScottish) &&
               data.saoStartNumber &&
               data.saoEndNumber &&
-              Number(data.saoStartNumber) > Number(data.saoEndNumber)
+              Number(data.saoStartNumber) >= Number(data.saoEndNumber)
             )
               saoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
 
@@ -301,7 +301,7 @@ export function ValidateAddressDetails(
               includeCheck(currentCheck, isScottish) &&
               data.paoStartNumber &&
               data.paoEndNumber &&
-              Number(data.paoStartNumber) > Number(data.paoEndNumber)
+              Number(data.paoStartNumber) >= Number(data.paoEndNumber)
             )
               paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
 
@@ -567,7 +567,7 @@ export function ValidateAddressDetails(
             includeCheck(currentCheck, isScottish) &&
             data.paoStartNumber &&
             data.paoEndNumber &&
-            Number(data.paoStartNumber) > Number(data.paoEndNumber)
+            Number(data.paoStartNumber) >= Number(data.paoEndNumber)
           )
             paoDetailsErrors.push(GetErrorMessage(currentCheck, isScottish));
         }

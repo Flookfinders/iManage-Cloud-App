@@ -59,6 +59,7 @@
 //    035   08.07.24 Sean Flook       IMANN-722 Corrected logic for check for duplicate punctuation.
 //    036   19.07.24 Joel Benford     IMANN-808 Handle GP postalAddress and OS postallyAddressable
 //    037   19.07.24 Sean Flook       IMANN-808 Deal with different field names for GP and OS for checks 2400060 & 2400061.
+//    038   26.07.24 Sean Flook       IMANN-855 Modified checks 2400077 & 2400078.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1037,7 +1038,7 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       includeCheck(currentCheck, isScottish) &&
       data.saoStartNumber &&
       data.saoEndNumber &&
-      Number(data.saoStartNumber) > Number(data.saoEndNumber)
+      Number(data.saoStartNumber) >= Number(data.saoEndNumber)
     ) {
       saoEndNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -1048,7 +1049,7 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       includeCheck(currentCheck, isScottish) &&
       data.paoStartNumber &&
       data.paoEndNumber &&
-      Number(data.paoStartNumber) > Number(data.paoEndNumber)
+      Number(data.paoStartNumber) >= Number(data.paoEndNumber)
     ) {
       paoEndNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
