@@ -27,6 +27,7 @@
 //    018   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    019   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    020   21.06.24 Sean Flook       IMANN-636 Pass through hasASD to GetNewStreet.
+//    021   26.07.24 Sean Flook       IMANN-850 Store the apiUrl so that on refresh we are still using the correct URL.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -89,17 +90,19 @@ function StreetPage() {
   useEffect(() => {
     if (reloadContexts) {
       setReloadContexts(false);
-      propertyContext.onReload();
-      sandboxContext.onReload();
-      mapContext.onReload();
+      userContext.onReload();
       settingsContext.onReload();
-      streetContext.onReload();
       lookupContext.onReload();
       searchContext.onReload();
       informationContext.onReload();
+      propertyContext.onReload();
+      streetContext.onReload();
+      mapContext.onReload();
+      sandboxContext.onReload();
     }
   }, [
     reloadContexts,
+    userContext,
     propertyContext,
     sandboxContext,
     mapContext,
@@ -355,11 +358,16 @@ function StreetPage() {
     };
 
     if (!apiUrl) {
-      const streetUrl = GetStreetByUSRNUrl(
-        userContext.currentUser.token,
-        !settingsContext.isScottish && userContext.currentUser && userContext.currentUser.hasASD
-      );
-      setApiUrl(streetUrl);
+      if (sessionStorage.getItem("StreetPage_ApiUrl") === null) {
+        const streetUrl = GetStreetByUSRNUrl(
+          userContext.currentUser.token,
+          !settingsContext.isScottish && userContext.currentUser && userContext.currentUser.hasASD
+        );
+        setApiUrl(streetUrl);
+        sessionStorage.setItem("StreetPage_ApiUrl", JSON.stringify(streetUrl));
+      } else {
+        setApiUrl(JSON.parse(sessionStorage.getItem("StreetPage_ApiUrl")));
+      }
     }
 
     if (location.pathname.includes(StreetRoute)) {
