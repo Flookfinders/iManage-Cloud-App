@@ -60,6 +60,7 @@
 //    036   19.07.24 Joel Benford     IMANN-808 Handle GP postalAddress and OS postallyAddressable
 //    037   19.07.24 Sean Flook       IMANN-808 Deal with different field names for GP and OS for checks 2400060 & 2400061.
 //    038   26.07.24 Sean Flook       IMANN-855 Modified checks 2400077 & 2400078.
+//    039   28.07.24 Sean Flook       IMANN-855 Removed check 2400106 as cannot be done in the GUI.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1204,26 +1205,6 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
     }
 
     if (includeCheck(currentCheck, true) && data.saoText && data.saoText.includes("  ")) {
-      saoTextErrors.push(GetErrorMessage(currentCheck, true));
-    }
-
-    // Organisation name is duplicated in pao or sao text.
-    currentCheck = GetCheck(2400106, currentLookups, methodName, true, showDebugMessages);
-    if (
-      includeCheck(currentCheck, true) &&
-      data.paoText &&
-      data.organisation &&
-      data.paoText.includes(data.organisation)
-    ) {
-      paoTextErrors.push(GetErrorMessage(currentCheck, true));
-    }
-
-    if (
-      includeCheck(currentCheck, true) &&
-      data.saoText &&
-      data.organisation &&
-      data.saoText.includes(data.organisation)
-    ) {
       saoTextErrors.push(GetErrorMessage(currentCheck, true));
     }
 
