@@ -59,6 +59,7 @@
 //    037   22.07.24 Sean Flook       IMANN-813 Report check 1700007 on the correct field.
 //    038   23.07.24 Sean Flook       IMANN-816 Fixed check 1600011.
 //    039   23.07.24 Sean Flook       IMANN-812 Removed check 6600031.
+//    039   26.07.24 Sean Flook       IMANN-854 Handle 0 in check 5200013.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1600,7 +1601,7 @@ export function ValidateReinstatementCategoryData(data, index, currentLookups) {
 
     // Enter a reinstatement category.
     currentCheck = GetCheck(5200013, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && !data.reinstatementCategoryCode) {
+    if (includeCheck(currentCheck, true) && !data.reinstatementCategoryCode && data.reinstatementCategoryCode !== 0) {
       reinstatementCategoryErrors.push(GetErrorMessage(currentCheck, true));
     }
 
