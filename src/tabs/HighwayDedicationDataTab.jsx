@@ -27,6 +27,7 @@
 //    014   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    015   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //    016   06.08.24 Sean Flook       IMANN-893 Check we have a source ESU before getting the highway dedication record.
+//    017   06.08.24 Sean Flook       IMANN-905 When determining if the record has changed and we do not have it in the sourceStreet use the currentStreet.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -543,6 +544,14 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
                 .highwayDedications.find(
                   (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.pkId
                 )
+            : sandboxContext.currentSandbox.currentStreet.esus.find(
+                (esu) => esu.esuId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.esuId
+              )
+            ? sandboxContext.currentSandbox.currentStreet.esus
+                .find((esu) => esu.esuId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.esuId)
+                .highwayDedications.find(
+                  (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.pkId
+                )
             : null
           : null;
 
@@ -558,6 +567,7 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
     }
   }, [
     sandboxContext.currentSandbox.sourceStreet,
+    sandboxContext.currentSandbox.currentStreet,
     sandboxContext.currentSandbox.currentStreetRecords.highwayDedication,
   ]);
 
