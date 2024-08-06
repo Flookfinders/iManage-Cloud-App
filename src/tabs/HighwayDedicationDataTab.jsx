@@ -26,6 +26,7 @@
 //    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    014   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    015   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
+//    016   06.08.24 Sean Flook       IMANN-893 Check we have a source ESU before getting the highway dedication record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -534,11 +535,15 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
       const sourceHighwayDedication =
         sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.pkId > 0 &&
         sandboxContext.currentSandbox.sourceStreet
-          ? sandboxContext.currentSandbox.sourceStreet.esus
-              .find((esu) => esu.esuId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.esuId)
-              .highwayDedications.find(
-                (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.pkId
-              )
+          ? sandboxContext.currentSandbox.sourceStreet.esus.find(
+              (esu) => esu.esuId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.esuId
+            )
+            ? sandboxContext.currentSandbox.sourceStreet.esus
+                .find((esu) => esu.esuId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.esuId)
+                .highwayDedications.find(
+                  (x) => x.pkId === sandboxContext.currentSandbox.currentStreetRecords.highwayDedication.pkId
+                )
+            : null
           : null;
 
       if (sourceHighwayDedication) {
