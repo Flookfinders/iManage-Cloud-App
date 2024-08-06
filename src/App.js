@@ -73,6 +73,7 @@
 //    060   17.07.24 Sean Flook       IMANN-596 Modified HandleClearHighlight to set objects to empty arrays rather than null.
 //    061   19.07.24 Sean Flook       IMANN-801 Added polling objects to Offline and Online and changed the polling interval from every 5 seconds to every 60 seconds.
 //    062   23.07.24 Sean Flook       IMANN-801 Reduced the polling interval back to every 5 seconds.
+//    063   06.08.24 Sean Flook       IMANN-903 Use a reference to store the loaded SHP files.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -459,6 +460,7 @@ function App() {
   const [wizardPoint, setWizardPoint] = useState(null);
   const [selectingProperties, setSelectingProperties] = useState(false);
   const [loadedShpFiles, setLoadedShpFiles] = useState([]);
+  const currentShpFiles = useRef([]);
   const [layerVisibility, setLayerVisibility] = useState({
     backgroundStreets: true,
     unassignedEsus: true,
@@ -3436,6 +3438,7 @@ function App() {
         );
       }
       setLoadedShpFiles(newLoadedShpFiles);
+      currentShpFiles.current = newLoadedShpFiles;
     }
   }
 
@@ -3446,8 +3449,9 @@ function App() {
    */
   function HandleUnloadShpFile(id) {
     if (id) {
-      const newLoadedShpFiles = loadedShpFiles.filter((x) => x.id !== id);
+      const newLoadedShpFiles = currentShpFiles.current.filter((x) => x.id !== id);
       setLoadedShpFiles(newLoadedShpFiles);
+      currentShpFiles.current = newLoadedShpFiles;
     }
   }
 
