@@ -61,6 +61,7 @@
 //    039   23.07.24 Sean Flook       IMANN-812 Removed check 6600031.
 //    040   26.07.24 Sean Flook       IMANN-854 Handle 0 in check 5200013.
 //    041   26.07.24 Sean Flook       IMANN-860 Report check 3000012 on the correct field.
+//    042   06.08.24 Sean Flook       IMANN-876 Removed check 6600018 as not required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3789,12 +3790,6 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups, author
     currentCheck = GetCheck(6600017, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, false) && (data.prowLength < 0 || data.prowLength > 99999)) {
       prowLengthErrors.push(GetErrorMessage(currentCheck, false));
-    }
-
-    // Enter a geometry type.
-    currentCheck = GetCheck(6600018, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, false) && !data.defMapGeometryType) {
-      defMapGeometryTypeErrors.push(GetErrorMessage(currentCheck, false));
     }
 
     // Enter a length.
