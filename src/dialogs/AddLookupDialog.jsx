@@ -24,6 +24,7 @@
 //    011   19.04.24 Sean Flook       IMANN-355 Use a dropdown list for selecting the authority.
 //    012   26.04.24 Sean Flook       IMANN-413 Removed Gaelic option.
 //    013   16.06.24 Joel Benford     IMANN-560 Make duplicate checks case insensitive
+//    014   06.08.24 Sean Flook       IMANN-875 Force cross reference source code to uppercase.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -559,7 +560,7 @@ function AddLookupDialog({ variant, isOpen, errorEng, errorAltLanguage, onDone, 
    * @param {object} event The event object.
    */
   const onCrossRefSourceCodeChange = (event) => {
-    setCrossRefSourceCode(event.target.value);
+    setCrossRefSourceCode(event.target.value.toUpperCase());
   };
 
   /**
