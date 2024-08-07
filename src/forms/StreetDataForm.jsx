@@ -113,6 +113,7 @@
 //    099   19.07.24 Joel Benford     IMANN-760 Stop trying to copy ENG/GAE lookups after editing a descriptor.
 //    100   24.07.24 Sean Flook       IMANN-841 When closing a Scottish street set the ASD state and end date as well.
 //    101   07.08.24 Sean Flook       IMANN-876 Recalculate the length of the PRoW when drawing a new one.
+//    102   07.08.24 Sean Flook       IMANN-876 Only return to 4 decimal places.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -8244,7 +8245,7 @@ function StreetDataForm({ data, loading }) {
 
       const prowLength = geometryEngine.planarLength(prowLine, "meters");
 
-      return prowLength ? prowLength : originalLength;
+      return prowLength ? prowLength.toFixed(4) : originalLength;
     };
 
     // console.log("[SF] StreetDataForm", { streetData: streetData });
