@@ -114,6 +114,7 @@
 //    100   24.07.24 Sean Flook       IMANN-841 When closing a Scottish street set the ASD state and end date as well.
 //    101   07.08.24 Sean Flook       IMANN-876 Recalculate the length of the PRoW when drawing a new one.
 //    102   07.08.24 Sean Flook       IMANN-876 Only return to 4 decimal places.
+//    103   07.08.24 Sean Flook       IMANN-909 Removed handling of successor records in the handleTabChange event.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -672,40 +673,12 @@ function StreetDataForm({ data, loading }) {
         }
         break;
 
-      case 2: // Successors / ASD
-        if (settingsContext.isScottish) {
-          if (successorCrossRefFormData) {
-            oldTab = "successor";
-            setSuccessorCrossRefFormData({
-              id: successorCrossRefFormData.id,
-              successorCrossRefData: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef
-                ? {
-                    id: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.pkId,
-                    changeType: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.changeType,
-                    succKey: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.succKey,
-                    successor: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.successor,
-                    successorType: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.successorType,
-                    predecessor: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.predecessor,
-                    startDate: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.startDate,
-                    endDate: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.endDate,
-                    entryDate: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.entryDate,
-                    lastUpdateDate: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.lastUpdateDate,
-                    neverExport: sandboxContext.currentSandbox.currentStreetRecords.successorCrossRef.neverExport,
-                  }
-                : successorCrossRefFormData.successorCrossRefData,
-              index: successorCrossRefFormData.index,
-              totalRecords: successorCrossRefFormData.totalRecords,
-            });
-          }
-        } else {
-          if (displayAsdTab) setAsdFormData();
-        }
+      case 2: // ASD
+        if (displayAsdTab) setAsdFormData();
         break;
 
-      case 3: // ASD / Note
-        if (settingsContext.isScottish) {
-          if (displayAsdTab) setAsdFormData();
-        } else setNotesForm();
+      case 3: // Note
+        setNotesForm();
         break;
 
       case 4: // Note
@@ -752,12 +725,7 @@ function StreetDataForm({ data, loading }) {
           break;
 
         case 2:
-          if (settingsContext.isScottish) {
-            if (successorCrossRefFormData)
-              streetContext.onRecordChange(30, successorCrossRefFormData.pkId, successorCrossRefFormData.index, null);
-            else streetContext.onRecordChange(13, null, null, null);
-            if (streetData) mapContext.onHighlightStreetProperty([streetData.usrn], null);
-          } else if (displayAsdTab) {
+          if (displayAsdTab) {
             if (maintenanceResponsibilityFormData) {
               streetContext.onRecordChange(
                 51,
@@ -809,36 +777,7 @@ function StreetDataForm({ data, loading }) {
           break;
 
         case 3:
-          if (settingsContext.isScottish && displayAsdTab) {
-            if (maintenanceResponsibilityFormData) {
-              streetContext.onRecordChange(
-                51,
-                maintenanceResponsibilityFormData.pkId,
-                maintenanceResponsibilityFormData.index,
-                null
-              );
-              if (!maintenanceResponsibilityFormData.maintenanceResponsibilityData.wholeRoad)
-                mapContext.onEditMapObject(51, maintenanceResponsibilityFormData.maintenanceResponsibilityData.pkId);
-            } else if (reinstatementCategoryFormData) {
-              streetContext.onRecordChange(
-                52,
-                reinstatementCategoryFormData.pkId,
-                reinstatementCategoryFormData.index,
-                null
-              );
-              if (!reinstatementCategoryFormData.reinstatementCategoryData.wholeRoad)
-                mapContext.onEditMapObject(52, reinstatementCategoryFormData.reinstatementCategoryData.pkId);
-            } else if (osSpecialDesignationFormData) {
-              streetContext.onRecordChange(
-                53,
-                osSpecialDesignationFormData.pkId,
-                osSpecialDesignationFormData.index,
-                null
-              );
-              if (!osSpecialDesignationFormData.osSpecialDesignationData.wholeRoad)
-                mapContext.onEditMapObject(53, osSpecialDesignationFormData.osSpecialDesignationData.pkId);
-            } else streetContext.onRecordChange(50, null, null, null);
-          } else if (settingsContext.isScottish && streetData && streetData.recordType > 2) {
+          if (settingsContext.isScottish && streetData && streetData.recordType > 2) {
             // Related tab
             mapContext.onHighlightStreetProperty([streetData.usrn], null);
           } else {
