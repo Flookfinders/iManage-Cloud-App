@@ -112,6 +112,7 @@
 //    098   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    099   19.07.24 Joel Benford     IMANN-760 Stop trying to copy ENG/GAE lookups after editing a descriptor.
 //    100   24.07.24 Sean Flook       IMANN-841 When closing a Scottish street set the ASD state and end date as well.
+//    101   07.08.24 Sean Flook       IMANN-876 Recalculate the length of the PRoW when drawing a new one.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -8234,6 +8235,18 @@ function StreetDataForm({ data, loading }) {
     let endX = 0;
     let endY = 0;
 
+    const getUpdatedProwLength = (wktGeometry, originalLength) => {
+      const prowLine = new Polyline({
+        type: "polyline",
+        paths: wktGeometry && wktGeometry !== "" ? GetWktCoordinates(wktGeometry) : undefined,
+        spatialReference: { wkid: 27700 },
+      });
+
+      const prowLength = geometryEngine.planarLength(prowLine, "meters");
+
+      return prowLength ? prowLength : originalLength;
+    };
+
     // console.log("[SF] StreetDataForm", { streetData: streetData });
 
     if (mapContext.currentLineGeometry) {
@@ -8964,7 +8977,7 @@ function StreetDataForm({ data, loading }) {
               prowUsrn: currentAsd66.prowUsrn,
               defMapGeometryType: currentAsd66.defMapGeometryType,
               defMapGeometryCount: currentAsd66.defMapGeometryCount,
-              prowLength: currentAsd66.prowLength,
+              prowLength: getUpdatedProwLength(mapContext.currentLineGeometry.wktGeometry, currentAsd66.prowLength),
               prowRights: currentAsd66.prowRights,
               pedAccess: currentAsd66.pedAccess,
               equAccess: currentAsd66.equAccess,
