@@ -20,6 +20,7 @@
 //    007   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    008   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
 //    009   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    010   07.08.24 Sean Flook       IMANN-907 Reload the lookups context as well.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -28,6 +29,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import SettingsContext from "../context/settingsContext";
 import UserContext from "../context/userContext";
+import LookupContext from "../context/lookupContext";
 
 import { Grid, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
@@ -45,6 +47,7 @@ import { TreeItemStyle, dataFormStyle } from "../utils/ADSStyles";
 function SettingsPage() {
   const settingsContext = useContext(SettingsContext);
   const userContext = useContext(UserContext);
+  const lookupContext = useContext(LookupContext);
 
   const [selectedNode, setSelectedNode] = useState(null);
   const [expandedNodes, setExpandedNodes] = useState([]);
@@ -88,8 +91,9 @@ function SettingsPage() {
     if (reloadContexts) {
       setReloadContexts(false);
       settingsContext.onReload();
+      lookupContext.onReload();
     }
-  }, [reloadContexts, settingsContext]);
+  }, [reloadContexts, settingsContext, lookupContext]);
 
   useEffect(() => {
     if (settingsContext.currentSettingsNode && !selectedNode) {
