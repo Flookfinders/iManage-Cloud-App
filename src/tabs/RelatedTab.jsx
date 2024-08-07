@@ -45,6 +45,7 @@
 //    030   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //    031   08.07.24 Sean Flook       IMANN-728 Hide the property tab if the user does not have the right to see properties.
 //    032   18.07.24 Sean Flook       IMANN-772 Corrected field name.
+//    033   07.08.24 Sean Flook       IMANN-891 Moved where ResetContexts is called from to correctly handle historic properties.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -198,8 +199,10 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
     easting,
     northing,
     logicalStatus,
-    classificationCode
+    classificationCode,
+    resetType
   ) => {
+    ResetContexts(resetType, mapContext, streetContext, propertyContext, sandboxContext);
     propertyContext.onPropertyChange(uprn, 0, address, address, postcode, null, null, false, null);
 
     const foundProperty = mapContext.currentSearchData.properties.find((x) => x.uprn === uprn.toString());
@@ -241,7 +244,17 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
    * @param {number} logicalStatus The logical status of the property
    * @param {string} classificationCode The classification code of the property
    */
-  const editProperty = (uprn, parentUprn, address, postcode, easting, northing, logicalStatus, classificationCode) => {
+  const editProperty = (
+    uprn,
+    parentUprn,
+    address,
+    postcode,
+    easting,
+    northing,
+    logicalStatus,
+    classificationCode,
+    resetType
+  ) => {
     if (logicalStatus && logicalStatus === 8) {
       historicRec.current = {
         uprn: uprn,
@@ -252,9 +265,21 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
         northing: northing,
         logicalStatus: logicalStatus,
         classificationCode: classificationCode,
+        resetType: resetType,
       };
       setOpenHistoricProperty(true);
-    } else doEditProperty(uprn, parentUprn, address, postcode, easting, northing, logicalStatus, classificationCode);
+    } else
+      doEditProperty(
+        uprn,
+        parentUprn,
+        address,
+        postcode,
+        easting,
+        northing,
+        logicalStatus,
+        classificationCode,
+        resetType
+      );
   };
 
   /**
@@ -266,7 +291,8 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
    * @param {string} locality The locality for the street.
    * @param {string} town The town for the street.
    */
-  async function editStreet(usrn, description, language, locality, town) {
+  async function editStreet(usrn, description, language, locality, town, resetType) {
+    ResetContexts(resetType, mapContext, streetContext, propertyContext, sandboxContext);
     streetContext.onStreetChange(usrn, description, false);
     const foundStreet =
       MapContext.currentLayers &&
@@ -433,7 +459,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
    *
    * @param {number} nodeId The id of the node that was selected.
    */
-  const handlePropertyNodeSelect = (nodeId) => {
+  const handlePropertyNodeSelect = (nodeId, resetType) => {
     const nodeData = propertyData.properties.find((x) => x.uprn.toString() === nodeId);
 
     if (nodeData) {
@@ -445,7 +471,8 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
         nodeData.easting,
         nodeData.northing,
         nodeData.primary.logicalStatus,
-        nodeData.blpuClass
+        nodeData.blpuClass,
+        resetType
       );
     }
   };
@@ -455,7 +482,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
    *
    * @param {number} nodeId The id of the node that was selected.
    */
-  const handleStreetNodeSelect = (nodeId) => {
+  const handleStreetNodeSelect = (nodeId, resetType) => {
     const nodeData = streetData.street.find((x) => x.usrn.toString() === nodeId);
 
     if (nodeData) {
@@ -464,7 +491,8 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
         nodeData.primary.address,
         nodeData.primary.language,
         nodeData.primary.locality,
-        nodeData.primary.town
+        nodeData.primary.town,
+        resetType
       );
     }
   };
@@ -587,9 +615,9 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
                   setSaveOpen(true);
                 }
               }
-              ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
-              if (nodeType === "property") handlePropertyNodeSelect(nodeId);
-              else handleStreetNodeSelect(nodeId);
+              // ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
+              if (nodeType === "property") handlePropertyNodeSelect(nodeId, "street");
+              else handleStreetNodeSelect(nodeId, "street");
             })
             .catch(() => {});
         } else {
@@ -598,16 +626,16 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
               if (result === "save") {
                 HandleSaveStreet(sandboxContext.currentSandbox.currentStreet);
               }
-              ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
-              if (nodeType === "property") handlePropertyNodeSelect(nodeId);
-              else handleStreetNodeSelect(nodeId);
+              // ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
+              if (nodeType === "property") handlePropertyNodeSelect(nodeId, "street");
+              else handleStreetNodeSelect(nodeId, "street");
             })
             .catch(() => {});
         }
       } else {
-        ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
-        if (nodeType === "property") handlePropertyNodeSelect(nodeId);
-        else handleStreetNodeSelect(nodeId);
+        // ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
+        if (nodeType === "property") handlePropertyNodeSelect(nodeId, "street");
+        else handleStreetNodeSelect(nodeId, "street");
       }
     } else if (sandboxContext.currentSandbox.sourceProperty) {
       const propertyChanged = hasPropertyChanged(
@@ -642,18 +670,18 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
                     settingsContext.isScottish
                   );
                   HandleSaveProperty(currentPropertyData, result === "saveCascade");
-                  ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
-                  if (nodeType === "property") handlePropertyNodeSelect(nodeId);
-                  else handleStreetNodeSelect(nodeId);
+                  // ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
+                  if (nodeType === "property") handlePropertyNodeSelect(nodeId, "property");
+                  else handleStreetNodeSelect(nodeId, "property");
                 } else {
                   failedValidation.current = true;
                   saveResult.current = false;
                   setSaveOpen(true);
                 }
               } else {
-                ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
-                if (nodeType === "property") handlePropertyNodeSelect(nodeId);
-                else handleStreetNodeSelect(nodeId);
+                // ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
+                if (nodeType === "property") handlePropertyNodeSelect(nodeId, "property");
+                else handleStreetNodeSelect(nodeId, "property");
               }
             })
             .catch(() => {});
@@ -663,21 +691,21 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
               if (result === "save" || result === "saveCascade") {
                 HandleSaveProperty(sandboxContext.currentSandbox.currentProperty, result === "saveCascade");
               }
-              ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
-              if (nodeType === "property") handlePropertyNodeSelect(nodeId);
-              else handleStreetNodeSelect(nodeId);
+              // ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
+              if (nodeType === "property") handlePropertyNodeSelect(nodeId, "property");
+              else handleStreetNodeSelect(nodeId, "property");
             })
             .catch(() => {});
         }
       } else {
-        ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
-        if (nodeType === "property") handlePropertyNodeSelect(nodeId);
-        else handleStreetNodeSelect(nodeId);
+        // ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
+        if (nodeType === "property") handlePropertyNodeSelect(nodeId, "property");
+        else handleStreetNodeSelect(nodeId, "property");
       }
     } else {
-      ResetContexts("all", mapContext, streetContext, propertyContext, sandboxContext);
-      if (nodeType === "property") handlePropertyNodeSelect(nodeId);
-      else handleStreetNodeSelect(nodeId);
+      // ResetContexts("all", mapContext, streetContext, propertyContext, sandboxContext);
+      if (nodeType === "property") handlePropertyNodeSelect(nodeId, "all");
+      else handleStreetNodeSelect(nodeId, "all");
     }
   };
 
@@ -767,7 +795,8 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
           historicRec.current.easting,
           historicRec.current.northing,
           historicRec.current.logicalStatus,
-          historicRec.current.classificationCode
+          historicRec.current.classificationCode,
+          historicRec.current.resetType
         );
       }
     }

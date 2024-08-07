@@ -57,6 +57,7 @@
 //    043   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    044   26.06.24 Sean Flook       IMANN-488 Correctly filter the data in getPropertyFromId.
 //    045   26.06.24 Joshua McCormick IMANN-548 ZoomToProperty fix, properties correctly add to list
+//    046   07.08.24 Sean Flook       IMANN-891 Use stopPropagation rather than persist.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -198,7 +199,7 @@ function RelatedPropertyTab({
    * @param {number} nodeId The id of the selected node.
    */
   function handleNodeSelected(event, nodeId) {
-    event.persist();
+    event.stopPropagation();
     const iconClicked = event.target.closest(".MuiTreeItem-iconContainer");
     const checkboxClicked = event.target.closest(".MuiCheckbox-root");
     if (!iconClicked && !checkboxClicked && onNodeSelect) onNodeSelect("property", nodeId);
@@ -211,7 +212,7 @@ function RelatedPropertyTab({
    * @param {array} nodeIds The list of node ids that are expanded.
    */
   function handleNodeToggle(event, nodeIds) {
-    event.persist();
+    event.stopPropagation();
     const iconClicked = event.target.closest(".MuiTreeItem-iconContainer");
     const checkboxClicked = event.target.closest(".MuiCheckbox-root");
     if (iconClicked && !checkboxClicked && onNodeToggle) onNodeToggle(nodeIds);
