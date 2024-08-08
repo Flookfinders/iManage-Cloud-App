@@ -48,6 +48,7 @@
 //    035   19.06.24 Joshua McCormick IMANN-503 BLPU Level max set to 99.9
 //    036   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    037   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    038   08.08.24 Sean Flook       IMANN-911 Corrected typo.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3391,7 +3392,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               setSiteVisitError(error.errors);
               break;
 
-            case "blpucstartdate":
+            case "blpustartdate":
               setBlpuStartDateError(error.errors);
               break;
 
