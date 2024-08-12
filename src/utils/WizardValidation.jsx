@@ -44,6 +44,7 @@
 //    027   16.07.24 Sean Flook       IMANN-786 Modified checks 8800004 & 8800005 to include all the range fields.
 //    028   19.07.24 Sean Flook       IMANN-808 Deal with different field names for GP and OS for checks 2400060 & 2400061.
 //    029   26.07.24 Sean Flook       IMANN-855 Modified checks 2400077 & 2400078.
+//    030   09.08.24 Joel Benford     IMANN-533 Modified checks 2100024 & 2400042.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -117,8 +118,8 @@ export function ValidateAddressDetails(
             break;
 
           case 3: // Single child
-            // Enter a USRN.
-            currentCheck = GetCheck(2400042, currentLookups, methodName, isScottish, showDebugMessages);
+            // Enter a street.
+            currentCheck = GetCheck(2400108, currentLookups, methodName, isScottish, showDebugMessages);
             if (includeCheck(currentCheck, isScottish))
               saoStartNumberErrors.push(GetErrorMessage(currentCheck, isScottish));
             break;
@@ -577,8 +578,8 @@ export function ValidateAddressDetails(
         break;
     }
 
-    // Enter a USRN.
-    currentCheck = GetCheck(2400042, currentLookups, methodName, isScottish, showDebugMessages);
+    // Enter a street.
+    currentCheck = GetCheck(2400108, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && !data.usrn)
       usrnErrors.push(GetErrorMessage(currentCheck, isScottish));
 
@@ -754,17 +755,16 @@ export function ValidatePropertyDetails(
     if (!isScottish && includeCheck(currentCheck, isScottish))
       blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
 
-    // Enter a state and State date.
+    // Both state and state date must be entered.
     currentCheck = GetCheck(2100024, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish)) stateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    if (includeCheck(currentCheck, isScottish)) {
+      stateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      stateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
 
     // Enter a start date.
     currentCheck = GetCheck(2100027, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish)) blpuStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
-
-    // Enter a state.
-    currentCheck = GetCheck(2100059, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish)) stateErrors.push(GetErrorMessage(currentCheck, isScottish));
   } else {
     // Enter a BLPU logical status.
     currentCheck = GetCheck(2100008, currentLookups, methodName, isScottish, showDebugMessages);
@@ -838,13 +838,13 @@ export function ValidatePropertyDetails(
     if (!isScottish && !haveMoveBlpu && includeCheck(currentCheck, isScottish) && !blpuData.classification)
       blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
 
-    // Enter a state and State date.
+    // Both state and state date must be entered.
     currentCheck = GetCheck(2100024, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       !haveMoveBlpu &&
       includeCheck(currentCheck, isScottish) &&
       (!isScottish || (isScottish && blpuData.logicalStatus < 9)) &&
-      (blpuData.state === undefined || blpuData.startDate === null)
+      (blpuData.state === undefined || blpuData.state === null)
     ) {
       stateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -964,15 +964,6 @@ export function ValidatePropertyDetails(
     ) {
       blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
-
-    // Enter a state.
-    currentCheck = GetCheck(2100059, currentLookups, methodName, isScottish, showDebugMessages);
-    if (
-      !haveMoveBlpu &&
-      includeCheck(currentCheck, isScottish) &&
-      (blpuData.state === undefined || blpuData.state === null)
-    )
-      stateErrors.push(GetErrorMessage(currentCheck, isScottish));
 
     // An approved BLPU more than a year old, can't have a classification of Unclassified.
     currentCheck = GetCheck(2100061, currentLookups, methodName, isScottish, showDebugMessages);
