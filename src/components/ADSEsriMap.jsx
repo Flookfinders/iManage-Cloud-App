@@ -95,6 +95,7 @@
 //    081   17.07.24 Sean Flook       IMANN-596 When selecting objects ensure at least 500 milliseconds have elapsed since the last selection, this is a work around for an ESRI bug.
 //    082   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    083   22.07.24 Sean Flook       IMANN-774 Added hack to cater for ESRI double event issue for when selecting ESUs.
+//    084   13.08.24 Sean Flook       IMANN-918 Do not display the sketch tool if the user does not have rights to edit the object.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -7668,7 +7669,16 @@ function ADSEsriMap(startExtent) {
         if (propertyLayer) propertyLayer.popupEnabled = false;
         if (extentLayer) extentLayer.popupEnabled = false;
 
-        sketchRef.current.visible = true;
+        sketchRef.current.visible =
+          (mapContext.currentEditObject.objectType === 13 &&
+            userContext.current &&
+            userContext.current.currentUser.editStreet) ||
+          ([21, 22].includes(mapContext.currentEditObject.objectType) &&
+            userContext.current &&
+            userContext.current.currentUser.editProperty) ||
+          ([51, 52, 53, 61, 62, 63, 64, 66].includes(mapContext.currentEditObject.objectType) &&
+            userContext.current &&
+            userContext.current.currentUser.editASD);
         let hasGeometry = false;
 
         switch (mapContext.currentEditObject.objectType) {
@@ -8733,7 +8743,7 @@ function ADSEsriMap(startExtent) {
             snappingControls: false,
             undoRedoMenu: false,
           };
-          sketchRef.current.visible = true;
+          sketchRef.current.visible = userContext.current && userContext.current.currentUser.editProperty;
         }
       } else {
         selectingProperties.current = false;
