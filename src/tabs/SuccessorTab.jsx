@@ -26,6 +26,7 @@
 //    013   14.05.24 Joshua McCormick IMANN-364 Removed unnecessary imports
 //    014   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    015   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
+//    016   13.08.24 Sean Flook       IMANN-861 Removed the predecessor field as not required.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -78,7 +79,6 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onHomeClic
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
 
   const [successorError, setSuccessorError] = useState(null);
-  const [predecessorError, setPredecessorError] = useState(null);
   const [startDateError, setStartDateError] = useState(null);
   const [endDateError, setEndDateError] = useState(null);
 
@@ -101,16 +101,6 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onHomeClic
   const handleSuccessorChangeEvent = (newValue) => {
     setSuccessor(newValue);
     UpdateSandbox("successor", newValue);
-  };
-
-  /**
-   * Event to handle when the predecessor is changed.
-   *
-   * @param {string|null} newValue The new predecessor.
-   */
-  const handlePredecessorChangeEvent = (newValue) => {
-    setPredecessor(newValue);
-    UpdateSandbox("predecessor", newValue);
   };
 
   /**
@@ -306,7 +296,6 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onHomeClic
 
   useEffect(() => {
     setSuccessorError(null);
-    setPredecessorError(null);
     setStartDateError(null);
     setEndDateError(null);
 
@@ -315,10 +304,6 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onHomeClic
         switch (error.field.toLowerCase()) {
           case "successor":
             setSuccessorError(error.errors);
-            break;
-
-          case "predecessor":
-            setPredecessorError(error.errors);
             break;
 
           case "startdate":
@@ -384,18 +369,6 @@ function SuccessorTab({ data, variant, errors, loading, focusedField, onHomeClic
           errorText={successorError}
           helperText={variant === "property" ? "UPRN of successor BLPU." : "USRN of successor street."}
           onChange={handleSuccessorChangeEvent}
-        />
-        <ADSNumberControl
-          label="Predecessor"
-          isEditable={userCanEdit}
-          isRequired
-          isFocused={focusedField ? focusedField === "Predecessor" : false}
-          loading={loading}
-          value={predecessor}
-          maximum={variant === "property" ? 999999999999 : 99999999}
-          errorText={predecessorError}
-          helperText={`Unique identifier (${variant === "property" ? "UPRN" : "USRN"}) for the predecessor.`}
-          onChange={handlePredecessorChangeEvent}
         />
         <ADSDateControl
           label="Start date"

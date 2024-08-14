@@ -75,6 +75,7 @@
 //    062   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
 //    063   18.07.24 Sean Flook       IMANN-563 When historicising a property also set the BLPU state to 4.
 //    064   19.07.24 Sean Flook       IMANN-802 Added ability for Scottish authorities to add new Gaelic LPIs.
+//    065   13.08.24 Sean Flook       IMANN-861 When creating a new successor record set the predecessor with the current UPRN.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1136,9 +1137,9 @@ function PropertyDataForm({ data, loading }) {
         pkId: newPkId,
         changeType: "I",
         succKey: null,
-        successor: propertyData && propertyData.uprn,
+        successor: null,
         successorType: 1,
-        predecessor: null,
+        predecessor: propertyData && propertyData.uprn,
         startDate: currentDate,
         endDate: null,
         entryDate: currentDate,

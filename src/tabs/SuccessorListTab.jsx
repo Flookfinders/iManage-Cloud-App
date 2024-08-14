@@ -27,6 +27,7 @@
 //    014   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    015   14.05.24 Joshua McCormick IMAN-364  noWrap & padding to prevent toolbar content overlapping
 //    016   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    017   13.08.24 Sean Flook       IMANN-861 Hide the predecessor value.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -380,6 +381,7 @@ function SuccessorListTab({
                   changeType: false,
                   succKey: false,
                   successorType: false,
+                  predecessor: false,
                   entryDate: false,
                   lastUpdateDate: false,
                 },
