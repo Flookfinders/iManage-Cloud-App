@@ -115,6 +115,7 @@
 //    101   07.08.24 Sean Flook       IMANN-876 Recalculate the length of the PRoW when drawing a new one.
 //    102   07.08.24 Sean Flook       IMANN-876 Only return to 4 decimal places.
 //    103   07.08.24 Sean Flook       IMANN-909 Removed handling of successor records in the handleTabChange event.
+//    104   16.08.24 Sean Flook       IMANN-935 Only return whole number when calculating the length of a PRoW.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -8184,7 +8185,7 @@ function StreetDataForm({ data, loading }) {
 
       const prowLength = geometryEngine.planarLength(prowLine, "meters");
 
-      return prowLength ? prowLength.toFixed(4) : originalLength;
+      return prowLength ? Math.round(prowLength) : originalLength;
     };
 
     // console.log("[SF] StreetDataForm", { streetData: streetData });
