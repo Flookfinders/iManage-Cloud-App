@@ -56,6 +56,7 @@
 //    043   03.07.24 Sean Flook       IMANN-697 Also check the single form of the key when handling errors.
 //    044   05.07.24 Sean Flook       IMANN-692 Do not reset the sandbox if call to UpdateRangeAfterSave is from ADSSelectionControl.
 //    045   18.07.24 Sean Flook       IMANN-775 For Scottish authorities when filtering BLPUState use the string of the index to handle the 0 state.
+//    046   16.08.24 Sean Flook       IMANN-861 Added new key from API for successor errors.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1694,6 +1695,7 @@ export function GetPropertyValidationErrors(body, newProperty) {
           errors: value,
         });
       } else if (
+        key.toLowerCase().includes("blpusuccessorcrossrefs[") ||
         key.toLowerCase().includes("successorcrossreferences[") ||
         key.toLowerCase().includes("successorcrossreference[")
       ) {
