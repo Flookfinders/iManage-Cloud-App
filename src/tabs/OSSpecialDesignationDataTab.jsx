@@ -37,6 +37,7 @@
 //    024   02.07.24 Joel Benford     IMANN-669 .specialDesig -> .specialDesignationCode
 //    025   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    026   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
+//    027   19.08.24 Sean Flook       IMANN-874 Added additional case.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -471,6 +472,7 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
     if (errors && errors.length > 0) {
       for (const error of errors) {
         switch (error.field.toLowerCase()) {
+          case "specialdesignation":
           case "specialdesignationcode":
             setDesignationCategoryError(error.errors);
             break;
