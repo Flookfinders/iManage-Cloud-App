@@ -35,6 +35,7 @@
 //    022   27.03.24 Sean Flook                 Clear specific location if going back to whole road.
 //    023   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    024   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
+//    025   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -450,11 +451,11 @@ function MaintenanceResponsibilityDataTab({ data, errors, loading, focusedField,
             setStreetStatusError(error.errors);
             break;
 
-          case "custodian":
+          case "custodiancode":
             setCustodianError(error.errors);
             break;
 
-          case "maintainingauthority":
+          case "maintainingauthoritycode":
             setAuthorityError(error.errors);
             break;
 
@@ -589,7 +590,7 @@ function MaintenanceResponsibilityDataTab({ data, errors, loading, focusedField,
           label="Custodian"
           isEditable={userCanEdit}
           isRequired
-          isFocused={focusedField ? focusedField === "Custodian" : false}
+          isFocused={focusedField ? focusedField === "CustodianCode" : false}
           loading={loading}
           useRounded
           doNotSetTitleCase
@@ -606,7 +607,7 @@ function MaintenanceResponsibilityDataTab({ data, errors, loading, focusedField,
           label="Authority"
           isEditable={userCanEdit}
           isRequired
-          isFocused={focusedField ? focusedField === "Authority" : false}
+          isFocused={focusedField ? focusedField === "MaintainingAuthorityCode" : false}
           loading={loading}
           useRounded
           doNotSetTitleCase

@@ -33,6 +33,7 @@
 //    020   27.03.24 Sean Flook                 Clear specific location if going back to whole road.
 //    021   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    022   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
+//    023   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -442,15 +443,15 @@ function ReinstatementCategoryDataTab({ data, errors, loading, focusedField, onH
     if (errors && errors.length > 0) {
       for (const error of errors) {
         switch (error.field.toLowerCase()) {
-          case "reinstatementcategory":
+          case "reinstatementcategorycode":
             setReinstatementCategoryError(error.errors);
             break;
 
-          case "custodian":
+          case "custodiancode":
             setCustodianError(error.errors);
             break;
 
-          case "reinstatementauthority":
+          case "reinstatementauthoritycode":
             setAuthorityError(error.errors);
             break;
 
@@ -569,7 +570,7 @@ function ReinstatementCategoryDataTab({ data, errors, loading, focusedField, onH
           label="Reinstatement category"
           isEditable={userCanEdit}
           isRequired
-          isFocused={focusedField ? focusedField === "ReinstatementCategory" : false}
+          isFocused={focusedField ? focusedField === "ReinstatementCategoryCode" : false}
           loading={loading}
           useRounded
           doNotSetTitleCase
@@ -586,7 +587,7 @@ function ReinstatementCategoryDataTab({ data, errors, loading, focusedField, onH
           label="Custodian"
           isEditable={userCanEdit}
           isRequired
-          isFocused={focusedField ? focusedField === "Custodian" : false}
+          isFocused={focusedField ? focusedField === "CustodianCode" : false}
           loading={loading}
           useRounded
           doNotSetTitleCase
@@ -603,7 +604,7 @@ function ReinstatementCategoryDataTab({ data, errors, loading, focusedField, onH
           label="Authority"
           isEditable={userCanEdit}
           isRequired
-          isFocused={focusedField ? focusedField === "Authority" : false}
+          isFocused={focusedField ? focusedField === "ReinstatementAuthorityCode" : false}
           loading={loading}
           useRounded
           doNotSetTitleCase

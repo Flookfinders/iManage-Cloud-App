@@ -38,6 +38,7 @@
 //    025   27.03.24 Sean Flook                 Clear specific location if going back to whole road.
 //    026   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    027   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
+//    028   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -124,7 +125,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onHomeClick, onA
 
   const [streetStatusError, setStreetStatusError] = useState(null);
   const [interestedOrganisationError, setInterestedOrganisationError] = useState(null);
-  const [interestTypeError, setInterestedTypeError] = useState(null);
+  const [interestTypeError, setInterestTypeError] = useState(null);
   const [districtError, setDistrictError] = useState(null);
   const [maintainingOrganisationError, setMaintainingOrganisationError] = useState(null);
   const [startDateError, setStartDateError] = useState(null);
@@ -444,7 +445,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onHomeClick, onA
   useEffect(() => {
     setStreetStatusError(null);
     setInterestedOrganisationError(null);
-    setInterestedTypeError(null);
+    setInterestTypeError(null);
     setDistrictError(null);
     setMaintainingOrganisationError(null);
     setStartDateError(null);
@@ -464,7 +465,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onHomeClick, onA
             break;
 
           case "interesttype":
-            setInterestedTypeError(error.errors);
+            setInterestTypeError(error.errors);
             break;
 
           case "districtrefauthority":
@@ -672,7 +673,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onHomeClick, onA
           label="Start date"
           isEditable={userCanEdit}
           isRequired
-          isFocused={focusedField ? focusedField === "recordStartDate" : false}
+          isFocused={focusedField ? focusedField === "RecordStartDate" : false}
           loading={loading}
           value={startDate}
           helperText="Date when the Record started."
@@ -682,7 +683,7 @@ function InterestDataTab({ data, errors, loading, focusedField, onHomeClick, onA
         <ADSDateControl
           label="End date"
           isEditable={userCanEdit}
-          isFocused={focusedField ? focusedField === "recordEndDate" : false}
+          isFocused={focusedField ? focusedField === "RecordEndDate" : false}
           loading={loading}
           value={endDate}
           helperText="Date when the Record ends."

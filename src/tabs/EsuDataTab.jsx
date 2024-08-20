@@ -40,6 +40,7 @@
 //    027   17.05.24 Sean Flook       IMANN-458 Pass isActive to the GetTabIconStyle method.
 //    028   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    029   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
+//    030   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -854,10 +855,12 @@ function EsuDataTab({
             break;
 
           case "esustartdate":
+          case "startdate":
             setStartDateError(error.errors);
             break;
 
           case "esuenddate":
+          case "enddate":
             setEndDateError(error.errors);
             break;
 
@@ -869,11 +872,11 @@ function EsuDataTab({
             setStateDateError(error.errors);
             break;
 
-          case "esuclassification":
+          case "classification":
             setClassificationError(error.errors);
             break;
 
-          case "esuclassificationdate":
+          case "classificationdate":
             setClassificationDateError(error.errors);
             break;
 
@@ -1090,7 +1093,7 @@ function EsuDataTab({
             isRequired
             doNotSetTitleCase
             loading={loading}
-            isFocused={focusedField ? focusedField === "EsuClassification" : false}
+            isFocused={focusedField ? focusedField === "Classification" : false}
             useRounded
             lookupData={EsuClassification}
             lookupId="id"
@@ -1108,7 +1111,7 @@ function EsuDataTab({
             isEditable={userCanEdit}
             isRequired
             loading={loading}
-            isFocused={focusedField ? focusedField === "EsuClassificationDate" : false}
+            isFocused={focusedField ? focusedField === "ClassificationDate" : false}
             value={classificationDate}
             helperText="The date that the current classification started."
             errorText={classificationDateError}
@@ -1119,7 +1122,7 @@ function EsuDataTab({
           label="Start date"
           isEditable={userCanEdit}
           isRequired
-          isFocused={focusedField ? focusedField === "EsuStartDate" : false}
+          isFocused={focusedField ? focusedField === "EsuStartDate" || focusedField === "StartDate" : false}
           loading={loading}
           value={startDate}
           helperText="The date that the street started."
@@ -1130,7 +1133,7 @@ function EsuDataTab({
           <ADSDateControl
             label="End date"
             isEditable={userCanEdit}
-            isFocused={focusedField ? focusedField === "EsuEndDate" : false}
+            isFocused={focusedField ? focusedField === "EsuEndDate" || focusedField === "EndDate" : false}
             loading={loading}
             value={endDate}
             helperText={`The date that the ${settingsContext.isScottish ? "ESU" : "street"} closed.`}

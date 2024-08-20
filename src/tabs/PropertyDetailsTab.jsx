@@ -62,6 +62,7 @@
 //    048   18.07.24 Sean Flook       IMANN-775 When changing the logical status of for Scottish authorities also set the state if new logical status is provisional or historic.
 //    049   19.07.24 Sean Flook       IMANN-802 Added ability for Scottish authorities to add new Gaelic LPIs.
 //    050   23.07.24 Sean Flook       IMANN-403 Only update the map if the coordinates are within the valid range.
+//    051   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1128,8 +1129,8 @@ function PropertyDetailsTab({
             setParishError(error.errors);
             break;
 
-          case "localCustodian":
-          case "custodianCode":
+          case "localcustodiancode":
+          case "custodiancode":
             setLocalCustodianError(error.errors);
             break;
 
@@ -1616,7 +1617,7 @@ function PropertyDetailsTab({
         <ADSSelectControl
           label="Authority"
           isRequired
-          isFocused={focusedField ? focusedField === "LocalCustodian" : false}
+          isFocused={focusedField ? focusedField === "LocalCustodianCode" || focusedField === "CustodianCode" : false}
           loading={loading}
           useRounded
           lookupData={DETRCodes}

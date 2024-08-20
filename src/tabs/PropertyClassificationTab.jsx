@@ -30,6 +30,7 @@
 //    017   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    018   08.07.24 Sean Flook       IMANN-718 Use the correct field name.
 //    019   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
+//    020   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -363,7 +364,7 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onHome
           label="Classification"
           isEditable={userCanEdit}
           isRequired
-          isFocused={focusedField ? focusedField === "Classification" : false}
+          isFocused={focusedField ? focusedField === "BlpuClass" || focusedField === "Classification" : false}
           isClassification
           includeHiddenCode
           loading={loading}
@@ -382,7 +383,7 @@ function PropertyClassificationTab({ data, errors, loading, focusedField, onHome
           label="Scheme"
           isEditable={userCanEdit}
           isRequired
-          isFocused={focusedField ? focusedField === "classificationScheme" : false}
+          isFocused={focusedField ? focusedField === "ClassificationScheme" : false}
           loading={loading}
           value={classificationScheme}
           id="scheme"

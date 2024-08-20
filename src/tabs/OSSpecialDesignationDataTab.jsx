@@ -38,6 +38,7 @@
 //    025   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    026   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //    027   19.08.24 Sean Flook       IMANN-874 Added additional case.
+//    028   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -480,11 +481,11 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
             setDescriptionError(error.errors);
             break;
 
-          case "custodian":
+          case "custodiancode":
             setCustodianError(error.errors);
             break;
 
-          case "authority":
+          case "authoritycode":
             setAuthorityError(error.errors);
             break;
 
@@ -605,7 +606,9 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
           label="Type"
           isEditable={userCanEdit}
           isRequired
-          isFocused={focusedField ? focusedField === "StreetSpecialDesigCode" : false}
+          isFocused={
+            focusedField ? focusedField === "SpecialDesignationCode" || focusedField === "SpecialDesignation" : false
+          }
           loading={loading}
           useRounded
           doNotSetTitleCase
@@ -622,7 +625,7 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
           label="Custodian"
           isEditable={userCanEdit}
           isRequired
-          isFocused={focusedField ? focusedField === "Custodian" : false}
+          isFocused={focusedField ? focusedField === "CustodianCode" : false}
           loading={loading}
           useRounded
           doNotSetTitleCase
@@ -639,7 +642,7 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
           label="Authority"
           isEditable={userCanEdit}
           isRequired
-          isFocused={focusedField ? focusedField === "Authority" : false}
+          isFocused={focusedField ? focusedField === "AuthorityCode" : false}
           loading={loading}
           useRounded
           doNotSetTitleCase
@@ -672,7 +675,7 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
           label="Start date"
           isEditable={userCanEdit}
           isRequired
-          isFocused={focusedField ? focusedField === "RecordStartDate" : false}
+          isFocused={focusedField ? focusedField === "StartDate" : false}
           loading={loading}
           value={startDate}
           helperText="The date on which the special designation started to apply in the real world."
@@ -684,7 +687,7 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
             label="End date"
             isEditable={userCanEdit}
             isRequired
-            isFocused={focusedField ? focusedField === "endDate" : false}
+            isFocused={focusedField ? focusedField === "EndDate" : false}
             loading={loading}
             value={endDate}
             helperText="Date on which this reinstatement category ceased to exist in the real world."

@@ -35,6 +35,7 @@
 //    022   05.04.24 Sean Flook       IMANN-372 Corrected typo.
 //    023   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    024   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
+//    025   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -798,7 +799,7 @@ function SpecialDesignationDataTab({ data, errors, loading, focusedField, onHome
           label="Description"
           isEditable={userCanEdit}
           isRequired={isAfter1stApril2015(startDate)}
-          isFocused={focusedField ? focusedField === "Description" : false}
+          isFocused={focusedField ? focusedField === "SpecialDesigDescription" : false}
           loading={loading}
           value={description}
           maxLength={250}
