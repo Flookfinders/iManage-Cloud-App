@@ -28,6 +28,7 @@
 //    015   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //    016   06.08.24 Sean Flook       IMANN-893 Check we have a source ESU before getting the highway dedication record.
 //    017   06.08.24 Sean Flook       IMANN-905 When determining if the record has changed and we do not have it in the sourceStreet use the currentStreet.
+//    018   20.08.24 Sean Flook       IMANN-818 Use the new ADSHDCheckbox controls and handle errors for those controls.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -42,7 +43,7 @@ import UserContext from "../context/userContext";
 import { GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
 import ObjectComparison, { highwayDedicationKeysToIgnore } from "../utils/ObjectComparison";
 
-import { Grid, Typography, FormControlLabel, Checkbox } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -53,18 +54,9 @@ import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 
 import HighwayDedicationCode from "../data/HighwayDedicationCode";
 
-import { DirectionsBike as NCRIcon } from "@mui/icons-material";
-import {
-  PRoWIcon,
-  QuietRouteIcon,
-  ObstructionIcon,
-  PlanningOrderIcon,
-  VehiclesProhibitedIcon,
-} from "../utils/ADSIcons";
-
 import { useTheme } from "@mui/styles";
-import { adsBlueA, adsMidGreyA } from "../utils/ADSColours";
 import { toolbarStyle, dataTabToolBar, dataFormStyle, FormRowStyle } from "../utils/ADSStyles";
+import ADSHDCheckbox from "../components/ADSHDCheckbox";
 
 HighwayDedicationDataTab.propTypes = {
   data: PropTypes.object,
@@ -101,13 +93,6 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
 
   const [userCanEdit, setUserCanEdit] = useState(false);
 
-  const [prowHover, setProwHover] = useState(false);
-  const [ncrHover, setNcrHover] = useState(false);
-  const [quietRouteHover, setQuietRouteHover] = useState(false);
-  const [obstructionHover, setObstructionHover] = useState(false);
-  const [planningOrderHover, setPlanningOrderHover] = useState(false);
-  const [vehiclesProhibitedHover, setVehiclesProhibitedHover] = useState(false);
-
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
 
   const [highwayDedicationCodeError, setHighwayDedicationCodeError] = useState(null);
@@ -115,6 +100,12 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
   const [endDateError, setEndDateError] = useState(null);
   const [startTimeError, setStartTimeError] = useState(null);
   const [endTimeError, setEndTimeError] = useState(null);
+  const [prowError, setProwError] = useState(null);
+  const [ncrError, setNcrError] = useState(null);
+  const [quietRouteError, setQuietRouteError] = useState(null);
+  const [obstructionError, setObstructionError] = useState(null);
+  const [planningOrderError, setPlanningOrderError] = useState(null);
+  const [vehiclesProhibitedError, setVehiclesProhibitedError] = useState(null);
   const [seasonalStartDateError, setSeasonalStartDateError] = useState(null);
   const [seasonalEndDateError, setSeasonalEndDateError] = useState(null);
   const [recordEndDateError, setRecordEndDateError] = useState(null);
@@ -183,10 +174,9 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
   /**
    * Event to handle when the public rights of way flag is changed.
    *
-   * @param {object} event The event object.
+   * @param {Boolean} newValue The new public rights of way flag.
    */
-  const handleProwChangeEvent = (event) => {
-    const newValue = event.target.checked;
+  const handleProwChangeEvent = (newValue) => {
     setProw(newValue);
     UpdateSandbox("prow", newValue);
   };
@@ -194,10 +184,9 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
   /**
    * Event to handle when the national cycle route flag is changed.
    *
-   * @param {object} event The event object.
+   * @param {Boolean} newValue The new national cycle route flag.
    */
-  const handleNcrChangeEvent = (event) => {
-    const newValue = event.target.checked;
+  const handleNcrChangeEvent = (newValue) => {
     setNcr(newValue);
     UpdateSandbox("ncr", newValue);
   };
@@ -205,10 +194,9 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
   /**
    * Event to handle when the quiet route flag is changed.
    *
-   * @param {object} event The event object.
+   * @param {Boolean} newValue The new quiet route flag.
    */
-  const handleQuietRouteChangeEvent = (event) => {
-    const newValue = event.target.checked;
+  const handleQuietRouteChangeEvent = (newValue) => {
     setQuietRoute(newValue);
     UpdateSandbox("quietRoute", newValue);
   };
@@ -216,10 +204,9 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
   /**
    * Event to handle when the obstruction flag is changed.
    *
-   * @param {object} event The event object.
+   * @param {Boolean} newValue The new obstruction flag.
    */
-  const handleObstructionChangeEvent = (event) => {
-    const newValue = event.target.checked;
+  const handleObstructionChangeEvent = (newValue) => {
     setObstruction(newValue);
     UpdateSandbox("obstruction", newValue);
   };
@@ -227,10 +214,9 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
   /**
    * Event to handle when the planning order flag is changed.
    *
-   * @param {object} event The event object.
+   * @param {Boolean} newValue The new planning order flag.
    */
-  const handlePlanningOrderChangeEvent = (event) => {
-    const newValue = event.target.checked;
+  const handlePlanningOrderChangeEvent = (newValue) => {
     setPlanningOrder(newValue);
     UpdateSandbox("planningOrder", newValue);
   };
@@ -238,10 +224,9 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
   /**
    * Event to handle when the vehicles prohibited flag is changed.
    *
-   * @param {object} event The event object.
+   * @param {Boolean} newValue The new vehicles prohibited flag.
    */
-  const handleVehiclesProhibitedChangeEvent = (event) => {
-    const newValue = event.target.checked;
+  const handleVehiclesProhibitedChangeEvent = (newValue) => {
     setVehiclesProhibited(newValue);
     UpdateSandbox("vehiclesProhibited", newValue);
   };
@@ -387,90 +372,6 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
   };
 
   /**
-   * Event to handle when the mouse enters the PRoW.
-   */
-  const handleProwMouseEnter = () => {
-    setProwHover(true);
-  };
-
-  /**
-   * Event to handle when the mouse leaves the PRoW.
-   */
-  const handleProwMouseLeave = () => {
-    setProwHover(false);
-  };
-
-  /**
-   * Event to handle when the mouse enters the NCR.
-   */
-  const handleNcrMouseEnter = () => {
-    setNcrHover(true);
-  };
-
-  /**
-   * Event to handle when the mouse leaves the NCR.
-   */
-  const handleNcrMouseLeave = () => {
-    setNcrHover(false);
-  };
-
-  /**
-   * Event to handle when the mouse enters the quiet route.
-   */
-  const handleQuietRouteMouseEnter = () => {
-    setQuietRouteHover(true);
-  };
-
-  /**
-   * Event to handle when the mouse leaves the quiet route.
-   */
-  const handleQuietRouteMouseLeave = () => {
-    setQuietRouteHover(false);
-  };
-
-  /**
-   * Event to handle when the mouse enters the obstruction.
-   */
-  const handleObstructionMouseEnter = () => {
-    setObstructionHover(true);
-  };
-
-  /**
-   * Event to handle when the mouse leaves the obstruction.
-   */
-  const handleObstructionMouseLeave = () => {
-    setObstructionHover(false);
-  };
-
-  /**
-   * Event to handle when the mouse enters the planning order.
-   */
-  const handlePlanningOrderMouseEnter = () => {
-    setPlanningOrderHover(true);
-  };
-
-  /**
-   * Event to handle when the mouse leaves the planning order.
-   */
-  const handlePlanningOrderMouseLeave = () => {
-    setPlanningOrderHover(false);
-  };
-
-  /**
-   * Event to handle when the mouse enters the vehicles prohibited.
-   */
-  const handleVehiclesProhibitedMouseEnter = () => {
-    setVehiclesProhibitedHover(true);
-  };
-
-  /**
-   * Event to handle when the mouse leaves the vehicles prohibited.
-   */
-  const handleVehiclesProhibitedMouseLeave = () => {
-    setVehiclesProhibitedHover(false);
-  };
-
-  /**
    * Event to handle when the delete confirmation dialog is closed.
    *
    * @param {boolean} deleteConfirmed True if the user has confirmed the deletion; otherwise false.
@@ -485,29 +386,6 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
       if (onDelete) onDelete(data.hdData.esuId, pkId);
     }
   };
-
-  /**
-   * Method to get the styling to be used for the indicator.
-   *
-   * @param {boolean} isChecked True if the item is checked; otherwise false.
-   * @param {boolean} isHover True if the mouse is hovering over the item; otherwise false.
-   * @returns {object} The styling to be used for the indicator.
-   */
-  function getIndicatorStyle(isChecked, isHover) {
-    if (isChecked || isHover)
-      return {
-        mr: theme.spacing(1),
-        color: adsBlueA,
-      };
-    else
-      return {
-        mr: theme.spacing(1),
-        color: adsMidGreyA,
-        "&:hover": {
-          color: adsBlueA,
-        },
-      };
-  }
 
   useEffect(() => {
     if (!loading && data && data.hdData) {
@@ -581,6 +459,12 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
     setEndDateError(null);
     setStartTimeError(null);
     setEndTimeError(null);
+    setProwError(null);
+    setNcrError(null);
+    setQuietRouteError(null);
+    setObstructionError(null);
+    setPlanningOrderError(null);
+    setVehiclesProhibitedError(null);
     setSeasonalStartDateError(null);
     setSeasonalEndDateError(null);
     setRecordEndDateError(null);
@@ -606,6 +490,30 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
 
           case "hdendtime":
             setEndTimeError(error.errors);
+            break;
+
+          case "hdprow":
+            setProwError(error.errors);
+            break;
+
+          case "hdncr":
+            setNcrError(error.errors);
+            break;
+
+          case "hdquietroute":
+            setQuietRouteError(error.errors);
+            break;
+
+          case "hdobstruction":
+            setObstructionError(error.errors);
+            break;
+
+          case "hdplanningorder":
+            setPlanningOrderError(error.errors);
+            break;
+
+          case "hdvehiclesprohibited":
+            setVehiclesProhibitedError(error.errors);
             break;
 
           case "hdseasonalstartdate":
@@ -728,98 +636,60 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
           </Grid>
           <Grid item xs={9}>
             <Grid container direction="column" justifyContent="flex-start" alignItems="flex-start">
-              <Grid item>
-                <FormControlLabel
-                  control={
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <Checkbox checked={prow} disabled={!userCanEdit} onChange={handleProwChangeEvent} />
-                      <PRoWIcon sx={getIndicatorStyle(prow, prowHover)} />
-                    </Box>
-                  }
-                  label="PRoW"
-                  onMouseEnter={handleProwMouseEnter}
-                  onMouseLeave={handleProwMouseLeave}
-                  sx={getIndicatorStyle(prow, prowHover)}
-                />
-              </Grid>
-              <Grid item>
-                <FormControlLabel
-                  control={
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <Checkbox checked={ncr} disabled={!userCanEdit} onChange={handleNcrChangeEvent} />
-                      <NCRIcon sx={getIndicatorStyle(ncr, ncrHover)} />
-                    </Box>
-                  }
-                  label="NCR"
-                  onMouseEnter={handleNcrMouseEnter}
-                  onMouseLeave={handleNcrMouseLeave}
-                  sx={getIndicatorStyle(ncr, ncrHover)}
-                />
-              </Grid>
-              <Grid item>
-                <FormControlLabel
-                  control={
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <Checkbox checked={quietRoute} disabled={!userCanEdit} onChange={handleQuietRouteChangeEvent} />
-                      <QuietRouteIcon sx={getIndicatorStyle(quietRoute, quietRouteHover)} />
-                    </Box>
-                  }
-                  label="Quiet route"
-                  onMouseEnter={handleQuietRouteMouseEnter}
-                  onMouseLeave={handleQuietRouteMouseLeave}
-                  sx={getIndicatorStyle(quietRoute, quietRouteHover)}
-                />
-              </Grid>
-              <Grid item>
-                <FormControlLabel
-                  control={
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <Checkbox checked={obstruction} disabled={!userCanEdit} onChange={handleObstructionChangeEvent} />
-                      <ObstructionIcon sx={getIndicatorStyle(obstruction, obstructionHover)} />
-                    </Box>
-                  }
-                  label="Obstruction"
-                  onMouseEnter={handleObstructionMouseEnter}
-                  onMouseLeave={handleObstructionMouseLeave}
-                  sx={getIndicatorStyle(obstruction, obstructionHover)}
-                />
-              </Grid>
-              <Grid item>
-                <FormControlLabel
-                  control={
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <Checkbox
-                        checked={planningOrder}
-                        disabled={!userCanEdit}
-                        onChange={handlePlanningOrderChangeEvent}
-                      />
-                      <PlanningOrderIcon sx={getIndicatorStyle(planningOrder, planningOrderHover)} />
-                    </Box>
-                  }
-                  label="Planning order"
-                  onMouseEnter={handlePlanningOrderMouseEnter}
-                  onMouseLeave={handlePlanningOrderMouseLeave}
-                  sx={getIndicatorStyle(planningOrder, planningOrderHover)}
-                />
-              </Grid>
-              <Grid item>
-                <FormControlLabel
-                  control={
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <Checkbox
-                        checked={vehiclesProhibited}
-                        disabled={!userCanEdit}
-                        onChange={handleVehiclesProhibitedChangeEvent}
-                      />
-                      <VehiclesProhibitedIcon sx={getIndicatorStyle(vehiclesProhibited, vehiclesProhibitedHover)} />
-                    </Box>
-                  }
-                  label="Vehicles prohibited"
-                  onMouseEnter={handleVehiclesProhibitedMouseEnter}
-                  onMouseLeave={handleVehiclesProhibitedMouseLeave}
-                  sx={getIndicatorStyle(vehiclesProhibited, vehiclesProhibitedHover)}
-                />
-              </Grid>
+              <ADSHDCheckbox
+                variant={"PRoW"}
+                checked={prow}
+                isEditable={userCanEdit}
+                isFocused={focusedField ? focusedField === "HdProw" : false}
+                loading={loading}
+                errorText={prowError}
+                onChange={handleProwChangeEvent}
+              />
+              <ADSHDCheckbox
+                variant={"NCR"}
+                checked={ncr}
+                isEditable={userCanEdit}
+                isFocused={focusedField ? focusedField === "HdNcr" : false}
+                loading={loading}
+                errorText={ncrError}
+                onChange={handleNcrChangeEvent}
+              />
+              <ADSHDCheckbox
+                variant={"Quiet route"}
+                checked={quietRoute}
+                isEditable={userCanEdit}
+                isFocused={focusedField ? focusedField === "HdQuietRoute" : false}
+                loading={loading}
+                errorText={quietRouteError}
+                onChange={handleQuietRouteChangeEvent}
+              />
+              <ADSHDCheckbox
+                variant={"Obstruction"}
+                checked={obstruction}
+                isEditable={userCanEdit}
+                isFocused={focusedField ? focusedField === "HdObstruction" : false}
+                loading={loading}
+                errorText={obstructionError}
+                onChange={handleObstructionChangeEvent}
+              />
+              <ADSHDCheckbox
+                variant={"Planning order"}
+                checked={planningOrder}
+                isEditable={userCanEdit}
+                isFocused={focusedField ? focusedField === "HdPlanningOrder" : false}
+                loading={loading}
+                errorText={planningOrderError}
+                onChange={handlePlanningOrderChangeEvent}
+              />
+              <ADSHDCheckbox
+                variant={"Vehicles prohibited"}
+                checked={vehiclesProhibited}
+                isEditable={userCanEdit}
+                isFocused={focusedField ? focusedField === "HdVehiclesProhibited" : false}
+                loading={loading}
+                errorText={vehiclesProhibitedError}
+                onChange={handleVehiclesProhibitedChangeEvent}
+              />
             </Grid>
           </Grid>
         </Grid>

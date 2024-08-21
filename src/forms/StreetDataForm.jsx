@@ -116,6 +116,7 @@
 //    102   07.08.24 Sean Flook       IMANN-876 Only return to 4 decimal places.
 //    103   07.08.24 Sean Flook       IMANN-909 Removed handling of successor records in the handleTabChange event.
 //    104   16.08.24 Sean Flook       IMANN-935 Only return whole number when calculating the length of a PRoW.
+//    105   20.08.24 Sean Flook       IMANN-818 Corrected typo.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -7954,7 +7955,7 @@ function StreetDataForm({ data, loading }) {
                 hdData: highwayDedicationData,
                 index: streetContext.goToField.index,
                 esuIndex: streetContext.goToField.parentIndex,
-                totalRecords: oweEsuData.highwayDedications.filter((x) => x.changeType !== "D").length,
+                totalRecords: hdEsuData.highwayDedications.filter((x) => x.changeType !== "D").length,
               });
             }
           }
