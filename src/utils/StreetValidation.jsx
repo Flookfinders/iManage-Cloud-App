@@ -62,6 +62,7 @@
 //    040   26.07.24 Sean Flook       IMANN-854 Handle 0 in check 5200013.
 //    041   26.07.24 Sean Flook       IMANN-860 Report check 3000012 on the correct field.
 //    042   06.08.24 Sean Flook       IMANN-876 Removed check 6600018 as not required.
+//    043   22.08.24 Sean Flook       IMANN-951 Corrected field names.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -859,14 +860,14 @@ export function ValidateEsuData(data, index, currentLookups, isScottish) {
   if (classificationErrors.length > 0)
     validationErrors.push({
       index: index,
-      field: "EsuClassification",
+      field: "Classification",
       errors: classificationErrors,
     });
 
   if (classificationDateErrors.length > 0)
     validationErrors.push({
       index: index,
-      field: "EsuClassificationDate",
+      field: "ClassificationDate",
       errors: classificationDateErrors,
     });
 
@@ -1487,14 +1488,14 @@ export function ValidateMaintenanceResponsibilityData(data, index, currentLookup
     if (custodianErrors.length > 0)
       validationErrors.push({
         index: index,
-        field: "Custodian",
+        field: "CustodianCode",
         errors: custodianErrors,
       });
 
     if (maintainingAuthorityErrors.length > 0)
       validationErrors.push({
         index: index,
-        field: "MaintainingAuthority",
+        field: "MaintainingAuthorityCode",
         errors: maintainingAuthorityErrors,
       });
 
@@ -1732,21 +1733,21 @@ export function ValidateReinstatementCategoryData(data, index, currentLookups) {
     if (custodianErrors.length > 0)
       validationErrors.push({
         index: index,
-        field: "Custodian",
+        field: "CustodianCode",
         errors: custodianErrors,
       });
 
     if (reinstatementAuthorityErrors.length > 0)
       validationErrors.push({
         index: index,
-        field: "ReinstatementAuthority",
+        field: "ReinstatementAuthorityCode",
         errors: reinstatementAuthorityErrors,
       });
 
     if (reinstatementCategoryErrors.length > 0)
       validationErrors.push({
         index: index,
-        field: "ReinstatementCategory",
+        field: "ReinstatementCategoryCode",
         errors: reinstatementCategoryErrors,
       });
 
@@ -1986,21 +1987,21 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
     if (custodianErrors.length > 0)
       validationErrors.push({
         index: index,
-        field: "Custodian",
+        field: "CustodianCode",
         errors: custodianErrors,
       });
 
     if (authorityErrors.length > 0)
       validationErrors.push({
         index: index,
-        field: "Authority",
+        field: "AuthorityCode",
         errors: authorityErrors,
       });
 
     if (specialDesignationErrors.length > 0)
       validationErrors.push({
         index: index,
-        field: "SpecialDesignation",
+        field: "SpecialDesignationCode",
         errors: specialDesignationErrors,
       });
 
@@ -3324,7 +3325,7 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
     if (swaOrgRefConsultantCodeErrors.length > 0)
       validationErrors.push({
         index: index,
-        field: "SwaOrgRefConsultantCode",
+        field: "SwaOrgRefConsultant",
         errors: swaOrgRefConsultantCodeErrors,
       });
 

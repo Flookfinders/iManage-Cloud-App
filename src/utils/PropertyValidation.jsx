@@ -62,6 +62,7 @@
 //    038   26.07.24 Sean Flook       IMANN-855 Modified checks 2400077 & 2400078.
 //    039   28.07.24 Sean Flook       IMANN-855 Removed check 2400106 as cannot be done in the GUI.
 //    040   26.07.24 Sean Flook       IMANN-860 Report check 3000012 on the correct field.
+//    041   22.08.24 Sean Flook       IMANN-951 Corrected field names.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1316,7 +1317,7 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
     if (postalAddressErrors.length > 0)
       validationErrors.push({
         index: index,
-        field: "PostalAddress",
+        field: isScottish ? "PostallyAddressable" : "PostalAddress",
         errors: postalAddressErrors,
       });
 
@@ -1472,7 +1473,7 @@ export function ValidateProvenanceData(data, index, currentLookups, isScottish) 
     if (annotationErrors.length > 0)
       validationErrors.push({
         index: index,
-        field: "Annotations",
+        field: "Annotation",
         errors: annotationErrors,
       });
   }
