@@ -27,6 +27,7 @@
 //    014   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    015   08.07.24 Sean Flook       IMANN-714 Corrected field name.
 //    016   08.07.24 Sean Flook       IMANN-715 Increase the failed count if failed to save property.
+//    017   22.08.24 Sean Flook       IMANN-946 Only display the Keep option when end date is set.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -314,6 +315,7 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
             };
 
             let updatedClassifications = property.classifications ? property.classifications.map((x) => x) : [];
+            let openClassification = property.classifications ? property.classifications.filter((x) => !x.endDate) : [];
             let haveReplaceError = false;
 
             switch (action) {
@@ -329,9 +331,24 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
                     return { ...x, changeType: "D", endDate: currentDate };
                   });
                   updatedClassifications.push(newClassificationRec);
-                } else if (property.blpuAppCrossRefs && property.classifications.length > 1) {
+                } else if (openClassification && openClassification.length === 1) {
+                  openClassification = openClassification.map((x) => {
+                    return { ...x, changeType: "D", endDate: currentDate };
+                  });
+                  updatedClassifications = property.classifications.map(
+                    (x) => openClassification.find((rec) => rec.pkId === x.pkId) || x
+                  );
+                  updatedClassifications.push(newClassificationRec);
+                } else if (
+                  property.classifications &&
+                  property.classifications.length > 1 &&
+                  openClassification &&
+                  openClassification.length > 1
+                ) {
                   haveReplaceError = true;
-                  setClassificationError(["Delete can only be used when there is only 1 previous classification."]);
+                  setClassificationError([
+                    "Delete can only be used when there is only 1 previous open classification.",
+                  ]);
                 }
                 break;
 
@@ -343,10 +360,23 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
                     return { ...x, changeType: "U", endDate: currentDate };
                   });
                   updatedClassifications.push(newClassificationRec);
-                } else if (property.blpuAppCrossRefs && property.classifications.length > 1) {
+                } else if (openClassification && openClassification.length === 1) {
+                  openClassification = openClassification.map((x) => {
+                    return { ...x, changeType: "U", endDate: currentDate };
+                  });
+                  updatedClassifications = property.classifications.map(
+                    (x) => openClassification.find((rec) => rec.pkId === x.pkId) || x
+                  );
+                  updatedClassifications.push(newClassificationRec);
+                } else if (
+                  property.classifications &&
+                  property.classifications.length > 1 &&
+                  openClassification &&
+                  openClassification.length > 1
+                ) {
                   haveReplaceError = true;
                   setClassificationError([
-                    "Historicise can only be used when there is only 1 previous classification.",
+                    "Historicise can only be used when there is only 1 previous open classification.",
                   ]);
                 }
                 break;
@@ -368,13 +398,42 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
                       neverExport: property.neverExport,
                     },
                   ];
-                } else if (property.blpuAppCrossRefs && property.classifications.length > 1) {
+                } else if (openClassification && openClassification.length === 1) {
+                  openClassification = [
+                    {
+                      pkId: openClassification[0].pkId,
+                      classKey: openClassification[0].classKey,
+                      changeType: "U",
+                      uprn: property && property.uprn,
+                      classificationScheme: openClassification[0].classificationScheme,
+                      blpuClass: classification,
+                      startDate: startDate,
+                      endDate: endDate,
+                      neverExport: property.neverExport,
+                    },
+                  ];
+                  updatedClassifications = property.classifications.map(
+                    (x) => openClassification.find((rec) => rec.pkId === x.pkId) || x
+                  );
+                  updatedClassifications.push(newClassificationRec);
+                } else if (
+                  property.classifications &&
+                  property.classifications.length > 1 &&
+                  openClassification &&
+                  openClassification.length > 1
+                ) {
                   haveReplaceError = true;
-                  setClassificationError(["Update can only be used when there is only 1 previous classification."]);
+                  setClassificationError([
+                    "Update can only be used when there is only 1 previous open classification.",
+                  ]);
                 }
                 break;
 
               default:
+                if (openClassification && openClassification.length > 0) {
+                  haveReplaceError = true;
+                  setClassificationError(["Select what should be done with the existing classification."]);
+                }
                 break;
             }
 
@@ -435,11 +494,12 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
                     setRangeProcessedCount(updatedCount.current + failedCount.current);
                   } else {
                     failedCount.current++;
+                    setRangeProcessedCount(updatedCount.current + failedCount.current);
                   }
                 }
               );
             } else {
-              failedCount.current++;
+              setUpdating(false);
             }
           }
         }
@@ -653,12 +713,14 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
                     value={action}
                     onChange={handleActionChangeEvent}
                   >
-                    <FormControlLabel
-                      value="keep"
-                      control={<Radio />}
-                      label={<Typography variant="body2">Keep existing and add new</Typography>}
-                      sx={{ ml: "135px" }}
-                    />
+                    {endDate && (
+                      <FormControlLabel
+                        value="keep"
+                        control={<Radio />}
+                        label={<Typography variant="body2">Keep existing and add new</Typography>}
+                        sx={{ ml: "135px" }}
+                      />
+                    )}
                     <FormControlLabel
                       value="delete"
                       control={<Radio />}
