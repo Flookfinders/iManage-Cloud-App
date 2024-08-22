@@ -21,6 +21,7 @@
 //    008   30.04.24 Sean Flook       IMANN-418 Corrected logic.
 //    009   18.07.24 Sean Flook       IMANN-571 Corrected bug.
 //    010   26.07.24 Sean Flook       IMANN-867 Pass the id into getData when using an existing template.
+//    011   22.08.24 Sean Flook       IMANN-945 Correctly store the id when selecting a template and then pass into getData.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -58,7 +59,7 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
   const [step, setStep] = useState(null);
   const [templateType, setTemplateType] = useState(null);
   const [options, setOptions] = useState([]);
-  const [createFromValue, setCreateFromValue] = useState(null);
+  const [createFromId, setCreateFromId] = useState(null);
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
   const [titleError, setTitleError] = useState(null);
@@ -136,7 +137,7 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
     } else setDescriptionError(null);
 
     if (isValid) {
-      const data = getData(!!duplicateId ? duplicateId : !!createFromValue ? createFromValue.id : null);
+      const data = getData(!!duplicateId ? duplicateId : !!createFromId ? createFromId : null);
       if (onDone) onDone(data);
     }
   };
@@ -166,7 +167,7 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
         };
       })
     );
-    setCreateFromValue(filteredTemplates[0].templatePkId);
+    setCreateFromId(filteredTemplates[0].templatePkId);
     setTitle(`Copy of ${filteredTemplates[0].templateName}`);
     setDescription(`Copy of ${filteredTemplates[0].templateDescription}`);
   };
@@ -188,7 +189,7 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
         };
       })
     );
-    setCreateFromValue(filteredTemplates[0].templatePkId);
+    setCreateFromId(filteredTemplates[0].templatePkId);
     setTitle(`Copy of ${filteredTemplates[0].templateName}`);
     setDescription(`Copy of ${filteredTemplates[0].templateDescription}`);
   };
@@ -250,7 +251,7 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
   useEffect(() => {
     if (isOpen) {
       setTemplateType(null);
-      setCreateFromValue(null);
+      setCreateFromId(null);
       setStep(1);
       setTitle(null);
       setDescription(null);
@@ -333,7 +334,7 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
                     }}
                     noOptionsText="No templates"
                     options={options}
-                    value={createFromValue}
+                    value={createFromId}
                     onChange={(event, newValue) => {
                       if (newValue) {
                         setTitle(`Copy of ${newValue.name}`);
@@ -342,7 +343,7 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
                         setTitle(null);
                         setDescription(null);
                       }
-                      setCreateFromValue(newValue);
+                      setCreateFromId(newValue.id);
                     }}
                     autoHighlight
                     autoSelect
@@ -398,7 +399,7 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
           <Button
             onClick={handleNextClick}
             autoFocus
-            disabled={!templateType || !createFromValue}
+            disabled={!templateType || !createFromId}
             variant="contained"
             sx={blueButtonStyle}
             startIcon={<NavigateNextIcon />}
