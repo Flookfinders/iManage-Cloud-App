@@ -79,6 +79,7 @@
 //    066   17.07.24 Joshua McCormick IMANN-548 Added formatStreetData util
 //    067   17.07.24 Joshua McCormick IMANN-548 Changed formatStreetData to getStreetSearchData
 //    068   18.07.24 Sean Flook       IMANN-772 Corrected field name.
+//    069   23.08.24 Sean Flook       IMANN-469 Only delete ESUs and associated records if the street is being deleted, not when it is just being closed.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2118,6 +2119,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                   esu.changeType &&
                   streetData.state === 4 &&
                   [1, 2].includes(streetData.recordType) &&
+                  streetData.changeType === "D" &&
                   esu.changeType !== "D"
                     ? "D"
                     : esu.changeType,
@@ -2139,7 +2141,10 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                     esuId: hd.esuId > 0 ? hd.esuId : 0,
                     seqNum: hd.seqNum,
                     changeType:
-                      (esu.changeType === "D" || (streetData.state === 4 && [1, 2].includes(streetData.recordType))) &&
+                      (esu.changeType === "D" ||
+                        (streetData.state === 4 &&
+                          [1, 2].includes(streetData.recordType) &&
+                          streetData.changeType === "D")) &&
                       hd.changeType !== "D"
                         ? "D"
                         : hd.changeType,
@@ -2172,7 +2177,11 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                     esuId: owe.esuId > 0 ? owe.esuId : 0,
                     seqNum: owe.seqNum,
                     changeType:
-                      (esu.changeType === "D" || [4, 5].includes(streetData.state)) && owe.changeType !== "D"
+                      (esu.changeType === "D" ||
+                        ([4, 5].includes(streetData.state) &&
+                          [1, 2].includes(streetData.recordType) &&
+                          streetData.changeType === "D")) &&
+                      owe.changeType !== "D"
                         ? "D"
                         : owe.changeType,
                     oneWayExemptionType: owe.oneWayExemptionType,
@@ -2265,6 +2274,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                   esu.changeType &&
                   streetData.state === 4 &&
                   [1, 2].includes(streetData.recordType) &&
+                  streetData.changeType === "D" &&
                   esu.changeType !== "D"
                     ? "D"
                     : esu.changeType,
@@ -2288,7 +2298,9 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                         seqNum: hd.seqNum,
                         changeType:
                           (esu.changeType === "D" ||
-                            (streetData.state === 4 && [1, 2].includes(streetData.recordType))) &&
+                            (streetData.state === 4 &&
+                              [1, 2].includes(streetData.recordType) &&
+                              streetData.changeType === "D")) &&
                           hd.changeType !== "D"
                             ? "D"
                             : hd.changeType,
@@ -2323,7 +2335,11 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                         esuId: owe.esuId > 0 ? owe.esuId : 0,
                         seqNum: owe.seqNum,
                         changeType:
-                          (esu.changeType === "D" || [4, 5].includes(streetData.state)) && owe.changeType !== "D"
+                          (esu.changeType === "D" ||
+                            ([4, 5].includes(streetData.state) &&
+                              [1, 2].includes(streetData.recordType) &&
+                              streetData.changeType === "D")) &&
+                          owe.changeType !== "D"
                             ? "D"
                             : owe.changeType,
                         oneWayExemptionType: owe.oneWayExemptionType,
