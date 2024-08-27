@@ -117,6 +117,7 @@
 //    103   07.08.24 Sean Flook       IMANN-909 Removed handling of successor records in the handleTabChange event.
 //    104   16.08.24 Sean Flook       IMANN-935 Only return whole number when calculating the length of a PRoW.
 //    105   20.08.24 Sean Flook       IMANN-818 Corrected typo.
+//    106   27.08.24 Sean Flook       IMANN-925 If creating a new street and editing the USRN save the street with the new USRN.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3077,7 +3078,19 @@ function StreetDataForm({ data, loading }) {
       hasASD
     );
 
-    if (streetChanged && newUsrnRef.current === 0) {
+    if (streetContext.currentStreet.newStreet) {
+      const newStreetData = { ...streetData, usrn: newUsrn };
+      updateStreetData(newStreetData);
+      newUsrnRef.current = 0;
+      if (streetContext.validateData()) {
+        failedValidation.current = false;
+        HandleStreetSave(newStreetData);
+      } else {
+        failedValidation.current = true;
+        saveResult.current = false;
+        setSaveOpen(true);
+      }
+    } else if (streetChanged && newUsrnRef.current === 0) {
       newUsrnRef.current = newUsrn;
       handleSaveClicked();
     } else {
