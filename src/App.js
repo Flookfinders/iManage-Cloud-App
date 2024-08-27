@@ -74,6 +74,7 @@
 //    061   19.07.24 Sean Flook       IMANN-801 Added polling objects to Offline and Online and changed the polling interval from every 5 seconds to every 60 seconds.
 //    062   23.07.24 Sean Flook       IMANN-801 Reduced the polling interval back to every 5 seconds.
 //    063   06.08.24 Sean Flook       IMANN-903 Use a reference to store the loaded SHP files.
+//    064   27.08.24 Sean Flook       IMANN-925 Corrected typo.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -924,7 +925,7 @@ function App() {
             ? JSON.parse(JSON.stringify(updatedData))
             : ["esu", "allAssociatedStreet", "allProperty", "allStreet"].includes(clearType)
             ? null
-            : sandbox.currentStreetRecords.esu,
+            : sandboxRef.current.currentStreetRecords.esu,
         highwayDedication:
           updateType === "highwayDedication"
             ? JSON.parse(JSON.stringify(updatedData))
