@@ -96,6 +96,7 @@
 //    082   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    083   22.07.24 Sean Flook       IMANN-774 Added hack to cater for ESRI double event issue for when selecting ESUs.
 //    084   13.08.24 Sean Flook       IMANN-918 Do not display the sketch tool if the user does not have rights to edit the object.
+//    085   27.08.24 Sean Flook       IMANN-888 Ensure the background streets are redrawn when creating a new street whilst already looking at another street.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3059,9 +3060,23 @@ function ADSEsriMap(startExtent) {
       mapContext.currentBackgroundData.streets &&
       mapContext.currentBackgroundData.streets.length > 0;
 
-    const oldAndNewSame = haveStreets
+    let oldAndNewSame = haveStreets
       ? ArraysEqual(oldMapData.current.backgroundStreets, mapContext.currentBackgroundData.streets)
       : false;
+
+    if (oldAndNewSame) {
+      oldAndNewSame =
+        !!mapContext.currentSearchData.editStreet &&
+        !!oldMapData.current.editStreet &&
+        mapContext.currentSearchData.editStreet === oldMapData.current.editStreet;
+    }
+
+    if (oldAndNewSame) {
+      oldAndNewSame =
+        !!mapContext.currentLayers.zoomStreet &&
+        !!oldMapData.current.zoomStreet &&
+        mapContext.currentLayers.zoomStreet === oldMapData.current.zoomStreet;
+    }
 
     if (!mapRef.current || !mapRef.current.layers || !haveStreets || oldAndNewSame) return;
 
@@ -3393,9 +3408,23 @@ function ADSEsriMap(startExtent) {
       mapContext.currentBackgroundData.properties &&
       mapContext.currentBackgroundData.properties.length > 0;
 
-    const oldAndNewSame = haveProperties
+    let oldAndNewSame = haveProperties
       ? ArraysEqual(oldMapData.current.backgroundProperties, mapContext.currentBackgroundData.properties)
       : false;
+
+    if (oldAndNewSame) {
+      oldAndNewSame =
+        !!mapContext.currentSearchData.editProperty &&
+        !!oldMapData.current.editProperty &&
+        mapContext.currentSearchData.editProperty === oldMapData.current.editProperty;
+    }
+
+    if (oldAndNewSame) {
+      oldAndNewSame =
+        !!mapContext.currentLayers.zoomProperty &&
+        !!oldMapData.current.zoomProperty &&
+        mapContext.currentLayers.zoomProperty === oldMapData.current.zoomProperty;
+    }
 
     if (!mapRef.current || !mapRef.current.layers || !haveProperties || oldAndNewSame) return;
 
