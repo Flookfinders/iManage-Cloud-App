@@ -28,6 +28,7 @@
 //    015   08.07.24 Sean Flook       IMANN-714 Corrected field name.
 //    016   08.07.24 Sean Flook       IMANN-715 Increase the failed count if failed to save property.
 //    017   22.08.24 Sean Flook       IMANN-946 Only display the Keep option when end date is set.
+//    018   28.08.24 Sean Flook       IMANN-959 When we have an end date set only display the keep option.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -197,6 +198,8 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
   const handleEndDateChangeEvent = (newValue) => {
     setEndDate(newValue);
     setEndDateError(null);
+    if (newValue) setAction("keep");
+    else setAction("add");
   };
 
   /**
@@ -721,24 +724,30 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
                         sx={{ ml: "135px" }}
                       />
                     )}
-                    <FormControlLabel
-                      value="delete"
-                      control={<Radio />}
-                      label={<Typography variant="body2">Delete existing and add new</Typography>}
-                      sx={{ ml: "135px" }}
-                    />
-                    <FormControlLabel
-                      value="historicise"
-                      control={<Radio />}
-                      label={<Typography variant="body2">Historicise existing and add new</Typography>}
-                      sx={{ ml: "135px" }}
-                    />
-                    <FormControlLabel
-                      value="update"
-                      control={<Radio />}
-                      label={<Typography variant="body2">Update existing</Typography>}
-                      sx={{ ml: "135px" }}
-                    />
+                    {!endDate && (
+                      <FormControlLabel
+                        value="delete"
+                        control={<Radio />}
+                        label={<Typography variant="body2">Delete existing and add new</Typography>}
+                        sx={{ ml: "135px" }}
+                      />
+                    )}
+                    {!endDate && (
+                      <FormControlLabel
+                        value="historicise"
+                        control={<Radio />}
+                        label={<Typography variant="body2">Historicise existing and add new</Typography>}
+                        sx={{ ml: "135px" }}
+                      />
+                    )}
+                    {!endDate && (
+                      <FormControlLabel
+                        value="update"
+                        control={<Radio />}
+                        label={<Typography variant="body2">Update existing</Typography>}
+                        sx={{ ml: "135px" }}
+                      />
+                    )}
                   </RadioGroup>
                 </FormControl>
               </Grid>
