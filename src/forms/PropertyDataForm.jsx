@@ -76,6 +76,7 @@
 //    063   18.07.24 Sean Flook       IMANN-563 When historicising a property also set the BLPU state to 4.
 //    064   19.07.24 Sean Flook       IMANN-802 Added ability for Scottish authorities to add new Gaelic LPIs.
 //    065   13.08.24 Sean Flook       IMANN-861 When creating a new successor record set the predecessor with the current UPRN.
+//    066   27.08.24 Sean Flook       IMANN-910 Corrected typo.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4159,7 +4160,7 @@ function PropertyDataForm({ data, loading }) {
           lastUpdateDate: sandboxContext.currentSandbox.currentPropertyRecords.classification.lastUpdateDate,
           neverExport: sandboxContext.currentSandbox.currentPropertyRecords.classification.neverExport,
         },
-        index: data.classifications.finIndex(
+        index: data.classifications.findIndex(
           (x) => x.pkId === sandboxContext.currentSandbox.currentPropertyRecords.classification.pkId
         ),
         totalRecords: data.classifications.length,
