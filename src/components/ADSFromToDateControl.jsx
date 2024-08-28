@@ -18,6 +18,7 @@
 //    005   03.01.24 Sean Flook                 Fixed warning.
 //    006   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    007   16.01.24 Sean Flook       IMANN-237 Added a clear button.
+//    008   28.08.24 Sean Flook       IMANN-961 Use a TextField when user is read only.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -27,15 +28,21 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Grid, Typography, Tooltip, Skeleton } from "@mui/material";
+import { Grid, Typography, Tooltip, Skeleton, TextField } from "@mui/material";
 import { Box } from "@mui/system";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dateFormat from "dateformat";
 import { parseISO } from "date-fns";
 import { isValidDate } from "../utils/HelperUtils";
 import ADSErrorDisplay from "./ADSErrorDisplay";
-import { useTheme } from "@mui/styles";
-import { FormBoxRowStyle, FormRowStyle, FormDateInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
+import {
+  FormBoxRowStyle,
+  FormRowStyle,
+  FormDateInputStyle,
+  controlLabelStyle,
+  tooltipStyle,
+  FormInputStyle,
+} from "../utils/ADSStyles";
 
 /* #endregion imports */
 
@@ -86,8 +93,6 @@ function ADSFromToDateControl({
   onFromChange,
   onToChange,
 }) {
-  const theme = useTheme();
-
   const [selectedFromDate, setSelectedFromDate] = useState(null);
   const [selectedToDate, setSelectedToDate] = useState(null);
   const hasFromError = useRef(false);
@@ -329,20 +334,34 @@ function ADSFromToDateControl({
                   <Typography variant="body2">{fromLabel}</Typography>
                 </Grid>
                 <Grid item>
-                  {selectedFromDate && selectedFromDate.toString() !== "0001-01-01T00:00:00" && (
-                    <Typography
+                  {selectedFromDate && selectedFromDate.toString() !== "0001-01-01T00:00:00" ? (
+                    <TextField
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-from-date`}
-                      variant="body1"
-                      align="left"
-                      sx={{
-                        pl: theme.spacing(2),
-                        pt: theme.spacing(1.75),
-                        pb: theme.spacing(1.75),
-                      }}
-                      aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-from-label`}
-                    >
-                      {dateFormat(selectedFromDate, "d mmm yyyy")}
-                    </Typography>
+                      sx={FormInputStyle(hasFromError.current)}
+                      error={hasFromError.current}
+                      rows={1}
+                      fullWidth
+                      disabled
+                      required={isRequired}
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      value={dateFormat(selectedFromDate, "d mmm yyyy")}
+                    />
+                  ) : (
+                    <TextField
+                      id={`${label.toLowerCase().replaceAll(" ", "-")}-from-date`}
+                      sx={FormInputStyle(hasFromError.current)}
+                      error={hasFromError.current}
+                      rows={1}
+                      fullWidth
+                      disabled
+                      required={isRequired}
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      value={""}
+                    />
                   )}
                 </Grid>
               </Grid>
@@ -351,20 +370,34 @@ function ADSFromToDateControl({
                   <Typography variant="body2">{toLabel}</Typography>
                 </Grid>
                 <Grid item>
-                  {selectedToDate && selectedToDate.toString() !== "0001-01-01T00:00:00" && (
-                    <Typography
+                  {selectedToDate && selectedToDate.toString() !== "0001-01-01T00:00:00" ? (
+                    <TextField
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-to-date`}
-                      variant="body1"
-                      align="left"
-                      sx={{
-                        pl: theme.spacing(2),
-                        pt: theme.spacing(1.75),
-                        pb: theme.spacing(1.75),
-                      }}
-                      aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-to-label`}
-                    >
-                      {dateFormat(selectedToDate, "d mmm yyyy")}
-                    </Typography>
+                      sx={FormInputStyle(hasToError.current)}
+                      error={hasToError.current}
+                      rows={1}
+                      fullWidth
+                      disabled
+                      required={isRequired}
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      value={dateFormat(selectedToDate, "d mmm yyyy")}
+                    />
+                  ) : (
+                    <TextField
+                      id={`${label.toLowerCase().replaceAll(" ", "-")}-to-date`}
+                      sx={FormInputStyle(hasToError.current)}
+                      error={hasToError.current}
+                      rows={1}
+                      fullWidth
+                      disabled
+                      required={isRequired}
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      value={""}
+                    />
                   )}
                 </Grid>
               </Grid>

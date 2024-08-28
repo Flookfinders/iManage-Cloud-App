@@ -21,6 +21,7 @@
 //    008   16.01.24 Sean Flook       IMANN-237 Added a clear button.
 //    009   19.01.24 Sean Flook       IMANN-243 Correctly update the time.
 //    010   16.02.24 Sean Flook       IMANN-243 Correctly handle the incoming time.
+//    011   28.08.24 Sean Flook       IMANN-961 Use a TextField when user is read only.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -35,15 +36,14 @@ import dateFormat from "dateformat";
 import { parseISO, parse } from "date-fns";
 import { isValidDate } from "../utils/HelperUtils";
 
-import { Grid, Typography, Tooltip, Skeleton } from "@mui/material";
+import { Grid, Typography, Tooltip, Skeleton, TextField } from "@mui/material";
 import { Box } from "@mui/system";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 
 import { adsMidGreyA } from "../utils/ADSColours";
-import { FormBoxRowStyle, FormRowStyle, FormDateInputStyle, tooltipStyle } from "../utils/ADSStyles";
-import { useTheme } from "@mui/styles";
+import { FormBoxRowStyle, FormRowStyle, FormDateInputStyle, tooltipStyle, FormInputStyle } from "../utils/ADSStyles";
 
 /* #endregion imports */
 
@@ -97,8 +97,6 @@ function ADSDateTimeControl({
   onDateChange,
   onTimeChange,
 }) {
-  const theme = useTheme();
-
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const hasDateError = useRef(false);
@@ -341,20 +339,34 @@ function ADSDateTimeControl({
                   <Typography variant="body2">{`Date${isDateRequired ? "*" : ""}`}</Typography>
                 </Grid>
                 <Grid item>
-                  {selectedDate && selectedDate.toString() !== "0001-01-01T00:00:00" && (
-                    <Typography
+                  {selectedDate && selectedDate.toString() !== "0001-01-01T00:00:00" ? (
+                    <TextField
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-date`}
-                      variant="body1"
-                      align="left"
-                      sx={{
-                        pl: theme.spacing(2),
-                        pt: theme.spacing(1.75),
-                        pb: theme.spacing(1.75),
-                      }}
-                      aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-                    >
-                      {dateFormat(selectedDate, "d mmm yyyy")}
-                    </Typography>
+                      sx={FormInputStyle(hasDateError.current)}
+                      error={hasDateError.current}
+                      rows={1}
+                      fullWidth
+                      disabled
+                      required={isRequired}
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      value={dateFormat(selectedDate, "d mmm yyyy")}
+                    />
+                  ) : (
+                    <TextField
+                      id={`${label.toLowerCase().replaceAll(" ", "-")}-date`}
+                      sx={FormInputStyle(hasDateError.current)}
+                      error={hasDateError.current}
+                      rows={1}
+                      fullWidth
+                      disabled
+                      required={isRequired}
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      value={""}
+                    />
                   )}
                 </Grid>
               </Grid>
@@ -363,20 +375,34 @@ function ADSDateTimeControl({
                   <Typography variant="body2">{`Time${isTimeRequired ? "*" : ""}`}</Typography>
                 </Grid>
                 <Grid item>
-                  {selectedTime && selectedTime.toString() !== "0001-01-01T00:00:00" && (
-                    <Typography
+                  {selectedTime && selectedTime.toString() !== "0001-01-01T00:00:00" ? (
+                    <TextField
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-time`}
-                      variant="body1"
-                      align="left"
-                      sx={{
-                        pl: theme.spacing(2),
-                        pt: theme.spacing(1.75),
-                        pb: theme.spacing(1.75),
-                      }}
-                      aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-time-label`}
-                    >
-                      {dateFormat(selectedTime, "h:M tt")}
-                    </Typography>
+                      sx={FormInputStyle(hasTimeError.current)}
+                      error={hasTimeError.current}
+                      rows={1}
+                      fullWidth
+                      disabled
+                      required={isRequired}
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      value={dateFormat(selectedTime, "h:M tt")}
+                    />
+                  ) : (
+                    <TextField
+                      id={`${label.toLowerCase().replaceAll(" ", "-")}-date`}
+                      sx={FormInputStyle(hasDateError.current || hasTimeError.current)}
+                      error={hasDateError.current || hasTimeError.current}
+                      rows={1}
+                      fullWidth
+                      disabled
+                      required={isRequired}
+                      variant="outlined"
+                      margin="dense"
+                      size="small"
+                      value={""}
+                    />
                   )}
                 </Grid>
               </Grid>

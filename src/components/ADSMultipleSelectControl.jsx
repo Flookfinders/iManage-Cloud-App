@@ -16,6 +16,7 @@
 //    003   06.10.23 Sean Flook                 Use colour variables.
 //    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    006   28.08.24 Sean Flook       IMANN-961 Use a TextField when user is read only.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -39,9 +40,12 @@ import {
   FormControl,
   Checkbox,
   ListItemText,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
+import { lookupToTitleCase } from "../utils/HelperUtils";
 import {
   SyncAlt as TwoWayIcon,
   DirectionsWalk as PRoWIcon,
@@ -83,8 +87,8 @@ import {
   menuItemStyle,
   controlLabelStyle,
   tooltipStyle,
+  FormInputStyle,
 } from "../utils/ADSStyles";
-import { useTheme } from "@mui/styles";
 
 /* #endregion imports */
 
@@ -132,7 +136,6 @@ function ADSMultipleSelectControl({
   errorText,
   onChange,
 }) {
-  const theme = useTheme();
   const [displayError, setDisplayError] = useState("");
   const hasError = useRef(false);
   const [filterData, setFilterData] = useState(value);
@@ -435,39 +438,59 @@ function ADSMultipleSelectControl({
       if (currentRow) {
         if (lookupIcon && currentRow[0][lookupIcon] && currentRow[0][lookupIcon].length !== 0) {
           return (
-            <Box
-              sx={{
-                pl: theme.spacing(2),
-                pt: theme.spacing(1.75),
-                pb: theme.spacing(1.75),
+            <TextField
+              id={`${label.toLowerCase().replaceAll(" ", "-")}-lookup-info`}
+              sx={FormInputStyle(hasError.current)}
+              error={hasError.current}
+              fullWidth
+              disabled
+              required={isRequired}
+              variant="outlined"
+              margin="dense"
+              size="small"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <img src={currentRow[0][lookupIcon]} alt="" width="20" height="20" />
+                  </InputAdornment>
+                ),
               }}
-            >
-              <img src={currentRow[0][lookupIcon]} alt="" width="20" height="20" />
-              <Typography
-                variant="body1"
-                align="left"
-                color="textPrimary"
-                aria-labelledby={`${label.replace(" ", "-")}-label`}
-              >
-                {currentRow[0][lookupLabel]}
-              </Typography>
-            </Box>
+              value={lookupToTitleCase(currentRow[0][lookupLabel], false)}
+            />
           );
         } else {
           return (
-            <Typography
-              variant="body1"
-              align="left"
-              sx={{
-                pl: theme.spacing(2),
-                pt: theme.spacing(1.75),
-                pb: theme.spacing(1.75),
-              }}
-            >
-              {currentRow[0][lookupLabel]}
-            </Typography>
+            <TextField
+              id={`${label.toLowerCase().replaceAll(" ", "-")}-lookup-info`}
+              sx={FormInputStyle(hasError.current)}
+              error={hasError.current}
+              rows={1}
+              fullWidth
+              disabled
+              required={isRequired}
+              variant="outlined"
+              margin="dense"
+              size="small"
+              value={lookupToTitleCase(currentRow[0][lookupLabel], false)}
+            />
           );
         }
+      } else {
+        return (
+          <TextField
+            id={`${label.toLowerCase().replaceAll(" ", "-")}-lookup-info`}
+            sx={FormInputStyle(hasError.current)}
+            error={hasError.current}
+            rows={1}
+            fullWidth
+            disabled
+            required={isRequired}
+            variant="outlined"
+            margin="dense"
+            size="small"
+            value={""}
+          />
+        );
       }
     }
   }

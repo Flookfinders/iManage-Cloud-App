@@ -28,6 +28,7 @@
 //    015   03.01.24 Sean Flook                 Fixed warning.
 //    016   05.01.24 Sean Flook                 use CSS shortcuts.
 //    017   16.01.24 Sean Flook       IMANN-237 Added a clear button.
+//    018   28.08.24 Sean Flook       IMANN-961 Use a TextField when user is read only.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -42,13 +43,19 @@ import { parseISO } from "date-fns";
 import dateFormat from "dateformat";
 import { isValidDate } from "../utils/HelperUtils";
 
-import { Grid, Typography, Tooltip, Skeleton } from "@mui/material";
+import { Grid, Typography, Tooltip, Skeleton, TextField } from "@mui/material";
 import { Box } from "@mui/system";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 
-import { useTheme } from "@mui/styles";
-import { FormBoxRowStyle, FormRowStyle, FormDateInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
+import {
+  FormBoxRowStyle,
+  FormRowStyle,
+  FormDateInputStyle,
+  controlLabelStyle,
+  tooltipStyle,
+  FormInputStyle,
+} from "../utils/ADSStyles";
 
 /* #endregion imports */
 
@@ -88,7 +95,6 @@ function ADSDateControl({
   errorText,
   onChange,
 }) {
-  const theme = useTheme();
   const [selectedDate, setSelectedDate] = useState(null);
   const [displayError, setDisplayError] = useState("");
   const hasError = useRef(false);
@@ -217,23 +223,34 @@ function ADSDateControl({
                 aria-describedby={`${label.toLowerCase().replaceAll(" ", "-")}-error`}
               />
             )
+          ) : selectedDate && selectedDate.toString() !== "0001-01-01T00:00:00" ? (
+            <TextField
+              id={`${label.toLowerCase().replaceAll(" ", "-")}-date`}
+              sx={FormInputStyle(hasError.current)}
+              error={hasError.current}
+              rows={1}
+              fullWidth
+              disabled
+              required={isRequired}
+              variant="outlined"
+              margin="dense"
+              size="small"
+              value={dateFormat(selectedDate, "d mmm yyyy")}
+            />
           ) : (
-            selectedDate &&
-            selectedDate.toString() !== "0001-01-01T00:00:00" && (
-              <Typography
-                id={`${label.toLowerCase().replaceAll(" ", "-")}-date`}
-                variant="body1"
-                align="left"
-                sx={{
-                  pl: theme.spacing(2),
-                  pt: theme.spacing(1.75),
-                  pb: theme.spacing(1.75),
-                }}
-                aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-              >
-                {dateFormat(selectedDate, "d mmm yyyy")}
-              </Typography>
-            )
+            <TextField
+              id={`${label.toLowerCase().replaceAll(" ", "-")}-date`}
+              sx={FormInputStyle(hasError.current)}
+              error={hasError.current}
+              rows={1}
+              fullWidth
+              disabled
+              required={isRequired}
+              variant="outlined"
+              margin="dense"
+              size="small"
+              value={""}
+            />
           )}
         </Grid>
         <ADSErrorDisplay errorText={displayError} id={`${label.toLowerCase().replaceAll(" ", "-")}-error`} />

@@ -31,6 +31,7 @@
 //    018   14.03.24 Sean Flook        ESU19_GP Use the lookupColour for the icon background colour.
 //    019   09.04.24 Sean Flook       IMANN-376 Modified to show an add button if required.
 //    020   13.06.24 Sean Flook       IMANN-553 Changes required to handle values of 0.
+//    021   28.08.24 Sean Flook       IMANN-961 Use a TextField when user is read only.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -65,12 +66,12 @@ import { adsBlueA, adsRed, adsDarkGrey, adsWhite, adsLightGreyA, adsBlack, adsYe
 import {
   ActionIconStyle,
   FormBoxRowStyle,
+  FormInputStyle,
   FormRowStyle,
   FormSelectInputStyle,
   controlLabelStyle,
   tooltipStyle,
 } from "../utils/ADSStyles";
-import { useTheme } from "@mui/styles";
 
 /* #endregion imports */
 
@@ -142,7 +143,6 @@ function ADSSelectControl({
   onChange,
   onAddLookup,
 }) {
-  const theme = useTheme();
   const [displayError, setDisplayError] = useState("");
   const hasError = useRef(false);
   const [options, setOptions] = useState([]);
@@ -246,41 +246,59 @@ function ADSSelectControl({
       if (currentRow && currentRow.length > 0) {
         if (lookupIcon && currentRow[0][lookupIcon] && currentRow[0][lookupIcon].length !== 0) {
           return (
-            <Box
-              sx={{
-                pl: theme.spacing(2),
-                pt: theme.spacing(1.75),
-                pb: theme.spacing(1.75),
+            <TextField
+              id={`${label.toLowerCase().replaceAll(" ", "-")}-lookup-info`}
+              sx={FormInputStyle(hasError.current)}
+              error={hasError.current}
+              fullWidth
+              disabled
+              required={isRequired}
+              variant="outlined"
+              margin="dense"
+              size="small"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    {getIcon(currentRow[0][lookupIcon], lookupColour ? currentRow[0][lookupColour] : adsBlueA)}
+                  </InputAdornment>
+                ),
               }}
-            >
-              {getIcon(currentRow[0][lookupIcon], lookupColour ? currentRow[0][lookupColour] : adsBlueA)}
-              <Typography
-                id={`${label.toLowerCase().replaceAll(" ", "-")}-lookup-info`}
-                variant="body1"
-                align="left"
-                aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-              >
-                {lookupToTitleCase(currentRow[0][lookupLabel], doNotSetTitleCase)}
-              </Typography>
-            </Box>
+              value={lookupToTitleCase(currentRow[0][lookupLabel], doNotSetTitleCase)}
+            />
           );
         } else {
           return (
-            <Typography
+            <TextField
               id={`${label.toLowerCase().replaceAll(" ", "-")}-lookup-info`}
-              variant="body1"
-              align="left"
-              sx={{
-                pl: theme.spacing(2),
-                pt: theme.spacing(1.75),
-                pb: theme.spacing(1.75),
-              }}
-              aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-            >
-              {lookupToTitleCase(currentRow[0][lookupLabel], doNotSetTitleCase)}
-            </Typography>
+              sx={FormInputStyle(hasError.current)}
+              error={hasError.current}
+              rows={1}
+              fullWidth
+              disabled
+              required={isRequired}
+              variant="outlined"
+              margin="dense"
+              size="small"
+              value={lookupToTitleCase(currentRow[0][lookupLabel], doNotSetTitleCase)}
+            />
           );
         }
+      } else {
+        return (
+          <TextField
+            id={`${label.toLowerCase().replaceAll(" ", "-")}-lookup-info`}
+            sx={FormInputStyle(hasError.current)}
+            error={hasError.current}
+            rows={1}
+            fullWidth
+            disabled
+            required={isRequired}
+            variant="outlined"
+            margin="dense"
+            size="small"
+            value={""}
+          />
+        );
       }
     }
   };
