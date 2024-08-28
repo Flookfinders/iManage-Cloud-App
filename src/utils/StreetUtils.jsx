@@ -81,6 +81,7 @@
 //    068   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    069   23.08.24 Sean Flook       IMANN-469 Only delete ESUs and associated records if the street is being deleted, not when it is just being closed.
 //    070   23.08.24 Sean Flook       IMANN-469 Delete OWE records when street is closed.
+//    071   28.08.24 Sean Flook       IMANN-895 When time fields are falsy send null to the API.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1601,8 +1602,8 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
                         hdEndDate: hd.hdEndDate,
                         hdSeasonalStartDate: hd.hdSeasonalStartDate,
                         hdSeasonalEndDate: hd.hdSeasonalEndDate,
-                        hdStartTime: hd.hdStartTime,
-                        hdEndTime: hd.hdEndTime,
+                        hdStartTime: hd.hdStartTime ? hd.hdStartTime : null,
+                        hdEndTime: hd.hdEndTime ? hd.hdEndTime : null,
                         hdProw: hd.hdProw,
                         hdNcr: hd.hdNcr,
                         hdQuietRoute: hd.hdQuietRoute,
@@ -1621,8 +1622,8 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
                         recordEndDate: owe.recordEndDate,
                         oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
                         oneWayExemptionEndDate: owe.oneWayExemptionEndDate,
-                        oneWayExemptionStartTime: owe.oneWayExemptionStartTime,
-                        oneWayExemptionEndTime: owe.oneWayExemptionEndTime,
+                        oneWayExemptionStartTime: owe.oneWayExemptionStartTime ? owe.oneWayExemptionStartTime : null,
+                        oneWayExemptionEndTime: owe.oneWayExemptionEndTime ? owe.oneWayExemptionEndTime : null,
                         oneWayExemptionPeriodicityCode: owe.oneWayExemptionPeriodicityCode,
                       };
                     })
@@ -1711,8 +1712,8 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
                         hdEndDate: hd.hdEndDate,
                         hdSeasonalStartDate: hd.hdSeasonalStartDate,
                         hdSeasonalEndDate: hd.hdSeasonalEndDate,
-                        hdStartTime: hd.hdStartTime,
-                        hdEndTime: hd.hdEndTime,
+                        hdStartTime: hd.hdStartTime ? hd.hdStartTime : null,
+                        hdEndTime: hd.hdEndTime ? hd.hdEndTime : null,
                         hdProw: hd.hdProw,
                         hdNcr: hd.hdNcr,
                         hdQuietRoute: hd.hdQuietRoute,
@@ -1731,8 +1732,8 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
                         recordEndDate: owe.recordEndDate,
                         oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
                         oneWayExemptionEndDate: owe.oneWayExemptionEndDate,
-                        oneWayExemptionStartTime: owe.oneWayExemptionStartTime,
-                        oneWayExemptionEndTime: owe.oneWayExemptionEndTime,
+                        oneWayExemptionStartTime: owe.oneWayExemptionStartTime ? owe.oneWayExemptionStartTime : null,
+                        oneWayExemptionEndTime: owe.oneWayExemptionEndTime ? owe.oneWayExemptionEndTime : null,
                         oneWayExemptionPeriodicityCode: owe.oneWayExemptionPeriodicityCode,
                       };
                     })
@@ -1840,8 +1841,8 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
                 recordEndDate: sd.recordEndDate,
                 specialDesigStartDate: sd.specialDesigStartDate,
                 specialDesigEndDate: sd.specialDesigEndDate,
-                specialDesigStartTime: sd.specialDesigStartTime,
-                specialDesigEndTime: sd.specialDesigEndTime,
+                specialDesigStartTime: sd.specialDesigStartTime ? sd.specialDesigStartTime : null,
+                specialDesigEndTime: sd.specialDesigEndTime ? sd.specialDesigEndTime : null,
                 specialDesigDescription: sd.specialDesigDescription,
                 swaOrgRefConsultant: sd.swaOrgRefConsultant,
                 districtRefConsultant: sd.districtRefConsultant,
@@ -2162,8 +2163,8 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                     hdEndDate: hd.hdEndDate,
                     hdSeasonalStartDate: hd.hdSeasonalStartDate,
                     hdSeasonalEndDate: hd.hdSeasonalEndDate,
-                    hdStartTime: hd.hdStartTime,
-                    hdEndTime: hd.hdEndTime,
+                    hdStartTime: hd.hdStartTime ? hd.hdStartTime : null,
+                    hdEndTime: hd.hdEndTime ? hd.hdEndTime : null,
                     hdProw: streetData.state === 4 ? false : hd.hdProw,
                     hdNcr: hd.hdNcr,
                     hdQuietRoute: hd.hdQuietRoute,
@@ -2192,8 +2193,8 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                         : owe.recordEndDate,
                     oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
                     oneWayExemptionEndDate: owe.oneWayExemptionEndDate,
-                    oneWayExemptionStartTime: owe.oneWayExemptionStartTime,
-                    oneWayExemptionEndTime: owe.oneWayExemptionEndTime,
+                    oneWayExemptionStartTime: owe.oneWayExemptionStartTime ? owe.oneWayExemptionStartTime : null,
+                    oneWayExemptionEndTime: owe.oneWayExemptionEndTime ? owe.oneWayExemptionEndTime : null,
                     oneWayExemptionPeriodicityCode: owe.oneWayExemptionPeriodicityCode,
                   };
                 }),
@@ -2314,8 +2315,8 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                         hdEndDate: hd.hdEndDate,
                         hdSeasonalStartDate: hd.hdSeasonalStartDate,
                         hdSeasonalEndDate: hd.hdSeasonalEndDate,
-                        hdStartTime: hd.hdStartTime,
-                        hdEndTime: hd.hdEndTime,
+                        hdStartTime: hd.hdStartTime ? hd.hdStartTime : null,
+                        hdEndTime: hd.hdEndTime ? hd.hdEndTime : null,
                         hdProw: streetData.state === 4 ? false : hd.hdProw,
                         hdNcr: hd.hdNcr,
                         hdQuietRoute: hd.hdQuietRoute,
@@ -2346,8 +2347,8 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                             : owe.recordEndDate,
                         oneWayExemptionStartDate: owe.oneWayExemptionStartDate,
                         oneWayExemptionEndDate: owe.oneWayExemptionEndDate,
-                        oneWayExemptionStartTime: owe.oneWayExemptionStartTime,
-                        oneWayExemptionEndTime: owe.oneWayExemptionEndTime,
+                        oneWayExemptionStartTime: owe.oneWayExemptionStartTime ? owe.oneWayExemptionStartTime : null,
+                        oneWayExemptionEndTime: owe.oneWayExemptionEndTime ? owe.oneWayExemptionEndTime : null,
                         oneWayExemptionPeriodicityCode: owe.oneWayExemptionPeriodicityCode,
                       };
                     })
@@ -2475,8 +2476,8 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                     : sd.recordEndDate,
                 specialDesigStartDate: sd.specialDesigStartDate,
                 specialDesigEndDate: sd.specialDesigEndDate,
-                specialDesigStartTime: sd.specialDesigStartTime,
-                specialDesigEndTime: sd.specialDesigEndTime,
+                specialDesigStartTime: sd.specialDesigStartTime ? sd.specialDesigStartTime : null,
+                specialDesigEndTime: sd.specialDesigEndTime ? sd.specialDesigEndTime : null,
                 specialDesigDescription: sd.specialDesigDescription,
                 swaOrgRefConsultant: sd.swaOrgRefConsultant,
                 districtRefConsultant: sd.districtRefConsultant,
