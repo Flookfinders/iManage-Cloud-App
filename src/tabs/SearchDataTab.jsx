@@ -64,6 +64,7 @@
 //    050   17.07.24 Joshua McCormick IMANN-548 Removed getStreetSearchData import
 //    051   18.07.24 Joshua McCormick IMANN-548 zoomToStreet add street if not in newMapSearchProperties
 //    052   18.07.24 Sean Flook       IMANN-772 Corrected field name.
+//    053   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -892,6 +893,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
         uprn: found.uprn,
         parentUprn: found.parentUprn,
         address: found.address,
+        formattedAddress: found.formattedAddress,
         postcode: found.postcode,
         easting: found.easting,
         northing: found.northing,
@@ -925,6 +927,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
         uprn: found.uprn,
         parentUprn: found.parentUprn,
         address: found.address,
+        formattedAddress: found.formattedAddress,
         postcode: found.postcode,
         easting: found.easting,
         northing: found.northing,

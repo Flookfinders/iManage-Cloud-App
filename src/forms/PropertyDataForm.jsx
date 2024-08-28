@@ -77,6 +77,7 @@
 //    064   19.07.24 Sean Flook       IMANN-802 Added ability for Scottish authorities to add new Gaelic LPIs.
 //    065   13.08.24 Sean Flook       IMANN-861 When creating a new successor record set the predecessor with the current UPRN.
 //    066   27.08.24 Sean Flook       IMANN-910 Corrected typo.
+//    067   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3907,6 +3908,7 @@ function PropertyDataForm({ data, loading }) {
               uprn: newPropertyData.uprn,
               parentUprn: newPropertyData.parentUprn,
               address: engLpi[0].address,
+              formattedAddress: engLpi[0].address,
               postcode: engLpi[0].postcode,
               easting: newX,
               northing: newY,

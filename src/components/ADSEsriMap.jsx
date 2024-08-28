@@ -97,6 +97,7 @@
 //    083   22.07.24 Sean Flook       IMANN-774 Added hack to cater for ESRI double event issue for when selecting ESUs.
 //    084   13.08.24 Sean Flook       IMANN-918 Do not display the sketch tool if the user does not have rights to edit the object.
 //    085   27.08.24 Sean Flook       IMANN-888 Ensure the background streets are redrawn when creating a new street whilst already looking at another street.
+//    086   28.08.24 Sean Flook       IMANN-957 Handle if formattedAddress  is missing from the property data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4491,6 +4492,8 @@ function ADSEsriMap(startExtent) {
           Address: rec.address ? addressToTitleCase(rec.address, rec.postcode) : "New Property",
           FormattedAddress: rec.formattedAddress
             ? addressToTitleCase(rec.formattedAddress, rec.postcode)
+            : rec.address
+            ? addressToTitleCase(rec.address, rec.postcode)
             : "New Property",
           Postcode: rec.postcode,
           Easting:

@@ -48,6 +48,7 @@
 //    035   17.07.24 Joshua McCormick IMANN-548 changed FormatStreetData to getStreetSearchData, Removed find debug code in zoomToStreet 
 //    036   18.07.24 Sean Flook       IMANN-761 Remove the Close and Delete menu options for streets.
 //    036   18.07.24 Sean Flook       IMANN-773 Correctly set the parent information when creating property/ies.
+//    037   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -730,6 +731,7 @@ function ADSSelectionControl({
           uprn: propertyData.uprn,
           parentUprn: propertyData.parentUprn,
           address: propertyData.address,
+          formattedAddress: propertyData.address,
           postcode: propertyData.postcode,
           easting: propertyData.easting,
           northing: propertyData.northing,
@@ -825,6 +827,7 @@ function ADSSelectionControl({
           uprn: found.uprn,
           parentUprn: found.parentUprn,
           address: found.address,
+          formattedAddress: found.formattedAddress,
           postcode: found.postcode,
           easting: found.easting,
           northing: found.northing,
@@ -862,6 +865,7 @@ function ADSSelectionControl({
           uprn: found.uprn,
           parentUprn: found.parentUprn,
           address: found.address,
+          formattedAddress: found.formattedAddress,
           postcode: found.postcode,
           easting: found.easting,
           northing: found.northing,

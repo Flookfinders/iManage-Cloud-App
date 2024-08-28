@@ -36,6 +36,7 @@
 //    023   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
 //    024   04.07.24 Sean Flook       IMANN-705 Also change tooltip.
 //    025   18.07.24 Sean Flook       IMANN-772 Corrected field name.
+//    026   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -423,6 +424,7 @@ function ADSHomepageLatestEditsControl({ data }) {
           uprn: uprn,
           parentUprn: parentUprn,
           address: address,
+          formattedAddress: address,
           postcode: postcode,
           easting: easting,
           northing: northing,

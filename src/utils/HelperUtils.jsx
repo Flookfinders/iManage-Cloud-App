@@ -60,6 +60,7 @@
 //    047   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    048   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    049   25.07.24 Joshua McCormick IMANN-820 added mapContext.onEditMapObject in ResetContexts
+//    050   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1800,6 +1801,7 @@ export async function doOpenRecord(
         uprn: rec.uprn,
         parentUprn: rec.parent_uprn,
         address: rec.formattedaddress,
+        formattedAddress: rec.formattedaddress,
         postcode: rec.postcode,
         easting: rec.easting,
         northing: rec.northing,

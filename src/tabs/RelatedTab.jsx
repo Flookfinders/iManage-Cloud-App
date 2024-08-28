@@ -46,6 +46,7 @@
 //    031   08.07.24 Sean Flook       IMANN-728 Hide the property tab if the user does not have the right to see properties.
 //    032   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    033   07.08.24 Sean Flook       IMANN-891 Moved where ResetContexts is called from to correctly handle historic properties.
+//    034   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -220,6 +221,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
           uprn: uprn,
           parentUprn: parentUprn,
           address: address,
+          formattedAddress: address,
           postcode: postcode,
           easting: easting,
           northing: northing,
