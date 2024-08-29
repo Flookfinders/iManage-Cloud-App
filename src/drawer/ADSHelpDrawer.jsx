@@ -21,6 +21,7 @@
 //    008   21.05.24 Sean Flook                 Updated support email address.
 //    009   26.06.24 Peter Bryden               Added in help reference.
 //    010   04.07.24 Sean Flook                 Updated URL for the help for new location.
+//    011   29.08.24 Sean Flook       IMANN-965 Updated wording.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -269,7 +270,7 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
                   rel="noopener"
                   variant="body2"
                 >
-                  Browse the Knowledge Base or search forums
+                  Log a support call and search knowledge base.
                 </Link>
               </Typography>
             </Grid>
@@ -299,7 +300,7 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
                   href="mailto:servicedesk@idoxgroup.com?subject=Support enquiry raised from iManage Cloud Help"
                   variant="body2"
                 >
-                  Raise a case with our support team
+                  Email the Service Desk
                 </Link>
               </Typography>
             </Grid>
