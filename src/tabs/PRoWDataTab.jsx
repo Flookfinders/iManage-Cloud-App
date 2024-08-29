@@ -32,6 +32,7 @@
 //    019   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    020   09.07.24 Joshua McCormick IMANN-594 Added displayCharactersLeft to PRoW source
 //    021   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
+//    022   29.08.24 Sean Flook       IMANN-908 Correctly set the defMapGeometryType variable.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -629,6 +630,7 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
       setStatus(data.prowData.prowStatus);
       setLocation(data.prowData.prowLocation ? data.prowData.prowLocation : "");
       setDetails(data.prowData.prowDetails ? data.prowData.prowDetails : "");
+      setDefMapGeometryType(data.prowData.defMapGeometryType ? data.prowData.defMapGeometryType : false);
       setProwLength(data.prowData.prowLength ? data.prowData.prowLength : 0);
       setPromotedRoute(data.prowData.promotedRoute ? data.prowData.promotedRoute : false);
       setAccessibleRoute(data.prowData.accessibleRoute ? data.prowData.accessibleRoute : false);
