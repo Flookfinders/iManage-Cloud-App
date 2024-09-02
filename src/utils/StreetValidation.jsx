@@ -63,6 +63,7 @@
 //    041   26.07.24 Sean Flook       IMANN-860 Report check 3000012 on the correct field.
 //    042   06.08.24 Sean Flook       IMANN-876 Removed check 6600018 as not required.
 //    043   22.08.24 Sean Flook       IMANN-951 Corrected field names.
+//    044   02.09.24 Sean Flook       IMANN-976 Handle "Unassigned" in lookups.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -467,7 +468,10 @@ export function ValidateDescriptorData(data, index, currentLookups, isScottish, 
 
     // Enter a town name.
     currentCheck = GetCheck(1500004, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && (!data.townRef || (townData && !townData.town))) {
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      (!data.townRef || (townData && (!townData.town || townData.town === "Unassigned")))
+    ) {
       townRefErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
@@ -475,7 +479,8 @@ export function ValidateDescriptorData(data, index, currentLookups, isScottish, 
     currentCheck = GetCheck(1500005, currentLookups, methodName, isScottish, showDebugMessages);
     if (
       includeCheck(currentCheck, isScottish) &&
-      (!data.adminAreaRef || (adminAreaData && !adminAreaData.administrativeArea))
+      (!data.adminAreaRef ||
+        (adminAreaData && (!adminAreaData.administrativeArea || adminAreaData.administrativeArea === "Unassigned")))
     ) {
       adminAreaRefErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -488,13 +493,25 @@ export function ValidateDescriptorData(data, index, currentLookups, isScottish, 
 
     // Locality name is too long.
     currentCheck = GetCheck(1500007, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && data.locRef && localityData && localityData.locality.length > 35) {
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.locRef &&
+      localityData &&
+      localityData.locality !== "Unassigned" &&
+      localityData.locality.length > 35
+    ) {
       locRefErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // Town name is too long.
     currentCheck = GetCheck(1500008, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && data.townRef && townData && townData.town.length > 30) {
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.townRef &&
+      townData &&
+      townData.town !== "Unassigned" &&
+      townData.town.length > 30
+    ) {
       townRefErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
@@ -504,6 +521,7 @@ export function ValidateDescriptorData(data, index, currentLookups, isScottish, 
       includeCheck(currentCheck, isScottish) &&
       data.adminAreaRef &&
       adminAreaData &&
+      adminAreaData.administrativeArea !== "Unassigned" &&
       adminAreaData.administrativeArea.length > 30
     ) {
       adminAreaRefErrors.push(GetErrorMessage(currentCheck, isScottish));
@@ -544,7 +562,11 @@ export function ValidateDescriptorData(data, index, currentLookups, isScottish, 
     if (
       includeCheck(currentCheck, isScottish) &&
       data.locRef &&
+      localityData &&
+      localityData.locality !== "Unassigned" &&
       data.townRef &&
+      townData &&
+      townData.town !== "Unassigned" &&
       localityData.locality.toLowerCase() === townData.town.toLowerCase()
     ) {
       locRefErrors.push(GetErrorMessage(currentCheck, isScottish));
@@ -559,7 +581,13 @@ export function ValidateDescriptorData(data, index, currentLookups, isScottish, 
 
     // Island name is too long.
     currentCheck = GetCheck(1500034, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && data.islandRef && islandData && islandData.island.length > 30) {
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.islandRef &&
+      islandData &&
+      islandData.island !== "Unassigned" &&
+      islandData.island.length > 30
+    ) {
       islandRefErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
@@ -568,8 +596,14 @@ export function ValidateDescriptorData(data, index, currentLookups, isScottish, 
     if (
       includeCheck(currentCheck, isScottish) &&
       data.islandRef &&
+      islandData &&
+      islandData.island !== "Unassigned" &&
       data.locRef &&
+      localityData &&
+      localityData.locality !== "Unassigned" &&
       data.townRef &&
+      townData &&
+      townData.town !== "Unassigned" &&
       (localityData.locality.toLowerCase() === townData.town.toLowerCase() ||
         localityData.locality.toLowerCase() === islandData.island.toLowerCase() ||
         townData.town.toLowerCase() === islandData.island.toLowerCase())
@@ -581,7 +615,13 @@ export function ValidateDescriptorData(data, index, currentLookups, isScottish, 
 
     // A street descriptor must have a town when a locality has been entered.
     currentCheck = GetCheck(1500038, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && data.locRef && !data.townRef) {
+    if (
+      includeCheck(currentCheck, isScottish) &&
+      data.locRef &&
+      localityData &&
+      localityData.locality !== "Unassigned" &&
+      (!data.townRef || (townData && townData.town === "Unassigned"))
+    ) {
       townRefErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
@@ -606,7 +646,11 @@ export function ValidateDescriptorData(data, index, currentLookups, isScottish, 
     if (
       includeCheck(currentCheck, isScottish) &&
       data.islandRef &&
+      islandData &&
+      islandData.island !== "Unassigned" &&
       data.adminAreaRef &&
+      adminAreaData &&
+      adminAreaData.administrativeArea !== "Unassigned" &&
       adminAreaData.administrativeArea.toLowerCase() === islandData.island.toLowerCase()
     ) {
       islandRefErrors.push(GetErrorMessage(currentCheck, isScottish));

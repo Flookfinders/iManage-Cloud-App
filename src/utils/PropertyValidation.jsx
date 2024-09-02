@@ -63,6 +63,7 @@
 //    039   28.07.24 Sean Flook       IMANN-855 Removed check 2400106 as cannot be done in the GUI.
 //    040   26.07.24 Sean Flook       IMANN-860 Report check 3000012 on the correct field.
 //    041   22.08.24 Sean Flook       IMANN-951 Corrected field names.
+//    042   02.09.24 Sean Flook       IMANN-976 Handle "Unassigned" in lookups.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -899,6 +900,7 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       includeCheck(currentCheck, isScottish) &&
       data.postTownRef &&
       postTownData &&
+      postTownData.postTown !== "Unassigned" &&
       postTownData.postTown.length > 30
     ) {
       postTownRefErrors.push(GetErrorMessage(currentCheck, isScottish));
@@ -910,6 +912,7 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       includeCheck(currentCheck, isScottish) &&
       data.postcodeRef &&
       postcodeData &&
+      postcodeData.postcode !== "Unassigned" &&
       postcodeData.postcode.length > 8
     ) {
       postcodeRefErrors.push(GetErrorMessage(currentCheck, isScottish));
@@ -944,7 +947,8 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
         data.logicalStatus !== 6 &&
         data.postallyAddressable &&
         data.postallyAddressable === "N" &&
-        (data.postTownRef || data.postcodeRef)
+        ((data.postTownRef && postTownData && postTownData.postTown !== "Unassigned") ||
+          (data.postcodeRef && postcodeData && postcodeData.postcode !== "Unassigned"))
       ) {
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
@@ -955,7 +959,8 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
         data.logicalStatus !== 6 &&
         data.postalAddress &&
         data.postalAddress === "N" &&
-        (data.postTownRef || data.postcodeRef)
+        ((data.postTownRef && postTownData && postTownData.postTown !== "Unassigned") ||
+          (data.postcodeRef && postcodeData && postcodeData.postcode !== "Unassigned"))
       ) {
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
@@ -968,7 +973,10 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
         includeCheck(currentCheck, isScottish) &&
         data.postallyAddressable &&
         ["Y", "L"].includes(data.postallyAddressable) &&
-        (!data.postTownRef || !data.postcodeRef)
+        (!data.postTownRef ||
+          (postTownData && postTownData.postTown === "Unassigned") ||
+          !data.postcodeRef ||
+          (postcodeData && postcodeData.postcode === "Unassigned"))
       ) {
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
@@ -977,7 +985,10 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
         includeCheck(currentCheck, isScottish) &&
         data.postalAddress &&
         ["Y", "A", "L"].includes(data.postalAddress) &&
-        (!data.postTownRef || !data.postcodeRef)
+        (!data.postTownRef ||
+          (postTownData && postTownData.postTown === "Unassigned") ||
+          !data.postcodeRef ||
+          (postcodeData && postcodeData.postcode === "Unassigned"))
       ) {
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
@@ -990,7 +1001,10 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       includeCheck(currentCheck, isScottish) &&
       data.postalAddress &&
       data.postalAddress === "P" &&
-      (!data.postTownRef || !data.postcodeRef)
+      (!data.postTownRef ||
+        (postTownData && postTownData.postTown === "Unassigned") ||
+        !data.postcodeRef ||
+        (postcodeData && postcodeData.postcode === "Unassigned"))
     ) {
       postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -1083,7 +1097,10 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       includeCheck(currentCheck, isScottish) &&
       data.postallyAddressable &&
       ["Y", "L"].includes(data.postallyAddressable) &&
-      (!data.postTownRef || !data.postcodeRef)
+      (!data.postTownRef ||
+        (postTownData && postTownData.postTown === "Unassigned") ||
+        !data.postcodeRef ||
+        (postcodeData && postcodeData.postcode === "Unassigned"))
     ) {
       postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
@@ -1988,6 +2005,9 @@ export function ValidateMultiEditLogicalStatus(data, currentLookups, isScottish)
   let postcodeRefErrors = [];
   let postTownRefErrors = [];
 
+  const postTownData = currentLookups.postTowns.find((x) => x.postTownRef === data.postTownRef);
+  const postcodeData = currentLookups.postcodes.find((x) => x.postcodeRef === data.postcodeRef);
+
   if (data) {
     // State is incompatible with the BLPU logical status.
     currentCheck = GetCheck(2100011, currentLookups, methodName, isScottish, showDebugMessages);
@@ -2115,7 +2135,8 @@ export function ValidateMultiEditLogicalStatus(data, currentLookups, isScottish)
         data.logicalStatus !== 6 &&
         data.postallyAddressable &&
         data.postallyAddressable === "N" &&
-        (data.postTownRef || data.postcodeRef)
+        ((data.postTownRef && postTownData && postTownData.postTown !== "Unassigned") ||
+          (data.postcodeRef && postcodeData && postcodeData.postcode !== "Unassigned"))
       ) {
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
@@ -2126,7 +2147,8 @@ export function ValidateMultiEditLogicalStatus(data, currentLookups, isScottish)
         data.logicalStatus !== 6 &&
         data.postalAddress &&
         data.postalAddress === "N" &&
-        (data.postTownRef || data.postcodeRef)
+        ((data.postTownRef && postTownData && postTownData.postTown !== "Unassigned") ||
+          (data.postcodeRef && postcodeData && postcodeData.postcode !== "Unassigned"))
       ) {
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
@@ -2139,7 +2161,10 @@ export function ValidateMultiEditLogicalStatus(data, currentLookups, isScottish)
         includeCheck(currentCheck, isScottish) &&
         data.postallyAddressable &&
         ["Y", "L"].includes(data.postallyAddressable) &&
-        (!data.postTownRef || !data.postcodeRef)
+        (!data.postTownRef ||
+          (postTownData && postTownData.postTown === "Unassigned") ||
+          !data.postcodeRef ||
+          (postcodeData && postcodeData.postcode === "Unassigned"))
       ) {
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
@@ -2148,7 +2173,10 @@ export function ValidateMultiEditLogicalStatus(data, currentLookups, isScottish)
         includeCheck(currentCheck, isScottish) &&
         data.postalAddress &&
         ["Y", "A", "L"].includes(data.postalAddress) &&
-        (!data.postTownRef || !data.postcodeRef)
+        (!data.postTownRef ||
+          (postTownData && postTownData.postTown === "Unassigned") ||
+          !data.postcodeRef ||
+          (postcodeData && postcodeData.postcode === "Unassigned"))
       ) {
         postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
       }
@@ -2161,7 +2189,10 @@ export function ValidateMultiEditLogicalStatus(data, currentLookups, isScottish)
       includeCheck(currentCheck, isScottish) &&
       data.postalAddress &&
       data.postalAddress === "P" &&
-      (!data.postTownRef || !data.postcodeRef)
+      (!data.postTownRef ||
+        (postTownData && postTownData.postTown === "Unassigned") ||
+        !data.postcodeRef ||
+        (postcodeData && postcodeData.postcode === "Unassigned"))
     ) {
       postalAddressErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
