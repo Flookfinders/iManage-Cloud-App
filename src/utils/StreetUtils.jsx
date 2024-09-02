@@ -82,6 +82,7 @@
 //    069   23.08.24 Sean Flook       IMANN-469 Only delete ESUs and associated records if the street is being deleted, not when it is just being closed.
 //    070   23.08.24 Sean Flook       IMANN-469 Delete OWE records when street is closed.
 //    071   28.08.24 Sean Flook       IMANN-895 When time fields are falsy send null to the API.
+//    072   02.09.24 Sean Flook       IMANN-975 Handle "Unassigned" in the lookups when getting the new street address.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3029,9 +3030,9 @@ export async function SaveStreet(
     const town = townRef ? lookupContext.currentLookups.towns.find((x) => x.townRef === townRef) : null;
     const island = islandRef ? lookupContext.currentLookups.islands.find((x) => x.islandRef === islandRef) : null;
 
-    return `${descriptor}${locality ? " " + locality.locality : ""}${town ? " " + town.town : ""}${
-      island ? " " + island.island : ""
-    }`;
+    return `${descriptor}${locality && locality.locality !== "Unassigned" ? " " + locality.locality : ""}${
+      town && town.town !== "Unassigned" ? " " + town.town : ""
+    }${island && island.island !== "Unassigned" ? " " + island.island : ""}`;
   };
 
   let streetSaved = null;
