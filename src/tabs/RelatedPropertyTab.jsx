@@ -58,6 +58,7 @@
 //    044   26.06.24 Sean Flook       IMANN-488 Correctly filter the data in getPropertyFromId.
 //    045   26.06.24 Joshua McCormick IMANN-548 ZoomToProperty fix, properties correctly add to list
 //    046   07.08.24 Sean Flook       IMANN-891 Use stopPropagation rather than persist.
+//    047   07.08.24 Sean Flook       IMANN-973 Use a string for the makeChildUprn.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -447,7 +448,7 @@ function RelatedPropertyTab({
     event.stopPropagation();
 
     if (record) {
-      setMakeChildUprn([record.uprn]);
+      setMakeChildUprn([record.uprn.toString()]);
       setOpenMakeChild(true);
       searchContext.onHideSearch(true);
     }
