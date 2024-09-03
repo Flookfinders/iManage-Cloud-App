@@ -42,6 +42,7 @@
 //    029   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    030   28.06.24 Sean Flook       IMANN-676 Ensure failed UPRNs are always returned to the API.
 //    031   17.07.24 Sean Flook       IMANN-797 After getting a validation error if user returns and clicks Back clear the errors.
+//    032   03.09.24 Sean Flook       IMANN-968 Correctly handle API errors.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2468,8 +2469,9 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
       switch (variant) {
         case "range":
         case "rangeChildren":
-          const addressId = errorId.current.find((x) => x.pkId === propertyContext.currentErrors.pkId).addressId;
-          const rangeUprn = errorId.current.find((x) => x.pkId === propertyContext.currentErrors.pkId).uprn;
+          const failedRecord = errorId.current.find((x) => x.pkId === propertyContext.currentErrors.pkId);
+          const addressId = failedRecord ? failedRecord.addressId : null;
+          const rangeUprn = failedRecord ? failedRecord.uprn : null;
           if (rangeErrors.current) rangeErrors.current.push({ id: addressId, errors: propertyContext.currentErrors });
           else rangeErrors.current = [{ id: addressId, errors: propertyContext.currentErrors }];
           if (Array.isArray(rangeErrors.current)) setFinaliseErrors(rangeErrors.current);
