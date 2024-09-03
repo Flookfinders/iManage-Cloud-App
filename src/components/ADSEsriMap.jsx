@@ -98,6 +98,7 @@
 //    084   13.08.24 Sean Flook       IMANN-918 Do not display the sketch tool if the user does not have rights to edit the object.
 //    085   27.08.24 Sean Flook       IMANN-888 Ensure the background streets are redrawn when creating a new street whilst already looking at another street.
 //    086   28.08.24 Sean Flook       IMANN-957 Handle if formattedAddress  is missing from the property data.
+//    087   03.09.24 Sean Flook       IMANN-972 Prevent infinite loop from occurring.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -8777,7 +8778,7 @@ function ADSEsriMap(startExtent) {
           };
           sketchRef.current.visible = userContext.current && userContext.current.currentUser.editProperty;
         }
-      } else {
+      } else if (selectingProperties.current) {
         selectingProperties.current = false;
 
         if (backgroundStreetLayerRef.current)
