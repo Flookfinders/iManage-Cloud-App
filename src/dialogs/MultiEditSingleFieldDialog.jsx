@@ -31,6 +31,7 @@
 //    018   02.07.24 Sean Flook       IMANN-582 Added state.
 //    019   08.07.24 Sean Flook       IMANN-716 Corrected Scottish property records.
 //    020   08.07.24 Sean Flook       IMANN-715 Increase the failed count if failed to save property.
+//    021   03.09.24 Sean Flook       IMANN-968 Corrected copy and paste error.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -722,7 +723,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
             case "level":
               if (settingsContext.isScottish)
                 updatedProperty = {
-                  blpuStateDate: stateDate,
+                  blpuStateDate: property.blpuStateDate,
                   parentUprn: property.parentUprn,
                   neverExport: property.neverExport,
                   siteSurvey: property.siteSurvey,
@@ -730,7 +731,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   logicalStatus: property.logicalStatus,
                   endDate: property.endDate,
                   startDate: property.startDate,
-                  blpuState: state,
+                  blpuState: property.blpuState,
                   custodianCode: property.custodianCode,
                   level: level,
                   xcoordinate: property.xcoordinate,
@@ -783,7 +784,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
             case "excludeFromExport":
               if (settingsContext.isScottish)
                 updatedProperty = {
-                  blpuStateDate: stateDate,
+                  blpuStateDate: property.blpuStateDate,
                   parentUprn: property.parentUprn,
                   neverExport: excludeFromExport,
                   siteSurvey: property.siteSurvey,
@@ -791,7 +792,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   logicalStatus: property.logicalStatus,
                   endDate: property.endDate,
                   startDate: property.startDate,
-                  blpuState: state,
+                  blpuState: property.blpuState,
                   custodianCode: property.custodianCode,
                   level: property.level,
                   xcoordinate: property.xcoordinate,
@@ -838,7 +839,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
             case "siteVisitRequired":
               if (settingsContext.isScottish)
                 updatedProperty = {
-                  blpuStateDate: stateDate,
+                  blpuStateDate: property.blpuStateDate,
                   parentUprn: property.parentUprn,
                   neverExport: property.neverExport,
                   siteSurvey: siteVisitRequired,
@@ -846,7 +847,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   logicalStatus: property.logicalStatus,
                   endDate: property.endDate,
                   startDate: property.startDate,
-                  blpuState: state,
+                  blpuState: property.blpuState,
                   custodianCode: property.custodianCode,
                   level: property.level,
                   xcoordinate: property.xcoordinate,
@@ -893,7 +894,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
             case "note":
               if (settingsContext.isScottish)
                 updatedProperty = {
-                  blpuStateDate: stateDate,
+                  blpuStateDate: property.blpuStateDate,
                   parentUprn: property.parentUprn,
                   neverExport: property.neverExport,
                   siteSurvey: property.siteSurvey,
@@ -901,7 +902,7 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   logicalStatus: property.logicalStatus,
                   endDate: property.endDate,
                   startDate: property.startDate,
-                  blpuState: state,
+                  blpuState: property.blpuState,
                   custodianCode: property.custodianCode,
                   level: property.level,
                   xcoordinate: property.xcoordinate,
