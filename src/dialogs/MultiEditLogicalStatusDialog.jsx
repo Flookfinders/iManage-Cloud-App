@@ -28,6 +28,7 @@
 //    015   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    016   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    017   08.07.24 Sean Flook       IMANN-715 Increase the failed count if failed to save property.
+//    018   03.09.24 Sean Flook       IMANN-969 Corrected field name and show state for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -557,7 +558,7 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                   logicalStatus: newLogicalStatus,
                   blpuState: property.blpuState,
                   blpuClass: property.blpuClass,
-                  localCustodianCode: property.localCustodianCode,
+                  custodianCode: property.custodianCode,
                   organisation: property.organisation,
                   xcoordinate: property.xcoordinate,
                   ycoordinate: property.ycoordinate,
@@ -910,26 +911,24 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                 <Grid item xs={12}>
                   <ADSReadOnlyControl label="LPI logical status" value={lpiLogicalStatus} />
                 </Grid>
-                {!settingsContext.isScottish && (
-                  <Grid item xs={12}>
-                    <ADSSelectControl
-                      label="State"
-                      isEditable
-                      useRounded
-                      disabled={updating}
-                      doNotSetTitleCase
-                      displayNoChange
-                      lookupData={blpuStateLookup}
-                      lookupId="id"
-                      lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-                      lookupColour="colour"
-                      value={state}
-                      errorText={stateError}
-                      onChange={handleStateChangeEvent}
-                      helperText="A code identifying the current state of a BLPU."
-                    />
-                  </Grid>
-                )}
+                <Grid item xs={12}>
+                  <ADSSelectControl
+                    label="State"
+                    isEditable
+                    useRounded
+                    disabled={updating}
+                    doNotSetTitleCase
+                    displayNoChange
+                    lookupData={blpuStateLookup}
+                    lookupId="id"
+                    lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+                    lookupColour="colour"
+                    value={state}
+                    errorText={stateError}
+                    onChange={handleStateChangeEvent}
+                    helperText="A code identifying the current state of a BLPU."
+                  />
+                </Grid>
                 <Grid item xs={12}>
                   <ADSSelectControl
                     label="RPC"
