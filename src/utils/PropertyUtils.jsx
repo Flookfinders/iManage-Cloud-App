@@ -57,6 +57,7 @@
 //    044   05.07.24 Sean Flook       IMANN-692 Do not reset the sandbox if call to UpdateRangeAfterSave is from ADSSelectionControl.
 //    045   18.07.24 Sean Flook       IMANN-775 For Scottish authorities when filtering BLPUState use the string of the index to handle the 0 state.
 //    046   16.08.24 Sean Flook       IMANN-861 Added new key from API for successor errors.
+//    047   02.09.24 Sean Flook       IMANN-976 Handle "Unassigned" in lookups.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -300,9 +301,9 @@ export async function GetTempAddress(lpiRecord, organisation, lookupContext, use
         paonEndNum: lpiRecord.paoEndNumber ? lpiRecord.paoEndNumber : 0,
         paonEndSuffix: lpiRecord.paoEndSuffix,
         paonText: lpiRecord.paoText,
-        postTown: postTown,
-        subLocality: subLocality,
-        postcode: postcode,
+        postTown: postTown && postTown !== "Unassigned" ? postTown : "",
+        subLocality: subLocality && subLocality !== "Unassigned" ? subLocality : "",
+        postcode: postcode && postcode !== "Unassigned" ? postcode : "",
         postallyAddressable: lpiRecord.postalAddress,
       }
     : {
@@ -319,8 +320,8 @@ export async function GetTempAddress(lpiRecord, organisation, lookupContext, use
         paonEndNum: lpiRecord.paoEndNumber ? lpiRecord.paoEndNumber : 0,
         paonEndSuffix: lpiRecord.paoEndSuffix,
         paonText: lpiRecord.paoText,
-        postTown: postTown,
-        postcode: postcode,
+        postTown: postTown && postTown !== "Unassigned" ? postTown : "",
+        postcode: postcode && postcode !== "Unassigned" ? postcode : "",
         postallyAddressable: lpiRecord.postalAddress,
       };
 
@@ -1281,8 +1282,8 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
               postTownRef: x.postTownRef ? x.postTownRef : -1,
               neverExport: propertyData.neverExport ? propertyData.neverExport : false,
-              postTown: x.postTownRef ? x.postTown : "",
-              postcode: x.postcodeRef ? x.postcode : "",
+              postTown: x.postTownRef && x.postTown && x.postTown !== "Unassigned" ? x.postTown : "",
+              postcode: x.postcodeRef && x.postcode && x.postcode !== "Unassigned" ? x.postcode : "",
               dualLanguageLink: x.dualLanguageLink,
               uprn: propertyData.uprn && propertyData.uprn > 0 ? propertyData.uprn : 0,
               changeType: "I",
@@ -1292,7 +1293,7 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               saoStartSuffix: x.saoStartSuffix,
               saoEndSuffix: x.saoEndSuffix,
               subLocalityRef: x.subLocalityRef ? x.subLocalityRef : -1,
-              subLocality: x.subLocality ? x.subLocality : "",
+              subLocality: x.subLocalityRef && x.subLocality && x.subLocality !== "Unassigned" ? x.subLocality : "",
               postallyAddressable: x.postallyAddressable,
               officialFlag: x.officialFlag,
             };
@@ -1372,8 +1373,8 @@ export function GetPropertyCreateData(propertyData, isScottish) {
               postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
               postTownRef: x.postTownRef ? x.postTownRef : -1,
               neverExport: propertyData.neverExport ? propertyData.neverExport : false,
-              postTown: x.postTownRef ? x.postTown : "",
-              postcode: x.postcodeRef ? x.postcode : "",
+              postTown: x.postTownRef && x.postTown && x.postTown !== "Unassigned" ? x.postTown : "",
+              postcode: x.postcodeRef && x.postcode && x.postcode !== "Unassigned" ? x.postcode : "",
               dualLanguageLink: x.dualLanguageLink,
               uprn: propertyData.uprn && propertyData.uprn > 0 ? propertyData.uprn : 0,
               logicalStatus: x.logicalStatus,
@@ -1522,8 +1523,8 @@ export function GetPropertyUpdateData(propertyData, isScottish, cascadeParentPao
               postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
               postTownRef: x.postTownRef ? x.postTownRef : -1,
               neverExport: propertyData.neverExport ? propertyData.neverExport : false,
-              postTown: x.postTownRef ? x.postTown : "",
-              postcode: x.postcodeRef ? x.postcode : "",
+              postTown: x.postTownRef && x.postTown && x.postTown !== "Unassigned" ? x.postTown : "",
+              postcode: x.postcodeRef && x.postcode && x.postcode !== "Unassigned" ? x.postcode : "",
               dualLanguageLink: x.dualLanguageLink,
               uprn: propertyData.uprn,
               logicalStatus: x.logicalStatus,
@@ -1532,7 +1533,7 @@ export function GetPropertyUpdateData(propertyData, isScottish, cascadeParentPao
               saoStartSuffix: x.saoStartSuffix,
               saoEndSuffix: x.saoEndSuffix,
               subLocalityRef: x.subLocalityRef ? x.subLocalityRef : -1,
-              subLocality: x.subLocality ? x.subLocality : "",
+              subLocality: x.subLocalityRef && x.subLocality && x.subLocality !== "Unassigned" ? x.subLocality : "",
               postallyAddressable: x.postallyAddressable,
               officialFlag: x.officialFlag,
               pkId: x.pkId > 0 ? x.pkId : 0,
@@ -1623,8 +1624,8 @@ export function GetPropertyUpdateData(propertyData, isScottish, cascadeParentPao
               postcodeRef: x.postcodeRef ? x.postcodeRef : -1,
               postTownRef: x.postTownRef ? x.postTownRef : -1,
               neverExport: propertyData.neverExport ? propertyData.neverExport : false,
-              postTown: x.postTownRef ? x.postTown : "",
-              postcode: x.postcodeRef ? x.postcode : "",
+              postTown: x.postTown && x.postTown !== "Unassigned" ? x.postTown : "",
+              postcode: x.postcode && x.postcode !== "Unassigned" ? x.postcode : "",
               dualLanguageLink: x.dualLanguageLink,
               uprn: propertyData.uprn,
               logicalStatus: x.logicalStatus,

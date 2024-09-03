@@ -83,6 +83,7 @@
 //    070   23.08.24 Sean Flook       IMANN-469 Delete OWE records when street is closed.
 //    071   28.08.24 Sean Flook       IMANN-895 When time fields are falsy send null to the API.
 //    072   02.09.24 Sean Flook       IMANN-975 Handle "Unassigned" in the lookups when getting the new street address.
+//    073   02.09.24 Sean Flook       IMANN-976 Handle "Unassigned" in lookups.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1521,19 +1522,22 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
                 : sd.language === "GAE"
                 ? unassignedGaeLocality.localityRef
                 : unassignedEngLocality.localityRef,
-              locality: sd.locRef ? sd.locality : "",
+              locality: sd.locRef && sd.locality && sd.locality !== "Unassigned" ? sd.locality : "",
               townRef: sd.townRef
                 ? sd.townRef
                 : sd.language === "GAE"
                 ? unassignedGaeTown.townRef
                 : unassignedEngTown.townRef,
-              town: sd.townRef ? sd.town : "",
+              town: sd.townRef && sd.town && sd.town !== "Unassigned" ? sd.town : "",
               adminAreaRef: sd.adminAreaRef
                 ? sd.adminAreaRef
                 : sd.language === "GAE"
                 ? unassignedGaeAdminArea.administrativeAreaRef
                 : unassignedEngAdminArea.administrativeAreaRef,
-              administrativeArea: sd.adminAreaRef && sd.administrativeArea ? sd.administrativeArea : "",
+              administrativeArea:
+                sd.adminAreaRef && sd.administrativeArea && sd.administrativeArea !== "Unassigned"
+                  ? sd.administrativeArea
+                  : "",
               language: sd.language,
               neverExport: streetData.neverExport ? streetData.neverExport : false,
               islandRef: sd.islandRef
@@ -1541,7 +1545,7 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
                 : sd.language === "GAE"
                 ? unassignedEngIsland.islandRef
                 : unassignedEngIsland.islandRef,
-              island: sd.islandRef ? sd.island : "",
+              island: sd.islandRef && sd.island && sd.island !== "Unassigned" ? sd.island : "",
             };
           })
         : [],
@@ -1643,19 +1647,22 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
                   : sd.language === "CYM"
                   ? unassignedCymLocality.localityRef
                   : unassignedEngLocality.localityRef,
-                locality: sd.locRef ? sd.locality : "",
+                locality: sd.locRef && sd.locality && sd.locality !== "Unassigned" ? sd.locality : "",
                 townRef: sd.townRef
                   ? sd.townRef
                   : sd.language === "CYM"
                   ? unassignedCymTown.townRef
                   : unassignedEngTown.townRef,
-                town: sd.townRef ? sd.town : "",
+                town: sd.townRef && sd.town && sd.town !== "Unassigned" ? sd.town : "",
                 adminAreaRef: sd.adminAreaRef
                   ? sd.adminAreaRef
                   : sd.language === "CYM"
                   ? unassignedCymAdminArea.administrativeAreaRef
                   : unassignedEngAdminArea.administrativeAreaRef,
-                administrativeArea: sd.adminAreaRef ? sd.administrativeArea : "",
+                administrativeArea:
+                  sd.adminAreaRef && sd.administrativeArea && sd.administrativeArea !== "Unassigned"
+                    ? sd.administrativeArea
+                    : "",
                 language: sd.language,
                 neverExport: streetData.neverExport ? streetData.neverExport : false,
               };
@@ -1753,19 +1760,22 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
                   : sd.language === "CYM"
                   ? unassignedCymLocality.localityRef
                   : unassignedEngLocality.localityRef,
-                locality: sd.locRef ? sd.locality : "",
+                locality: sd.locRef && sd.locality && sd.locality !== "Unassigned" ? sd.locality : "",
                 townRef: sd.townRef
                   ? sd.townRef
                   : sd.language === "CYM"
                   ? unassignedCymTown.townRef
                   : unassignedEngTown.townRef,
-                town: sd.townRef ? sd.town : "",
+                town: sd.townRef && sd.town && sd.town !== "Unassigned" ? sd.town : "",
                 adminAreaRef: sd.adminAreaRef
                   ? sd.adminAreaRef
                   : sd.language === "CYM"
                   ? unassignedCymAdminArea.administrativeAreaRef
                   : unassignedEngAdminArea.administrativeAreaRef,
-                administrativeArea: sd.adminAreaRef ? sd.administrativeArea : "",
+                administrativeArea:
+                  sd.adminAreaRef && sd.administrativeArea && sd.administrativeArea !== "Unassigned"
+                    ? sd.administrativeArea
+                    : "",
                 language: sd.language,
                 neverExport: streetData.neverExport ? streetData.neverExport : false,
               };
@@ -2062,15 +2072,18 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
               usrn: streetData.usrn,
               streetDescriptor: sd.streetDescriptor,
               locRef: sd.locRef ? sd.locRef : unassignedEngLocality.localityRef,
-              locality: sd.locRef ? sd.locality : "",
+              locality: sd.locRef && sd.locality && sd.locality !== "Unassigned" ? sd.locality : "",
               townRef: sd.townRef ? sd.townRef : unassignedEngTown.townRef,
-              town: sd.townRef ? sd.town : "",
+              town: sd.townRef && sd.town && sd.town !== "Unassigned" ? sd.town : "",
               adminAreaRef: sd.adminAreaRef ? sd.adminAreaRef : unassignedEngAdminArea.administrativeAreaRef,
-              administrativeArea: sd.adminAreaRef ? sd.administrativeArea : "",
+              administrativeArea:
+                sd.adminAreaRef && sd.administrativeArea && sd.administrativeArea !== "Unassigned"
+                  ? sd.administrativeArea
+                  : "",
               language: sd.language,
               neverExport: streetData.neverExport ? streetData.neverExport : false,
               islandRef: sd.islandRef ? sd.islandRef : unassignedEngIsland.islandRef,
-              island: sd.islandRef ? sd.island : "",
+              island: sd.islandRef && sd.island && sd.island !== "Unassigned" ? sd.island : "",
               pkId: sd.pkId > 0 ? sd.pkId : 0,
             };
           })
@@ -2214,19 +2227,22 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                   : sd.language === "CYM"
                   ? unassignedCymLocality.localityRef
                   : unassignedEngLocality.localityRef,
-                locality: sd.locRef ? sd.locality : "",
+                locality: sd.locRef && sd.locality && sd.locality !== "Unassigned" ? sd.locality : "",
                 townRef: sd.townRef
                   ? sd.townRef
                   : sd.language === "CYM"
                   ? unassignedCymTown.townRef
                   : unassignedEngTown.townRef,
-                town: sd.townRef ? sd.town : "",
+                town: sd.townRef && sd.town && sd.town !== "Unassigned" ? sd.town : "",
                 adminAreaRef: sd.adminAreaRef
                   ? sd.adminAreaRef
                   : sd.language === "CYM"
                   ? unassignedCymAdminArea.administrativeAreaRef
                   : unassignedEngAdminArea.administrativeAreaRef,
-                administrativeArea: sd.adminAreaRef ? sd.administrativeArea : "",
+                administrativeArea:
+                  sd.adminAreaRef && sd.administrativeArea && sd.administrativeArea !== "Unassigned"
+                    ? sd.administrativeArea
+                    : "",
                 language: sd.language,
                 neverExport: streetData.neverExport ? streetData.neverExport : false,
               };
@@ -2369,19 +2385,22 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                   : sd.language === "CYM"
                   ? unassignedCymLocality.localityRef
                   : unassignedEngLocality.localityRef,
-                locality: sd.locRef ? sd.locality : "",
+                locality: sd.locRef && sd.locality && sd.locality !== "Unassigned" ? sd.locality : "",
                 townRef: sd.townRef
                   ? sd.townRef
                   : sd.language === "CYM"
                   ? unassignedCymTown.townRef
                   : unassignedEngTown.townRef,
-                town: sd.townRef ? sd.town : "",
+                town: sd.townRef && sd.town && sd.town !== "Unassigned" ? sd.town : "",
                 adminAreaRef: sd.adminAreaRef
                   ? sd.adminAreaRef
                   : sd.language === "CYM"
                   ? unassignedCymAdminArea.administrativeAreaRef
                   : unassignedEngAdminArea.administrativeAreaRef,
-                administrativeArea: sd.adminAreaRef ? sd.administrativeArea : "",
+                administrativeArea:
+                  sd.adminAreaRef && sd.administrativeArea && sd.administrativeArea !== "Unassigned"
+                    ? sd.administrativeArea
+                    : "",
                 language: sd.language,
                 neverExport: streetData.neverExport ? streetData.neverExport : false,
               };
