@@ -28,6 +28,7 @@
 //    019   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    020   21.06.24 Sean Flook       IMANN-636 Pass through hasASD to GetNewStreet.
 //    021   26.07.24 Sean Flook       IMANN-850 Store the apiUrl so that on refresh we are still using the correct URL.
+//    022   05.09.24 Sean Flook       IMANN-575 Added additional debug message.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -242,6 +243,7 @@ function StreetPage() {
               })
               .then(
                 (result) => {
+                  console.log("[DEBUG] SetUpStreetData", apiUrl, urlUsrn, JSON.stringify(result));
                   setData(result);
                   if (
                     urlUsrn &&

@@ -22,6 +22,7 @@
 //    009   18.04.24 Sean Flook       IMANN-351 Corrected typo.
 //    010   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    011   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
+//    012   05.09.24 Sean Flook       IMANN-575 Added additional debug message.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -207,6 +208,7 @@ function PropertyPage() {
               })
               .then(
                 (result) => {
+                  console.log("[DEBUG] SetUpPropertyData", apiUrl, urlUprn, JSON.stringify(result));
                   setData(result);
                   if (
                     urlUprn &&
