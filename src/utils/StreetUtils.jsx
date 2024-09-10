@@ -84,6 +84,7 @@
 //    071   28.08.24 Sean Flook       IMANN-895 When time fields are falsy send null to the API.
 //    072   02.09.24 Sean Flook       IMANN-975 Handle "Unassigned" in the lookups when getting the new street address.
 //    073   02.09.24 Sean Flook       IMANN-976 Handle "Unassigned" in lookups.
+//    074   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -588,8 +589,8 @@ export async function StreetDelete(usrn, deleteEsus, lookupContext, streetContex
   );
 
   if (deleteUrl) {
-    // if (process.env.NODE_ENV === "development")
-    console.log("[DEBUG] StreetDelete - URL", `${deleteUrl.url}/${usrn}/${deleteEsus ? "true" : "false"}`);
+    if (userContext.currentUser.showMessages)
+      console.log("[DEBUG] StreetDelete - URL", `${deleteUrl.url}/${usrn}/${deleteEsus ? "true" : "false"}`);
 
     return await fetch(`${deleteUrl.url}/${usrn}/${deleteEsus ? "true" : "false"}`, {
       headers: deleteUrl.headers,
@@ -632,7 +633,11 @@ export async function StreetDelete(usrn, deleteEsus, lookupContext, streetContex
 
           case 400:
             res.json().then((body) => {
-              const streetErrors = GetStreetValidationErrors(body, streetContext.currentStreet.newStreet);
+              const streetErrors = GetStreetValidationErrors(
+                body,
+                streetContext.currentStreet.newStreet,
+                userContext.currentUser.showMessages
+              );
 
               streetContext.onStreetErrors(
                 streetErrors.street,
@@ -684,7 +689,8 @@ export async function StreetDelete(usrn, deleteEsus, lookupContext, streetContex
             break;
 
           default:
-            console.error(`[${res.status} ERROR] Deleting street - response`, res);
+            if (userContext.currentUser.showMessages)
+              console.error(`[${res.status} ERROR] Deleting street - response`, res);
             streetContext.onStreetErrors(
               [
                 {
@@ -2590,9 +2596,10 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
  *
  * @param {object} body The body of the returned data from the API call, which should contain any errors.
  * @param {boolean} newStreet If true then this we were trying to create a new street; otherwise we were trying to update an existing street.
+ * @param {boolean} showMessages If true then write messages to the console; otherwise do not.
  * @return {object} The street validation error object.
  */
-export function GetStreetValidationErrors(body, newStreet) {
+export function GetStreetValidationErrors(body, newStreet, showMessages) {
   let errorStreet = [];
   let errorDescriptor = [];
   let errorEsu = [];
@@ -2715,72 +2722,71 @@ export function GetStreetValidationErrors(body, newStreet) {
   }
 
   if (errorStreet.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Street`, errorStreet);
+    if (showMessages) console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Street`, errorStreet);
   }
   if (errorDescriptor.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Descriptor`, errorDescriptor);
+    if (showMessages)
+      console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Descriptor`, errorDescriptor);
   }
   if (errorEsu.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - ESU`, errorEsu);
+    if (showMessages) console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - ESU`, errorEsu);
   }
   if (errorHighwayDedication.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(
-      `[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Highway Dedication`,
-      errorHighwayDedication
-    );
+    if (showMessages)
+      console.error(
+        `[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Highway Dedication`,
+        errorHighwayDedication
+      );
   }
   if (errorOneWayException.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(
-      `[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - One-way Exemption`,
-      errorOneWayException
-    );
+    if (showMessages)
+      console.error(
+        `[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - One-way Exemption`,
+        errorOneWayException
+      );
   }
   if (errorSuccessorCrossReference.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(
-      `[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Successor Cross Reference`,
-      errorInterest
-    );
+    if (showMessages)
+      console.error(
+        `[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Successor Cross Reference`,
+        errorInterest
+      );
   }
   if (errorMaintenanceResponsibility.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Maintenance Responsibility`, errorInterest);
+    if (showMessages)
+      console.error(
+        `[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Maintenance Responsibility`,
+        errorInterest
+      );
   }
   if (errorReinstatementCategory.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Reinstatement Category`, errorInterest);
+    if (showMessages)
+      console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Reinstatement Category`, errorInterest);
   }
   if (errorInterest.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Interest`, errorInterest);
+    if (showMessages) console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Interest`, errorInterest);
   }
   if (errorConstruction.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Construction`, errorConstruction);
+    if (showMessages)
+      console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Construction`, errorConstruction);
   }
   if (errorSpecialDesignation.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(
-      `[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Special Designation`,
-      errorSpecialDesignation
-    );
+    if (showMessages)
+      console.error(
+        `[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Special Designation`,
+        errorSpecialDesignation
+      );
   }
   if (errorHww.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Height, Width and Weight`, errorHww);
+    if (showMessages)
+      console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Height, Width and Weight`, errorHww);
   }
   if (errorProw.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Public Right of Way`, errorProw);
+    if (showMessages)
+      console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Public Right of Way`, errorProw);
   }
   if (errorNote.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Note`, errorNote);
+    if (showMessages) console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Note`, errorNote);
   }
 
   return {
@@ -2830,7 +2836,7 @@ export async function GetStreetMapData(usrn, userContext, isScottish) {
             return res.json();
 
           case 204:
-            console.log("[DEBUG] GetStreetMapData: No content found");
+            if (userContext.currentUser.showMessages) console.log("[DEBUG] GetStreetMapData: No content found");
             return null;
 
           case 401:
@@ -2838,15 +2844,17 @@ export async function GetStreetMapData(usrn, userContext, isScottish) {
             return null;
 
           case 403:
-            console.error("[402 ERROR] GetStreetMapData: You do not have database access.", res);
+            if (userContext.currentUser.showMessages)
+              console.error("[402 ERROR] GetStreetMapData: You do not have database access.", res);
             return null;
 
           case 500:
-            console.error("[500 ERROR] GetStreetMapData: Unexpected server error.", res);
+            if (userContext.currentUser.showMessages)
+              console.error("[500 ERROR] GetStreetMapData: Unexpected server error.", res);
             return null;
 
           default:
-            console.error("[ERROR] GetStreetMapData: Unexpected error.", res);
+            if (userContext.currentUser.showMessages) console.error("[ERROR] GetStreetMapData: Unexpected error.", res);
             return null;
         }
       })
@@ -2855,7 +2863,7 @@ export async function GetStreetMapData(usrn, userContext, isScottish) {
           return result;
         },
         (error) => {
-          console.error("[ERROR] Get Street data", error);
+          if (userContext.currentUser.showMessages) console.error("[ERROR] Get Street data", error);
           return null;
         }
       );
@@ -2954,7 +2962,7 @@ export async function GetEsuData(esuId, userContext) {
           if (error.status && error.status === 401) {
             userContext.onExpired();
           } else {
-            console.error("[ERROR] Get Street data", error);
+            if (userContext.currentUser.showMessages) console.error("[ERROR] Get Street data", error);
           }
           return null;
         }
@@ -2995,7 +3003,7 @@ export async function GetMultipleEsusData(esuIds, userContext) {
           if (error.status && error.status === 401) {
             userContext.onExpired();
           } else {
-            console.error("[ERROR] Get ESUs for assigning to street.", error);
+            if (userContext.currentUser.showMessages) console.error("[ERROR] Get ESUs for assigning to street.", error);
           }
           return null;
         }
@@ -3063,8 +3071,7 @@ export async function SaveStreet(
     ? GetStreetCreateData(currentStreet, lookupContext, isScottish, hasASD)
     : GetStreetUpdateData(currentStreet, lookupContext, isScottish, hasASD);
 
-  // if (process.env.NODE_ENV === "development")
-  console.log("[DEBUG] SaveStreet - JSON saveData", JSON.stringify(saveData));
+  if (userContext.currentUser.showMessages) console.log("[DEBUG] SaveStreet - JSON saveData", JSON.stringify(saveData));
 
   if (saveUrl) {
     await fetch(saveUrl.url, {
@@ -3076,6 +3083,7 @@ export async function SaveStreet(
       .then((res) => (res.ok ? res : Promise.reject(res)))
       .then((res) => res.json())
       .then((result) => {
+        if (userContext.currentUser.showMessages) console.log("[DEBUG] Street Saved", JSON.stringify(result));
         mapContext.onSetCoordinate(null);
         streetContext.onStreetModified(false);
         streetContext.resetStreetErrors();
@@ -3201,7 +3209,11 @@ export async function SaveStreet(
                 `[400 ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} street`,
                 body.errors
               );
-              const streetErrors = GetStreetValidationErrors(body, streetContext.currentStreet.newStreet);
+              const streetErrors = GetStreetValidationErrors(
+                body,
+                streetContext.currentStreet.newStreet,
+                userContext.currentUser.showMessages
+              );
 
               streetContext.onStreetErrors(
                 streetErrors.street,

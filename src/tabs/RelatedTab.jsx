@@ -47,6 +47,7 @@
 //    032   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    033   07.08.24 Sean Flook       IMANN-891 Moved where ResetContexts is called from to correctly handle historic properties.
 //    034   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
+//    035   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -878,7 +879,8 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
                   if (error.status && error.status === 401) {
                     userContext.onExpired();
                   } else {
-                    console.error(`[ERROR] Get ${relatedType} related data`, error);
+                    if (userContext.currentUser.showMessages)
+                      console.error(`[ERROR] Get ${relatedType} related data`, error);
                   }
                 }
               )
@@ -892,7 +894,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
               });
           }
         } else {
-          console.error("[ERROR] Related apiUrl is null");
+          if (userContext.currentUser.showMessages) console.error("[ERROR] Related apiUrl is null");
         }
       }
     }

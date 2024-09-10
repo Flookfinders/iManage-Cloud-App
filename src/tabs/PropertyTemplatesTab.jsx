@@ -29,6 +29,7 @@
 //    016   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //    017   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    018   26.06.24 Joel Benford               Null never export and site visit -> false on save, string lpiLevel if Scottish
+//    019   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -128,12 +129,12 @@ function PropertyTemplatesTab() {
         note: newRecord.note,
       };
 
-      // if (process.env.NODE_ENV === "development")
-      console.log("[DEBUG] handleDoneAddTemplate", {
-        newRecord: newRecord,
-        saveUrl: saveUrl,
-        saveData: JSON.stringify(saveData),
-      });
+      if (userContext.currentUser.showMessages)
+        console.log("[DEBUG] handleDoneAddTemplate", {
+          newRecord: newRecord,
+          saveUrl: saveUrl,
+          saveData: JSON.stringify(saveData),
+        });
 
       if (saveUrl) {
         await fetch(saveUrl.url, {
@@ -156,7 +157,8 @@ function PropertyTemplatesTab() {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.error("[400 ERROR] Creating property template", body.errors);
+                  if (userContext.currentUser.showMessages)
+                    console.error("[400 ERROR] Creating property template", body.errors);
                 });
                 break;
 
@@ -165,11 +167,12 @@ function PropertyTemplatesTab() {
                 break;
 
               case 500:
-                console.error("[500 ERROR] Creating property template", res);
+                if (userContext.currentUser.showMessages) console.error("[500 ERROR] Creating property template", res);
                 break;
 
               default:
-                console.error(`[${res.status} ERROR] handleDoneAddTemplate - Creating property template.`, res);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[${res.status} ERROR] handleDoneAddTemplate - Creating property template.`, res);
                 break;
             }
           });
@@ -240,8 +243,8 @@ function PropertyTemplatesTab() {
           note: updatedData.note,
         };
 
-        // if (process.env.NODE_ENV === "development")
-        console.log("[DEBUG] handleUpdateData", updatedData, saveData, saveUrl, JSON.stringify(saveData));
+        if (userContext.currentUser.showMessages)
+          console.log("[DEBUG] handleUpdateData", updatedData, saveData, saveUrl, JSON.stringify(saveData));
 
         await fetch(saveUrl.url, {
           headers: saveUrl.headers,
@@ -261,7 +264,8 @@ function PropertyTemplatesTab() {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.error("[400 ERROR] Updating property template", body.errors);
+                  if (userContext.currentUser.showMessages)
+                    console.error("[400 ERROR] Updating property template", body.errors);
                 });
                 break;
 
@@ -277,14 +281,16 @@ function PropertyTemplatesTab() {
                 res.json().then((body) => {
                   if (process.env.NODE_ENV === "development")
                     setUpdateError(`ERROR: ${body[0].errorTitle} - ${body[0].errorDescription}`);
-                  console.error(
-                    `[500 ERROR] Updating street template - ${body[0].errorTitle}: ${body[0].errorDescription}`
-                  );
+                  if (userContext.currentUser.showMessages)
+                    console.error(
+                      `[500 ERROR] Updating street template - ${body[0].errorTitle}: ${body[0].errorDescription}`
+                    );
                 });
                 break;
 
               default:
-                console.error(`[${res.status} ERROR] handleUpdateData - Updating property template.`, res);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[${res.status} ERROR] handleUpdateData - Updating property template.`, res);
                 break;
             }
           });
@@ -338,7 +344,8 @@ function PropertyTemplatesTab() {
             if (res.status && res.status === 401) {
               userContext.onExpired();
             } else {
-              console.error("[ERROR] Deleting property template - response", res);
+              if (userContext.currentUser.showMessages)
+                console.error("[ERROR] Deleting property template - response", res);
             }
           });
       }

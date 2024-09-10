@@ -99,6 +99,7 @@
 //    085   27.08.24 Sean Flook       IMANN-888 Ensure the background streets are redrawn when creating a new street whilst already looking at another street.
 //    086   28.08.24 Sean Flook       IMANN-957 Handle if formattedAddress  is missing from the property data.
 //    087   03.09.24 Sean Flook       IMANN-972 Prevent infinite loop from occurring.
+//    088   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1773,10 +1774,11 @@ function ADSEsriMap(startExtent) {
 
       reader.onload = function () {
         if (reader.readyState !== 2 || reader.error) {
-          console.error(`[ERROR] failed to upload ${shpFile.title}`, {
-            readyState: reader.readyState,
-            error: reader.error,
-          });
+          if (userContext.current.currentUser.showMessages)
+            console.error(`[ERROR] failed to upload ${shpFile.title}`, {
+              readyState: reader.readyState,
+              error: reader.error,
+            });
           saveResult.current = false;
           featuresDownloaded.current = shpFile.title;
           saveType.current = "uploadedShpFileError";
@@ -2126,7 +2128,7 @@ function ADSEsriMap(startExtent) {
                   break;
 
                 default:
-                  console.error("[ERROR] Get Property data", error);
+                  if (userContext.current.currentUser.showMessages) console.error("[ERROR] Get Property data", error);
                   break;
               }
               return null;
@@ -2973,11 +2975,12 @@ function ADSEsriMap(startExtent) {
       // Uncomment below if need to know what layers are being added, moved and removed from the map
       // baseMap.layers.on("change", function (event) {
       //   const copiedEvent = JSON.parse(JSON.stringify(event));
-      //   console.log("[SF] layers changed", {
-      //     added: copiedEvent.added,
-      //     moved: copiedEvent.moved,
-      //     removed: copiedEvent.removed,
-      //   });
+      //   if (userContext.current.currentUser.showMessages)
+      //     console.log("[DEBUG] layers changed", {
+      //       added: copiedEvent.added,
+      //       moved: copiedEvent.moved,
+      //       removed: copiedEvent.removed,
+      //     });
       // });
 
       baseView.when((_) => {
@@ -2997,8 +3000,6 @@ function ADSEsriMap(startExtent) {
       coordinateConversionRef.current = baseCoordinateConversion;
     };
 
-    // console.log(["[SF] Base mapping"]);
-
     const baseLayers = [];
     const baseLayerIds = [];
     const snapEsu = [];
@@ -3007,7 +3008,6 @@ function ADSEsriMap(startExtent) {
     const featureLayer = [];
     let newBaseLayer;
 
-    // console.log("[SF] Base mapping");
     if (!baseMapLayers.current) {
       getBaseMapLayers(userContext.current).then((result) => {
         baseMapLayers.current = result;
@@ -3031,7 +3031,6 @@ function ADSEsriMap(startExtent) {
   // Extent change
   useEffect(() => {
     if (mapContext.currentExtent && backgroundExtent.current !== mapContext.currentExtent) {
-      // console.log("[SF] Extent change");
       backgroundExtent.current = mapContext.currentExtent;
     }
   }, [mapContext.currentExtent]);
@@ -3040,7 +3039,6 @@ function ADSEsriMap(startExtent) {
   useEffect(() => {
     if (!measurementRef.current) return;
 
-    // console.log("[SF] Measurement tool");
     measurementRef.current.visible = displayMeasurement;
     measurementRef.current.activeTool = measurementActiveTool;
     if (!displayMeasurement) measurementRef.current.clear();
@@ -3050,13 +3048,11 @@ function ADSEsriMap(startExtent) {
   useEffect(() => {
     if (!layerListRef.current) return;
 
-    // console.log("[SF] Layer list tool");
     layerListRef.current.visible = displayLayerList;
   }, [displayLayerList]);
 
   // Background streets Layer
   useEffect(() => {
-    // console.log("[SF] Background streets layer");
     const haveStreets =
       mapContext.currentBackgroundData &&
       mapContext.currentBackgroundData.streets &&
@@ -3253,7 +3249,6 @@ function ADSEsriMap(startExtent) {
 
   // Unassigned ESUs layer
   useEffect(() => {
-    // console.log("[SF] Unassigned ESUs layer");
     const haveEsus =
       mapContext.currentBackgroundData &&
       mapContext.currentBackgroundData.unassignedEsus &&
@@ -3404,7 +3399,6 @@ function ADSEsriMap(startExtent) {
 
   // Background property layer
   useEffect(() => {
-    // console.log("[SF] Background property layer");
     const haveProperties =
       mapContext.currentBackgroundData &&
       mapContext.currentBackgroundData.properties &&
@@ -3697,7 +3691,6 @@ function ADSEsriMap(startExtent) {
 
   // Background provenance layer
   useEffect(() => {
-    // console.log("[SF] Background provenance layer");
     const haveProvenances =
       mapContext.currentBackgroundData &&
       mapContext.currentBackgroundData.provenances &&
@@ -3822,7 +3815,6 @@ function ADSEsriMap(startExtent) {
 
   // Display loaded SHP files
   useEffect(() => {
-    // console.log("[SF] Display loaded SHP files");
     // First unload all the shpFiles previously loaded
     if (loadedShpFileIds.current && loadedShpFileIds.current.length) {
       loadedShpFileIds.current.forEach((shpId) => {
@@ -3884,7 +3876,6 @@ function ADSEsriMap(startExtent) {
     )
       return;
 
-    // console.log("[SF] Edit, street & property layers");
     let streetDataRef = null;
     let asdType51DataRef = null;
     let asdType52DataRef = null;
@@ -5630,7 +5621,6 @@ function ADSEsriMap(startExtent) {
           };
         }
         view.extent = backgroundExtent.current;
-        // console.log("[SF] Set street extent");
       }
     });
 
@@ -5672,7 +5662,6 @@ function ADSEsriMap(startExtent) {
           };
         }
         view.extent = backgroundExtent.current;
-        // console.log("[SF] Set property extent");
       }
     });
 
@@ -5792,8 +5781,10 @@ function ADSEsriMap(startExtent) {
                     const newEsus = geometryEngine.cut(divideEsuGeometry, cutLine);
 
                     if (newEsus && newEsus.length === 2) mapContext.onEsuDivided(newEsus[0], newEsus[1]);
-                    else console.log("[DEBUG] Unable to divide the ESU", newEsus);
-                  } else console.log("[DEBUG] Run out of options on how to divide the ESU");
+                    else if (userContext.current.currentUser.showMessages)
+                      console.log("[DEBUG] Unable to divide the ESU", newEsus);
+                  } else if (userContext.current.currentUser.showMessages)
+                    console.log("[DEBUG] Run out of options on how to divide the ESU");
                 }
               });
             }
@@ -5944,10 +5935,6 @@ function ADSEsriMap(startExtent) {
 
                   const newSelected = [...new Set(newGraphics.map((x) => x.attributes.TOID))];
                   setSelectedExtents(newSelected);
-                  console.log("[SF] selectedExtents", {
-                    selectedExtents: newSelected,
-                    graphics: graphics,
-                  });
                   if (newSelected.length > 0) {
                     setSelectionAnchorEl(document.getElementById("ads-provenance-data-tab"));
                     setDisplayExtentMergeTool(true);
@@ -6039,10 +6026,6 @@ function ADSEsriMap(startExtent) {
 
                         const newSelected = [...new Set(graphics.map((x) => x.attributes.TOID))];
                         setSelectedExtents(newSelected);
-                        // console.log("[SF] selectedExtents", {
-                        //   selectedExtents: newSelected,
-                        //   graphics: graphics,
-                        // });
                         if (newSelected.length > 0) {
                           setSelectionAnchorEl(document.getElementById("ads-provenance-data-tab"));
                           setDisplayExtentMergeTool(true);
@@ -6232,7 +6215,7 @@ function ADSEsriMap(startExtent) {
           return response;
         })
         .catch((error) => {
-          console.error("[ERROR] getting function", { error: error });
+          if (userContext.current.currentUser.showMessages) console.error("[ERROR] getting function", { error: error });
         });
     }
 
@@ -6261,7 +6244,7 @@ function ADSEsriMap(startExtent) {
           return response;
         })
         .catch((error) => {
-          console.error("[ERROR] getting function", { error: error });
+          if (userContext.current.currentUser.showMessages) console.error("[ERROR] getting function", { error: error });
         });
     }
 
@@ -6293,7 +6276,7 @@ function ADSEsriMap(startExtent) {
           return response;
         })
         .catch((error) => {
-          console.error("[ERROR] getting function", { error: error });
+          if (userContext.current.currentUser.showMessages) console.error("[ERROR] getting function", { error: error });
         });
     }
 
@@ -6446,7 +6429,8 @@ function ADSEsriMap(startExtent) {
           break;
 
         default:
-          console.error("[ERROR] Trying to create a new " + event.graphic.geometry.type);
+          if (userContext.current.currentUser.showMessages)
+            console.error("[ERROR] Trying to create a new " + event.graphic.geometry.type);
           break;
       }
     });
@@ -6626,7 +6610,13 @@ function ADSEsriMap(startExtent) {
           return response;
         })
         .catch((error) => {
-          console.error("[ERROR] getting OS functions", { layer: layer, wfsParams: wfsParams, url: url, error: error });
+          if (userContext.current.currentUser.showMessages)
+            console.error("[ERROR] getting OS functions", {
+              layer: layer,
+              wfsParams: wfsParams,
+              url: url,
+              error: error,
+            });
         });
     }
 
@@ -6667,12 +6657,13 @@ function ADSEsriMap(startExtent) {
           return response;
         })
         .catch((error) => {
-          console.error("[ERROR] getting thinkWare functions", {
-            layer: layer,
-            wfsParams: wfsParams,
-            url: url,
-            error: error,
-          });
+          if (userContext.current.currentUser.showMessages)
+            console.error("[ERROR] getting thinkWare functions", {
+              layer: layer,
+              wfsParams: wfsParams,
+              url: url,
+              error: error,
+            });
         });
     }
 
@@ -7256,8 +7247,6 @@ function ADSEsriMap(startExtent) {
   useEffect(() => {
     if (!mapRef.current || !mapRef.current.layers || !mapRef.current.layers.length) return;
 
-    // console.log("[SF] Fix the order of the layers");
-
     const backgroundStreetLayer = mapRef.current.findLayerById(backgroundStreetLayerName);
     const unassignedEsusLayer = mapRef.current.findLayerById(unassignedEsusLayerName);
     const backgroundPropertyLayer = mapRef.current.findLayerById(backgroundPropertyLayerName);
@@ -7524,7 +7513,6 @@ function ADSEsriMap(startExtent) {
     ) {
       setSnappingLayers();
     } else {
-      // console.log("[SF] Edit graphics layer & setting sketch tools");
       editGraphicsLayer.current.graphics.removeAll();
 
       let canContinue = false;
@@ -8116,8 +8104,6 @@ function ADSEsriMap(startExtent) {
     if (!mapRef.current || !mapRef.current.layers || !mapRef.current.layers.length) return;
 
     if (streetContext.currentRecord) {
-      // console.log("[SF] ASD Layer visibility");
-
       const asd51Layer = mapRef.current && mapRef.current.findLayerById(asd51LayerName);
       const asd52Layer = mapRef.current && mapRef.current.findLayerById(asd52LayerName);
       const asd53Layer = mapRef.current && mapRef.current.findLayerById(asd53LayerName);
@@ -8140,14 +8126,12 @@ function ADSEsriMap(startExtent) {
 
   // Store sandboxContext
   useEffect(() => {
-    // console.log("[SF] Store sandboxContext");
     sandbox.current = sandboxContext.currentSandbox;
   }, [sandboxContext.currentSandbox]);
 
   // Map actions and events
   useEffect(() => {
     if (view) {
-      // console.log("[SF] Map actions and events");
       reactiveUtils.when(
         () => view.popup?.actions,
         () => {
@@ -8215,7 +8199,6 @@ function ADSEsriMap(startExtent) {
                 break;
 
               case "street-menu":
-                console.log("[To Do] Street menu", event);
                 break;
 
               case "open-property-record":
@@ -8232,12 +8215,10 @@ function ADSEsriMap(startExtent) {
 
               case "property-radial-search":
                 // Perform a property radial search
-                console.log("[To Do] Property radial search", event);
                 break;
 
               case "property-activity-list":
                 // Add property to the activity list
-                console.log("[To Do] Property activity list", event);
                 break;
 
               case "property-street-view":
@@ -8247,7 +8228,6 @@ function ADSEsriMap(startExtent) {
 
               case "property-menu":
                 // Open property actions menu
-                console.log("[To Do] Property menu", event);
                 break;
 
               default:
@@ -8307,7 +8287,6 @@ function ADSEsriMap(startExtent) {
     )
       return;
 
-    // console.log("[SF] Highlight map objects");
     const mapLayers = mapRef.current.layers.items;
     let streetLayer = null;
     let backgroundStreetLayer = null;
@@ -8532,8 +8511,6 @@ function ADSEsriMap(startExtent) {
   useEffect(() => {
     if (!mapRef.current || !mapRef.current.layers || !mapRef.current.layers.length) return;
 
-    // console.log("[SF] Capture coordinates");
-
     const streetLayer = mapRef.current && mapRef.current.findLayerById(streetLayerName);
     const asd51Layer = mapRef.current && mapRef.current.findLayerById(asd51LayerName);
     const asd52Layer = mapRef.current && mapRef.current.findLayerById(asd52LayerName);
@@ -8590,7 +8567,6 @@ function ADSEsriMap(startExtent) {
       propertyContext.wizardData.source &&
       propertyContext.wizardData.source === "map"
     ) {
-      // console.log("[SF] Property wizard finalise");
       if (!propertyContext.wizardData.savedProperty || propertyContext.wizardData.savedProperty.length === 0) {
         if (propertyContext.wizardData.type === "close") {
           setOpenPropertyWizard(false);
@@ -8731,7 +8707,6 @@ function ADSEsriMap(startExtent) {
     if (!mapRef.current || !mapRef.current.layers || !mapRef.current.layers.length) return;
 
     if (mapContext.currentBackgroundData.properties && !(editingObject.current && editingObject.current.objectType)) {
-      // console.log("[SF] Selecting properties");
       const streetLayer = mapRef.current && mapRef.current.findLayerById(streetLayerName);
       const propertyLayer = mapRef.current && mapRef.current.findLayerById(propertyLayerName);
       const selectPropertyLayer = mapRef.current && mapRef.current.findLayerById(selectPropertyLayerName);

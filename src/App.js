@@ -75,6 +75,7 @@
 //    062   23.07.24 Sean Flook       IMANN-801 Reduced the polling interval back to every 5 seconds.
 //    063   06.08.24 Sean Flook       IMANN-903 Use a reference to store the loaded SHP files.
 //    064   27.08.24 Sean Flook       IMANN-925 Corrected typo.
+//    065   10.09.24 Sean Flook       IMANN-980 Set the showMessages rights for users and only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -152,6 +153,7 @@ import { adsLightGreyD } from "./utils/ADSColours";
 function App() {
   const theme = createTheme();
   const [currentUser, setCurrentUser] = useState(null);
+  const userShowMessages = useRef(false);
 
   const [loginOpen, setLoginOpen] = useState(localStorage.getItem("currentUser") === null);
   const loginMessage = useRef("Enter your credentials.");
@@ -484,6 +486,12 @@ function App() {
    */
   function HandleUserChange(userInfo) {
     if (userInfo) {
+      userShowMessages.current =
+        userInfo.active &&
+        userInfo.extraInformation &&
+        userInfo.extraInformation.length > 0 &&
+        !!userInfo.extraInformation.find((x) => x.key === "ShowMessages" && x.value === "true");
+
       const user = {
         ...userInfo,
         displayName: `${userInfo.firstName} ${userInfo.lastName}`.trim(),
@@ -516,6 +524,7 @@ function App() {
         editProperty:
           userInfo.active && (userInfo.rights.includes("LLPGEditor") || userInfo.rights.includes("LLPGAdministrator")),
         adminProperty: userInfo.active && userInfo.rights.includes("LLPGAdministrator"),
+        showMessages: userShowMessages.current,
       };
 
       setCurrentUser(user);
@@ -2164,7 +2173,7 @@ function App() {
               return result.parentUprn;
             },
             (error) => {
-              console.error("[ERROR] Get Property data", error);
+              if (userShowMessages.current) console.error("[ERROR] Get Property data", error);
               return null;
             }
           );
@@ -2898,7 +2907,7 @@ function App() {
           switch (res.status) {
             case 400:
               res.json().then((body) => {
-                console.error(`[400 ERROR] Getting all Street data`, body.errors);
+                if (userShowMessages.current) console.error(`[400 ERROR] Getting all Street data`, body.errors);
               });
               return null;
 
@@ -2907,11 +2916,11 @@ function App() {
               return null;
 
             case 500:
-              console.error(`[500 ERROR] Getting all Street data`, res);
+              if (userShowMessages.current) console.error(`[500 ERROR] Getting all Street data`, res);
               return null;
 
             default:
-              console.error(`[${res.status} ERROR] Getting all Street data`, res);
+              if (userShowMessages.current) console.error(`[${res.status} ERROR] Getting all Street data`, res);
               return null;
           }
         });
@@ -2952,7 +2961,7 @@ function App() {
           switch (res.status) {
             case 400:
               res.json().then((body) => {
-                console.error(`[400 ERROR] Getting all unassigned ESU data`, body.errors);
+                if (userShowMessages.current) console.error(`[400 ERROR] Getting all unassigned ESU data`, body.errors);
               });
               return null;
 
@@ -2961,11 +2970,11 @@ function App() {
               return null;
 
             case 500:
-              console.error(`[500 ERROR] Getting all unassigned ESU data`, res);
+              if (userShowMessages.current) console.error(`[500 ERROR] Getting all unassigned ESU data`, res);
               return null;
 
             default:
-              console.error(`[${res.status} ERROR] Getting all unassigned ESU data`, res);
+              if (userShowMessages.current) console.error(`[${res.status} ERROR] Getting all unassigned ESU data`, res);
               return null;
           }
         });
@@ -3006,7 +3015,7 @@ function App() {
           switch (res.status) {
             case 400:
               res.json().then((body) => {
-                console.error(`[400 ERROR] Getting all property data`, body.errors);
+                if (userShowMessages.current) console.error(`[400 ERROR] Getting all property data`, body.errors);
               });
               return null;
 
@@ -3015,11 +3024,11 @@ function App() {
               return null;
 
             case 500:
-              console.error(`[500 ERROR] Getting all property data`, res);
+              if (userShowMessages.current) console.error(`[500 ERROR] Getting all property data`, res);
               return null;
 
             default:
-              console.error(`[${res.status} ERROR] Getting all property data`, res);
+              if (userShowMessages.current) console.error(`[${res.status} ERROR] Getting all property data`, res);
               return null;
           }
         });
@@ -3060,7 +3069,7 @@ function App() {
           switch (res.status) {
             case 400:
               res.json().then((body) => {
-                console.error(`[400 ERROR] Getting all provenance data`, body.errors);
+                if (userShowMessages.current) console.error(`[400 ERROR] Getting all provenance data`, body.errors);
               });
               return null;
 
@@ -3069,11 +3078,11 @@ function App() {
               return null;
 
             case 500:
-              console.error(`[500 ERROR] Getting all provenance data`, res);
+              if (userShowMessages.current) console.error(`[500 ERROR] Getting all provenance data`, res);
               return null;
 
             default:
-              console.error(`[${res.status} ERROR] Getting all provenance data`, res);
+              if (userShowMessages.current) console.error(`[${res.status} ERROR] Getting all provenance data`, res);
               return null;
           }
         });

@@ -118,6 +118,7 @@
 //    104   16.08.24 Sean Flook       IMANN-935 Only return whole number when calculating the length of a PRoW.
 //    105   20.08.24 Sean Flook       IMANN-818 Corrected typo.
 //    106   27.08.24 Sean Flook       IMANN-925 If creating a new street and editing the USRN save the street with the new USRN.
+//    107   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3099,7 +3100,8 @@ function StreetDataForm({ data, loading }) {
       const updateUsrnUrl = GetUpdateStreetUrl(userContext.currentUser.token, !settingsContext.isScottish && hasASD);
 
       if (updateUsrnUrl) {
-        console.log("[DEBUG] Update USRN", `${updateUsrnUrl.url}/${streetData.usrn}/${newUsrn}`);
+        if (userContext.currentUser.showMessages)
+          console.log("[DEBUG] Update USRN", `${updateUsrnUrl.url}/${streetData.usrn}/${newUsrn}`);
         await fetch(`${updateUsrnUrl.url}/${streetData.usrn}/${newUsrn}`, {
           headers: updateUsrnUrl.headers,
           crossDomain: true,
@@ -3236,11 +3238,16 @@ function StreetDataForm({ data, loading }) {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.error(
-                    `[400 ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} street`,
-                    body.errors
+                  if (userContext.currentUser.showMessages)
+                    console.error(
+                      `[400 ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} street`,
+                      body.errors
+                    );
+                  const streetErrors = GetStreetValidationErrors(
+                    body,
+                    streetContext.currentStreet.newStreet,
+                    userContext.currentUser.showMessages
                   );
-                  const streetErrors = GetStreetValidationErrors(body, streetContext.currentStreet.newStreet);
 
                   streetContext.onStreetErrors(
                     streetErrors.street,
@@ -3295,12 +3302,13 @@ function StreetDataForm({ data, loading }) {
                 const contentType = res.headers ? res.headers.get("content-type") : null;
                 if (contentType && contentType.indexOf("application/json") !== -1) {
                   res.json().then((body) => {
-                    console.error(
-                      `[${res.status} ERROR] ${
-                        streetContext.currentStreet.newStreet ? "Creating" : "Updating"
-                      } street.`,
-                      body
-                    );
+                    if (userContext.currentUser.showMessages)
+                      console.error(
+                        `[${res.status} ERROR] ${
+                          streetContext.currentStreet.newStreet ? "Creating" : "Updating"
+                        } street.`,
+                        body
+                      );
 
                     streetContext.onStreetErrors(
                       [
@@ -3329,13 +3337,14 @@ function StreetDataForm({ data, loading }) {
                   });
                 } else if (contentType && contentType.indexOf("text")) {
                   res.text().then((response) => {
-                    console.error(
-                      `[${res.status} ERROR] ${
-                        streetContext.currentStreet.newStreet ? "Creating" : "Updating"
-                      } street.`,
-                      response,
-                      res
-                    );
+                    if (userContext.currentUser.showMessages)
+                      console.error(
+                        `[${res.status} ERROR] ${
+                          streetContext.currentStreet.newStreet ? "Creating" : "Updating"
+                        } street.`,
+                        response,
+                        res
+                      );
 
                     const responseData = response.replace("[{", "").replace("}]", "").split(',"');
 
@@ -3377,10 +3386,11 @@ function StreetDataForm({ data, loading }) {
                     );
                   });
                 } else {
-                  console.error(
-                    `[ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} street (other)`,
-                    res
-                  );
+                  if (userContext.currentUser.showMessages)
+                    console.error(
+                      `[ERROR] ${streetContext.currentStreet.newStreet ? "Creating" : "Updating"} street (other)`,
+                      res
+                    );
 
                   streetContext.onStreetErrors(
                     [
@@ -8201,8 +8211,6 @@ function StreetDataForm({ data, loading }) {
 
       return prowLength ? Math.round(prowLength) : originalLength;
     };
-
-    // console.log("[SF] StreetDataForm", { streetData: streetData });
 
     if (mapContext.currentLineGeometry) {
       switch (mapContext.currentLineGeometry.objectType) {

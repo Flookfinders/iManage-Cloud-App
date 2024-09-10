@@ -58,6 +58,7 @@
 //    045   18.07.24 Sean Flook       IMANN-775 For Scottish authorities when filtering BLPUState use the string of the index to handle the 0 state.
 //    046   16.08.24 Sean Flook       IMANN-861 Added new key from API for successor errors.
 //    047   02.09.24 Sean Flook       IMANN-976 Handle "Unassigned" in lookups.
+//    048   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -327,8 +328,8 @@ export async function GetTempAddress(lpiRecord, organisation, lookupContext, use
 
   const tempAddressUrl = GetTempAddressUrl(userContext.currentUser.token);
 
-  // if (process.env.NODE_ENV === "development")
-  console.log("[DEBUG] GetTempAddress", tempAddressUrl, JSON.stringify(addressData));
+  if (userContext.currentUser.showMessages)
+    console.log("[DEBUG] GetTempAddress", tempAddressUrl, JSON.stringify(addressData));
 
   if (tempAddressUrl) {
     const tempAddress = await fetch(`${tempAddressUrl.url}?AddressSeparator=%2C%20`, {
@@ -344,11 +345,11 @@ export async function GetTempAddress(lpiRecord, organisation, lookupContext, use
             return res.text();
 
           case 204:
-            console.log("[DEBUG] GetTempAddress: No content found");
+            if (userContext.currentUser.showMessages) console.log("[DEBUG] GetTempAddress: No content found");
             return "No content found";
 
           case 400:
-            console.error("[400 ERROR] GetTempAddress: Bad Request.", res);
+            if (userContext.currentUser.showMessages) console.error("[400 ERROR] GetTempAddress: Bad Request.", res);
             return null;
 
           case 401:
@@ -356,11 +357,12 @@ export async function GetTempAddress(lpiRecord, organisation, lookupContext, use
             return null;
 
           case 403:
-            console.error("[403 ERROR] GetTempAddress: You do not have database access.", res);
+            if (userContext.currentUser.showMessages)
+              console.error("[403 ERROR] GetTempAddress: You do not have database access.", res);
             return null;
 
           default:
-            console.error("[ERROR] GetTempAddress: Unexpected error.", res);
+            if (userContext.currentUser.showMessages) console.error("[ERROR] GetTempAddress: Unexpected error.", res);
             return null;
         }
       })
@@ -370,7 +372,7 @@ export async function GetTempAddress(lpiRecord, organisation, lookupContext, use
           else return tempAddress;
         },
         (error) => {
-          console.error("[ERROR] Get temp address data", error);
+          if (userContext.currentUser.showMessages) console.error("[ERROR] Get temp address data", error);
           return "";
         }
       );
@@ -821,7 +823,7 @@ export async function PropertyDelete(uprn, deleteChildProperties, userContext, p
 
           case 400:
             res.json().then((body) => {
-              const propertyErrors = GetPropertyValidationErrors(body, false);
+              const propertyErrors = GetPropertyValidationErrors(body, false, userContext.currentUser.showMessages);
 
               propertyContext.onPropertyErrors(
                 propertyErrors.blpu,
@@ -861,7 +863,8 @@ export async function PropertyDelete(uprn, deleteChildProperties, userContext, p
             break;
 
           default:
-            console.error(`[${res.status} ERROR] Deleting Property - response`, res);
+            if (userContext.currentUser.showMessages)
+              console.error(`[${res.status} ERROR] Deleting Property - response`, res);
             propertyContext.onPropertyErrors(
               [
                 {
@@ -1649,9 +1652,10 @@ export function GetPropertyUpdateData(propertyData, isScottish, cascadeParentPao
  *
  * @param {object} body The body of the returned data from the API call, which should contain any errors.
  * @param {boolean} newProperty If true then this we were trying to create a new property; otherwise we were trying to update an existing property.
+ * @param {boolean} showMessages If true then write messages to the console; otherwise do not write the messages to the console.
  * @return {object} The validation error object.
  */
-export function GetPropertyValidationErrors(body, newProperty) {
+export function GetPropertyValidationErrors(body, newProperty, showMessages) {
   let errorBlpu = [];
   let errorLpi = [];
   let errorProvenance = [];
@@ -1716,42 +1720,39 @@ export function GetPropertyValidationErrors(body, newProperty) {
   }
 
   if (errorBlpu.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - BLPU`, errorBlpu);
+    if (showMessages) console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - BLPU`, errorBlpu);
   }
   if (errorLpi.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - LPI`, errorLpi);
+    if (showMessages) console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - LPI`, errorLpi);
   }
   if (errorProvenance.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Provenance`, errorProvenance);
+    if (showMessages)
+      console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Provenance`, errorProvenance);
   }
   if (errorCrossRef.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Cross Ref`, errorCrossRef);
+    if (showMessages)
+      console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Cross Ref`, errorCrossRef);
   }
   if (errorClassification.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(
-      `[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Classification`,
-      errorClassification
-    );
+    if (showMessages)
+      console.error(
+        `[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Classification`,
+        errorClassification
+      );
   }
   if (errorOrganisation.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Organisation`, errorOrganisation);
+    if (showMessages)
+      console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Organisation`, errorOrganisation);
   }
   if (errorSuccessorCrossRef.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(
-      `[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Successor cross reference`,
-      errorSuccessorCrossRef
-    );
+    if (showMessages)
+      console.error(
+        `[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Successor cross reference`,
+        errorSuccessorCrossRef
+      );
   }
   if (errorNote.length > 0) {
-    // if (process.env.NODE_ENV === "development")
-    console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Note`, errorNote);
+    if (showMessages) console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} Property - Note`, errorNote);
   }
 
   return {
@@ -1789,7 +1790,7 @@ export async function GetPropertyMapData(uprn, userContext) {
             return res.json();
 
           case 204:
-            console.log("[DEBUG] GetPropertyMapData: No content found");
+            if (userContext.currentUser.showMessages) console.log("[DEBUG] GetPropertyMapData: No content found");
             return null;
 
           case 401:
@@ -1797,15 +1798,18 @@ export async function GetPropertyMapData(uprn, userContext) {
             return null;
 
           case 403:
-            console.error("[402 ERROR] GetPropertyMapData: You do not have database access.", res);
+            if (userContext.currentUser.showMessages)
+              console.error("[402 ERROR] GetPropertyMapData: You do not have database access.", res);
             return null;
 
           case 500:
-            console.error("[500 ERROR] GetPropertyMapData: Unexpected server error.", res);
+            if (userContext.currentUser.showMessages)
+              console.error("[500 ERROR] GetPropertyMapData: Unexpected server error.", res);
             return null;
 
           default:
-            console.error(`[${res.status} ERROR] GetPropertyMapData: Unexpected error.`, res);
+            if (userContext.currentUser.showMessages)
+              console.error(`[${res.status} ERROR] GetPropertyMapData: Unexpected error.`, res);
             return null;
         }
       })
@@ -1814,7 +1818,7 @@ export async function GetPropertyMapData(uprn, userContext) {
           return result;
         },
         (error) => {
-          console.error("[ERROR] Get Property data", error);
+          if (userContext.currentUser.showMessages) console.error("[ERROR] Get Property data", error);
           return null;
         }
       );
@@ -1873,8 +1877,7 @@ export async function SaveProperty(
     ? GetPropertyCreateData(currentProperty, isScottish)
     : GetPropertyUpdateData(currentProperty, isScottish, cascadeParentPaoChanges);
 
-  // if (process.env.NODE_ENV === "development")
-  console.log("[DEBUG] SaveProperty", saveUrl, JSON.stringify(saveData));
+  if (userContext.currentUser.showMessages) console.log("[DEBUG] SaveProperty", saveUrl, JSON.stringify(saveData));
 
   if (saveUrl) {
     const saveResult = await fetch(saveUrl.url, {
@@ -1892,8 +1895,13 @@ export async function SaveProperty(
         switch (res.status) {
           case 400:
             res.json().then((body) => {
-              console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} property`, body.errors);
-              const propertyErrors = GetPropertyValidationErrors(body, newProperty);
+              if (userContext.currentUser.showMessages)
+                console.error(`[400 ERROR] ${newProperty ? "Creating" : "Updating"} property`, body.errors);
+              const propertyErrors = GetPropertyValidationErrors(
+                body,
+                newProperty,
+                userContext.currentUser.showMessages
+              );
 
               propertyContext.onPropertyErrors(
                 propertyErrors.blpu,
@@ -1934,13 +1942,15 @@ export async function SaveProperty(
 
           default:
             const contentType = res && res.headers ? res.headers.get("content-type") : null;
-            console.error("[SF] SaveProperty - Failed", {
-              res: res,
-              contentType: contentType,
-            });
+            if (userContext.currentUser.showMessages)
+              console.error("[SF] SaveProperty - Failed", {
+                res: res,
+                contentType: contentType,
+              });
             if (contentType && contentType.indexOf("application/json") !== -1) {
               res.json().then((body) => {
-                console.error(`[${res.status} ERROR] ${newProperty ? "Creating" : "Updating"} property.`, body);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[${res.status} ERROR] ${newProperty ? "Creating" : "Updating"} property.`, body);
 
                 propertyContext.onPropertyErrors(
                   [
@@ -1963,11 +1973,12 @@ export async function SaveProperty(
               });
             } else if (contentType && contentType.indexOf("text")) {
               res.text().then((response) => {
-                console.error(
-                  `[${res.status} ERROR] ${newProperty ? "Creating" : "Updating"} property.`,
-                  response,
-                  res
-                );
+                if (userContext.currentUser.showMessages)
+                  console.error(
+                    `[${res.status} ERROR] ${newProperty ? "Creating" : "Updating"} property.`,
+                    response,
+                    res
+                  );
 
                 const responseData = response.replace("[{", "").replace("}]", "").split(',"');
 
@@ -2003,7 +2014,8 @@ export async function SaveProperty(
                 );
               });
             } else {
-              console.error(`[${res.status} ERROR] ${newProperty ? "Creating" : "Updating"} property (other)`, res);
+              if (userContext.currentUser.showMessages)
+                console.error(`[${res.status} ERROR] ${newProperty ? "Creating" : "Updating"} property (other)`, res);
             }
             break;
         }
@@ -2663,7 +2675,7 @@ export const returnFailedUprns = async (uprns, userContext) => {
 
   const returnUrl = GetAddUprnsBackUrl(userContext.currentUser.token);
 
-  console.log("[DEBUG] returnFailedUprns", returnUrl, JSON.stringify(uprns));
+  if (userContext.currentUser.showMessages) console.log("[DEBUG] returnFailedUprns", returnUrl, JSON.stringify(uprns));
 
   if (returnUrl) {
     await fetch(returnUrl.url, {
@@ -2684,43 +2696,52 @@ export const returnFailedUprns = async (uprns, userContext) => {
 
           default:
             const contentType = res && res.headers ? res.headers.get("content-type") : null;
-            console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs - Failed`, {
-              res: res,
-              contentType: contentType,
-            });
+            if (userContext.currentUser.showMessages)
+              console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs - Failed`, {
+                res: res,
+                contentType: contentType,
+              });
             if (contentType && contentType.indexOf("application/json") !== -1) {
               res.json().then((body) => {
-                console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, body);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, body);
               });
             } else if (contentType && contentType.indexOf("text")) {
               res.text().then((response) => {
-                console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, response, res);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, response, res);
               });
             } else {
-              console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, res);
+              if (userContext.currentUser.showMessages)
+                console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, res);
             }
             return null;
         }
       })
       .then((result) => {
-        if (result) console.log("Failed UPRNs have been added back to the available UPRNs.");
+        if (result && userContext.currentUser.showMessages)
+          console.log("Failed UPRNs have been added back to the available UPRNs.");
       })
       .catch((res) => {
         const contentType = res && res.headers ? res.headers.get("content-type") : null;
-        console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs - Failed`, {
-          res: res,
-          contentType: contentType,
-        });
+        if (userContext.currentUser.showMessages)
+          console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs - Failed`, {
+            res: res,
+            contentType: contentType,
+          });
         if (contentType && contentType.indexOf("application/json") !== -1) {
           res.json().then((body) => {
-            console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, body);
+            if (userContext.currentUser.showMessages)
+              console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, body);
           });
         } else if (contentType && contentType.indexOf("text")) {
           res.text().then((response) => {
-            console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, response, res);
+            if (userContext.currentUser.showMessages)
+              console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, response, res);
           });
         } else {
-          console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, res);
+          if (userContext.currentUser.showMessages)
+            console.error(`[${res.status} ERROR] Add UPRNs back to available UPRNs.`, res);
         }
       });
   }

@@ -24,6 +24,7 @@
 //    011   25.01.24 Sean Flook                 Changes required after UX review.
 //    012   31.01.24 Joel Benford               Changes to as save and support OS
 //    013   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    014   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -742,7 +743,6 @@ function MetadataSettingsTab({ variant }) {
 
     if (saveUrl) {
       const saveData = { ...originalData, ...updatedData };
-      //console.log("MetadataSettingsTab saveMetadata() will PUT", JSON.stringify(saveData));
 
       await fetch(saveUrl.url, {
         headers: saveUrl.headers,
@@ -757,7 +757,8 @@ function MetadataSettingsTab({ variant }) {
           switch (res.status) {
             case 400:
               res.json().then((body) => {
-                console.error(`[400 ERROR] Updating ${errorType} metadata.`, body.errors);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[400 ERROR] Updating ${errorType} metadata.`, body.errors);
               });
               break;
 
@@ -766,11 +767,13 @@ function MetadataSettingsTab({ variant }) {
               break;
 
             case 500:
-              console.error(`[500 ERROR] Updating ${errorType} metadata.`, res);
+              if (userContext.currentUser.showMessages)
+                console.error(`[500 ERROR] Updating ${errorType} metadata.`, res);
               break;
 
             default:
-              console.error(`[${res.status} ERROR] in saveGazetteerMetadata - updating ${errorType} metadata.`, res);
+              if (userContext.currentUser.showMessages)
+                console.error(`[${res.status} ERROR] in saveGazetteerMetadata - updating ${errorType} metadata.`, res);
               break;
           }
         });
@@ -1048,7 +1051,7 @@ function MetadataSettingsTab({ variant }) {
               if (error.status && error.status === 401) {
                 userContext.onExpired();
               } else {
-                console.error("[ERROR] Getting street metadata", error);
+                if (userContext.currentUser.showMessages) console.error("[ERROR] Getting street metadata", error);
               }
             }
           )
@@ -1163,7 +1166,7 @@ function MetadataSettingsTab({ variant }) {
               if (error.status && error.status === 401) {
                 userContext.onExpired();
               } else {
-                console.error("[ERROR] Getting ASD metadata", error);
+                if (userContext.currentUser.showMessages) console.error("[ERROR] Getting ASD metadata", error);
               }
             }
           )
@@ -1234,7 +1237,7 @@ function MetadataSettingsTab({ variant }) {
               if (error.status && error.status === 401) {
                 useContext.onExpired();
               } else {
-                console.error("[ERROR] Getting property metadata", error);
+                if (userContext.currentUser.showMessages) console.error("[ERROR] Getting property metadata", error);
               }
             }
           )

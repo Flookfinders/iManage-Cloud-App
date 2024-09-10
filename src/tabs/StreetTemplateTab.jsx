@@ -27,6 +27,7 @@
 //    014   19.02.24 Sean Flook       IMANN-307 Check for the ESU objects when trying to edit the ESU template.
 //    015   08.05.24 Sean Flook       IMANN-447 Added exclude from export.
 //    016   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    017   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -530,8 +531,8 @@ function StreetTemplateTab() {
           },
         };
 
-        // if (process.env.NODE_ENV === "development")
-        console.log("[DEBUG] handleDoneEditTemplate", updatedData, saveUrl, JSON.stringify(saveData));
+        if (userContext.currentUser.showMessages)
+          console.log("[DEBUG] handleDoneEditTemplate", updatedData, saveUrl, JSON.stringify(saveData));
 
         await fetch(saveUrl.url, {
           headers: saveUrl.headers,
@@ -548,7 +549,8 @@ function StreetTemplateTab() {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.error("[400 ERROR] Updating street template", body.errors);
+                  if (userContext.currentUser.showMessages)
+                    console.error("[400 ERROR] Updating street template", body.errors);
                 });
                 break;
 
@@ -562,16 +564,17 @@ function StreetTemplateTab() {
 
               case 500:
                 res.json().then((body) => {
-                  if (process.env.NODE_ENV === "development")
-                    setUpdateError(`ERROR: ${body[0].errorTitle} - ${body[0].errorDescription}`);
-                  console.error(
-                    `[500 ERROR] Updating street template - ${body[0].errorTitle}: ${body[0].errorDescription}`
-                  );
+                  setUpdateError(`ERROR: ${body[0].errorTitle} - ${body[0].errorDescription}`);
+                  if (userContext.currentUser.showMessages)
+                    console.error(
+                      `[500 ERROR] Updating street template - ${body[0].errorTitle}: ${body[0].errorDescription}`
+                    );
                 });
                 break;
 
               default:
-                console.error(`[${res.status} ERROR] handleDoneEditTemplate - Updating street template.`, res);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[${res.status} ERROR] handleDoneEditTemplate - Updating street template.`, res);
                 break;
             }
           });

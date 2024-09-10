@@ -29,6 +29,7 @@
 //    020   21.06.24 Sean Flook       IMANN-636 Pass through hasASD to GetNewStreet.
 //    021   26.07.24 Sean Flook       IMANN-850 Store the apiUrl so that on refresh we are still using the correct URL.
 //    022   05.09.24 Sean Flook       IMANN-575 Added additional debug message.
+//    023   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -122,7 +123,8 @@ function StreetPage() {
             dataUsrn.current = urlUsrn;
             setLoading(true);
             loadingRef.current = true;
-            console.log("[DEBUG] fetching Street data", dataUsrn.current, `${apiUrl.url}/${urlUsrn}`);
+            if (userContext.currentUser.showMessages)
+              console.log("[DEBUG] fetching Street data", dataUsrn.current, `${apiUrl.url}/${urlUsrn}`);
             fetch(`${apiUrl.url}/${urlUsrn}`, {
               headers: apiUrl.headers,
               crossDomain: true,
@@ -211,7 +213,8 @@ function StreetPage() {
                       [],
                       []
                     );
-                    console.error("[500 ERROR] SetUpStreetData: Unexpected server error.", res);
+                    if (userContext.currentUser.showMessages)
+                      console.error("[500 ERROR] SetUpStreetData: Unexpected server error.", res);
                     return null;
 
                   default:
@@ -237,13 +240,15 @@ function StreetPage() {
                       [],
                       []
                     );
-                    console.error("[ERROR] SetUpStreetData: Unexpected error.", res);
+                    if (userContext.currentUser.showMessages)
+                      console.error("[ERROR] SetUpStreetData: Unexpected error.", res);
                     return null;
                 }
               })
               .then(
                 (result) => {
-                  console.log("[DEBUG] SetUpStreetData", apiUrl, urlUsrn, JSON.stringify(result));
+                  if (userContext.currentUser.showMessages)
+                    console.log("[DEBUG] SetUpStreetData", apiUrl, urlUsrn, JSON.stringify(result));
                   setData(result);
                   if (
                     urlUsrn &&
@@ -259,7 +264,7 @@ function StreetPage() {
                   sandboxContext.onUpdateAndClear("sourceStreet", result, "allStreet");
                 },
                 (error) => {
-                  console.error("[ERROR] Get Street data", error);
+                  if (userContext.currentUser.showMessages) console.error("[ERROR] Get Street data", error);
                 }
               )
               .then(() => {

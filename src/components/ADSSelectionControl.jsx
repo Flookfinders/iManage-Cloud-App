@@ -49,6 +49,7 @@
 //    036   18.07.24 Sean Flook       IMANN-761 Remove the Close and Delete menu options for streets.
 //    036   18.07.24 Sean Flook       IMANN-773 Correctly set the parent information when creating property/ies.
 //    037   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
+//    038   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1033,7 +1034,8 @@ function ADSSelectionControl({
               return res.json();
 
             case 204:
-              console.log("[DEBUG] handlePropertiesSelected: No content found");
+              if (userContext.currentUser.showMessages)
+                console.log("[DEBUG] handlePropertiesSelected: No content found");
               return null;
 
             case 401:
@@ -1041,7 +1043,8 @@ function ADSSelectionControl({
               return null;
 
             default:
-              console.error("[ERROR] handlePropertiesSelected: Unexpected error.", res);
+              if (userContext.currentUser.showMessages)
+                console.error("[ERROR] handlePropertiesSelected: Unexpected error.", res);
               return null;
           }
         })
@@ -1050,7 +1053,8 @@ function ADSSelectionControl({
             return result;
           },
           (error) => {
-            console.error("[ERROR] handlePropertiesSelected: Unexpected error.", error);
+            if (userContext.currentUser.showMessages)
+              console.error("[ERROR] handlePropertiesSelected: Unexpected error.", error);
             return null;
           }
         );

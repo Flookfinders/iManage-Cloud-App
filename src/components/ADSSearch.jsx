@@ -46,6 +46,7 @@
 //    033   03.07.24 Joshua McCormick IMANN-542 Searching when inside a property will now directly open property instead of showing search list
 //    034   08.07.24 Sean Flook       IMANN-728 Only get the background properties and provenances if the user can see properties.
 //    035   18.07.24 Sean Flook       IMANN-772 Corrected field name.
+//    036   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1117,7 +1118,8 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.error(`[400 ERROR] Getting all Street data`, body.errors);
+                  if (userContext.currentUser.showMessages)
+                    console.error(`[400 ERROR] Getting all Street data`, body.errors);
                 });
                 return null;
 
@@ -1126,11 +1128,12 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                 return null;
 
               case 500:
-                console.error(`[500 ERROR] Getting all Street data`, res);
+                if (userContext.currentUser.showMessages) console.error(`[500 ERROR] Getting all Street data`, res);
                 return null;
 
               default:
-                console.error(`[${res.status} ERROR] Getting all Street data`, res);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[${res.status} ERROR] Getting all Street data`, res);
                 return null;
             }
           });
@@ -1161,12 +1164,6 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
       const unassignedEsusUrl = GetUnassignedEsusUrl(userContext.currentUser.token);
 
       if (unassignedEsusUrl) {
-        // console.log("[SF] GetUnassignedEsuData", {
-        //   XMin: mapContext.currentExtent.xmin,
-        //   YMin: mapContext.currentExtent.ymin,
-        //   XMax: mapContext.currentExtent.xmax,
-        //   YMax: mapContext.currentExtent.ymax,
-        // });
         const returnValue = await fetch(
           `${unassignedEsusUrl.url}?XMin=${mapContext.currentExtent.xmin}&YMin=${mapContext.currentExtent.ymin}&XMax=${mapContext.currentExtent.xmax}&YMax=${mapContext.currentExtent.ymax}`,
           {
@@ -1187,7 +1184,8 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.error(`[400 ERROR] Getting all unassigned ESU data`, body.errors);
+                  if (userContext.currentUser.showMessages)
+                    console.error(`[400 ERROR] Getting all unassigned ESU data`, body.errors);
                 });
                 return null;
 
@@ -1196,11 +1194,13 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                 return null;
 
               case 500:
-                console.error(`[500 ERROR] Getting all unassigned ESU data`, res);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[500 ERROR] Getting all unassigned ESU data`, res);
                 return null;
 
               default:
-                console.error(`[${res.status} ERROR] Getting all unassigned ESU data`, res);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[${res.status} ERROR] Getting all unassigned ESU data`, res);
                 return null;
             }
           });
@@ -1252,7 +1252,8 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.error(`[400 ERROR] Getting all property data`, body.errors);
+                  if (userContext.currentUser.showMessages)
+                    console.error(`[400 ERROR] Getting all property data`, body.errors);
                 });
                 return null;
 
@@ -1261,11 +1262,12 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                 return null;
 
               case 500:
-                console.error(`[500 ERROR] Getting all property data`, res);
+                if (userContext.currentUser.showMessages) console.error(`[500 ERROR] Getting all property data`, res);
                 return null;
 
               default:
-                console.error(`[${res.status} ERROR] Getting all property data`, res);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[${res.status} ERROR] Getting all property data`, res);
                 return null;
             }
           });
@@ -1317,7 +1319,8 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.error(`[400 ERROR] Getting all provenance data`, body.errors);
+                  if (userContext.currentUser.showMessages)
+                    console.error(`[400 ERROR] Getting all provenance data`, body.errors);
                 });
                 return null;
 
@@ -1326,11 +1329,12 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                 return null;
 
               case 500:
-                console.error(`[500 ERROR] Getting all provenance data`, res);
+                if (userContext.currentUser.showMessages) console.error(`[500 ERROR] Getting all provenance data`, res);
                 return null;
 
               default:
-                console.error(`[${res.status} ERROR] Getting all provenance data`, res);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[${res.status} ERROR] Getting all provenance data`, res);
                 return null;
             }
           });

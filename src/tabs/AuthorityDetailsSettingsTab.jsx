@@ -22,6 +22,7 @@
 //    009   25.01.24 Sean Flook                 Changes required after UX review.
 //    010   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    011   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    012   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -123,8 +124,8 @@ function AuthorityDetailsSettingsTab() {
     const authorityApiUrl = GetAuthorityDetailsUrl(newRecord ? "POST" : "PUT", userContext.currentUser.token);
 
     if (authorityApiUrl && updatedData) {
-      // if (process.env.NODE_ENV === "development")
-      console.log("[DEBUG] handleDoneEditAuthority", authorityApiUrl, JSON.stringify(updatedData));
+      if (userContext.currentUser.showMessages)
+        console.log("[DEBUG] handleDoneEditAuthority", authorityApiUrl, JSON.stringify(updatedData));
 
       await fetch(authorityApiUrl.url, {
         headers: authorityApiUrl.headers,
@@ -143,13 +144,18 @@ function AuthorityDetailsSettingsTab() {
               res
                 .json()
                 .then((body) => {
-                  console.error(
-                    `[400 ERROR] ${newRecord ? "Creating" : "Updating"} authority details object`,
-                    body.errors
-                  );
+                  if (userContext.currentUser.showMessages)
+                    console.error(
+                      `[400 ERROR] ${newRecord ? "Creating" : "Updating"} authority details object`,
+                      body.errors
+                    );
                 })
                 .catch((err400) => {
-                  console.error(`[400 ERROR] ${newRecord ? "Creating" : "Updating"} authority details object.`, err400);
+                  if (userContext.currentUser.showMessages)
+                    console.error(
+                      `[400 ERROR] ${newRecord ? "Creating" : "Updating"} authority details object.`,
+                      err400
+                    );
                 });
               break;
 
@@ -158,16 +164,18 @@ function AuthorityDetailsSettingsTab() {
               break;
 
             case 500:
-              console.error(`[500 ERROR] ${newRecord ? "Creating" : "Updating"} authority details`, res);
+              if (userContext.currentUser.showMessages)
+                console.error(`[500 ERROR] ${newRecord ? "Creating" : "Updating"} authority details`, res);
               break;
 
             default:
-              console.error(
-                `[${res.status} ERROR] handleDoneEditAuthority - ${
-                  newRecord ? "Creating" : "Updating"
-                } authority details.`,
-                res
-              );
+              if (userContext.currentUser.showMessages)
+                console.error(
+                  `[${res.status} ERROR] handleDoneEditAuthority - ${
+                    newRecord ? "Creating" : "Updating"
+                  } authority details.`,
+                  res
+                );
               break;
           }
         });

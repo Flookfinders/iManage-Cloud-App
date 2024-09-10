@@ -53,6 +53,7 @@
 //    050   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    051   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //    052   18.07.24 Sean Flook       IMANN-772 Corrected field name.
+//    053   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -414,7 +415,8 @@ function ADSAppBar(props) {
         break;
 
       default:
-        console.error(`Unknown action: "${action}" passed in to HandleReturnClick.`);
+        if (userContext.currentUser.showMessages)
+          console.error(`Unknown action: "${action}" passed in to HandleReturnClick.`);
         break;
     }
   }

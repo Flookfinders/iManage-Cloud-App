@@ -26,6 +26,7 @@
 //    013   04.06.24 Sean Flook       IMANN-445 Show save data.
 //    014   04.06.24 Sean Flook       IMANN-445 Only close the edit dialog if the save was successful.
 //    015   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    016   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -121,7 +122,7 @@ function MapLayersTab(props) {
       if (mapLayerApiUrl) {
         const isNewLayer = newLayer.current;
 
-        if (process.env.NODE_ENV === "development")
+        if (userContext.currentUser.showMessages)
           console.log(
             "[DEBUG] moveLayer",
             `${mapLayerApiUrl.url}/${params.id}/${currentLayerPosition < newLayerPosition ? "MoveUp" : "MoveDown"}`
@@ -214,7 +215,8 @@ function MapLayersTab(props) {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.error(`[400 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body.errors);
+                  if (userContext.currentUser.showMessages)
+                    console.error(`[400 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body.errors);
                 });
                 break;
 
@@ -223,17 +225,19 @@ function MapLayersTab(props) {
                 break;
 
               default:
-                console.error(
-                  `[${res.status} ERROR] HandleDoneEditLayer - ${isNewLayer ? "Creating" : "Updating"} map layer.`,
-                  res
-                );
-
-                res.text().then((response) => {
+                if (userContext.currentUser.showMessages)
                   console.error(
                     `[${res.status} ERROR] HandleDoneEditLayer - ${isNewLayer ? "Creating" : "Updating"} map layer.`,
-                    response,
                     res
                   );
+
+                res.text().then((response) => {
+                  if (userContext.currentUser.showMessages)
+                    console.error(
+                      `[${res.status} ERROR] HandleDoneEditLayer - ${isNewLayer ? "Creating" : "Updating"} map layer.`,
+                      response,
+                      res
+                    );
 
                   const responseData = response.replace("[{", "").replace("}]", "").split(',"');
 
@@ -468,7 +472,8 @@ function MapLayersTab(props) {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.error(`[400 ERROR] Deleting map layer`, body.errors);
+                  if (userContext.currentUser.showMessages)
+                    console.error(`[400 ERROR] Deleting map layer`, body.errors);
                 });
                 break;
 
@@ -478,7 +483,8 @@ function MapLayersTab(props) {
 
               default:
                 res.text().then((response) => {
-                  console.error(`[${res.status} ERROR] doDeleteMapLayer - Deleting map layer.`, response, res);
+                  if (userContext.currentUser.showMessages)
+                    console.error(`[${res.status} ERROR] doDeleteMapLayer - Deleting map layer.`, response, res);
 
                   const responseData = response.replace("[{", "").replace("}]", "").split(',"');
 
@@ -577,8 +583,7 @@ function MapLayersTab(props) {
     const isNewLayer = newLayer.current;
 
     if (mapLayerApiUrl) {
-      // if (process.env.NODE_ENV === "development")
-      console.log("[DEBUG] saveData", JSON.stringify(saveData));
+      if (userContext.currentUser.showMessages) console.log("[DEBUG] saveData", JSON.stringify(saveData));
 
       fetch(mapLayerApiUrl.url, {
         headers: mapLayerApiUrl.headers,
@@ -606,7 +611,8 @@ function MapLayersTab(props) {
           switch (res.status) {
             case 400:
               res.json().then((body) => {
-                console.error(`[400 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body.errors);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[400 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body.errors);
 
                 let errorMapLayer = [];
 
@@ -657,22 +663,25 @@ function MapLayersTab(props) {
                 },
               ]);
               res.json().then((body) => {
-                console.error(`[401 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[401 ERROR] ${isNewLayer ? "Creating" : "Updating"} map layer`, body);
               });
               break;
 
             default:
-              console.error(
-                `[${res.status} ERROR] HandleDoneEditLayer - ${isNewLayer ? "Creating" : "Updating"} map layer.`,
-                res
-              );
-
-              res.text().then((response) => {
+              if (userContext.currentUser.showMessages)
                 console.error(
                   `[${res.status} ERROR] HandleDoneEditLayer - ${isNewLayer ? "Creating" : "Updating"} map layer.`,
-                  response,
                   res
                 );
+
+              res.text().then((response) => {
+                if (userContext.currentUser.showMessages)
+                  console.error(
+                    `[${res.status} ERROR] HandleDoneEditLayer - ${isNewLayer ? "Creating" : "Updating"} map layer.`,
+                    response,
+                    res
+                  );
 
                 const responseData = response.replace("[{", "").replace("}]", "").split(',"');
 

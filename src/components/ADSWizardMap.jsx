@@ -32,6 +32,7 @@
 //    019   18.06.24 Sean Flook       IMANN-599 Use the correct classification when moving BLPUs for Scottish authorities.
 //    020   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    021   08.07.24 Sean Flook       IMANN-728 Pass in the new parameter to onExtentChange.
+//    022   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -871,10 +872,11 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
 
       reader.onload = function () {
         if (reader.readyState !== 2 || reader.error) {
-          console.error(`[ERROR] failed to upload ${shpFile.title}`, {
-            readyState: reader.readyState,
-            error: reader.error,
-          });
+          if (userContext.current.currentUser.showMessages)
+            console.error(`[ERROR] failed to upload ${shpFile.title}`, {
+              readyState: reader.readyState,
+              error: reader.error,
+            });
           saveResult.current = false;
           featuresDownloaded.current = shpFile.title;
           saveType.current = "uploadedShpFileError";
@@ -1240,7 +1242,6 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
 
   // Background streets Layer
   useEffect(() => {
-    // console.log("[SF] Background streets layer");
     const haveStreets =
       mapContext.currentBackgroundData &&
       mapContext.currentBackgroundData.streets &&
@@ -1392,7 +1393,6 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
 
   // Unassigned ESUs layer
   useEffect(() => {
-    // console.log("[SF] Unassigned ESUs layer");
     const haveEsus =
       mapContext.currentBackgroundData &&
       mapContext.currentBackgroundData.unassignedEsus &&
@@ -1535,7 +1535,6 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
 
   // Background property layer
   useEffect(() => {
-    // console.log("[SF] Background property layer");
     const haveProperties =
       mapContext.currentBackgroundData &&
       mapContext.currentBackgroundData.properties &&

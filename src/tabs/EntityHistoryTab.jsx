@@ -24,6 +24,7 @@
 //    011   15.03.24 Sean Flook            GLB6 Use individual buttons to toggle between updates and edits.
 //    012   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    013   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    014   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -113,7 +114,7 @@ function EntityHistoryTab({ variant }) {
                 if (error.status && error.status === 401) {
                   userContext.onExpired();
                 } else {
-                  console.error(`[ERROR] Get ${variant} history`, error);
+                  if (userContext.currentUser.showMessages) console.error(`[ERROR] Get ${variant} history`, error);
                 }
               }
             )
@@ -126,7 +127,7 @@ function EntityHistoryTab({ variant }) {
               setLoading(false);
             });
         } else {
-          console.error("[ERROR] Property history apiUrl is null");
+          if (userContext.currentUser.showMessages) console.error("[ERROR] Property history apiUrl is null");
         }
       }
     }

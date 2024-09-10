@@ -23,6 +23,7 @@
 //    010   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    011   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //    012   05.09.24 Sean Flook       IMANN-575 Added additional debug message.
+//    013   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -182,7 +183,8 @@ function PropertyPage() {
                       [],
                       0
                     );
-                    console.error("[500 ERROR] GetPropertyMapData: Unexpected server error.", res);
+                    if (userContext.currentUser.showMessages)
+                      console.error("[500 ERROR] GetPropertyMapData: Unexpected server error.", res);
                     return null;
 
                   default:
@@ -202,13 +204,15 @@ function PropertyPage() {
                       [],
                       0
                     );
-                    console.error(`[${res.status} ERROR] GetPropertyMapData: Unexpected error.`, res);
+                    if (userContext.currentUser.showMessages)
+                      console.error(`[${res.status} ERROR] GetPropertyMapData: Unexpected error.`, res);
                     return null;
                 }
               })
               .then(
                 (result) => {
-                  console.log("[DEBUG] SetUpPropertyData", apiUrl, urlUprn, JSON.stringify(result));
+                  if (userContext.currentUser.showMessages)
+                    console.log("[DEBUG] SetUpPropertyData", apiUrl, urlUprn, JSON.stringify(result));
                   setData(result);
                   if (
                     urlUprn &&
@@ -236,7 +240,7 @@ function PropertyPage() {
                   sandboxContext.onUpdateAndClear("sourceProperty", result, "allProperty");
                 },
                 (error) => {
-                  console.error("[ERROR] Get Property data", error);
+                  if (userContext.currentUser.showMessages) console.error("[ERROR] Get Property data", error);
                 }
               )
               .then(() => {

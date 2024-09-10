@@ -32,6 +32,7 @@
 //    019   06.06.24 Joel Benford     IMANN-497 Interim check-in
 //    020   13.06.24 Joel Benford     IMANN-497 Various fixes mostly on making historic
 //    021   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    022   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -574,7 +575,8 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
           switch (res.status) {
             case 400:
               res.json().then((body) => {
-                console.error(`[400 ERROR] Getting ${getLookupVariantString(variant)} object`, body.errors);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[400 ERROR] Getting ${getLookupVariantString(variant)} object`, body.errors);
               });
               break;
 
@@ -583,11 +585,13 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
               break;
 
             case 500:
-              console.error(`[500 ERROR] Getting ${getLookupVariantString(variant)} object`, res);
+              if (userContext.currentUser.showMessages)
+                console.error(`[500 ERROR] Getting ${getLookupVariantString(variant)} object`, res);
               break;
 
             default:
-              console.error(`[${res.status} ERROR] Getting ${getLookupVariantString(variant)} object`, res);
+              if (userContext.currentUser.showMessages)
+                console.error(`[${res.status} ERROR] Getting ${getLookupVariantString(variant)} object`, res);
               break;
           }
         });
@@ -2044,7 +2048,8 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.error(`[400 ERROR] Updating ${getLookupVariantString(data.variant)} object`, body.errors);
+                  if (userContext.currentUser.showMessages)
+                    console.error(`[400 ERROR] Updating ${getLookupVariantString(data.variant)} object`, body.errors);
                   let lookupEngErrors = [];
                   for (const [key, value] of Object.entries(body.errors)) {
                     lookupEngErrors.push({ key: key, value: value });
@@ -2060,11 +2065,13 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 break;
 
               case 500:
-                console.error(`[500 ERROR] Updating ${getLookupVariantString(data.variant)} object`, res);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[500 ERROR] Updating ${getLookupVariantString(data.variant)} object`, res);
                 break;
 
               default:
-                console.error(`[${res.status} ERROR] Updating ${getLookupVariantString(data.variant)} object`, res);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[${res.status} ERROR] Updating ${getLookupVariantString(data.variant)} object`, res);
                 break;
             }
           });
@@ -2100,10 +2107,11 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                   switch (res.status) {
                     case 400:
                       res.json().then((body) => {
-                        console.error(
-                          `[400 ERROR] Updating ${getLookupVariantString(data.variant)} object`,
-                          body.errors
-                        );
+                        if (userContext.currentUser.showMessages)
+                          console.error(
+                            `[400 ERROR] Updating ${getLookupVariantString(data.variant)} object`,
+                            body.errors
+                          );
                         let lookupCymErrors = [];
                         for (const [key, value] of Object.entries(body.errors)) {
                           lookupCymErrors.push({ key: key, value: value });
@@ -2119,14 +2127,16 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                       break;
 
                     case 500:
-                      console.error(`[500 ERROR] Updating ${getLookupVariantString(data.variant)} object`, res);
+                      if (userContext.currentUser.showMessages)
+                        console.error(`[500 ERROR] Updating ${getLookupVariantString(data.variant)} object`, res);
                       break;
 
                     default:
-                      console.error(
-                        `[${res.status} ERROR] Updating ${getLookupVariantString(data.variant)} object`,
-                        res
-                      );
+                      if (userContext.currentUser.showMessages)
+                        console.error(
+                          `[${res.status} ERROR] Updating ${getLookupVariantString(data.variant)} object`,
+                          res
+                        );
                       break;
                   }
                 });
@@ -2195,14 +2205,16 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
           else return res.json();
         })
         .then((result) => {
-          console.log(`Successfully deleted the ${currentVariant.current} record.`);
+          if (userContext.currentUser.showMessages)
+            console.log(`Successfully deleted the ${currentVariant.current} record.`);
           lookupDeleted = true;
         })
         .catch((res) => {
           switch (res.status) {
             case 400:
               res.json().then((body) => {
-                console.error(`[400 ERROR] Deleting ${currentVariant.current} object`, body.errors);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[400 ERROR] Deleting ${currentVariant.current} object`, body.errors);
                 let lookupEngErrors = [];
                 for (const [key, value] of Object.entries(body.errors)) {
                   lookupEngErrors.push({ key: key, value: value });
@@ -2218,11 +2230,13 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
               break;
 
             case 500:
-              console.error(`[500 ERROR] Deleting ${currentVariant.current} object`, res);
+              if (userContext.currentUser.showMessages)
+                console.error(`[500 ERROR] Deleting ${currentVariant.current} object`, res);
               break;
 
             default:
-              console.error(`[${res.status} ERROR] Deleting ${currentVariant.current} object`, res);
+              if (userContext.currentUser.showMessages)
+                console.error(`[${res.status} ERROR] Deleting ${currentVariant.current} object`, res);
               break;
           }
         });
@@ -2240,14 +2254,16 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
             else return res.json();
           })
           .then((result) => {
-            console.log(`Successfully deleted the ${currentVariant.current} record.`);
+            if (userContext.currentUser.showMessages)
+              console.log(`Successfully deleted the ${currentVariant.current} record.`);
             lookupDeleted = true;
           })
           .catch((res) => {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.error(`[400 ERROR] Deleting ${currentVariant.current} object`, body.errors);
+                  if (userContext.currentUser.showMessages)
+                    console.error(`[400 ERROR] Deleting ${currentVariant.current} object`, body.errors);
                   let lookupAltErrors = [];
                   for (const [key, value] of Object.entries(body.errors)) {
                     lookupAltErrors.push({ key: key, value: value });
@@ -2263,11 +2279,13 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 break;
 
               case 500:
-                console.error(`[500 ERROR] Deleting ${currentVariant.current} object`, res);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[500 ERROR] Deleting ${currentVariant.current} object`, res);
                 break;
 
               default:
-                console.error(`[${res.status} ERROR] Deleting ${getLookupVariantString(variant)} object`, res);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[${res.status} ERROR] Deleting ${getLookupVariantString(variant)} object`, res);
                 break;
             }
           });
@@ -2783,7 +2801,8 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
           switch (res.status) {
             case 400:
               res.json().then((body) => {
-                console.error(`[400 ERROR] Updating ${getLookupVariantString(variant)} object`, body.errors);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[400 ERROR] Updating ${getLookupVariantString(variant)} object`, body.errors);
                 let lookupEngErrors = [];
                 for (const [key, value] of Object.entries(body.errors)) {
                   lookupEngErrors.push({ key: key, value: value });
@@ -2799,11 +2818,13 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
               break;
 
             case 500:
-              console.error(`[500 ERROR] Updating ${getLookupVariantString(variant)} object`, res);
+              if (userContext.currentUser.showMessages)
+                console.error(`[500 ERROR] Updating ${getLookupVariantString(variant)} object`, res);
               break;
 
             default:
-              console.error(`[${res.status} ERROR] Updating ${getLookupVariantString(variant)} object`, res);
+              if (userContext.currentUser.showMessages)
+                console.error(`[${res.status} ERROR] Updating ${getLookupVariantString(variant)} object`, res);
               break;
           }
         });
@@ -2832,7 +2853,8 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                 switch (res.status) {
                   case 400:
                     res.json().then((body) => {
-                      console.error(`[400 ERROR] Updating ${getLookupVariantString(variant)} object`, body.errors);
+                      if (userContext.currentUser.showMessages)
+                        console.error(`[400 ERROR] Updating ${getLookupVariantString(variant)} object`, body.errors);
                       let lookupCymErrors = [];
                       for (const [key, value] of Object.entries(body.errors)) {
                         lookupCymErrors.push({ key: key, value: value });
@@ -2848,11 +2870,13 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
                     break;
 
                   case 500:
-                    console.error(`[500 ERROR] Updating ${getLookupVariantString(variant)} object`, res);
+                    if (userContext.currentUser.showMessages)
+                      console.error(`[500 ERROR] Updating ${getLookupVariantString(variant)} object`, res);
                     break;
 
                   default:
-                    console.error(`[${res.status} ERROR] Updating ${getLookupVariantString(variant)} object`, res);
+                    if (userContext.currentUser.showMessages)
+                      console.error(`[${res.status} ERROR] Updating ${getLookupVariantString(variant)} object`, res);
                     break;
                 }
               });

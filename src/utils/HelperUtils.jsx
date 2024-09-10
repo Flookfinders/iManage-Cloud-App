@@ -61,6 +61,7 @@
 //    048   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    049   25.07.24 Joshua McCormick IMANN-820 added mapContext.onEditMapObject in ResetContexts
 //    050   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
+//    051   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -720,9 +721,7 @@ function fallbackCopyTextToClipboard(text) {
   textArea.select();
 
   try {
-    var successful = document.execCommand("copy");
-    var msg = successful ? "successful" : "unsuccessful";
-    console.log("Fallback: Copying text command was " + msg);
+    document.execCommand("copy");
   } catch (err) {
     console.error("Fallback: Oops, unable to copy", err);
   }
@@ -743,10 +742,10 @@ export function copyTextToClipboard(text) {
   }
   navigator.clipboard.writeText(text).then(
     function () {
-      console.log("Async: Copying to clipboard was successful!");
+      // console.log("Async: Copying to clipboard was successful!");
     },
     function (err) {
-      console.log("Async: Could not copy text:", err);
+      console.error("Async: Could not copy text:", err);
     }
   );
 }
@@ -2319,12 +2318,12 @@ export const addLookup = async (data, authorityCode, userContext, isWelsh, curre
   if (data) {
     let lookupUrl = GetLookupUrl(data.variant, "POST", userContext.currentUser.token, authorityCode);
 
-    // if (process.env.NODE_ENV === "development")
-    console.log("[DEBUG] handleDoneAddLookup", {
-      lookupUrl: lookupUrl,
-      language: "ENG",
-      JSON: JSON.stringify(getEngPostData()),
-    });
+    if (userContext.currentUser.showMessages)
+      console.log("[DEBUG] handleDoneAddLookup", {
+        lookupUrl: lookupUrl,
+        language: "ENG",
+        JSON: JSON.stringify(getEngPostData()),
+      });
     let newEngLookup = null;
     let newCymLookup = null;
     let newGaeLookup = null;
@@ -2343,7 +2342,8 @@ export const addLookup = async (data, authorityCode, userContext, isWelsh, curre
         const engBody = await engResponse.json();
         switch (engResponse.status) {
           case 400:
-            console.error(`[400 ERROR] Creating ${getLookupVariantString(data.variant)} object`, engBody.errors);
+            if (userContext.currentUser.showMessages)
+              console.error(`[400 ERROR] Creating ${getLookupVariantString(data.variant)} object`, engBody.errors);
             let lookupEngErrors = [];
             for (const [key, value] of Object.entries(engBody.errors)) {
               lookupEngErrors.push({ key: key, value: value });
@@ -2357,14 +2357,16 @@ export const addLookup = async (data, authorityCode, userContext, isWelsh, curre
             break;
 
           case 500:
-            console.error(`[500 ERROR] Creating ${getLookupVariantString(data.variant)} object`, engResponse);
+            if (userContext.currentUser.showMessages)
+              console.error(`[500 ERROR] Creating ${getLookupVariantString(data.variant)} object`, engResponse);
             break;
 
           default:
-            console.error(
-              `[${engResponse.status} ERROR] Creating ${getLookupVariantString(data.variant)} object`,
-              engResponse
-            );
+            if (userContext.currentUser.showMessages)
+              console.error(
+                `[${engResponse.status} ERROR] Creating ${getLookupVariantString(data.variant)} object`,
+                engResponse
+              );
             break;
         }
       }
@@ -2374,12 +2376,12 @@ export const addLookup = async (data, authorityCode, userContext, isWelsh, curre
         if (canHaveMultiLanguage && isWelsh) {
           lookupAdded = false;
           const cymData = getCymPostData(newEngLookup);
-          // if (process.env.NODE_ENV === "development")
-          console.log("[DEBUG] handleDoneAddLookup", {
-            lookupUrl: lookupUrl,
-            language: "CYM",
-            JSON: JSON.stringify(cymData),
-          });
+          if (userContext.currentUser.showMessages)
+            console.log("[DEBUG] handleDoneAddLookup", {
+              lookupUrl: lookupUrl,
+              language: "CYM",
+              JSON: JSON.stringify(cymData),
+            });
           if (cymData) {
             const cymResponse = await fetch(lookupUrl.url, {
               headers: lookupUrl.headers,
@@ -2394,7 +2396,11 @@ export const addLookup = async (data, authorityCode, userContext, isWelsh, curre
               const cymBody = await cymResponse.json();
               switch (cymResponse.status) {
                 case 400:
-                  console.error(`[400 ERROR] Creating ${getLookupVariantString(data.variant)} object`, cymBody.errors);
+                  if (userContext.currentUser.showMessages)
+                    console.error(
+                      `[400 ERROR] Creating ${getLookupVariantString(data.variant)} object`,
+                      cymBody.errors
+                    );
                   let lookupCymErrors = [];
                   for (const [key, value] of Object.entries(cymBody.errors)) {
                     lookupCymErrors.push({ key: key, value: value });
@@ -2409,14 +2415,16 @@ export const addLookup = async (data, authorityCode, userContext, isWelsh, curre
                   break;
 
                 case 500:
-                  console.error(`[500 ERROR] Creating ${getLookupVariantString(data.variant)} object`, cymResponse);
+                  if (userContext.currentUser.showMessages)
+                    console.error(`[500 ERROR] Creating ${getLookupVariantString(data.variant)} object`, cymResponse);
                   break;
 
                 default:
-                  console.error(
-                    `[${cymResponse.status} ERROR] Creating ${getLookupVariantString(data.variant)} object`,
-                    cymResponse
-                  );
+                  if (userContext.currentUser.showMessages)
+                    console.error(
+                      `[${cymResponse.status} ERROR] Creating ${getLookupVariantString(data.variant)} object`,
+                      cymResponse
+                    );
                   break;
               }
             }
@@ -2439,10 +2447,11 @@ export const addLookup = async (data, authorityCode, userContext, isWelsh, curre
                 const linkedBody = await linkedResponse.json();
                 switch (linkedResponse.status) {
                   case 400:
-                    console.error(
-                      `[400 ERROR] Creating ${getLookupVariantString(data.variant)} object`,
-                      linkedBody.errors
-                    );
+                    if (userContext.currentUser.showMessages)
+                      console.error(
+                        `[400 ERROR] Creating ${getLookupVariantString(data.variant)} object`,
+                        linkedBody.errors
+                      );
                     let lookupLinkedErrors = [];
                     for (const [key, value] of Object.entries(linkedBody.errors)) {
                       lookupLinkedErrors.push({ key: key, value: value });
@@ -2457,17 +2466,19 @@ export const addLookup = async (data, authorityCode, userContext, isWelsh, curre
                     break;
 
                   case 500:
-                    console.error(
-                      `[500 ERROR] Creating ${getLookupVariantString(data.variant)} object`,
-                      linkedResponse
-                    );
+                    if (userContext.currentUser.showMessages)
+                      console.error(
+                        `[500 ERROR] Creating ${getLookupVariantString(data.variant)} object`,
+                        linkedResponse
+                      );
                     break;
 
                   default:
-                    console.error(
-                      `[${linkedResponse.status} ERROR] Creating ${getLookupVariantString(data.variant)} object`,
-                      linkedResponse
-                    );
+                    if (userContext.currentUser.showMessages)
+                      console.error(
+                        `[${linkedResponse.status} ERROR] Creating ${getLookupVariantString(data.variant)} object`,
+                        linkedResponse
+                      );
                     break;
                 }
               }
@@ -2735,7 +2746,7 @@ export const getBaseMapLayers = async (userContext) => {
           if (error.status && error.status === 401) {
             userContext.onExpired();
           } else {
-            console.error("[ERROR] Getting base map layers", error);
+            if (userContext.currentUser.showMessages) console.error("[ERROR] Getting base map layers", error);
           }
           return null;
         }

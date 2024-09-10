@@ -26,6 +26,7 @@
 //    013   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    014   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    015   09.07.24 Sean Flook       IMANN-731 Corrected Scottish data.
+//    016   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -362,7 +363,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
               if (error.status && error.status === 401) {
                 userContext.onExpired();
               } else {
-                console.error("[ERROR] Getting selected properties", error);
+                if (userContext.currentUser.showMessages) console.error("[ERROR] Getting selected properties", error);
               }
               return null;
             }

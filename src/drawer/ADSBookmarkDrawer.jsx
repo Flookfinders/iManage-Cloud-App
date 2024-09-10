@@ -18,6 +18,7 @@
 //    005   06.02.24 Sean Flook                 Updated street view icon.
 //    006   11.03.24 Sean Flook           GLB12 Correctly set width.
 //    007   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    008   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -62,54 +63,42 @@ function ADSBookmarkDrawer(props) {
    *
    * @param {number} index The index of the item.
    */
-  const handlePropertyViewClick = (index) => {
-    console.log("DEBUG handlePropertyViewClick", index);
-  };
+  const handlePropertyViewClick = (index) => {};
 
   /**
    * Event handle when the street view button is clicked.
    *
    * @param {number} index The index of the item.
    */
-  const handleStreetViewClick = (index) => {
-    console.log("DEBUG handleStreetViewClick", index);
-  };
+  const handleStreetViewClick = (index) => {};
 
   /**
    * Event handle when the ASD view button is clicked.
    *
    * @param {number} index The index of the item.
    */
-  const handleASDViewClick = (index) => {
-    console.log("DEBUG handleASDViewClick", index);
-  };
+  const handleASDViewClick = (index) => {};
 
   /**
    * Event handle when the bookmark button is clicked.
    *
    * @param {number} index The index of the item.
    */
-  const handleBookmarkClick = (index) => {
-    console.log("DEBUG handleBookmarkClick", index);
-  };
+  const handleBookmarkClick = (index) => {};
 
   /**
    * Event handle when the recent button is clicked.
    *
    * @param {number} index The index of the item.
    */
-  const handleRecentClick = (index) => {
-    console.log("DEBUG handleRecentClick", index);
-  };
+  const handleRecentClick = (index) => {};
 
   /**
    * Event handle when the other button is clicked.
    *
    * @param {number} index The index of the item.
    */
-  const handleOtherViewClick = (index) => {
-    console.log("DEBUG handleOtherViewClick", index);
-  };
+  const handleOtherViewClick = (index) => {};
 
   useEffect(() => {
     setHasASD(userContext.currentUser && userContext.currentUser.hasASD);

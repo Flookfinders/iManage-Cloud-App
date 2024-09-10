@@ -25,6 +25,7 @@
 //    012   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    013   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    014   02.07.24 Sean Flook       IMANN-666 Moved permit scheme id and out of hours arrangement.
+//    015   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -167,8 +168,8 @@ function LookupTablesTab() {
           districtPermitSchemeId: updatedData.districtPermitSchemeId,
         };
 
-        // if (process.env.NODE_ENV === "development")
-        console.log("[DEBUG] handleUpdateData", updatedData, saveData, saveUrl, JSON.stringify(saveData));
+        if (userContext.currentUser.showMessages)
+          console.log("[DEBUG] handleUpdateData", updatedData, saveData, saveUrl, JSON.stringify(saveData));
 
         await fetch(saveUrl.url, {
           headers: saveUrl.headers,
@@ -244,7 +245,8 @@ function LookupTablesTab() {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.error("[400 ERROR] Updating operational district", body.errors);
+                  if (userContext.currentUser.showMessages)
+                    console.error("[400 ERROR] Updating operational district", body.errors);
                 });
                 break;
 
@@ -253,11 +255,13 @@ function LookupTablesTab() {
                 break;
 
               case 500:
-                console.error("[500 ERROR] Updating operational district", res);
+                if (userContext.currentUser.showMessages)
+                  console.error("[500 ERROR] Updating operational district", res);
                 break;
 
               default:
-                console.error(`[${res.status} ERROR] handleUpdateData - Updating operational district.`, res);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[${res.status} ERROR] handleUpdateData - Updating operational district.`, res);
                 break;
             }
           });
@@ -436,8 +440,8 @@ function LookupTablesTab() {
           districtPermitSchemeId: updatedData.districtPermitSchemeId,
         };
 
-        // if (process.env.NODE_ENV === "development")
-        console.log("[DEBUG] handleDoneEditDistrict", updatedData, saveData, saveUrl, JSON.stringify(saveData));
+        if (userContext.currentUser.showMessages)
+          console.log("[DEBUG] handleDoneEditDistrict", updatedData, saveData, saveUrl, JSON.stringify(saveData));
 
         await fetch(saveUrl.url, {
           headers: saveUrl.headers,
@@ -514,7 +518,8 @@ function LookupTablesTab() {
             switch (res.status) {
               case 400:
                 res.json().then((body) => {
-                  console.error("[400 ERROR] Creating operational district", body.errors);
+                  if (userContext.currentUser.showMessages)
+                    console.error("[400 ERROR] Creating operational district", body.errors);
                 });
                 break;
 
@@ -523,11 +528,13 @@ function LookupTablesTab() {
                 break;
 
               case 500:
-                console.error("[500 ERROR] Creating operational district", res);
+                if (userContext.currentUser.showMessages)
+                  console.error("[500 ERROR] Creating operational district", res);
                 break;
 
               default:
-                console.error(`[${res.status} ERROR] handleUpdateData - Creating operational district.`, res);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[${res.status} ERROR] handleUpdateData - Creating operational district.`, res);
                 break;
             }
           });

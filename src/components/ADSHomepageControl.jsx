@@ -19,6 +19,7 @@
 //    006   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    007   25.01.24 Sean Flook                 Correctly handle status code 204.
 //    008   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    009   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -76,7 +77,7 @@ function ADSHomepageControl() {
             if (error.status && error.status === 401) {
               userContext.onExpired();
             } else {
-              console.error("[ERROR] Get Homepage data", error);
+              if (userContext.currentUser.showMessages) console.error("[ERROR] Get Homepage data", error);
             }
             setApiData({ pieCharts: [], latestStreetAndPropertyEdits: [] });
           }

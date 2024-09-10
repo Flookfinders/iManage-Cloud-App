@@ -27,6 +27,7 @@
 //    014   01.03.24 Joel Benford               Restrict Districts to suit organisation
 //    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    016   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    017   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -755,8 +756,8 @@ function AsdTemplateTab() {
           streetTemplate: data.streetTemplate,
         };
 
-        // if (process.env.NODE_ENV === "development")
-        console.log("[DEBUG] handleDoneEditTemplate", updatedData, saveUrl, JSON.stringify(saveData));
+        if (userContext.currentUser.showMessages)
+          console.log("[DEBUG] handleDoneEditTemplate", updatedData, saveUrl, JSON.stringify(saveData));
 
         await fetch(saveUrl.url, {
           headers: saveUrl.headers,
@@ -777,16 +778,17 @@ function AsdTemplateTab() {
 
               case 401:
                 res.json().then((body) => {
-                  console.error("[401 ERROR] Updating ASD template", body);
+                  if (userContext.currentUser.showMessages) console.error("[401 ERROR] Updating ASD template", body);
                 });
                 break;
 
               case 500:
-                console.error("[500 ERROR] Updating ASD template", res);
+                if (userContext.currentUser.showMessages) console.error("[500 ERROR] Updating ASD template", res);
                 break;
 
               default:
-                console.error(`[${res.status} ERROR] handleDoneEditTemplate - Updating ASD template.`, res);
+                if (userContext.currentUser.showMessages)
+                  console.error(`[${res.status} ERROR] handleDoneEditTemplate - Updating ASD template.`, res);
                 break;
             }
           });

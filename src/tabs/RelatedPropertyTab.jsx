@@ -59,6 +59,7 @@
 //    045   26.06.24 Joshua McCormick IMANN-548 ZoomToProperty fix, properties correctly add to list
 //    046   07.08.24 Sean Flook       IMANN-891 Use stopPropagation rather than persist.
 //    047   07.08.24 Sean Flook       IMANN-973 Use a string for the makeChildUprn.
+//    048   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1094,7 +1095,6 @@ function RelatedPropertyTab({
                     : 0;
                 })
                 .map((rec) => {
-                  // console.log("[SF] property", rec);
                   return (
                     <TreeItem
                       key={rec.uprn}
@@ -1116,7 +1116,6 @@ function RelatedPropertyTab({
                               : 0;
                           })
                           .map((child1) => {
-                            // console.log("[SF] child1", child1);
                             return (
                               <TreeItem
                                 key={child1.uprn}
@@ -1138,7 +1137,6 @@ function RelatedPropertyTab({
                                         : 0;
                                     })
                                     .map((child2) => {
-                                      // console.log("[SF] child2", child2);
                                       return (
                                         <TreeItem
                                           key={child2.uprn}
@@ -1160,7 +1158,6 @@ function RelatedPropertyTab({
                                                   : 0;
                                               })
                                               .map((child3) => {
-                                                // console.log("[SF] child3", child3);
                                                 return (
                                                   <TreeItem
                                                     key={child3.uprn}

@@ -14,6 +14,7 @@
 //    001   17.05.24 Sean Flook       IMANN-176 Initial version.
 //    002   20.05.24 Sean Flook       IMANN-176 Handle when there are no invalid codes found.
 //    003   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    004   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -65,7 +66,8 @@ function UpdateWardParishBoundariesDialog({ isOpen, variant, onClose }) {
         const countUrl = GetIncorrectBoundariesCountUrl(userContext.currentUser.token);
 
         if (countUrl) {
-          console.log("[DEBUG] IncorrectBoundariesCount", `${countUrl.url}/${variant}`);
+          if (userContext.currentUser.showMessages)
+            console.log("[DEBUG] IncorrectBoundariesCount", `${countUrl.url}/${variant}`);
           await fetch(`${countUrl.url}/${variant}`, {
             headers: countUrl.headers,
             crossDomain: true,
@@ -128,39 +130,47 @@ function UpdateWardParishBoundariesDialog({ isOpen, variant, onClose }) {
                 case 400:
                   setCurrentStep(-1);
                   res.json().then((body) => {
-                    console.error(
-                      `[400 ERROR] Getting incorrect boundaries count for ${variant === "Ward" ? "wards" : "parishes"}`,
-                      body.errors
-                    );
+                    if (userContext.currentUser.showMessages)
+                      console.error(
+                        `[400 ERROR] Getting incorrect boundaries count for ${
+                          variant === "Ward" ? "wards" : "parishes"
+                        }`,
+                        body.errors
+                      );
                   });
                   break;
 
                 case 401:
                   setCurrentStep(-1);
                   res.json().then((body) => {
-                    console.error(
-                      `[401 ERROR] Getting incorrect boundaries count for ${variant === "Ward" ? "wards" : "parishes"}`,
-                      body
-                    );
+                    if (userContext.currentUser.showMessages)
+                      console.error(
+                        `[401 ERROR] Getting incorrect boundaries count for ${
+                          variant === "Ward" ? "wards" : "parishes"
+                        }`,
+                        body
+                      );
                   });
                   break;
 
                 case 500:
                   setCurrentStep(-1);
-                  console.error(
-                    `[500 ERROR] Getting incorrect boundaries count for ${variant === "Ward" ? "wards" : "parishes"}`,
-                    res
-                  );
+                  if (userContext.currentUser.showMessages)
+                    console.error(
+                      `[500 ERROR] Getting incorrect boundaries count for ${variant === "Ward" ? "wards" : "parishes"}`,
+                      res
+                    );
                   break;
 
                 default:
                   setCurrentStep(-1);
-                  console.error(
-                    `[${res.status} ERROR] Getting incorrect boundaries count for ${
-                      variant === "Ward" ? "wards" : "parishes"
-                    }`,
-                    res
-                  );
+                  if (userContext.currentUser.showMessages)
+                    console.error(
+                      `[${res.status} ERROR] Getting incorrect boundaries count for ${
+                        variant === "Ward" ? "wards" : "parishes"
+                      }`,
+                      res
+                    );
                   break;
               }
             });
@@ -174,7 +184,8 @@ function UpdateWardParishBoundariesDialog({ isOpen, variant, onClose }) {
         const updateUrl = GetUpdateBlpuBoundaryCodesUrl(userContext.currentUser.token);
 
         if (updateUrl) {
-          console.log("[DEBUG] UpdateBlpuBoundaryCodes", `${updateUrl.url}/${variant}`);
+          if (userContext.currentUser.showMessages)
+            console.log("[DEBUG] UpdateBlpuBoundaryCodes", `${updateUrl.url}/${variant}`);
           await fetch(`${updateUrl.url}/${variant}`, {
             headers: updateUrl.headers,
             crossDomain: true,
@@ -234,29 +245,32 @@ function UpdateWardParishBoundariesDialog({ isOpen, variant, onClose }) {
                 case 400:
                   setCurrentStep(-1);
                   res.json().then((body) => {
-                    console.error(
-                      `[400 ERROR] Updating incorrect boundaries for ${variant === "Ward" ? "wards" : "parishes"}`,
-                      body.errors
-                    );
+                    if (userContext.currentUser.showMessages)
+                      console.error(
+                        `[400 ERROR] Updating incorrect boundaries for ${variant === "Ward" ? "wards" : "parishes"}`,
+                        body.errors
+                      );
                   });
                   break;
 
                 case 401:
                   setCurrentStep(-1);
                   res.json().then((body) => {
-                    console.error(
-                      `[401 ERROR] Updating incorrect boundaries for ${variant === "Ward" ? "wards" : "parishes"}`,
-                      body
-                    );
+                    if (userContext.currentUser.showMessages)
+                      console.error(
+                        `[401 ERROR] Updating incorrect boundaries for ${variant === "Ward" ? "wards" : "parishes"}`,
+                        body
+                      );
                   });
                   break;
 
                 case 500:
                   setCurrentStep(-1);
-                  console.error(
-                    `[500 ERROR] Updating incorrect boundaries for ${variant === "Ward" ? "wards" : "parishes"}`,
-                    res
-                  );
+                  if (userContext.currentUser.showMessages)
+                    console.error(
+                      `[500 ERROR] Updating incorrect boundaries for ${variant === "Ward" ? "wards" : "parishes"}`,
+                      res
+                    );
                   break;
 
                 default:
@@ -264,12 +278,13 @@ function UpdateWardParishBoundariesDialog({ isOpen, variant, onClose }) {
                     `[ERROR] Updating incorrect boundaries for ${variant === "Ward" ? "wards" : "parishes"}`
                   );
                   setCurrentStep(-1);
-                  console.error(
-                    `[${res.status} ERROR] Updating incorrect boundaries for ${
-                      variant === "Ward" ? "wards" : "parishes"
-                    }`,
-                    res
-                  );
+                  if (userContext.currentUser.showMessages)
+                    console.error(
+                      `[${res.status} ERROR] Updating incorrect boundaries for ${
+                        variant === "Ward" ? "wards" : "parishes"
+                      }`,
+                      res
+                    );
                   break;
               }
             });

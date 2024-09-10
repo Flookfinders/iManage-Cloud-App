@@ -43,6 +43,7 @@
 //    030   28.06.24 Sean Flook       IMANN-676 Ensure failed UPRNs are always returned to the API.
 //    031   17.07.24 Sean Flook       IMANN-797 After getting a validation error if user returns and clicks Back clear the errors.
 //    032   03.09.24 Sean Flook       IMANN-968 Correctly handle API errors.
+//    033   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -910,7 +911,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                     if (error.status && error.status === 401) {
                       userContext.onExpired();
                     } else {
-                      console.error("[ERROR] Get Property data", error);
+                      if (userContext.currentUser.showMessages) console.error("[ERROR] Get Property data", error);
                     }
                     return null;
                   }

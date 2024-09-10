@@ -23,6 +23,7 @@
 //    010   09.02.24 Joel Benford    IM-227/228 Generalize ward/parish URL
 //    011   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    012   05.07.24 Sean Flook       IMANN-629 If we cannot return the apiMetadata then it means we are looking at different database and need to expire the current user.
+//    013   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -251,11 +252,12 @@ const HomePage = () => {
               break;
 
             case 500:
-              console.error("[500 ERROR] Fetching data", {
-                lookup: lookup.id,
-                errorText: response.statusText,
-                response: response,
-              });
+              if (userContext.currentUser.showMessages)
+                console.error("[500 ERROR] Fetching data", {
+                  lookup: lookup.id,
+                  errorText: response.statusText,
+                  response: response,
+                });
               setData(lookup.id, lookup.noRecords);
               break;
 
@@ -270,10 +272,11 @@ const HomePage = () => {
       .catch((e) => {
         // Ignore lookups that do not exist
         if (e.message !== "Unexpected end of JSON input")
-          console.error("[ERROR] Fetching data", {
-            lookup: lookup.id,
-            error: e,
-          });
+          if (userContext.currentUser.showMessages)
+            console.error("[ERROR] Fetching data", {
+              lookup: lookup.id,
+              error: e,
+            });
         setData(lookup.id, lookup.noRecords);
       });
   };
