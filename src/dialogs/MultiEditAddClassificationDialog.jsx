@@ -29,6 +29,7 @@
 //    016   08.07.24 Sean Flook       IMANN-715 Increase the failed count if failed to save property.
 //    017   22.08.24 Sean Flook       IMANN-946 Only display the Keep option when end date is set.
 //    018   28.08.24 Sean Flook       IMANN-959 When we have an end date set only display the keep option.
+//    019   10.09.24 Sean Flook       IMANN-979 When updating existing do not add a new record.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -418,7 +419,6 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
                   updatedClassifications = property.classifications.map(
                     (x) => openClassification.find((rec) => rec.pkId === x.pkId) || x
                   );
-                  updatedClassifications.push(newClassificationRec);
                 } else if (
                   property.classifications &&
                   property.classifications.length > 1 &&
