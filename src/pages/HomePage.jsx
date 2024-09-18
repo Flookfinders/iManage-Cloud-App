@@ -24,6 +24,7 @@
 //    011   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    012   05.07.24 Sean Flook       IMANN-629 If we cannot return the apiMetadata then it means we are looking at different database and need to expire the current user.
 //    013   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    014   18.09.24 Sean Flook       IMANN-980 Added missing parameter when calling fetchData.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -492,7 +493,7 @@ const HomePage = () => {
       Lookups.forEach(async (lookup) => {
         if (!isCancelled && !loadedLookups.current.includes(lookup.id)) {
           loadedLookups.current = loadedLookups.current.concat([lookup.id]);
-          await fetchData(lookup);
+          await fetchData(lookup, userContext);
         }
       });
     };
