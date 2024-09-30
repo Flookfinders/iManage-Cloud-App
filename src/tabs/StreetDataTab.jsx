@@ -55,6 +55,9 @@
 //    042   25.07.24 Sean Flook       IMANN-849 Convert the correct variables to numbers.
 //    043   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    044   30.09.24 Sean Flook       IMANN-617 Check we have a USRN before calling onUpdateUsrn.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -712,7 +715,7 @@ function StreetDataTab({
    */
   const handleCloseEditUsrnDialog = (newUsrn) => {
     setShowEditUsrnDialog(false);
-    if (onUpdateUsrn) onUpdateUsrn(newUsrn);
+    if (onUpdateUsrn && !!newUsrn) onUpdateUsrn(newUsrn);
   };
 
   /**
