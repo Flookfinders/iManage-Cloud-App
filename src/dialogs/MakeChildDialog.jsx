@@ -20,6 +20,9 @@
 //    007   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    008   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    009   30.09.24 Sean Flook       IMANN-605 Display the selected parent address on the first page once selected.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -622,6 +625,9 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
               selectedUPRNs && selectedUPRNs.length > 1 ? "properties" : "property"
             }:`}</Typography>
             <ADSSearch variant="makeChild" placeholder="Search for a property" onSearchClick={handleSearchClick} />
+            {parentAddress.length > 0 && (
+              <Typography variant="body2">{`Parent: ${addressToTitleCase(parentAddress, parentPostcode)}`}</Typography>
+            )}
           </Stack>
         );
 
