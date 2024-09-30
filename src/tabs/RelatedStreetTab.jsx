@@ -48,6 +48,9 @@
 //    035   17.07.24 Joshua McCormick IMANN-548 zoomToStreet fix
 //    036   17.07.24 Joshua McCormick IMANN-548 changed FormatStreetData to getStreetSearchData, Removed find debug code in zoomToStreet 
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    037   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -1292,6 +1295,8 @@ function RelatedStreetTab({
             ? `You are not allowed to create a property on a closed street.`
             : errorType.current === "invalidRangeState"
             ? `You are not allowed to create properties on a closed street.`
+            : errorType.current === "maxParentLevel"
+            ? `Parent is already at the maximum BLPU hierarchy level.`
             : `Unknown error.`
         }`}</Alert>
       </Snackbar>

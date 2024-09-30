@@ -61,6 +61,9 @@
 //    047   07.08.24 Sean Flook       IMANN-973 Use a string for the makeChildUprn.
 //    048   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    049   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -421,6 +424,18 @@ function RelatedPropertyTab({
   const handlePropertyMoved = () => {
     alertType.current = "propertyMoved";
     setAlertOpen(true);
+  };
+
+  /**
+   * Event to handle selection errors.
+   *
+   * @param {string} typeOfError The type of error.
+   */
+  const handleSelectionError = (typeOfError) => {
+    if (typeOfError) {
+      alertType.current = typeOfError;
+      setAlertOpen(true);
+    }
   };
 
   /**
@@ -1199,6 +1214,7 @@ function RelatedPropertyTab({
           propertyUprns={propertyChecked}
           onSetCopyOpen={handleSetCopyOpen}
           onPropertyMoved={handlePropertyMoved}
+          onError={handleSelectionError}
           onClose={handleCloseSelection}
         />
       </Popper>
@@ -1218,6 +1234,8 @@ function RelatedPropertyTab({
         >{`${
           alertType.current === "propertyMoved"
             ? `Changes saved successfully. Your moved seed points have been updated.`
+            : alertType.current === "maxParentLevel"
+            ? `Parent is already at the maximum BLPU hierarchy level.`
             : `Unknown error.`
         }`}</Alert>
       </Snackbar>

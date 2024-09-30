@@ -51,6 +51,9 @@
 //    037   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
 //    038   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    039   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -86,7 +89,12 @@ import MoveBLPUDialog from "../dialogs/MoveBLPUDialog";
 
 import { copyTextToClipboard, GetWktCoordinates, openInStreetView } from "../utils/HelperUtils";
 import { GetStreetMapData, getStreetSearchData } from "../utils/StreetUtils";
-import { GetPropertyMapData, UpdateRangeAfterSave, getClassificationCode } from "../utils/PropertyUtils";
+import {
+  GetParentHierarchy,
+  GetPropertyMapData,
+  UpdateRangeAfterSave,
+  getClassificationCode,
+} from "../utils/PropertyUtils";
 import { GetMultiEditSearchUrl } from "../configuration/ADSConfig";
 
 import Polyline from "@arcgis/core/geometry/Polyline";
@@ -663,21 +671,27 @@ function ADSSelectionControl({
    */
   async function HandleAddChild() {
     if (currentUprn) {
-      await GetPropertyMapData(Number(currentUprn), userContext).then((result) => {
-        propertyContext.resetPropertyErrors();
-        propertyContext.onWizardDone(null, false, null, null);
-        mapContext.onWizardSetCoordinate(null);
-        propertyWizardType.current = "child";
-        const engLpi = result.lpis.find((x) => x.logicalStatus === result.logicalStatus && x.language === "ENG");
-        propertyWizardParent.current = {
-          address: engLpi.address,
-          easting: result.easting,
-          northing: result.northing,
-          postcode: engLpi.postcode,
-          uprn: currentUprn,
-          usrn: engLpi.usrn,
-        };
-        setOpenPropertyWizard(true);
+      GetParentHierarchy(currentUprn, userContext).then((parentProperties) => {
+        if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
+          GetPropertyMapData(Number(currentUprn), userContext).then((result) => {
+            propertyContext.resetPropertyErrors();
+            propertyContext.onWizardDone(null, false, null, null);
+            mapContext.onWizardSetCoordinate(null);
+            propertyWizardType.current = "child";
+            const engLpi = result.lpis.find((x) => x.logicalStatus === result.logicalStatus && x.language === "ENG");
+            propertyWizardParent.current = {
+              address: engLpi.address,
+              easting: result.easting,
+              northing: result.northing,
+              postcode: engLpi.postcode,
+              uprn: currentUprn,
+              usrn: engLpi.usrn,
+            };
+            setOpenPropertyWizard(true);
+          });
+        } else {
+          if (onError) onError("maxParentLevel");
+        }
       });
     }
   }
@@ -687,21 +701,27 @@ function ADSSelectionControl({
    */
   async function HandleAddChildren() {
     if (currentUprn) {
-      await GetPropertyMapData(Number(currentUprn), userContext).then((result) => {
-        propertyContext.resetPropertyErrors();
-        propertyContext.onWizardDone(null, false, null, null);
-        mapContext.onWizardSetCoordinate(null);
-        propertyWizardType.current = "rangeChildren";
-        const engLpi = result.lpis.find((x) => x.logicalStatus === result.logicalStatus && x.language === "ENG");
-        propertyWizardParent.current = {
-          address: engLpi.address,
-          easting: result.easting,
-          northing: result.northing,
-          postcode: engLpi.postcode,
-          uprn: currentUprn,
-          usrn: engLpi.usrn,
-        };
-        setOpenPropertyWizard(true);
+      GetParentHierarchy(currentUprn, userContext).then((parentProperties) => {
+        if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
+          GetPropertyMapData(Number(currentUprn), userContext).then((result) => {
+            propertyContext.resetPropertyErrors();
+            propertyContext.onWizardDone(null, false, null, null);
+            mapContext.onWizardSetCoordinate(null);
+            propertyWizardType.current = "rangeChildren";
+            const engLpi = result.lpis.find((x) => x.logicalStatus === result.logicalStatus && x.language === "ENG");
+            propertyWizardParent.current = {
+              address: engLpi.address,
+              easting: result.easting,
+              northing: result.northing,
+              postcode: engLpi.postcode,
+              uprn: currentUprn,
+              usrn: engLpi.usrn,
+            };
+            setOpenPropertyWizard(true);
+          });
+        } else {
+          if (onError) onError("maxParentLevel");
+        }
       });
     }
   }

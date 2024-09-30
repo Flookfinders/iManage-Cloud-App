@@ -120,6 +120,9 @@
 //    106   27.08.24 Sean Flook       IMANN-925 If creating a new street and editing the USRN save the street with the new USRN.
 //    107   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    108   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -164,7 +167,7 @@ import {
   StreetDelete,
   GetStreetValidationErrors,
 } from "../utils/StreetUtils";
-import { UpdateRangeAfterSave, UpdateAfterSave, GetPropertyMapData } from "../utils/PropertyUtils";
+import { UpdateRangeAfterSave, UpdateAfterSave, GetPropertyMapData, GetParentHierarchy } from "../utils/PropertyUtils";
 import ObjectComparison, {
   MergeEsuComparison,
   constructionKeysToIgnore,
@@ -7738,19 +7741,29 @@ function StreetDataForm({ data, loading }) {
             settingsContext.isScottish
           ).then((result) => {
             if (result && result.state !== 4) {
-              propertyContext.resetPropertyErrors();
-              propertyContext.onWizardDone(null, false, null, null);
-              mapContext.onWizardSetCoordinate(null);
-              propertyWizardType.current = streetContext.leavingStreet.information.isRange
-                ? !streetContext.leavingStreet.information.parent
-                  ? "range"
-                  : "rangeChildren"
-                : !streetContext.leavingStreet.information.parent
-                ? "property"
-                : "child";
-              if (streetContext.leavingStreet.information.parent)
-                propertyWizardParent.current = streetContext.leavingStreet.information.parent;
-              else {
+              if (streetContext.leavingStreet.information.parent) {
+                GetParentHierarchy(streetContext.leavingStreet.information.parent.uprn, userContext).then(
+                  (parentProperties) => {
+                    if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
+                      propertyContext.resetPropertyErrors();
+                      propertyContext.onWizardDone(null, false, null, null);
+                      mapContext.onWizardSetCoordinate(null);
+                      propertyWizardType.current = streetContext.leavingStreet.information.isRange
+                        ? "rangeChildren"
+                        : "child";
+                      propertyWizardParent.current = streetContext.leavingStreet.information.parent;
+                      setOpenPropertyWizard(true);
+                    } else {
+                      alertType.current = "maxParentLevel";
+                      setAlertOpen(true);
+                    }
+                  }
+                );
+              } else {
+                propertyContext.resetPropertyErrors();
+                propertyContext.onWizardDone(null, false, null, null);
+                mapContext.onWizardSetCoordinate(null);
+                propertyWizardType.current = streetContext.leavingStreet.information.isRange ? "range" : "property";
                 const engDescriptor = result.streetDescriptors.filter((x) => x.language === "ENG");
                 if (engDescriptor) {
                   propertyWizardParent.current = {
@@ -7758,8 +7771,8 @@ function StreetDataForm({ data, loading }) {
                     address: engDescriptor[0].streetDescriptor,
                   };
                 }
+                setOpenPropertyWizard(true);
               }
-              setOpenPropertyWizard(true);
             } else {
               alertType.current = streetContext.leavingStreet.information.isRange
                 ? "invalidRangeState"
@@ -10653,21 +10666,35 @@ function StreetDataForm({ data, loading }) {
               break;
 
             case "addChild":
-              propertyContext.resetPropertyErrors();
-              propertyContext.onWizardDone(null, false, null, null);
-              mapContext.onWizardSetCoordinate(null);
-              propertyWizardType.current = "child";
-              propertyWizardParent.current = propertyContext.wizardData.parent;
-              setOpenPropertyWizard(true);
+              GetParentHierarchy(propertyContext.wizardData.parent.uprn, userContext).then((parentProperties) => {
+                if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
+                  propertyContext.resetPropertyErrors();
+                  propertyContext.onWizardDone(null, false, null, null);
+                  mapContext.onWizardSetCoordinate(null);
+                  propertyWizardType.current = "child";
+                  propertyWizardParent.current = propertyContext.wizardData.parent;
+                  setOpenPropertyWizard(true);
+                } else {
+                  alertType.current = "maxParentLevel";
+                  setAlertOpen(true);
+                }
+              });
               break;
 
             case "addChildren":
-              propertyContext.resetPropertyErrors();
-              propertyContext.onWizardDone(null, false, null, null);
-              mapContext.onWizardSetCoordinate(null);
-              propertyWizardType.current = "rangeChildren";
-              propertyWizardParent.current = propertyContext.wizardData.parent;
-              setOpenPropertyWizard(true);
+              GetParentHierarchy(propertyContext.wizardData.parent.uprn, userContext).then((parentProperties) => {
+                if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
+                  propertyContext.resetPropertyErrors();
+                  propertyContext.onWizardDone(null, false, null, null);
+                  mapContext.onWizardSetCoordinate(null);
+                  propertyWizardType.current = "rangeChildren";
+                  propertyWizardParent.current = propertyContext.wizardData.parent;
+                  setOpenPropertyWizard(true);
+                } else {
+                  alertType.current = "maxParentLevel";
+                  setAlertOpen(true);
+                }
+              });
               break;
 
             default:
@@ -11482,6 +11509,8 @@ function StreetDataForm({ data, loading }) {
             ? `The ESUs have been successfully assigned to the street.`
             : alertType.current === "streetAlreadyDividedMerged"
             ? "There has already been a divide or merge on this street, please save changes before retrying."
+            : alertType.current === "maxParentLevel"
+            ? `Parent is already at the maximum BLPU hierarchy level.`
             : `Unknown error.`
         }`}</Alert>
       </Snackbar>

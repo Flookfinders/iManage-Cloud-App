@@ -66,6 +66,9 @@
 //    052   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    053   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    054   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -126,6 +129,7 @@ import {
   PropertyDelete,
   UpdateRangeAfterSave,
   UpdateAfterSave,
+  GetParentHierarchy,
 } from "../utils/PropertyUtils";
 
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -834,12 +838,19 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   async function HandleAddChild(event, rec) {
     handlePropertyActionsMenuClose(event);
 
-    propertyContext.resetPropertyErrors();
-    propertyContext.onWizardDone(null, false, null, null);
-    mapContext.onWizardSetCoordinate(null);
-    propertyWizardType.current = "child";
-    propertyWizardParent.current = rec;
-    setOpenPropertyWizard(true);
+    GetParentHierarchy(rec.uprn, userContext).then((parentProperties) => {
+      if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
+        propertyContext.resetPropertyErrors();
+        propertyContext.onWizardDone(null, false, null, null);
+        mapContext.onWizardSetCoordinate(null);
+        propertyWizardType.current = "child";
+        propertyWizardParent.current = rec;
+        setOpenPropertyWizard(true);
+      } else {
+        alertType.current = "maxParentLevel";
+        setAlertOpen(true);
+      }
+    });
   }
 
   /**
@@ -851,12 +862,19 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   function HandleAddChildren(event, rec) {
     handlePropertyActionsMenuClose(event);
 
-    propertyContext.resetPropertyErrors();
-    propertyContext.onWizardDone(null, false, null, null);
-    mapContext.onWizardSetCoordinate(null);
-    propertyWizardType.current = "rangeChildren";
-    propertyWizardParent.current = rec;
-    setOpenPropertyWizard(true);
+    GetParentHierarchy(rec.uprn, userContext).then((parentProperties) => {
+      if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
+        propertyContext.resetPropertyErrors();
+        propertyContext.onWizardDone(null, false, null, null);
+        mapContext.onWizardSetCoordinate(null);
+        propertyWizardType.current = "rangeChildren";
+        propertyWizardParent.current = rec;
+        setOpenPropertyWizard(true);
+      } else {
+        alertType.current = "maxParentLevel";
+        setAlertOpen(true);
+      }
+    });
   }
 
   /**
@@ -1348,95 +1366,117 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
               break;
 
             case "addChild":
-              propertyContext.resetPropertyErrors();
-              propertyContext.onWizardDone(null, false, null, null);
-              mapContext.onWizardSetCoordinate(null);
-              propertyWizardType.current = "child";
-              propertyWizardParent.current = {
-                type: 24,
-                id: engLpi[0].lpi_key,
-                uprn: propertyContext.wizardData.savedProperty.uprn,
-                usrn: engLpi[0].usrn,
-                logical_status: propertyContext.wizardData.savedProperty.logicalStatus,
-                language: "ENG",
-                classification_code: settingsContext.isScottish
-                  ? propertyContext.wizardData.savedProperty.classifications[0].blpuClass
-                  : propertyContext.wizardData.savedProperty.blpuClass,
-                isParent: true,
-                parent_uprn: propertyContext.wizardData.savedProperty.parentUprn,
-                country: "",
-                authority: "",
-                longitude: 0,
-                latitude: 0,
-                easting: propertyContext.wizardData.savedProperty.xcoordinate,
-                northing: propertyContext.wizardData.savedProperty.ycoordinate,
-                full_building_desc: "",
-                formattedAddress: engLpi[0].address,
-                organisation: "",
-                secondary_name: "",
-                sao_text: "",
-                sao_nums: "",
-                primary_name: "",
-                pao_text: engLpi[0].paoText,
-                pao_nums: `${engLpi[0].paoStartNumber && engLpi[0].paoStartNumber > 0 ? engLpi[0].paoStartNumber : ""}${
-                  engLpi[0].paoEndNumber && engLpi[0].paoEndNumber > 0 ? " - " : ""
-                }${engLpi[0].paoEndNumber && engLpi[0].paoEndNumber > 0 ? engLpi[0].paoEndNumber : ""}`,
-                street: "",
-                locality: "",
-                town: "",
-                post_town: "",
-                postcode: "",
-                crossref: "",
-                address: engLpi[0].address,
-                sort_score: 0,
-              };
-              setOpenPropertyWizard(true);
+              GetParentHierarchy(propertyContext.wizardData.savedProperty.parentUprn, userContext).then(
+                (parentProperties) => {
+                  if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
+                    propertyContext.resetPropertyErrors();
+                    propertyContext.onWizardDone(null, false, null, null);
+                    mapContext.onWizardSetCoordinate(null);
+                    propertyWizardType.current = "child";
+                    propertyWizardParent.current = {
+                      type: 24,
+                      id: engLpi[0].lpi_key,
+                      uprn: propertyContext.wizardData.savedProperty.uprn,
+                      usrn: engLpi[0].usrn,
+                      logical_status: propertyContext.wizardData.savedProperty.logicalStatus,
+                      language: "ENG",
+                      classification_code: settingsContext.isScottish
+                        ? propertyContext.wizardData.savedProperty.classifications[0].blpuClass
+                        : propertyContext.wizardData.savedProperty.blpuClass,
+                      isParent: true,
+                      parent_uprn: propertyContext.wizardData.savedProperty.parentUprn,
+                      country: "",
+                      authority: "",
+                      longitude: 0,
+                      latitude: 0,
+                      easting: propertyContext.wizardData.savedProperty.xcoordinate,
+                      northing: propertyContext.wizardData.savedProperty.ycoordinate,
+                      full_building_desc: "",
+                      formattedAddress: engLpi[0].address,
+                      organisation: "",
+                      secondary_name: "",
+                      sao_text: "",
+                      sao_nums: "",
+                      primary_name: "",
+                      pao_text: engLpi[0].paoText,
+                      pao_nums: `${
+                        engLpi[0].paoStartNumber && engLpi[0].paoStartNumber > 0 ? engLpi[0].paoStartNumber : ""
+                      }${engLpi[0].paoEndNumber && engLpi[0].paoEndNumber > 0 ? " - " : ""}${
+                        engLpi[0].paoEndNumber && engLpi[0].paoEndNumber > 0 ? engLpi[0].paoEndNumber : ""
+                      }`,
+                      street: "",
+                      locality: "",
+                      town: "",
+                      post_town: "",
+                      postcode: "",
+                      crossref: "",
+                      address: engLpi[0].address,
+                      sort_score: 0,
+                    };
+                    setOpenPropertyWizard(true);
+                  } else {
+                    alertType.current = "maxParentLevel";
+                    setAlertOpen(true);
+                  }
+                }
+              );
               break;
 
             case "addChildren":
-              propertyContext.resetPropertyErrors();
-              propertyContext.onWizardDone(null, false, null, null);
-              mapContext.onWizardSetCoordinate(null);
-              propertyWizardType.current = "rangeChildren";
-              propertyWizardParent.current = {
-                type: 24,
-                id: engLpi[0].lpi_key,
-                uprn: propertyContext.wizardData.savedProperty.uprn,
-                usrn: engLpi[0].usrn,
-                logical_status: propertyContext.wizardData.savedProperty.logicalStatus,
-                language: "ENG",
-                classification_code: settingsContext.isScottish
-                  ? propertyContext.wizardData.savedProperty.classifications[0].blpuClass
-                  : propertyContext.wizardData.savedProperty.blpuClass,
-                isParent: true,
-                parent_uprn: propertyContext.wizardData.savedProperty.parentUprn,
-                country: "",
-                authority: "",
-                longitude: 0,
-                latitude: 0,
-                easting: propertyContext.wizardData.savedProperty.xcoordinate,
-                northing: propertyContext.wizardData.savedProperty.ycoordinate,
-                full_building_desc: "",
-                formattedAddress: engLpi[0].address,
-                organisation: "",
-                secondary_name: "",
-                sao_text: "",
-                sao_nums: "",
-                primary_name: "",
-                pao_text: engLpi[0].paoText,
-                pao_nums: `${engLpi[0].paoStartNumber && engLpi[0].paoStartNumber > 0 ? engLpi[0].paoStartNumber : ""}${
-                  engLpi[0].paoEndNumber && engLpi[0].paoEndNumber > 0 ? " - " : ""
-                }${engLpi[0].paoEndNumber && engLpi[0].paoEndNumber > 0 ? engLpi[0].paoEndNumber : ""}`,
-                street: "",
-                locality: "",
-                town: "",
-                post_town: "",
-                postcode: "",
-                crossref: "",
-                address: engLpi[0].address,
-                sort_score: 0,
-              };
-              setOpenPropertyWizard(true);
+              GetParentHierarchy(propertyContext.wizardData.savedProperty.parentUprn, userContext).then(
+                (parentProperties) => {
+                  if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
+                    propertyContext.resetPropertyErrors();
+                    propertyContext.onWizardDone(null, false, null, null);
+                    mapContext.onWizardSetCoordinate(null);
+                    propertyWizardType.current = "rangeChildren";
+                    propertyWizardParent.current = {
+                      type: 24,
+                      id: engLpi[0].lpi_key,
+                      uprn: propertyContext.wizardData.savedProperty.uprn,
+                      usrn: engLpi[0].usrn,
+                      logical_status: propertyContext.wizardData.savedProperty.logicalStatus,
+                      language: "ENG",
+                      classification_code: settingsContext.isScottish
+                        ? propertyContext.wizardData.savedProperty.classifications[0].blpuClass
+                        : propertyContext.wizardData.savedProperty.blpuClass,
+                      isParent: true,
+                      parent_uprn: propertyContext.wizardData.savedProperty.parentUprn,
+                      country: "",
+                      authority: "",
+                      longitude: 0,
+                      latitude: 0,
+                      easting: propertyContext.wizardData.savedProperty.xcoordinate,
+                      northing: propertyContext.wizardData.savedProperty.ycoordinate,
+                      full_building_desc: "",
+                      formattedAddress: engLpi[0].address,
+                      organisation: "",
+                      secondary_name: "",
+                      sao_text: "",
+                      sao_nums: "",
+                      primary_name: "",
+                      pao_text: engLpi[0].paoText,
+                      pao_nums: `${
+                        engLpi[0].paoStartNumber && engLpi[0].paoStartNumber > 0 ? engLpi[0].paoStartNumber : ""
+                      }${engLpi[0].paoEndNumber && engLpi[0].paoEndNumber > 0 ? " - " : ""}${
+                        engLpi[0].paoEndNumber && engLpi[0].paoEndNumber > 0 ? engLpi[0].paoEndNumber : ""
+                      }`,
+                      street: "",
+                      locality: "",
+                      town: "",
+                      post_town: "",
+                      postcode: "",
+                      crossref: "",
+                      address: engLpi[0].address,
+                      sort_score: 0,
+                    };
+                    setOpenPropertyWizard(true);
+                  } else {
+                    alertType.current = "maxParentLevel";
+                    setAlertOpen(true);
+                  }
+                }
+              );
               break;
 
             default:
@@ -2567,6 +2607,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
               ? `You are not allowed to create a property on a closed street.`
               : alertType.current === "invalidRangeState"
               ? `You are not allowed to create properties on a closed street.`
+              : alertType.current === "maxParentLevel"
+              ? `Parent is already at the maximum BLPU hierarchy level.`
               : alertType.current === "propertyMoved"
               ? `Changes saved successfully. Your moved seed points have been updated.`
               : `Unknown error.`

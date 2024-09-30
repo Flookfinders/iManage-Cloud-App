@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 0.0.1.00 changes
+//#region Version 1.0.0.0 changes
 //    001   16.08.22 Sean Flook         WI39??? Initial Revision.
 //    002   16.03.23 Sean Flook         WI40583 Correctly set/reset propertyErrors.
 //    003   28.03.23 Sean Flook         WI40632 Added source to HandleWizardDone.
@@ -76,10 +76,10 @@
 //    063   06.08.24 Sean Flook       IMANN-903 Use a reference to store the loaded SHP files.
 //    064   27.08.24 Sean Flook       IMANN-925 Corrected typo.
 //    065   10.09.24 Sean Flook       IMANN-980 Set the showMessages rights for users and only write to the console if the user has the showMessages right.
-//#endregion Version 0.0.1.00 changes
-//#region Version 0.0.2.00 changes
-//    066   26.09.24 Sean Flook                 Updated the version.
-//#endregion Version 0.0.2.00 changes
+//#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    066   26.09.24 Sean Flook       IMANN-573 Updated the version.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -163,7 +163,7 @@ function App() {
 
   const currentMapExtent = useRef(null);
 
-  const guiVersion = "0.0.2.00";
+  const guiVersion = "1.0.1.0";
 
   const onlinePolling = { enabled: true, url: "https://ipv4.icanhazip.com", interval: 5000, timeout: 5000 };
   const offlinePolling = { enabled: true, url: "https://ipv4.icanhazip.com", interval: 5000, timeout: 5000 };
