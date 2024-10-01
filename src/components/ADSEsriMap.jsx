@@ -104,6 +104,7 @@
 //#region Version 1.0.1.0 changes
 //    089   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    090   01.10.24 Sean Flook       IMANN-713 Changed the text on the buttons for adding a property/ies to a street.
+//    091   01.10.24 Sean Flook       IMANN-993 Display the extent merge tool.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -8858,11 +8859,11 @@ function ADSEsriMap(startExtent) {
                 <MergeIcon sx={ActionIconStyle()} />
               </IconButton>
             )}
-            {/* {displayExtentMergeTool && (
+            {displayExtentMergeTool && (
               <IconButton onClick={handleMergeFeatures} size="small" title="Use selected features for extent">
                 <MergeIcon sx={ActionIconStyle()} />
               </IconButton>
-            )} */}
+            )}
             <IconButton onClick={handleDisplayMeasurement} size="small" title="Measure distance/area">
               <StraightenIcon sx={ActionIconStyle()} />
             </IconButton>
