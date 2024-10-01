@@ -50,6 +50,9 @@
 //    037   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    038   08.08.24 Sean Flook       IMANN-911 Corrected typo.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.0.0 changes
+//    039   01.10.24 Sean Flook       IMANN-665 Changed Designation to Type for HWW.
+//#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -2578,7 +2581,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         return (
           <Stack direction="column">
             <ADSSelectControl
-              label="Designation"
+              label="Type"
               isEditable
               useRounded
               doNotSetTitleCase
