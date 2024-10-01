@@ -23,6 +23,9 @@
 //    010   27.06.24 Joel Benford     IMANN-685 HD sequence numbers -> seqNum
 //    011   06.08.24 Sean Flook       IMANN-886 Check highway dedication record end date when merging.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    012   01.10.24 Sean Flook       IMANN-899 Modified ObjectComparison to handle BLPU App Cross Ref and Provenance where the second object uses ID rather than PKID.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -224,7 +227,11 @@ export default function ObjectComparison(object1, object2, keysToIgnore) {
   }
 
   for (let key of keys1) {
-    if (object1[key] !== object2[key]) {
+    if (key === "pkId" && !keys2.includes("pkId") && keys2.includes("id")) {
+      if (object1[key] !== object2["id"]) {
+        return false;
+      }
+    } else if (object1[key] !== object2[key]) {
       return false;
     }
   }

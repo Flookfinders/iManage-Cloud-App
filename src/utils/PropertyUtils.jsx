@@ -60,6 +60,9 @@
 //    047   02.09.24 Sean Flook       IMANN-976 Handle "Unassigned" in lookups.
 //    048   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    049   01.10.24 Sean Flook       IMANN-899 Use the correct field for BLPU App Cross Reference.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -2574,7 +2577,7 @@ export const hasPropertyChanged = (newProperty, currentSandbox) => {
       currentSandbox.sourceProperty.blpuAppCrossRefs &&
       !ObjectComparison(
         currentSandbox.sourceProperty.blpuAppCrossRefs.find(
-          (x) => x.pkId === currentSandbox.currentPropertyRecords.appCrossRef.pkId
+          (x) => x.pkId === currentSandbox.currentPropertyRecords.appCrossRef.id
         ),
         currentSandbox.currentPropertyRecords.appCrossRef,
         blpuAppCrossRefKeysToIgnore
