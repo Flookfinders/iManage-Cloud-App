@@ -34,6 +34,9 @@
 //    021   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    022   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    023   01.10.24 Sean Flook       IMANN-431 Change the default returned in GetLinkedRef to -1.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -852,41 +855,41 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
         case "postTown":
           const postTownRecord = lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === lookupId);
           if (postTownRecord) return postTownRecord.linkedRef;
-          else return null;
+          else return -1;
 
         case "subLocality":
           const subLocalityRecord = lookupContext.currentLookups.subLocalities.find(
             (x) => x.subLocalityRef === lookupId
           );
           if (subLocalityRecord) return subLocalityRecord.linkedRef;
-          else return null;
+          else return -1;
 
         case "locality":
           const localityRecord = lookupContext.currentLookups.localities.find((x) => x.localityRef === lookupId);
           if (localityRecord) return localityRecord.linkedRef;
-          else return null;
+          else return -1;
 
         case "town":
           const townRecord = lookupContext.currentLookups.towns.find((x) => x.townRef === lookupId);
           if (townRecord) return townRecord.linkedRef;
-          else return null;
+          else return -1;
 
         case "island":
           const islandRecord = lookupContext.currentLookups.islands.find((x) => x.islandRef === lookupId);
           if (islandRecord) return islandRecord.linkedRef;
-          else return null;
+          else return -1;
 
         case "administrativeArea":
           const administrativeAreaRecord = lookupContext.currentLookups.adminAuthorities.find(
             (x) => x.administrativeAreaRef === lookupId
           );
           if (administrativeAreaRecord) return administrativeAreaRecord.linkedRef;
-          else return null;
+          else return -1;
 
         default:
-          return null;
+          return -1;
       }
-    } else return null;
+    } else return -1;
   }
 
   /**
