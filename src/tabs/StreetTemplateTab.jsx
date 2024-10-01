@@ -29,6 +29,9 @@
 //    016   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    017   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    018   01.10.24 Sean Flook       IMANN-664 Changed Indicators to Indicator.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -918,7 +921,7 @@ function StreetTemplateTab() {
                         </Typography>
                       </Grid>
                       <Grid item xs={3}>
-                        <Typography variant="body2">Indicators</Typography>
+                        <Typography variant="body2">Indicator</Typography>
                       </Grid>
                       <Grid item xs={9}>
                         <Stack direction="row" spacing={1}>
