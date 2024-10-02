@@ -48,6 +48,9 @@
 //    035   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    036   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.0.0 changes
+//    037   02.10.24 Sean Flook       IMANN-996 Call onEditMapObject when opening a property.
+//#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -743,6 +746,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
     searchStreets.current = [];
     mapContext.onSearchDataChange(searchStreets.current, searchProperties.current, null, rec.uprn);
     mapContext.onMapChange(extents, null, null);
+    mapContext.onEditMapObject(21, rec.uprn);
   };
 
   /**
