@@ -22,6 +22,9 @@
 //    010   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    011   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    012   02.10.24 Sean Flook       IMANN-997 Removed display language.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -75,7 +78,6 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
   const [minEsu, setMinEsu] = useState(null);
   const [maxEsu, setMaxEsu] = useState(null);
   const [createStreetBlpu, setCreateStreetBlpu] = useState(settingsContext.isScottish);
-  const [displayLanguage, setDisplayLanguage] = useState(null);
   const [uppercase, setUppercase] = useState(false);
 
   const [showMinMaxDialog, setShowMinMaxDialog] = useState(false);
@@ -89,18 +91,6 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
   const custodianCodes = DETRCodes.map(function (x) {
     return { id: x.id, text: `${x.id} - ${x.text}` };
   });
-
-  const languages = settingsContext.isWelsh
-    ? [
-        { id: "ENG", text: "English" },
-        { id: "CYM", text: "Welsh" },
-      ]
-    : settingsContext.isScottish
-    ? [
-        { id: "ENG", text: "English" },
-        { id: "GAE", text: "Gaelic" },
-      ]
-    : [{ id: "ENG", text: "English" }];
 
   /**
    * Event to handle when the dialog is closing.
@@ -131,7 +121,6 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
       uppercase: uppercase,
       msaLicenceNumber: msaText,
       streetBlpu: settingsContext.isScottish ? true : createStreetBlpu,
-      displayLanguage: displayLanguage,
       tabText: tabText,
     };
   };
@@ -235,15 +224,6 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
   };
 
   /**
-   * Event to handle when the display language changes.
-   *
-   * @param {string} newValue The new display language.
-   */
-  const handleDisplayLanguageChangeEvent = (newValue) => {
-    setDisplayLanguage(newValue);
-  };
-
-  /**
    * Event to handle when the uppercase flag changes.
    *
    * @param {boolean} newValue The new uppercase flag.
@@ -306,7 +286,6 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
       setMinEsu(data.minEsuId);
       setMaxEsu(data.maxEsuId);
       setCreateStreetBlpu(data.streetBlpu);
-      setDisplayLanguage(data.displayLanguage);
       setUppercase(data.uppercase);
     }
 
@@ -407,19 +386,6 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
                       falseLabel="No"
                       helperText="Set this if you want to create a new street BLPU when creating a new street."
                       onChange={handleCreateStreetBlpuChangeEvent}
-                    />
-                  )}
-                  {(settingsContext.isWelsh || settingsContext.isScottish) && (
-                    <ADSSelectControl
-                      label="Display language"
-                      isEditable
-                      required
-                      useRounded
-                      lookupData={languages}
-                      lookupId="id"
-                      lookupLabel="text"
-                      value={displayLanguage}
-                      onChange={handleDisplayLanguageChangeEvent}
                     />
                   )}
                   <ADSSwitchControl

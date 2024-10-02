@@ -24,6 +24,9 @@
 //    011   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    012   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    013   02.10.24 Sean Flook       IMANN-997 Removed display language.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -38,7 +41,7 @@ import { Box, Stack } from "@mui/system";
 import EditAuthorityDetailsDialog from "../dialogs/EditAuthorityDetailsDialog";
 
 import { GetAuthorityDetailsUrl } from "../configuration/ADSConfig";
-import { getAuthorityText, getDisplayLanguage } from "../utils/HelperUtils";
+import { getAuthorityText } from "../utils/HelperUtils";
 
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
@@ -72,7 +75,6 @@ function AuthorityDetailsSettingsTab() {
   const [minEsu, setMinEsu] = useState(null);
   const [maxEsu, setMaxEsu] = useState(null);
   const [createStreetBlpu, setCreateStreetBlpu] = useState(settingsContext.isScottish);
-  const [displayLanguage, setDisplayLanguage] = useState(null);
   const [uppercase, setUppercase] = useState(false);
 
   const [editAuthority, setEditAuthority] = useState(false);
@@ -210,7 +212,6 @@ function AuthorityDetailsSettingsTab() {
       setMinEsu(data.minEsuId);
       setMaxEsu(data.maxEsuId);
       setCreateStreetBlpu(data.streetBlpu);
-      setDisplayLanguage(data.displayLanguage);
       setUppercase(data.uppercase);
     }
   }, [data]);
@@ -318,14 +319,6 @@ function AuthorityDetailsSettingsTab() {
                     </Grid>
                     <Grid item xs={9}>
                       {getCheck(settingsContext.isScottish ? true : createStreetBlpu)}
-                    </Grid>
-                    <Grid item xs={3}>
-                      <Typography variant="body2">Display language</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
-                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        {getDisplayLanguage(displayLanguage)}
-                      </Typography>
                     </Grid>
                     <Grid item xs={3}>
                       <Typography variant="body2">Address fields uppercase</Typography>
