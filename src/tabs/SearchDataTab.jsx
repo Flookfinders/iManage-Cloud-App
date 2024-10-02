@@ -68,6 +68,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    054   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//    055   02.10.24 Sean Flook       IMANN-550 Changed menu item order for streets.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1653,23 +1654,11 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                               )}
                               <MenuItem
                                 dense
-                                onClick={(event) => itemCopy(event, rec.usrn.toString(), "USRN")}
-                                sx={menuItemStyle(false)}
-                              >
-                                <Typography variant="inherit">Copy USRN</Typography>
-                              </MenuItem>
-                              <MenuItem
-                                dense
                                 onClick={(event) => handleStreetViewClick(event, rec)}
                                 sx={menuItemStyle(false)}
                               >
                                 <Typography variant="inherit">Open in Street View</Typography>
                               </MenuItem>
-                              {process.env.NODE_ENV === "development" && (
-                                <MenuItem dense disabled sx={menuItemStyle(false)}>
-                                  <Typography variant="inherit">Search nearby</Typography>
-                                </MenuItem>
-                              )}
                               <MenuItem
                                 dense
                                 divider
@@ -1678,16 +1667,13 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                               >
                                 <Typography variant="inherit">Zoom to this</Typography>
                               </MenuItem>
-                              {process.env.NODE_ENV === "development" && (
-                                <MenuItem dense disabled sx={menuItemStyle(false)}>
-                                  <Typography variant="inherit">Bookmark</Typography>
-                                </MenuItem>
-                              )}
-                              {process.env.NODE_ENV === "development" && (
-                                <MenuItem dense disabled sx={menuItemStyle(true)}>
-                                  <Typography variant="inherit">Add to list</Typography>
-                                </MenuItem>
-                              )}
+                              <MenuItem
+                                dense
+                                onClick={(event) => itemCopy(event, rec.usrn.toString(), "USRN")}
+                                sx={menuItemStyle(false)}
+                              >
+                                <Typography variant="inherit">Copy USRN</Typography>
+                              </MenuItem>
                               <MenuItem
                                 dense
                                 divider
@@ -1698,7 +1684,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                               </MenuItem>
                               {userCanEditStreet && (
                                 <MenuItem dense onClick={(event) => CloseStreet(event, rec)} sx={menuItemStyle(false)}>
-                                  <Typography variant="inherit">Close street</Typography>
+                                  <Typography variant="inherit">Close</Typography>
                                 </MenuItem>
                               )}
                               {!settingsContext.isScottish && userCanEditStreet && (

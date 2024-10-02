@@ -50,6 +50,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    037   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//    038   02.10.24 Sean Flook       IMANN-550 Changed menu item order.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -922,6 +923,7 @@ function RelatedStreetTab({
                                   </MenuItem>
                                   <MenuItem
                                     dense
+                                    divider
                                     onClick={(event) => zoomToStreet(event, rec.usrn)}
                                     sx={menuItemStyle(false)}
                                   >
@@ -929,22 +931,11 @@ function RelatedStreetTab({
                                   </MenuItem>
                                   <MenuItem
                                     dense
-                                    divider
                                     onClick={(event) => itemCopy(event, rec.usrn.toString(), "USRN")}
                                     sx={menuItemStyle(true)}
                                   >
                                     <Typography variant="inherit">Copy USRN</Typography>
                                   </MenuItem>
-                                  {process.env.NODE_ENV === "development" && (
-                                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                                      <Typography variant="inherit">Bookmark</Typography>
-                                    </MenuItem>
-                                  )}
-                                  {process.env.NODE_ENV === "development" && (
-                                    <MenuItem dense disabled sx={menuItemStyle(false)}>
-                                      <Typography variant="inherit">Add to list</Typography>
-                                    </MenuItem>
-                                  )}
                                 </Menu>
                               </Stack>
                             )}

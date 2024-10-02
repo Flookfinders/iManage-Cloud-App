@@ -57,6 +57,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    044   30.09.24 Sean Flook       IMANN-617 Check we have a USRN before calling onUpdateUsrn.
+//    045   02.10.24 Sean Flook       IMANN-550 Changed menu item order.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -599,15 +600,6 @@ function StreetDataTab({
   };
 
   /**
-   * Event to handle when the user clicks on the view properties on street menu item.
-   *
-   * @param {object} event
-   */
-  const handleViewPropertiesOnStreet = () => {
-    setAnchorEl(null);
-  };
-
-  /**
    * Event to handle when the user clicks on the copy USRN menu item.
    *
    * @param {object} event
@@ -648,31 +640,6 @@ function StreetDataTab({
       copyTextToClipboard(text);
       if (onSetCopyOpen) onSetCopyOpen(true, dataType);
     }
-  };
-
-  /**
-   * Event to handle adding a bookmark
-   *
-   */
-  const handleBookmark = () => {
-    setAnchorEl(null);
-  };
-
-  /**
-   * Event to handle adding a street to a list.
-   *
-   */
-  const handleAddToList = () => {
-    setAnchorEl(null);
-  };
-
-  /**
-   * Event to handle export
-   *
-   * @param {object} event
-   */
-  const handleExportTo = (event) => {
-    setAnchorEl(null);
   };
 
   /**
@@ -1011,42 +978,23 @@ function StreetDataTab({
                 <Typography variant="inherit">Add properties</Typography>
               </MenuItem>
             )}
+            <MenuItem dense onClick={handleOpenInStreetview} sx={menuItemStyle(false)}>
+              <Typography variant="inherit">Open in Street View</Typography>
+            </MenuItem>
             <MenuItem
               dense
+              divider
               onClick={(event) => zoomToStreet(event, streetContext.currentStreet.usrn)}
               sx={menuItemStyle(false)}
             >
               <Typography variant="inherit">Zoom to this</Typography>
             </MenuItem>
-            <MenuItem dense onClick={handleOpenInStreetview} sx={menuItemStyle(false)}>
-              <Typography variant="inherit">Open in Street View</Typography>
-            </MenuItem>
-            {process.env.NODE_ENV === "development" && (
-              <MenuItem dense divider disabled onClick={handleViewPropertiesOnStreet} sx={menuItemStyle(true)}>
-                <Typography variant="inherit">View properties on street</Typography>
-              </MenuItem>
-            )}
-            <MenuItem dense onClick={handleCopyUsrn} sx={menuItemStyle(false)}>
+            <MenuItem dense divider onClick={handleCopyUsrn} sx={menuItemStyle(false)}>
               <Typography variant="inherit">Copy USRN</Typography>
             </MenuItem>
-            {process.env.NODE_ENV === "development" && (
-              <MenuItem dense disabled onClick={handleBookmark} sx={menuItemStyle(false)}>
-                <Typography variant="inherit">Bookmark</Typography>
-              </MenuItem>
-            )}
-            {process.env.NODE_ENV === "development" && (
-              <MenuItem dense disabled onClick={handleAddToList} sx={menuItemStyle(false)}>
-                <Typography variant="inherit">Add to list</Typography>
-              </MenuItem>
-            )}
-            {process.env.NODE_ENV === "development" && (
-              <MenuItem dense divider disabled onClick={handleExportTo} sx={menuItemStyle(true)}>
-                <Typography variant="inherit">Export to...</Typography>
-              </MenuItem>
-            )}
             {userCanEdit && (
               <MenuItem dense onClick={handleCloseStreet} sx={menuItemStyle(false)}>
-                <Typography variant="inherit">Close street</Typography>
+                <Typography variant="inherit">Close</Typography>
               </MenuItem>
             )}
             {process.env.NODE_ENV === "development" && !settingsContext.isScottish && userCanEdit && (
