@@ -36,6 +36,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    023   01.10.24 Sean Flook       IMANN-431 Change the default returned in GetLinkedRef to -1.
+//    024   02.10.24 Sean Flook       IMANN-994 Include the PKId in the update data for App Cross References.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1710,6 +1711,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
             );
             if (crossReferenceRecord)
               return {
+                pkId: crossReferenceRecord.pkId,
                 xrefSourceRef: crossReferenceRecord.xrefSourceRef,
                 altXrefSourceRef: crossReferenceRecord.altXrefSourceRef,
                 xrefSourceRef73: data.lookupData.xrefSourceRef73,
