@@ -58,6 +58,7 @@
 //#region Version 1.0.1.0 changes
 //    044   30.09.24 Sean Flook       IMANN-617 Check we have a USRN before calling onUpdateUsrn.
 //    045   02.10.24 Sean Flook       IMANN-550 Changed menu item order.
+//    046   02.10.24 Sean Flook       IMANN-999 Changed label to State date.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1189,7 +1190,7 @@ function StreetDataTab({
         )}
         {!settingsContext.isScottish && (
           <ADSDateControl
-            label="State start date"
+            label="State date"
             isEditable={userCanEdit}
             isRequired
             loading={loading}

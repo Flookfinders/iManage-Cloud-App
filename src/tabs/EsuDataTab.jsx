@@ -42,6 +42,9 @@
 //    029   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //    030   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    031   02.10.24 Sean Flook       IMANN-999 Changed label to State date.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -1075,7 +1078,7 @@ function EsuDataTab({
         )}
         {settingsContext.isScottish && (
           <ADSDateControl
-            label="State start date"
+            label="State date"
             isEditable={userCanEdit}
             isRequired
             loading={loading}
