@@ -27,6 +27,9 @@
 //    014   02.07.24 Sean Flook       IMANN-666 Moved permit scheme id and out of hours arrangement.
 //    015   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.0.0 changes
+//    016   02.10.24 Sean Flook       IMANN-409 Set newDistrict flag for EditDistrictLookupDialog.
+//#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -719,6 +722,7 @@ function LookupTablesTab() {
       )}
       <EditDistrictLookupDialog
         isOpen={showEditDistrictDialog}
+        newDistrict
         variant={"district"}
         data={newDistrictData}
         onDone={(data) => handleDoneEditDistrict(data)}

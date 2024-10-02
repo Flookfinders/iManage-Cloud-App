@@ -16,6 +16,9 @@
 //    003   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    004   02.07.24 Sean Flook       IMANN-666 Moved permit scheme id and out of hours arrangement.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.0.0 changes
+//    016   02.10.24 Sean Flook       IMANN-409 Added newDistrict flag to determine how the title is displayed.
+//#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -46,13 +49,18 @@ import { useTheme } from "@mui/styles";
 
 EditDistrictLookupDialog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
+  newDistrict: PropTypes.bool,
   variant: PropTypes.oneOf(["district", "ftp", "fpnDelivery", "fpnPayment", "fpnContact", "unknown"]).isRequired,
   data: PropTypes.object.isRequired,
   onDone: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
 };
 
-function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
+EditDistrictLookupDialog.defaultProps = {
+  newDistrict: false,
+};
+
+function EditDistrictLookupDialog({ isOpen, newDistrict, variant, data, onDone, onClose }) {
   const theme = useTheme();
 
   const lookupContext = useContext(LookupContext);
@@ -1766,7 +1774,11 @@ function EditDistrictLookupDialog({ isOpen, variant, data, onDone, onClose }) {
 
   return (
     <Dialog open={showDialog} aria-labelledby="edit-lookup-dialog" fullWidth maxWidth="md" onClose={handleDialogClose}>
-      <ADSDialogTitle title={`Edit ${lookupType} information`} closeTooltip="Cancel" onClose={handleCancelClick} />
+      <ADSDialogTitle
+        title={`${newDistrict ? "Add" : "Edit"} ${lookupType} information`}
+        closeTooltip="Cancel"
+        onClose={handleCancelClick}
+      />
       <DialogContent sx={{ mt: theme.spacing(2) }}>{getDialogContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: "flex-start", mb: theme.spacing(1), ml: theme.spacing(3) }}>
         <Button onClick={handleDoneClick} autoFocus variant="contained" sx={blueButtonStyle} startIcon={<DoneIcon />}>
