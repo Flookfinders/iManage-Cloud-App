@@ -38,6 +38,9 @@
 //    025   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    026   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.0.0 changes
+//    027   03.10.24 Sean Flook      IMANN-1001 Use getClassificationCode to determine the classification code to use.
+//#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -52,7 +55,7 @@ import PropertyContext from "../context/propertyContext";
 import MapContext from "../context/mapContext";
 
 import { GetStreetMapData, streetToTitleCase } from "../utils/StreetUtils";
-import { GetPropertyMapData, addressToTitleCase } from "../utils/PropertyUtils";
+import { GetPropertyMapData, addressToTitleCase, getClassificationCode } from "../utils/PropertyUtils";
 import { GetWktCoordinates, FormatDate, StringAvatar } from "../utils/HelperUtils";
 
 import HistoricPropertyDialog from "../dialogs/HistoricPropertyDialog";
@@ -457,7 +460,7 @@ function ADSHomepageLatestEditsControl({ data }) {
         easting: propertyData.xcoordinate,
         northing: propertyData.ycoordinate,
         logicalStatus: lpi.logicalStatus,
-        classificationCode: propertyData.blpuClass ? propertyData.blpuClass.substring(0, 1) : "U",
+        classificationCode: getClassificationCode(propertyData),
       };
       setOpenHistoricProperty(true);
     } else
@@ -469,7 +472,7 @@ function ADSHomepageLatestEditsControl({ data }) {
         propertyData.xcoordinate,
         propertyData.ycoordinate,
         lpi.logicalStatus,
-        propertyData.blpuClass ? propertyData.blpuClass.substring(0, 1) : "U"
+        getClassificationCode(propertyData)
       );
   };
 
