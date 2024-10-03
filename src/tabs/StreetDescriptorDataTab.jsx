@@ -33,6 +33,9 @@
 //    020   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    021   18.07.24 Sean Flook       IMANN-678 After adding a new lookup call UpdateSandbox.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.0.0 changes
+//    022   03.10.24 Sean Flook      IMANN-1002 Corrected character set to use for descriptor.
+//#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -458,7 +461,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
           characterSet={
             settingsContext.isScottish
               ? "OneScotlandStreet"
-              : data.streetType === 1
+              : data.streetType === 3
               ? "GeoPlaceStreet2"
               : "GeoPlaceStreet1"
           }

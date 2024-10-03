@@ -66,12 +66,12 @@
 // ===================================
 // • A-Z
 //
-// GeoPlaceStreet1 - Type 2, 3, 4 and 9 street descriptor, town and locality as well as OneScotland text fields not specified below.
+// GeoPlaceStreet1 - Type 1, 2, 4 and 9 street descriptor, town and locality as well as OneScotland text fields not specified below.
 // =================================================================================================================================
 //
 // Valid characters are A-Z, a-z, 0-9 or any of ! # $ % “ & ' ( ) * - + , . / : ; < = > ? [ \ ] ^ _ | ~ @ { } £ © § ® ¶ Ŵ ŵ Ṫ ṫ Ŷ ŷ Ḃ ḃ Ċ ċ Ḋ ḋ Ẁ Ẃ Ỳ Ÿ Ḟ ḟ Ġ ġ Ṁ ṁ Ṗ ẁ ṗ ẃ Ṡ ṡ ỳ Ẅ ẅ À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ñ Ò Ó Ô Õ Ö Ø Ù Ú Û Ü Ý ß à á â ã ä å æ ç è é ê ë ì í î ï ñ ò ó ô õ ö ø ù ú û ü ý ÿ and the space character.
 //
-// GeoPlaceStreet2 - Type 1 street
+// GeoPlaceStreet2 - Type 3 street
 // ===============================
 //
 // Valid characters are A-Z, a-z, 0-9, ( ) and the space character.
