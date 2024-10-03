@@ -105,6 +105,7 @@
 //    089   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    090   01.10.24 Sean Flook       IMANN-713 Changed the text on the buttons for adding a property/ies to a street.
 //    091   01.10.24 Sean Flook       IMANN-993 Display the extent merge tool.
+//    092   03.10.24 Sean Flook       IMANN-958 Check user has property edit permission before trying to create a child/children.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1875,6 +1876,9 @@ function ADSEsriMap(startExtent) {
         case "maxParentLevel":
           return "Parent is already at the maximum BLPU hierarchy level.";
 
+        case "noPermission":
+          return "You do not have permission to do this.";
+
         default:
           if (saveResult.current) return `The ${saveType.current} has been successfully saved.`;
           else if (failedValidation.current) return `Failed to validate the ${saveType.current} record.`;
@@ -2644,29 +2648,36 @@ function ADSEsriMap(startExtent) {
    */
   const handleAddChild = useCallback(async () => {
     if (recordAttributes.current && !displayingWizard.current) {
-      GetParentHierarchy(Number(recordAttributes.current.UPRN), userContext.current).then((parentProperties) => {
-        if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
-          displayingWizard.current = true;
-          const rec = {
-            address: recordAttributes.current.Address,
-            easting: Number(recordAttributes.current.Easting),
-            northing: Number(recordAttributes.current.Northing),
-            postcode: recordAttributes.current.Postcode,
-            uprn: Number(recordAttributes.current.UPRN),
-          };
-          propertyContext.resetPropertyErrors();
-          propertyContext.onWizardDone(null, false, null, null);
-          mapContext.onWizardSetCoordinate(null);
-          propertyWizardType.current = "child";
-          propertyWizardParent.current = rec;
-          setOpenPropertyWizard(true);
-        } else {
-          saveResult.current = false;
-          saveType.current = "maxParentLevel";
-          saveOpenRef.current = true;
-          setSaveOpen(true);
-        }
-      });
+      if (userContext.current.currentUser.editProperty) {
+        GetParentHierarchy(Number(recordAttributes.current.UPRN), userContext.current).then((parentProperties) => {
+          if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
+            displayingWizard.current = true;
+            const rec = {
+              address: recordAttributes.current.Address,
+              easting: Number(recordAttributes.current.Easting),
+              northing: Number(recordAttributes.current.Northing),
+              postcode: recordAttributes.current.Postcode,
+              uprn: Number(recordAttributes.current.UPRN),
+            };
+            propertyContext.resetPropertyErrors();
+            propertyContext.onWizardDone(null, false, null, null);
+            mapContext.onWizardSetCoordinate(null);
+            propertyWizardType.current = "child";
+            propertyWizardParent.current = rec;
+            setOpenPropertyWizard(true);
+          } else {
+            saveResult.current = false;
+            saveType.current = "maxParentLevel";
+            saveOpenRef.current = true;
+            setSaveOpen(true);
+          }
+        });
+      } else {
+        saveResult.current = false;
+        saveType.current = "noPermission";
+        saveOpenRef.current = true;
+        setSaveOpen(true);
+      }
     }
   }, [mapContext, propertyContext]);
 
@@ -2675,29 +2686,36 @@ function ADSEsriMap(startExtent) {
    */
   const handleAddChildren = useCallback(async () => {
     if (recordAttributes.current && !displayingWizard.current) {
-      GetParentHierarchy(Number(recordAttributes.current.UPRN), userContext.current).then((parentProperties) => {
-        if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
-          displayingWizard.current = true;
-          const rec = {
-            address: recordAttributes.current.Address,
-            easting: Number(recordAttributes.current.Easting),
-            northing: Number(recordAttributes.current.Northing),
-            postcode: recordAttributes.current.Postcode,
-            uprn: Number(recordAttributes.current.UPRN),
-          };
-          propertyContext.resetPropertyErrors();
-          propertyContext.onWizardDone(null, false, null, null);
-          mapContext.onWizardSetCoordinate(null);
-          propertyWizardType.current = "rangeChildren";
-          propertyWizardParent.current = rec;
-          setOpenPropertyWizard(true);
-        } else {
-          saveResult.current = false;
-          saveType.current = "maxParentLevel";
-          saveOpenRef.current = true;
-          setSaveOpen(true);
-        }
-      });
+      if (userContext.current.currentUser.editProperty) {
+        GetParentHierarchy(Number(recordAttributes.current.UPRN), userContext.current).then((parentProperties) => {
+          if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
+            displayingWizard.current = true;
+            const rec = {
+              address: recordAttributes.current.Address,
+              easting: Number(recordAttributes.current.Easting),
+              northing: Number(recordAttributes.current.Northing),
+              postcode: recordAttributes.current.Postcode,
+              uprn: Number(recordAttributes.current.UPRN),
+            };
+            propertyContext.resetPropertyErrors();
+            propertyContext.onWizardDone(null, false, null, null);
+            mapContext.onWizardSetCoordinate(null);
+            propertyWizardType.current = "rangeChildren";
+            propertyWizardParent.current = rec;
+            setOpenPropertyWizard(true);
+          } else {
+            saveResult.current = false;
+            saveType.current = "maxParentLevel";
+            saveOpenRef.current = true;
+            setSaveOpen(true);
+          }
+        });
+      } else {
+        saveResult.current = false;
+        saveType.current = "noPermission";
+        saveOpenRef.current = true;
+        setSaveOpen(true);
+      }
     }
   }, [mapContext, propertyContext]);
 
