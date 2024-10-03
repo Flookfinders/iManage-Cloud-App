@@ -29,6 +29,9 @@
 //    016   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title no wrapping with width restrictions
 //    017   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    018   20.06.24 Sean Flook      IMANN-1003 Removed the add icon when we have no records.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -40,17 +43,7 @@ import LookupContext from "../context/lookupContext";
 import SettingsContext from "../context/settingsContext";
 import { copyTextToClipboard, GetCrossRefAvatar, GetHistoricAvatar } from "../utils/HelperUtils";
 import { getBilingualSource } from "../utils/PropertyUtils";
-import {
-  Tooltip,
-  IconButton,
-  Typography,
-  List,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
-  Skeleton,
-  Popper,
-} from "@mui/material";
+import { Tooltip, IconButton, Typography, List, ListItemButton, ListItemText, Skeleton, Popper } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import ADSActionButton from "../components/ADSActionButton";
@@ -446,17 +439,6 @@ function PropertyCrossRefListTab({
               }}
             >
               <ListItemText primary={<Typography variant="subtitle1">No cross reference records present</Typography>} />
-              <ListItemAvatar
-                sx={{
-                  minWidth: 32,
-                }}
-              >
-                <Tooltip title="Add cross reference record" arrow placement="bottom" sx={tooltipStyle}>
-                  <IconButton disabled={!userCanEdit} onClick={handleAddCrossRefClick} size="small">
-                    <AddCircleIcon sx={ActionIconStyle()} />
-                  </IconButton>
-                </Tooltip>
-              </ListItemAvatar>
             </ListItemButton>
           </List>
         )}
