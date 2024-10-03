@@ -122,6 +122,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    108   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//    109   03.10.24 Sean Flook      IMANN-1004 Ensure the descriptorFormData is null when changing street.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -7097,6 +7098,7 @@ function StreetDataForm({ data, loading }) {
       streetUsrn.current = data.usrn;
       streetContext.resetStreetErrors();
       setStreetData(data);
+      setDescriptorFormData(null);
       sandboxContext.onStreetTabChange(0);
       sandboxContext.onSandboxChange("sourceStreet", data);
       mergedDividedEsus.current = [];
