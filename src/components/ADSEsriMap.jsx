@@ -106,6 +106,7 @@
 //    090   01.10.24 Sean Flook       IMANN-713 Changed the text on the buttons for adding a property/ies to a street.
 //    091   01.10.24 Sean Flook       IMANN-993 Display the extent merge tool.
 //    092   03.10.24 Sean Flook       IMANN-958 Check user has property edit permission before trying to create a child/children.
+//    093   04.10.24 Sean Flook      IMANN-1005 Use a different colour for a closed street.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -423,7 +424,7 @@ const streetRenderer = {
     },
     {
       value: "0, 4",
-      symbol: GetESUMapSymbol(),
+      symbol: GetESUMapSymbol(true),
       label: "Unassigned ESU, Permanently closed",
     },
     {
@@ -443,7 +444,7 @@ const streetRenderer = {
     },
     {
       value: "1, 4",
-      symbol: GetStreetMapSymbol(),
+      symbol: GetStreetMapSymbol(true),
       label: "Official Designated Street Name, Permanently closed",
     },
     {
@@ -463,7 +464,7 @@ const streetRenderer = {
     },
     {
       value: "2, 4",
-      symbol: GetStreetMapSymbol(),
+      symbol: GetStreetMapSymbol(true),
       label: "Street Description, Permanently closed",
     },
     {
@@ -483,7 +484,7 @@ const streetRenderer = {
     },
     {
       value: "3, 4",
-      symbol: GetStreetMapSymbol(),
+      symbol: GetStreetMapSymbol(true),
       label: "Numbered Street, Permanently closed",
     },
     {
@@ -503,7 +504,7 @@ const streetRenderer = {
     },
     {
       value: "4, 4",
-      symbol: GetStreetMapSymbol(),
+      symbol: GetStreetMapSymbol(true),
       label: "Unofficial Street Description, Permanently closed",
     },
     {
@@ -523,7 +524,7 @@ const streetRenderer = {
     },
     {
       value: "9, 4",
-      symbol: GetStreetMapSymbol(),
+      symbol: GetStreetMapSymbol(true),
       label: "Description used for LLPG Access, Permanently closed",
     },
     {

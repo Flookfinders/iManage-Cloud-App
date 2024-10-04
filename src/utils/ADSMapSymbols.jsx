@@ -20,6 +20,9 @@
 //    007   04.03.24 Sean Flook            COL3 Changed the colour and style for type 51/61 ASD records.
 //    008   08.05.24 Sean Flook                 Bug fixes in GetExtentMapSymbol.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    009   04.10.24 Sean Flook      IMANN-1005 Use a different colour for a closed street.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -799,7 +802,7 @@ export function GetExtentMapSymbol(provenance) {
  *
  * @returns {CIMSymbol} The street symbol.
  */
-export function GetStreetMapSymbol() {
+export function GetStreetMapSymbol(streetClosed = false) {
   function getStreetSymbolLayer() {
     return {
       type: "CIMSolidStroke",
@@ -809,7 +812,7 @@ export function GetStreetMapSymbol() {
       lineStyle3D: "Strip",
       miterLimit: 10,
       width: 8,
-      color: [201, 120, 213, 166], // #C978D5A6
+      color: streetClosed ? [153, 97, 34, 166] : [201, 120, 213, 166], // #996122A6 #C978D5A6
       effects: [],
     };
   }
