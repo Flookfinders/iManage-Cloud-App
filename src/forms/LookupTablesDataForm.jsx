@@ -37,6 +37,7 @@
 //#region Version 1.0.1.0 changes
 //    023   01.10.24 Sean Flook       IMANN-431 Change the default returned in GetLinkedRef to -1.
 //    024   02.10.24 Sean Flook       IMANN-994 Include the PKId in the update data for App Cross References.
+//    025   07.10.24 Sean Flook       IMANN-995 Corrected check for linked records when refreshing data after a delete.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2301,7 +2302,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
         let updatedLookups;
 
         if (oldLookups) {
-          if (linkedRef) {
+          if (linkedRef && linkedRef !== -1) {
             switch (variant) {
               case "postTown":
                 updatedLookups = oldLookups.filter((x) => x.postTownRef !== lookupId && x.postTownRef !== linkedRef);
