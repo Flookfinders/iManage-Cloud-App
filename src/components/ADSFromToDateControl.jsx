@@ -20,6 +20,9 @@
 //    007   16.01.24 Sean Flook       IMANN-237 Added a clear button.
 //    008   28.08.24 Sean Flook       IMANN-961 Use a TextField when user is read only.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    009   10.10.24 Sean Flook      IMANN-1011 Changed display format to only show 3 characters for month.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -195,7 +198,7 @@ function ADSFromToDateControl({
                       <div>
                         <DatePicker
                           id={`${label.toLowerCase().replaceAll(" ", "-")}-from-date-picker`}
-                          format="dd MMMM yyyy"
+                          format="dd MMM yyyy"
                           disableMaskedInput
                           value={selectedFromDate}
                           showTodayButton
@@ -225,7 +228,7 @@ function ADSFromToDateControl({
                   ) : (
                     <DatePicker
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-from-date-picker`}
-                      format="dd MMMM yyyy"
+                      format="dd MMM yyyy"
                       disableMaskedInput
                       value={selectedFromDate}
                       showTodayButton
@@ -268,7 +271,7 @@ function ADSFromToDateControl({
                       <div>
                         <DatePicker
                           id={`${label.toLowerCase().replaceAll(" ", "-")}-to-date-picker`}
-                          format="dd MMMM yyyy"
+                          format="dd MMM yyyy"
                           disableMaskedInput
                           value={selectedToDate}
                           showTodayButton
@@ -298,7 +301,7 @@ function ADSFromToDateControl({
                   ) : (
                     <DatePicker
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-to-date-picker`}
-                      format="dd MMMM yyyy"
+                      format="dd MMM yyyy"
                       disableMaskedInput
                       value={selectedToDate}
                       showTodayButton
