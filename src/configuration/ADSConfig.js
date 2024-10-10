@@ -32,6 +32,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    019   01.10.24 Sean Flook       IMANN-986 Added new range URLs.
+//    020   10.10.24 Sean Flook       IMANN-986 Corrected method name.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -908,7 +909,7 @@ export function GetUprnRangeUrl(userToken, isScottish) {
  * @param {string} userToken The token for the user who is calling the endpoint.
  * @return {object} The URL object used in FETCH calls.
  */
-export function GetUEsuIdRangeUrl(userToken) {
+export function GetEsuIdRangeUrl(userToken) {
   const url = GetApiSite("settings", `/api/${settingsVersion}OSRanges/EsuIdRange`);
   return getUrl(url, "POST", "application/json", userToken);
 }

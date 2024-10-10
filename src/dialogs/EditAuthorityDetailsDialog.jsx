@@ -25,6 +25,7 @@
 //#region Version 1.0.1.0 changes
 //    012   02.10.24 Sean Flook       IMANN-997 Removed display language.
 //    013   08.10.24 Sean Flook       IMANN-986 Changes required for updating USRN, UPRN and ESU Id ranges.
+//    014   10.10.24 Sean Flook       IMANN-986 Call correct method.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -45,7 +46,7 @@ import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import MinMaxDialog from "../dialogs/MinMaxDialog";
 
-import { GetEsuByIdUrl, GetUprnRangeUrl, GetUsrnRangeUrl } from "../configuration/ADSConfig";
+import { GetEsuIdRangeUrl, GetUprnRangeUrl, GetUsrnRangeUrl } from "../configuration/ADSConfig";
 
 import DETRCodes from "../data/DETRCodes";
 
@@ -301,7 +302,7 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
               setMaxEsu(data.max);
             }
           }
-          updateRangeUrl = GetEsuByIdUrl(userContext.currentUser.token);
+          updateRangeUrl = GetEsuIdRangeUrl(userContext.currentUser.token);
           if (updateRangeUrl) {
             fetchUrl = `${updateRangeUrl.url}?firstEsuId=${data.min}&lastEsuId=${data.max}&authorityRef=${
               settingsContext.authorityCode
