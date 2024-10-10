@@ -24,6 +24,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    012   02.10.24 Sean Flook       IMANN-997 Removed display language.
+//    013   08.10.24 Sean Flook       IMANN-986 Changes required for updating USRN, UPRN and ESU Id ranges.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -43,6 +44,8 @@ import ADSSwitchControl from "../components/ADSSwitchControl";
 import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import MinMaxDialog from "../dialogs/MinMaxDialog";
+
+import { GetEsuByIdUrl, GetUprnRangeUrl, GetUsrnRangeUrl } from "../configuration/ADSConfig";
 
 import DETRCodes from "../data/DETRCodes";
 
@@ -77,6 +80,7 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
   const [maxUprn, setMaxUprn] = useState(null);
   const [minEsu, setMinEsu] = useState(null);
   const [maxEsu, setMaxEsu] = useState(null);
+  const [minMaxError, setMinMaxError] = useState("");
   const [createStreetBlpu, setCreateStreetBlpu] = useState(settingsContext.isScottish);
   const [uppercase, setUppercase] = useState(false);
 
@@ -184,8 +188,6 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
     setMinMaxType("usrn");
     minValue.current = minUsrn ? minUsrn : 0;
     maxValue.current = maxUsrn ? maxUsrn : 0;
-    // setMinValue(minUsrn ? minUsrn : 0);
-    // setMaxValue(maxUsrn ? maxUsrn : 0);
     setMaximum(99999999);
     setShowMinMaxDialog(true);
   };
@@ -197,8 +199,6 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
     setMinMaxType("uprn");
     minValue.current = minUprn ? minUprn : 0;
     maxValue.current = maxUprn ? maxUprn : 0;
-    // setMinValue(minUprn ? minUprn : 0);
-    // setMaxValue(maxUprn ? maxUprn : 0);
     setMaximum(999999999999);
     setShowMinMaxDialog(true);
   };
@@ -208,9 +208,9 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
    */
   const handleMinMaxEsuChangeEvent = () => {
     setMinMaxType("esu");
-    minValue.current = minEsu ? minEsu : 0;
-    maxValue.current = maxEsu ? maxEsu : 0;
-    setMaximum(999999);
+    minValue.current = minEsu ? minEsu : Number(`${code}0000000000`);
+    maxValue.current = maxEsu ? maxEsu : Number(`${code}0000000000`);
+    setMaximum(99999999999999);
     setShowMinMaxDialog(true);
   };
 
@@ -237,33 +237,192 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
    *
    * @param {object} data The new minimum and maximum values.
    */
-  const handleNewMinMax = (data) => {
+  const handleNewMinMax = async (data) => {
     if (data) {
       minValue.current = data.min;
       maxValue.current = data.max;
+      let updateRangeUrl = null;
+      let fetchUrl = null;
+      let endpointName = "Unknown endpoint";
 
       switch (data.variant) {
         case "usrn":
-          setMinUsrn(data.min);
-          setMaxUsrn(data.max);
+          endpointName = "UsrnRange";
+          if (data.type === "new") {
+            setMinUsrn(data.min);
+            setMaxUsrn(data.max);
+          } else if (data.type === "full") {
+            if (data.min < minUsrn) {
+              setMinUsrn(data.min);
+            }
+            if (data.max > maxUsrn) {
+              setMaxUsrn(data.max);
+            }
+          }
+          updateRangeUrl = GetUsrnRangeUrl(userContext.currentUser.token, settingsContext.isScottish);
+          if (updateRangeUrl) {
+            fetchUrl = `${updateRangeUrl.url}?firstUsrn=${data.min}&lastUsrn=${data.max}&authorityRef=${
+              settingsContext.authorityCode
+            }&fullRange=${data.type === "full" ? true : false}`;
+          }
           break;
 
         case "uprn":
-          setMinUprn(data.min);
-          setMaxUprn(data.max);
+          endpointName = "UprnRange";
+          if (data.type === "new") {
+            setMinUprn(data.min);
+            setMaxUprn(data.max);
+          } else if (data.type === "full") {
+            if (data.min < minUprn) {
+              setMinUprn(data.min);
+            }
+            if (data.max > maxUprn) {
+              setMaxUprn(data.max);
+            }
+          }
+          updateRangeUrl = GetUprnRangeUrl(userContext.currentUser.token, settingsContext.isScottish);
+          if (updateRangeUrl) {
+            fetchUrl = `${updateRangeUrl.url}?firstUprn=${data.min}&lastUprn=${data.max}&fullRange=${
+              data.type === "full" ? true : false
+            }`;
+          }
           break;
 
         case "esu":
-          setMinEsu(data.min);
-          setMaxEsu(data.max);
+          endpointName = "EsuIdRange";
+          if (data.type === "new") {
+            setMinEsu(data.min);
+            setMaxEsu(data.max);
+          } else if (data.type === "full") {
+            if (data.min < minEsu) {
+              setMinEsu(data.min);
+            }
+            if (data.max > maxEsu) {
+              setMaxEsu(data.max);
+            }
+          }
+          updateRangeUrl = GetEsuByIdUrl(userContext.currentUser.token);
+          if (updateRangeUrl) {
+            fetchUrl = `${updateRangeUrl.url}?firstEsuId=${data.min}&lastEsuId=${data.max}&authorityRef=${
+              settingsContext.authorityCode
+            }&fullRange=${data.type === "full" ? true : false}`;
+          }
           break;
 
         default:
           break;
       }
-    }
 
-    setShowMinMaxDialog(false);
+      if (updateRangeUrl && fetchUrl) {
+        const updateResult = await fetch(fetchUrl, {
+          headers: updateRangeUrl.headers,
+          crossDomain: true,
+          method: updateRangeUrl.type,
+        })
+          .then((res) => (res.ok ? res : Promise.reject(res)))
+          .then((res) => {
+            let errorStr = "";
+            switch (res.status) {
+              case 200:
+                return res.text();
+
+              case 400:
+                res.json().then((body) => {
+                  if (userContext.currentUser.showMessages)
+                    console.error(`[400 ERROR] ${endpointName}: Bad Request.`, body);
+                  errorStr = body;
+                });
+                return errorStr;
+
+              case 401:
+                userContext.onExpired();
+                return null;
+
+              case 403:
+                if (userContext.currentUser.showMessages)
+                  console.error(`[403 ERROR] ${endpointName}: You do not have database access.`);
+                return "You do not have database access.";
+
+              default:
+                res.json().then((body) => {
+                  if (userContext.currentUser.showMessages)
+                    console.error(`[${res.status} ERROR] ${endpointName}: Unexpected error.`, body);
+                  errorStr = `Unexpected error. ${body}`;
+                });
+                return errorStr;
+            }
+          })
+          .then(
+            (result) => {
+              if (userContext.currentUser.showMessages) console.error(`Updating ${endpointName} data`, result);
+              return null;
+            },
+            (error) => {
+              let errorStr = "";
+              switch (error.status) {
+                case 400:
+                  error.json().then((body) => {
+                    if (userContext.currentUser.showMessages)
+                      console.error(`[400 ERROR] ${endpointName}: Bad Request.`, body);
+                    errorStr = body;
+                  });
+                  return errorStr;
+
+                case 401:
+                  userContext.onExpired();
+                  return null;
+
+                case 403:
+                  if (userContext.currentUser.showMessages)
+                    console.error(`[403 ERROR] ${endpointName}: You do not have database access.`);
+                  return "You do not have database access.";
+
+                case 404:
+                  if (userContext.currentUser.showMessages)
+                    console.error(`[404 ERROR] ${endpointName}: Endpoint does not exist.`);
+                  return `${endpointName} endpoint does not exist.`;
+
+                default:
+                  const contentType = error && error.headers ? error.headers.get("content-type") : null;
+                  if (contentType && contentType.indexOf("application/json") !== -1) {
+                    error.json().then((body) => {
+                      if (userContext.currentUser.showMessages)
+                        console.error(`[ERROR] Updating ${endpointName} data`, body);
+                      return body;
+                    });
+                  } else if (contentType && contentType.indexOf("text")) {
+                    error.text().then((response) => {
+                      const responseData = response.replace("[{", "").replace("}]", "").split(',"');
+
+                      let errorTitle = "";
+                      let errorDescription = "";
+
+                      for (const errorData of responseData) {
+                        if (errorData.includes("errorTitle")) errorTitle = errorData.substr(13).replace('"', "");
+                        else if (errorData.includes("errorDescription"))
+                          errorDescription = errorData.substr(19).replace('"', "");
+
+                        if (errorTitle && errorTitle.length > 0 && errorDescription && errorDescription.length > 0)
+                          break;
+                      }
+
+                      return `[${error.status}] ${errorTitle}: ${errorDescription}. Please report this error to support.`;
+                    });
+                  } else {
+                    return `[${error.status} Error] ${error}`;
+                  }
+                  break;
+              }
+            }
+          );
+
+        setMinMaxError(updateResult);
+
+        if (!updateResult) {
+          setShowMinMaxDialog(false);
+        }
+      }
+    }
   };
 
   /**
@@ -417,6 +576,7 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
         minValue={minValue.current}
         maxValue={maxValue.current}
         maximum={maximum}
+        error={minMaxError}
         onNewMinMax={(data) => handleNewMinMax(data)}
         onClose={handleCloseMinMax}
       />

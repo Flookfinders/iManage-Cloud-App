@@ -18,6 +18,9 @@
 //    005   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    006   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    007   08.10.24 Sean Flook       IMANN-986 Added new error parameter.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -41,12 +44,13 @@ MinMaxDialog.propTypes = {
   minValue: PropTypes.number.isRequired,
   maxValue: PropTypes.number.isRequired,
   maximum: PropTypes.number.isRequired,
+  error: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,
   onNewMinMax: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
 };
 
-function MinMaxDialog({ variant, minValue, maxValue, maximum, isOpen, onNewMinMax, onClose }) {
+function MinMaxDialog({ variant, minValue, maxValue, maximum, error, isOpen, onNewMinMax, onClose }) {
   const theme = useTheme();
 
   const [showDialog, setShowDialog] = useState(false);
@@ -200,6 +204,13 @@ function MinMaxDialog({ variant, minValue, maxValue, maximum, isOpen, onNewMinMa
               onChange={onMaxChangeEvent}
             />
           </Grid>
+          {error && (
+            <Grid item xs={12}>
+              <Typography variant="body1" align="left" color="error" gutterBottom>
+                {error}
+              </Typography>
+            </Grid>
+          )}
         </Grid>
       </DialogContent>
       <DialogActions sx={{ justifyContent: "flex-start", mb: theme.spacing(1), ml: theme.spacing(3) }}>

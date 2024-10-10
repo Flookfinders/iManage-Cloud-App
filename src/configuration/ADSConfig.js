@@ -30,6 +30,9 @@
 //    017   11.06.24 Sean Flook       IMANN-509 Undone above changes.
 //    018   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    019   01.10.24 Sean Flook       IMANN-986 Added new range URLs.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -873,4 +876,39 @@ export function GetStreetTemplateUrl(endPointType, userToken) {
 export function GetMapLayersUrl(endPointType, userToken) {
   const url = GetApiSite("settings", `/api/${settingsVersion}MapLayer`);
   return getUrl(url, endPointType, "application/json", userToken);
+}
+
+/**
+ * Get the URLs used to maintain the USRN Range
+ *
+ * @param {string} userToken The token for the user who is calling the endpoint.
+ * @param {boolean} isScottish Is the authority a Scottish authority.
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function GetUsrnRangeUrl(userToken, isScottish) {
+  const url = GetApiSite("settings", `/api/${settingsVersion}${isScottish ? "OSRanges" : "GPRanges"}/UsrnRange`);
+  return getUrl(url, "POST", "application/json", userToken);
+}
+
+/**
+ * Get the URLs used to maintain the UPRN Range
+ *
+ * @param {string} userToken The token for the user who is calling the endpoint.
+ * @param {boolean} isScottish Is the authority a Scottish authority.
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function GetUprnRangeUrl(userToken, isScottish) {
+  const url = GetApiSite("settings", `/api/${settingsVersion}${isScottish ? "OSRanges" : "GPRanges"}/UprnRange`);
+  return getUrl(url, "POST", "application/json", userToken);
+}
+
+/**
+ * Get the URLs used to maintain the ESU Id Range
+ *
+ * @param {string} userToken The token for the user who is calling the endpoint.
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function GetUEsuIdRangeUrl(userToken) {
+  const url = GetApiSite("settings", `/api/${settingsVersion}OSRanges/EsuIdRange`);
+  return getUrl(url, "POST", "application/json", userToken);
 }
