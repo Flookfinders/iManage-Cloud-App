@@ -123,6 +123,7 @@
 //#region Version 1.0.1.0 changes
 //    108   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    109   03.10.24 Sean Flook      IMANN-1004 Ensure the descriptorFormData is null when changing street.
+//    110   10.10.24 Sean Flook      IMANN-1018 Do not display the ESU tab if only LLPG.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -183,7 +184,6 @@ import ObjectComparison, {
   reinstatementCategoryKeysToIgnore,
   specialDesignationKeysToIgnore,
   streetDescriptorKeysToIgnore,
-  successorCrossRefKeysToIgnore,
 } from "./../utils/ObjectComparison";
 import { GetUpdateStreetUrl } from "../configuration/ADSConfig";
 
@@ -197,8 +197,6 @@ import ErrorIcon from "@mui/icons-material/Error";
 import StreetDataTab from "../tabs/StreetDataTab";
 import StreetDescriptorDataTab from "../tabs/StreetDescriptorDataTab";
 import EsuListTab from "../tabs/EsuListTab";
-import SuccessorListTab from "../tabs/SuccessorListTab";
-import SuccessorTab from "../tabs/SuccessorTab";
 import AsdDataTab from "../tabs/AsdDataTab";
 import RelatedTab from "../tabs/RelatedTab";
 import NotesListTab from "../tabs/NotesListTab";
@@ -282,6 +280,7 @@ function StreetDataForm({ data, loading }) {
 
   const history = useHistory();
 
+  const [displayEsuTab, setDisplayEsuTab] = useState(false);
   const [displayAsdTab, setDisplayAsdTab] = useState(false);
   const [streetData, setStreetData] = useState(data);
   const currentStreetEsuData = useRef(null);
@@ -319,7 +318,6 @@ function StreetDataForm({ data, loading }) {
   const [esuErrors, setEsuErrors] = useState([]);
   const [oneWayExemptionErrors, setOneWayExemptionErrors] = useState([]);
   const [highwayDedicationErrors, setHighwayDedicationErrors] = useState([]);
-  const [successorCrossRefErrors, setSuccessorCrossRefErrors] = useState([]);
   const [maintenanceResponsibilityErrors, setMaintenanceResponsibilityErrors] = useState([]);
   const [reinstatementCategoryErrors, setReinstatementCategoryErrors] = useState([]);
   const [osSpecialDesignationErrors, setOSSpecialDesignationErrors] = useState([]);
@@ -350,7 +348,6 @@ function StreetDataForm({ data, loading }) {
   const [esuFocusedField, setEsuFocusedField] = useState(null);
   const [oneWayExemptionFocusedField, setOneWayExemptionFocusedField] = useState(null);
   const [highwayDedicationFocusedField, setHighwayDedicationFocusedField] = useState(null);
-  const [successorCrossRefFocusedField, setSuccessorCrossRefFocusedField] = useState(null);
   const [maintenanceResponsibilityFocusedField, setMaintenanceResponsibilityFocusedField] = useState(null);
   const [reinstatementCategoryFocusedField, setReinstatementCategoryFocusedField] = useState(null);
   const [osSpecialDesignationFocusedField, setOSSpecialDesignationFocusedField] = useState(null);
@@ -643,58 +640,56 @@ function StreetDataForm({ data, loading }) {
         break;
 
       case 1: // ESU
-        if (esuFormData) {
-          oldTab = "esu";
-          setEsuFormData({
-            pkId: esuFormData.pkId,
-            esuData: sandboxContext.currentSandbox.currentStreetRecords.esu
-              ? sandboxContext.currentSandbox.currentStreetRecords.esu
-              : esuFormData.esuData,
-            index: esuFormData.index,
-            totalRecords: esuFormData.totalRecords,
-          });
-        } else if (oweFormData) {
-          oldTab = "owe";
-          setOweFormData({
-            pkId: oweFormData.pkId,
-            oweData: sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption
-              ? sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption
-              : oweFormData.oweData,
-            index: oweFormData.index,
-            esuIndex: oweFormData.esuIndex,
-            totalRecords: oweFormData.totalRecords,
-          });
-        } else if (hdFormData) {
-          oldTab = "hd";
-          setHdFormData({
-            pkId: hdFormData.pkId,
-            hdData: sandboxContext.currentSandbox.currentStreetRecords.highwayDedication
-              ? sandboxContext.currentSandbox.currentStreetRecords.highwayDedication
-              : hdFormData.hdData,
-            index: hdFormData.index,
-            esuIndex: hdFormData.esuIndex,
-            totalRecords: hdFormData.totalRecords,
-          });
-        }
-        if (informationContext.informationType) {
-          informationContext.onClearInformation();
+        if (displayEsuTab) {
+          if (esuFormData) {
+            oldTab = "esu";
+            setEsuFormData({
+              pkId: esuFormData.pkId,
+              esuData: sandboxContext.currentSandbox.currentStreetRecords.esu
+                ? sandboxContext.currentSandbox.currentStreetRecords.esu
+                : esuFormData.esuData,
+              index: esuFormData.index,
+              totalRecords: esuFormData.totalRecords,
+            });
+          } else if (oweFormData) {
+            oldTab = "owe";
+            setOweFormData({
+              pkId: oweFormData.pkId,
+              oweData: sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption
+                ? sandboxContext.currentSandbox.currentStreetRecords.oneWayExemption
+                : oweFormData.oweData,
+              index: oweFormData.index,
+              esuIndex: oweFormData.esuIndex,
+              totalRecords: oweFormData.totalRecords,
+            });
+          } else if (hdFormData) {
+            oldTab = "hd";
+            setHdFormData({
+              pkId: hdFormData.pkId,
+              hdData: sandboxContext.currentSandbox.currentStreetRecords.highwayDedication
+                ? sandboxContext.currentSandbox.currentStreetRecords.highwayDedication
+                : hdFormData.hdData,
+              index: hdFormData.index,
+              esuIndex: hdFormData.esuIndex,
+              totalRecords: hdFormData.totalRecords,
+            });
+          }
+          if (informationContext.informationType) {
+            informationContext.onClearInformation();
+          }
         }
         break;
 
-      case 2: // ASD
+      case 2: // ASD or Note
         if (displayAsdTab) setAsdFormData();
+        else if (!displayEsuTab) setNotesForm();
         break;
 
       case 3: // Note
-        setNotesForm();
+        if (displayEsuTab && !displayAsdTab) setNotesForm();
         break;
 
       case 4: // Note
-        if (!settingsContext.isScottish) setNotesForm();
-        else if (!displayAsdTab) setNotesForm();
-        break;
-
-      case 5: // Note
         if (displayAsdTab) setNotesForm();
         break;
 
@@ -724,12 +719,16 @@ function StreetDataForm({ data, loading }) {
           break;
 
         case 1:
-          if (oweFormData) streetContext.onRecordChange(16, oweFormData.pkId, oweFormData.index, oweFormData.esuIndex);
-          else if (hdFormData) streetContext.onRecordChange(17, hdFormData.pkId, hdFormData.index, hdFormData.esuIndex);
-          else if (esuFormData) {
-            streetContext.onRecordChange(13, esuFormData.pkId, esuFormData.index, null);
-            mapContext.onEditMapObject(13, esuFormData.esuData.esuId);
-          } else streetContext.onRecordChange(13, null, null, null);
+          if (displayEsuTab) {
+            if (oweFormData)
+              streetContext.onRecordChange(16, oweFormData.pkId, oweFormData.index, oweFormData.esuIndex);
+            else if (hdFormData)
+              streetContext.onRecordChange(17, hdFormData.pkId, hdFormData.index, hdFormData.esuIndex);
+            else if (esuFormData) {
+              streetContext.onRecordChange(13, esuFormData.pkId, esuFormData.index, null);
+              mapContext.onEditMapObject(13, esuFormData.esuData.esuId);
+            } else streetContext.onRecordChange(13, null, null, null);
+          }
           break;
 
         case 2:
@@ -778,6 +777,10 @@ function StreetDataForm({ data, loading }) {
               if (!hwwFormData.hwwData.wholeRoad) mapContext.onEditMapObject(64, hwwFormData.hwwData.pkId);
             } else if (prowFormData) streetContext.onRecordChange(66, prowFormData.pkId, prowFormData.index, null);
             else streetContext.onRecordChange(50, null, null, null);
+          } else if (!displayEsuTab) {
+            if (notesFormData) streetContext.onRecordChange(72, notesFormData.pkId, notesFormData.index, null);
+            else streetContext.onRecordChange(11, null, null, null);
+            if (streetData) mapContext.onHighlightStreetProperty([streetData.usrn], null);
           } else {
             // GP Related
             if (streetData) mapContext.onHighlightStreetProperty([streetData.usrn], null);
@@ -1619,103 +1622,6 @@ function StreetDataForm({ data, loading }) {
 
       sandboxContext.onSandboxChange("oneWayExemption", oweData);
       streetContext.onRecordChange(16, pkId, index, esuIndex);
-      lastOpenedId.current = pkId;
-    }
-  };
-
-  /**
-   * Event to handle when a successor cross reference record is selected from the list of successor cross reference records.
-   *
-   * @param {number} pkId The primary key for the selected record. If -1 the data is cleared. 0 indicates a new successor cross reference is required. Any number > 0 is existing data.
-   * @param {object|null} successorCrossRefData The  cross reference data for the selected record
-   * @param {number|null} dataIdx The index of the record within the array of successor cross reference records.
-   * @param {number|null} dataLength The total number of records in the array of successor cross reference records.
-   */
-  const handleSuccessorCrossRefSelected = (pkId, successorCrossRefData, dataIdx, dataLength) => {
-    if (pkId === -1) {
-      setSuccessorCrossRefFormData(null);
-      streetContext.onRecordChange(11, null, null);
-      mapContext.onEditMapObject(null, null);
-      lastOpenedId.current = 0;
-    } else if (pkId === 0) {
-      const newIdx =
-        streetData && streetData.successorCrossRefs
-          ? streetData.successorCrossRefs.filter((x) => x.changeType !== "D").length
-          : 0;
-      const currentDate = GetCurrentDate(false);
-      const minPkIdSuccessorCrossRef =
-        streetData.successorCrossRefs && streetData.successorCrossRefs.length > 0
-          ? streetData.successorCrossRefs.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
-          : null;
-      const newPkId =
-        !minPkIdSuccessorCrossRef || !minPkIdSuccessorCrossRef.pkId || minPkIdSuccessorCrossRef.pkId > -10
-          ? -10
-          : minPkIdSuccessorCrossRef.pkId - 1;
-      const newRec = {
-        pkId: newPkId,
-        changeType: "I",
-        succKey: null,
-        successor: streetData && streetData.usrn,
-        successorType: 2,
-        predecessor: null,
-        startDate: currentDate,
-        endDate: null,
-        entryDate: currentDate,
-        lastUpdateDate: currentDate,
-      };
-
-      const newSuccessorCrossRefs = streetData.successorCrossRefs ? streetData.successorCrossRefs : [];
-      newSuccessorCrossRefs.push(newRec);
-
-      setAssociatedStreetData(
-        streetData.esus,
-        newSuccessorCrossRefs,
-        streetData.streetDescriptors,
-        streetData.streetNotes,
-        streetData.maintenanceResponsibilities,
-        streetData.reinstatementCategories,
-        streetData.specialDesignations,
-        null,
-        null,
-        null,
-        null,
-        null
-      );
-
-      setSuccessorCrossRefFormData({
-        id: newPkId,
-        successorCrossRefData: {
-          id: newRec.pkId,
-          changeType: newRec.changeType,
-          succKey: newRec.succKey,
-          successor: newRec.successor,
-          successorType: newRec.successorType,
-          predecessor: newRec.predecessor,
-          startDate: newRec.startDate,
-          endDate: newRec.endDate,
-          entryDate: newRec.entryDate,
-          lastUpdateDate: newRec.lastUpdateDate,
-        },
-        index: newIdx,
-        totalRecords: streetData.successorCrossRefs
-          ? streetData.successorCrossRefs.filter((x) => x.changeType !== "D").length
-          : 1,
-      });
-
-      sandboxContext.onSandboxChange("successorCrossRef", newRec);
-      streetContext.onRecordChange(30, newPkId, newIdx, null);
-      lastOpenedId.current = 0;
-    } else {
-      setSuccessorCrossRefFormData({
-        id: pkId,
-        successorCrossRefData: successorCrossRefData,
-        index: dataIdx,
-        totalRecords: dataLength,
-      });
-
-      sandboxContext.onSandboxChange("successorCrossRef", successorCrossRefData);
-      streetContext.onRecordChange(30, pkId, dataIdx);
-      mapContext.onEditMapObject(30, pkId);
       lastOpenedId.current = pkId;
     }
   };
@@ -4053,103 +3959,6 @@ function StreetDataForm({ data, loading }) {
   };
 
   /**
-   * Event to handle the deleting of a successor cross reference.
-   *
-   * @param {number} pkId The id of the successor cross reference the user wants to delete.
-   */
-  const handleDeleteSuccessorCrossRef = (pkId) => {
-    if (pkId && pkId > 0) {
-      const deleteSuccessorCrossRef = streetData.successorCrossRefs.find((x) => x.pkId === pkId);
-
-      if (deleteSuccessorCrossRef) {
-        const deletedSuccessorCrossRef = {
-          entryDate: deleteSuccessorCrossRef.entryDate,
-          pkId: deleteSuccessorCrossRef.pkId,
-          succKey: deleteSuccessorCrossRef.succKey,
-          changeType: "D",
-          predecessor: deleteSuccessorCrossRef.predecessor,
-          successorType: deleteSuccessorCrossRef.successorType,
-          successor: deleteSuccessorCrossRef.successor,
-          startDate: deleteSuccessorCrossRef.startDate,
-          endDate: deleteSuccessorCrossRef.endDate,
-        };
-
-        const newSuccessorCrossRefs = streetData.successorCrossRefs.map(
-          (x) => [deletedSuccessorCrossRef].find((rec) => rec.pkId === x.pkId) || x
-        );
-
-        setAssociatedStreetData(
-          streetData.esus,
-          newSuccessorCrossRefs,
-          streetData.streetDescriptors,
-          streetData.streetNotes,
-          streetData.maintenanceResponsibilities,
-          streetData.reinstatementCategories,
-          streetData.specialDesignations,
-          null,
-          null,
-          null,
-          null,
-          null
-        );
-      }
-    } else if (pkId && pkId < 0) {
-      const newSuccessorCrossRefs = streetData.successorCrossRefs.filter((x) => x.pkId !== pkId);
-      setAssociatedStreetData(
-        streetData.esus,
-        newSuccessorCrossRefs,
-        streetData.streetDescriptors,
-        streetData.streetNotes,
-        streetData.maintenanceResponsibilities,
-        streetData.reinstatementCategories,
-        streetData.specialDesignations,
-        null,
-        null,
-        null,
-        null,
-        null
-      );
-    }
-  };
-
-  /**
-   * Event to handle the deleting of multiple successor cross references.
-   *
-   * @param {Array} successorCrossRefIds The list of successor cross reference ids that the user wants to delete.
-   */
-  const handleMultiDeleteSuccessorCrossRef = (successorCrossRefIds) => {
-    if (successorCrossRefIds && successorCrossRefIds.length > 0) {
-      const deleteSuccessorCrossRefs = streetData.successorCrossRefs
-        .filter((x) => successorCrossRefIds.includes(x.pkId))
-        .map((successorCrossRef) => {
-          successorCrossRef.changeType = "D";
-          return successorCrossRef;
-        });
-
-      if (deleteSuccessorCrossRefs && deleteSuccessorCrossRefs.length > 0) {
-        const successorCrossRefDeleted = streetData.successorCrossRefs.map(
-          (x) => deleteSuccessorCrossRefs.filter((x) => x.pkId > 0).find((rec) => rec.pkId === x.pkId) || x
-        );
-
-        setAssociatedStreetData(
-          streetData.esus,
-          successorCrossRefDeleted,
-          streetData.streetDescriptors,
-          streetData.streetNotes,
-          streetData.maintenanceResponsibilities,
-          streetData.reinstatementCategories,
-          streetData.specialDesignations,
-          null,
-          null,
-          null,
-          null,
-          null
-        );
-      }
-    }
-  };
-
-  /**
    * Event to handle deleting a maintenance responsibility record
    *
    * @param {number} pkId The id of the maintenance responsibility record that the user wants to delete.
@@ -5194,97 +5003,6 @@ function StreetDataForm({ data, loading }) {
 
       default:
         discardChanges();
-        break;
-    }
-
-    return failedValidation.current;
-  };
-
-  /**
-   * Event to handle when a user clicks on the home button from the successor cross reference tab.
-   *
-   * @param {string} action The action to take.
-   * @param {object} srcData The original state of the data
-   * @param {object} currentData The current state of the data.
-   * @returns {boolean}
-   */
-  const handleSuccessorCrossRefHomeClick = (action, srcData, currentData) => {
-    const discardChanges = (checkPkID) => {
-      if (checkPkID < 0 && lastOpenedId.current === 0) {
-        // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
-        const restoredSuccessorCrossRefs = streetData.successorCrossRefs.filter((x) => x.pkId !== checkPkID);
-
-        if (restoredSuccessorCrossRefs)
-          setAssociatedStreetDataAndClear(
-            streetData.esus,
-            restoredSuccessorCrossRefs,
-            streetData.streetDescriptors,
-            streetData.streetNotes,
-            streetData.maintenanceResponsibilities,
-            streetData.reinstatementCategories,
-            streetData.specialDesignations,
-            null,
-            null,
-            null,
-            null,
-            null,
-            "successorCrossRef"
-          );
-      }
-
-      failedValidation.current = false;
-      sandboxContext.onSandboxChange("successorCrossRef", null);
-      handleSuccessorCrossRefSelected(-1, null, null, null);
-    };
-
-    failedValidation.current = false;
-
-    switch (action) {
-      case "check":
-        const dataHasChanged =
-          currentData.pkId < 0 || !ObjectComparison(srcData, currentData, successorCrossRefKeysToIgnore);
-
-        if (dataHasChanged) {
-          confirmDialog(true)
-            .then((result) => {
-              if (result === "save") {
-                if (propertyContext.validateData()) {
-                  failedValidation.current = false;
-                  updateSuccessorCrossRefData(currentData);
-                  clearingType.current = "successorCrossRef";
-                  handleSuccessorCrossRefSelected(-1, null, null, null);
-                } else {
-                  failedValidation.current = true;
-                  saveResult.current = false;
-                  setSaveOpen(true);
-                }
-              } else {
-                discardChanges(currentData ? currentData.pkId : 0);
-              }
-            })
-            .catch(() => {});
-        } else {
-          clearingType.current = "successorCrossRef";
-          sandboxContext.onSandboxChange("successorCrossRef", null);
-          handleSuccessorCrossRefSelected(-1, null, null, null);
-        }
-        break;
-
-      case "save":
-        if (propertyContext.validateData()) {
-          failedValidation.current = false;
-          updateSuccessorCrossRefData(currentData);
-          clearingType.current = "successorCrossRef";
-          handleSuccessorCrossRefSelected(-1, null, null, null);
-        } else {
-          failedValidation.current = true;
-          saveResult.current = false;
-          setSaveOpen(true);
-        }
-        break;
-
-      default:
-        discardChanges(srcData ? srcData.id : currentData ? currentData.pkId : 0);
         break;
     }
 
@@ -6560,36 +6278,6 @@ function StreetDataForm({ data, loading }) {
   };
 
   /**
-   * Event to update the successor cross reference record with new data.
-   *
-   * @param {object|null} newData The data to be used to update the successor cross reference record with.
-   * @returns
-   */
-  const updateSuccessorCrossRefData = (newData) => {
-    if (!newData) return;
-
-    const newSuccessorCrossRefs = streetData.successorCrossRefs.map(
-      (x) => [newData].find((successorCrossRef) => successorCrossRef.pkId === x.pkId) || x
-    );
-
-    setAssociatedStreetDataAndClear(
-      streetData.esus,
-      newSuccessorCrossRefs,
-      streetData.streetDescriptors,
-      streetData.streetNotes,
-      streetData.maintenanceResponsibilities,
-      streetData.reinstatementCategories,
-      streetData.specialDesignations,
-      null,
-      null,
-      null,
-      null,
-      null,
-      "successorCrossRef"
-    );
-  };
-
-  /**
    * Event to update the maintenance responsibility record with new data.
    *
    * @param {object|null} newData The data to be used to update the maintenance responsibility record with.
@@ -7623,16 +7311,20 @@ function StreetDataForm({ data, loading }) {
   }, [streetContext]);
 
   useEffect(() => {
-    if (streetData && streetContext.currentStreet.openRelated && sandboxContext.streetTab !== (displayAsdTab ? 3 : 2)) {
+    if (
+      streetData &&
+      streetContext.currentStreet.openRelated &&
+      sandboxContext.streetTab !== (displayEsuTab ? (displayAsdTab ? 3 : 2) : 1)
+    ) {
       failedValidation.current = false;
-      sandboxContext.onStreetTabChange(displayAsdTab ? 3 : 2);
-      // setValue(displayAsdTab ? 3 : 2);
+      sandboxContext.onStreetTabChange(displayEsuTab ? (displayAsdTab ? 3 : 2) : 1);
       mapContext.onEditMapObject(null, null);
     }
   }, [
     streetContext.currentStreet.openRelated,
     settingsContext.isScottish,
     mapContext,
+    displayEsuTab,
     displayAsdTab,
     streetData,
     sandboxContext,
@@ -7644,7 +7336,6 @@ function StreetDataForm({ data, loading }) {
     setEsuErrors([]);
     setOneWayExemptionErrors([]);
     setHighwayDedicationErrors([]);
-    setSuccessorCrossRefErrors([]);
     setConstructionErrors([]);
     setReinstatementCategoryErrors([]);
     setOSSpecialDesignationErrors([]);
@@ -7674,10 +7365,6 @@ function StreetDataForm({ data, loading }) {
 
       if (streetContext.currentErrors.highwayDedication && streetContext.currentErrors.highwayDedication.length > 0) {
         setHighwayDedicationErrors(streetContext.currentErrors.highwayDedication);
-      }
-
-      if (streetContext.currentErrors.successorCrossRef && streetContext.currentErrors.successorCrossRef.length > 0) {
-        setSuccessorCrossRefErrors(streetContext.currentErrors.successorCrossRef);
       }
 
       if (streetContext.currentErrors.construction && streetContext.currentErrors.construction.length > 0) {
@@ -7866,7 +7553,6 @@ function StreetDataForm({ data, loading }) {
       setStreetFocusedField(null);
       setDescriptorFocusedField(null);
       setEsuFocusedField(null);
-      setSuccessorCrossRefFocusedField(null);
       setOneWayExemptionFocusedField(null);
       setHighwayDedicationFocusedField(null);
       setMaintenanceResponsibilityFocusedField(null);
@@ -7996,24 +7682,6 @@ function StreetDataForm({ data, loading }) {
                 totalRecords: hdEsuData.highwayDedications.filter((x) => x.changeType !== "D").length,
               });
             }
-          }
-          break;
-
-        case 30:
-          setSuccessorCrossRefFocusedField(streetContext.goToField.fieldName);
-          if (value !== 2) setValue(2);
-          const successorCrossRefData =
-            streetData && streetData.successorCrossRefs.length > streetContext.goToField.index
-              ? streetData.successorCrossRefs[streetContext.goToField.index]
-              : null;
-          if (successorCrossRefData) {
-            streetContext.onRecordChange(30, successorCrossRefData.pkId, streetContext.goToField.index, null);
-            setSuccessorCrossRefFormData({
-              pkId: successorCrossRefData.pkId,
-              successorCrossRefData: successorCrossRefData,
-              index: streetContext.goToField.index,
-              totalRecords: streetData.successorCrossRefs.filter((x) => x.changeType !== "D").length,
-            });
           }
           break;
 
@@ -9137,6 +8805,8 @@ function StreetDataForm({ data, loading }) {
 
   // Create an ESU if the start and end coordinates are supplied
   useEffect(() => {
+    if (!displayEsuTab) return;
+
     const contextStreet = sandboxContext.currentSandbox.currentStreet || sandboxContext.currentSandbox.sourceStreet;
     let newStreetData = null;
     const currentDate = GetCurrentDate(false);
@@ -9749,6 +9419,7 @@ function StreetDataForm({ data, loading }) {
       sandboxContext.onUpdateAndClear("currentStreet", newStreetData, "esu");
     }
   }, [
+    displayEsuTab,
     mapContext.currentStreetStart,
     mapContext.currentStreetEnd,
     mapContext,
@@ -10741,6 +10412,7 @@ function StreetDataForm({ data, loading }) {
 
   useEffect(() => {
     setHasASD(userContext.currentUser && userContext.currentUser.hasASD);
+    setDisplayEsuTab(userContext.currentUser && userContext.currentUser.hasStreet);
   }, [userContext]);
 
   return (
@@ -10770,65 +10442,32 @@ function StreetDataForm({ data, loading }) {
             }
             {...a11yProps(0)}
           />
-          <Tab
-            sx={tabStyle}
-            label={
-              <Stack direction="row" spacing={0.5} alignItems="center">
-                <Typography variant="subtitle2" sx={tabLabelStyle(value === 1)}>
-                  ESU
-                </Typography>
-                {(esuErrors && esuErrors.length > 0) ||
-                (oneWayExemptionErrors && oneWayExemptionErrors.length > 0) ||
-                (highwayDedicationErrors && highwayDedicationErrors.length > 0) ? (
-                  <ErrorIcon sx={errorIconStyle} />
-                ) : (
-                  <Avatar
-                    variant="rounded"
-                    sx={GetTabIconStyle(
-                      streetData && streetData.esus
-                        ? streetData.esus.filter((x) => x.changeType !== "D" && x.assignUnassign !== -1).length
-                        : 0,
-                      value === 1
-                    )}
-                  >
-                    <Typography variant="caption">
-                      <strong>
-                        {streetData && streetData.esus
-                          ? streetData.esus.filter((x) => x.changeType !== "D" && x.assignUnassign !== -1).length
-                          : 0}
-                      </strong>
-                    </Typography>
-                  </Avatar>
-                )}
-              </Stack>
-            }
-            {...a11yProps(1)}
-          />
-          {/* {settingsContext.isScottish && ( */}
-          {false && settingsContext.isScottish && (
+          {displayEsuTab && (
             <Tab
               sx={tabStyle}
               label={
                 <Stack direction="row" spacing={0.5} alignItems="center">
-                  <Typography variant="subtitle2" sx={tabLabelStyle(value === 2)}>
-                    Successors
+                  <Typography variant="subtitle2" sx={tabLabelStyle(value === 1)}>
+                    ESU
                   </Typography>
-                  {successorCrossRefErrors && successorCrossRefErrors.length > 0 ? (
+                  {(esuErrors && esuErrors.length > 0) ||
+                  (oneWayExemptionErrors && oneWayExemptionErrors.length > 0) ||
+                  (highwayDedicationErrors && highwayDedicationErrors.length > 0) ? (
                     <ErrorIcon sx={errorIconStyle} />
                   ) : (
                     <Avatar
                       variant="rounded"
                       sx={GetTabIconStyle(
-                        streetData && streetData.successorCrossRefs
-                          ? streetData.successorCrossRefs.filter((x) => x.changeType !== "D").length
+                        streetData && streetData.esus
+                          ? streetData.esus.filter((x) => x.changeType !== "D" && x.assignUnassign !== -1).length
                           : 0,
-                        value === 2
+                        value === 1
                       )}
                     >
                       <Typography variant="caption">
                         <strong>
-                          {streetData && streetData.successorCrossRefs
-                            ? streetData.successorCrossRefs.filter((x) => x.changeType !== "D").length
+                          {streetData && streetData.esus
+                            ? streetData.esus.filter((x) => x.changeType !== "D" && x.assignUnassign !== -1).length
                             : 0}
                         </strong>
                       </Typography>
@@ -10836,7 +10475,7 @@ function StreetDataForm({ data, loading }) {
                   )}
                 </Stack>
               }
-              {...a11yProps(2)}
+              {...a11yProps(1)}
             />
           )}
           {displayAsdTab && (
@@ -10844,7 +10483,7 @@ function StreetDataForm({ data, loading }) {
               sx={tabStyle}
               label={
                 <Stack direction="row" spacing={0.5} alignItems="center">
-                  <Typography variant="subtitle2" sx={tabLabelStyle(value === (settingsContext.isScottish ? 3 : 2))}>
+                  <Typography variant="subtitle2" sx={tabLabelStyle(value === 2)}>
                     ASD
                   </Typography>
                   {(interestErrors && interestErrors.length > 0) ||
@@ -10914,7 +10553,7 @@ function StreetDataForm({ data, loading }) {
                   )}
                 </Stack>
               }
-              {...a11yProps(settingsContext.isScottish ? 3 : 2)}
+              {...a11yProps(2)}
             />
           )}
           <Tab
@@ -10923,9 +10562,7 @@ function StreetDataForm({ data, loading }) {
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography
                   variant="subtitle2"
-                  sx={tabLabelStyle(
-                    value === (settingsContext.isScottish ? (displayAsdTab ? 4 : 3) : displayAsdTab ? 3 : 2)
-                  )}
+                  sx={tabLabelStyle(value === (displayEsuTab ? (displayAsdTab ? 3 : 2) : 1))}
                 >
                   Related
                 </Typography>
@@ -10933,7 +10570,7 @@ function StreetDataForm({ data, loading }) {
                   variant="rounded"
                   sx={GetTabIconStyle(
                     streetData ? streetData.relatedPropertyCount + streetData.relatedStreetCount : 0,
-                    value === (settingsContext.isScottish ? (displayAsdTab ? 4 : 3) : displayAsdTab ? 3 : 2)
+                    value === (displayEsuTab ? (displayAsdTab ? 3 : 2) : 1)
                   )}
                 >
                   <Typography variant="caption">
@@ -10942,7 +10579,7 @@ function StreetDataForm({ data, loading }) {
                 </Avatar>
               </Stack>
             }
-            {...a11yProps(settingsContext.isScottish ? (displayAsdTab ? 4 : 3) : displayAsdTab ? 3 : 2)}
+            {...a11yProps(displayEsuTab ? (displayAsdTab ? 3 : 2) : 1)}
           />
           <Tab
             sx={tabStyle}
@@ -10950,9 +10587,7 @@ function StreetDataForm({ data, loading }) {
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography
                   variant="subtitle2"
-                  sx={tabLabelStyle(
-                    value === (settingsContext.isScottish ? (displayAsdTab ? 5 : 4) : displayAsdTab ? 4 : 3)
-                  )}
+                  sx={tabLabelStyle(value === (displayEsuTab ? (displayAsdTab ? 4 : 3) : 2))}
                 >
                   Notes
                 </Typography>
@@ -10965,7 +10600,7 @@ function StreetDataForm({ data, loading }) {
                       streetData && streetData.streetNotes
                         ? streetData.streetNotes.filter((x) => x.changeType !== "D").length
                         : 0,
-                      value === (settingsContext.isScottish ? (displayAsdTab ? 5 : 4) : displayAsdTab ? 4 : 3)
+                      value === (displayEsuTab ? (displayAsdTab ? 4 : 3) : 2)
                     )}
                   >
                     <Typography variant="caption">
@@ -10979,21 +10614,19 @@ function StreetDataForm({ data, loading }) {
                 )}
               </Stack>
             }
-            {...a11yProps(settingsContext.isScottish ? (displayAsdTab ? 5 : 4) : displayAsdTab ? 4 : 3)}
+            {...a11yProps(displayEsuTab ? (displayAsdTab ? 4 : 3) : 2)}
           />
           <Tab
             sx={tabStyle}
             label={
               <Typography
                 variant="subtitle2"
-                sx={tabLabelStyle(
-                  value === (settingsContext.isScottish ? (displayAsdTab ? 6 : 5) : displayAsdTab ? 5 : 4)
-                )}
+                sx={tabLabelStyle(value === (displayEsuTab ? (displayAsdTab ? 5 : 4) : 3))}
               >
                 History
               </Typography>
             }
-            {...a11yProps(settingsContext.isScottish ? (displayAsdTab ? 6 : 5) : displayAsdTab ? 5 : 4)}
+            {...a11yProps(displayEsuTab ? (displayAsdTab ? 5 : 4) : 3)}
           />
         </Tabs>
       </AppBar>
@@ -11024,140 +10657,92 @@ function StreetDataForm({ data, loading }) {
           />
         )}
       </TabPanel>
-      <TabPanel value={value} index={1}>
-        {hdFormData ? (
-          <HighwayDedicationDataTab
-            data={hdFormData}
-            errors={
-              highwayDedicationErrors &&
-              highwayDedicationErrors.filter((x) => x.esuIndex === hdFormData.esuIndex && x.index === hdFormData.index)
-            }
-            loading={loading}
-            focusedField={highwayDedicationFocusedField}
-            onHomeClick={(action, srcData, currentData) =>
-              handleHighwayDedicationHomeClick(action, srcData, currentData)
-            }
-            onAdd={(esuId, esuIndex) => handleAddHighwayDedication(esuId, esuIndex)}
-            onDelete={(esuId, pkId) => handleHighwayDedicationDeleted(esuId, pkId)}
-          />
-        ) : oweFormData ? (
-          <OneWayExemptionDataTab
-            data={oweFormData}
-            errors={
-              oneWayExemptionErrors &&
-              oneWayExemptionErrors.filter((x) => x.esuIndex === oweFormData.esuIndex && x.index === oweFormData.index)
-            }
-            loading={loading}
-            focusedField={oneWayExemptionFocusedField}
-            onHomeClick={(action, srcData, currentData) => handleOneWayExemptionHomeClick(action, srcData, currentData)}
-            onAdd={(esuId, esuIndex) => handleAddOneWayExemption(esuId, esuIndex)}
-            onDelete={(esuId, pkId) => handleOneWayExceptionDeleted(esuId, pkId)}
-          />
-        ) : esuFormData ? (
-          <EsuDataTab
-            data={esuFormData}
-            streetState={streetData ? streetData.state : null}
-            errors={esuErrors && esuErrors.filter((x) => x.index === esuFormData.index)}
-            oweErrors={oneWayExemptionErrors.filter((x) => x.esuIndex === esuFormData.index)}
-            hdErrors={highwayDedicationErrors.filter((x) => x.esuIndex === esuFormData.index)}
-            loading={loading}
-            focusedField={esuFocusedField}
-            onValidateData={(srcData, currentData) => handleEsuValidateData(srcData, currentData)}
-            onHomeClick={(action, srcData, currentData) => handleEsuHomeClick(action, srcData, currentData)}
-            onSetCopyOpen={(open, dataType) => handleCopyOpen(open, dataType)}
-            onHighwayDedicationClicked={(hdData, index, esuIndex) =>
-              handleHighwayDedicationClicked(hdData, index, esuIndex)
-            }
-            onOneWayExceptionClicked={(oweData, index, esuIndex) =>
-              handleOneWayExemptionClicked(oweData, index, esuIndex)
-            }
-            onAddEsu={handleAddEsu}
-            onAddHighwayDedication={(esuId, esuIndex) => handleAddHighwayDedication(esuId, esuIndex)}
-            onAddOneWayException={(esuId, esuIndex) => handleAddOneWayExemption(esuId, esuIndex)}
-            onDelete={(pkId) => handleEsuDeleted(pkId)}
-            onDivideError={handleDivideError}
-          />
-        ) : (
-          <EsuListTab
-            data={streetData && streetData.esus ? streetData.esus : null}
-            streetState={streetData ? streetData.state : null}
-            loading={loading}
-            errors={esuErrors}
-            oneWayExemptionErrors={oneWayExemptionErrors}
-            highwayDedicationErrors={highwayDedicationErrors}
-            onSetCopyOpen={(open, dataType) => handleCopyOpen(open, dataType)}
-            onEsuSelected={(pkId, esuData, index) => handleEsuSelected(pkId, esuData, index)}
-            onHighwayDedicationSelected={(esuId, pkId, hdData, index, esuIndex) =>
-              handleHighwayDedicationSelected(esuId, pkId, hdData, index, esuIndex)
-            }
-            onAddHighwayDedication={(esuId, esuIndex) => handleAddHighwayDedication(esuId, esuIndex)}
-            onOneWayExemptionSelected={(esuId, pkId, oweData, index, esuIndex) =>
-              handleOneWayExemptionSelected(esuId, pkId, oweData, index, esuIndex)
-            }
-            onAddOneWayExemption={(esuId, esuIndex) => handleAddOneWayExemption(esuId, esuIndex)}
-            onDeleteEsu={(pkId) => handleEsuDeleted(pkId)}
-            onMultiEsuDelete={(esuIds) => handleMultiDeleteEsu(esuIds)}
-          />
-        )}
-      </TabPanel>
-      {/* {settingsContext.isScottish && ( */}
-      {false && settingsContext.isScottish && (
-        <TabPanel value={value} index={2}>
-          {successorCrossRefFormData ? (
-            <SuccessorTab
-              data={successorCrossRefFormData}
-              variant="street"
+      {displayEsuTab && (
+        <TabPanel value={value} index={1}>
+          {hdFormData ? (
+            <HighwayDedicationDataTab
+              data={hdFormData}
               errors={
-                successorCrossRefErrors &&
-                successorCrossRefErrors.filter((x) => x.index === successorCrossRefFormData.index)
+                highwayDedicationErrors &&
+                highwayDedicationErrors.filter(
+                  (x) => x.esuIndex === hdFormData.esuIndex && x.index === hdFormData.index
+                )
               }
               loading={loading}
-              focusedField={successorCrossRefFocusedField}
+              focusedField={highwayDedicationFocusedField}
               onHomeClick={(action, srcData, currentData) =>
-                handleSuccessorCrossRefHomeClick(action, srcData, currentData)
+                handleHighwayDedicationHomeClick(action, srcData, currentData)
               }
-              onDelete={(pkId) => handleDeleteSuccessorCrossRef(pkId)}
+              onAdd={(esuId, esuIndex) => handleAddHighwayDedication(esuId, esuIndex)}
+              onDelete={(esuId, pkId) => handleHighwayDedicationDeleted(esuId, pkId)}
+            />
+          ) : oweFormData ? (
+            <OneWayExemptionDataTab
+              data={oweFormData}
+              errors={
+                oneWayExemptionErrors &&
+                oneWayExemptionErrors.filter(
+                  (x) => x.esuIndex === oweFormData.esuIndex && x.index === oweFormData.index
+                )
+              }
+              loading={loading}
+              focusedField={oneWayExemptionFocusedField}
+              onHomeClick={(action, srcData, currentData) =>
+                handleOneWayExemptionHomeClick(action, srcData, currentData)
+              }
+              onAdd={(esuId, esuIndex) => handleAddOneWayExemption(esuId, esuIndex)}
+              onDelete={(esuId, pkId) => handleOneWayExceptionDeleted(esuId, pkId)}
+            />
+          ) : esuFormData ? (
+            <EsuDataTab
+              data={esuFormData}
+              streetState={streetData ? streetData.state : null}
+              errors={esuErrors && esuErrors.filter((x) => x.index === esuFormData.index)}
+              oweErrors={oneWayExemptionErrors.filter((x) => x.esuIndex === esuFormData.index)}
+              hdErrors={highwayDedicationErrors.filter((x) => x.esuIndex === esuFormData.index)}
+              loading={loading}
+              focusedField={esuFocusedField}
+              onValidateData={(srcData, currentData) => handleEsuValidateData(srcData, currentData)}
+              onHomeClick={(action, srcData, currentData) => handleEsuHomeClick(action, srcData, currentData)}
+              onSetCopyOpen={(open, dataType) => handleCopyOpen(open, dataType)}
+              onHighwayDedicationClicked={(hdData, index, esuIndex) =>
+                handleHighwayDedicationClicked(hdData, index, esuIndex)
+              }
+              onOneWayExceptionClicked={(oweData, index, esuIndex) =>
+                handleOneWayExemptionClicked(oweData, index, esuIndex)
+              }
+              onAddEsu={handleAddEsu}
+              onAddHighwayDedication={(esuId, esuIndex) => handleAddHighwayDedication(esuId, esuIndex)}
+              onAddOneWayException={(esuId, esuIndex) => handleAddOneWayExemption(esuId, esuIndex)}
+              onDelete={(pkId) => handleEsuDeleted(pkId)}
+              onDivideError={handleDivideError}
             />
           ) : (
-            <SuccessorListTab
-              data={
-                streetData &&
-                streetData.successorCrossRefs &&
-                streetData.successorCrossRefs
-                  .filter((x) => x.changeType !== "D")
-                  .map(function (x) {
-                    return {
-                      id: x.pkId,
-                      changeType: x.changeType,
-                      succKey: x.succKey,
-                      predecessor: x.predecessor,
-                      successorType: x.successorType,
-                      successor: x.successor,
-                      entryDate: x.entryDate,
-                      lastUpdateDate: x.lastUpdateDate,
-                      startDate: x.startDate,
-                      endDate: x.endDate,
-                    };
-                  })
-              }
-              variant="street"
-              errors={successorCrossRefErrors}
+            <EsuListTab
+              data={streetData && streetData.esus ? streetData.esus : null}
+              streetState={streetData ? streetData.state : null}
               loading={loading}
-              onSuccessorCrossRefSelected={(pkId, successorCrossRefData, dataIdx, dataLength) =>
-                handleSuccessorCrossRefSelected(pkId, successorCrossRefData, dataIdx, dataLength)
+              errors={esuErrors}
+              oneWayExemptionErrors={oneWayExemptionErrors}
+              highwayDedicationErrors={highwayDedicationErrors}
+              onSetCopyOpen={(open, dataType) => handleCopyOpen(open, dataType)}
+              onEsuSelected={(pkId, esuData, index) => handleEsuSelected(pkId, esuData, index)}
+              onHighwayDedicationSelected={(esuId, pkId, hdData, index, esuIndex) =>
+                handleHighwayDedicationSelected(esuId, pkId, hdData, index, esuIndex)
               }
-              onSuccessorCrossRefDelete={(pkId) => handleDeleteSuccessorCrossRef(pkId)}
-              onMultiSuccessorCrossRefDelete={(successorCrossRefIds) =>
-                handleMultiDeleteSuccessorCrossRef(successorCrossRefIds)
+              onAddHighwayDedication={(esuId, esuIndex) => handleAddHighwayDedication(esuId, esuIndex)}
+              onOneWayExemptionSelected={(esuId, pkId, oweData, index, esuIndex) =>
+                handleOneWayExemptionSelected(esuId, pkId, oweData, index, esuIndex)
               }
+              onAddOneWayExemption={(esuId, esuIndex) => handleAddOneWayExemption(esuId, esuIndex)}
+              onDeleteEsu={(pkId) => handleEsuDeleted(pkId)}
+              onMultiEsuDelete={(esuIds) => handleMultiDeleteEsu(esuIds)}
             />
           )}
         </TabPanel>
       )}
       {displayAsdTab ? (
         <Fragment>
-          {/* to revert to using street successors...  */}
-          {/* <TabPanel value={value} index={settingsContext.isScottish ? 3 : 2}>  */}
           <TabPanel value={value} index={2}>
             {maintenanceResponsibilityFormData ? (
               <MaintenanceResponsibilityDataTab
@@ -11305,8 +10890,7 @@ function StreetDataForm({ data, loading }) {
               />
             )}
           </TabPanel>
-          {/* <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 4 : 3) : displayAsdTab ? 3 : 2}> */}
-          <TabPanel value={value} index={displayAsdTab ? 3 : 2}>
+          <TabPanel value={value} index={displayEsuTab ? (displayAsdTab ? 3 : 2) : 1}>
             <RelatedTab
               variant="street"
               propertyCount={streetData ? streetData.relatedPropertyCount : 0}
@@ -11315,8 +10899,7 @@ function StreetDataForm({ data, loading }) {
               onPropertyAdd={(usrn, parent, isRange) => handlePropertyAdd(usrn, parent, isRange)}
             />
           </TabPanel>
-          {/* <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 5 : 4) : displayAsdTab ? 4 : 3}> */}
-          <TabPanel value={value} index={displayAsdTab ? 4 : 3}>
+          <TabPanel value={value} index={displayEsuTab ? (displayAsdTab ? 4 : 3) : 2}>
             {notesFormData ? (
               <NotesDataTab
                 data={notesFormData}
@@ -11337,15 +10920,13 @@ function StreetDataForm({ data, loading }) {
               />
             )}
           </TabPanel>
-          {/* <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 6 : 5) : displayAsdTab ? 5 : 4}> */}
-          <TabPanel value={value} index={displayAsdTab ? 5 : 4}>
+          <TabPanel value={value} index={displayEsuTab ? (displayAsdTab ? 5 : 4) : 3}>
             <EntityHistoryTab variant="street" />
           </TabPanel>
         </Fragment>
       ) : (
         <Fragment>
-          {/* <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 4 : 3) : displayAsdTab ? 3 : 2}> */}
-          <TabPanel value={value} index={displayAsdTab ? 3 : 2}>
+          <TabPanel value={value} index={displayEsuTab ? (displayAsdTab ? 3 : 2) : 1}>
             <RelatedTab
               variant="street"
               propertyCount={streetData ? streetData.relatedPropertyCount : 0}
@@ -11354,8 +10935,7 @@ function StreetDataForm({ data, loading }) {
               onPropertyAdd={(usrn, parent, isRange) => handlePropertyAdd(usrn, parent, isRange)}
             />
           </TabPanel>
-          {/* <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 5 : 4) : displayAsdTab ? 4 : 3}> */}
-          <TabPanel value={value} index={displayAsdTab ? 4 : 3}>
+          <TabPanel value={value} index={displayEsuTab ? (displayAsdTab ? 4 : 3) : 2}>
             {notesFormData ? (
               <NotesDataTab
                 data={notesFormData}
@@ -11375,8 +10955,7 @@ function StreetDataForm({ data, loading }) {
               />
             )}
           </TabPanel>
-          {/* <TabPanel value={value} index={settingsContext.isScottish ? (displayAsdTab ? 6 : 5) : displayAsdTab ? 5 : 4}> */}
-          <TabPanel value={value} index={displayAsdTab ? 5 : 4}>
+          <TabPanel value={value} index={displayEsuTab ? (displayAsdTab ? 5 : 4) : 3}>
             <EntityHistoryTab variant="street" />
           </TabPanel>
         </Fragment>

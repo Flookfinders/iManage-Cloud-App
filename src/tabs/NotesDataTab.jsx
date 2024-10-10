@@ -35,6 +35,9 @@
 //    022   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    023   04.07.24 Sean Flook       IMANN-705 Use displayName rather than auditName.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    024   10.10.24 Sean Flook      IMANN-1018 Allow LLPG editors to edit streets.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -275,7 +278,9 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
 
   useEffect(() => {
     if (data.variant === "street") {
-      setUserCanEdit(userContext.currentUser && userContext.currentUser.editStreet);
+      setUserCanEdit(
+        userContext.currentUser && (userContext.currentUser.editStreet || userContext.currentUser.editProperty)
+      );
     } else {
       setUserCanEdit(userContext.currentUser && userContext.currentUser.editProperty);
     }

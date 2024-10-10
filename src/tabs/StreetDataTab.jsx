@@ -59,6 +59,7 @@
 //    044   30.09.24 Sean Flook       IMANN-617 Check we have a USRN before calling onUpdateUsrn.
 //    045   02.10.24 Sean Flook       IMANN-550 Changed menu item order.
 //    046   02.10.24 Sean Flook       IMANN-999 Changed label to State date.
+//    047   10.10.24 Sean Flook      IMANN-1018 Allow LLPG editors to edit streets.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -832,9 +833,13 @@ function StreetDataTab({
   }, [data, settingsContext, userContext.currentUser]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.editStreet);
+    setUserCanEdit(
+      userContext.currentUser && (userContext.currentUser.editStreet || userContext.currentUser.editProperty)
+    );
 
-    setAdminUser(userContext.currentUser && userContext.currentUser.adminStreet);
+    setAdminUser(
+      userContext.currentUser && (userContext.currentUser.adminStreet || userContext.currentUser.adminProperty)
+    );
   }, [userContext]);
 
   useEffect(() => {

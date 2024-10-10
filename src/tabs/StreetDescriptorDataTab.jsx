@@ -35,6 +35,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.0.0 changes
 //    022   03.10.24 Sean Flook      IMANN-1002 Corrected character set to use for descriptor.
+//    023   10.10.24 Sean Flook      IMANN-1018 Allow LLPG editors to edit streets.
 //#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -371,7 +372,9 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
   }, [sandboxContext.currentSandbox.currentStreetRecords.streetDescriptor, sandboxContext.currentSandbox.sourceStreet]);
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.editStreet);
+    setUserCanEdit(
+      userContext.currentUser && (userContext.currentUser.editStreet || userContext.currentUser.editProperty)
+    );
   }, [userContext]);
 
   useEffect(() => {

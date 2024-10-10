@@ -51,6 +51,7 @@
 //#region Version 1.0.1.0 changes
 //    037   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    038   02.10.24 Sean Flook       IMANN-550 Changed menu item order.
+//    039   10.10.24 Sean Flook      IMANN-1018 Corrected setting of userCanEdit.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -717,7 +718,7 @@ function RelatedStreetTab({
   };
 
   useEffect(() => {
-    setUserCanEdit(userContext.currentUser && userContext.currentUser.editStreet);
+    setUserCanEdit(userContext.currentUser && userContext.currentUser.editProperty);
   }, [userContext]);
 
   useEffect(() => {

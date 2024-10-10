@@ -55,6 +55,9 @@
 //    052   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    053   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    054   10.10.24 Sean Flook      IMANN-1018 Allow LLPG editors to create streets.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -1119,7 +1122,7 @@ function ADSAppBar(props) {
               <ADSSearch variant="appBar" placeholder="Search…" onSearchClick={handleSearchClick} />
             )}
             {userContext.currentUser &&
-            userContext.currentUser.editStreet &&
+            (userContext.currentUser.editStreet || userContext.currentUser.editProperty) &&
             (haveSearch || haveStreet || haveProperty || location.pathname === GazetteerRoute) ? (
               <Tooltip title="Add street" arrow placement="bottom-end" sx={tooltipStyle}>
                 <Button
