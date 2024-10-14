@@ -28,6 +28,9 @@
 //    015   09.07.24 Sean Flook       IMANN-731 Corrected Scottish data.
 //    016   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    017   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -642,7 +645,13 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
         const updatedSearchProperties = mapContext.currentSearchData.properties.map(
           (x) => savedMapProperties.find((rec) => rec.uprn === x.uprn) || x
         );
-        mapContext.onSearchDataChange(mapContext.currentSearchData.streets, updatedSearchProperties, null, null);
+        mapContext.onSearchDataChange(
+          mapContext.currentSearchData.streets,
+          mapContext.currentSearchData.llpgStreets,
+          updatedSearchProperties,
+          null,
+          null
+        );
         if (onClose) onClose(true);
         else setShowDialog(false);
       }

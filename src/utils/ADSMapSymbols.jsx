@@ -22,6 +22,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    009   04.10.24 Sean Flook      IMANN-1005 Use a different colour for a closed street.
+//    010   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -835,7 +836,7 @@ export function GetStreetMapSymbol(streetClosed = false) {
       lineStyle3D: "Strip",
       miterLimit: 10,
       width: 0.7,
-      color: [153, 52, 164, 255], // #9934A4FF
+      color: streetClosed ? [153, 97, 34, 255] : [153, 52, 164, 255], // #996122FF #9934A4FF
     };
   }
 
@@ -918,8 +919,151 @@ export function GetStreetMapSymbol(streetClosed = false) {
               {
                 type: "CIMSolidFill",
                 enable: true,
-                color: [153, 52, 164, 255], // #9934A4FF
+                color: streetClosed ? [153, 97, 34, 255] : [153, 52, 164, 255], // #996122FF #9934A4FF
                 // color: [0, 0, 0, 255],
+              },
+            ],
+          },
+        },
+      ],
+      scaleSymbolsProportionally: true,
+      respectFrame: true,
+    };
+  }
+
+  return new CIMSymbol({
+    data: {
+      type: "CIMSymbolReference",
+      symbol: {
+        type: "CIMLineSymbol",
+        symbolLayers: [getNodeSymbolLayer(), getBorderSymbolLayer(4), getStreetSymbolLayer(), getBorderSymbolLayer(-4)],
+      },
+    },
+  });
+}
+
+/**
+ * Method to get the street map symbol.
+ *
+ * @returns {CIMSymbol} The street symbol.
+ */
+export function GetLlpgStreetMapSymbol() {
+  function getStreetSymbolLayer() {
+    return {
+      type: "CIMSolidStroke",
+      enable: true,
+      capStyle: "Round",
+      joinStyle: "Round",
+      lineStyle3D: "Strip",
+      miterLimit: 10,
+      width: 8,
+      color: [51, 234, 55, 166], // #33EA37A6
+      effects: [],
+    };
+  }
+
+  function getBorderSymbolLayer(offset) {
+    return {
+      type: "CIMSolidStroke",
+      effects: [
+        {
+          type: "CIMGeometricEffectOffset",
+          method: "Bevelled",
+          offset: offset,
+          option: "Fast",
+        },
+      ],
+      enable: true,
+      colorLocked: true,
+      capStyle: "Round",
+      joinStyle: "Miter",
+      lineStyle3D: "Strip",
+      miterLimit: 10,
+      width: 0.7,
+      color: [51, 234, 26, 255], // #33EA1AFF
+    };
+  }
+
+  function getNodeSymbolLayer() {
+    return {
+      type: "CIMVectorMarker",
+      enable: true,
+      colorLocked: true,
+      anchorPoint: {
+        x: 0,
+        y: 0,
+      },
+      anchorPointUnits: "Relative",
+      dominantSizeAxis3D: "Y",
+      size: 6,
+      billboardMode3D: "FaceNearPlane",
+      markerPlacement: {
+        type: "CIMMarkerPlacementOnVertices",
+        angleToLine: true,
+        offset: 0,
+        placeOnEndPoints: true,
+        placeOnRegularVertices: true,
+      },
+      frame: {
+        xmin: -5,
+        ymin: -5,
+        xmax: 5,
+        ymax: 5,
+      },
+      markerGraphics: [
+        {
+          type: "CIMMarkerGraphic",
+          geometry: {
+            rings: [
+              [
+                [0, 5],
+                [0.87, 4.92],
+                [1.71, 4.7],
+                [2.5, 4.33],
+                [3.21, 3.83],
+                [3.83, 3.21],
+                [4.33, 2.5],
+                [4.7, 1.71],
+                [4.92, 0.87],
+                [5, 0],
+                [4.92, -0.87],
+                [4.7, -1.71],
+                [4.33, -2.5],
+                [3.83, -3.21],
+                [3.21, -3.83],
+                [2.5, -4.33],
+                [1.71, -4.7],
+                [0.87, -4.92],
+                [0, -5],
+                [-0.87, -4.92],
+                [-1.71, -4.7],
+                [-2.5, -4.33],
+                [-3.21, -3.83],
+                [-3.83, -3.21],
+                [-4.33, -2.5],
+                [-4.7, -1.71],
+                [-4.92, -0.87],
+                [-5, 0],
+                [-4.92, 0.87],
+                [-4.7, 1.71],
+                [-4.33, 2.5],
+                [-3.83, 3.21],
+                [-3.21, 3.83],
+                [-2.5, 4.33],
+                [-1.71, 4.7],
+                [-0.87, 4.92],
+                [0, 5],
+                [0, 5],
+              ],
+            ],
+          },
+          symbol: {
+            type: "CIMPolygonSymbol",
+            symbolLayers: [
+              {
+                type: "CIMSolidFill",
+                enable: true,
+                color: [51, 234, 26, 255], // #33EA1AFF
               },
             ],
           },

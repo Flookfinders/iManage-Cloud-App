@@ -38,9 +38,10 @@
 //    025   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    026   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
 //    027   03.10.24 Sean Flook      IMANN-1001 Use getClassificationCode to determine the classification code to use.
-//#endregion Version 1.0.0.0 changes
+//    028   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -235,6 +236,7 @@ function ADSHomepageLatestEditsControl({ data }) {
       //if so tell map to reuse it
       mapContext.onSearchDataChange(
         mapContext.currentSearchData.streets,
+        mapContext.currentSearchData.llpgStreets,
         mapContext.currentSearchData.properties,
         usrn,
         null
@@ -242,16 +244,28 @@ function ADSHomepageLatestEditsControl({ data }) {
     } else {
       //else fetch what we need and pass to map
       const streetData = await GetStreetMapData(usrn, userContext, settingsContext.isScottish);
-      const esus =
-        streetData && streetData.esus
+      const esus = streetData
+        ? userContext.currentUser.hasStreet
           ? streetData.esus.map((rec) => ({
               esuId: rec.esuId,
               geometry: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
             }))
-          : [];
+          : [
+              {
+                esuId: -1,
+                state: undefined,
+                geometry: GetWktCoordinates(
+                  `LINESTRING (${streetData.streetStartX} ${streetData.streetStartY}, ${streetData.streetEndX} ${streetData.streetEndY})`
+                ),
+              },
+            ]
+        : [];
       const engDescriptor = streetData.streetDescriptors.filter((sd) => sd.language === "ENG")[0];
       const asdType51 =
-        settingsContext.isScottish && streetData && streetData.maintenanceResponsibilities
+        userContext.currentUser.hasStreet &&
+        settingsContext.isScottish &&
+        streetData &&
+        streetData.maintenanceResponsibilities
           ? streetData.maintenanceResponsibilities.map((asdRec) => ({
               type: 51,
               pkId: asdRec.pkId,
@@ -265,7 +279,10 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType52 =
-        settingsContext.isScottish && streetData && streetData.reinstatementCategories
+        userContext.currentUser.hasStreet &&
+        settingsContext.isScottish &&
+        streetData &&
+        streetData.reinstatementCategories
           ? streetData.reinstatementCategories.map((asdRec) => ({
               type: 52,
               pkId: asdRec.pkId,
@@ -279,7 +296,7 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType53 =
-        settingsContext.isScottish && streetData && streetData.specialDesignations
+        userContext.currentUser.hasStreet && settingsContext.isScottish && streetData && streetData.specialDesignations
           ? streetData.specialDesignations.map((asdRec) => ({
               type: 53,
               pkId: asdRec.pkId,
@@ -293,7 +310,7 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType61 =
-        !settingsContext.isScottish && hasASD && streetData && streetData.interests
+        userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData && streetData.interests
           ? streetData.interests.map((asdRec) => ({
               type: 61,
               pkId: asdRec.pkId,
@@ -308,7 +325,11 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType62 =
-        !settingsContext.isScottish && hasASD && streetData && streetData.constructions
+        userContext.currentUser.hasStreet &&
+        !settingsContext.isScottish &&
+        hasASD &&
+        streetData &&
+        streetData.constructions
           ? streetData.constructions.map((asdRec) => ({
               type: 62,
               pkId: asdRec.pkId,
@@ -323,7 +344,11 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType63 =
-        !settingsContext.isScottish && hasASD && streetData && streetData.specialDesignations
+        userContext.currentUser.hasStreet &&
+        !settingsContext.isScottish &&
+        hasASD &&
+        streetData &&
+        streetData.specialDesignations
           ? streetData.specialDesignations.map((asdRec) => ({
               type: 63,
               pkId: asdRec.pkId,
@@ -337,7 +362,11 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType64 =
-        !settingsContext.isScottish && hasASD && streetData && streetData.heightWidthWeights
+        userContext.currentUser.hasStreet &&
+        !settingsContext.isScottish &&
+        hasASD &&
+        streetData &&
+        streetData.heightWidthWeights
           ? streetData.heightWidthWeights.map((asdRec) => ({
               type: 64,
               pkId: asdRec.pkId,
@@ -351,7 +380,11 @@ function ADSHomepageLatestEditsControl({ data }) {
             }))
           : [];
       const asdType66 =
-        !settingsContext.isScottish && hasASD && streetData && streetData.publicRightOfWays
+        userContext.currentUser.hasStreet &&
+        !settingsContext.isScottish &&
+        hasASD &&
+        streetData &&
+        streetData.publicRightOfWays
           ? streetData.publicRightOfWays.map((asdRec) => ({
               type: 66,
               pkId: asdRec.pkId,
@@ -385,7 +418,13 @@ function ADSHomepageLatestEditsControl({ data }) {
           asdType66: asdType66,
         },
       ];
-      mapContext.onSearchDataChange(searchStreets, [], usrn, null);
+      mapContext.onSearchDataChange(
+        userContext.currentUser.hasStreet ? searchStreets : [],
+        !userContext.currentUser.hasStreet ? searchStreets : [],
+        [],
+        usrn,
+        null
+      );
     }
   };
 
@@ -417,6 +456,7 @@ function ADSHomepageLatestEditsControl({ data }) {
     if (foundProperty) {
       mapContext.onSearchDataChange(
         mapContext.currentSearchData.streets,
+        mapContext.currentSearchData.llpgStreets,
         mapContext.currentSearchData.properties,
         null,
         uprn
@@ -435,7 +475,7 @@ function ADSHomepageLatestEditsControl({ data }) {
           classificationCode: classificationCode ? classificationCode.substring(0, 1) : "U",
         },
       ];
-      mapContext.onSearchDataChange([], searchProperties, null, uprn);
+      mapContext.onSearchDataChange([], [], searchProperties, null, uprn);
     }
     mapContext.onHighlightStreetProperty(null, [uprn.toString()]);
   };

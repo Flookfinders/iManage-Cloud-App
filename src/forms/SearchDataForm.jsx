@@ -35,6 +35,9 @@
 //    022   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    023   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    094   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -240,14 +243,24 @@ function SearchDataForm() {
           try {
             return await GetStreetMapData(x.usrn, userContext, settingsContext.isScottish).then((streetData) => {
               let esus = streetData
-                ? streetData.esus.map((rec) => ({
-                    esuId: rec.esuId,
-                    state: settingsContext.isScottish ? rec.state : undefined,
-                    geometry: rec.wktGeometry ? GetWktCoordinates(rec.wktGeometry) : undefined,
-                  }))
-                : undefined;
+                ? userContext.currentUser.hasStreet
+                  ? streetData.esus.map((rec) => ({
+                      esuId: rec.esuId,
+                      state: settingsContext.isScottish ? rec.state : undefined,
+                      geometry: rec.wktGeometry ? GetWktCoordinates(rec.wktGeometry) : undefined,
+                    }))
+                  : [
+                      {
+                        esuId: -1,
+                        state: undefined,
+                        geometry: GetWktCoordinates(
+                          `LINESTRING (${streetData.streetStartX} ${streetData.streetStartY}, ${streetData.streetEndX} ${streetData.streetEndY})`
+                        ),
+                      },
+                    ]
+                : [];
               let asdType51 =
-                settingsContext.isScottish && streetData
+                userContext.currentUser.hasStreet && settingsContext.isScottish && streetData
                   ? streetData.maintenanceResponsibilities.map((asdRec) => ({
                       type: 51,
                       pkId: asdRec.pkId,
@@ -258,9 +271,9 @@ function SearchDataForm() {
                       wholeRoad: asdRec.wholeRoad,
                       geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                     }))
-                  : undefined;
+                  : [];
               let asdType52 =
-                settingsContext.isScottish && streetData
+                userContext.currentUser.hasStreet && settingsContext.isScottish && streetData
                   ? streetData.reinstatementCategories.map((asdRec) => ({
                       type: 52,
                       pkId: asdRec.pkId,
@@ -271,9 +284,9 @@ function SearchDataForm() {
                       wholeRoad: asdRec.wholeRoad,
                       geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                     }))
-                  : undefined;
+                  : [];
               let asdType53 =
-                settingsContext.isScottish && streetData
+                userContext.currentUser.hasStreet && settingsContext.isScottish && streetData
                   ? streetData.specialDesignations.map((asdRec) => ({
                       type: 53,
                       pkId: asdRec.pkId,
@@ -284,9 +297,9 @@ function SearchDataForm() {
                       wholeRoad: asdRec.wholeRoad,
                       geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                     }))
-                  : undefined;
+                  : [];
               let asdType61 =
-                !settingsContext.isScottish && hasASD && streetData
+                userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
                   ? streetData.interests.map((asdRec) => ({
                       type: 61,
                       pkId: asdRec.pkId,
@@ -298,9 +311,9 @@ function SearchDataForm() {
                       wholeRoad: asdRec.wholeRoad,
                       geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                     }))
-                  : undefined;
+                  : [];
               let asdType62 =
-                !settingsContext.isScottish && hasASD && streetData
+                userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
                   ? streetData.constructions.map((asdRec) => ({
                       type: 62,
                       pkId: asdRec.pkId,
@@ -312,9 +325,9 @@ function SearchDataForm() {
                       wholeRoad: asdRec.wholeRoad,
                       geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                     }))
-                  : undefined;
+                  : [];
               let asdType63 =
-                !settingsContext.isScottish && hasASD && streetData
+                userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
                   ? streetData.specialDesignations.map((asdRec) => ({
                       type: 63,
                       pkId: asdRec.pkId,
@@ -325,9 +338,9 @@ function SearchDataForm() {
                       wholeRoad: asdRec.wholeRoad,
                       geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                     }))
-                  : undefined;
+                  : [];
               let asdType64 =
-                !settingsContext.isScottish && hasASD && streetData
+                userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
                   ? streetData.heightWidthWeights.map((asdRec) => ({
                       type: 64,
                       pkId: asdRec.pkId,
@@ -338,9 +351,9 @@ function SearchDataForm() {
                       wholeRoad: asdRec.wholeRoad,
                       geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                     }))
-                  : undefined;
+                  : [];
               let asdType66 =
-                !settingsContext.isScottish && hasASD && streetData
+                userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
                   ? streetData.publicRightOfWays.map((asdRec) => ({
                       type: 66,
                       pkId: asdRec.pkId,
@@ -352,7 +365,7 @@ function SearchDataForm() {
                       defMapGeometryType: asdRec.defMapGeometryType,
                       geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                     }))
-                  : undefined;
+                  : [];
               let streetObj = {
                 usrn: x.usrn,
                 description: x.street,
@@ -396,7 +409,13 @@ function SearchDataForm() {
         return propObj;
       });
 
-    mapContext.onSearchDataChange(searchStreets, searchProperties, null, null);
+    mapContext.onSearchDataChange(
+      userContext.currentUser.hasStreet ? searchStreets : [],
+      !userContext.currentUser.hasStreet ? searchStreets : [],
+      searchProperties,
+      null,
+      null
+    );
   }
 
   /**
@@ -413,14 +432,24 @@ function SearchDataForm() {
           try {
             return await GetStreetMapData(x.usrn, userContext, settingsContext.isScottish).then((streetData) => {
               let esus = streetData
-                ? streetData.esus.map((rec) => ({
-                    esuId: rec.esuId,
-                    state: settingsContext.isScottish ? rec.state : undefined,
-                    geometry: rec.wktGeometry ? GetWktCoordinates(rec.wktGeometry) : undefined,
-                  }))
-                : undefined;
+                ? userContext.currentUser.hasStreet
+                  ? streetData.esus.map((rec) => ({
+                      esuId: rec.esuId,
+                      state: settingsContext.isScottish ? rec.state : undefined,
+                      geometry: rec.wktGeometry ? GetWktCoordinates(rec.wktGeometry) : undefined,
+                    }))
+                  : [
+                      {
+                        esuId: -1,
+                        state: undefined,
+                        geometry: GetWktCoordinates(
+                          `LINESTRING (${streetData.streetStartX} ${streetData.streetStartY}, ${streetData.streetEndX} ${streetData.streetEndY})`
+                        ),
+                      },
+                    ]
+                : [];
               let asdType51 =
-                settingsContext.isScottish && streetData
+                userContext.currentUser.hasStreet && settingsContext.isScottish && streetData
                   ? streetData.maintenanceResponsibilities.map((asdRec) => ({
                       type: 51,
                       pkId: asdRec.pkId,
@@ -431,9 +460,9 @@ function SearchDataForm() {
                       wholeRoad: asdRec.wholeRoad,
                       geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                     }))
-                  : undefined;
+                  : [];
               let asdType52 =
-                settingsContext.isScottish && streetData
+                userContext.currentUser.hasStreet && settingsContext.isScottish && streetData
                   ? streetData.reinstatementCategories.map((asdRec) => ({
                       type: 52,
                       pkId: asdRec.pkId,
@@ -444,9 +473,9 @@ function SearchDataForm() {
                       wholeRoad: asdRec.wholeRoad,
                       geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                     }))
-                  : undefined;
+                  : [];
               let asdType53 =
-                settingsContext.isScottish && streetData
+                userContext.currentUser.hasStreet && settingsContext.isScottish && streetData
                   ? streetData.specialDesignations.map((asdRec) => ({
                       type: 53,
                       pkId: asdRec.pkId,
@@ -457,9 +486,9 @@ function SearchDataForm() {
                       wholeRoad: asdRec.wholeRoad,
                       geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                     }))
-                  : undefined;
+                  : [];
               let asdType61 =
-                !settingsContext.isScottish && hasASD && streetData
+                userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
                   ? streetData.interests.map((asdRec) => ({
                       type: 61,
                       pkId: asdRec.pkId,
@@ -471,9 +500,9 @@ function SearchDataForm() {
                       wholeRoad: asdRec.wholeRoad,
                       geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                     }))
-                  : undefined;
+                  : [];
               let asdType62 =
-                !settingsContext.isScottish && hasASD && streetData
+                userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
                   ? streetData.constructions.map((asdRec) => ({
                       type: 62,
                       pkId: asdRec.pkId,
@@ -485,9 +514,9 @@ function SearchDataForm() {
                       wholeRoad: asdRec.wholeRoad,
                       geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                     }))
-                  : undefined;
+                  : [];
               let asdType63 =
-                !settingsContext.isScottish && hasASD && streetData
+                userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
                   ? streetData.specialDesignations.map((asdRec) => ({
                       type: 63,
                       pkId: asdRec.pkId,
@@ -498,9 +527,9 @@ function SearchDataForm() {
                       wholeRoad: asdRec.wholeRoad,
                       geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                     }))
-                  : undefined;
+                  : [];
               let asdType64 =
-                !settingsContext.isScottish && hasASD && streetData
+                userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
                   ? streetData.heightWidthWeights.map((asdRec) => ({
                       type: 64,
                       pkId: asdRec.pkId,
@@ -511,9 +540,9 @@ function SearchDataForm() {
                       wholeRoad: asdRec.wholeRoad,
                       geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                     }))
-                  : undefined;
+                  : [];
               let asdType66 =
-                !settingsContext.isScottish && hasASD && streetData
+                userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
                   ? streetData.publicRightOfWays.map((asdRec) => ({
                       type: 66,
                       pkId: asdRec.pkId,
@@ -525,7 +554,7 @@ function SearchDataForm() {
                       defMapGeometryType: asdRec.defMapGeometryType,
                       geometry: asdRec.wktGeometry ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
                     }))
-                  : undefined;
+                  : [];
               let streetObj = {
                 usrn: x.usrn,
                 description: x.street,
@@ -569,7 +598,13 @@ function SearchDataForm() {
         return propObj;
       });
 
-    mapContext.onSearchDataChange(searchStreets, searchProperties, null, null);
+    mapContext.onSearchDataChange(
+      userContext.currentUser.hasStreet ? searchStreets : [],
+      !userContext.currentUser.hasStreet ? searchStreets : [],
+      searchProperties,
+      null,
+      null
+    );
   }
 
   /**
@@ -769,12 +804,21 @@ function SearchDataForm() {
           newMapBackgroundProperties,
           mapContext.currentBackgroundData.provenances
         );
-        mapContext.onSearchDataChange(mapContext.currentSearchData.streets, newMapSearchProperties, null, null);
+        mapContext.onSearchDataChange(
+          mapContext.currentSearchData.streets,
+          mapContext.currentSearchData.llpgStreets,
+          newMapSearchProperties,
+          null,
+          null
+        );
       } else {
         const newMapBackgroundStreets = mapContext.currentBackgroundData.streets.filter(
           (x) => x.usrn.toString() !== entityId.toString()
         );
         const newMapSearchStreets = mapContext.currentSearchData.streets.filter(
+          (x) => x.usrn.toString() !== entityId.toString()
+        );
+        const newMapSearchLlpgStreets = mapContext.currentSearchData.llpgStreets.filter(
           (x) => x.usrn.toString() !== entityId.toString()
         );
         mapContext.onBackgroundDataChange(
@@ -783,7 +827,13 @@ function SearchDataForm() {
           mapContext.currentBackgroundData.properties,
           mapContext.currentBackgroundData.provenances
         );
-        mapContext.onSearchDataChange(newMapSearchStreets, mapContext.currentSearchData.properties, null, null);
+        mapContext.onSearchDataChange(
+          newMapSearchStreets,
+          newMapSearchLlpgStreets,
+          mapContext.currentSearchData.properties,
+          null,
+          null
+        );
       }
     }
 

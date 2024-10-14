@@ -69,6 +69,7 @@
 //#region Version 1.0.1.0 changes
 //    054   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    055   02.10.24 Sean Flook       IMANN-550 Changed menu item order for streets.
+//    056   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -493,21 +494,33 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
 
     if (rec.type === 15) {
       streetContext.onStreetChange(rec.usrn, rec.street, false);
-      const foundStreet = mapContext.currentSearchData.streets.find(({ usrn }) => usrn === rec.usrn);
+      const foundStreet = userContext.currentUser.hasStreet
+        ? mapContext.currentSearchData.streets.find(({ usrn }) => usrn === rec.usrn)
+        : mapContext.currentSearchData.llpgStreets.find(({ usrn }) => usrn === rec.usrn);
       const currentSearchStreets = JSON.parse(JSON.stringify(mapContext.currentSearchData.streets));
 
       if (!foundStreet) {
         const streetData = await GetStreetMapData(rec.usrn, userContext, settingsContext.isScottish);
         const esus = streetData
-          ? streetData.esus.map((esuRec) => ({
-              esuId: esuRec.esuId,
-              state: settingsContext.isScottish ? esuRec.state : undefined,
-              geometry:
-                esuRec.wktGeometry && esuRec.wktGeometry !== "" ? GetWktCoordinates(esuRec.wktGeometry) : undefined,
-            }))
-          : undefined;
+          ? userContext.currentUser.hasStreet
+            ? streetData.esus.map((esuRec) => ({
+                esuId: esuRec.esuId,
+                state: settingsContext.isScottish ? esuRec.state : undefined,
+                geometry:
+                  esuRec.wktGeometry && esuRec.wktGeometry !== "" ? GetWktCoordinates(esuRec.wktGeometry) : undefined,
+              }))
+            : [
+                {
+                  esuId: -1,
+                  state: undefined,
+                  geometry: GetWktCoordinates(
+                    `LINESTRING (${streetData.streetStartX} ${streetData.streetStartY}, ${streetData.streetEndX} ${streetData.streetEndY})`
+                  ),
+                },
+              ]
+          : [];
         const asdType51 =
-          settingsContext.isScottish && streetData
+          userContext.currentUser.hasStreet && settingsContext.isScottish && streetData
             ? streetData.maintenanceResponsibilities.map((asdRec) => ({
                 type: 51,
                 pkId: asdRec.pkId,
@@ -519,9 +532,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
-            : undefined;
+            : [];
         const asdType52 =
-          settingsContext.isScottish && streetData
+          userContext.currentUser.hasStreet && settingsContext.isScottish && streetData
             ? streetData.reinstatementCategories.map((asdRec) => ({
                 type: 52,
                 pkId: asdRec.pkId,
@@ -533,9 +546,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
-            : undefined;
+            : [];
         const asdType53 =
-          settingsContext.isScottish && streetData
+          userContext.currentUser.hasStreet && settingsContext.isScottish && streetData
             ? streetData.specialDesignations.map((asdRec) => ({
                 type: 53,
                 pkId: asdRec.pkId,
@@ -547,9 +560,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
-            : undefined;
+            : [];
         const asdType61 =
-          !settingsContext.isScottish && hasASD && streetData
+          userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
             ? streetData.interests.map((asdRec) => ({
                 type: 61,
                 pkId: asdRec.pkId,
@@ -562,9 +575,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
-            : undefined;
+            : [];
         const asdType62 =
-          !settingsContext.isScottish && hasASD && streetData
+          userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
             ? streetData.constructions.map((asdRec) => ({
                 type: 62,
                 pkId: asdRec.pkId,
@@ -577,9 +590,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
-            : undefined;
+            : [];
         const asdType63 =
-          !settingsContext.isScottish && hasASD && streetData
+          userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
             ? streetData.specialDesignations.map((asdRec) => ({
                 type: 63,
                 pkId: asdRec.pkId,
@@ -591,9 +604,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
-            : undefined;
+            : [];
         const asdType64 =
-          !settingsContext.isScottish && hasASD && streetData
+          userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
             ? streetData.heightWidthWeights.map((asdRec) => ({
                 type: 64,
                 pkId: asdRec.pkId,
@@ -605,9 +618,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
-            : undefined;
+            : [];
         const asdType66 =
-          !settingsContext.isScottish && hasASD && streetData
+          userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
             ? streetData.publicRightOfWays.map((asdRec) => ({
                 type: 66,
                 pkId: asdRec.pkId,
@@ -620,7 +633,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                 geometry:
                   asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
               }))
-            : undefined;
+            : [];
         currentSearchStreets.push({
           usrn: rec.usrn,
           description: rec.street,
@@ -640,7 +653,13 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
           asdType66: asdType66,
         });
       }
-      mapContext.onSearchDataChange(currentSearchStreets, mapContext.currentSearchData.properties, rec.usrn, null);
+      mapContext.onSearchDataChange(
+        userContext.currentUser.hasStreet ? currentSearchStreets : [],
+        !userContext.currentUser.hasStreet ? currentSearchStreets : [],
+        mapContext.currentSearchData.properties,
+        rec.usrn,
+        null
+      );
       mapContext.onEditMapObject(null, null);
     } else if (rec.type === 24) {
       if (rec.logical_status === 8) {
@@ -777,13 +796,17 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
       isStreet && removedItem
         ? mapContext.currentSearchData.streets.filter((x) => x.usrn !== removedItem.usrn)
         : mapContext.currentSearchData.streets;
+    const newMapSearchLlpgStreets =
+      isStreet && removedItem
+        ? mapContext.currentSearchData.llpgStreets.filter((x) => x.usrn !== removedItem.usrn)
+        : mapContext.currentSearchData.llpgStreets;
     const newMapSearchProperties =
       !isStreet && removedItem
         ? mapContext.currentSearchData.properties.filter((x) => x.uprn !== removedItem.uprn)
         : mapContext.currentSearchData.properties;
 
     searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newSearchData);
-    mapContext.onSearchDataChange(newMapSearchStreets, newMapSearchProperties, null, null);
+    mapContext.onSearchDataChange(newMapSearchStreets, newMapSearchLlpgStreets, newMapSearchProperties, null, null);
   };
 
   /**
@@ -924,7 +947,13 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
         (x) => [updatedProperty].find((rec) => rec.uprn === x.uprn) || x
       );
 
-      mapContext.onSearchDataChange(mapContext.currentSearchData.streets, currentSearchProperties, null, rec.uprn);
+      mapContext.onSearchDataChange(
+        mapContext.currentSearchData.streets,
+        mapContext.currentSearchData.llpgStreets,
+        currentSearchProperties,
+        null,
+        rec.uprn
+      );
     }
   }
 
@@ -958,7 +987,13 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
         (x) => [updatedProperty].find((rec) => rec.uprn === x.uprn) || x
       );
 
-      mapContext.onSearchDataChange(mapContext.currentSearchData.streets, currentSearchProperties, null, rec.uprn);
+      mapContext.onSearchDataChange(
+        mapContext.currentSearchData.streets,
+        mapContext.currentSearchData.llpgStreets,
+        currentSearchProperties,
+        null,
+        rec.uprn
+      );
     }
   }
 

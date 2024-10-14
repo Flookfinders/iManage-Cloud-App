@@ -79,6 +79,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    066   26.09.24 Sean Flook       IMANN-573 Updated the version.
+//    067   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -417,6 +418,7 @@ function App() {
 
   const [mapSearchData, setMapSearchData] = useState({
     streets: [],
+    llpgStreets: [],
     properties: [],
     editStreet: null,
     editProperty: null,
@@ -424,6 +426,7 @@ function App() {
 
   const [sourceMapSearchData, setSourceMapSearchData] = useState({
     streets: [],
+    llpgStreets: [],
     properties: [],
   });
 
@@ -2783,13 +2786,15 @@ function App() {
    * Event to handle when the mapping data changes for a search.
    *
    * @param {Array|null} streets The list of streets returned by the search.
+   * @param {Array|null} llpgStreets The list of LLPG streets returned by the search.
    * @param {Array|null} properties The list of properties returned by the search.
    * @param {number|null} editStreet The USRN of the street that is being edited.
    * @param {number|null} editProperty The UPRN of the property that is being edited.
    */
-  function HandleMapSearchDataChange(streets, properties, editStreet, editProperty, reloading = false) {
+  function HandleMapSearchDataChange(streets, llpgStreets, properties, editStreet, editProperty, reloading = false) {
     setMapSearchData({
       streets: streets,
+      llpgStreets: llpgStreets,
       properties: properties,
       editStreet: editStreet,
       editProperty: editProperty,
@@ -2800,6 +2805,7 @@ function App() {
         "mapSearch",
         JSON.stringify({
           streets: streets,
+          llpgStreets: llpgStreets,
           properties: properties,
           editStreet: editStreet,
           editProperty: editProperty,
@@ -2808,7 +2814,7 @@ function App() {
     }
 
     if (!editStreet && editStreet !== 0 && !editProperty && editProperty !== 0) {
-      setSourceMapSearchData({ streets: streets, properties: properties });
+      setSourceMapSearchData({ streets: streets, llpgStreets: llpgStreets, properties: properties });
     }
   }
 
@@ -3484,6 +3490,7 @@ function App() {
     if (
       sessionStorage.getItem("mapSearch") !== null &&
       (!mapSearchData.streets || mapSearchData.streets.length === 0) &&
+      (!mapSearchData.llpgStreets || mapSearchData.llpgStreets.length === 0) &&
       (!mapSearchData.properties || mapSearchData.properties.length === 0) &&
       !mapSearchData.editStreet &&
       !mapSearchData.editProperty
@@ -3491,6 +3498,7 @@ function App() {
       const savedMapSearch = JSON.parse(sessionStorage.getItem("mapSearch"));
       HandleMapSearchDataChange(
         savedMapSearch.streets,
+        savedMapSearch.llpgStreets,
         savedMapSearch.properties,
         savedMapSearch.editStreet,
         savedMapSearch.editProperty,

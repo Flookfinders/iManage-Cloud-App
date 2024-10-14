@@ -57,6 +57,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    054   10.10.24 Sean Flook      IMANN-1018 Allow LLPG editors to create streets.
+//    055   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -206,7 +207,10 @@ function ADSAppBar(props) {
   const handleCreateStreet = () => {
     streetContext.onStreetChange(0, "Add new Street", true);
 
-    const currentSearchStreets = mapContext.currentSearchData.streets;
+    const currentSearchStreets =
+      userContext.currentUser && userContext.currentUser.hasStreet
+        ? mapContext.currentSearchData.streets
+        : mapContext.currentSearchData.llpgStreets;
     currentSearchStreets.push({
       usrn: 0,
       description: "Add new Street",
@@ -246,7 +250,13 @@ function ADSAppBar(props) {
       asdType66: [],
     });
 
-    mapContext.onSearchDataChange(currentSearchStreets, [], "0", null);
+    mapContext.onSearchDataChange(
+      userContext.currentUser && userContext.currentUser.hasStreet ? currentSearchStreets : [],
+      userContext.currentUser && !userContext.currentUser.hasStreet ? currentSearchStreets : [],
+      [],
+      "0",
+      null
+    );
     mapContext.onEditMapObject(null, null);
   };
 
@@ -546,7 +556,7 @@ function ADSAppBar(props) {
     searchContext.onSearchDataChange("", []);
     sandboxContext.resetSandbox();
     mapContext.onBackgroundDataChange([], [], [], []);
-    mapContext.onSearchDataChange([], [], null, null);
+    mapContext.onSearchDataChange([], [], [], null, null);
     mapContext.onMapChange([], null, null);
     mapContext.onEditMapObject(null, null);
     informationContext.onClearInformation();
@@ -707,6 +717,19 @@ function ADSAppBar(props) {
             ? mapContext.sourceSearchData.streets
             : mapContext.currentSearchData.streets;
 
+        const currentSearchLlpgStreets =
+          streetContext.currentStreet && streetContext.currentStreet.newStreet && discardChanges
+            ? mapContext.sourceSearchData.llpgStreets.filter((x) => x.usrn !== 0)
+            : streetContext.currentStreet && streetContext.currentStreet.newStreet && !discardChanges
+            ? mapContext.currentSearchData.llpgStreets.filter((x) => x.usrn !== 0)
+            : discardChanges && originalStreet
+            ? mapContext.sourceSearchData.llpgStreets.map(
+                (x) => [originalStreet].find((rec) => rec.usrn.toString() === x.usrn.toString()) || x
+              )
+            : discardChanges
+            ? mapContext.sourceSearchData.llpgStreets
+            : mapContext.currentSearchData.llpgStreets;
+
         const foundProperty =
           discardChanges &&
           propertyContext.currentProperty &&
@@ -747,7 +770,13 @@ function ADSAppBar(props) {
         propertyContext.resetPropertyErrors();
         propertyContext.onWizardDone(null, false, null, null);
 
-        mapContext.onSearchDataChange(currentSearchStreets, currentSearchProperties, null, null);
+        mapContext.onSearchDataChange(
+          currentSearchStreets,
+          currentSearchLlpgStreets,
+          currentSearchProperties,
+          null,
+          null
+        );
         mapContext.onEditMapObject(null, null);
 
         informationContext.onClearInformation();

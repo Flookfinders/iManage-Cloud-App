@@ -53,6 +53,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    039   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//    040   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -483,17 +484,23 @@ function ADSSelectionControl({
         : searchContext.currentSearchData.results.filter((x) => x.type === 24);
     const newSearchData = newStreetSearchData.concat(newPropertySearchData);
 
-    const newMapSearchStreets =
-      haveStreet && streetUsrns
+    const newMapSearchStreets = userContext.currentUser.haveStreet
+      ? haveStreet && streetUsrns
         ? mapContext.currentSearchData.streets.filter((x) => !streetUsrns.includes(x.usrn))
-        : mapContext.currentSearchData.streets;
+        : mapContext.currentSearchData.streets
+      : [];
+    const newMapSearchLlpgStreets = !userContext.currentUser.haveStreet
+      ? haveStreet && streetUsrns
+        ? mapContext.currentSearchData.streets.filter((x) => !streetUsrns.includes(x.usrn))
+        : mapContext.currentSearchData.streets
+      : [];
     const newMapSearchProperties =
       haveProperty && propertyUprns
         ? mapContext.currentSearchData.properties.filter((x) => !propertyUprns.includes(x.uprn))
         : mapContext.currentSearchData.properties;
 
     searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newSearchData);
-    mapContext.onSearchDataChange(newMapSearchStreets, newMapSearchProperties, null, null);
+    mapContext.onSearchDataChange(newMapSearchStreets, newMapSearchLlpgStreets, newMapSearchProperties, null, null);
     if (onClose) onClose();
   };
 
@@ -771,6 +778,7 @@ function ADSSelectionControl({
 
       mapContext.onSearchDataChange(
         mapContext.currentSearchData.streets,
+        mapContext.currentSearchData.llpgStreets,
         currentSearchProperties,
         null,
         propertyData.uprn
@@ -862,6 +870,7 @@ function ADSSelectionControl({
 
         mapContext.onSearchDataChange(
           mapContext.currentSearchData.streets,
+          mapContext.currentSearchData.llpgStreets,
           currentSearchProperties,
           null,
           Number(currentUprn)
@@ -900,6 +909,7 @@ function ADSSelectionControl({
 
         mapContext.onSearchDataChange(
           mapContext.currentSearchData.streets,
+          mapContext.currentSearchData.llpgStreets,
           currentSearchProperties,
           null,
           Number(currentUprn)

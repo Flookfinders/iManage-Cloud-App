@@ -81,6 +81,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    068   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//    069   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2263,7 +2264,13 @@ function PropertyDataForm({ data, loading }) {
         newMapBackgroundProperties,
         mapContext.currentBackgroundData.provenances
       );
-      mapContext.onSearchDataChange(mapContext.currentSearchData.streets, newMapSearchProperties, null, null);
+      mapContext.onSearchDataChange(
+        mapContext.currentSearchData.streets,
+        mapContext.currentSearchData.llpgStreets,
+        newMapSearchProperties,
+        null,
+        null
+      );
 
       searchContext.onNavigateBack(true);
     }
@@ -2382,7 +2389,7 @@ function PropertyDataForm({ data, loading }) {
             ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
             if (propertyContext.currentProperty.newProperty) {
               propertyContext.resetProperty();
-              mapContext.onSearchDataChange([], [], null, null);
+              mapContext.onSearchDataChange([], [], [], null, null);
               mapContext.onEditMapObject(null, null);
 
               history.push(GazetteerRoute);
@@ -3921,7 +3928,7 @@ function PropertyDataForm({ data, loading }) {
             },
           ];
 
-          mapContext.onSearchDataChange([], currentSearchProperties, null, newPropertyData.uprn);
+          mapContext.onSearchDataChange([], [], currentSearchProperties, null, newPropertyData.uprn);
         }
         setPropertyData(newPropertyData);
         sandboxContext.onSandboxChange("currentProperty", newPropertyData);

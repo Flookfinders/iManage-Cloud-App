@@ -62,6 +62,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    049   01.10.24 Sean Flook       IMANN-899 Use the correct field for BLPU App Cross Reference.
+//    050   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2183,7 +2184,7 @@ export async function UpdateAfterSave(
     },
   ];
 
-  mapContext.onSearchDataChange([], currentSearchProperties, null, result.uprn);
+  mapContext.onSearchDataChange([], [], currentSearchProperties, null, result.uprn);
 }
 
 /**
@@ -2321,7 +2322,13 @@ export async function UpdateRangeAfterSave(
   }
 
   if (newMapSearchProperties)
-    mapContext.onSearchDataChange(mapContext.currentSearchData.streets, newMapSearchProperties, null, null);
+    mapContext.onSearchDataChange(
+      mapContext.currentSearchData.streets,
+      mapContext.currentSearchData.llpgStreets,
+      newMapSearchProperties,
+      null,
+      null
+    );
 
   sandboxContext.onRefreshRelated(true);
 }

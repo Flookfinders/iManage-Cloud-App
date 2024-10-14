@@ -63,6 +63,9 @@
 //    050   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
 //    051   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    052   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -1634,15 +1637,25 @@ export async function doOpenRecord(
       const engDescriptor = streetData.streetDescriptors.filter((x) => x.language === "ENG");
       streetContext.onStreetChange(rec.usrn, engDescriptor.streetDescriptor, false, openRelated);
       const esus = streetData
-        ? streetData.esus.map((esuRec) => ({
-            esuId: esuRec.esuId,
-            state: isScottish ? esuRec.sate : undefined,
-            geometry:
-              esuRec.wktGeometry && esuRec.wktGeometry !== "" ? GetWktCoordinates(esuRec.wktGeometry) : undefined,
-          }))
-        : undefined;
+        ? userContext.currentUser.hasStreet
+          ? streetData.esus.map((esuRec) => ({
+              esuId: esuRec.esuId,
+              state: isScottish ? esuRec.sate : undefined,
+              geometry:
+                esuRec.wktGeometry && esuRec.wktGeometry !== "" ? GetWktCoordinates(esuRec.wktGeometry) : undefined,
+            }))
+          : [
+              {
+                esuId: -1,
+                state: undefined,
+                geometry: GetWktCoordinates(
+                  `LINESTRING (${streetData.streetStartX} ${streetData.streetStartY}, ${streetData.streetEndX} ${streetData.streetEndY})`
+                ),
+              },
+            ]
+        : [];
       const asdType51 =
-        isScottish && streetData
+        userContext.currentUser.hasStreet && isScottish && streetData
           ? streetData.maintenanceResponsibilities.map((asdRec) => ({
               type: 51,
               pkId: asdRec.pkId,
@@ -1654,9 +1667,9 @@ export async function doOpenRecord(
               geometry:
                 asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
             }))
-          : undefined;
+          : [];
       const asdType52 =
-        isScottish && streetData
+        userContext.currentUser.hasStreet && isScottish && streetData
           ? streetData.reinstatementCategories.map((asdRec) => ({
               type: 52,
               pkId: asdRec.pkId,
@@ -1668,9 +1681,9 @@ export async function doOpenRecord(
               geometry:
                 asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
             }))
-          : undefined;
+          : [];
       const asdType53 =
-        isScottish && streetData
+        userContext.currentUser.hasStreet && isScottish && streetData
           ? streetData.specialDesignations.map((asdRec) => ({
               type: 53,
               pkId: asdRec.pkId,
@@ -1682,9 +1695,9 @@ export async function doOpenRecord(
               geometry:
                 asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
             }))
-          : undefined;
+          : [];
       const asdType61 =
-        !isScottish && hasASD && streetData
+        userContext.currentUser.hasStreet && !isScottish && hasASD && streetData
           ? streetData.interests.map((asdRec) => ({
               type: 61,
               pkId: asdRec.pkId,
@@ -1697,9 +1710,9 @@ export async function doOpenRecord(
               geometry:
                 asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
             }))
-          : undefined;
+          : [];
       const asdType62 =
-        !isScottish && hasASD && streetData
+        userContext.currentUser.hasStreet && !isScottish && hasASD && streetData
           ? streetData.constructions.map((asdRec) => ({
               type: 62,
               pkId: asdRec.pkId,
@@ -1712,9 +1725,9 @@ export async function doOpenRecord(
               geometry:
                 asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
             }))
-          : undefined;
+          : [];
       const asdType63 =
-        !isScottish && hasASD && streetData
+        userContext.currentUser.hasStreet && !isScottish && hasASD && streetData
           ? streetData.specialDesignations.map((asdRec) => ({
               type: 63,
               pkId: asdRec.pkId,
@@ -1726,9 +1739,9 @@ export async function doOpenRecord(
               geometry:
                 asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
             }))
-          : undefined;
+          : [];
       const asdType64 =
-        !isScottish && hasASD && streetData
+        userContext.currentUser.hasStreet && !isScottish && hasASD && streetData
           ? streetData.heightWidthWeights.map((asdRec) => ({
               type: 64,
               pkId: asdRec.pkId,
@@ -1740,9 +1753,9 @@ export async function doOpenRecord(
               geometry:
                 asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
             }))
-          : undefined;
+          : [];
       const asdType66 =
-        !isScottish && hasASD && streetData
+        userContext.currentUser.hasStreet && !isScottish && hasASD && streetData
           ? streetData.publicRightOfWays.map((asdRec) => ({
               type: 66,
               pkId: asdRec.pkId,
@@ -1755,7 +1768,7 @@ export async function doOpenRecord(
               geometry:
                 asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
             }))
-          : undefined;
+          : [];
       currentSearchStreets.push({
         usrn: rec.usrn,
         description: engDescriptor.streetDescriptor,
@@ -1777,7 +1790,13 @@ export async function doOpenRecord(
     } else {
       streetContext.onStreetChange(rec.usrn, foundStreet.street, false, openRelated);
     }
-    mapContext.onSearchDataChange(currentSearchStreets, mapContext.currentSearchData.properties, rec.usrn, null);
+    mapContext.onSearchDataChange(
+      userContext.currentUser.hasStreet ? currentSearchStreets : mapContext.currentSearchData.streets,
+      !userContext.currentUser.hasStreet ? currentSearchStreets : mapContext.currentSearchData.llpgStreets,
+      mapContext.currentSearchData.properties,
+      rec.usrn,
+      null
+    );
     mapContext.onEditMapObject(null, null);
   } else if (rec.type === 24) {
     propertyContext.onPropertyChange(
@@ -1819,7 +1838,13 @@ export async function doOpenRecord(
         }))
       : undefined;
 
-    mapContext.onSearchDataChange(mapContext.currentSearchData.streets, currentSearchProperties, null, rec.uprn);
+    mapContext.onSearchDataChange(
+      mapContext.currentSearchData.streets,
+      mapContext.currentSearchData.llpgStreets,
+      currentSearchProperties,
+      null,
+      rec.uprn
+    );
     mapContext.onMapChange(extents, null, null);
     mapContext.onEditMapObject(21, rec.uprn);
   }

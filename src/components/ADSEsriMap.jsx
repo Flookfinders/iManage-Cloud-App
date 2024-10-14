@@ -107,6 +107,7 @@
 //    091   01.10.24 Sean Flook       IMANN-993 Display the extent merge tool.
 //    092   03.10.24 Sean Flook       IMANN-958 Check user has property edit permission before trying to create a child/children.
 //    093   04.10.24 Sean Flook      IMANN-1005 Use a different colour for a closed street.
+//    094   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -204,6 +205,7 @@ import {
   GetStreetMapSymbol,
   GetESUMapSymbol,
   GetASDMapSymbol,
+  GetLlpgStreetMapSymbol,
 } from "../utils/ADSMapSymbols";
 import { CircularProgress, IconButton, Divider, Snackbar, Alert, Backdrop, Popper } from "@mui/material";
 import { Box, Stack } from "@mui/system";
@@ -230,6 +232,7 @@ const backgroundProvenanceLayerName = "backgroundProvenanceLayer";
 const backgroundStreetLayerName = "backgroundStreetLayer";
 const unassignedEsusLayerName = "unassignedEsusLayer";
 const streetLayerName = "streetLayer";
+const llpgStreetLayerName = "llpgStreetLayer";
 const propertyLayerName = "propertyLayer";
 const extentLayerName = "extentLayer";
 const asd51LayerName = "asd51Layer";
@@ -530,6 +533,106 @@ const streetRenderer = {
     {
       value: "9, 5",
       symbol: GetStreetMapSymbol(),
+      label: "Description used for LLPG Access, Street for addressing purposes only",
+    },
+    {
+      value: "-1, 1, 1",
+      symbol: GetLlpgStreetMapSymbol(),
+      label: "Official Designated Street Name, Under construction",
+    },
+    {
+      value: "-1, 1, 2",
+      symbol: GetLlpgStreetMapSymbol(),
+      label: "Official Designated Street Name, Open",
+    },
+    {
+      value: "-1, 1, 4",
+      symbol: GetLlpgStreetMapSymbol(true),
+      label: "Official Designated Street Name, Permanently closed",
+    },
+    {
+      value: "-1, 1, 5",
+      symbol: GetLlpgStreetMapSymbol(),
+      label: "Official Designated Street Name, Street for addressing purposes only",
+    },
+    {
+      value: "-1, 2, 1",
+      symbol: GetLlpgStreetMapSymbol(),
+      label: "Street Description, Under construction",
+    },
+    {
+      value: "-1, 2, 2",
+      symbol: GetLlpgStreetMapSymbol(),
+      label: "Street Description, Open",
+    },
+    {
+      value: "-1, 2, 4",
+      symbol: GetLlpgStreetMapSymbol(true),
+      label: "Street Description, Permanently closed",
+    },
+    {
+      value: "-1, 2, 5",
+      symbol: GetLlpgStreetMapSymbol(),
+      label: "Street Description, Street for addressing purposes only",
+    },
+    {
+      value: "-1, 3, 1",
+      symbol: GetLlpgStreetMapSymbol(),
+      label: "Numbered Street, Under construction",
+    },
+    {
+      value: "-1, 3, 2",
+      symbol: GetLlpgStreetMapSymbol(),
+      label: "Numbered Street, Open",
+    },
+    {
+      value: "-1, 3, 4",
+      symbol: GetLlpgStreetMapSymbol(true),
+      label: "Numbered Street, Permanently closed",
+    },
+    {
+      value: "-1, 3, 5",
+      symbol: GetLlpgStreetMapSymbol(),
+      label: "Numbered Street, Street for addressing purposes only",
+    },
+    {
+      value: "-1, 4, 1",
+      symbol: GetLlpgStreetMapSymbol(),
+      label: "Unofficial Street Description, Under construction",
+    },
+    {
+      value: "-1, 4, 2",
+      symbol: GetLlpgStreetMapSymbol(),
+      label: "Unofficial Street Description, Open",
+    },
+    {
+      value: "-1, 4, 4",
+      symbol: GetLlpgStreetMapSymbol(true),
+      label: "Unofficial Street Description, Permanently closed",
+    },
+    {
+      value: "-1, 4, 5",
+      symbol: GetLlpgStreetMapSymbol(),
+      label: "Unofficial Street Description, Street for addressing purposes only",
+    },
+    {
+      value: "-1, 9, 1",
+      symbol: GetLlpgStreetMapSymbol(),
+      label: "Description used for LLPG Access, Under construction",
+    },
+    {
+      value: "-1, 9, 2",
+      symbol: GetLlpgStreetMapSymbol(),
+      label: "Description used for LLPG Access, Open",
+    },
+    {
+      value: "-1, 9, 4",
+      symbol: GetLlpgStreetMapSymbol(true),
+      label: "Description used for LLPG Access, Permanently closed",
+    },
+    {
+      value: "-1, 9, 5",
+      symbol: GetLlpgStreetMapSymbol(),
       label: "Description used for LLPG Access, Street for addressing purposes only",
     },
   ],
@@ -1144,8 +1247,10 @@ function ADSEsriMap(startExtent) {
   const backgroundPropertyData = useRef(null);
   const backgroundProvenanceData = useRef(null);
   const [streetData, setStreetData] = useState(null);
+  const [llpgStreetData, setLlpgStreetData] = useState(null);
   const [propertyData, setPropertyData] = useState(null);
   const refStreetData = useRef(null);
+  const refLlpgStreetData = useRef(null);
   const refAsd51Data = useRef(null);
   const refAsd52Data = useRef(null);
   const refAsd53Data = useRef(null);
@@ -2184,10 +2289,17 @@ function ADSEsriMap(startExtent) {
             (a, b) => a.uprn === b.uprn
           );
 
-          mapContext.onSearchDataChange(mapContext.currentSearchData.streets, currentSearchProperties, null, uprn);
+          mapContext.onSearchDataChange(
+            mapContext.currentSearchData.streets,
+            mapContext.currentSearchData.llpgStreets,
+            currentSearchProperties,
+            null,
+            uprn
+          );
         } else {
           mapContext.onSearchDataChange(
             mapContext.currentSearchData.streets,
+            mapContext.currentSearchData.llpgStreets,
             mapContext.currentSearchData.properties,
             null,
             uprn
@@ -2208,215 +2320,293 @@ function ADSEsriMap(startExtent) {
 
       streetContext.onStreetChange(recordAttributes.current.USRN, recordAttributes.current.Description, false);
 
-      const foundStreet = mapContext.currentSearchData.streets.find(
-        (x) => x.usrn.toString() === recordAttributes.current.USRN.toString()
-      );
-
-      if (!foundStreet) {
-        const streetData = await GetStreetMapData(
-          Number(recordAttributes.current.USRN),
-          userContext.current,
-          isScottish.current
+      if (userContext.current.currentUser.hasStreet) {
+        const foundStreet = mapContext.currentSearchData.streets.find(
+          (x) => x.usrn.toString() === recordAttributes.current.USRN.toString()
         );
 
-        if (streetData) {
-          const engDescriptor = streetData.streetDescriptors.find((x) => x.language === "ENG");
-
-          const townRec = lookupContext.current.currentLookups.towns.find((x) => x.townRef === engDescriptor.townRef);
-          const localityRec = lookupContext.current.currentLookups.localities.find(
-            (x) => x.localityRef === engDescriptor.locRef
+        if (!foundStreet) {
+          const streetData = await GetStreetMapData(
+            Number(recordAttributes.current.USRN),
+            userContext.current,
+            isScottish.current
           );
 
-          const newSearchStreet = [
-            {
-              usrn: streetData.usrn,
-              description: engDescriptor.streetDescriptor,
-              language: "ENG",
-              locality: localityRec ? localityRec.locality : engDescriptor.locality,
-              town: townRec ? townRec.town : engDescriptor.town,
-              state: !isScottish ? streetData.state : undefined,
-              type: streetData.recordType,
-              esus:
-                streetData && streetData.esus
-                  ? streetData.esus
-                      .filter((esu) => esu.changeType !== "D")
-                      .map((esu) => ({
-                        esuId: esu.esuId,
-                        state: isScottish ? esu.state : undefined,
-                        geometry:
-                          esu.wktGeometry && esu.wktGeometry !== "" ? GetWktCoordinates(esu.wktGeometry) : undefined,
-                      }))
-                  : [],
-              asdType51:
-                isScottish.current && streetData.maintenanceResponsibilities
-                  ? streetData.maintenanceResponsibilities
-                      .filter((asdRec) => asdRec.changeType !== "D")
-                      .map((asdRec) => ({
-                        type: 51,
-                        pkId: asdRec.pkId,
-                        usrn: asdRec.usrn,
-                        streetStatus: asdRec.streetStatus,
-                        custodianCode: asdRec.custodianCode,
-                        maintainingAuthorityCode: asdRec.maintainingAuthorityCode,
-                        wholeRoad: asdRec.wholeRoad,
-                        geometry:
-                          asdRec.wktGeometry && asdRec.wktGeometry !== ""
-                            ? GetWktCoordinates(asdRec.wktGeometry)
-                            : undefined,
-                      }))
-                  : [],
-              asdType52:
-                isScottish.current && streetData.reinstatementCategories
-                  ? streetData.reinstatementCategories
-                      .filter((asdRec) => asdRec.changeType !== "D")
-                      .map((asdRec) => ({
-                        type: 52,
-                        pkId: asdRec.pkId,
-                        usrn: asdRec.usrn,
-                        reinstatementCategoryCode: asdRec.reinstatementCategoryCode,
-                        custodianCode: asdRec.custodianCode,
-                        reinstatementAuthorityCode: asdRec.reinstatementAuthorityCode,
-                        wholeRoad: asdRec.wholeRoad,
-                        geometry:
-                          asdRec.wktGeometry && asdRec.wktGeometry !== ""
-                            ? GetWktCoordinates(asdRec.wktGeometry)
-                            : undefined,
-                      }))
-                  : [],
-              asdType53:
-                isScottish.current && streetData.specialDesignations
-                  ? streetData.specialDesignations
-                      .filter((asdRec) => asdRec.changeType !== "D")
-                      .map((asdRec) => ({
-                        type: 53,
-                        pkId: asdRec.pkId,
-                        usrn: asdRec.usrn,
-                        specialDesignationCode: asdRec.specialDesignationCode,
-                        custodianCode: asdRec.custodianCode,
-                        authorityCode: asdRec.authorityCode,
-                        wholeRoad: asdRec.wholeRoad,
-                        geometry:
-                          asdRec.wktGeometry && asdRec.wktGeometry !== ""
-                            ? GetWktCoordinates(asdRec.wktGeometry)
-                            : undefined,
-                      }))
-                  : [],
-              asdType61:
-                !isScottish.current && userContext.current.currentUser.hasASD && streetData.interests
-                  ? streetData.interests
-                      .filter((asdRec) => asdRec.changeType !== "D")
-                      .map((asdRec) => ({
-                        type: 61,
-                        pkId: asdRec.pkId,
-                        usrn: asdRec.usrn,
-                        streetStatus: asdRec.streetStatus,
-                        interestType: asdRec.interestType,
-                        districtRefAuthority: asdRec.districtRefAuthority,
-                        swaOrgRefAuthority: asdRec.swaOrgRefAuthority,
-                        wholeRoad: asdRec.wholeRoad,
-                        geometry:
-                          asdRec.wktGeometry && asdRec.wktGeometry !== ""
-                            ? GetWktCoordinates(asdRec.wktGeometry)
-                            : undefined,
-                      }))
-                  : [],
-              asdType62:
-                !isScottish.current && userContext.current.currentUser.hasASD && streetData.constructions
-                  ? streetData.constructions
-                      .filter((asdRec) => asdRec.changeType !== "D")
-                      .map((asdRec) => ({
-                        type: 62,
-                        pkId: asdRec.pkId,
-                        usrn: asdRec.usrn,
-                        constructionType: asdRec.constructionType,
-                        reinstatementTypeCode: asdRec.reinstatementTypeCode,
-                        swaOrgRefConsultant: asdRec.swaOrgRefConsultant,
-                        districtRefConsultant: asdRec.districtRefConsultant,
-                        wholeRoad: asdRec.wholeRoad,
-                        geometry:
-                          asdRec.wktGeometry && asdRec.wktGeometry !== ""
-                            ? GetWktCoordinates(asdRec.wktGeometry)
-                            : undefined,
-                      }))
-                  : [],
-              asdType63:
-                !isScottish.current && userContext.current.currentUser.hasASD && streetData.specialDesignations
-                  ? streetData.specialDesignations
-                      .filter((asdRec) => asdRec.changeType !== "D")
-                      .map((asdRec) => ({
-                        type: 63,
-                        pkId: asdRec.pkId,
-                        usrn: asdRec.usrn,
-                        streetSpecialDesigCode: asdRec.streetSpecialDesigCode,
-                        swaOrgRefConsultant: asdRec.swaOrgRefConsultant,
-                        districtRefConsultant: asdRec.districtRefConsultant,
-                        wholeRoad: asdRec.wholeRoad,
-                        geometry:
-                          asdRec.wktGeometry && asdRec.wktGeometry !== ""
-                            ? GetWktCoordinates(asdRec.wktGeometry)
-                            : undefined,
-                      }))
-                  : [],
-              asdType64:
-                !isScottish.current && userContext.current.currentUser.hasASD && streetData.heightWidthWeights
-                  ? streetData.heightWidthWeights
-                      .filter((asdRec) => asdRec.changeType !== "D")
-                      .map((asdRec) => ({
-                        type: 64,
-                        pkId: asdRec.pkId,
-                        usrn: asdRec.usrn,
-                        hwwRestrictionCode: asdRec.hwwRestrictionCode,
-                        swaOrgRefConsultant: asdRec.swaOrgRefConsultant,
-                        districtRefConsultant: asdRec.districtRefConsultant,
-                        wholeRoad: asdRec.wholeRoad,
-                        geometry:
-                          asdRec.wktGeometry && asdRec.wktGeometry !== ""
-                            ? GetWktCoordinates(asdRec.wktGeometry)
-                            : undefined,
-                      }))
-                  : [],
-              asdType66:
-                !isScottish.current && userContext.current.currentUser.hasASD && streetData.publicRightOfWays
-                  ? streetData.publicRightOfWays
-                      .filter((asdRec) => asdRec.changeType !== "D")
-                      .map((asdRec) => ({
-                        type: 66,
-                        pkId: asdRec.pkId,
-                        prowUsrn: asdRec.prowUsrn,
-                        prowRights: asdRec.prowRights,
-                        prowStatus: asdRec.prowStatus,
-                        prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
-                        prowDistrictRefConsultant: asdRec.prowDistrictRefConsultant,
-                        defMapGeometryType: asdRec.defMapGeometryType,
-                        geometry:
-                          asdRec.wktGeometry && asdRec.wktGeometry !== ""
-                            ? GetWktCoordinates(asdRec.wktGeometry)
-                            : undefined,
-                      }))
-                  : [],
-            },
-          ];
+          if (streetData) {
+            const engDescriptor = streetData.streetDescriptors.find((x) => x.language === "ENG");
 
-          const currentSearchStreets = mergeArrays(
-            mapContext.currentSearchData.streets,
-            newSearchStreet,
-            (a, b) => a.usrn === b.usrn
-          );
+            const townRec = lookupContext.current.currentLookups.towns.find((x) => x.townRef === engDescriptor.townRef);
+            const localityRec = lookupContext.current.currentLookups.localities.find(
+              (x) => x.localityRef === engDescriptor.locRef
+            );
 
+            const newSearchStreet = [
+              {
+                usrn: streetData.usrn,
+                description: engDescriptor.streetDescriptor,
+                language: "ENG",
+                locality: localityRec ? localityRec.locality : engDescriptor.locality,
+                town: townRec ? townRec.town : engDescriptor.town,
+                state: !isScottish ? streetData.state : undefined,
+                type: streetData.recordType,
+                esus:
+                  streetData && streetData.esus
+                    ? streetData.esus
+                        .filter((esu) => esu.changeType !== "D")
+                        .map((esu) => ({
+                          esuId: esu.esuId,
+                          state: isScottish ? esu.state : undefined,
+                          geometry:
+                            esu.wktGeometry && esu.wktGeometry !== "" ? GetWktCoordinates(esu.wktGeometry) : undefined,
+                        }))
+                    : [],
+                asdType51:
+                  isScottish.current && streetData.maintenanceResponsibilities
+                    ? streetData.maintenanceResponsibilities
+                        .filter((asdRec) => asdRec.changeType !== "D")
+                        .map((asdRec) => ({
+                          type: 51,
+                          pkId: asdRec.pkId,
+                          usrn: asdRec.usrn,
+                          streetStatus: asdRec.streetStatus,
+                          custodianCode: asdRec.custodianCode,
+                          maintainingAuthorityCode: asdRec.maintainingAuthorityCode,
+                          wholeRoad: asdRec.wholeRoad,
+                          geometry:
+                            asdRec.wktGeometry && asdRec.wktGeometry !== ""
+                              ? GetWktCoordinates(asdRec.wktGeometry)
+                              : undefined,
+                        }))
+                    : [],
+                asdType52:
+                  isScottish.current && streetData.reinstatementCategories
+                    ? streetData.reinstatementCategories
+                        .filter((asdRec) => asdRec.changeType !== "D")
+                        .map((asdRec) => ({
+                          type: 52,
+                          pkId: asdRec.pkId,
+                          usrn: asdRec.usrn,
+                          reinstatementCategoryCode: asdRec.reinstatementCategoryCode,
+                          custodianCode: asdRec.custodianCode,
+                          reinstatementAuthorityCode: asdRec.reinstatementAuthorityCode,
+                          wholeRoad: asdRec.wholeRoad,
+                          geometry:
+                            asdRec.wktGeometry && asdRec.wktGeometry !== ""
+                              ? GetWktCoordinates(asdRec.wktGeometry)
+                              : undefined,
+                        }))
+                    : [],
+                asdType53:
+                  isScottish.current && streetData.specialDesignations
+                    ? streetData.specialDesignations
+                        .filter((asdRec) => asdRec.changeType !== "D")
+                        .map((asdRec) => ({
+                          type: 53,
+                          pkId: asdRec.pkId,
+                          usrn: asdRec.usrn,
+                          specialDesignationCode: asdRec.specialDesignationCode,
+                          custodianCode: asdRec.custodianCode,
+                          authorityCode: asdRec.authorityCode,
+                          wholeRoad: asdRec.wholeRoad,
+                          geometry:
+                            asdRec.wktGeometry && asdRec.wktGeometry !== ""
+                              ? GetWktCoordinates(asdRec.wktGeometry)
+                              : undefined,
+                        }))
+                    : [],
+                asdType61:
+                  !isScottish.current && userContext.current.currentUser.hasASD && streetData.interests
+                    ? streetData.interests
+                        .filter((asdRec) => asdRec.changeType !== "D")
+                        .map((asdRec) => ({
+                          type: 61,
+                          pkId: asdRec.pkId,
+                          usrn: asdRec.usrn,
+                          streetStatus: asdRec.streetStatus,
+                          interestType: asdRec.interestType,
+                          districtRefAuthority: asdRec.districtRefAuthority,
+                          swaOrgRefAuthority: asdRec.swaOrgRefAuthority,
+                          wholeRoad: asdRec.wholeRoad,
+                          geometry:
+                            asdRec.wktGeometry && asdRec.wktGeometry !== ""
+                              ? GetWktCoordinates(asdRec.wktGeometry)
+                              : undefined,
+                        }))
+                    : [],
+                asdType62:
+                  !isScottish.current && userContext.current.currentUser.hasASD && streetData.constructions
+                    ? streetData.constructions
+                        .filter((asdRec) => asdRec.changeType !== "D")
+                        .map((asdRec) => ({
+                          type: 62,
+                          pkId: asdRec.pkId,
+                          usrn: asdRec.usrn,
+                          constructionType: asdRec.constructionType,
+                          reinstatementTypeCode: asdRec.reinstatementTypeCode,
+                          swaOrgRefConsultant: asdRec.swaOrgRefConsultant,
+                          districtRefConsultant: asdRec.districtRefConsultant,
+                          wholeRoad: asdRec.wholeRoad,
+                          geometry:
+                            asdRec.wktGeometry && asdRec.wktGeometry !== ""
+                              ? GetWktCoordinates(asdRec.wktGeometry)
+                              : undefined,
+                        }))
+                    : [],
+                asdType63:
+                  !isScottish.current && userContext.current.currentUser.hasASD && streetData.specialDesignations
+                    ? streetData.specialDesignations
+                        .filter((asdRec) => asdRec.changeType !== "D")
+                        .map((asdRec) => ({
+                          type: 63,
+                          pkId: asdRec.pkId,
+                          usrn: asdRec.usrn,
+                          streetSpecialDesigCode: asdRec.streetSpecialDesigCode,
+                          swaOrgRefConsultant: asdRec.swaOrgRefConsultant,
+                          districtRefConsultant: asdRec.districtRefConsultant,
+                          wholeRoad: asdRec.wholeRoad,
+                          geometry:
+                            asdRec.wktGeometry && asdRec.wktGeometry !== ""
+                              ? GetWktCoordinates(asdRec.wktGeometry)
+                              : undefined,
+                        }))
+                    : [],
+                asdType64:
+                  !isScottish.current && userContext.current.currentUser.hasASD && streetData.heightWidthWeights
+                    ? streetData.heightWidthWeights
+                        .filter((asdRec) => asdRec.changeType !== "D")
+                        .map((asdRec) => ({
+                          type: 64,
+                          pkId: asdRec.pkId,
+                          usrn: asdRec.usrn,
+                          hwwRestrictionCode: asdRec.hwwRestrictionCode,
+                          swaOrgRefConsultant: asdRec.swaOrgRefConsultant,
+                          districtRefConsultant: asdRec.districtRefConsultant,
+                          wholeRoad: asdRec.wholeRoad,
+                          geometry:
+                            asdRec.wktGeometry && asdRec.wktGeometry !== ""
+                              ? GetWktCoordinates(asdRec.wktGeometry)
+                              : undefined,
+                        }))
+                    : [],
+                asdType66:
+                  !isScottish.current && userContext.current.currentUser.hasASD && streetData.publicRightOfWays
+                    ? streetData.publicRightOfWays
+                        .filter((asdRec) => asdRec.changeType !== "D")
+                        .map((asdRec) => ({
+                          type: 66,
+                          pkId: asdRec.pkId,
+                          prowUsrn: asdRec.prowUsrn,
+                          prowRights: asdRec.prowRights,
+                          prowStatus: asdRec.prowStatus,
+                          prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
+                          prowDistrictRefConsultant: asdRec.prowDistrictRefConsultant,
+                          defMapGeometryType: asdRec.defMapGeometryType,
+                          geometry:
+                            asdRec.wktGeometry && asdRec.wktGeometry !== ""
+                              ? GetWktCoordinates(asdRec.wktGeometry)
+                              : undefined,
+                        }))
+                    : [],
+              },
+            ];
+
+            const currentSearchStreets = mergeArrays(
+              mapContext.currentSearchData.streets,
+              newSearchStreet,
+              (a, b) => a.usrn === b.usrn
+            );
+
+            mapContext.onSearchDataChange(
+              currentSearchStreets,
+              mapContext.currentSearchData.llpgStreets,
+              mapContext.currentSearchData.properties,
+              recordAttributes.current.USRN,
+              null
+            );
+          }
+        } else {
           mapContext.onSearchDataChange(
-            currentSearchStreets,
+            mapContext.currentSearchData.streets,
+            mapContext.currentSearchData.llpgStreets,
             mapContext.currentSearchData.properties,
             recordAttributes.current.USRN,
             null
           );
         }
       } else {
-        mapContext.onSearchDataChange(
-          mapContext.currentSearchData.streets,
-          mapContext.currentSearchData.properties,
-          recordAttributes.current.USRN,
-          null
+        const foundLlpgStreet = mapContext.currentSearchData.llpgStreets.find(
+          (x) => x.usrn.toString() === recordAttributes.current.USRN.toString()
         );
+
+        if (!foundLlpgStreet) {
+          const llpgStreetData = await GetStreetMapData(
+            Number(recordAttributes.current.USRN),
+            userContext.current,
+            isScottish.current
+          );
+
+          if (llpgStreetData) {
+            const engDescriptor = llpgStreetData.streetDescriptors.find((x) => x.language === "ENG");
+
+            const townRec = lookupContext.current.currentLookups.towns.find((x) => x.townRef === engDescriptor.townRef);
+            const localityRec = lookupContext.current.currentLookups.localities.find(
+              (x) => x.localityRef === engDescriptor.locRef
+            );
+
+            const newSearchLlpgStreet = [
+              {
+                usrn: llpgStreetData.usrn,
+                description: engDescriptor.streetDescriptor,
+                language: "ENG",
+                locality: localityRec ? localityRec.locality : engDescriptor.locality,
+                town: townRec ? townRec.town : engDescriptor.town,
+                state: !isScottish ? llpgStreetData.state : undefined,
+                type: llpgStreetData.recordType,
+                esus: llpgStreetData
+                  ? [
+                      {
+                        esuId: -1,
+                        state: undefined,
+                        geometry: GetWktCoordinates(
+                          `LINESTRING (${llpgStreetData.streetStartX} ${llpgStreetData.streetStartY}, ${llpgStreetData.streetEndX} ${llpgStreetData.streetEndY})`
+                        ),
+                      },
+                    ]
+                  : [],
+                asdType51: [],
+                asdType52: [],
+                asdType53: [],
+                asdType61: [],
+                asdType62: [],
+                asdType63: [],
+                asdType64: [],
+                asdType66: [],
+              },
+            ];
+
+            const currentSearchLlpgStreets = mergeArrays(
+              mapContext.currentSearchData.llpgStreets,
+              newSearchLlpgStreet,
+              (a, b) => a.usrn === b.usrn
+            );
+
+            mapContext.onSearchDataChange(
+              mapContext.currentSearchData.streets,
+              currentSearchLlpgStreets,
+              mapContext.currentSearchData.properties,
+              recordAttributes.current.USRN,
+              null
+            );
+          }
+        } else {
+          mapContext.onSearchDataChange(
+            mapContext.currentSearchData.streets,
+            mapContext.currentSearchData.llpgStreets,
+            mapContext.currentSearchData.properties,
+            recordAttributes.current.USRN,
+            null
+          );
+        }
       }
 
       mapContext.onMapChange([], null, null);
@@ -3126,6 +3316,7 @@ function ADSEsriMap(startExtent) {
 
     oldMapData.current = {
       streets: oldMapData.current.streets,
+      llpgStreets: oldMapData.current.llpgStreets,
       properties: oldMapData.current.properties,
       extents: oldMapData.current.extents,
       backgroundStreets: mapContext.currentBackgroundData.streets,
@@ -3149,6 +3340,16 @@ function ADSEsriMap(startExtent) {
       else if (streetData)
         backgroundStreetData.current = mapContext.currentBackgroundData.streets.filter(
           (x) => streetData.findIndex((i) => i.usrn.toString() === x.usrn.toString()) === -1
+        );
+      else if (llpgStreetData && zoomStreetData)
+        backgroundStreetData.current = mapContext.currentBackgroundData.streets.filter(
+          (x) =>
+            llpgStreetData.findIndex((i) => i.usrn.toString() === x.usrn.toString()) === -1 &&
+            zoomStreetData.findIndex((i) => i.usrn.toString() === x.usrn.toString()) === -1
+        );
+      else if (llpgStreetData)
+        backgroundStreetData.current = mapContext.currentBackgroundData.streets.filter(
+          (x) => llpgStreetData.findIndex((i) => i.usrn.toString() === x.usrn.toString()) === -1
         );
       else if (zoomStreetData)
         backgroundStreetData.current = mapContext.currentBackgroundData.streets.filter(
@@ -3291,7 +3492,7 @@ function ADSEsriMap(startExtent) {
     });
 
     backgroundStreetLayerRef.current = backgroundStreetLayer;
-  }, [mapContext, streetData, zoomStreetData, fadeVisibilityOn]);
+  }, [mapContext, streetData, llpgStreetData, zoomStreetData, fadeVisibilityOn]);
 
   // Unassigned ESUs layer
   useEffect(() => {
@@ -3308,6 +3509,7 @@ function ADSEsriMap(startExtent) {
 
     oldMapData.current = {
       streets: oldMapData.current.streets,
+      llpgStreets: oldMapData.current.llpgStreets,
       properties: oldMapData.current.properties,
       extents: oldMapData.current.extents,
       backgroundStreets: oldMapData.current.streets,
@@ -3322,6 +3524,157 @@ function ADSEsriMap(startExtent) {
     };
 
     if (haveEsus) {
+      unassignedEsusData.current = mapContext.currentBackgroundData.unassignedEsus;
+    } else unassignedEsusData.current = null;
+
+    const unassignedEsusFeatures =
+      unassignedEsusData.current &&
+      unassignedEsusData.current.map((rec, index) => ({
+        geometry: {
+          type: "polyline",
+          paths: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
+          spatialReference: { wkid: 27700 },
+        },
+        attributes: {
+          ObjectID: index,
+          USRN: "",
+          EsuId: rec.esuId ? rec.esuId.toString() : "",
+          Description: "",
+          State: rec.state ? rec.state : 0,
+          Type: 0,
+          StateLabel: GetStreetStateLabel(rec.state ? rec.state : 0, false),
+          TypeLabel: GetStreetTypeLabel(0, isScottish.current, false),
+          SymbolCode: `0, ${rec.state ? rec.state.toString() : "0"}`,
+        },
+      }));
+
+    const unassignedEsusLayer = new FeatureLayer({
+      id: unassignedEsusLayerName,
+      copyright: `© Copyright Idox Software Ltd. ${new Date().getFullYear()}`,
+      source: unassignedEsusFeatures,
+      fields: [
+        {
+          name: "ObjectID",
+          alias: "ObjectID",
+          type: "oid",
+        },
+        {
+          name: "USRN",
+          alias: "USRN",
+          type: "string",
+        },
+        {
+          name: "EsuId",
+          alias: "EsuId",
+          type: "string",
+        },
+        {
+          name: "Description",
+          alias: "Description",
+          type: "string",
+        },
+        {
+          name: "State",
+          alias: "State",
+          type: "integer",
+        },
+        {
+          name: "Type",
+          alias: "Type",
+          type: "integer",
+        },
+        {
+          name: "StateLabel",
+          alias: "StateLabel",
+          type: "string",
+        },
+        {
+          name: "TypeLabel",
+          alias: "TypeLabel",
+          type: "string",
+        },
+        {
+          name: "SymbolCode",
+          alias: "SymbolCode",
+          type: "string",
+        },
+        {
+          name: "Geometry",
+          alias: "Geometry",
+          type: "string",
+        },
+      ],
+      outFields: ["*"],
+      objectIdField: "ObjectID",
+      popupTemplate: {
+        title: "Unassigned ESU",
+        lastEditInfoEnabled: false,
+        content: [
+          {
+            type: "fields",
+            fieldInfos: [
+              {
+                fieldName: "EsuId",
+                label: "ESU Id",
+              },
+            ],
+          },
+        ],
+        // actions: [streetAssignAction],
+        actions: [],
+      },
+      renderer: streetRenderer,
+      opacity: 0.75,
+      spatialReference: { wkid: 27700 },
+      title: "Unassigned ESU layer",
+      visible: true,
+    });
+
+    mapRef.current.remove(mapRef.current.findLayerById(unassignedEsusLayerName));
+
+    if (unassignedEsusData && unassignedEsusData.current && unassignedEsusData.current.length > 0)
+      mapRef.current.add(unassignedEsusLayer);
+
+    unassignedEsusLayer.watch("visible", (visible) => {
+      mapContext.onLayerVisibilityChange("unassignedEsus", visible);
+      if (visible) {
+        fadeVisibilityOn(unassignedEsusLayer);
+      }
+    });
+
+    unassignedEsusLayerRef.current = unassignedEsusLayer;
+  }, [mapContext, fadeVisibilityOn]);
+
+  // LLPG Street layer
+  useEffect(() => {
+    const haveLlpgStreets =
+      mapContext.currentBackgroundData &&
+      mapContext.currentBackgroundData.unassignedEsus &&
+      mapContext.currentBackgroundData.unassignedEsus.length > 0;
+
+    const oldAndNewSame = haveLlpgStreets
+      ? ArraysEqual(oldMapData.current.unassignedEsus, mapContext.currentBackgroundData.unassignedEsus)
+      : false;
+
+    if (!mapRef.current || !mapRef.current.layers || !haveLlpgStreets || oldAndNewSame) return;
+
+    oldMapData.current = {
+      streets: oldMapData.current.streets,
+      llpgStreets: oldMapData.current.llpgStreets,
+      properties: oldMapData.current.properties,
+      extents: oldMapData.current.extents,
+      backgroundStreets: oldMapData.current.streets,
+      unassignedEsus: mapContext.currentBackgroundData.unassignedEsus,
+      backgroundProperties: oldMapData.current.backgroundProperties,
+      backgroundProvenances: oldMapData.current.backgroundProvenances,
+      editStreet: oldMapData.current.editStreet,
+      editProperty: oldMapData.current.editProperty,
+      zoomStreet: oldMapData.current.zoomStreet,
+      zoomProperty: oldMapData.current.zoomProperty,
+      mapProperty: oldMapData.current.mapProperty,
+    };
+
+    if (haveLlpgStreets) {
       unassignedEsusData.current = mapContext.currentBackgroundData.unassignedEsus;
     } else unassignedEsusData.current = null;
 
@@ -3472,6 +3825,7 @@ function ADSEsriMap(startExtent) {
 
     oldMapData.current = {
       streets: oldMapData.current.streets,
+      llpgStreets: oldMapData.current.llpgStreets,
       properties: oldMapData.current.properties,
       extents: oldMapData.current.extents,
       backgroundStreets: oldMapData.current.backgroundStreets,
@@ -3750,6 +4104,7 @@ function ADSEsriMap(startExtent) {
 
     oldMapData.current = {
       streets: oldMapData.current.streets,
+      llpgStreets: oldMapData.current.llpgStreets,
       properties: oldMapData.current.properties,
       extents: oldMapData.current.extents,
       backgroundStreets: oldMapData.current.streets,
@@ -3912,6 +4267,7 @@ function ADSEsriMap(startExtent) {
       !view ||
       !view.ui ||
       (oldMapData.current.streets === mapContext.currentSearchData.streets &&
+        oldMapData.current.llpgStreets === mapContext.currentSearchData.llpgStreets &&
         oldMapData.current.properties === mapContext.currentSearchData.properties &&
         oldMapData.current.extents === mapContext.currentLayers.extents &&
         oldMapData.current.editStreet === mapContext.currentSearchData.editStreet &&
@@ -3923,6 +4279,7 @@ function ADSEsriMap(startExtent) {
       return;
 
     let streetDataRef = null;
+    let llpgStreetDataRef = null;
     let asdType51DataRef = null;
     let asdType52DataRef = null;
     let asdType53DataRef = null;
@@ -3937,30 +4294,57 @@ function ADSEsriMap(startExtent) {
 
     if (mapContext.currentLayers && mapContext.currentSearchData) {
       if (mapContext.currentLayers.zoomStreet) {
-        const currentStreets = mapContext.currentSearchData.streets.filter(
-          (x) => x.usrn.toString() === mapContext.currentLayers.zoomStreet.usrn.toString()
-        );
+        if (userContext.current.currentUser.hasStreet) {
+          const currentStreets = mapContext.currentSearchData.streets.filter(
+            (x) => x.usrn.toString() === mapContext.currentLayers.zoomStreet.usrn.toString()
+          );
 
-        let mapStreets = [];
+          let mapStreets = [];
 
-        currentStreets.forEach((street) => {
-          mapStreets = street.esus.map((esu) => {
-            return {
-              usrn: street.usrn,
-              description: street.streetDescriptor,
-              language: street.language,
-              locality: street.locality,
-              town: street.town,
-              type: street.type,
-              state: street.state,
-              esuId: esu.esuId,
-              geometry: esu.geometry,
-            };
+          currentStreets.forEach((street) => {
+            mapStreets = street.esus.map((esu) => {
+              return {
+                usrn: street.usrn,
+                description: street.streetDescriptor,
+                language: street.language,
+                locality: street.locality,
+                town: street.town,
+                type: street.type,
+                state: street.state,
+                esuId: esu.esuId,
+                geometry: esu.geometry,
+              };
+            });
           });
-        });
 
-        if (mapStreets && mapStreets.length > 0) zoomStreetDataRef = mapStreets;
-        else zoomStreetDataRef = null;
+          if (mapStreets && mapStreets.length > 0) zoomStreetDataRef = mapStreets;
+          else zoomStreetDataRef = null;
+        } else {
+          const currentLlpgStreets = mapContext.currentSearchData.llpgStreets.filter(
+            (x) => x.usrn.toString() === mapContext.currentLayers.zoomStreet.usrn.toString()
+          );
+
+          let mapLlpgStreets = [];
+
+          currentLlpgStreets.forEach((street) => {
+            mapLlpgStreets = street.esus.map((esu) => {
+              return {
+                usrn: street.usrn,
+                description: street.streetDescriptor,
+                language: street.language,
+                locality: street.locality,
+                town: street.town,
+                type: street.type,
+                state: street.state,
+                esuId: esu.esuId,
+                geometry: esu.geometry,
+              };
+            });
+          });
+
+          if (mapLlpgStreets && mapLlpgStreets.length > 0) zoomStreetDataRef = mapLlpgStreets;
+          else zoomStreetDataRef = null;
+        }
       } else zoomStreetDataRef = null;
       setZoomStreetData(zoomStreetDataRef);
 
@@ -3987,22 +4371,27 @@ function ADSEsriMap(startExtent) {
         );
       } else extentData.current = null;
 
-      if (mapContext.currentSearchData.streets && !mapContext.currentSearchData.editProperty) {
+      let mapStreets = [];
+      let mapLlpgStreets = [];
+      let mapAsd51 = [];
+      let mapAsd52 = [];
+      let mapAsd53 = [];
+      let mapAsd61 = [];
+      let mapAsd62 = [];
+      let mapAsd63 = [];
+      let mapAsd64 = [];
+      let mapAsd66 = [];
+
+      if (
+        userContext.current.currentUser.hasStreet &&
+        mapContext.currentSearchData.streets &&
+        !mapContext.currentSearchData.editProperty
+      ) {
         const currentStreets = mapContext.currentSearchData.editStreet
           ? mapContext.currentSearchData.streets.filter(
               (x) => x.usrn.toString() === mapContext.currentSearchData.editStreet.toString()
             )
           : mapContext.currentSearchData.streets;
-
-        let mapStreets = [];
-        let mapAsd51 = [];
-        let mapAsd52 = [];
-        let mapAsd53 = [];
-        let mapAsd61 = [];
-        let mapAsd62 = [];
-        let mapAsd63 = [];
-        let mapAsd64 = [];
-        let mapAsd66 = [];
 
         currentStreets.forEach((street) => {
           if (street.esus) {
@@ -4197,6 +4586,8 @@ function ADSEsriMap(startExtent) {
         if (mapStreets && mapStreets.length > 0) streetDataRef = mapStreets;
         else streetDataRef = null;
 
+        llpgStreetDataRef = null;
+
         if (mapAsd51 && mapAsd51.length > 0) asdType51DataRef = mapAsd51;
         else asdType51DataRef = null;
 
@@ -4220,8 +4611,53 @@ function ADSEsriMap(startExtent) {
 
         if (mapAsd66 && mapAsd66.length > 0) asdType66DataRef = mapAsd66;
         else asdType66DataRef = null;
+      } else if (
+        !userContext.current.currentUser.hasStreet &&
+        mapContext.currentSearchData.llpgStreets &&
+        !mapContext.currentSearchData.editProperty
+      ) {
+        const currentLlpgStreets = mapContext.currentSearchData.editStreet
+          ? mapContext.currentSearchData.llpgStreets.filter(
+              (x) => x.usrn.toString() === mapContext.currentSearchData.editStreet.toString()
+            )
+          : mapContext.currentSearchData.llpgStreets;
+
+        currentLlpgStreets.forEach((street) => {
+          if (street.esus) {
+            mapLlpgStreets = mapLlpgStreets.concat(
+              street.esus.map((esu) => {
+                return {
+                  usrn: street.usrn,
+                  description: street.description,
+                  language: street.language,
+                  locality: street.locality,
+                  town: street.town,
+                  type: street.type,
+                  state: isScottish.current ? esu.state : street.state,
+                  esuId: esu.esuId,
+                  geometry: esu.geometry,
+                };
+              })
+            );
+          }
+        });
+
+        streetDataRef = null;
+
+        if (mapLlpgStreets && mapLlpgStreets.length > 0) llpgStreetDataRef = mapLlpgStreets;
+        else llpgStreetDataRef = null;
+
+        asdType51DataRef = null;
+        asdType52DataRef = null;
+        asdType53DataRef = null;
+        asdType61DataRef = null;
+        asdType62DataRef = null;
+        asdType63DataRef = null;
+        asdType64DataRef = null;
+        asdType66DataRef = null;
       } else {
         streetDataRef = null;
+        llpgStreetDataRef = null;
         asdType51DataRef = null;
         asdType52DataRef = null;
         asdType53DataRef = null;
@@ -4231,8 +4667,11 @@ function ADSEsriMap(startExtent) {
         asdType64DataRef = null;
         asdType66DataRef = null;
       }
+
       setStreetData(streetDataRef);
+      setLlpgStreetData(llpgStreetDataRef);
       refStreetData.current = streetDataRef;
+      refLlpgStreetData.current = llpgStreetDataRef;
       refAsd51Data.current = asdType51DataRef;
       refAsd52Data.current = asdType52DataRef;
       refAsd53Data.current = asdType53DataRef;
@@ -4311,6 +4750,93 @@ function ADSEsriMap(startExtent) {
             false
           ),
           SymbolCode: `${
+            mapContext.currentStreet &&
+            mapContext.currentStreet.usrn &&
+            mapContext.currentStreet.usrn.toString() === rec.usrn.toString()
+              ? mapContext.currentStreet.type
+              : rec.type
+              ? rec.type
+              : "1"
+          }, ${
+            mapContext.currentStreet &&
+            mapContext.currentStreet.usrn &&
+            mapContext.currentStreet.usrn.toString() === rec.usrn.toString()
+              ? mapContext.currentStreet.state
+              : rec.state
+              ? rec.state
+              : "2"
+          }`,
+        },
+      }));
+
+    const llpgStreetFeatures =
+      llpgStreetDataRef &&
+      llpgStreetDataRef.map((rec, index) => ({
+        geometry: {
+          type: "polyline",
+          paths:
+            mapContext.currentStreet &&
+            mapContext.currentStreet.usrn &&
+            mapContext.currentStreet.usrn.toString() === rec.usrn.toString()
+              ? mapContext.currentStreet.geometry
+              : rec.geometry,
+          spatialReference: { wkid: 27700 },
+        },
+        attributes: {
+          ObjectID: index,
+          USRN: rec.usrn.toString(),
+          EsuId: rec.esuId.toString(),
+          Description: streetToTitleCase(
+            mapContext.currentStreet &&
+              mapContext.currentStreet.usrn &&
+              mapContext.currentStreet.usrn.toString() === rec.usrn.toString()
+              ? `${rec.description ? rec.description : "Unknown"}${
+                  mapContext.currentStreet.locality && mapContext.currentStreet.locality !== "Unassigned"
+                    ? " " + mapContext.currentStreet.locality
+                    : ""
+                }${
+                  mapContext.currentStreet.town && mapContext.currentStreet.town !== "Unassigned"
+                    ? " " + mapContext.currentStreet.town
+                    : ""
+                }`
+              : `${rec.description ? rec.description : "Unknown"}${
+                  rec.locality && rec.locality !== "Unassigned" ? " " + rec.locality : ""
+                }${rec.town && rec.town !== "Unassigned" ? " " + rec.town : ""}`
+          ),
+          State:
+            mapContext.currentStreet &&
+            mapContext.currentStreet.usrn &&
+            mapContext.currentStreet.usrn.toString() === rec.usrn.toString()
+              ? mapContext.currentStreet.state
+              : rec.state,
+          Type:
+            mapContext.currentStreet &&
+            mapContext.currentStreet.usrn &&
+            mapContext.currentStreet.usrn.toString() === rec.usrn.toString()
+              ? mapContext.currentStreet.type
+              : rec.type
+              ? rec.type
+              : 1,
+          StateLabel: GetStreetStateLabel(
+            mapContext.currentStreet &&
+              mapContext.currentStreet.usrn &&
+              mapContext.currentStreet.usrn.toString() === rec.usrn.toString()
+              ? mapContext.currentStreet.state
+              : rec.state,
+            false
+          ),
+          TypeLabel: GetStreetTypeLabel(
+            mapContext.currentStreet &&
+              mapContext.currentStreet.usrn &&
+              mapContext.currentStreet.usrn.toString() === rec.usrn.toString()
+              ? mapContext.currentStreet.type
+              : rec.type
+              ? rec.type
+              : 1,
+            isScottish.current,
+            false
+          ),
+          SymbolCode: `-1, ${
             mapContext.currentStreet &&
             mapContext.currentStreet.usrn &&
             mapContext.currentStreet.usrn.toString() === rec.usrn.toString()
@@ -4705,6 +5231,101 @@ function ADSEsriMap(startExtent) {
 
     if (userContext.current && userContext.current.currentUser.editProperty && streetLayer) {
       streetLayer.popupTemplate.actions = [
+        streetOpenAction,
+        streetAddProperty,
+        streetAddRangeProperties,
+        streetStreetViewAction,
+      ];
+    }
+
+    const llpgStreetLayer = new FeatureLayer({
+      id: llpgStreetLayerName,
+      copyright: `© Copyright Idox Software Ltd. ${new Date().getFullYear()}`,
+      source: llpgStreetFeatures,
+      fields: [
+        {
+          name: "ObjectID",
+          alias: "ObjectID",
+          type: "oid",
+        },
+        {
+          name: "USRN",
+          alias: "USRN",
+          type: "string",
+        },
+        {
+          name: "EsuId",
+          alias: "EsuId",
+          type: "string",
+        },
+        {
+          name: "Description",
+          alias: "Description",
+          type: "string",
+        },
+        {
+          name: "State",
+          alias: "State",
+          type: "integer",
+        },
+        {
+          name: "Type",
+          alias: "Type",
+          type: "integer",
+        },
+        {
+          name: "StateLabel",
+          alias: "StateLabel",
+          type: "string",
+        },
+        {
+          name: "TypeLabel",
+          alias: "TypeLabel",
+          type: "string",
+        },
+        {
+          name: "SymbolCode",
+          alias: "SymbolCode",
+          type: "string",
+        },
+        {
+          name: "Geometry",
+          alias: "Geometry",
+          type: "string",
+        },
+      ],
+      outFields: ["*"],
+      objectIdField: "ObjectID",
+      popupTemplate: {
+        title: "{Description}",
+        lastEditInfoEnabled: false,
+        content: [
+          {
+            type: "fields",
+            fieldInfos: [
+              {
+                fieldName: "USRN",
+              },
+              {
+                fieldName: "StateLabel",
+                label: "Status",
+              },
+              {
+                fieldName: "TypeLabel",
+                label: "Type",
+              },
+            ],
+          },
+        ],
+        actions: [streetOpenAction, streetStreetViewAction],
+      },
+      renderer: streetRenderer,
+      spatialReference: { wkid: 27700 },
+      title: "LLPG Street layer",
+    });
+
+    if (userContext.current && userContext.current.currentUser.editProperty && llpgStreetLayer) {
+      llpgStreetLayer.popupTemplate.actions = [
         streetOpenAction,
         streetAddProperty,
         streetAddRangeProperties,
@@ -5524,6 +6145,7 @@ function ADSEsriMap(startExtent) {
     });
 
     mapRef.current.remove(mapRef.current.findLayerById(streetLayerName));
+    mapRef.current.remove(mapRef.current.findLayerById(llpgStreetLayerName));
     mapRef.current.remove(mapRef.current.findLayerById(asd51LayerName));
     mapRef.current.remove(mapRef.current.findLayerById(asd52LayerName));
     mapRef.current.remove(mapRef.current.findLayerById(asd53LayerName));
@@ -5541,6 +6163,10 @@ function ADSEsriMap(startExtent) {
     if (streetDataRef && streetDataRef.length > 0) {
       mapRef.current.add(streetLayer);
       if (editingGraphic) streetLayer.popupEnabled = false;
+    }
+    if (llpgStreetDataRef && llpgStreetDataRef.length > 0) {
+      mapRef.current.add(llpgStreetLayer);
+      if (editingGraphic) llpgStreetLayer.popupEnabled = false;
     }
     if (asdType51DataRef && asdType51DataRef.length > 0) {
       mapRef.current.add(asd51Layer);
@@ -5670,6 +6296,47 @@ function ADSEsriMap(startExtent) {
       }
     });
 
+    llpgStreetLayer.when(function () {
+      if (
+        !mapContext.currentLayers.zoomStreet &&
+        !mapContext.currentLayers.zoomProperty &&
+        (!editingObject.current || editingObject.current.objectType !== 13)
+      ) {
+        if (propertyLayer.fullExtent) {
+          backgroundExtent.current = {
+            xmin:
+              (llpgStreetLayer.fullExtent.xmin < propertyLayer.fullExtent.xmin
+                ? llpgStreetLayer.fullExtent.xmin
+                : propertyLayer.fullExtent.xmin) - extentBorder,
+            ymin:
+              (llpgStreetLayer.fullExtent.ymin < propertyLayer.fullExtent.ymin
+                ? llpgStreetLayer.fullExtent.ymin
+                : propertyLayer.fullExtent.ymin) - extentBorder,
+            xmax:
+              (llpgStreetLayer.fullExtent.xmax > propertyLayer.fullExtent.xmax
+                ? llpgStreetLayer.fullExtent.xmax
+                : propertyLayer.fullExtent.xmax) + extentBorder,
+            ymax:
+              (llpgStreetLayer.fullExtent.ymax > propertyLayer.fullExtent.ymax
+                ? llpgStreetLayer.fullExtent.ymax
+                : propertyLayer.fullExtent.ymax) + extentBorder,
+            spatialReference: { wkid: 27700 },
+            zoomLevel: view.zoom,
+          };
+        } else if (llpgStreetLayer.fullExtent) {
+          backgroundExtent.current = {
+            xmin: llpgStreetLayer.fullExtent.xmin - extentBorder,
+            ymin: llpgStreetLayer.fullExtent.ymin - extentBorder,
+            xmax: llpgStreetLayer.fullExtent.xmax + extentBorder,
+            ymax: llpgStreetLayer.fullExtent.ymax + extentBorder,
+            spatialReference: { wkid: 27700 },
+            zoomLevel: view.zoom,
+          };
+        }
+        view.extent = backgroundExtent.current;
+      }
+    });
+
     propertyLayer.when(function () {
       if (
         !mapContext.currentLayers.zoomStreet &&
@@ -5693,6 +6360,27 @@ function ADSEsriMap(startExtent) {
             ymax:
               (streetLayer.fullExtent.ymax > propertyLayer.fullExtent.ymax
                 ? streetLayer.fullExtent.ymax
+                : propertyLayer.fullExtent.ymax) + extentBorder,
+            spatialReference: { wkid: 27700 },
+            zoomLevel: view.zoom,
+          };
+        } else if (llpgStreetLayer.fullExtent) {
+          backgroundExtent.current = {
+            xmin:
+              (llpgStreetLayer.fullExtent.xmin < propertyLayer.fullExtent.xmin
+                ? llpgStreetLayer.fullExtent.xmin
+                : propertyLayer.fullExtent.xmin) - extentBorder,
+            ymin:
+              (llpgStreetLayer.fullExtent.ymin < propertyLayer.fullExtent.ymin
+                ? llpgStreetLayer.fullExtent.ymin
+                : propertyLayer.fullExtent.ymin) - extentBorder,
+            xmax:
+              (llpgStreetLayer.fullExtent.xmax > propertyLayer.fullExtent.xmax
+                ? llpgStreetLayer.fullExtent.xmax
+                : propertyLayer.fullExtent.xmax) + extentBorder,
+            ymax:
+              (llpgStreetLayer.fullExtent.ymax > propertyLayer.fullExtent.ymax
+                ? llpgStreetLayer.fullExtent.ymax
                 : propertyLayer.fullExtent.ymax) + extentBorder,
             spatialReference: { wkid: 27700 },
             zoomLevel: view.zoom,
@@ -6350,6 +7038,14 @@ function ADSEsriMap(startExtent) {
 
         case "decrease-street-opacity":
           if (streetLayer.opacity > 0) streetLayer.opacity -= 0.25;
+          break;
+
+        case "increase-llpg-street-opacity":
+          if (llpgStreetLayer.opacity < 1) llpgStreetLayer.opacity += 0.25;
+          break;
+
+        case "decrease-llpg-street-opacity":
+          if (llpgStreetLayer.opacity > 0) llpgStreetLayer.opacity -= 0.25;
           break;
 
         case "increase-extent-opacity":
@@ -7263,6 +7959,7 @@ function ADSEsriMap(startExtent) {
 
     oldMapData.current = {
       streets: mapContext.currentSearchData.streets,
+      llpgStreets: mapContext.currentSearchData.llpgStreets,
       properties: mapContext.currentSearchData.properties,
       extents: mapContext.currentLayers.extents,
       backgroundStreets: mapContext.currentBackgroundData.streets,
@@ -7298,10 +7995,12 @@ function ADSEsriMap(startExtent) {
     const backgroundPropertyLayer = mapRef.current.findLayerById(backgroundPropertyLayerName);
     const backgroundProvenanceLayer = mapRef.current.findLayerById(backgroundProvenanceLayerName);
     const streetLayer = mapRef.current.findLayerById(streetLayerName);
+    const llpgStreetLayer = mapRef.current.findLayerById(llpgStreetLayerName);
     const propertyLayer = mapRef.current.findLayerById(propertyLayerName);
     const extentLayer = mapRef.current.findLayerById(extentLayerName);
 
-    if (!backgroundStreetLayer || !backgroundPropertyLayer || !streetLayer || !propertyLayer) return;
+    if (!backgroundStreetLayer || !backgroundPropertyLayer || !streetLayer || !llpgStreetLayer || !propertyLayer)
+      return;
 
     let levelAboveBase = baseMapLayers.current.length;
 
@@ -7329,9 +8028,18 @@ function ADSEsriMap(startExtent) {
     if (currentBackgroundPropertyIndex !== requiredBackgroundPropertyIndex)
       mapRef.current.reorder(backgroundPropertyLayer, requiredBackgroundPropertyIndex);
 
-    const currentStreetIndex = mapRef.current.layers.indexOf(streetLayer);
-    const requiredStreetIndex = levelAboveBase++;
-    if (currentStreetIndex !== requiredStreetIndex) mapRef.current.reorder(streetLayer, requiredStreetIndex);
+    if (streetLayer) {
+      const currentStreetIndex = mapRef.current.layers.indexOf(streetLayer);
+      const requiredStreetIndex = levelAboveBase++;
+      if (currentStreetIndex !== requiredStreetIndex) mapRef.current.reorder(streetLayer, requiredStreetIndex);
+    }
+
+    if (llpgStreetLayer) {
+      const currentLlpgStreetIndex = mapRef.current.layers.indexOf(llpgStreetLayer);
+      const requiredLlpgStreetIndex = levelAboveBase++;
+      if (currentLlpgStreetIndex !== requiredLlpgStreetIndex)
+        mapRef.current.reorder(llpgStreetLayer, requiredLlpgStreetIndex);
+    }
 
     if (extentLayer) {
       const currentExtentIndex = mapRef.current.layers.indexOf(extentLayer);
@@ -7365,6 +8073,7 @@ function ADSEsriMap(startExtent) {
           if (unassignedEsusLayerRef.current)
             LayersUsedForSnapping.push({ layer: unassignedEsusLayerRef.current, enabled: true });
           if (streetLayer) LayersUsedForSnapping.push({ layer: streetLayer, enabled: true });
+          if (llpgStreetLayer) LayersUsedForSnapping.push({ layer: llpgStreetLayer, enabled: true });
           baseLayersSnapEsu.current.forEach((layerId) => {
             baseLayer = mapRef.current && mapRef.current.findLayerById(layerId);
             if (baseLayer) LayersUsedForSnapping.push({ layer: baseLayer, enabled: true });
@@ -7540,6 +8249,7 @@ function ADSEsriMap(startExtent) {
     if (!mapRef.current || !mapRef.current.layers || !mapRef.current.layers.length) return;
 
     const streetLayer = mapRef.current && mapRef.current.findLayerById(streetLayerName);
+    const llpgStreetLayer = mapRef.current && mapRef.current.findLayerById(llpgStreetLayerName);
     const asd51Layer = mapRef.current && mapRef.current.findLayerById(asd51LayerName);
     const asd52Layer = mapRef.current && mapRef.current.findLayerById(asd52LayerName);
     const asd53Layer = mapRef.current && mapRef.current.findLayerById(asd53LayerName);
@@ -7660,6 +8370,10 @@ function ADSEsriMap(startExtent) {
           streetLayer.opacity = 1;
           streetLayer.popupEnabled = true;
         }
+        if (llpgStreetLayer) {
+          llpgStreetLayer.opacity = 1;
+          llpgStreetLayer.popupEnabled = true;
+        }
         if (asd51Layer) {
           asd51Layer.opacity = 1;
           asd51Layer.popupEnabled = true;
@@ -7723,6 +8437,7 @@ function ADSEsriMap(startExtent) {
         if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.popupEnabled = false;
         if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.popupEnabled = false;
         if (streetLayer) streetLayer.popupEnabled = false;
+        if (llpgStreetLayer) llpgStreetLayer.popupEnabled = false;
         if (asd51Layer) asd51Layer.popupEnabled = false;
         if (asd52Layer) asd52Layer.popupEnabled = false;
         if (asd53Layer) asd53Layer.popupEnabled = false;
@@ -7764,6 +8479,7 @@ function ADSEsriMap(startExtent) {
               if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.opacity = 0.25;
               if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.opacity = 0.25;
               if (streetLayer) streetLayer.opacity = 0.5;
+              if (llpgStreetLayer) llpgStreetLayer.opacity = 0.5;
 
               editGraphicsLayer.current.listMode = "show";
               setSnappingLayers();
@@ -8081,6 +8797,10 @@ function ADSEsriMap(startExtent) {
               streetLayer.opacity = 1;
               if (!editingGraphic) streetLayer.popupEnabled = true;
             }
+            if (llpgStreetLayer) {
+              llpgStreetLayer.opacity = 1;
+              if (!editingGraphic) llpgStreetLayer.popupEnabled = true;
+            }
             if (asd51Layer) {
               asd51Layer.opacity = 1;
               if (!editingGraphic) asd51Layer.popupEnabled = true;
@@ -8335,6 +9055,7 @@ function ADSEsriMap(startExtent) {
 
     const mapLayers = mapRef.current.layers.items;
     let streetLayer = null;
+    let llpgStreetLayer = null;
     let backgroundStreetLayer = null;
     let unassignedEsuLayer = null;
     let asd51Layer = null;
@@ -8351,6 +9072,7 @@ function ADSEsriMap(startExtent) {
 
     for (let index = 0; index < mapLayers.length; index++) {
       if (mapLayers[index] && mapLayers[index].id === streetLayerName) streetLayer = mapLayers[index];
+      if (mapLayers[index] && mapLayers[index].id === llpgStreetLayerName) llpgStreetLayer = mapLayers[index];
       if (mapLayers[index] && mapLayers[index].id === backgroundStreetLayerName)
         backgroundStreetLayer = mapLayers[index];
       if (mapLayers[index] && mapLayers[index].id === unassignedEsusLayerName) unassignedEsuLayer = mapLayers[index];
@@ -8372,6 +9094,15 @@ function ADSEsriMap(startExtent) {
         let streetQuery = streetLayer.createQuery();
         streetQuery.where = `usrn IN ('${mapContext.currentHighlight.street.join("', '")}')`;
         streetLayer.queryFeatures(streetQuery).then(function (result) {
+          if (highlightStreet.current) highlightStreet.current.remove();
+          highlightStreet.current = layerView.highlight(result.features);
+        });
+      });
+    } else if (mapContext.currentHighlight.street && llpgStreetLayer) {
+      view.whenLayerView(llpgStreetLayer).then(function (layerView) {
+        let streetQuery = llpgStreetLayer.createQuery();
+        streetQuery.where = `usrn IN ('${mapContext.currentHighlight.street.join("', '")}')`;
+        llpgStreetLayer.queryFeatures(streetQuery).then(function (result) {
           if (highlightStreet.current) highlightStreet.current.remove();
           highlightStreet.current = layerView.highlight(result.features);
         });
@@ -8558,6 +9289,7 @@ function ADSEsriMap(startExtent) {
     if (!mapRef.current || !mapRef.current.layers || !mapRef.current.layers.length) return;
 
     const streetLayer = mapRef.current && mapRef.current.findLayerById(streetLayerName);
+    const llpgStreetLayer = mapRef.current && mapRef.current.findLayerById(llpgStreetLayerName);
     const asd51Layer = mapRef.current && mapRef.current.findLayerById(asd51LayerName);
     const asd52Layer = mapRef.current && mapRef.current.findLayerById(asd52LayerName);
     const asd53Layer = mapRef.current && mapRef.current.findLayerById(asd53LayerName);
@@ -8578,6 +9310,7 @@ function ADSEsriMap(startExtent) {
       if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.popupEnabled = false;
       if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.popupEnabled = false;
       if (streetLayer) streetLayer.popupEnabled = false;
+      if (llpgStreetLayer) llpgStreetLayer.popupEnabled = false;
       if (asd51Layer) asd51Layer.popupEnabled = false;
       if (asd52Layer) asd52Layer.popupEnabled = false;
       if (asd53Layer) asd53Layer.popupEnabled = false;
@@ -8595,6 +9328,7 @@ function ADSEsriMap(startExtent) {
       if (unassignedEsusLayerRef.current && !editingGraphic && !unassignedEsusLayerRef.current.popupEnabled)
         unassignedEsusLayerRef.current.popupEnabled = true;
       if (streetLayer && !editingGraphic && !streetLayer.popupEnabled) streetLayer.popupEnabled = true;
+      if (llpgStreetLayer && !editingGraphic && !llpgStreetLayer.popupEnabled) llpgStreetLayer.popupEnabled = true;
       if (asd51Layer && !editingGraphic && !asd51Layer.popupEnabled) asd51Layer.popupEnabled = true;
       if (asd52Layer && !editingGraphic && !asd52Layer.popupEnabled) asd52Layer.popupEnabled = true;
       if (asd53Layer && !editingGraphic && !asd53Layer.popupEnabled) asd53Layer.popupEnabled = true;
@@ -8776,6 +9510,7 @@ function ADSEsriMap(startExtent) {
 
     if (mapContext.currentBackgroundData.properties && !(editingObject.current && editingObject.current.objectType)) {
       const streetLayer = mapRef.current && mapRef.current.findLayerById(streetLayerName);
+      const llpgStreetLayer = mapRef.current && mapRef.current.findLayerById(llpgStreetLayerName);
       const propertyLayer = mapRef.current && mapRef.current.findLayerById(propertyLayerName);
       const selectPropertyLayer = mapRef.current && mapRef.current.findLayerById(selectPropertyLayerName);
 
@@ -8791,6 +9526,7 @@ function ADSEsriMap(startExtent) {
           if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.visible = false;
           if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.visible = false;
           if (streetLayer) streetLayer.visible = false;
+          if (llpgStreetLayer) llpgStreetLayer.visible = false;
           if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.visible = false;
           if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.visible = false;
           if (propertyLayer) propertyLayer.visible = false;
@@ -8829,6 +9565,7 @@ function ADSEsriMap(startExtent) {
         if (unassignedEsusLayerRef.current)
           unassignedEsusLayerRef.current.visible = mapContext.layerVisibility.unassignedEsus;
         if (streetLayer) streetLayer.visible = true;
+        if (llpgStreetLayer) llpgStreetLayer.visible = true;
         if (backgroundProvenanceLayerRef.current)
           backgroundProvenanceLayerRef.current.visible = mapContext.layerVisibility.backgroundProvenances;
         if (backgroundPropertyLayerRef.current)

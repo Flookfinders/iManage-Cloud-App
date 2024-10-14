@@ -63,6 +63,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    049   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//    050   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -509,7 +510,7 @@ function RelatedPropertyTab({
 
       const newMapSearchProperties = mapContext.currentSearchData.properties;
       newMapSearchProperties.push(...newMapSearchLpis);
-      mapContext.onSearchDataChange([], newMapSearchProperties, null, propertyData.uprn);
+      mapContext.onSearchDataChange([], [], newMapSearchProperties, null, propertyData.uprn);
     }
     mapContext.onMapChange(mapContext.currentLayers.extents, null, uprn);
   }

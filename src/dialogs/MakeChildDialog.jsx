@@ -22,6 +22,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    009   30.09.24 Sean Flook       IMANN-605 Display the selected parent address on the first page once selected.
+//    010   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -510,6 +511,7 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
                         );
                         mapContext.onSearchDataChange(
                           mapContext.currentSearchData.streets,
+                          mapContext.currentSearchData.llpgStreets,
                           newMapSearchProperties,
                           null,
                           null

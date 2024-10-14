@@ -49,6 +49,9 @@
 //    034   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
 //    035   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    036   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -212,6 +215,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
     if (foundProperty) {
       mapContext.onSearchDataChange(
         mapContext.currentSearchData.streets,
+        mapContext.currentSearchData.llpgStreets,
         mapContext.currentSearchData.properties,
         null,
         uprn
@@ -230,7 +234,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
           classificationCode: classificationCode ? classificationCode.substring(0, 1) : "U",
         },
       ];
-      mapContext.onSearchDataChange([], searchProperties, null, uprn);
+      mapContext.onSearchDataChange([], [], searchProperties, null, uprn);
     }
     mapContext.onHighlightStreetProperty(null, [uprn.toString()]);
   };
@@ -304,6 +308,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
     if (foundStreet) {
       mapContext.onSearchDataChange(
         mapContext.currentSearchData.streets,
+        mapContext.currentSearchData.llpgStreets,
         mapContext.currentSearchData.properties,
         usrn,
         null
@@ -311,14 +316,24 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
     } else {
       const streetData = await GetStreetMapData(usrn, userContext, settingsContext.isScottish);
       const esus = streetData
-        ? streetData.esus.map((rec) => ({
-            esuId: rec.esuId,
-            state: settingsContext.isScottish ? rec.state : undefined,
-            geometry: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
-          }))
-        : undefined;
+        ? userContext.currentUser.hasStreet
+          ? streetData.esus.map((rec) => ({
+              esuId: rec.esuId,
+              state: settingsContext.isScottish ? rec.state : undefined,
+              geometry: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
+            }))
+          : [
+              {
+                esuId: -1,
+                state: undefined,
+                geometry: GetWktCoordinates(
+                  `LINESTRING (${streetData.streetStartX} ${streetData.streetStartY}, ${streetData.streetEndX} ${streetData.streetEndY})`
+                ),
+              },
+            ]
+        : [];
       const asdType51 =
-        settingsContext.isScottish && streetData
+        userContext.currentUser.hasStreet && settingsContext.isScottish && streetData
           ? streetData.maintenanceResponsibilities.map((asdRec) => ({
               type: 51,
               pkId: asdRec.pkId,
@@ -332,7 +347,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
             }))
           : [];
       const asdType52 =
-        settingsContext.isScottish && streetData
+        userContext.currentUser.hasStreet && settingsContext.isScottish && streetData
           ? streetData.reinstatementCategories.map((asdRec) => ({
               type: 52,
               pkId: asdRec.pkId,
@@ -346,7 +361,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
             }))
           : [];
       const asdType53 =
-        settingsContext.isScottish && streetData
+        userContext.currentUser.hasStreet && settingsContext.isScottish && streetData
           ? streetData.specialDesignations.map((asdRec) => ({
               type: 53,
               pkId: asdRec.pkId,
@@ -360,7 +375,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
             }))
           : [];
       const asdType61 =
-        !settingsContext.isScottish && hasASD && streetData
+        userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
           ? streetData.interests.map((asdRec) => ({
               type: 61,
               pkId: asdRec.pkId,
@@ -375,7 +390,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
             }))
           : [];
       const asdType62 =
-        !settingsContext.isScottish && hasASD && streetData
+        userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
           ? streetData.constructions.map((asdRec) => ({
               type: 62,
               pkId: asdRec.pkId,
@@ -390,7 +405,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
             }))
           : [];
       const asdType63 =
-        !settingsContext.isScottish && hasASD && streetData
+        userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
           ? streetData.specialDesignations.map((asdRec) => ({
               type: 63,
               pkId: asdRec.pkId,
@@ -404,7 +419,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
             }))
           : [];
       const asdType64 =
-        !settingsContext.isScottish && hasASD && streetData
+        userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
           ? streetData.heightWidthWeights.map((asdRec) => ({
               type: 64,
               pkId: asdRec.pkId,
@@ -418,7 +433,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
             }))
           : [];
       const asdType66 =
-        !settingsContext.isScottish && hasASD && streetData
+        userContext.currentUser.hasStreet && !settingsContext.isScottish && hasASD && streetData
           ? streetData.publicRightOfWays.map((asdRec) => ({
               type: 66,
               pkId: asdRec.pkId,
@@ -452,7 +467,13 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
           asdType66: asdType66,
         },
       ];
-      mapContext.onSearchDataChange(searchStreets, [], usrn, null);
+      mapContext.onSearchDataChange(
+        userContext.currentUser.hasStreet ? searchStreets : [],
+        !userContext.currentUser.hasStreet ? searchStreets : [],
+        [],
+        usrn,
+        null
+      );
     }
     mapContext.onHighlightStreetProperty([usrn.toString()], null);
   }

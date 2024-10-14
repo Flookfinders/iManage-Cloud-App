@@ -86,6 +86,9 @@
 //    073   02.09.24 Sean Flook       IMANN-976 Handle "Unassigned" in lookups.
 //    074   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    075   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -3195,6 +3198,7 @@ export async function SaveStreet(
           !isScottish && hasASD ? result.publicRightOfWays : null,
           isScottish,
           hasASD,
+          userContext.currentUser.hasStreet,
           mapContext,
           lookupContext.currentLookups
         );
@@ -3554,6 +3558,7 @@ export function GetAsdSecondaryText(value, variant, isScottish) {
  * @param {Object|null} asdType66 The ASD type 66 data (GeoPlace only).
  * @param {Boolean} isScottish True if the authority is a Scottish authority; otherwise false.
  * @param {Boolean} hasASD True if the current user can see ASD; otherwise false.
+ * @param {Boolean} hasStreet True if the current user has LSG rights; otherwise false.
  * @param {Object} mapContext The map context object.
  * @param {Object} currentlookups The current lookups.
  */
@@ -3569,6 +3574,7 @@ export const updateMapStreetData = (
   asdType66,
   isScottish,
   hasASD,
+  hasStreet,
   mapContext,
   currentlookups
 ) => {
@@ -3586,8 +3592,8 @@ export const updateMapStreetData = (
       town: townRec ? townRec.town : engDescriptor.town,
       state: !isScottish ? streetData.state : undefined,
       type: streetData.recordType,
-      esus:
-        streetData && streetData.esus
+      esus: streetData
+        ? hasStreet
           ? streetData.esus
               .filter((esu) => esu.changeType !== "D")
               .map((esu) => ({
@@ -3595,9 +3601,18 @@ export const updateMapStreetData = (
                 state: isScottish ? esu.state : undefined,
                 geometry: esu.wktGeometry && esu.wktGeometry !== "" ? GetWktCoordinates(esu.wktGeometry) : undefined,
               }))
-          : [],
+          : [
+              {
+                esuId: -1,
+                state: undefined,
+                geometry: GetWktCoordinates(
+                  `LINESTRING (${streetData.streetStartX} ${streetData.streetStartY}, ${streetData.streetEndX} ${streetData.streetEndY})`
+                ),
+              },
+            ]
+        : [],
       asdType51:
-        isScottish && asdType51
+        hasStreet && isScottish && asdType51
           ? asdType51
               .filter((asdRec) => asdRec.changeType !== "D")
               .map((asdRec) => ({
@@ -3613,7 +3628,7 @@ export const updateMapStreetData = (
               }))
           : [],
       asdType52:
-        isScottish && asdType52
+        hasStreet && isScottish && asdType52
           ? asdType52
               .filter((asdRec) => asdRec.changeType !== "D")
               .map((asdRec) => ({
@@ -3629,7 +3644,7 @@ export const updateMapStreetData = (
               }))
           : [],
       asdType53:
-        isScottish && asdType53
+        hasStreet && isScottish && asdType53
           ? asdType53
               .filter((asdRec) => asdRec.changeType !== "D")
               .map((asdRec) => ({
@@ -3645,7 +3660,7 @@ export const updateMapStreetData = (
               }))
           : [],
       asdType61:
-        !isScottish && hasASD && asdType61
+        hasStreet && !isScottish && hasASD && asdType61
           ? asdType61
               .filter((asdRec) => asdRec.changeType !== "D")
               .map((asdRec) => ({
@@ -3662,7 +3677,7 @@ export const updateMapStreetData = (
               }))
           : [],
       asdType62:
-        !isScottish && hasASD && asdType62
+        hasStreet && !isScottish && hasASD && asdType62
           ? asdType62
               .filter((asdRec) => asdRec.changeType !== "D")
               .map((asdRec) => ({
@@ -3679,7 +3694,7 @@ export const updateMapStreetData = (
               }))
           : [],
       asdType63:
-        !isScottish && hasASD && asdType63
+        hasStreet && !isScottish && hasASD && asdType63
           ? asdType63
               .filter((asdRec) => asdRec.changeType !== "D")
               .map((asdRec) => ({
@@ -3695,7 +3710,7 @@ export const updateMapStreetData = (
               }))
           : [],
       asdType64:
-        !isScottish && hasASD && asdType64
+        hasStreet && !isScottish && hasASD && asdType64
           ? asdType64
               .filter((asdRec) => asdRec.changeType !== "D")
               .map((asdRec) => ({
@@ -3711,7 +3726,7 @@ export const updateMapStreetData = (
               }))
           : [],
       asdType66:
-        !isScottish && hasASD && asdType66
+        hasStreet && !isScottish && hasASD && asdType66
           ? asdType66
               .filter((asdRec) => asdRec.changeType !== "D")
               .map((asdRec) => ({
@@ -3730,7 +3745,13 @@ export const updateMapStreetData = (
     },
   ];
 
-  mapContext.onSearchDataChange(currentSearchStreets, [], streetData.usrn, null);
+  mapContext.onSearchDataChange(
+    hasStreet ? currentSearchStreets : [],
+    !hasStreet ? currentSearchStreets : [],
+    [],
+    streetData.usrn,
+    null
+  );
 };
 
 /**
