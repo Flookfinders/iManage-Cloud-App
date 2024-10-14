@@ -108,6 +108,7 @@
 //    092   03.10.24 Sean Flook       IMANN-958 Check user has property edit permission before trying to create a child/children.
 //    093   04.10.24 Sean Flook      IMANN-1005 Use a different colour for a closed street.
 //    094   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//    095   14.10.24 Sean Flook      IMANN-1024 Call onEditMapObject when opening a property.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2306,6 +2307,7 @@ function ADSEsriMap(startExtent) {
           );
         }
         mapContext.onMapChange(extents, null, null);
+        mapContext.onEditMapObject(21, uprn);
       }
     },
     [mapContext]
