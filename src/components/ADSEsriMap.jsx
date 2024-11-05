@@ -110,6 +110,7 @@
 //    094   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //    095   14.10.24 Sean Flook      IMANN-1024 Call onEditMapObject when opening a property.
 //    096   28.10.24 Joshua McCormick IMANN-904 useEffect for mapContext.currentClearObject
+//    097   05.11.24 Sean Flook       IMANN-904 When clearing the current edit object clear the geometry as well.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -7990,7 +7991,32 @@ function ADSEsriMap(startExtent) {
   ]);
 
   useEffect(() => {
-  }, [mapContext.currentClearObject]);
+    if (mapContext.currentClearObject) {
+      switch (mapContext.currentClearObject.objectType) {
+        case 13: // ESU
+        case 51: // Maintenance Responsibility
+        case 52: // Reinstatement Category
+        case 53: // Special Designation
+        case 61: // Interest
+        case 62: // Construction
+        case 63: // Special Designation
+        case 64: // Height, Width & Weight Restriction
+          if (mapContext.currentLineGeometry && mapContext.currentLineGeometry.objectType) {
+            mapContext.onSetLineGeometry(null);
+          }
+          break;
+
+        case 22: // Extent
+          if (mapContext.currentPolygonGeometry && mapContext.currentPolygonGeometry.objectType) {
+            mapContext.onSetPolygonGeometry(null);
+          }
+          break;
+
+        default:
+          break;
+      }
+    }
+  }, [mapContext.currentClearObject, mapContext]);
 
   // Fix the order of the layers
   useEffect(() => {
