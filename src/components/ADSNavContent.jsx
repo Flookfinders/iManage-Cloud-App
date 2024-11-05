@@ -39,6 +39,9 @@
 //    026   04.07.24 Sean Flook       IMANN-705 Use displayName for the user icon.
 //    027   15.07.24 Sean Flook       IMANN-762 If user cannot see properties default to street template when opening the settings.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    028   24.10.24 Sean Flook      IMANN-1040 Call the logoff endpoint when logging a user off the system.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -111,6 +114,7 @@ import {
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 import LoginDialog from "../dialogs/LoginDialog";
+import { PostUserLogoffUrl } from "../configuration/ADSConfig";
 
 /* #endregion imports */
 
@@ -602,12 +606,35 @@ const ADSNavContent = (props) => {
   /**
    * Event to handle logging out of the system.
    */
-  const handleLogout = () => {
-    setAnchorEl(null);
-    handleHomeClick();
-    informationContext.onClearInformation();
-    userContext.onUserChange(null);
-    window.location.reload();
+  const handleLogout = async () => {
+    const apiUrl = PostUserLogoffUrl(userContext.currentUser.token);
+    if (apiUrl) {
+      const logoffResult = await fetch(`${apiUrl.url}`, {
+        cache: "no-cache",
+        headers: apiUrl.headers,
+        crossDomain: true,
+        method: apiUrl.type,
+      })
+        .then((res) => (res.ok ? res : Promise.reject(res)))
+        .then((res) => res.text())
+        .then((result) => {
+          return "Logged off";
+        })
+        .catch((error) => {
+          if (userContext.currentUser.showMessages) {
+            console.error("[ERROR] User logoff", error);
+          }
+          return null;
+        });
+
+      if (!!logoffResult) {
+        setAnchorEl(null);
+        handleHomeClick();
+        informationContext.onClearInformation();
+        userContext.onUserChange(null);
+        window.location.reload();
+      }
+    }
   };
 
   /**

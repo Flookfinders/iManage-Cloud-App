@@ -17,6 +17,9 @@
 //    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    006   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -30,7 +33,7 @@ import ADSErrorDisplay from "./ADSErrorDisplay";
 import { EquestrianIcon } from "../utils/ADSIcons";
 import { useTheme } from "@mui/styles";
 import { adsBlueA, adsMidGreyA } from "../utils/ADSColours";
-import { FormBoxRowStyle } from "../utils/ADSStyles";
+import { FormBoxRowStyle, skeletonHeight } from "../utils/ADSStyles";
 
 ADSProwAccessControl.propTypes = {
   variant: PropTypes.oneOf(["Pedestrian", "Equestrian", "NonMotorised", "Bicycle", "Motorised"]).isRequired,
@@ -188,7 +191,7 @@ function ADSProwAccessControl({ variant, value, isEditable, isFocused, loading, 
       <FormControlLabel
         control={
           loading ? (
-            <Skeleton variant="rectangular" animation="wave" height="60px" width="100%" />
+            <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
           ) : (
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Checkbox

@@ -28,6 +28,9 @@
 //    015   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    016   08.07.24 Sean Flook       IMANN-715 Corrected the Scottish property structure and increase the failed count if failed to save property.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    017   24.10.24 Sean Flook      IMANN-1033 Only sort and filter lookups when required.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -102,6 +105,11 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
   const [postalAddress, setPostalAddress] = useState(null);
   const [note, setNote] = useState(null);
   const [noteOpen, setNoteOpen] = useState(false);
+
+  const [streetLookup, setStreetLookup] = useState([]);
+  const [postTownLookup, setPostTownLookup] = useState([]);
+  const [subLocalityLookup, setSubLocalityLookup] = useState([]);
+  const [postcodeLookup, setPostcodeLookup] = useState([]);
 
   const [title, setTitle] = useState("Edit address");
 
@@ -505,6 +513,49 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
   };
 
   useEffect(() => {
+    setStreetLookup(lookupContext.currentLookups.streetDescriptors.filter((x) => x.language === "ENG"));
+  }, [lookupContext.currentLookups.streetDescriptors]);
+
+  useEffect(() => {
+    setPostTownLookup(
+      lookupContext.currentLookups.postTowns
+        .filter((x) => x.language === "ENG" && !x.historic)
+        .sort(function (a, b) {
+          return a.postTown.localeCompare(b.postTown, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.postTowns]);
+
+  useEffect(() => {
+    setSubLocalityLookup(
+      lookupContext.currentLookups.subLocalities
+        .filter((x) => x.language === "ENG" && !x.historic)
+        .sort(function (a, b) {
+          return a.subLocality.localeCompare(b.subLocality, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.subLocalities]);
+
+  useEffect(() => {
+    setPostcodeLookup(
+      lookupContext.currentLookups.postcodes
+        .filter((x) => !x.historic)
+        .sort(function (a, b) {
+          return a.postcode.localeCompare(b.postcode, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.postcodes]);
+
+  useEffect(() => {
     if (isOpen) {
       setTitle("Edit address");
       setHaveErrors(false);
@@ -659,7 +710,7 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                     useRounded
                     disabled={updating}
                     displayNoChange
-                    lookupData={lookupContext.currentLookups.streetDescriptors.filter((x) => x.language === "ENG")}
+                    lookupData={streetLookup}
                     lookupId="usrn"
                     lookupLabel="address"
                     value={street}
@@ -676,14 +727,7 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                     disabled={updating}
                     displayNoChange
                     allowAddLookup
-                    lookupData={lookupContext.currentLookups.postTowns
-                      .filter((x) => x.language === "ENG" && !x.historic)
-                      .sort(function (a, b) {
-                        return a.postTown.localeCompare(b.postTown, undefined, {
-                          numeric: true,
-                          sensitivity: "base",
-                        });
-                      })}
+                    lookupData={postTownLookup}
                     lookupId="postTownRef"
                     lookupLabel="postTown"
                     value={postTown}
@@ -702,14 +746,7 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                       disabled={updating}
                       displayNoChange
                       allowAddLookup
-                      lookupData={lookupContext.currentLookups.subLocalities
-                        .filter((x) => x.language === "ENG" && !x.historic)
-                        .sort(function (a, b) {
-                          return a.subLocality.localeCompare(b.subLocality, undefined, {
-                            numeric: true,
-                            sensitivity: "base",
-                          });
-                        })}
+                      lookupData={subLocalityLookup}
                       lookupId="subLocalityRef"
                       lookupLabel="subLocality"
                       value={subLocality}
@@ -729,14 +766,7 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                     doNotSetTitleCase
                     displayNoChange
                     allowAddLookup
-                    lookupData={lookupContext.currentLookups.postcodes
-                      .filter((x) => !x.historic)
-                      .sort(function (a, b) {
-                        return a.postcode.localeCompare(b.postcode, undefined, {
-                          numeric: true,
-                          sensitivity: "base",
-                        });
-                      })}
+                    lookupData={postcodeLookup}
                     lookupId="postcodeRef"
                     lookupLabel="postcode"
                     value={postcode}

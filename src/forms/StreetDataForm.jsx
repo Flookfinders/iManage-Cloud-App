@@ -125,6 +125,8 @@
 //    109   03.10.24 Sean Flook      IMANN-1004 Ensure the descriptorFormData is null when changing street.
 //    110   10.10.24 Sean Flook      IMANN-1018 Do not display the ESU tab if only LLPG.
 //    111   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//    112   22.10.24 Sean Flook      IMANN-1018 Changes required to handle creating LLPG Streets.
+//    113   01.11.24 Sean Flook      IMANN-1010 Include new fields in search results.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3086,6 +3088,8 @@ function StreetDataForm({ data, loading }) {
                   post_town: null,
                   postcode: null,
                   crossref: null,
+                  lpi_st_ref_type: result.recordType ? Number(result.recordType) : 1,
+                  blpu_state: result.state ? Number(result.state) : 2,
                   address: streetAddress,
                   sort_code: 0,
                 };
@@ -8828,8 +8832,6 @@ function StreetDataForm({ data, loading }) {
 
   // Create an ESU if the start and end coordinates are supplied
   useEffect(() => {
-    if (!displayEsuTab) return;
-
     const contextStreet = sandboxContext.currentSandbox.currentStreet || sandboxContext.currentSandbox.sourceStreet;
     let newStreetData = null;
     const currentDate = GetCurrentDate(false);
@@ -8843,7 +8845,8 @@ function StreetDataForm({ data, loading }) {
         if (
           (!contextStreet.esus || contextStreet.esus.length === 0) &&
           contextStreet.streetEndX &&
-          contextStreet.streetEndY
+          contextStreet.streetEndY &&
+          displayEsuTab
         ) {
           esuData = settingsContext.isScottish
             ? [
@@ -9071,7 +9074,8 @@ function StreetDataForm({ data, loading }) {
         if (
           (!contextStreet.esus || contextStreet.esus.length === 0) &&
           contextStreet.streetStartX &&
-          contextStreet.streetStartY
+          contextStreet.streetStartY &&
+          displayEsuTab
         ) {
           esuData = settingsContext.isScottish
             ? [
@@ -9318,7 +9322,11 @@ function StreetDataForm({ data, loading }) {
                     esuId: -1,
                     state: undefined,
                     geometry: GetWktCoordinates(
-                      `LINESTRING (${newStreetData.streetStartX} ${newStreetData.streetStartY}, ${newStreetData.streetEndX} ${newStreetData.streetEndY})`
+                      `LINESTRING (${
+                        newStreetData.streetStartX ? newStreetData.streetStartX : newStreetData.streetEndX
+                      } ${newStreetData.streetStartY ? newStreetData.streetStartY : newStreetData.streetEndY}, ${
+                        newStreetData.streetEndX ? newStreetData.streetEndX : newStreetData.streetStartX
+                      } ${newStreetData.streetEndY ? newStreetData.streetEndY : newStreetData.streetStartY})`
                     ),
                   },
                 ],

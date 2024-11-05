@@ -54,6 +54,7 @@
 //#region Version 1.0.1.0 changes
 //    039   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    040   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//    041   31.10.24 Sean Flook      IMANN-1012 Added the plot to postal wizard.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -107,6 +108,7 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { adsBlueA, adsWhite, adsLightGreyA50 } from "../utils/ADSColours";
 import { menuStyle, menuItemStyle } from "../utils/ADSStyles";
 import MakeChildDialog from "../dialogs/MakeChildDialog";
+import MultiEditPlotToPostalWizardDialog from "../dialogs/MultiEditPlotToPostalWizardDialog";
 
 ADSSelectionControl.propTypes = {
   selectionCount: PropTypes.number.isRequired,
@@ -249,6 +251,7 @@ function ADSSelectionControl({
   const [openEditLogicalStatus, setOpenEditLogicalStatus] = useState(false);
   const [openEditSingleField, setOpenEditSingleField] = useState(false);
   const [openEditAddressFields, setOpenEditAddressFields] = useState(false);
+  const [openPlotToPostalWizard, setOpenPlotToPostalWizard] = useState(false);
   const [openAddCrossReference, setOpenAddCrossReference] = useState(false);
   const [openRemoveCrossReference, setOpenRemoveCrossReference] = useState(false);
   const [openAddClassification, setOpenAddClassification] = useState(false);
@@ -256,6 +259,7 @@ function ADSSelectionControl({
   const [openMakeChild, setOpenMakeChild] = useState(false);
 
   const [makeChildUprn, setMakeChildUprn] = useState([]);
+  const [multiEditUprns, setMultiEditUprns] = useState([]);
 
   /**
    * Event to handle the closing.
@@ -327,6 +331,7 @@ function ADSSelectionControl({
    */
   const handleEditLogicalStatusClose = (updatedData) => {
     setOpenEditLogicalStatus(false);
+    setMultiEditUprns([]);
 
     if (updatedData && updatedData.length > 0) {
       UpdateRangeAfterSave(
@@ -349,6 +354,7 @@ function ADSSelectionControl({
    */
   const handleEditSingleFieldClose = (updatedData) => {
     setOpenEditSingleField(false);
+    setMultiEditUprns([]);
 
     if (updatedData && updatedData.length > 0) {
       UpdateRangeAfterSave(
@@ -371,6 +377,30 @@ function ADSSelectionControl({
    */
   const handleEditAddressFieldsClose = (updatedData) => {
     setOpenEditAddressFields(false);
+    setMultiEditUprns([]);
+
+    if (updatedData && updatedData.length > 0) {
+      UpdateRangeAfterSave(
+        updatedData,
+        lookupContext,
+        mapContext,
+        propertyContext,
+        sandboxContext,
+        settingsContext.isWelsh,
+        searchContext,
+        true
+      );
+    }
+  };
+
+  /**
+   * Event to handle when the plot to postal wizard is closed.
+   *
+   * @param {array} updatedData Array of properties that have been updated
+   */
+  const handlePlotToPostalWizardClose = (updatedData) => {
+    setOpenPlotToPostalWizard(false);
+    setMultiEditUprns([]);
 
     if (updatedData && updatedData.length > 0) {
       UpdateRangeAfterSave(
@@ -393,6 +423,7 @@ function ADSSelectionControl({
    */
   const handleAddCrossReferenceClose = (updatedData) => {
     setOpenAddCrossReference(false);
+    setMultiEditUprns([]);
 
     if (updatedData && updatedData.length > 0) {
       UpdateRangeAfterSave(
@@ -415,6 +446,7 @@ function ADSSelectionControl({
    */
   const handleRemoveCrossReferenceClose = (updatedData) => {
     setOpenRemoveCrossReference(false);
+    setMultiEditUprns([]);
 
     if (updatedData && updatedData.length > 0) {
       UpdateRangeAfterSave(
@@ -437,6 +469,7 @@ function ADSSelectionControl({
    */
   const handleAddClassificationClose = (updatedData) => {
     setOpenAddClassification(false);
+    setMultiEditUprns([]);
 
     if (updatedData && updatedData.length > 0) {
       UpdateRangeAfterSave(
@@ -459,6 +492,7 @@ function ADSSelectionControl({
    */
   const handleMoveBlpuClose = (saved) => {
     setOpenMoveBlpu(false);
+    setMultiEditUprns([]);
     if (saved && onPropertyMoved) onPropertyMoved();
   };
 
@@ -837,6 +871,7 @@ function ADSSelectionControl({
    * Event to handle when the move button is clicked.
    */
   const handleMoveBlpuButtonClicked = () => {
+    setMultiEditUprns([...new Set(propertyUprns)]);
     setOpenMoveBlpu(true);
   };
 
@@ -933,6 +968,7 @@ function ADSSelectionControl({
   const handleSetHistoricClick = () => {
     setAnchorPropertyActionsEl(null);
     setEditLogicalStatusVariant("historic");
+    setMultiEditUprns([...new Set(propertyUprns)]);
     setOpenEditLogicalStatus(true);
   };
 
@@ -944,6 +980,7 @@ function ADSSelectionControl({
   const displaySingleFieldDialog = (variant) => {
     setAnchorPropertyActionsEl(null);
     setEditSingleFieldVariant(variant);
+    setMultiEditUprns([...new Set(propertyUprns)]);
     setOpenEditSingleField(true);
   };
 
@@ -954,6 +991,7 @@ function ADSSelectionControl({
     if (!settingsContext.isScottish) displaySingleFieldDialog("classification");
     else {
       setAnchorPropertyActionsEl(null);
+      setMultiEditUprns([...new Set(propertyUprns)]);
       setOpenAddClassification(true);
     }
   };
@@ -1013,16 +1051,22 @@ function ADSSelectionControl({
    */
   const handleEditAddressFieldsClick = () => {
     setAnchorPropertyActionsEl(null);
+    setMultiEditUprns([...new Set(propertyUprns)]);
     setOpenEditAddressFields(true);
   };
 
-  const handlePlotToAddressWizardClick = () => {};
+  const handlePlotToPostalWizardClick = () => {
+    setAnchorPropertyActionsEl(null);
+    setMultiEditUprns([...new Set(propertyUprns)]);
+    setOpenPlotToPostalWizard(true);
+  };
 
   /**
    * Event to handle when the add cross reference menu item is clicked
    */
   const handleAddCrossReferenceClick = () => {
     setAnchorPropertyActionsEl(null);
+    setMultiEditUprns([...new Set(propertyUprns)]);
     setOpenAddCrossReference(true);
   };
 
@@ -1031,6 +1075,7 @@ function ADSSelectionControl({
    */
   const handleRemoveCrossReferenceClick = () => {
     setAnchorPropertyActionsEl(null);
+    setMultiEditUprns([...new Set(propertyUprns)]);
     setOpenRemoveCrossReference(true);
   };
 
@@ -1852,8 +1897,8 @@ function ADSSelectionControl({
                           <Typography variant="inherit">Edit address fields</Typography>
                         </MenuItem>
                         {process.env.NODE_ENV === "development" && (
-                          <MenuItem dense disabled onClick={handlePlotToAddressWizardClick} sx={menuItemStyle(false)}>
-                            <Typography variant="inherit">Plot to address wizard</Typography>
+                          <MenuItem dense onClick={handlePlotToPostalWizardClick} sx={menuItemStyle(false)}>
+                            <Typography variant="inherit">Plot to postal wizard</Typography>
                           </MenuItem>
                         )}
                       </NestedMenuItem>
@@ -2043,38 +2088,43 @@ function ADSSelectionControl({
       />
       <MultiEditLogicalStatusDialog
         variant={editLogicalStatusVariant}
-        propertyUprns={propertyUprns ? propertyUprns : []}
+        propertyUprns={multiEditUprns ? multiEditUprns : []}
         isOpen={openEditLogicalStatus}
         onClose={handleEditLogicalStatusClose}
       />
       <MultiEditSingleFieldDialog
         variant={editSingleFieldVariant}
-        propertyUprns={propertyUprns ? propertyUprns : []}
+        propertyUprns={multiEditUprns ? multiEditUprns : []}
         isOpen={openEditSingleField}
         onClose={handleEditSingleFieldClose}
       />
       <MultiEditAddressFieldsDialog
-        propertyUprns={propertyUprns ? propertyUprns : []}
+        propertyUprns={multiEditUprns ? multiEditUprns : []}
         isOpen={openEditAddressFields}
         onClose={handleEditAddressFieldsClose}
       />
+      <MultiEditPlotToPostalWizardDialog
+        propertyUprns={multiEditUprns ? multiEditUprns : []}
+        isOpen={openPlotToPostalWizard}
+        onClose={handlePlotToPostalWizardClose}
+      />
       <MultiEditAddCrossReferenceDialog
-        propertyUprns={propertyUprns ? propertyUprns : []}
+        propertyUprns={multiEditUprns ? multiEditUprns : []}
         isOpen={openAddCrossReference}
         onClose={handleAddCrossReferenceClose}
       />
       <MultiEditRemoveCrossReferenceDialog
-        propertyUprns={propertyUprns ? propertyUprns : []}
+        propertyUprns={multiEditUprns ? multiEditUprns : []}
         isOpen={openRemoveCrossReference}
         onClose={handleRemoveCrossReferenceClose}
       />
       <MultiEditAddClassificationDialog
-        propertyUprns={propertyUprns ? propertyUprns : []}
+        propertyUprns={multiEditUprns ? multiEditUprns : []}
         isOpen={openAddClassification}
         onClose={handleAddClassificationClose}
       />
       <MoveBLPUDialog
-        propertyUprns={propertyUprns ? propertyUprns : []}
+        propertyUprns={multiEditUprns ? multiEditUprns : []}
         isOpen={openMoveBlpu}
         onClose={handleMoveBlpuClose}
       />

@@ -44,6 +44,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    031   02.10.24 Sean Flook       IMANN-999 Changed label to State date.
+//    032   28.10.24 Joshua McCormick IMANN-904 mapContext ccall for onEditMapObject
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -393,6 +394,7 @@ function EsuDataTab({
         setTolerance(data.esuData.esuTolerance ? data.esuData.esuTolerance : 0);
         setStartDate(data.esuData.esuStartDate);
         setEndDate(data.esuData.esuEndDate);
+        mapContext.onEditMapObject(null, null)
       }
     }
     if (onHomeClick) onHomeClick("discard", data.esuData, null);

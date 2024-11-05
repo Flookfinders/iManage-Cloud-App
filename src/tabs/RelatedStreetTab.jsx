@@ -52,6 +52,7 @@
 //    037   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    038   02.10.24 Sean Flook       IMANN-550 Changed menu item order.
 //    039   10.10.24 Sean Flook      IMANN-1018 Corrected setting of userCanEdit.
+//    040   01.11.24 Sean Flook      IMANN-1010 Do not need to add 10 to the street record type value.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -797,19 +798,13 @@ function RelatedStreetTab({
                             )}
                             <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="flex-start">
                               <Tooltip
-                                title={GetAvatarTooltip(
-                                  15,
-                                  10 + rec.stRefType,
-                                  null,
-                                  rec.state,
-                                  settingsContext.isScottish
-                                )}
+                                title={GetAvatarTooltip(15, rec.stRefType, null, rec.state, settingsContext.isScottish)}
                                 arrow
                                 placement="bottom"
                                 sx={tooltipStyle}
                               >
                                 {GetStreetIcon(
-                                  rec.stRefType > 0 ? rec.stRefType + 10 : 11, // TODO: Correct once field name as been corrected to recordType
+                                  rec.stRefType > 0 ? rec.stRefType : 1,
                                   GetAvatarColour(rec.state > 0 ? rec.state + 10 : 12)
                                 )}
                               </Tooltip>

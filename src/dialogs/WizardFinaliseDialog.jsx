@@ -20,6 +20,9 @@
 //    007   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle.
 //    008   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    009   31.10.24 Sean Flook      IMANN-1012 Added plotToPostal.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -46,7 +49,7 @@ import { useTheme } from "@mui/styles";
 
 WizardFinaliseDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  variant: PropTypes.oneOf(["property", "child", "range", "rangeChildren", "moveBlpu", "makeChildOf"]),
+  variant: PropTypes.oneOf(["property", "child", "range", "rangeChildren", "moveBlpu", "makeChildOf", "plotToPostal"]),
   errors: PropTypes.array,
   createdCount: PropTypes.number,
   failedCount: PropTypes.number,
@@ -125,7 +128,7 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
       if (Array.isArray(errors)) {
         for (const error of errors) {
           blpuErrors =
-            ["property", "child", "moveBlpu", "makeChildOf"].includes(variant) &&
+            ["property", "child", "moveBlpu", "makeChildOf", "plotToPostal"].includes(variant) &&
             error &&
             error.blpu &&
             error.blpu.length > 0
@@ -134,7 +137,7 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
               ? blpuErrors
               : [];
           lpiErrors =
-            ["property", "child", "moveBlpu", "makeChildOf"].includes(variant) &&
+            ["property", "child", "moveBlpu", "makeChildOf", "plotToPostal"].includes(variant) &&
             error &&
             error.lpi &&
             error.lpi.length > 0
@@ -155,7 +158,10 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
               ? crossRefErrors
               : [];
           noteErrors =
-            ["property", "child", "makeChildOf"].includes(variant) && error && error.note && error.note.length > 0
+            ["property", "child", "makeChildOf", "plotToPostal"].includes(variant) &&
+            error &&
+            error.note &&
+            error.note.length > 0
               ? [...new Set([...error.note.flatMap((x) => x.errors), ...noteErrors])]
               : noteErrors.length > 0
               ? noteErrors
@@ -163,14 +169,14 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
         }
       } else {
         blpuErrors =
-          ["property", "child", "moveBlpu", "makeChildOf"].includes(variant) &&
+          ["property", "child", "moveBlpu", "makeChildOf", "plotToPostal"].includes(variant) &&
           errors &&
           errors.blpu &&
           errors.blpu.length > 0
             ? [...new Set(errors.blpu.flatMap((x) => x.errors))]
             : [];
         lpiErrors =
-          ["property", "child", "moveBlpu", "makeChildOf"].includes(variant) &&
+          ["property", "child", "moveBlpu", "makeChildOf", "plotToPostal"].includes(variant) &&
           errors &&
           errors.lpi &&
           errors.lpi.length > 0
@@ -185,7 +191,10 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
             ? [...new Set(errors.crossRef.flatMap((x) => x.errors))]
             : [];
         noteErrors =
-          ["property", "child", "makeChildOf"].includes(variant) && errors && errors.note && errors.note.length > 0
+          ["property", "child", "makeChildOf", "plotToPostal"].includes(variant) &&
+          errors &&
+          errors.note &&
+          errors.note.length > 0
             ? [...new Set(errors.note.flatMap((x) => x.errors))]
             : [];
       }
@@ -359,12 +368,40 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
           );
           break;
 
+        case "plotToPostal":
+          setIsRange(true);
+          setTitle(
+            `Update plot to postal for ${createdCount + failedCount === 1 ? "property" : "properties"}: completed`
+          );
+          setContent(
+            <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
+              <Stack direction="column">
+                <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
+                  <Typography variant="h6" color={adsGreenC} sx={{ fontSize: "20px" }}>{`${createdCount}`}</Typography>
+                  <Typography variant="body2">{`${
+                    createdCount === 1 ? "property was" : "properties were"
+                  } successfully updated.`}</Typography>
+                </Stack>
+                {failedCount > 0 && (
+                  <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
+                    <Typography variant="h6" color={adsRed} sx={{ fontSize: "20px" }}>{`${failedCount}`}</Typography>
+                    <Typography variant="body2">{`${
+                      failedCount === 1 ? "property" : "properties"
+                    } failed to be updated.`}</Typography>
+                  </Stack>
+                )}
+              </Stack>
+            </Box>
+          );
+          break;
+
         default:
           break;
       }
     }
 
-    if (["property", "range", "child", "rangeChildren", "moveBlpu", "makeChildOf"].includes(variant)) setShowOpen(open);
+    if (["property", "range", "child", "rangeChildren", "moveBlpu", "makeChildOf", "plotToPostal"].includes(variant))
+      setShowOpen(open);
     else setShowOpen(false);
   }, [variant, errors, createdCount, failedCount, saveFailed, open]);
 

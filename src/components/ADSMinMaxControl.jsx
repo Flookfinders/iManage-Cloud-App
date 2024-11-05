@@ -18,6 +18,9 @@
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    006   10.01.24 Sean Flook                 Fix warnings.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    007   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -30,7 +33,14 @@ import { Box } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 
 import { adsBlack20 } from "../utils/ADSColours";
-import { FormBoxRowStyle, FormRowStyle, whiteButtonStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
+import {
+  FormBoxRowStyle,
+  FormRowStyle,
+  whiteButtonStyle,
+  controlLabelStyle,
+  tooltipStyle,
+  skeletonHeight,
+} from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
 ADSMinMaxControl.propTypes = {
@@ -111,7 +121,7 @@ function ADSMinMaxControl({
         </Grid>
         <Grid item xs={9}>
           {loading ? (
-            <Skeleton variant="rectangular" animation="wave" height="60px" width="100%" />
+            <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
           ) : helperText && helperText.length > 0 ? (
             <Tooltip
               title={isRequired ? helperText + " This is a required field." : helperText}

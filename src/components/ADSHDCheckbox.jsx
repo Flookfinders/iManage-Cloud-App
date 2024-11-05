@@ -13,6 +13,9 @@
 //#region Version 1.0.0.0 changes
 //    001   20.08.24 Sean Flook       IMANN-818 Initial version.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    002   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -31,7 +34,7 @@ import {
   VehiclesProhibitedIcon,
 } from "../utils/ADSIcons";
 
-import { FormBoxRowStyle, FormRowStyle } from "../utils/ADSStyles";
+import { FormBoxRowStyle, FormRowStyle, skeletonHeight } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 import { adsBlueA, adsMidGreyA } from "../utils/ADSColours";
 import ADSErrorDisplay from "./ADSErrorDisplay";
@@ -161,7 +164,7 @@ function ADSHDCheckbox({ variant, checked, isEditable, isFocused, loading, error
       <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
         <Grid item>
           {loading ? (
-            <Skeleton variant="rectangular" animation="wave" height="60px" width="100%" />
+            <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
           ) : (
             <FormControlLabel
               id={`ads-hd-checkbox-${variant.toLowerCase().replaceAll(" ", "-")}`}

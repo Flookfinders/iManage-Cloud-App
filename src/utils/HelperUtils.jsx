@@ -65,6 +65,8 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    052   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//    053   31.10.24 Sean Flook      IMANN-1012 Added getLookupLinkedRef method.
+//    054   01.10.24 Sean Flook      IMANN-1010 For streets the logicalStatus is no longer greater than 10 in GetAvatarTooltip.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -599,18 +601,18 @@ export function GetAvatarColour(logicalStatus) {
 /**
  * Get the avatar tooltip depending on the type, logical status and classification code.
  *
- * @param {number} type The type of record [ 15: Street, 24: LPI, etc. ]
- * @param {number} logicalStatus If type is a street then this is the street type + 10 (from elastic); otherwise it is the logical status of the LPI
- * @param {string} classificationCode The classification code for the property. This is not used for streets.
- * @param {number} streetStateCode The street state. This is only used for GP streets.
- * @param {boolean} isScottish Used to determine which field name is used to get the lookup labels.
- * @return {string} The avatar tooltip.
+ * @param {Number} type The type of record [ 15: Street, 24: LPI, etc. ]
+ * @param {Number} logicalStatus If type is a street then this is the street type + 10 (from elastic); otherwise it is the logical status of the LPI
+ * @param {String} classificationCode The classification code for the property. This is not used for streets.
+ * @param {Number} streetStateCode The street state. This is only used for GP streets.
+ * @param {Boolean} isScottish Used to determine which field name is used to get the lookup labels.
+ * @return {String} The avatar tooltip.
  */
 export function GetAvatarTooltip(type, logicalStatus, classificationCode, streetStateCode, isScottish) {
   if (!type) return null;
 
   if (type === 15) {
-    const streetType = logicalStatus && logicalStatus > 10 ? StreetType.find((x) => x.id === logicalStatus - 10) : null;
+    const streetType = logicalStatus ? StreetType.find((x) => x.id === logicalStatus) : null;
     if (!streetType) return null;
     const streetState = StreetState.find((x) => x.id === streetStateCode);
     const streetStateText = streetState ? `${streetState[GetLookupLabel(isScottish)] + ", "}` : "";
@@ -2792,4 +2794,48 @@ export const hasLoginExpired = (expiry) => {
   const now = new Date();
 
   return now.getTime > expiryDate.getTime();
+};
+
+/**
+ * Method to get the linked ref for a given lookup.
+ *
+ * @param {String} variant The type of lookup to find the linked ref for.
+ * @param {Number} code The reference for the record that we need the linked ref for.
+ * @param {Object} currentLookups The context for the current lookups.
+ * @returns {Number} The linked ref for the lookup.
+ */
+export const getLookupLinkedRef = (variant, code, currentLookups) => {
+  let foundRec = null;
+
+  switch (variant) {
+    case "postTown":
+      foundRec = currentLookups.postTowns.find((x) => x.postTownRef === code);
+      break;
+
+    case "subLocality":
+      foundRec = currentLookups.subLocalities.find((x) => x.subLocalityRef === code);
+      break;
+
+    case "locality":
+      foundRec = currentLookups.localities.find((x) => x.localityRef === code);
+      break;
+
+    case "town":
+      foundRec = currentLookups.towns.find((x) => x.townRef === code);
+      break;
+
+    case "island":
+      foundRec = currentLookups.islands.find((x) => x.islandRef === code);
+      break;
+
+    case "administrativeArea":
+      foundRec = currentLookups.adminAuthorities.find((x) => x.administrativeAreaRef === code);
+      break;
+
+    default:
+      break;
+  }
+
+  if (foundRec) return foundRec.linkedRef;
+  else return null;
 };

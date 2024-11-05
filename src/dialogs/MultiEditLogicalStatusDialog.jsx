@@ -31,6 +31,9 @@
 //    018   03.09.24 Sean Flook       IMANN-969 Corrected field name and show state for Scottish authorities.
 //    019   05.09.24 Sean Flook       IMANN-978 Set the state if required for OneScotland authorities.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    020   24.10.24 Sean Flook      IMANN-1033 Only sort and filter lookups when required.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -119,6 +122,10 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
   const [postcode, setPostcode] = useState(null);
   const [note, setNote] = useState(null);
   const [noteOpen, setNoteOpen] = useState(false);
+
+  const [postTownLookup, setPostTownLookup] = useState([]);
+  const [subLocalityLookup, setSubLocalityLookup] = useState([]);
+  const [postcodeLookup, setPostcodeLookup] = useState([]);
 
   const [stateError, setStateError] = useState(null);
   const [rpcError, setRpcError] = useState(null);
@@ -733,6 +740,45 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
   };
 
   useEffect(() => {
+    setPostTownLookup(
+      lookupContext.currentLookups.postTowns
+        .filter((x) => x.language === "ENG" && !x.historic)
+        .sort(function (a, b) {
+          return a.postTown.localeCompare(b.postTown, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.postTowns]);
+
+  useEffect(() => {
+    setSubLocalityLookup(
+      lookupContext.currentLookups.subLocalities
+        .filter((x) => x.language === "ENG" && !x.historic)
+        .sort(function (a, b) {
+          return a.subLocality.localeCompare(b.subLocality, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.subLocalities]);
+
+  useEffect(() => {
+    setPostcodeLookup(
+      lookupContext.currentLookups.postcodes
+        .filter((x) => !x.historic)
+        .sort(function (a, b) {
+          return a.postcode.localeCompare(b.postcode, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.postcodes]);
+
+  useEffect(() => {
     setRepresentativePointCodeLookup(FilteredRepresentativePointCode(settingsContext.isScottish, true));
 
     if (isOpen) {
@@ -990,14 +1036,7 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                     disabled={updating}
                     displayNoChange
                     allowAddLookup
-                    lookupData={lookupContext.currentLookups.postTowns
-                      .filter((x) => x.language === "ENG" && !x.historic)
-                      .sort(function (a, b) {
-                        return a.postTown.localeCompare(b.postTown, undefined, {
-                          numeric: true,
-                          sensitivity: "base",
-                        });
-                      })}
+                    lookupData={postTownLookup}
                     lookupId="postTownRef"
                     lookupLabel="postTown"
                     value={postTown}
@@ -1016,14 +1055,7 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                       disabled={updating}
                       displayNoChange
                       allowAddLookup
-                      lookupData={lookupContext.currentLookups.subLocalities
-                        .filter((x) => x.language === "ENG" && !x.historic)
-                        .sort(function (a, b) {
-                          return a.subLocality.localeCompare(b.subLocality, undefined, {
-                            numeric: true,
-                            sensitivity: "base",
-                          });
-                        })}
+                      lookupData={subLocalityLookup}
                       lookupId="subLocalityRef"
                       lookupLabel="subLocality"
                       value={subLocality}
@@ -1043,14 +1075,7 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                     doNotSetTitleCase
                     displayNoChange
                     allowAddLookup
-                    lookupData={lookupContext.currentLookups.postcodes
-                      .filter((x) => !x.historic)
-                      .sort(function (a, b) {
-                        return a.postcode.localeCompare(b.postcode, undefined, {
-                          numeric: true,
-                          sensitivity: "base",
-                        });
-                      })}
+                    lookupData={postcodeLookup}
                     lookupId="postcodeRef"
                     lookupLabel="postcode"
                     value={postcode}

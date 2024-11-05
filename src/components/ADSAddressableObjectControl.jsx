@@ -49,6 +49,9 @@
 //    014   11.07.24 Sean Flook       IMANN-759 Set the display variable if we do not have the input reference.
 //    015   15.07.24 Sean Flook       IMANN-759 Always set the display variable.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    016   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -60,7 +63,14 @@ import { Typography, Grid, Tooltip, TextField, Skeleton } from "@mui/material";
 import { Box } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { adsMidGreyA } from "../utils/ADSColours";
-import { FormBoxRowStyle, FormRowStyle, FormInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
+import {
+  FormBoxRowStyle,
+  FormRowStyle,
+  FormInputStyle,
+  controlLabelStyle,
+  tooltipStyle,
+  skeletonHeight,
+} from "../utils/ADSStyles";
 import { characterSetValidator } from "../utils/HelperUtils";
 
 ADSAddressableObjectControl.propTypes = {
@@ -283,7 +293,7 @@ function ADSAddressableObjectControl({
             </Grid>
             <Grid item xs={3}>
               {loading ? (
-                <Skeleton variant="rectangular" animation="wave" height="60px" width="100%" />
+                <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
               ) : helperText && helperText.length > 0 ? (
                 <Tooltip
                   title={`The ${variant === "PAO" ? "primary" : "secondary"} addressable object start number.${
@@ -333,7 +343,7 @@ function ADSAddressableObjectControl({
             </Grid>
             <Grid item xs={3}>
               {loading ? (
-                <Skeleton variant="rectangular" animation="wave" height="60px" width="100%" />
+                <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
               ) : helperText && helperText.length > 0 ? (
                 <Tooltip
                   title={`The ${variant === "PAO" ? "primary" : "secondary"} addressable object start suffix.${
@@ -384,7 +394,7 @@ function ADSAddressableObjectControl({
             </Grid>
             <Grid item xs={3}>
               {loading ? (
-                <Skeleton variant="rectangular" animation="wave" height="60px" width="100%" />
+                <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
               ) : helperText && helperText.length > 0 ? (
                 <Tooltip
                   title={`The ${variant === "PAO" ? "primary" : "secondary"} addressable object end number.${
@@ -432,7 +442,7 @@ function ADSAddressableObjectControl({
             </Grid>
             <Grid item xs={3}>
               {loading ? (
-                <Skeleton variant="rectangular" animation="wave" height="60px" width="100%" />
+                <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
               ) : helperText && helperText.length > 0 ? (
                 <Tooltip
                   title={`The ${variant === "PAO" ? "primary" : "secondary"} addressable object end suffix.${
@@ -490,7 +500,7 @@ function ADSAddressableObjectControl({
         </Grid>
         <Grid item xs={9}>
           {loading ? (
-            <Skeleton variant="rectangular" animation="wave" height="60px" width="100%" />
+            <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
           ) : helperText && helperText.length > 0 ? (
             <Tooltip
               title={isRequired ? helperText + " This is a required field." : helperText}

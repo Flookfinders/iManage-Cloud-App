@@ -31,6 +31,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    018   20.06.24 Sean Flook      IMANN-1003 Removed the add icon when we have no records.
+//    019   31.10.24 Sean Flook      IMANN-1012 Changed height of skeleton control.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -374,7 +375,7 @@ function PropertyCrossRefListTab({
         className={classes.root}
       >
         {loading ? (
-          <Skeleton variant="rectangular" height="60px" width="100%" />
+          <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : data && data.length > 0 ? (
           <DataGrid
             rows={data}

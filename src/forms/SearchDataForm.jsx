@@ -37,6 +37,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    094   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//    095   24.10.24 Sean Flook      IMANN-1040 Use sessionStorage rather than localStorage.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -867,8 +868,8 @@ function SearchDataForm() {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("SearchDataForm_firstLoadDone") === null) {
-      localStorage.setItem("SearchDataForm_firstLoadDone", 1);
+    if (sessionStorage.getItem("SearchDataForm_firstLoadDone") === null) {
+      sessionStorage.setItem("SearchDataForm_firstLoadDone", 1);
     } else {
       setCurrentData(JSON.parse(sessionStorage.getItem("currentData")));
     }

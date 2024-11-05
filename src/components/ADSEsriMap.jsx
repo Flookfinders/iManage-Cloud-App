@@ -109,6 +109,7 @@
 //    093   04.10.24 Sean Flook      IMANN-1005 Use a different colour for a closed street.
 //    094   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //    095   14.10.24 Sean Flook      IMANN-1024 Call onEditMapObject when opening a property.
+//    096   28.10.24 Joshua McCormick IMANN-904 useEffect for mapContext.currentClearObject
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -7987,6 +7988,9 @@ function ADSEsriMap(startExtent) {
     streetContext,
     fadeVisibilityOn,
   ]);
+
+  useEffect(() => {
+  }, [mapContext.currentClearObject]);
 
   // Fix the order of the layers
   useEffect(() => {

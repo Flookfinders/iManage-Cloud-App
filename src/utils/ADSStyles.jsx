@@ -45,6 +45,9 @@
 //    032   08.05.24 Sean Flook       IMANN-447 Fixed height in wizard.
 //    033   17.05.24 Sean Flook       IMANN-458 Modified GetTabIconStyle to include isActive.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    034   31.10.24 Sean Flook      IMANN-1012 Changes required for plot to postal wizard.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -87,6 +90,7 @@ export const appBarHeight = "56";
 export const wizardStepperHeight = "70";
 const maxContentHeight = "400px";
 export const doughnutHeight = "360";
+export const skeletonHeight = "53";
 
 /**
  * Return the styling for action icons.
@@ -425,6 +429,19 @@ export const dataFormStyle = (dataForm) => {
       height = maxHeight - wizardStepperHeight * 2 - dataFormToolbarHeight * 2;
       break;
 
+    case "PlotToPostalAddressDataGrid":
+    case "PlotLPI":
+      height = maxHeight - wizardStepperHeight * 2 - dataFormToolbarHeight * 3;
+      break;
+
+    case "PlotLPIDetails":
+      height = maxHeight - wizardStepperHeight * 2 - dataFormToolbarHeight * 4 - 4;
+      break;
+
+    case "AltLangPlotLPIDetails":
+      height = maxHeight - wizardStepperHeight * 2 - dataFormToolbarHeight * 5 - 4;
+      break;
+
     case "SettingsPage":
       height = maxHeight - appBarHeight;
       break;
@@ -435,6 +452,7 @@ export const dataFormStyle = (dataForm) => {
       break;
 
     case "WizardCrossReferencePage":
+    case "PlotToPostalFinalisePage":
       height = maxHeight - wizardStepperHeight * 3 - appBarHeight;
       break;
 
@@ -524,9 +542,41 @@ export const dataFormStyle = (dataForm) => {
 
     case "LookupTableGridTab":
     case "MapLayersTab":
+    case "PlotToPostalAddressDataGrid":
       return {
         height: `${height}px`,
         "& .idox-data-grid-header": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
+      };
+
+    case "PlotLPI":
+      return {
+        width: "100%",
+        height: `${height}px`,
+        backgroundColor: adsOffWhite,
+        pl: "12px",
+        pr: "50px",
+        mr: "50px",
+      };
+
+    case "PlotLPIDetails":
+    case "AltLangPlotLPIDetails":
+      return {
+        overflowY: "auto",
+        width: "100%",
+        height: `${height}px`,
+        backgroundColor: adsOffWhite,
+        pl: "12px",
+        pr: "50px",
+      };
+
+    case "PlotToPostalFinalisePage":
+      return {
+        overflowY: "auto",
+        width: "100%",
+        height: `${height}px`,
+        backgroundColor: adsOffWhite,
+        pl: "12px",
+        pr: "50px",
       };
 
     default:
@@ -716,6 +766,19 @@ export const blueButtonStyle = {
 export const whiteButtonStyle = {
   color: adsBlueA,
   backgroundColor: adsWhite,
+  textTransform: "none",
+  "&:hover": {
+    backgroundColor: adsLightBlue,
+    color: adsWhite,
+  },
+};
+
+/**
+ * The styling used for an off white button.
+ */
+export const offWhiteButtonStyle = {
+  color: adsBlueA,
+  backgroundColor: adsOffWhite,
   textTransform: "none",
   "&:hover": {
     backgroundColor: adsLightBlue,

@@ -33,6 +33,7 @@
 //#region Version 1.0.1.0 changes
 //    019   01.10.24 Sean Flook       IMANN-986 Added new range URLs.
 //    020   10.10.24 Sean Flook       IMANN-986 Corrected method name.
+//    021   24.10.24 Sean Flook      IMANN-1040 Added PostUserLogoffUrl.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -145,6 +146,17 @@ const getUrl = (url, endPointType, contentType, userToken) => {
 export function PostUserLoginUrl() {
   const url = GetApiSite("security", `/api/${securityVersion}Authority/Login`);
   return getUrl(url, "POST", "application/json", null);
+}
+
+/**
+ * Get the URL used to log an user out of the system.
+ *
+ * @param {string} userToken The token for the user who is calling the endpoint
+ * @return {object} The URL object used in FETCH calls.
+ */
+export function PostUserLogoffUrl(userToken) {
+  const url = GetApiSite("security", `/api/${securityVersion}Authority/Logoff`);
+  return getUrl(url, "POST", "application/text", userToken);
 }
 
 /**

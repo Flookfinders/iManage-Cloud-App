@@ -33,6 +33,9 @@
 //    020   13.06.24 Sean Flook       IMANN-553 Changes required to handle values of 0.
 //    021   28.08.24 Sean Flook       IMANN-961 Use a TextField when user is read only.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    022   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -70,6 +73,7 @@ import {
   FormRowStyle,
   FormSelectInputStyle,
   controlLabelStyle,
+  skeletonHeight,
   tooltipStyle,
 } from "../utils/ADSStyles";
 
@@ -517,7 +521,7 @@ function ADSSelectControl({
         </Grid>
         <Grid item xs={9}>
           {loading ? (
-            <Skeleton variant="rectangular" animation="wave" height="60px" width="100%" />
+            <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
           ) : isEditable ? (
             helperText && helperText.length > 0 ? (
               lookupColour ? (

@@ -1,4 +1,4 @@
-//#region header */
+//#region header
 /**************************************************************************************************
 //
 //  Description: URL data about the api calls we need to make
@@ -26,15 +26,19 @@
 //    013   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //    014   18.09.24 Sean Flook       IMANN-980 Added missing parameter when calling fetchData.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    015   30.10.24 Sean Flook      IMANN-1040 Display a message dialog if we get an error loading the lookups etc.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
 
 import React, { useContext, useState, useRef, useEffect } from "react";
-import { Backdrop, CircularProgress } from "@mui/material";
+
 import LookupContext from "../context/lookupContext";
 import SettingsContext from "../context/settingsContext";
 import UserContext from "../context/userContext";
+
 import {
   GetValidationMessagesUrl,
   GetLocalityUrl,
@@ -58,7 +62,10 @@ import {
   GetStreetTemplateUrl,
   GetMapLayersUrl,
 } from "../configuration/ADSConfig";
+
+import { Backdrop, CircularProgress } from "@mui/material";
 import ADSHomepageControl from "../components/ADSHomepageControl";
+import MessageDialog from "../dialogs/MessageDialog";
 
 const HomePage = () => {
   const lookupsContext = useContext(LookupContext);
@@ -111,6 +118,7 @@ const HomePage = () => {
   const mapLayersLoaded = useRef(false);
 
   const [isLoaded, setIsLoaded] = useState(false);
+  const [openMessageDialog, setOpenMessageDialog] = useState(false);
 
   /**
    * Method to fetch the lookup data.
@@ -260,9 +268,18 @@ const HomePage = () => {
                   response: response,
                 });
               setData(lookup.id, lookup.noRecords);
+              setOpenMessageDialog(true);
               break;
 
             default:
+              if (userContext.currentUser.showMessages)
+                console.error(`[${response.status} ERROR] Fetching data`, {
+                  lookup: lookup.id,
+                  errorText: response.statusText,
+                  response: response,
+                });
+              setData(lookup.id, lookup.noRecords);
+              setOpenMessageDialog(true);
               break;
           }
         } else return response.json();
@@ -279,7 +296,17 @@ const HomePage = () => {
               error: e,
             });
         setData(lookup.id, lookup.noRecords);
+        setOpenMessageDialog(true);
       });
+  };
+
+  /**
+   * Event to handle when the message dialog closes.
+   *
+   * @param {string} action The action to take after closing the dialog.
+   */
+  const handleMessageDialogClose = (action) => {
+    setOpenMessageDialog(false);
   };
 
   useEffect(() => {
@@ -611,6 +638,7 @@ const HomePage = () => {
       <Backdrop open={!isLoaded}>
         Loading data, please wait...
         <CircularProgress color="inherit" />
+        <MessageDialog isOpen={openMessageDialog} variant={"failLookupLoad"} onClose={handleMessageDialogClose} />
       </Backdrop>
     </div>
   );

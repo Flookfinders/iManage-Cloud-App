@@ -63,6 +63,7 @@
 //#region Version 1.0.1.0 changes
 //    049   01.10.24 Sean Flook       IMANN-899 Use the correct field for BLPU App Cross Reference.
 //    050   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//    051   31.10.24 Sean Flook      IMANN-1012 Various changes required for plot to postal wizard.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -184,11 +185,14 @@ export const FilteredBLPUState = (isScottish, logicalStatus) => {
  * @param {boolean} isScottish True if the authority is a Scottish authority; otherwise false.
  * @param {number} blpuLogicalStatus The BLPU logical status used to further filter the list of available LPI logical statuses.
  * @param {boolean} [isTemplate=false] If true only return values that are acceptable for creating a new record.
+ * @param {boolean} [isPlot=false] If true only return values that are acceptable for a plot address being changed to postal address.
  * @return {array} The filtered list of LPI logical statuses.
  */
-export const FilteredLPILogicalStatus = (isScottish, blpuLogicalStatus, isTemplate = false) => {
+export const FilteredLPILogicalStatus = (isScottish, blpuLogicalStatus, isTemplate = false, isPlot = false) => {
   if (isScottish) {
-    return LPILogicalStatus.filter((x) => x.osText && (!isTemplate || ![7, 8, 9].includes(x.id)));
+    return LPILogicalStatus.filter(
+      (x) => x.osText && (isPlot ? [7, 8, 9].includes(x.id) : !isTemplate || ![7, 8, 9].includes(x.id))
+    );
   } else {
     switch (blpuLogicalStatus) {
       case 1:
@@ -212,7 +216,9 @@ export const FilteredLPILogicalStatus = (isScottish, blpuLogicalStatus, isTempla
         return LPILogicalStatus.filter((x) => x.gpText && [9].includes(x.id));
 
       default:
-        return LPILogicalStatus.filter((x) => x.gpText && (!isTemplate || ![7, 8, 9].includes(x.id)));
+        return LPILogicalStatus.filter(
+          (x) => x.gpText && (isPlot ? [7, 8, 9].includes(x.id) : !isTemplate || ![7, 8, 9].includes(x.id))
+        );
     }
   }
 };
@@ -399,7 +405,13 @@ export function addressToTitleCase(address, postcode) {
 
   if (address && address.length > 0) {
     if (address === "No records found" || address === "Search failed...") return address;
-    else
+    else {
+      if (!postcode) {
+        const lastPart = address.split(", ").reverse()[0];
+        const regexp = /^[A-Z]{1,2}[0-9RCHNQ][0-9A-Z]?\s?[0-9][ABD-HJLNP-UW-Z]{2}$|^[A-Z]{2}-?[0-9]{4}$/;
+        postcode = regexp.test(lastPart) ? lastPart : "";
+      }
+
       return (
         address
           .replace(postcode, "")
@@ -410,8 +422,9 @@ export function addressToTitleCase(address, postcode) {
           .replaceAll(" And ", " and ")
           .replaceAll(" The ", " the ")
           .replaceAll(" Of ", " of ")
-          .replaceAll(" To ", " to ") + (postcode && address.includes(postcode) ? postcode : "")
+          .replaceAll(" To ", " to ") + (postcode && address.includes(postcode) ? postcode.toUpperCase() : "")
       );
+    }
   } else return null;
 }
 
@@ -2118,6 +2131,8 @@ export async function UpdateAfterSave(
           post_town: lpi.postTown,
           postcode: lpi.postcode,
           crossref: null,
+          lpi_st_ref_type: 1,
+          blpu_state: 2,
           address: lpi.address.replaceAll("\r\n", " "),
           sort_code: 0,
         };
@@ -2229,8 +2244,9 @@ export async function UpdateRangeAfterSave(
 
     if (returnedLpis) {
       for (const lpi of returnedLpis) {
-        if (!searchAddresses.includes(lpi.address)) {
-          searchAddresses.push(lpi.address);
+        const saoPaoDetails = `${lpi.saoStartNumber}|${lpi.saoStartSuffix}|${lpi.saoEndNumber}|${lpi.saoEndSuffix}|${lpi.saoText}|${lpi.paoStartNumber}|${lpi.paoStartSuffix}|${lpi.paoEndNumber}|${lpi.paoEndSuffix}|${lpi.paoText}|${lpi.usrn}`;
+        if (!searchAddresses.includes(saoPaoDetails)) {
+          searchAddresses.push(saoPaoDetails);
           const newData = {
             type: 24,
             id: lpi.lpiKey,
@@ -2262,6 +2278,8 @@ export async function UpdateRangeAfterSave(
             post_town: lpi.postTown,
             postcode: lpi.postcode,
             crossref: null,
+            lpi_st_ref_type: 1,
+            blpu_state: 2,
             address: lpi.address.replaceAll("\r\n", " "),
             sort_code: 0,
           };
@@ -2278,16 +2296,21 @@ export async function UpdateRangeAfterSave(
     }
   }
 
-  if (newSearchData) searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newSearchData);
+  if (newSearchData) {
+    searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newSearchData);
 
-  const addressesOnUPRN = searchContext.currentSearchData.results.filter((x) => x.uprn === properties.uprn);
+    const currentUprns = properties.map((x) => `${x.uprn}`);
+    const addressesOnUPRN = newSearchData.filter((x) => currentUprns.includes(x.uprn));
 
-  if (addressesOnUPRN.length > searchAddresses.length) {
-    const currentLpiKeys = properties.lpis.map((x) => x.lpiKey);
+    if (addressesOnUPRN.length > searchAddresses.length) {
+      const currentLpiKeys = properties.lpis.map((x) => x.lpiKey);
 
-    const fixedSearchData = newSearchData.filter((x) => x.uprn !== properties.uprn || currentLpiKeys.includes(x.id));
+      const fixedSearchData = newSearchData.filter(
+        (x) => !currentUprns.includes(x.uprn) || currentLpiKeys.includes(x.id)
+      );
 
-    searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, fixedSearchData);
+      searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, fixedSearchData);
+    }
   }
 
   let newMapSearchProperties = JSON.parse(JSON.stringify(mapContext.currentSearchData.properties));
@@ -2468,6 +2491,20 @@ export const getLpiPostTown = (value, postTowns) => {
   const rec = postTowns.find((x) => x.postTownRef === value);
 
   if (rec) return rec.postTown;
+  else return null;
+};
+
+/**
+ * Method to get the postcode description.
+ *
+ * @param {number} value The postcode reference number.
+ * @param {Array} postcodes The list of postcodes.
+ * @returns {string|null} The description to display for the postcode reference number.
+ */
+export const getLpiPostcode = (value, postcodes) => {
+  const rec = postcodes.find((x) => x.postcodeRef === value);
+
+  if (rec) return rec.postcode;
   else return null;
 };
 

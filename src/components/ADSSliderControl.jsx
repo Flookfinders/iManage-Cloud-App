@@ -15,6 +15,9 @@
 //    002   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
 //    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    004   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -24,7 +27,7 @@ import PropTypes from "prop-types";
 import { Typography, Grid, Tooltip, Slider, TextField, Skeleton } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
-import { FormBoxRowStyle, FormRowStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
+import { FormBoxRowStyle, FormRowStyle, controlLabelStyle, skeletonHeight, tooltipStyle } from "../utils/ADSStyles";
 
 ADSSliderControl.propTypes = {
   label: PropTypes.string.isRequired,
@@ -149,7 +152,7 @@ function ADSSliderControl({
         </Grid>
         <Grid item xs={narrowLabel ? 9 : 8}>
           {loading ? (
-            <Skeleton variant="rectangular" animation="wave" height="60px" width="100%" />
+            <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
           ) : helperText && helperText.length > 0 ? (
             <Tooltip
               title={isRequired ? helperText + " This is a required field." : helperText}

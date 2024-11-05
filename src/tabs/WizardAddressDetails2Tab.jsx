@@ -28,6 +28,9 @@
 //    015   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    016   20.06.24 Sean Flook       IMANN-633 Enforce the maximum for the numbers.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    017   24.10.24 Sean Flook      IMANN-1033 Only sort and filter lookups when required.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -120,6 +123,11 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
   const [postTownRef, setPostTownRef] = useState(null);
   const [subLocalityRef, setSubLocalityRef] = useState(null);
   const [postcodeRef, setPostcodeRef] = useState(null);
+
+  const [streetLookup, setStreetLookup] = useState([]);
+  const [postTownLookup, setPostTownLookup] = useState([]);
+  const [subLocalityLookup, setSubLocalityLookup] = useState([]);
+  const [postcodeLookup, setPostcodeLookup] = useState([]);
 
   const [rangeTypeError, setRangeTypeError] = useState(null);
   const [rangeTextError, setRangeTextError] = useState(null);
@@ -1475,6 +1483,53 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
   };
 
   useEffect(() => {
+    setStreetLookup(
+      lookupContext.currentLookups.streetDescriptors.filter(
+        (x) => x.language === (settingsContext.isScottish ? "ENG" : language)
+      )
+    );
+  }, [lookupContext.currentLookups.streetDescriptors, settingsContext.isScottish, language]);
+
+  useEffect(() => {
+    setPostTownLookup(
+      lookupContext.currentLookups.postTowns
+        .filter((x) => x.language === (settingsContext.isScottish ? "ENG" : language) && !x.historic)
+        .sort(function (a, b) {
+          return a.postTown.localeCompare(b.postTown, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.postTowns, settingsContext.isScottish, language]);
+
+  useEffect(() => {
+    setSubLocalityLookup(
+      lookupContext.currentLookups.subLocalities
+        .filter((x) => x.language === "ENG" && !x.historic)
+        .sort(function (a, b) {
+          return a.subLocality.localeCompare(b.subLocality, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.subLocalities]);
+
+  useEffect(() => {
+    setPostcodeLookup(
+      lookupContext.currentLookups.postcodes
+        .filter((x) => !x.historic)
+        .sort(function (a, b) {
+          return a.postcode.localeCompare(b.postcode, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.postcodes]);
+
+  useEffect(() => {
     if (data) {
       setRangeType(data.rangeType);
       setRangeText(data.rangeText);
@@ -2093,9 +2148,7 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
             isEditable
             isRequired
             useRounded
-            lookupData={lookupContext.currentLookups.streetDescriptors.filter(
-              (x) => x.language === (settingsContext.isScottish ? "ENG" : language)
-            )}
+            lookupData={streetLookup}
             lookupId="usrn"
             lookupLabel="address"
             value={usrn}
@@ -2110,14 +2163,7 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
             isEditable
             useRounded
             allowAddLookup
-            lookupData={lookupContext.currentLookups.postTowns
-              .filter((x) => x.language === (settingsContext.isScottish ? "ENG" : language) && !x.historic)
-              .sort(function (a, b) {
-                return a.postTown.localeCompare(b.postTown, undefined, {
-                  numeric: true,
-                  sensitivity: "base",
-                });
-              })}
+            lookupData={postTownLookup}
             lookupId="postTownRef"
             lookupLabel="postTown"
             value={postTownRef}
@@ -2133,14 +2179,7 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
             isEditable
             useRounded
             allowAddLookup
-            lookupData={lookupContext.currentLookups.subLocalities
-              .filter((x) => x.language === (settingsContext.isScottish ? "ENG" : language) && !x.historic)
-              .sort(function (a, b) {
-                return a.subLocality.localeCompare(b.subLocality, undefined, {
-                  numeric: true,
-                  sensitivity: "base",
-                });
-              })}
+            lookupData={subLocalityLookup}
             lookupId="subLocalityRef"
             lookupLabel="subLocality"
             value={subLocalityRef}
@@ -2157,14 +2196,7 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
             useRounded
             doNotSetTitleCase
             allowAddLookup
-            lookupData={lookupContext.currentLookups.postcodes
-              .filter((x) => !x.historic)
-              .sort(function (a, b) {
-                return a.postcode.localeCompare(b.postcode, undefined, {
-                  numeric: true,
-                  sensitivity: "base",
-                });
-              })}
+            lookupData={postcodeLookup}
             lookupId="postcodeRef"
             lookupLabel="postcode"
             value={postcodeRef}

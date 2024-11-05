@@ -22,6 +22,9 @@
 //    009   16.02.24 Sean Flook       IMANN-243 Correctly handle the incoming time.
 //    010   28.08.24 Sean Flook       IMANN-961 Use a TextField when user is read only.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    011   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -43,6 +46,7 @@ import {
   controlLabelStyle,
   tooltipStyle,
   FormInputStyle,
+  skeletonHeight,
 } from "../utils/ADSStyles";
 import { isValidDate } from "../utils/HelperUtils";
 
@@ -185,7 +189,7 @@ function ADSFromToTimeControl({
         </Grid>
         <Grid item xs={9}>
           {loading ? (
-            <Skeleton variant="rectangular" animation="wave" height="52px" width="100%" />
+            <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
           ) : isEditable ? (
             <Grid container justifyContent="flex-start" alignItems="center" spacing={1}>
               <Grid item xs={6} container direction="column">

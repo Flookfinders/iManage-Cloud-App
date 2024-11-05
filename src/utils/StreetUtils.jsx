@@ -88,6 +88,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    075   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//    076   01.11.24 Sean Flook      IMANN-1010 Include new fields in search results.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3142,6 +3143,8 @@ export async function SaveStreet(
               post_town: null,
               postcode: null,
               crossref: null,
+              lpi_st_ref_type: result.recordType ? Number(result.recordType) : 1,
+              blpu_state: result.state ? Number(result.state) : 2,
               address: streetAddress,
               sort_code: 0,
             };

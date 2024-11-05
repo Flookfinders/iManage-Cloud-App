@@ -51,6 +51,9 @@
 //    038   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //    039   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    040   24.10.24 Sean Flook      IMANN-1033 Only sort and filter lookups when required.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -181,6 +184,11 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
   const [postalAddressError, setPostalAddressError] = useState(null);
   const [startDateError, setStartDateError] = useState(null);
   const [endDateError, setEndDateError] = useState(null);
+
+  const [streetLookup, setStreetLookup] = useState([]);
+  const [postTownLookup, setPostTownLookup] = useState([]);
+  const [subLocalityLookup, setSubLocalityLookup] = useState([]);
+  const [postcodeLookup, setPostcodeLookup] = useState([]);
 
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [lookupType, setLookupType] = useState("unknown");
@@ -801,6 +809,53 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
   };
 
   useEffect(() => {
+    setStreetLookup(
+      lookupContext.currentLookups.streetDescriptors.filter(
+        (x) => x.language === (settingsContext.isWelsh ? language : "ENG")
+      )
+    );
+  }, [lookupContext.currentLookups.streetDescriptors, settingsContext.isWelsh, language]);
+
+  useEffect(() => {
+    setPostTownLookup(
+      lookupContext.currentLookups.postTowns
+        .filter((x) => x.language === (settingsContext.isWelsh ? language : "ENG") && !x.historic)
+        .sort(function (a, b) {
+          return a.postTown.localeCompare(b.postTown, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.postTowns, settingsContext.isWelsh, language]);
+
+  useEffect(() => {
+    setSubLocalityLookup(
+      lookupContext.currentLookups.subLocalities
+        .filter((x) => !x.historic)
+        .sort(function (a, b) {
+          return a.subLocality.localeCompare(b.subLocality, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.subLocalities]);
+
+  useEffect(() => {
+    setPostcodeLookup(
+      lookupContext.currentLookups.postcodes
+        .filter((x) => !x.historic)
+        .sort(function (a, b) {
+          return a.postcode.localeCompare(b.postcode, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.postcodes]);
+
+  useEffect(() => {
     if (!loading && data && data.lpiData) {
       setLanguage(data.lpiData.language);
       setLogicalStatus(data.lpiData.logicalStatus);
@@ -1159,9 +1214,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           loading={loading}
           useRounded
           // doNotSetTitleCase
-          lookupData={lookupContext.currentLookups.streetDescriptors.filter(
-            (x) => x.language === (settingsContext.isWelsh ? language : "ENG")
-          )}
+          lookupData={streetLookup}
           lookupId="usrn"
           lookupLabel="address"
           value={usrn}
@@ -1176,14 +1229,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           loading={loading}
           useRounded
           allowAddLookup
-          lookupData={lookupContext.currentLookups.postTowns
-            .filter((x) => x.language === (settingsContext.isWelsh ? language : "ENG") && !x.historic)
-            .sort(function (a, b) {
-              return a.postTown.localeCompare(b.postTown, undefined, {
-                numeric: true,
-                sensitivity: "base",
-              });
-            })}
+          lookupData={postTownLookup}
           lookupId="postTownRef"
           lookupLabel="postTown"
           value={postTownRef}
@@ -1200,14 +1246,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
             loading={loading}
             useRounded
             allowAddLookup
-            lookupData={lookupContext.currentLookups.subLocalities
-              .filter((x) => !x.historic)
-              .sort(function (a, b) {
-                return a.subLocality.localeCompare(b.subLocality, undefined, {
-                  numeric: true,
-                  sensitivity: "base",
-                });
-              })}
+            lookupData={subLocalityLookup}
             lookupId="subLocalityRef"
             lookupLabel="subLocality"
             value={subLocalityRef}
@@ -1225,14 +1264,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           useRounded
           doNotSetTitleCase
           allowAddLookup
-          lookupData={lookupContext.currentLookups.postcodes
-            .filter((x) => !x.historic)
-            .sort(function (a, b) {
-              return a.postcode.localeCompare(b.postcode, undefined, {
-                numeric: true,
-                sensitivity: "base",
-              });
-            })}
+          lookupData={postcodeLookup}
           lookupId="postcodeRef"
           lookupLabel="postcode"
           value={postcodeRef}

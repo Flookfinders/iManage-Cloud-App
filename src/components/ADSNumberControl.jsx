@@ -27,6 +27,9 @@
 //    014   19.06.24 Joshua McCormick IMANN-503 handleNumberChangeEvent change to allow for 99.9 maximum
 //    015   20.06.24 Sean Flook       IMANN-633 Allow numbers to be removed.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    016   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -37,7 +40,14 @@ import PropTypes from "prop-types";
 import { Grid, TextField, Typography, Tooltip, Skeleton } from "@mui/material";
 import { Box } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
-import { FormBoxRowStyle, FormRowStyle, FormInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
+import {
+  FormBoxRowStyle,
+  FormRowStyle,
+  FormInputStyle,
+  controlLabelStyle,
+  tooltipStyle,
+  skeletonHeight,
+} from "../utils/ADSStyles";
 /* #endregion imports */
 
 ADSNumberControl.propTypes = {
@@ -99,7 +109,7 @@ function ADSNumberControl({ label, isEditable, isRequired, loading, helperText, 
         </Grid>
         <Grid item xs={9}>
           {loading ? (
-            <Skeleton variant="rectangular" animation="wave" height="60px" width="100%" />
+            <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
           ) : helperText && helperText.length > 0 ? (
             <Tooltip
               title={isRequired ? helperText + " This is a required field." : helperText}

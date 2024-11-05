@@ -29,6 +29,9 @@
 //    016   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    017   13.08.24 Sean Flook       IMANN-861 Hide the predecessor value.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    018   31.10.24 Sean Flook      IMANN-1012 Changed height of skeleton control.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -369,7 +372,7 @@ function SuccessorListTab({
         className={classes.root}
       >
         {loading ? (
-          <Skeleton variant="rectangular" height="60px" width="100%" />
+          <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : data && data.filter((x) => x.changeType !== "D").length > 0 ? (
           <DataGrid
             rows={data.filter((x) => x.changeType !== "D")}

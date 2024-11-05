@@ -50,9 +50,10 @@
 //    037   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    038   08.08.24 Sean Flook       IMANN-911 Corrected typo.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
 //    039   01.10.24 Sean Flook       IMANN-665 Changed Designation to Type for HWW.
-//#endregion Version 1.0.0.0 changes
+//    040   31.10.24 Sean Flook      IMANN-1012 Changes required for the plot to postal wizard.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -72,6 +73,7 @@ import {
   Grid,
   FormControlLabel,
   Checkbox,
+  Divider,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -160,6 +162,9 @@ EditTemplateDialog.propTypes = {
     "lpiWizard",
     "classificationWizard",
     "otherWizard",
+    "plotBlpuWizard",
+    "plotLpiWizard",
+    "plotOtherWizard",
   ]),
   isOpen: PropTypes.bool.isRequired,
   data: PropTypes.object,
@@ -188,7 +193,9 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [excludeFromExport, setExcludeFromExport] = useState(false);
   const [siteVisit, setSiteVisit] = useState(false);
   const [level, setLevel] = useState(""); // numeric on BLPU for OS, string on LPI for GP
+  const [existingLpiStatus, setExistingLpiStatus] = useState(null);
   const [lpiStatus, setLpiStatus] = useState(null);
+  const [lpiPostcode, setLpiPostcode] = useState(null);
   const [lpiPostTown, setLpiPostTown] = useState(null);
   const [lpiSubLocality, setLpiSubLocality] = useState(null);
   const [lpiOfficialAddress, setLpiOfficialAddress] = useState(null);
@@ -200,6 +207,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [otherProvenance, setOtherProvenance] = useState(null);
   const [otherProvenanceStartDate, setOtherProvenanceStartDate] = useState(null);
   const [otherNote, setOtherNote] = useState("");
+  const [createGaelic, setCreateGaelic] = useState(false);
   const [streetType, setStreetType] = useState(null);
   const [streetState, setStreetState] = useState(null);
   const [streetLocality, setStreetLocality] = useState(null);
@@ -260,6 +268,10 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [prowOrganisation, setProwOrganisation] = useState(null);
   const [prowDistrict, setProwDistrict] = useState(null);
 
+  const [subLocalityLookup, setSubLocalityLookup] = useState([]);
+  const [postTownLookup, setPostTownLookup] = useState([]);
+  const [postcodeLookup, setPostcodeLookup] = useState([]);
+
   const [prowHover, setProwHover] = useState(false);
   const [ncrHover, setNcrHover] = useState(false);
   const [quietRouteHover, setQuietRouteHover] = useState(false);
@@ -276,7 +288,11 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const [excludeFromExportError, setExcludeFromExportError] = useState(null);
   const [siteVisitError, setSiteVisitError] = useState(null);
   const [blpuStartDateError, setBlpuStartDateError] = useState(null);
+  const [existingLpiStatusError, setExistingLpiStatusError] = useState(null);
   const [lpiStatusError, setLpiStatusError] = useState(null);
+  const [lpiPostTownError, setLpiPostTownError] = useState(null);
+  const [lpiPostcodeError, setLpiPostcodeError] = useState(null);
+  const [lpiSubLocalityError, setLpiSubLocalityError] = useState(null);
   const [levelError, setLevelError] = useState(null);
   const [lpiOfficialAddressError, setLpiOfficialAddressError] = useState(null);
   const [lpiPostalAddressError, setLpiPostalAddressError] = useState(null);
@@ -521,6 +537,63 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           errors: errors,
         };
 
+      case "plotBlpuWizard":
+        if (settingsContext.isScottish)
+          return {
+            blpuLogicalStatus: blpuStatus,
+            rpc: blpuRpc,
+            state: blpuState,
+            stateDate: blpuStateDate,
+            blpuLevel: level,
+            errors: errors,
+          };
+        else
+          return {
+            blpuLogicalStatus: blpuStatus,
+            rpc: blpuRpc,
+            state: blpuState,
+            stateDate: blpuStateDate,
+            errors: errors,
+          };
+
+      case "plotLpiWizard":
+        if (settingsContext.isScottish)
+          return {
+            existingLpiLogicalStatus: existingLpiStatus,
+            newLpiLogicalStatus: lpiStatus,
+            postcodeRef: lpiPostcode,
+            postTownRef: lpiPostTown,
+            subLocalityRef: lpiSubLocality,
+            officialAddressMaker: lpiOfficialAddress,
+            postallyAddressable: lpiPostalAddress,
+            startDate: lpiStartDate,
+            errors: errors,
+          };
+        else
+          return {
+            existingLpiLogicalStatus: existingLpiStatus,
+            newLpiLogicalStatus: lpiStatus,
+            postcodeRef: lpiPostcode,
+            postTownRef: lpiPostTown,
+            lpiLevel: level,
+            officialAddressMaker: lpiOfficialAddress,
+            postallyAddressable: lpiPostalAddress,
+            startDate: lpiStartDate,
+            errors: errors,
+          };
+
+      case "plotOtherWizard":
+        return settingsContext.isScottish
+          ? {
+              createGaelic: createGaelic,
+              note: otherNote,
+              errors: errors,
+            }
+          : {
+              note: otherNote,
+              errors: errors,
+            };
+
       default:
         return null;
     }
@@ -575,7 +648,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleBlpuStatusChangeEvent = (newValue) => {
     setBlpuStatus(newValue);
-    if (variant === "blpuWizard") {
+    if (variant === "blpuWizard" || variant === "plotBlpuWizard") {
       updateErrors("blpuStatus");
       setBlpuStatusError(null);
     }
@@ -588,7 +661,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleBlpuRpcChangeEvent = (newValue) => {
     setBlpuRpc(newValue);
-    if (variant === "blpuWizard") {
+    if (variant === "blpuWizard" || variant === "plotBlpuWizard") {
       updateErrors("rpc");
       setBlpuRpcError(null);
     }
@@ -601,7 +674,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleBlpuStateChangeEvent = (newValue) => {
     setBlpuState(newValue);
-    if (variant === "blpuWizard") {
+    if (variant === "blpuWizard" || variant === "plotBlpuWizard") {
       if (newValue && !blpuStateDate) setBlpuStateDate(new Date());
       updateErrors("state");
       setBlpuStateError(null);
@@ -615,7 +688,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleBlpuStateDateChangeEvent = (newValue) => {
     setBlpuStateDate(newValue);
-    if (variant === "blpuWizard") {
+    if (variant === "blpuWizard" || variant === "plotBlpuWizard") {
       updateErrors("stateDate");
       setBlpuStateDateError(null);
     }
@@ -663,9 +736,22 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleBlpuStartDateChangeEvent = (newValue) => {
     setBlpuStartDate(newValue);
-    if (variant === "blpuWizard") {
+    if (variant === "blpuWizard" || variant === "plotBlpuWizard") {
       updateErrors("blpuStartDate");
       setBlpuStartDateError(null);
+    }
+  };
+
+  /**
+   * Event to handle when the existing LPI logical status is changed.
+   *
+   * @param {number} newValue The new existing LPI logical status.
+   */
+  const handleExistingLpiStatusChangeEvent = (newValue) => {
+    setExistingLpiStatus(newValue);
+    if (variant === "plotLpiWizard") {
+      updateErrors("existingLpiStatus");
+      setExistingLpiStatusError(null);
     }
   };
 
@@ -676,10 +762,27 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleLpiStatusChangeEvent = (newValue) => {
     setLpiStatus(newValue);
-    if (variant === "lpiWizard") {
+    if (variant === "lpiWizard" || variant === "plotLpiWizard") {
       updateErrors("lpiStatus");
       setLpiStatusError(null);
     }
+  };
+
+  /**
+   * Event to handle when the postcode is changed.
+   *
+   * @param {number} newValue The new postcode.
+   */
+  const handleLpiPostcodeChangeEvent = (newValue) => {
+    setLpiPostcode(newValue);
+  };
+
+  /**
+   * Event to handle when a new postcode is added.
+   */
+  const handleAddPostcodeEvent = () => {
+    setLookupType("postcode");
+    setShowAddDialog(true);
   };
 
   /**
@@ -723,7 +826,12 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleLevelChangeEvent = (newValue) => {
     setLevel(newValue);
-    if (variant === "lpiWizard" || variant === "blpuWizard") {
+    if (
+      variant === "lpiWizard" ||
+      variant === "blpuWizard" ||
+      variant === "plotBlpuWizard" ||
+      variant === "plotLpiWizard"
+    ) {
       updateErrors("level");
       setLevelError(null);
     }
@@ -736,7 +844,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleLpiOfficialAddressChangeEvent = (newValue) => {
     setLpiOfficialAddress(newValue);
-    if (variant === "lpiWizard") {
+    if (variant === "lpiWizard" || variant === "plotLpiWizard") {
       updateErrors("officialAddress");
       setLpiOfficialAddressError(null);
     }
@@ -749,7 +857,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleLpiPostalAddressChangeEvent = (newValue) => {
     setLpiPostalAddress(newValue);
-    if (variant === "lpiWizard") {
+    if (variant === "lpiWizard" || variant === "plotLpiWizard") {
       updateErrors("postalAddress");
       setLpiPostalAddressError(null);
     }
@@ -762,7 +870,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
    */
   const handleLpiStartDateChangeEvent = (newValue) => {
     setLpiStartDate(newValue);
-    if (variant === "lpiWizard") {
+    if (variant === "lpiWizard" || variant === "plotLpiWizard") {
       updateErrors("lpiStartDate");
       setLpiStartDateError(null);
     }
@@ -831,13 +939,22 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   };
 
   /**
+   * Event to handle when the create Gaelic flag changes.
+   *
+   * @param {Boolean} newValue The new create Gaelic flag.
+   */
+  const handleCreateGaelicChangeEvent = (newValue) => {
+    setCreateGaelic(newValue);
+  };
+
+  /**
    * Event to handle when the note is changed.
    *
    * @param {string} newValue The new note.
    */
   const handleOtherNoteChangeEvent = (newValue) => {
     setOtherNote(newValue);
-    if (variant === "otherWizard") {
+    if (variant === "otherWizard" || variant === "plotOtherWizard") {
       updateErrors("note");
       setOtherNoteError(null);
     }
@@ -1511,6 +1628,9 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
       case "lpiWizard":
       case "classificationWizard":
       case "otherWizard":
+      case "plotBlpuWizard":
+      case "plotLpiWizard":
+      case "plotOtherWizard":
         return `Edit ${templateType} details`;
 
       default:
@@ -3040,6 +3160,248 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           </Stack>
         );
 
+      case "plotBlpuWizard":
+        return (
+          <Stack direction="column">
+            <ADSSelectControl
+              label="Logical status"
+              isEditable
+              isRequired
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredBLPULogicalStatus(settingsContext.isScottish, true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              value={blpuStatus}
+              errorText={blpuStatusError}
+              onChange={handleBlpuStatusChangeEvent}
+              helperText="Logical Status of the BLPU."
+            />
+            <ADSSelectControl
+              label="RPC"
+              isEditable
+              isRequired
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredRepresentativePointCode(settingsContext.isScottish, true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              value={blpuRpc}
+              errorText={blpuRpcError}
+              onChange={handleBlpuRpcChangeEvent}
+              helperText="Representative Point Code."
+            />
+            <ADSSelectControl
+              label="State"
+              isEditable
+              isRequired
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredBLPUState(settingsContext.isScottish, blpuStatus ? blpuStatus : null)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              value={blpuState}
+              errorText={blpuStateError}
+              onChange={handleBlpuStateChangeEvent}
+              helperText="A code identifying the current state of a BLPU."
+            />
+            <ADSDateControl
+              label="State date"
+              isEditable
+              isRequired
+              value={blpuStateDate}
+              errorText={blpuStateDateError}
+              onChange={handleBlpuStateDateChangeEvent}
+              helperText="Date at which the BLPU achieved its current state in the real-world."
+            />
+            {settingsContext.isScottish && (
+              <ADSNumberControl
+                label="Level"
+                maximum={99.9}
+                isEditable
+                isRequired
+                value={level}
+                errorText={levelError}
+                helperText="Memorandum of the vertical position of the BLPU."
+                onChange={handleLevelChangeEvent}
+              />
+            )}
+          </Stack>
+        );
+
+      case "plotLpiWizard":
+        return (
+          <Stack direction="column">
+            <Divider textAlign="center">
+              <Typography variant="body1" sx={{ color: `${adsBlueA}`, fontWeight: 700 }}>
+                Existing
+              </Typography>
+            </Divider>
+            <ADSSelectControl
+              label="Logical status"
+              isEditable
+              isRequired
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredLPILogicalStatus(settingsContext.isScottish, null, false, true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              value={existingLpiStatus}
+              errorText={existingLpiStatusError}
+              onChange={handleExistingLpiStatusChangeEvent}
+              helperText="Logical status of this Record."
+            />
+            <Divider textAlign="center">
+              <Typography variant="body1" sx={{ color: `${adsBlueA}`, fontWeight: 700 }}>
+                New
+              </Typography>
+            </Divider>
+            <ADSSelectControl
+              label="Logical status"
+              isEditable
+              isRequired
+              useRounded
+              doNotSetTitleCase
+              lookupData={FilteredLPILogicalStatus(settingsContext.isScottish, null, true)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              value={lpiStatus}
+              errorText={lpiStatusError}
+              onChange={handleLpiStatusChangeEvent}
+              helperText="Logical status of this Record."
+            />
+            {settingsContext.isScottish && (
+              <ADSSelectControl
+                label="Sub-locality"
+                isEditable
+                useRounded
+                allowAddLookup
+                lookupData={subLocalityLookup}
+                lookupId="subLocalityRef"
+                lookupLabel="subLocality"
+                value={lpiSubLocality}
+                errorText={lpiSubLocalityError}
+                onChange={handleLpiSubLocalityChangeEvent}
+                onAddLookup={handleAddSubLocalityEvent}
+                helperText="Third level of geographic area name. e.g. to record an island name or property group."
+              />
+            )}
+            <ADSSelectControl
+              label="Post town"
+              isEditable
+              useRounded
+              allowAddLookup
+              lookupData={postTownLookup}
+              lookupId="postTownRef"
+              lookupLabel="postTown"
+              value={lpiPostTown}
+              errorText={lpiPostTownError}
+              onChange={handleLpiPostTownChangeEvent}
+              onAddLookup={handleAddPostTownEvent}
+              helperText="Allocated by the Royal Mail to assist in delivery of mail."
+            />
+            <ADSSelectControl
+              label="Postcode"
+              isEditable
+              useRounded
+              doNotSetTitleCase
+              allowAddLookup
+              lookupData={postcodeLookup}
+              lookupId="postcodeRef"
+              lookupLabel="postcode"
+              value={lpiPostcode}
+              errorText={lpiPostcodeError}
+              onChange={handleLpiPostcodeChangeEvent}
+              onAddLookup={handleAddPostcodeEvent}
+              helperText="Allocated by the Royal Mail to assist in delivery of mail."
+            />
+            {!settingsContext.isScottish && (
+              <ADSTextControl
+                label="Level"
+                maximum={99.9}
+                isEditable
+                value={level}
+                errorText={levelError}
+                id="lpi_level_settings_template"
+                maxLength={30}
+                displayCharactersLeft
+                helperText="Memorandum of the vertical position of the BLPU."
+                onChange={handleLevelChangeEvent}
+              />
+            )}
+            <ADSSelectControl
+              label="Official address"
+              isEditable
+              isRequired={settingsContext.isScottish}
+              useRounded
+              doNotSetTitleCase
+              lookupData={filteredLookup(OfficialAddress, settingsContext.isScottish)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              value={lpiOfficialAddress}
+              errorText={lpiOfficialAddressError}
+              onChange={handleLpiOfficialAddressChangeEvent}
+              helperText="Status of address."
+            />
+            <ADSSelectControl
+              label={`${settingsContext.isScottish ? "Postally addressable" : "Postal address"}`}
+              isEditable
+              isRequired
+              useRounded
+              doNotSetTitleCase
+              lookupData={filteredLookup(PostallyAddressable, settingsContext.isScottish)}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              value={lpiPostalAddress}
+              errorText={lpiPostalAddressError}
+              onChange={handleLpiPostalAddressChangeEvent}
+              helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
+            />
+            <ADSDateControl
+              label="Start date"
+              isEditable
+              isRequired
+              value={lpiStartDate}
+              helperText="Date this Record was created."
+              errorText={lpiStartDateError}
+              onChange={handleLpiStartDateChangeEvent}
+            />
+          </Stack>
+        );
+
+      case "plotOtherWizard":
+        return (
+          <Stack direction="column">
+            {settingsContext.isScottish && (
+              <ADSSwitchControl
+                label="Create Gaelic records"
+                isEditable
+                checked={createGaelic}
+                trueLabel="Yes"
+                falseLabel="No"
+                onChange={handleCreateGaelicChangeEvent}
+                helperText="Set this if you want to also create Gaelic records."
+              />
+            )}
+            <ADSTextControl
+              label="Note"
+              isEditable
+              value={otherNote}
+              errorText={otherNoteError}
+              id={"ads-text-textfield-note"}
+              maxLength={4000}
+              minLines={2}
+              maxLines={10}
+              onChange={handleOtherNoteChangeEvent}
+            />
+          </Stack>
+        );
+
       default:
         return null;
     }
@@ -3131,6 +3493,45 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const handleCloseAddLookup = () => {
     setShowAddDialog(false);
   };
+
+  useEffect(() => {
+    setSubLocalityLookup(
+      lookupContext.currentLookups.subLocalities
+        .filter((x) => x.language === "ENG" && !x.historic)
+        .sort(function (a, b) {
+          return a.subLocality.localeCompare(b.subLocality, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.subLocalities]);
+
+  useEffect(() => {
+    setPostTownLookup(
+      lookupContext.currentLookups.postTowns
+        .filter((x) => x.language === "ENG" && !x.historic)
+        .sort(function (a, b) {
+          return a.postTown.localeCompare(b.postTown, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.postTowns]);
+
+  useEffect(() => {
+    setPostcodeLookup(
+      lookupContext.currentLookups.postcodes
+        .filter((x) => !x.historic)
+        .sort(function (a, b) {
+          return a.postcode.localeCompare(b.postcode, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.postcodes]);
 
   useEffect(() => {
     if (data) {
@@ -3336,13 +3737,59 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
           setOtherNote(data.note ? data.note : "");
           break;
 
+        case "plotBlpuWizard":
+          setTemplateType("BLPU");
+          setBlpuStatus(data.blpuLogicalStatus);
+          setBlpuRpc(data.rpc);
+          setBlpuState(data.state);
+          setBlpuStateDate(data.stateDate);
+          if (settingsContext.isScottish) {
+            setLevel(data.level ? data.level : 0);
+          } else {
+            setBlpuClassification(data.classification);
+          }
+          setExcludeFromExport(data.excludeFromExport);
+          setSiteVisit(data.siteVisit);
+          break;
+
+        case "plotLpiWizard":
+          setTemplateType("LPI");
+          setExistingLpiStatus(data.existingLpiLogicalStatus);
+          setLpiStatus(data.newLpiLogicalStatus);
+          setLpiPostTown(data.postTownRef);
+          setLpiPostcode(data.postcodeRef);
+          if (settingsContext.isScottish) {
+            setLpiSubLocality(data.subLocalityRef);
+          } else {
+            setLevel(data.level ? data.level : "");
+          }
+          setLpiOfficialAddress(data.officialAddressMaker);
+          setLpiPostalAddress(data.postallyAddressable);
+          setLpiStartDate(data.startDate);
+          break;
+
+        case "plotOtherWizard":
+          setTemplateType(`${settingsContext.isScottish ? "Other" : "Note"}`);
+          if (settingsContext.isScottish) setCreateGaelic(data.createGaelic);
+          setOtherNote(data.note ? data.note : "");
+          break;
+
         default:
           setTemplateType("Unknown");
           break;
       }
 
       if (
-        ["blpuWizard", "lpiWizard", "classificationWizard", "otherWizard"].includes(variant) &&
+        [
+          "blpuWizard",
+          "lpiWizard",
+          "classificationWizard",
+          "otherWizard",
+          "plotBlpuWizard",
+          "plotLpiWizard",
+          "postalLpiWizard",
+          "plotOtherWizard",
+        ].includes(variant) &&
         data.errors &&
         data.errors.length > 0
       ) {
@@ -3355,7 +3802,11 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
         setExcludeFromExportError(null);
         setSiteVisitError(null);
         setBlpuStartDateError(null);
+        setExistingLpiStatusError(null);
         setLpiStatusError(null);
+        setLpiPostTownError(null);
+        setLpiPostcodeError(null);
+        setLpiSubLocalityError(null);
         setLevelError(null);
         setLpiOfficialAddressError(null);
         setLpiPostalAddressError(null);
@@ -3399,8 +3850,28 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               setBlpuStartDateError(error.errors);
               break;
 
+            case "existinglpistatus":
+              setExistingLpiStatusError(error.errors);
+              break;
+
             case "lpistatus":
+            case "newlpistatus":
               setLpiStatusError(error.errors);
+              break;
+
+            case "postcode":
+            case "postcoderef":
+              setLpiPostcodeError(error.errors);
+              break;
+
+            case "posttown":
+            case "posttownref":
+              setLpiPostTownError(error.errors);
+              break;
+
+            case "sublocality":
+            case "sublocalityref":
+              setLpiSubLocalityError(error.errors);
               break;
 
             case "level":

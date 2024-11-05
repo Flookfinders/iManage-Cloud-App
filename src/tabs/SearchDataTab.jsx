@@ -70,6 +70,8 @@
 //    054   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    055   02.10.24 Sean Flook       IMANN-550 Changed menu item order for streets.
 //    056   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//    057   23.10.24 Sean Flook      IMANN-1019 Use the correct data when opening the record.
+//    058   01.11.24 Sean Flook      IMANN-1010 Use the correct data determining the street icon.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -497,7 +499,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
       const foundStreet = userContext.currentUser.hasStreet
         ? mapContext.currentSearchData.streets.find(({ usrn }) => usrn === rec.usrn)
         : mapContext.currentSearchData.llpgStreets.find(({ usrn }) => usrn === rec.usrn);
-      const currentSearchStreets = JSON.parse(JSON.stringify(mapContext.currentSearchData.streets));
+      const currentSearchStreets = userContext.currentUser.hasStreet
+        ? JSON.parse(JSON.stringify(mapContext.currentSearchData.streets))
+        : JSON.parse(JSON.stringify(mapContext.currentSearchData.llpgStreets));
 
       if (!foundStreet) {
         const streetData = await GetStreetMapData(rec.usrn, userContext, settingsContext.isScottish);
@@ -1446,6 +1450,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                       post_town: "",
                       postcode: "",
                       crossref: "",
+                      lpi_st_ref_type: 1,
+                      blpu_state: 2,
                       address: engLpi[0].address,
                       sort_score: 0,
                     };
@@ -1503,6 +1509,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                       post_town: "",
                       postcode: "",
                       crossref: "",
+                      lpi_st_ref_type: 1,
+                      blpu_state: 2,
                       address: engLpi[0].address,
                       sort_score: 0,
                     };
@@ -1593,9 +1601,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                       <Tooltip
                         title={GetAvatarTooltip(
                           rec.type,
-                          rec.logical_status,
+                          rec.type === 15 ? rec.lpi_st_ref_type : rec.logical_status,
                           rec.classification_code,
-                          rec.type === 15 ? rec.state : null,
+                          rec.type === 15 ? rec.blpu_state : null,
                           settingsContext.isScottish,
                           rec
                         )}
@@ -1604,7 +1612,10 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                         sx={tooltipStyle}
                       >
                         {rec.type === 15
-                          ? GetStreetIcon(rec.logical_status, GetAvatarColour(rec.status ? rec.status : 12))
+                          ? GetStreetIcon(
+                              rec.lpi_st_ref_type,
+                              GetAvatarColour(rec.blpu_state ? rec.blpu_state + 10 : 12)
+                            )
                           : GetClassificationIcon(
                               rec.classification_code ? rec.classification_code : "U",
                               GetAvatarColour(rec.logical_status)
@@ -1960,9 +1971,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                       <Tooltip
                         title={GetAvatarTooltip(
                           rec.type,
-                          rec.logical_status,
+                          rec.type === 15 ? rec.lpi_st_ref_type : rec.logical_status,
                           rec.classification_code,
-                          rec.type === 15 ? rec.state : null,
+                          rec.type === 15 ? rec.blpu_state : null,
                           settingsContext.isScottish
                         )}
                         arrow
@@ -1970,7 +1981,10 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                         sx={tooltipStyle}
                       >
                         {rec.type === 15
-                          ? GetStreetIcon(rec.logical_status, GetAvatarColour(rec.status ? rec.status : 12))
+                          ? GetStreetIcon(
+                              rec.lpi_st_ref_type,
+                              GetAvatarColour(rec.blpu_state ? rec.blpu_state + 10 : 12)
+                            )
                           : GetClassificationIcon(
                               rec.classification_code ? rec.classification_code : "U",
                               GetAvatarColour(rec.logical_status)

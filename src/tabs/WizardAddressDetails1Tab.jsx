@@ -20,6 +20,9 @@
 //    007   14.06.24 Sean Flook       IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
 //    008   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    009   24.10.24 Sean Flook      IMANN-1033 Only sort and filter lookups when required.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -74,6 +77,10 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
   const [postTownRef, setPostTownRef] = useState(0);
   const [subLocalityRef, setSubLocalityRef] = useState(0);
   const [postcodeRef, setPostcodeRef] = useState(0);
+  const [streetLookup, setStreetLookup] = useState([]);
+  const [postTownLookup, setPostTownLookup] = useState([]);
+  const [subLocalityLookup, setSubLocalityLookup] = useState([]);
+  const [postcodeLookup, setPostcodeLookup] = useState([]);
 
   const [addressPreview, setAddressPreview] = useState("");
 
@@ -211,51 +218,47 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
     );
 
     if (isChild) {
-      if (updatedData.saoStartNumber || updatedData.saoText) {
-        const paoDetails = `${updatedData.paoText ? updatedData.paoText : ""}${
+      const paoDetails = `${updatedData.paoText ? updatedData.paoText : ""}${
+        updatedData.paoText && (updatedData.paoStartNumber || updatedData.paoStartSuffix) ? ", " : ""
+      }${updatedData.paoStartNumber ? updatedData.paoStartNumber : ""}${
+        updatedData.paoStartSuffix ? updatedData.paoStartSuffix : ""
+      }${updatedData.paoEndNumber || updatedData.paoEndSuffix ? "-" : ""}${
+        updatedData.paoEndNumber ? updatedData.paoEndNumber : ""
+      }${updatedData.paoEndSuffix ? updatedData.paoEndSuffix : ""}`;
+
+      const saoDetails = `${updatedData.saoText ? updatedData.saoText : ""}${
+        updatedData.saoText && (updatedData.saoStartNumber || updatedData.saoStartSuffix) ? ", " : ""
+      }${updatedData.saoStartNumber ? updatedData.saoStartNumber : ""}${
+        updatedData.saoStartSuffix ? updatedData.saoStartSuffix : ""
+      }${updatedData.saoEndNumber || updatedData.saoEndSuffix ? "-" : ""}${
+        updatedData.saoEndNumber ? updatedData.saoEndNumber : ""
+      }${updatedData.saoEndSuffix ? updatedData.saoEndSuffix : ""}`;
+
+      setAddressPreview(
+        `${saoDetails.trim()}${saoDetails ? ", " : ""}${paoDetails.trim()}${streetDescriptorRecord ? " " : ""}${
+          streetDescriptorRecord ? streetDescriptorToTitleCase(streetDescriptorRecord.address) : ""
+        }${postTownRecord ? ", " : ""}${postTownRecord ? stringToSentenceCase(postTownRecord.postTown) : ""}${
+          subLocalityRecord ? ", " : ""
+        }${subLocalityRecord ? stringToSentenceCase(subLocalityRecord.subLocality) : ""}${postcodeRecord ? " " : ""}${
+          postcodeRecord ? postcodeRecord.postcode : ""
+        }`
+      );
+    } else {
+      setAddressPreview(
+        `${updatedData.paoText ? updatedData.paoText : ""}${
           updatedData.paoText && (updatedData.paoStartNumber || updatedData.paoStartSuffix) ? ", " : ""
         }${updatedData.paoStartNumber ? updatedData.paoStartNumber : ""}${
           updatedData.paoStartSuffix ? updatedData.paoStartSuffix : ""
         }${updatedData.paoEndNumber || updatedData.paoEndSuffix ? "-" : ""}${
           updatedData.paoEndNumber ? updatedData.paoEndNumber : ""
-        }${updatedData.paoEndSuffix ? updatedData.paoEndSuffix : ""}`;
-
-        const saoDetails = `${updatedData.saoText ? updatedData.saoText : ""}${
-          updatedData.saoText && (updatedData.saoStartNumber || updatedData.saoStartSuffix) ? ", " : ""
-        }${updatedData.saoStartNumber ? updatedData.saoStartNumber : ""}${
-          updatedData.saoStartSuffix ? updatedData.saoStartSuffix : ""
-        }${updatedData.saoEndNumber || updatedData.saoEndSuffix ? "-" : ""}${
-          updatedData.saoEndNumber ? updatedData.saoEndNumber : ""
-        }${updatedData.saoEndSuffix ? updatedData.saoEndSuffix : ""}`;
-
-        setAddressPreview(
-          `${saoDetails.trim()}${saoDetails ? ", " : ""}${paoDetails.trim()}${streetDescriptorRecord ? " " : ""}${
-            streetDescriptorRecord ? streetDescriptorToTitleCase(streetDescriptorRecord.address) : ""
-          }${postTownRecord ? ", " : ""}${postTownRecord ? stringToSentenceCase(postTownRecord.postTown) : ""}${
-            subLocalityRecord ? ", " : ""
-          }${subLocalityRecord ? stringToSentenceCase(subLocalityRecord.subLocality) : ""}${postcodeRecord ? " " : ""}${
-            postcodeRecord ? postcodeRecord.postcode : ""
-          }`
-        );
-      }
-    } else {
-      if (updatedData.paoStartNumber || updatedData.paoText) {
-        setAddressPreview(
-          `${updatedData.paoText ? updatedData.paoText : ""}${
-            updatedData.paoText && (updatedData.paoStartNumber || updatedData.paoStartSuffix) ? ", " : ""
-          }${updatedData.paoStartNumber ? updatedData.paoStartNumber : ""}${
-            updatedData.paoStartSuffix ? updatedData.paoStartSuffix : ""
-          }${updatedData.paoEndNumber || updatedData.paoEndSuffix ? "-" : ""}${
-            updatedData.paoEndNumber ? updatedData.paoEndNumber : ""
-          }${updatedData.paoEndSuffix ? updatedData.paoEndSuffix : ""}${streetDescriptorRecord ? " " : ""}${
-            streetDescriptorRecord ? streetDescriptorToTitleCase(streetDescriptorRecord.address) : ""
-          }${postTownRecord ? ", " : ""}${postTownRecord ? stringToSentenceCase(postTownRecord.postTown) : ""}${
-            subLocalityRecord ? ", " : ""
-          }${subLocalityRecord ? stringToSentenceCase(subLocalityRecord.subLocality) : ""}${postcodeRecord ? " " : ""}${
-            postcodeRecord ? postcodeRecord.postcode : ""
-          }`
-        );
-      }
+        }${updatedData.paoEndSuffix ? updatedData.paoEndSuffix : ""}${streetDescriptorRecord ? " " : ""}${
+          streetDescriptorRecord ? streetDescriptorToTitleCase(streetDescriptorRecord.address) : ""
+        }${postTownRecord ? ", " : ""}${postTownRecord ? stringToSentenceCase(postTownRecord.postTown) : ""}${
+          subLocalityRecord ? ", " : ""
+        }${subLocalityRecord ? stringToSentenceCase(subLocalityRecord.subLocality) : ""}${postcodeRecord ? " " : ""}${
+          postcodeRecord ? postcodeRecord.postcode : ""
+        }`
+      );
     }
 
     return updatedData;
@@ -550,6 +553,53 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
   };
 
   useEffect(() => {
+    setStreetLookup(
+      lookupContext.currentLookups.streetDescriptors.filter(
+        (x) => x.language === (settingsContext.isScottish ? "ENG" : language)
+      )
+    );
+  }, [lookupContext.currentLookups.streetDescriptors, settingsContext.isScottish, language]);
+
+  useEffect(() => {
+    setPostTownLookup(
+      lookupContext.currentLookups.postTowns
+        .filter((x) => x.language === (settingsContext.isScottish ? "ENG" : language) && !x.historic)
+        .sort(function (a, b) {
+          return a.postTown.localeCompare(b.postTown, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.postTowns, settingsContext.isScottish, language]);
+
+  useEffect(() => {
+    setSubLocalityLookup(
+      lookupContext.currentLookups.subLocalities
+        .filter((x) => x.language === "ENG" && !x.historic)
+        .sort(function (a, b) {
+          return a.subLocality.localeCompare(b.subLocality, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.subLocalities]);
+
+  useEffect(() => {
+    setPostcodeLookup(
+      lookupContext.currentLookups.postcodes
+        .filter((x) => !x.historic)
+        .sort(function (a, b) {
+          return a.postcode.localeCompare(b.postcode, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.postcodes]);
+
+  useEffect(() => {
     if (data) {
       setSaoStartNumber(data.saoStartNumber);
       setSaoStartSuffix(data.saoStartSuffix);
@@ -566,61 +616,6 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
       setPostTownRef(data.postTownRef);
       setSubLocalityRef(settingsContext.isScottish ? data.subLocalityRef : null);
       setPostcodeRef(data.postcodeRef);
-
-      const streetDescriptorRecord = settingsContext.isWelsh
-        ? lookupContext.currentLookups.streetDescriptors.find(
-            (x) => x.usrn === data.usrn && x.language === data.language
-          )
-        : lookupContext.currentLookups.streetDescriptors.find((x) => x.usrn === data.usrn);
-      const postTownRecord = settingsContext.isWelsh
-        ? lookupContext.currentLookups.postTowns.find(
-            (x) => x.postTownRef === data.postTownRef && x.language === data.language
-          )
-        : lookupContext.currentLookups.postTowns.find((x) => x.postTownRef === data.postTownRef);
-      const subLocalityRecord = settingsContext.isScottish
-        ? lookupContext.currentLookups.subLocalities.find((x) => x.subLocalityRef === data.subLocalityRef)
-        : null;
-      const postcodeRecord = lookupContext.currentLookups.postcodes.find((x) => x.postcodeRef === data.postcodeRef);
-
-      if (isChild && (data.saoStartNumber || data.saoText)) {
-        const paoDetails = `${data.paoText ? data.paoText : ""}${
-          data.paoText && (data.paoStartNumber || data.paoStartSuffix) ? ", " : ""
-        }${data.paoStartNumber ? data.paoStartNumber : ""}${data.paoStartSuffix ? data.paoStartSuffix : ""}${
-          data.paoEndNumber || data.paoEndSuffix ? "-" : ""
-        }${data.paoEndNumber ? data.paoEndNumber : ""}${data.paoEndSuffix ? data.paoEndSuffix : ""}`;
-
-        const saoDetails = `${data.saoText ? data.saoText : ""}${
-          data.saoText && (data.saoStartNumber || data.saoStartSuffix) ? ", " : ""
-        }${data.saoStartNumber ? data.saoStartNumber : ""}${data.saoStartSuffix ? data.saoStartSuffix : ""}${
-          data.saoEndNumber || data.saoEndSuffix ? "-" : ""
-        }${data.saoEndNumber ? data.saoEndNumber : ""}${data.saoEndSuffix ? data.saoEndSuffix : ""}`;
-
-        setAddressPreview(
-          `${saoDetails.trim()}${saoDetails ? ", " : ""}${paoDetails.trim()}${streetDescriptorRecord ? " " : ""}${
-            streetDescriptorRecord ? streetDescriptorToTitleCase(streetDescriptorRecord.address) : ""
-          }${postTownRecord ? ", " : ""}${postTownRecord ? stringToSentenceCase(postTownRecord.postTown) : ""}${
-            subLocalityRecord ? ", " : ""
-          }${subLocalityRecord ? stringToSentenceCase(subLocalityRecord.subLocality) : ""}${postcodeRecord ? " " : ""}${
-            postcodeRecord ? postcodeRecord.postcode : ""
-          }`
-        );
-      } else if (!isChild && (data.paoStartNumber || data.paoText)) {
-        setAddressPreview(
-          `${data.paoText ? data.paoText : ""}${
-            data.paoText && (data.paoStartNumber || data.paoStartSuffix) ? ", " : ""
-          }${data.paoStartNumber ? data.paoStartNumber : ""}${data.paoStartSuffix ? data.paoStartSuffix : ""}${
-            data.paoEndNumber || data.paoEndSuffix ? "-" : ""
-          }${data.paoEndNumber ? data.paoEndNumber : ""}${data.paoEndSuffix ? data.paoEndSuffix : ""}${
-            streetDescriptorRecord ? " " : ""
-          }${streetDescriptorRecord ? streetDescriptorToTitleCase(streetDescriptorRecord.address) : ""}${
-            postTownRecord ? ", " : ""
-          }${postTownRecord ? stringToSentenceCase(postTownRecord.postTown) : ""}${postcodeRecord ? " " : ""}${
-            subLocalityRecord ? ", " : ""
-          }${subLocalityRecord ? stringToSentenceCase(subLocalityRecord.subLocality) : ""}${
-            postcodeRecord ? postcodeRecord.postcode : ""
-          }`
-        );
-      }
     }
   }, [language, data, lookupContext, isChild, settingsContext.isScottish, settingsContext.isWelsh]);
 
@@ -784,9 +779,7 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
           isEditable
           isRequired
           useRounded
-          lookupData={lookupContext.currentLookups.streetDescriptors.filter(
-            (x) => x.language === (settingsContext.isScottish ? "ENG" : language)
-          )}
+          lookupData={streetLookup}
           lookupId="usrn"
           lookupLabel="address"
           value={usrn}
@@ -799,14 +792,7 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
           isEditable
           useRounded
           allowAddLookup
-          lookupData={lookupContext.currentLookups.postTowns
-            .filter((x) => x.language === (settingsContext.isScottish ? "ENG" : language) && !x.historic)
-            .sort(function (a, b) {
-              return a.postTown.localeCompare(b.postTown, undefined, {
-                numeric: true,
-                sensitivity: "base",
-              });
-            })}
+          lookupData={postTownLookup}
           lookupId="postTownRef"
           lookupLabel="postTown"
           value={postTownRef}
@@ -821,14 +807,7 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
             isEditable
             useRounded
             allowAddLookup
-            lookupData={lookupContext.currentLookups.subLocalities
-              .filter((x) => x.language === (settingsContext.isScottish ? "ENG" : language) && !x.historic)
-              .sort(function (a, b) {
-                return a.subLocality.localeCompare(b.subLocality, undefined, {
-                  numeric: true,
-                  sensitivity: "base",
-                });
-              })}
+            lookupData={subLocalityLookup}
             lookupId="subLocalityRef"
             lookupLabel="subLocality"
             value={subLocalityRef}
@@ -844,14 +823,7 @@ function WizardAddressDetails1Tab({ data, isChild, language, errors, onDataChang
           useRounded
           doNotSetTitleCase
           allowAddLookup
-          lookupData={lookupContext.currentLookups.postcodes
-            .filter((x) => !x.historic)
-            .sort(function (a, b) {
-              return a.postcode.localeCompare(b.postcode, undefined, {
-                numeric: true,
-                sensitivity: "base",
-              });
-            })}
+          lookupData={postcodeLookup}
           lookupId="postcodeRef"
           lookupLabel="postcode"
           value={postcodeRef}

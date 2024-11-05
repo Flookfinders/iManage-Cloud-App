@@ -31,6 +31,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    018   01.10.24 Sean Flook       IMANN-664 Changed Indicators to Indicator.
+//    019   22.10.24 Sean Flook      IMANN-1018 Hide ESU and associated cards if do not have streets.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -760,85 +761,87 @@ function StreetTemplateTab() {
               </CardActionArea>
             </Card>
           </Grid>
-          <Grid item xs={6}>
-            <Card
-              variant="outlined"
-              elevation={0}
-              onMouseEnter={doMouseEnterEsu}
-              onMouseLeave={doMouseLeaveEsu}
-              sx={settingsCardStyle(editEsu)}
-            >
-              <CardHeader
-                action={
-                  editEsu && (
-                    <Tooltip title="Edit ESU defaults" placement="bottom" sx={tooltipStyle}>
-                      <IconButton onClick={doEditEsu} sx={{ pr: "16px", pb: "16px" }}>
-                        <EditIcon sx={ActionIconStyle(true)} />
-                      </IconButton>
-                    </Tooltip>
-                  )
-                }
-                title="ESU defaults"
-                titleTypographyProps={{ sx: getTitleStyle(editEsu) }}
-                sx={{ height: "66px" }}
-              />
-              <CardActionArea onClick={doEditEsu}>
-                <CardContent sx={settingsCardContentStyle(settingsContext.isScottish ? "os-street" : "street")}>
-                  <Grid container rowSpacing={1}>
-                    {!settingsContext.isScottish && (
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Direction</Typography>
-                      </Grid>
-                    )}
-                    {!settingsContext.isScottish && (
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getDirection(esuDirection)}
-                        </Typography>
-                      </Grid>
-                    )}
-                    {!settingsContext.isScottish && (
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Tolerance</Typography>
-                      </Grid>
-                    )}
-                    {!settingsContext.isScottish && (
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getTolerance(esuTolerance)}
-                        </Typography>
-                      </Grid>
-                    )}
-                    {settingsContext.isScottish && (
-                      <Grid item xs={3}>
-                        <Typography variant="body2">State</Typography>
-                      </Grid>
-                    )}
-                    {settingsContext.isScottish && (
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getState(esuState)}
-                        </Typography>
-                      </Grid>
-                    )}
-                    {settingsContext.isScottish && (
-                      <Grid item xs={3}>
-                        <Typography variant="body2">Classification</Typography>
-                      </Grid>
-                    )}
-                    {settingsContext.isScottish && (
-                      <Grid item xs={9}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {getClassification(esuClassification)}
-                        </Typography>
-                      </Grid>
-                    )}
-                  </Grid>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-          {!settingsContext.isScottish && (
+          {userContext.currentUser.hasStreet && (
+            <Grid item xs={6}>
+              <Card
+                variant="outlined"
+                elevation={0}
+                onMouseEnter={doMouseEnterEsu}
+                onMouseLeave={doMouseLeaveEsu}
+                sx={settingsCardStyle(editEsu)}
+              >
+                <CardHeader
+                  action={
+                    editEsu && (
+                      <Tooltip title="Edit ESU defaults" placement="bottom" sx={tooltipStyle}>
+                        <IconButton onClick={doEditEsu} sx={{ pr: "16px", pb: "16px" }}>
+                          <EditIcon sx={ActionIconStyle(true)} />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }
+                  title="ESU defaults"
+                  titleTypographyProps={{ sx: getTitleStyle(editEsu) }}
+                  sx={{ height: "66px" }}
+                />
+                <CardActionArea onClick={doEditEsu}>
+                  <CardContent sx={settingsCardContentStyle(settingsContext.isScottish ? "os-street" : "street")}>
+                    <Grid container rowSpacing={1}>
+                      {!settingsContext.isScottish && (
+                        <Grid item xs={3}>
+                          <Typography variant="body2">Direction</Typography>
+                        </Grid>
+                      )}
+                      {!settingsContext.isScottish && (
+                        <Grid item xs={9}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {getDirection(esuDirection)}
+                          </Typography>
+                        </Grid>
+                      )}
+                      {!settingsContext.isScottish && (
+                        <Grid item xs={3}>
+                          <Typography variant="body2">Tolerance</Typography>
+                        </Grid>
+                      )}
+                      {!settingsContext.isScottish && (
+                        <Grid item xs={9}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {getTolerance(esuTolerance)}
+                          </Typography>
+                        </Grid>
+                      )}
+                      {settingsContext.isScottish && (
+                        <Grid item xs={3}>
+                          <Typography variant="body2">State</Typography>
+                        </Grid>
+                      )}
+                      {settingsContext.isScottish && (
+                        <Grid item xs={9}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {getState(esuState)}
+                          </Typography>
+                        </Grid>
+                      )}
+                      {settingsContext.isScottish && (
+                        <Grid item xs={3}>
+                          <Typography variant="body2">Classification</Typography>
+                        </Grid>
+                      )}
+                      {settingsContext.isScottish && (
+                        <Grid item xs={9}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {getClassification(esuClassification)}
+                          </Typography>
+                        </Grid>
+                      )}
+                    </Grid>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+          )}
+          {!settingsContext.isScottish && userContext.currentUser.hasStreet && (
             <Grid item xs={6}>
               <Card
                 variant="outlined"
@@ -886,7 +889,7 @@ function StreetTemplateTab() {
               </Card>
             </Grid>
           )}
-          {!settingsContext.isScottish && (
+          {!settingsContext.isScottish && userContext.currentUser.hasStreet && (
             <Grid item xs={6}>
               <Card
                 variant="outlined"

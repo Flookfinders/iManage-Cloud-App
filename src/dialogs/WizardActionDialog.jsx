@@ -32,6 +32,9 @@
 //    019   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    020   16.07.24 Sean Flook       IMANN-581 Limit the RPC drop down list to values valid for new records.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    021   24.10.24 Sean Flook      IMANN-1033 Only sort and filter lookups when required.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -104,6 +107,11 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
   const [lookupType, setLookupType] = useState("unknown");
   const [engError, setEngError] = useState(null);
   const [altLanguageError, setAltLanguageError] = useState(null);
+
+  const [postTownEngLookup, setPostTownEngLookup] = useState([]);
+  const [postTownCymLookup, setPostTownCymLookup] = useState([]);
+  const [subLocalityLookup, setSubLocalityLookup] = useState([]);
+  const [postcodeLookup, setPostcodeLookup] = useState([]);
 
   const addResult = useRef(null);
   const currentVariant = useRef(null);
@@ -336,14 +344,7 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
               useRounded
               doNotSetTitleCase
               allowAddLookup
-              lookupData={lookupContext.currentLookups.postcodes
-                .filter((x) => !x.historic)
-                .sort(function (a, b) {
-                  return a.postcode.localeCompare(b.postcode, undefined, {
-                    numeric: true,
-                    sensitivity: "base",
-                  });
-                })}
+              lookupData={postcodeLookup}
               lookupId="postcodeRef"
               lookupLabel="postcode"
               value={actionData}
@@ -363,14 +364,7 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
               isFocused
               useRounded
               allowAddLookup
-              lookupData={lookupContext.currentLookups.postTowns
-                .filter((x) => x.language === "ENG" && !x.historic)
-                .sort(function (a, b) {
-                  return a.postTown.localeCompare(b.postTown, undefined, {
-                    numeric: true,
-                    sensitivity: "base",
-                  });
-                })}
+              lookupData={postTownEngLookup}
               lookupId="postTownRef"
               lookupLabel="postTown"
               value={actionData ? actionData.eng : null}
@@ -384,14 +378,7 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
                 isEditable
                 useRounded
                 allowAddLookup
-                lookupData={lookupContext.currentLookups.postTowns
-                  .filter((x) => x.language === "CYM" && !x.historic)
-                  .sort(function (a, b) {
-                    return a.postTown.localeCompare(b.postTown, undefined, {
-                      numeric: true,
-                      sensitivity: "base",
-                    });
-                  })}
+                lookupData={postTownCymLookup}
                 lookupId="postTownRef"
                 lookupLabel="postTown"
                 value={actionData ? actionData.alt : null}
@@ -412,7 +399,7 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
               isFocused
               useRounded
               allowAddLookup
-              lookupData={lookupContext.currentLookups.subLocalities.filter((x) => x.language === "ENG")}
+              lookupData={subLocalityLookup}
               lookupId="subLocalityRef"
               lookupLabel="subLocality"
               value={actionData ? actionData.eng : null}
@@ -514,6 +501,49 @@ function WizardActionDialog({ open, variant, data, recordCount, onClose, onCance
   const handleCloseAddLookup = () => {
     setShowAddDialog(false);
   };
+
+  useEffect(() => {
+    setPostTownEngLookup(
+      lookupContext.currentLookups.postTowns
+        .filter((x) => x.language === "ENG" && !x.historic)
+        .sort(function (a, b) {
+          return a.postTown.localeCompare(b.postTown, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.postTowns]);
+
+  useEffect(() => {
+    setPostTownCymLookup(
+      lookupContext.currentLookups.postTowns
+        .filter((x) => x.language === "CYM" && !x.historic)
+        .sort(function (a, b) {
+          return a.postTown.localeCompare(b.postTown, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.postTowns]);
+
+  useEffect(() => {
+    setSubLocalityLookup(lookupContext.currentLookups.subLocalities.filter((x) => x.language === "ENG"));
+  }, [lookupContext.currentLookups.subLocalities]);
+
+  useEffect(() => {
+    setPostcodeLookup(
+      lookupContext.currentLookups.postcodes
+        .filter((x) => !x.historic)
+        .sort(function (a, b) {
+          return a.postcode.localeCompare(b.postcode, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.postcodes]);
 
   useEffect(() => {
     setActionData(

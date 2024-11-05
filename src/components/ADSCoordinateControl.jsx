@@ -17,6 +17,9 @@
 //    004   04.04.24 Sean Flook       IMANN-319 Do not allow coordinates to be changed outside the allowable limits.
 //    005   04.04.24 Sean Flook       IMANN-403 Removed above changes as preventing user from changing coordinates.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    006   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -40,6 +43,7 @@ import {
   ActionIconStyle,
   controlLabelStyle,
   tooltipStyle,
+  skeletonHeight,
 } from "../utils/ADSStyles";
 
 /* #endregion imports */
@@ -204,7 +208,7 @@ function ADSCoordinateControl({
                 </Grid>
                 <Grid item xs={9}>
                   {loading ? (
-                    <Skeleton variant="rectangular" animation="wave" height="50px" width="100%" />
+                    <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
                   ) : helperText && helperText.length > 0 ? (
                     <Tooltip
                       title={isRequired ? helperText + " This is a required field." : helperText}
@@ -264,7 +268,7 @@ function ADSCoordinateControl({
                 </Grid>
                 <Grid item xs={9}>
                   {loading ? (
-                    <Skeleton variant="rectangular" height="50px" width="100%" />
+                    <Skeleton variant="rectangular" height={`${skeletonHeight}px`} width="100%" />
                   ) : helperText && helperText.length > 0 ? (
                     <Tooltip
                       title={isRequired ? helperText + " This is a required field." : helperText}
@@ -340,7 +344,7 @@ function ADSCoordinateControl({
                 </Grid>
                 <Grid item xs={9}>
                   {loading ? (
-                    <Skeleton variant="rectangular" animation="wave" height="50px" width="100%" />
+                    <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
                   ) : helperText && helperText.length > 0 ? (
                     <Tooltip
                       title={isRequired ? helperText + " This is a required field." : helperText}
@@ -400,7 +404,7 @@ function ADSCoordinateControl({
                 </Grid>
                 <Grid item xs={9}>
                   {loading ? (
-                    <Skeleton variant="rectangular" height="50px" width="100%" />
+                    <Skeleton variant="rectangular" height={`${skeletonHeight}px`} width="100%" />
                   ) : helperText && helperText.length > 0 ? (
                     <Tooltip
                       title={isRequired ? helperText + " This is a required field." : helperText}

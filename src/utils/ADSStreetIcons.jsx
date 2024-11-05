@@ -14,6 +14,9 @@
 //    001   23.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.0.0 changes
+//    003   201.11.24 Sean Flook     IMANN-1010 No longer need to take 10 from the type.
+//#endregion Version 1.0.0.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -93,7 +96,7 @@ export default function GetStreetIcon(type, nameClass, props) {
           }}
         >
           <tspan style={{ fill: adsWhite, strokeWidth: 0.52128381 }} y="20.727282" x="15.921395" id="tspan834">
-            {`${type - 10}`}
+            {`${type}`}
           </tspan>
         </text>
       </SvgIcon>
@@ -153,7 +156,7 @@ export default function GetStreetIcon(type, nameClass, props) {
           }}
         >
           <tspan style={{ fill: adsWhite, strokeWidth: 0.52128381 }} y="20.727282" x="15.921395" id="tspan834">
-            {`${type - 10}`}
+            {`${type}`}
           </tspan>
         </text>
       </SvgIcon>

@@ -23,6 +23,7 @@
 //#region Version 1.0.1.0 changes
 //    009   30.09.24 Sean Flook       IMANN-605 Display the selected parent address on the first page once selected.
 //    010   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//    011   01.11.24 Sean Flook      IMANN-1010 Include new fields in search results.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -482,6 +483,8 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
                             post_town: x.postTown,
                             postcode: x.postcode,
                             crossref: null,
+                            lpi_st_ref_type: 1,
+                            blpu_state: 2,
                             address: x.address,
                             sort_code: 0,
                           };

@@ -64,6 +64,9 @@
 //    050   23.07.24 Sean Flook       IMANN-403 Only update the map if the coordinates are within the valid range.
 //    051   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    052   30.10.24 Joel Benford    IMANN-1036 Set OS blpu state 0 when LS -> 9
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -343,6 +346,8 @@ function PropertyDetailsTab({
               ? 0
               : fieldName && fieldName === "logicalStatus" && newValue === 8 && state !== 4
               ? 4
+              : fieldName && fieldName === "logicalStatus" && newValue === 9 && ![0, 4].includes(state)
+              ? 0
               : state,
           blpuStateDate:
             fieldName && fieldName === "state"
@@ -350,6 +355,8 @@ function PropertyDetailsTab({
               : fieldName && fieldName === "logicalStatus" && newValue === 6 && state !== 0
               ? GetCurrentDate()
               : fieldName && fieldName === "logicalStatus" && newValue === 8 && state !== 4
+              ? GetCurrentDate()
+              : fieldName && fieldName === "logicalStatus" && newValue === 9 && ![0, 4].includes(state)
               ? GetCurrentDate()
               : fieldName && fieldName === "stateDate"
               ? newValue && ConvertDate(newValue)

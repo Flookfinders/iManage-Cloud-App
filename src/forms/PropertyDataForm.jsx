@@ -81,7 +81,8 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    068   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
-//    069   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//    069   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
+//    070   30.10.24 Joel Benford     IMANN-1036 Set OS blpu state 0 when LS -> 9
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4357,7 +4358,7 @@ function PropertyDataForm({ data, loading }) {
             lpis: newLpis,
           }
         : {
-            blpuStateDate: propertyContext.newLogicalStatus === 8 ? today : propertyData.blpuStateDate,
+            blpuStateDate: propertyContext.newLogicalStatus === 8 ? today : 9 ? today : propertyData.blpuStateDate,
             parentUprn: propertyData.parentUprn,
             neverExport: propertyData.neverExport,
             siteSurvey: propertyData.siteSurvey,
@@ -4365,7 +4366,7 @@ function PropertyDataForm({ data, loading }) {
             logicalStatus: propertyContext.newLogicalStatus,
             endDate: today,
             startDate: propertyData.startDate,
-            blpuState: propertyContext.newLogicalStatus === 8 ? 4 : propertyData.blpuState,
+            blpuState: propertyContext.newLogicalStatus === 8 ? 4 : 9 ? 0 : propertyData.blpuState,
             custodianCode: propertyData.custodianCode,
             level: propertyData.level,
             xcoordinate: propertyData.xcoordinate,

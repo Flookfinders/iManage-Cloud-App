@@ -30,6 +30,9 @@
 //    017   05.06.24 Sean Flook       IMANN-523 Use the provenance colour for the avatar.
 //    018   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    019   31.10.24 Sean Flook      IMANN-1012 Changed height of skeleton control.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -412,7 +415,7 @@ function PropertyBLPUProvenanceListTab({
         className={classes.root}
       >
         {loading ? (
-          <Skeleton variant="rectangular" height="60px" width="100%" />
+          <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : data && data.filter((x) => x.changeType !== "D").length > 0 ? (
           <DataGrid
             rows={data.filter((x) => x.changeType !== "D")}

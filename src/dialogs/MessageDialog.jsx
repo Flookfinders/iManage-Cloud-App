@@ -25,6 +25,9 @@
 //    012   25.04.24 Sean Flook       IMANN-390 Added noUprn and noUprnsRange.
 //    013   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    014   30.10.24 Sean Flook      IMANN-1040 Added failLookupLoad.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -56,6 +59,7 @@ MessageDialog.propTypes = {
     "noUprn",
     "noUprnsRange",
     "cascadePAOChanges",
+    "failLookupLoad",
   ]).isRequired,
   onClose: PropTypes.func.isRequired,
 };
@@ -117,6 +121,9 @@ function MessageDialog({ isOpen, variant, onClose }) {
       case "cascadePAOChanges":
         return "PAO has changed";
 
+      case "failLookupLoad":
+        return "Startup error";
+
       default:
         return `Unknown variant: ${variant}`;
     }
@@ -139,6 +146,7 @@ function MessageDialog({ isOpen, variant, onClose }) {
         return "Close wizard";
 
       case "cascadePAOChanges":
+      case "failLookupLoad":
         return undefined;
 
       default:
@@ -218,6 +226,16 @@ function MessageDialog({ isOpen, variant, onClose }) {
           <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={1}>
             <Typography variant="body2">You have modified the PAO details of this parent property.</Typography>
             <Typography variant="body2">Do you want to cascade the changes to its children?</Typography>
+          </Stack>
+        );
+
+      case "failLookupLoad":
+        return (
+          <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={1}>
+            <Typography variant="body2">
+              The application was unable to load the required data in order for it to run.
+            </Typography>
+            <Typography variant="body2">Please report this to Idox support.</Typography>
           </Stack>
         );
 
@@ -315,6 +333,7 @@ function MessageDialog({ isOpen, variant, onClose }) {
 
       case "noUprn":
       case "noUprnsRange":
+      case "failLookupLoad":
         return (
           <Button
             variant="contained"

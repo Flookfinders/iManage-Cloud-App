@@ -65,6 +65,9 @@
 //    041   22.08.24 Sean Flook       IMANN-951 Corrected field names.
 //    042   02.09.24 Sean Flook       IMANN-976 Handle "Unassigned" in lookups.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
+//    043   31.10.24 Joel Benford    IMANN-1039 Add check 2400108 (LPI must have USRN)
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -1236,6 +1239,12 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
       data.saoText
     ) {
       saoTextErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
+    // You must enter a street.
+    currentCheck = GetCheck(2400108, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && !data.usrn) {
+      usrnErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     if (showDebugMessages) console.log("[DEBUG] ValidateLpiData - Finished checks");
