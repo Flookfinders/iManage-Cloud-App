@@ -89,6 +89,7 @@
 //#region Version 1.0.1.0 changes
 //    075   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //    076   01.11.24 Sean Flook      IMANN-1010 Include new fields in search results.
+//    077   06.11.24 Sean Flook      IMANN-1047 Make some of the code more robust.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -899,140 +900,145 @@ export function GetCurrentSearchStreets(streetData, isScottish, hasASD) {
       state: !isScottish ? streetData.state : undefined,
       type: streetData.recordType,
       esus: streetData.esus
-        .filter((x) => x.changeType !== "D" && x.assignUnassign !== -1)
-        .map((esu) => ({
-          esuId: esu.esuId,
-          state: isScottish ? esu.state : undefined,
-          geometry: esu.wktGeometry && esu.wktGeometry !== "" ? GetWktCoordinates(esu.wktGeometry) : undefined,
-        })),
+        ? streetData.esus
+            .filter((x) => x.changeType !== "D" && x.assignUnassign !== -1)
+            .map((esu) => ({
+              esuId: esu.esuId,
+              state: isScottish ? esu.state : undefined,
+              geometry: esu.wktGeometry && esu.wktGeometry !== "" ? GetWktCoordinates(esu.wktGeometry) : undefined,
+            }))
+        : [],
       asdType51:
-        isScottish &&
-        streetData.maintenanceResponsibilities
-          .filter((x) => x.changeType !== "D")
-          .map((asdRec) => ({
-            type: 51,
-            pkId: asdRec.pkId,
-            usrn: asdRec.usrn,
-            streetStatus: asdRec.streetStatus,
-            custodianCode: asdRec.custodianCode,
-            maintainingAuthorityCode: asdRec.maintainingAuthorityCode,
-            wholeRoad: asdRec.wholeRoad,
-            geometry:
-              asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
-          })),
+        isScottish && streetData.maintenanceResponsibilities
+          ? streetData.maintenanceResponsibilities
+              .filter((x) => x.changeType !== "D")
+              .map((asdRec) => ({
+                type: 51,
+                pkId: asdRec.pkId,
+                usrn: asdRec.usrn,
+                streetStatus: asdRec.streetStatus,
+                custodianCode: asdRec.custodianCode,
+                maintainingAuthorityCode: asdRec.maintainingAuthorityCode,
+                wholeRoad: asdRec.wholeRoad,
+                geometry:
+                  asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
+              }))
+          : [],
       asdType52:
-        isScottish &&
-        streetData.reinstatementCategories
-          .filter((x) => x.changeType !== "D")
-          .map((asdRec) => ({
-            type: 52,
-            pkId: asdRec.pkId,
-            usrn: asdRec.usrn,
-            reinstatementCategoryCode: asdRec.reinstatementCategoryCode,
-            custodianCode: asdRec.custodianCode,
-            reinstatementAuthorityCode: asdRec.reinstatementAuthorityCode,
-            wholeRoad: asdRec.wholeRoad,
-            geometry:
-              asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
-          })),
+        isScottish && streetData.reinstatementCategories
+          ? streetData.reinstatementCategories
+              .filter((x) => x.changeType !== "D")
+              .map((asdRec) => ({
+                type: 52,
+                pkId: asdRec.pkId,
+                usrn: asdRec.usrn,
+                reinstatementCategoryCode: asdRec.reinstatementCategoryCode,
+                custodianCode: asdRec.custodianCode,
+                reinstatementAuthorityCode: asdRec.reinstatementAuthorityCode,
+                wholeRoad: asdRec.wholeRoad,
+                geometry:
+                  asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
+              }))
+          : [],
       asdType53:
-        isScottish &&
-        streetData.specialDesignations
-          .filter((x) => x.changeType !== "D")
-          .map((asdRec) => ({
-            type: 53,
-            pkId: asdRec.pkId,
-            usrn: asdRec.usrn,
-            specialDesignationCode: asdRec.specialDesignationCode,
-            custodianCode: asdRec.custodianCode,
-            authorityCode: asdRec.authorityCode,
-            wholeRoad: asdRec.wholeRoad,
-            geometry:
-              asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
-          })),
+        isScottish && streetData.specialDesignations
+          ? streetData.specialDesignations
+              .filter((x) => x.changeType !== "D")
+              .map((asdRec) => ({
+                type: 53,
+                pkId: asdRec.pkId,
+                usrn: asdRec.usrn,
+                specialDesignationCode: asdRec.specialDesignationCode,
+                custodianCode: asdRec.custodianCode,
+                authorityCode: asdRec.authorityCode,
+                wholeRoad: asdRec.wholeRoad,
+                geometry:
+                  asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
+              }))
+          : [],
       asdType61:
-        !isScottish &&
-        hasASD &&
-        streetData.interests
-          .filter((x) => x.changeType !== "D")
-          .map((asdRec) => ({
-            type: 61,
-            pkId: asdRec.pkId,
-            usrn: asdRec.usrn,
-            streetStatus: asdRec.streetStatus,
-            interestType: asdRec.interestType,
-            districtRefAuthority: asdRec.districtRefAuthority,
-            swaOrgRefAuthority: asdRec.swaOrgRefAuthority,
-            wholeRoad: asdRec.wholeRoad,
-            geometry:
-              asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
-          })),
+        !isScottish && hasASD && streetData.interests
+          ? streetData.interests
+              .filter((x) => x.changeType !== "D")
+              .map((asdRec) => ({
+                type: 61,
+                pkId: asdRec.pkId,
+                usrn: asdRec.usrn,
+                streetStatus: asdRec.streetStatus,
+                interestType: asdRec.interestType,
+                districtRefAuthority: asdRec.districtRefAuthority,
+                swaOrgRefAuthority: asdRec.swaOrgRefAuthority,
+                wholeRoad: asdRec.wholeRoad,
+                geometry:
+                  asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
+              }))
+          : [],
       asdType62:
-        !isScottish &&
-        hasASD &&
-        streetData.constructions
-          .filter((x) => x.changeType !== "D")
-          .map((asdRec) => ({
-            type: 62,
-            pkId: asdRec.pkId,
-            usrn: asdRec.usrn,
-            constructionType: asdRec.constructionType,
-            reinstatementTypeCode: asdRec.reinstatementTypeCode,
-            swaOrgRefConsultant: asdRec.swaOrgRefConsultant,
-            districtRefConsultant: asdRec.districtRefConsultant,
-            wholeRoad: asdRec.wholeRoad,
-            geometry:
-              asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
-          })),
+        !isScottish && hasASD && streetData.constructions
+          ? streetData.constructions
+              .filter((x) => x.changeType !== "D")
+              .map((asdRec) => ({
+                type: 62,
+                pkId: asdRec.pkId,
+                usrn: asdRec.usrn,
+                constructionType: asdRec.constructionType,
+                reinstatementTypeCode: asdRec.reinstatementTypeCode,
+                swaOrgRefConsultant: asdRec.swaOrgRefConsultant,
+                districtRefConsultant: asdRec.districtRefConsultant,
+                wholeRoad: asdRec.wholeRoad,
+                geometry:
+                  asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
+              }))
+          : [],
       asdType63:
-        !isScottish &&
-        hasASD &&
-        streetData.specialDesignations
-          .filter((x) => x.changeType !== "D")
-          .map((asdRec) => ({
-            type: 63,
-            pkId: asdRec.pkId,
-            usrn: asdRec.usrn,
-            streetSpecialDesigCode: asdRec.streetSpecialDesigCode,
-            swaOrgRefConsultant: asdRec.swaOrgRefConsultant,
-            districtRefConsultant: asdRec.districtRefConsultant,
-            wholeRoad: asdRec.wholeRoad,
-            geometry:
-              asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
-          })),
+        !isScottish && hasASD && streetData.specialDesignations
+          ? streetData.specialDesignations
+              .filter((x) => x.changeType !== "D")
+              .map((asdRec) => ({
+                type: 63,
+                pkId: asdRec.pkId,
+                usrn: asdRec.usrn,
+                streetSpecialDesigCode: asdRec.streetSpecialDesigCode,
+                swaOrgRefConsultant: asdRec.swaOrgRefConsultant,
+                districtRefConsultant: asdRec.districtRefConsultant,
+                wholeRoad: asdRec.wholeRoad,
+                geometry:
+                  asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
+              }))
+          : [],
       asdType64:
-        !isScottish &&
-        hasASD &&
-        streetData.heightWidthWeights
-          .filter((x) => x.changeType !== "D")
-          .map((asdRec) => ({
-            type: 64,
-            pkId: asdRec.pkId,
-            usrn: asdRec.usrn,
-            hwwRestrictionCode: asdRec.hwwRestrictionCode,
-            swaOrgRefConsultant: asdRec.swaOrgRefConsultant,
-            districtRefConsultant: asdRec.districtRefConsultant,
-            wholeRoad: asdRec.wholeRoad,
-            geometry:
-              asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
-          })),
+        !isScottish && hasASD && streetData.heightWidthWeights
+          ? streetData.heightWidthWeights
+              .filter((x) => x.changeType !== "D")
+              .map((asdRec) => ({
+                type: 64,
+                pkId: asdRec.pkId,
+                usrn: asdRec.usrn,
+                hwwRestrictionCode: asdRec.hwwRestrictionCode,
+                swaOrgRefConsultant: asdRec.swaOrgRefConsultant,
+                districtRefConsultant: asdRec.districtRefConsultant,
+                wholeRoad: asdRec.wholeRoad,
+                geometry:
+                  asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
+              }))
+          : [],
       asdType66:
-        !isScottish &&
-        hasASD &&
-        streetData.publicRightOfWays
-          .filter((x) => x.changeType !== "D")
-          .map((asdRec) => ({
-            type: 66,
-            pkId: asdRec.pkId,
-            prowUsrn: asdRec.prowUsrn,
-            prowRights: asdRec.prowRights,
-            prowStatus: asdRec.prowStatus,
-            prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
-            prowDistrictRefConsultant: asdRec.prowDistrictRefConsultant,
-            defMapGeometryType: asdRec.defMapGeometryType,
-            geometry:
-              asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
-          })),
+        !isScottish && hasASD && streetData.publicRightOfWays
+          ? streetData.publicRightOfWays
+              .filter((x) => x.changeType !== "D")
+              .map((asdRec) => ({
+                type: 66,
+                pkId: asdRec.pkId,
+                prowUsrn: asdRec.prowUsrn,
+                prowRights: asdRec.prowRights,
+                prowStatus: asdRec.prowStatus,
+                prowOrgRefConsultant: asdRec.prowOrgRefConsultant,
+                prowDistrictRefConsultant: asdRec.prowDistrictRefConsultant,
+                defMapGeometryType: asdRec.defMapGeometryType,
+                geometry:
+                  asdRec.wktGeometry && asdRec.wktGeometry !== "" ? GetWktCoordinates(asdRec.wktGeometry) : undefined,
+              }))
+          : [],
     },
   ];
 
@@ -1046,18 +1052,20 @@ export function GetCurrentSearchStreets(streetData, isScottish, hasASD) {
  * @returns {string|undefined} The geometry string for the whole road.
  */
 export function GetWholeRoadGeometry(esus) {
-  const wholeRoadGeometries = [];
-  for (let i = 0; i < esus.length; i++) {
-    if (esus[i].changeType && esus[i].changeType !== "D" && esus[i].assignUnassign !== -1 && esus[i].wktGeometry) {
-      wholeRoadGeometries.push(
-        esus[i].wktGeometry.replace("MULTILINESTRING (", "").replace("LINESTRING ", "").replace("))", ")")
-      );
+  if (esus) {
+    const wholeRoadGeometries = [];
+    for (let i = 0; i < esus.length; i++) {
+      if (esus[i].changeType && esus[i].changeType !== "D" && esus[i].assignUnassign !== -1 && esus[i].wktGeometry) {
+        wholeRoadGeometries.push(
+          esus[i].wktGeometry.replace("MULTILINESTRING (", "").replace("LINESTRING ", "").replace("))", ")")
+        );
+      }
     }
-  }
 
-  if (wholeRoadGeometries && wholeRoadGeometries.length > 0)
-    return `MULTILINESTRING (${wholeRoadGeometries.join(", ")})`;
-  else return "";
+    if (wholeRoadGeometries && wholeRoadGeometries.length > 0)
+      return `MULTILINESTRING (${wholeRoadGeometries.join(", ")})`;
+    else return "";
+  } else return "";
 }
 
 /**

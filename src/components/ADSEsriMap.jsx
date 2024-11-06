@@ -111,6 +111,7 @@
 //    095   14.10.24 Sean Flook      IMANN-1024 Call onEditMapObject when opening a property.
 //    096   28.10.24 Joshua McCormick IMANN-904 useEffect for mapContext.currentClearObject
 //    097   05.11.24 Sean Flook       IMANN-904 When clearing the current edit object clear the geometry as well.
+//    098   06.11.24 Sean Flook      IMANN-1047 Undo changes done for IMANN-904.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4398,7 +4399,7 @@ function ADSEsriMap(startExtent) {
           : mapContext.currentSearchData.streets;
 
         currentStreets.forEach((street) => {
-          if (street.esus) {
+          if (street.esus && street.esus.length > 0) {
             mapStreets = mapStreets.concat(
               street.esus.map((esu) => {
                 return {
@@ -7186,103 +7187,105 @@ function ADSEsriMap(startExtent) {
     sketchUpdateEvent.current = sketchRef.current.on(
       ["update", "undo", "redo", "vertex-add", "vertex-remove", "cursor-update", "draw-complete"],
       (event) => {
-        if (
-          selectingProperties.current &&
-          event.graphics &&
-          event.graphics.length > 0 &&
-          event.state === "start" &&
-          (!lastSelectedProperty.current ||
-            lastSelectedProperty.current.uprn !== event.graphics[0].attributes.uprn ||
-            performance.now() - lastSelectedProperty.current.time > doubleEventWait)
-        ) {
-          lastSelectedProperty.current = { uprn: event.graphics[0].attributes.uprn, time: performance.now() };
-          // Get the list of UPRNs of the selected properties
-          const selectedUprns = [];
+        if (!event.aborted) {
+          if (
+            selectingProperties.current &&
+            event.graphics &&
+            event.graphics.length > 0 &&
+            event.state === "start" &&
+            (!lastSelectedProperty.current ||
+              lastSelectedProperty.current.uprn !== event.graphics[0].attributes.uprn ||
+              performance.now() - lastSelectedProperty.current.time > doubleEventWait)
+          ) {
+            lastSelectedProperty.current = { uprn: event.graphics[0].attributes.uprn, time: performance.now() };
+            // Get the list of UPRNs of the selected properties
+            const selectedUprns = [];
 
-          event.graphics.forEach((point) => {
-            if (point.geometry.type === "point" && !selectedUprns.includes(point.attributes.uprn)) {
-              selectedUprns.push(point.attributes.uprn);
-            }
-          });
+            event.graphics.forEach((point) => {
+              if (point.geometry.type === "point" && !selectedUprns.includes(point.attributes.uprn)) {
+                selectedUprns.push(point.attributes.uprn);
+              }
+            });
 
-          if (selectedProperties.current.length + selectedUprns.length > 300) {
-            saveResult.current = false;
-            saveType.current = "maxSelectProperties";
-            saveOpenRef.current = true;
-            setSaveOpen(true);
-            mapContext.onSelectPropertiesChange(false);
-          } else {
-            saveOpenRef.current = false;
-            setSaveOpen(false);
-            const removedProperties = selectedProperties.current.filter((x) => selectedUprns.includes(x));
-            const newSelectedProperties = mergeArrays(
-              selectedProperties.current.filter((x) => !removedProperties.includes(x)),
-              selectedUprns.filter((x) => !removedProperties.includes(x)),
-              (a, b) => a === b
-            );
-            selectedProperties.current = newSelectedProperties;
-
-            if (newSelectedProperties.length > 0) {
-              setSelectionAnchorEl(document.getElementById("ads-search-data-list"));
-              mapContext.onHighlightListItem("selectProperties", newSelectedProperties);
+            if (selectedProperties.current.length + selectedUprns.length > 300) {
+              saveResult.current = false;
+              saveType.current = "maxSelectProperties";
+              saveOpenRef.current = true;
+              setSaveOpen(true);
+              mapContext.onSelectPropertiesChange(false);
             } else {
-              setSelectionAnchorEl(null);
-              mapContext.onHighlightClear();
+              saveOpenRef.current = false;
+              setSaveOpen(false);
+              const removedProperties = selectedProperties.current.filter((x) => selectedUprns.includes(x));
+              const newSelectedProperties = mergeArrays(
+                selectedProperties.current.filter((x) => !removedProperties.includes(x)),
+                selectedUprns.filter((x) => !removedProperties.includes(x)),
+                (a, b) => a === b
+              );
+              selectedProperties.current = newSelectedProperties;
+
+              if (newSelectedProperties.length > 0) {
+                setSelectionAnchorEl(document.getElementById("ads-search-data-list"));
+                mapContext.onHighlightListItem("selectProperties", newSelectedProperties);
+              } else {
+                setSelectionAnchorEl(null);
+                mapContext.onHighlightClear();
+              }
             }
-          }
-        } else {
-          // get the graphic as it is being updated
-          const graphic = event.graphics[0];
+          } else {
+            // get the graphic as it is being updated
+            const graphic = event.graphics[0];
 
-          if (graphic.geometry) {
-            switch (graphic.geometry.type) {
-              case "point":
-                if (
-                  event.type === "undo" ||
-                  event.type === "redo" ||
-                  (event.toolEventInfo && event.toolEventInfo.type === "move-stop")
-                ) {
-                  mapContext.onSetCoordinate({
-                    x: graphic.geometry.x.toFixed(4),
-                    y: graphic.geometry.y.toFixed(4),
-                  });
-                }
-                break;
+            if (graphic.geometry) {
+              switch (graphic.geometry.type) {
+                case "point":
+                  if (
+                    event.type === "undo" ||
+                    event.type === "redo" ||
+                    (event.toolEventInfo && event.toolEventInfo.type === "move-stop")
+                  ) {
+                    mapContext.onSetCoordinate({
+                      x: graphic.geometry.x.toFixed(4),
+                      y: graphic.geometry.y.toFixed(4),
+                    });
+                  }
+                  break;
 
-              case "polyline":
-                if (
-                  event.state === "complete" ||
-                  event.type === "undo" ||
-                  event.type === "redo" ||
-                  (event.toolEventInfo &&
-                    (event.toolEventInfo.type === "move-stop" ||
-                      event.toolEventInfo.type === "reshape-stop" ||
-                      event.toolEventInfo.type === "vertex-add" ||
-                      event.toolEventInfo.type === "vertex-remove" ||
-                      event.toolEventInfo.type === "scale-stop"))
-                ) {
-                  handlePolylineUpdate(graphic, true);
-                }
-                break;
+                case "polyline":
+                  if (
+                    event.state === "complete" ||
+                    event.type === "undo" ||
+                    event.type === "redo" ||
+                    (event.toolEventInfo &&
+                      (event.toolEventInfo.type === "move-stop" ||
+                        event.toolEventInfo.type === "reshape-stop" ||
+                        event.toolEventInfo.type === "vertex-add" ||
+                        event.toolEventInfo.type === "vertex-remove" ||
+                        event.toolEventInfo.type === "scale-stop"))
+                  ) {
+                    handlePolylineUpdate(graphic, true);
+                  }
+                  break;
 
-              case "polygon":
-                if (
-                  event.state === "complete" ||
-                  event.type === "undo" ||
-                  event.type === "redo" ||
-                  (event.toolEventInfo &&
-                    (event.toolEventInfo.type === "move-stop" ||
-                      event.toolEventInfo.type === "reshape-stop" ||
-                      event.toolEventInfo.type === "vertex-add" ||
-                      event.toolEventInfo.type === "vertex-remove" ||
-                      event.toolEventInfo.type === "scale-stop"))
-                ) {
-                  handlePolygonUpdate(graphic, true);
-                }
-                break;
+                case "polygon":
+                  if (
+                    event.state === "complete" ||
+                    event.type === "undo" ||
+                    event.type === "redo" ||
+                    (event.toolEventInfo &&
+                      (event.toolEventInfo.type === "move-stop" ||
+                        event.toolEventInfo.type === "reshape-stop" ||
+                        event.toolEventInfo.type === "vertex-add" ||
+                        event.toolEventInfo.type === "vertex-remove" ||
+                        event.toolEventInfo.type === "scale-stop"))
+                  ) {
+                    handlePolygonUpdate(graphic, true);
+                  }
+                  break;
 
-              default:
-                break;
+                default:
+                  break;
+              }
             }
           }
         }
@@ -7829,8 +7832,9 @@ function ADSEsriMap(startExtent) {
         }
 
         // Only update the geometry if it is valid
-        if (canUpdate && !intersectingSegment && graphic.symbol.style !== invalidLineSymbol.current.color)
+        if (canUpdate && !intersectingSegment && graphic.symbol.style !== invalidLineSymbol.current.color) {
           mapContext.onSetLineGeometry(GetPolylineAsWKT([graphic]));
+        }
       }
     }
 
@@ -7989,34 +7993,6 @@ function ADSEsriMap(startExtent) {
     streetContext,
     fadeVisibilityOn,
   ]);
-
-  useEffect(() => {
-    if (mapContext.currentClearObject) {
-      switch (mapContext.currentClearObject.objectType) {
-        case 13: // ESU
-        case 51: // Maintenance Responsibility
-        case 52: // Reinstatement Category
-        case 53: // Special Designation
-        case 61: // Interest
-        case 62: // Construction
-        case 63: // Special Designation
-        case 64: // Height, Width & Weight Restriction
-          if (mapContext.currentLineGeometry && mapContext.currentLineGeometry.objectType) {
-            mapContext.onSetLineGeometry(null);
-          }
-          break;
-
-        case 22: // Extent
-          if (mapContext.currentPolygonGeometry && mapContext.currentPolygonGeometry.objectType) {
-            mapContext.onSetPolygonGeometry(null);
-          }
-          break;
-
-        default:
-          break;
-      }
-    }
-  }, [mapContext.currentClearObject, mapContext]);
 
   // Fix the order of the layers
   useEffect(() => {

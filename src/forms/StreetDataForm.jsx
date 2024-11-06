@@ -127,6 +127,7 @@
 //    111   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //    112   22.10.24 Sean Flook      IMANN-1018 Changes required to handle creating LLPG Streets.
 //    113   01.11.24 Sean Flook      IMANN-1010 Include new fields in search results.
+//    114   06.11.24 Sean Flook      IMANN-1047 When discarding changes where there could be geometry ensure the map search data is updated as well.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -467,6 +468,32 @@ function StreetDataForm({ data, loading }) {
       settingsContext.isScottish,
       hasASD
     );
+
+    if (
+      [
+        "maintenanceResponsibility",
+        "reinstatementCategory",
+        "osSpecialDesignation",
+        "interest",
+        "construction",
+        "specialDesignation",
+        "hww",
+        "prow",
+      ].includes(clearType)
+    ) {
+      const newEsuStreetData = GetNewEsuStreetData(
+        sandboxContext.currentSandbox,
+        newStreetData.esus,
+        newStreetData,
+        settingsContext.isScottish,
+        hasASD,
+        true
+      );
+
+      if (newEsuStreetData) {
+        mapContext.onSearchDataChange(newEsuStreetData.searchStreets, [], [], newEsuStreetData.streetData.usrn, null);
+      }
+    }
     updateStreetDataAndClear(newStreetData, clearType);
   };
 
@@ -4804,7 +4831,26 @@ function StreetDataForm({ data, loading }) {
         // If user has added a new record and then clicked Discard/Cancel remove the record from the array.
         const restoredEsus = streetData.esus.filter((x) => x.pkId !== checkData.pkId);
 
-        if (restoredEsus)
+        if (restoredEsus) {
+          const newEsuStreetData = GetNewEsuStreetData(
+            sandboxContext.currentSandbox,
+            restoredEsus,
+            streetData,
+            settingsContext.isScottish,
+            hasASD,
+            true
+          );
+
+          if (newEsuStreetData) {
+            mapContext.onSearchDataChange(
+              newEsuStreetData.searchStreets,
+              [],
+              [],
+              newEsuStreetData.streetData.usrn,
+              null
+            );
+          }
+
           setAssociatedStreetDataAndClear(
             restoredEsus,
             streetData.successorCrossRefs,
@@ -4820,6 +4866,7 @@ function StreetDataForm({ data, loading }) {
             streetData.heightWidthWeights,
             "esu"
           );
+        }
       }
 
       failedValidation.current = false;
@@ -7928,6 +7975,10 @@ function StreetDataForm({ data, loading }) {
               ? sandboxContext.currentSandbox.currentStreetRecords.esu
               : streetData && streetData.esus
               ? streetData.esus.find((x) => x.esuId === mapContext.currentLineGeometry.objectId)
+              : sandboxContext.currentSandbox.currentStreet && sandboxContext.currentSandbox.currentStreet.esus
+              ? sandboxContext.currentSandbox.currentStreet.esus.find(
+                  (x) => x.esuId === mapContext.currentLineGeometry.objectId
+                )
               : null;
 
           // Only update if geometry has changed

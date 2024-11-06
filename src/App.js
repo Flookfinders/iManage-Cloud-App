@@ -83,6 +83,7 @@
 //    068   28.10.24 Sean Flook      IMANN-1040 Clear the localStorage and sessionStorage items when logoff user.
 //    069   28.10.24 Joshua McCormick IMANN-904 added context for clearObject, setClearObject
 //    070   05.11.24 Sean Flook       IMANN-904 Correctly handle clearing the geometry in HandleSetLineGeometry.
+//    071   06.11.24 Sean Flook      IMANN-1047 Undo changes done for IMANN-904.
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -440,13 +441,8 @@ function App() {
   });
 
   const [editObject, setEditObject] = useState(null);
-
-  const [clearObject, setClearObject] = useState(null);
-
   const [mapProperty, setMapProperty] = useState(null);
-
   const [mapStreet, setMapStreet] = useState(null);
-
   const [mapExtent, setMapExtent] = useState(null);
 
   const [highlight, setHighlight] = useState({
@@ -2916,9 +2912,6 @@ function App() {
    * @param {number} objectId The id of the object being edited.
    */
   function HandleEditMapObject(objectType, objectId, reloading = false) {
-    if (editObjectRef.current) {
-      setClearObject(editObjectRef.current);
-    }
     if (!objectType) {
       setEditObject(null);
       editObjectRef.current = null;
@@ -3394,13 +3387,9 @@ function App() {
    * @param {string} wktGeometry The WKT geometry of the line.
    */
   function HandleSetLineGeometry(wktGeometry) {
-    if (!wktGeometry || !wktGeometry.includes(","))
-      setMapLineGeometry({
-        wktGeometry: "",
-        objectType: editObjectRef.current ? editObjectRef.current.objectType : null,
-        objectId: editObjectRef.current ? editObjectRef.current.objectId : null,
-      });
-    else
+    if (!wktGeometry || !wktGeometry.includes(",")) {
+      setMapLineGeometry(null);
+    } else
       setMapLineGeometry({
         wktGeometry: wktGeometry,
         objectType: editObjectRef.current ? editObjectRef.current.objectType : null,
@@ -3839,7 +3828,6 @@ function App() {
                             currentExtent: mapExtent,
                             currentHighlight: highlight,
                             currentEditObject: editObject,
-                            currentClearObject: clearObject,
                             currentPropertyPin: mapPropertyPin,
                             currentStreetStart: mapStreetStart,
                             currentStreetEnd: mapStreetEnd,
