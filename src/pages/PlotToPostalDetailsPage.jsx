@@ -61,7 +61,7 @@ import { Masonry } from "@mui/lab";
 
 PlotToPostalDetailsPage.propTypes = {
   data: PropTypes.object.isRequired,
-  errors: PropTypes.object,
+  errors: PropTypes.array,
   onDataChanged: PropTypes.func.isRequired,
   onErrorChanged: PropTypes.func.isRequired,
 };

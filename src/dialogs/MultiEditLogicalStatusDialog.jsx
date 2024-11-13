@@ -387,304 +387,310 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
    * Method to update the selected properties.
    */
   const updateProperties = async () => {
-    savedProperty.current = null;
-    setUpdating(true);
+    try {
+      savedProperty.current = null;
+      setUpdating(true);
 
-    if (dataValid()) {
-      if (propertyUprns && propertyUprns.length > 0) {
-        properties.current = [];
-        savedProperty.current = [];
-        totalUpdateCount.current = propertyUprns.length;
-        updatedCount.current = 0;
-        failedCount.current = 0;
-        failedIds.current = [];
-        setHaveErrors(false);
-        updateErrors.current = [];
-        setFinaliseErrors([]);
+      if (dataValid()) {
+        if (propertyUprns && propertyUprns.length > 0) {
+          properties.current = [];
+          savedProperty.current = [];
+          totalUpdateCount.current = propertyUprns.length;
+          updatedCount.current = 0;
+          failedCount.current = 0;
+          failedIds.current = [];
+          setHaveErrors(false);
+          updateErrors.current = [];
+          setFinaliseErrors([]);
 
-        const currentDate = GetCurrentDate();
-        const duplicateApprovedCheck = GetCheck(
-          2400048,
-          lookupContext.currentLookups,
-          "MultiEditUpdateProperties",
-          settingsContext.isScottish,
-          false
-        );
+          const currentDate = GetCurrentDate();
+          const duplicateApprovedCheck = GetCheck(
+            2400048,
+            lookupContext.currentLookups,
+            "MultiEditUpdateProperties",
+            settingsContext.isScottish,
+            false
+          );
 
-        for (const propertyUprn of propertyUprns) {
-          const property = await GetPropertyMapData(propertyUprn, userContext);
+          for (const propertyUprn of propertyUprns) {
+            const property = await GetPropertyMapData(propertyUprn, userContext);
 
-          if (property) {
-            let updatedProperty = null;
+            if (property) {
+              let updatedProperty = null;
 
-            const newLogicalStatus = variant === "historic" ? 8 : 1;
+              const newLogicalStatus = variant === "historic" ? 8 : 1;
 
-            const engLpi = property.lpis.filter((x) => x.language === "ENG");
-            if (engLpi && engLpi.length > 0) {
-              properties.current.push({
-                id: property.pkId,
-                uprn: property.uprn,
-                address: addressToTitleCase(engLpi[0].address, engLpi[0].postcode),
-              });
-            }
+              const engLpi = property.lpis.filter((x) => x.language === "ENG");
+              if (engLpi && engLpi.length > 0) {
+                properties.current.push({
+                  id: property.pkId,
+                  uprn: property.uprn,
+                  address: addressToTitleCase(engLpi[0].address, engLpi[0].postcode),
+                });
+              }
 
-            const updatedCrossRefs = !property.blpuAppCrossRefs
-              ? []
-              : variant === "historic"
-              ? property.blpuAppCrossRefs.map((x) => {
-                  return { ...x, endDate: currentDate, changeType: "U" };
-                })
-              : property.blpuAppCrossRefs;
-            const updatedProvenances = !property.blpuProvenances
-              ? []
-              : variant === "historic"
-              ? property.blpuProvenances.map((x) => {
-                  return { ...x, endDate: currentDate, changeType: "U" };
-                })
-              : property.blpuProvenances;
+              const updatedCrossRefs = !property.blpuAppCrossRefs
+                ? []
+                : variant === "historic"
+                ? property.blpuAppCrossRefs.map((x) => {
+                    return { ...x, endDate: currentDate, changeType: "U" };
+                  })
+                : property.blpuAppCrossRefs;
+              const updatedProvenances = !property.blpuProvenances
+                ? []
+                : variant === "historic"
+                ? property.blpuProvenances.map((x) => {
+                    return { ...x, endDate: currentDate, changeType: "U" };
+                  })
+                : property.blpuProvenances;
 
-            const minPkIdNote =
-              property.blpuNotes && property.blpuNotes.length > 0
-                ? property.blpuNotes.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
-                : null;
-            const newPkId = !minPkIdNote || !minPkIdNote.pkId || minPkIdNote.pkId > -10 ? -10 : minPkIdNote.pkId - 1;
-            const maxSeqNum =
-              property.blpuNotes && property.blpuNotes.length > 0
-                ? property.blpuNotes.reduce((prev, curr) => (prev.seqNum > curr.seqNum ? prev : curr))
-                : null;
-            const newSeqNum = maxSeqNum && maxSeqNum.seqNum ? maxSeqNum.seqNum + 1 : 1;
-
-            const updatedNotes = property.blpuNotes ? [...property.blpuNotes] : [];
-            if (noteOpen)
-              updatedNotes.push({
-                uprn: property.uprn,
-                note: note,
-                changeType: "I",
-                pkId: newPkId,
-                seqNum: newSeqNum,
-              });
-
-            if (settingsContext.isWelsh) {
-              if (variant === "approved" && property.lpis.length > 2) {
-                // Cannot have more than 1 logical status of Approved
-                propertyContext.onPropertyErrors(
-                  [],
-                  property.lpis.map((x, indx) => {
-                    return {
-                      field: "UPRN",
-                      index: indx,
-                      errors: [GetErrorMessage(duplicateApprovedCheck, settingsContext.isScottish)],
-                    };
-                  }),
-                  [],
-                  [],
-                  [],
-                  [],
-                  [],
-                  [],
-                  property.pkId
-                );
-              } else {
-                const cymPostTownRef = postTown
-                  ? lookupContext.currentLookups.postTowns.find((x) => x.linkedRef === postTown && x.language === "CYM")
-                      .postTownRef
+              const minPkIdNote =
+                property.blpuNotes && property.blpuNotes.length > 0
+                  ? property.blpuNotes.reduce((prev, curr) => (prev.pkId < curr.pkId ? prev : curr))
                   : null;
-
-                updatedProperty = {
-                  changeType: "U",
-                  blpuStateDate: state ? currentDate : property.blpuStateDate,
-                  rpc: rpc ? rpc : property.rpc,
-                  startDate: property.startDate,
-                  endDate: variant === "historic" ? currentDate : null, //property.endDate,
-                  parentUprn: property.parentUprn,
-                  neverExport: property.neverExport,
-                  siteSurvey: property.siteSurvey,
-                  uprn: property.uprn,
-                  logicalStatus: newLogicalStatus,
-                  blpuState: state ? state : property.blpuState,
-                  blpuClass: property.blpuClass,
-                  localCustodianCode: property.localCustodianCode,
-                  organisation: property.organisation,
-                  xcoordinate: property.xcoordinate,
-                  ycoordinate: property.ycoordinate,
-                  wardCode: property.wardCode,
-                  parishCode: property.parishCode,
-                  pkId: property.pkId,
-                  blpuAppCrossRefs: updatedCrossRefs,
-                  blpuProvenances: updatedProvenances,
-                  blpuNotes: updatedNotes,
-                  lpis: property.lpis.map((lpi) => {
-                    return {
-                      ...lpi,
-                      changeType: "U",
-                      endDate: variant === "historic" ? currentDate : null, // lpi.endDate,
-                      postcodeRef: postcode ? postcode : lpi.postcodeRef,
-                      postTownRef: postTown ? (lpi.language === "ENG" ? postTown : cymPostTownRef) : lpi.postTownRef,
-                      logicalStatus: newLogicalStatus,
-                      postalAddress: postalAddress ? postalAddress : lpi.postalAddress,
-                      officialFlag: officialFlag ? officialFlag : lpi.officialFlag,
-                    };
-                  }),
-                };
-              }
-            } else if (settingsContext.isScottish) {
-              if (variant === "approved" && property.lpis.filter((x) => x.language === "ENG").length > 1) {
-                // Cannot have more than 1 logical status of Approved
-                propertyContext.onPropertyErrors(
-                  [],
-                  property.lpis.map((x, indx) => {
-                    return {
-                      field: "UPRN",
-                      index: indx,
-                      errors: [GetErrorMessage(duplicateApprovedCheck, settingsContext.isScottish)],
-                    };
-                  }),
-                  [],
-                  [],
-                  [],
-                  [],
-                  [],
-                  [],
-                  property.pkId
-                );
-              } else {
-                const gaePostTownRef = postTown
-                  ? lookupContext.currentLookups.postTowns.find((x) => x.linkedRef === postTown && x.language === "GAE")
-                      .postTownRef
+              const newPkId = !minPkIdNote || !minPkIdNote.pkId || minPkIdNote.pkId > -10 ? -10 : minPkIdNote.pkId - 1;
+              const maxSeqNum =
+                property.blpuNotes && property.blpuNotes.length > 0
+                  ? property.blpuNotes.reduce((prev, curr) => (prev.seqNum > curr.seqNum ? prev : curr))
                   : null;
+              const newSeqNum = maxSeqNum && maxSeqNum.seqNum ? maxSeqNum.seqNum + 1 : 1;
 
-                updatedProperty = {
-                  changeType: "U",
-                  blpuStateDate: state ? currentDate : property.blpuStateDate,
-                  rpc: rpc ? rpc : property.rpc,
-                  startDate: property.startDate,
-                  endDate: variant === "historic" ? currentDate : property.endDate,
-                  parentUprn: property.parentUprn,
-                  neverExport: property.neverExport,
-                  siteSurvey: property.siteSurvey,
+              const updatedNotes = property.blpuNotes ? [...property.blpuNotes] : [];
+              if (noteOpen)
+                updatedNotes.push({
                   uprn: property.uprn,
-                  logicalStatus: newLogicalStatus,
-                  blpuState: state ? state : property.blpuState,
-                  blpuClass: property.blpuClass,
-                  custodianCode: property.custodianCode,
-                  organisation: property.organisation,
-                  xcoordinate: property.xcoordinate,
-                  ycoordinate: property.ycoordinate,
-                  wardCode: property.wardCode,
-                  parishCode: property.parishCode,
-                  pkId: property.pkId,
-                  blpuAppCrossRefs: updatedCrossRefs,
-                  blpuProvenances: updatedProvenances,
-                  classifications:
-                    variant === "historic"
-                      ? property.classifications.map((x) => {
-                          return { ...x, endDate: currentDate, changeType: "U" };
-                        })
-                      : property.classifications,
-                  organisations:
-                    variant === "historic"
-                      ? property.organisations.map((x) => {
-                          return { ...x, endDate: currentDate, changeType: "U" };
-                        })
-                      : property.organisations,
-                  successorCrossRefs:
-                    variant === "historic"
-                      ? property.successorCrossRefs.map((x) => {
-                          return { ...x, endDate: currentDate, changeType: "U" };
-                        })
-                      : property.successorCrossRefs,
-                  blpuNotes: updatedNotes,
-                  lpis: property.lpis.map((lpi) => {
-                    return {
-                      ...lpi,
-                      changeType: "U",
-                      endDate: variant === "historic" ? currentDate : lpi.endDate,
-                      postcodeRef: postcode ? postcode : lpi.postcodeRef,
-                      postTownRef: postTown ? (lpi.language === "ENG" ? postTown : gaePostTownRef) : lpi.postTownRef,
-                      logicalStatus: newLogicalStatus,
-                    };
-                  }),
-                };
-              }
-            } else {
-              if (variant === "approved" && property.lpis.length > 1) {
-                // Cannot have more than 1 logical status of Approved
-                propertyContext.onPropertyErrors(
-                  [],
-                  property.lpis.map((x, indx) => {
-                    return {
-                      field: "UPRN",
-                      index: indx,
-                      errors: [GetErrorMessage(duplicateApprovedCheck, settingsContext.isScottish)],
-                    };
-                  }),
-                  [],
-                  [],
-                  [],
-                  [],
-                  [],
-                  [],
-                  property.pkId
-                );
-              } else {
-                updatedProperty = {
-                  changeType: "U",
-                  blpuStateDate: state ? currentDate : property.blpuStateDate,
-                  rpc: rpc ? rpc : property.rpc,
-                  startDate: property.startDate,
-                  endDate: variant === "historic" ? currentDate : property.endDate,
-                  parentUprn: property.parentUprn,
-                  neverExport: property.neverExport,
-                  siteSurvey: property.siteSurvey,
-                  uprn: property.uprn,
-                  logicalStatus: newLogicalStatus,
-                  blpuState: state ? state : property.blpuState,
-                  blpuClass: property.blpuClass,
-                  localCustodianCode: property.localCustodianCode,
-                  organisation: property.organisation,
-                  xcoordinate: property.xcoordinate,
-                  ycoordinate: property.ycoordinate,
-                  wardCode: property.wardCode,
-                  parishCode: property.parishCode,
-                  pkId: property.pkId,
-                  blpuAppCrossRefs: updatedCrossRefs,
-                  blpuProvenances: updatedProvenances,
-                  blpuNotes: updatedNotes,
-                  lpis: property.lpis.map((lpi) => {
-                    return {
-                      ...lpi,
-                      changeType: "U",
-                      endDate: variant === "historic" ? currentDate : lpi.endDate,
-                      postcodeRef: postcode ? postcode : lpi.postcodeRef,
-                      postTownRef: postTown ? postTown : lpi.postTownRef,
-                      logicalStatus: newLogicalStatus,
-                      postalAddress: postalAddress ? postalAddress : lpi.postalAddress,
-                      officialFlag: officialFlag ? officialFlag : lpi.officialFlag,
-                    };
-                  }),
-                };
-              }
-            }
+                  note: note,
+                  changeType: "I",
+                  pkId: newPkId,
+                  seqNum: newSeqNum,
+                });
 
-            if (updatedProperty) {
-              SaveProperty(updatedProperty, false, userContext, propertyContext, settingsContext.isScottish).then(
-                (result) => {
-                  if (result) {
-                    updatedCount.current++;
-                    savedProperty.current.push(result);
-                    setRangeProcessedCount(updatedCount.current + failedCount.current);
-                  } else {
-                    failedCount.current++;
-                  }
+              if (settingsContext.isWelsh) {
+                if (variant === "approved" && property.lpis.length > 2) {
+                  // Cannot have more than 1 logical status of Approved
+                  propertyContext.onPropertyErrors(
+                    [],
+                    property.lpis.map((x, indx) => {
+                      return {
+                        field: "UPRN",
+                        index: indx,
+                        errors: [GetErrorMessage(duplicateApprovedCheck, settingsContext.isScottish)],
+                      };
+                    }),
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    property.pkId
+                  );
+                } else {
+                  const cymPostTownRef = postTown
+                    ? lookupContext.currentLookups.postTowns.find(
+                        (x) => x.linkedRef === postTown && x.language === "CYM"
+                      ).postTownRef
+                    : null;
+
+                  updatedProperty = {
+                    changeType: "U",
+                    blpuStateDate: state ? currentDate : property.blpuStateDate,
+                    rpc: rpc ? rpc : property.rpc,
+                    startDate: property.startDate,
+                    endDate: variant === "historic" ? currentDate : null, //property.endDate,
+                    parentUprn: property.parentUprn,
+                    neverExport: property.neverExport,
+                    siteSurvey: property.siteSurvey,
+                    uprn: property.uprn,
+                    logicalStatus: newLogicalStatus,
+                    blpuState: state ? state : property.blpuState,
+                    blpuClass: property.blpuClass,
+                    localCustodianCode: property.localCustodianCode,
+                    organisation: property.organisation,
+                    xcoordinate: property.xcoordinate,
+                    ycoordinate: property.ycoordinate,
+                    wardCode: property.wardCode,
+                    parishCode: property.parishCode,
+                    pkId: property.pkId,
+                    blpuAppCrossRefs: updatedCrossRefs,
+                    blpuProvenances: updatedProvenances,
+                    blpuNotes: updatedNotes,
+                    lpis: property.lpis.map((lpi) => {
+                      return {
+                        ...lpi,
+                        changeType: "U",
+                        endDate: variant === "historic" ? currentDate : null, // lpi.endDate,
+                        postcodeRef: postcode ? postcode : lpi.postcodeRef,
+                        postTownRef: postTown ? (lpi.language === "ENG" ? postTown : cymPostTownRef) : lpi.postTownRef,
+                        logicalStatus: newLogicalStatus,
+                        postalAddress: postalAddress ? postalAddress : lpi.postalAddress,
+                        officialFlag: officialFlag ? officialFlag : lpi.officialFlag,
+                      };
+                    }),
+                  };
                 }
-              );
-            } else {
-              failedCount.current++;
+              } else if (settingsContext.isScottish) {
+                if (variant === "approved" && property.lpis.filter((x) => x.language === "ENG").length > 1) {
+                  // Cannot have more than 1 logical status of Approved
+                  propertyContext.onPropertyErrors(
+                    [],
+                    property.lpis.map((x, indx) => {
+                      return {
+                        field: "UPRN",
+                        index: indx,
+                        errors: [GetErrorMessage(duplicateApprovedCheck, settingsContext.isScottish)],
+                      };
+                    }),
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    property.pkId
+                  );
+                } else {
+                  const gaePostTownRef = postTown
+                    ? lookupContext.currentLookups.postTowns.find(
+                        (x) => x.linkedRef === postTown && x.language === "GAE"
+                      ).postTownRef
+                    : null;
+
+                  updatedProperty = {
+                    changeType: "U",
+                    blpuStateDate: state ? currentDate : property.blpuStateDate,
+                    rpc: rpc ? rpc : property.rpc,
+                    startDate: property.startDate,
+                    endDate: variant === "historic" ? currentDate : property.endDate,
+                    parentUprn: property.parentUprn,
+                    neverExport: property.neverExport,
+                    siteSurvey: property.siteSurvey,
+                    uprn: property.uprn,
+                    logicalStatus: newLogicalStatus,
+                    blpuState: state ? state : property.blpuState,
+                    blpuClass: property.blpuClass,
+                    custodianCode: property.custodianCode,
+                    organisation: property.organisation,
+                    xcoordinate: property.xcoordinate,
+                    ycoordinate: property.ycoordinate,
+                    wardCode: property.wardCode,
+                    parishCode: property.parishCode,
+                    pkId: property.pkId,
+                    blpuAppCrossRefs: updatedCrossRefs,
+                    blpuProvenances: updatedProvenances,
+                    classifications:
+                      variant === "historic"
+                        ? property.classifications.map((x) => {
+                            return { ...x, endDate: currentDate, changeType: "U" };
+                          })
+                        : property.classifications,
+                    organisations:
+                      variant === "historic"
+                        ? property.organisations.map((x) => {
+                            return { ...x, endDate: currentDate, changeType: "U" };
+                          })
+                        : property.organisations,
+                    successorCrossRefs:
+                      variant === "historic"
+                        ? property.successorCrossRefs.map((x) => {
+                            return { ...x, endDate: currentDate, changeType: "U" };
+                          })
+                        : property.successorCrossRefs,
+                    blpuNotes: updatedNotes,
+                    lpis: property.lpis.map((lpi) => {
+                      return {
+                        ...lpi,
+                        changeType: "U",
+                        endDate: variant === "historic" ? currentDate : lpi.endDate,
+                        postcodeRef: postcode ? postcode : lpi.postcodeRef,
+                        postTownRef: postTown ? (lpi.language === "ENG" ? postTown : gaePostTownRef) : lpi.postTownRef,
+                        logicalStatus: newLogicalStatus,
+                      };
+                    }),
+                  };
+                }
+              } else {
+                if (variant === "approved" && property.lpis.length > 1) {
+                  // Cannot have more than 1 logical status of Approved
+                  propertyContext.onPropertyErrors(
+                    [],
+                    property.lpis.map((x, indx) => {
+                      return {
+                        field: "UPRN",
+                        index: indx,
+                        errors: [GetErrorMessage(duplicateApprovedCheck, settingsContext.isScottish)],
+                      };
+                    }),
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    property.pkId
+                  );
+                } else {
+                  updatedProperty = {
+                    changeType: "U",
+                    blpuStateDate: state ? currentDate : property.blpuStateDate,
+                    rpc: rpc ? rpc : property.rpc,
+                    startDate: property.startDate,
+                    endDate: variant === "historic" ? currentDate : property.endDate,
+                    parentUprn: property.parentUprn,
+                    neverExport: property.neverExport,
+                    siteSurvey: property.siteSurvey,
+                    uprn: property.uprn,
+                    logicalStatus: newLogicalStatus,
+                    blpuState: state ? state : property.blpuState,
+                    blpuClass: property.blpuClass,
+                    localCustodianCode: property.localCustodianCode,
+                    organisation: property.organisation,
+                    xcoordinate: property.xcoordinate,
+                    ycoordinate: property.ycoordinate,
+                    wardCode: property.wardCode,
+                    parishCode: property.parishCode,
+                    pkId: property.pkId,
+                    blpuAppCrossRefs: updatedCrossRefs,
+                    blpuProvenances: updatedProvenances,
+                    blpuNotes: updatedNotes,
+                    lpis: property.lpis.map((lpi) => {
+                      return {
+                        ...lpi,
+                        changeType: "U",
+                        endDate: variant === "historic" ? currentDate : lpi.endDate,
+                        postcodeRef: postcode ? postcode : lpi.postcodeRef,
+                        postTownRef: postTown ? postTown : lpi.postTownRef,
+                        logicalStatus: newLogicalStatus,
+                        postalAddress: postalAddress ? postalAddress : lpi.postalAddress,
+                        officialFlag: officialFlag ? officialFlag : lpi.officialFlag,
+                      };
+                    }),
+                  };
+                }
+              }
+
+              if (updatedProperty) {
+                SaveProperty(updatedProperty, false, userContext, propertyContext, settingsContext.isScottish).then(
+                  (result) => {
+                    if (result) {
+                      updatedCount.current++;
+                      savedProperty.current.push(result);
+                      setRangeProcessedCount(updatedCount.current + failedCount.current);
+                    } else {
+                      failedCount.current++;
+                    }
+                  }
+                );
+              } else {
+                failedCount.current++;
+              }
             }
           }
         }
       }
-    } else setUpdating(false);
+    } finally {
+      setUpdating(false);
+    }
   };
 
   /**
