@@ -859,6 +859,7 @@ function ADSSelectionControl({
    */
   const handleSetApprovedButtonClicked = () => {
     setEditLogicalStatusVariant("approved");
+    setMultiEditUprns([...new Set(propertyUprns)]);
     setOpenEditLogicalStatus(true);
   };
 
