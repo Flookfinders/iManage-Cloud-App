@@ -33,10 +33,11 @@
 //    020   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    021   18.07.24 Sean Flook       IMANN-678 After adding a new lookup call UpdateSandbox.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
 //    022   03.10.24 Sean Flook      IMANN-1002 Corrected character set to use for descriptor.
 //    023   10.10.24 Sean Flook      IMANN-1018 Allow LLPG editors to edit streets.
-//#endregion Version 1.0.0.0 changes
+//    024   12.11.24 Sean Flook      IMANN-1018 Only filter and sort lookups when required.
+//#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -80,6 +81,11 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
   const sandboxContext = useContext(SandboxContext);
   const userContext = useContext(UserContext);
   const settingsContext = useContext(SettingsContext);
+
+  const [localityLookup, setLocalityLookup] = useState([]);
+  const [townLookup, setTownLookup] = useState([]);
+  const [islandLookup, setIslandLookup] = useState([]);
+  const [adminAreaLookup, setAdminAreaLookup] = useState([]);
 
   const [dataChanged, setDataChanged] = useState(false);
 
@@ -340,6 +346,58 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
   };
 
   useEffect(() => {
+    setLocalityLookup(
+      lookupContext.currentLookups.localities
+        .filter((x) => x.language === (settingsContext.isWelsh ? language : "ENG") && !x.historic)
+        .sort(function (a, b) {
+          return a.locality.localeCompare(b.locality, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.localities, settingsContext.isWelsh, language]);
+
+  useEffect(() => {
+    setTownLookup(
+      lookupContext.currentLookups.towns
+        .filter((x) => x.language === (settingsContext.isWelsh ? language : "ENG") && !x.historic)
+        .sort(function (a, b) {
+          return a.town.localeCompare(b.town, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.towns, settingsContext.isWelsh, language]);
+
+  useEffect(() => {
+    setIslandLookup(
+      lookupContext.currentLookups.islands
+        .filter((x) => !x.historic)
+        .sort(function (a, b) {
+          return a.island.localeCompare(b.island, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.islands]);
+
+  useEffect(() => {
+    setAdminAreaLookup(
+      lookupContext.currentLookups.adminAuthorities
+        .filter((x) => x.language === (settingsContext.isWelsh ? language : "ENG") && !x.historic)
+        .sort(function (a, b) {
+          return a.administrativeArea.localeCompare(b.administrativeArea, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
+    );
+  }, [lookupContext.currentLookups.adminAuthorities, settingsContext.isWelsh, language]);
+
+  useEffect(() => {
     if (!loading && data && data.sdData) {
       setLanguage(data.sdData.language ? data.sdData.language : "ENG");
       setDescription(data.sdData.streetDescriptor ? data.sdData.streetDescriptor : "");
@@ -480,14 +538,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
           loading={loading}
           useRounded
           allowAddLookup
-          lookupData={lookupContext.currentLookups.localities
-            .filter((x) => x.language === (settingsContext.isWelsh ? language : "ENG") && !x.historic)
-            .sort(function (a, b) {
-              return a.locality.localeCompare(b.locality, undefined, {
-                numeric: true,
-                sensitivity: "base",
-              });
-            })}
+          lookupData={localityLookup}
           lookupId="localityRef"
           lookupLabel="locality"
           value={locality}
@@ -504,14 +555,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
           loading={loading}
           useRounded
           allowAddLookup
-          lookupData={lookupContext.currentLookups.towns
-            .filter((x) => x.language === (settingsContext.isWelsh ? language : "ENG") && !x.historic)
-            .sort(function (a, b) {
-              return a.town.localeCompare(b.town, undefined, {
-                numeric: true,
-                sensitivity: "base",
-              });
-            })}
+          lookupData={townLookup}
           lookupId="townRef"
           lookupLabel="town"
           value={town}
@@ -528,14 +572,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
             loading={loading}
             useRounded
             allowAddLookup
-            lookupData={lookupContext.currentLookups.islands
-              .filter((x) => !x.historic)
-              .sort(function (a, b) {
-                return a.island.localeCompare(b.island, undefined, {
-                  numeric: true,
-                  sensitivity: "base",
-                });
-              })}
+            lookupData={islandLookup}
             lookupId="islandRef"
             lookupLabel="island"
             value={island}
@@ -552,14 +589,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
           isFocused={focusedField ? focusedField === "AdminAreaRef" || focusedField === "AdministrativeArea" : false}
           loading={loading}
           useRounded
-          lookupData={lookupContext.currentLookups.adminAuthorities
-            .filter((x) => x.language === (settingsContext.isWelsh ? language : "ENG") && !x.historic)
-            .sort(function (a, b) {
-              return a.administrativeArea.localeCompare(b.administrativeArea, undefined, {
-                numeric: true,
-                sensitivity: "base",
-              });
-            })}
+          lookupData={adminAreaLookup}
           lookupId="administrativeAreaRef"
           lookupLabel="administrativeArea"
           value={administrativeArea}

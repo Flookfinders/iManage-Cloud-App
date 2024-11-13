@@ -18,6 +18,9 @@
 //    005   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    006   28.08.24 Sean Flook       IMANN-961 Use a TextField when user is read only.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.2.0 changes
+//    007   12.11.24 Sean Flook                 Various changes to improve the control.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -26,6 +29,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
+
 import {
   Grid,
   Select,
@@ -43,43 +47,24 @@ import {
   TextField,
   InputAdornment,
 } from "@mui/material";
-import { Box } from "@mui/system";
+import { Box, Stack } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
+
 import { lookupToTitleCase } from "../utils/HelperUtils";
+
+import DirectionsBikeIcon from "@mui/icons-material/DirectionsBike";
+import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import {
-  SyncAlt as TwoWayIcon,
-  DirectionsWalk as PRoWIcon,
-  DirectionsBike as NationalCycleRouteIcon,
-} from "@mui/icons-material";
-import {
+  PRoWIcon,
   StartToEndIcon,
   EndToStartIcon,
+  QuietRouteIcon,
   ObstructionIcon,
   PlanningOrderIcon,
   VehiclesProhibitedIcon,
 } from "../utils/ADSIcons";
-import {
-  adsBlueA,
-  adsWhite,
-  adsLightBlue,
-  adsMagenta,
-  adsBlack,
-  adsYellow,
-  adsGreenA,
-  adsLightPurple,
-  adsMidBlueA,
-  adsLightPink,
-  adsLightBrown,
-  adsOrange,
-  adsMidBrownA,
-  adsRoyalBlue,
-  adsMidBlueB,
-  adsBlueB,
-  adsGreenB,
-  adsPink,
-  adsMidRed,
-  adsDarkBlue,
-} from "../utils/ADSColours";
+
+import { adsBlueA, adsWhite, adsBlack, adsYellow, adsTheme, getAsdThemColourString } from "../utils/ADSColours";
 import {
   FormBoxRowStyle,
   FormRowStyle,
@@ -89,6 +74,8 @@ import {
   tooltipStyle,
   FormInputStyle,
 } from "../utils/ADSStyles";
+import { ThemeProvider } from "@mui/material/styles";
+import GetClassificationIcon from "../utils/ADSClassificationIcons";
 
 /* #endregion imports */
 
@@ -96,6 +83,7 @@ ADSMultipleSelectControl.propTypes = {
   label: PropTypes.string.isRequired,
   isEditable: PropTypes.bool,
   isRequired: PropTypes.bool,
+  isClassification: PropTypes.bool,
   useRounded: PropTypes.bool,
   indicateChange: PropTypes.bool,
   lookupData: PropTypes.array.isRequired,
@@ -114,6 +102,7 @@ ADSMultipleSelectControl.propTypes = {
 ADSMultipleSelectControl.defaultProps = {
   isEditable: false,
   isRequired: false,
+  isClassification: false,
   useRounded: false,
   indicateChange: false,
 };
@@ -122,6 +111,7 @@ function ADSMultipleSelectControl({
   label,
   isEditable,
   isRequired,
+  isClassification,
   useRounded,
   indicateChange,
   lookupData,
@@ -153,7 +143,7 @@ function ADSMultipleSelectControl({
   /**
    * Event to handle when the control changes.
    *
-   * @param {object} event The event object.
+   * @param {Object} event The event object.
    */
   const handleChangeEvent = (event) => {
     setFilterData(event.target.value);
@@ -164,7 +154,7 @@ function ADSMultipleSelectControl({
   /**
    * Event to handle the removal of items.
    *
-   * @param {object} value The item to be removed.
+   * @param {Object} value The item to be removed.
    */
   const handleRemoveItem = (value) => {
     const newFilterData = filterData.filter((x) => x !== value);
@@ -177,57 +167,66 @@ function ADSMultipleSelectControl({
   /**
    * Method to get the selected item details.
    *
-   * @param {string} value The description of the selected item.
-   * @returns {array} The lookup filtered by the value.
+   * @param {String} value The description of the selected item.
+   * @returns {Array} The lookup filtered by the value.
    */
   function getSelectedItem(value) {
-    return lookupData.filter((x) => x[`${lookupLabel}`] === value);
+    return lookupData.filter((x) =>
+      isClassification ? `${x[`${lookupId}`]} - ${x[`${lookupLabel}`]}` === value : x[`${lookupLabel}`] === value
+    );
   }
 
   /**
    * Method to get the chip icon.
    *
-   * @param {string} value The description of the item.
+   * @param {String} value The description of the item.
    * @returns {JSX.Element} The icon to be used in the chip.
    */
   function getChipIcon(value) {
     const selectedItem = getSelectedItem(value);
 
-    switch (selectedItem[0][lookupIcon]) {
-      case "TwoWay":
-        return <TwoWayIcon sx={getAvatarColour(value)} />;
+    if (isClassification && lookupIcon === "useId") {
+      return GetClassificationIcon(selectedItem[0][lookupId]);
+    } else {
+      switch (selectedItem[0][lookupIcon]) {
+        case "TwoWay":
+          return <SyncAltIcon sx={getAvatarStyle(value)} />;
 
-      case "StartToEnd":
-        return <StartToEndIcon sx={getAvatarColour(value)} />;
+        case "StartToEnd":
+          return <StartToEndIcon sx={getAvatarStyle(value)} />;
 
-      case "EndToStart":
-        return <EndToStartIcon sx={getAvatarColour(value)} />;
+        case "EndToStart":
+          return <EndToStartIcon sx={getAvatarStyle(value)} />;
 
-      case "PRoW":
-        return <PRoWIcon sx={getAvatarColour(value)} />;
+        case "PRoW":
+          return <PRoWIcon sx={getAvatarStyle(value)} />;
 
-      case "NCR":
-        return <NationalCycleRouteIcon sx={getAvatarColour(value)} />;
+        case "NCR":
+          return <DirectionsBikeIcon sx={getAvatarStyle(value)} />;
 
-      case "Obstruction":
-        return <ObstructionIcon sx={getAvatarColour(value)} />;
+        case "QuietRoute":
+          return <QuietRouteIcon sx={getAvatarStyle(value)} />;
 
-      case "PlanningOrder":
-        return <PlanningOrderIcon sx={getAvatarColour(value)} />;
+        case "Obstruction":
+          return <ObstructionIcon sx={getAvatarStyle(value)} />;
 
-      case "WorksProhibited":
-        return <VehiclesProhibitedIcon sx={getAvatarColour(value)} />;
+        case "PlanningOrder":
+          return <PlanningOrderIcon sx={getAvatarStyle(value)} />;
 
-      default:
-        return null;
+        case "WorksProhibited":
+          return <VehiclesProhibitedIcon sx={getAvatarStyle(value)} />;
+
+        default:
+          return null;
+      }
     }
   }
 
   /**
    * Method to get the avatar text styling.
    *
-   * @param {array} selectedItem The selected item.
-   * @returns {object} The styling to be used for the avatar text.
+   * @param {Array} selectedItem The selected item.
+   * @returns {Object} The styling to be used for the avatar text.
    */
   function getAvatarTextStyle(selectedItem) {
     if (selectedItem[0][lookupColour] === adsYellow)
@@ -245,27 +244,33 @@ function ADSMultipleSelectControl({
   }
 
   /**
+   * Method to get the chip colour.
+   *
+   * @param {String} value The description of the item.
+   * @returns {String} The colour to be used for the chip.
+   */
+  const getChipColour = (value) => {
+    const selectedItem = getSelectedItem(value);
+
+    if (selectedItem) {
+      return getAsdThemColourString(selectedItem[0][`${lookupColour}`]);
+    } else return "primary";
+  };
+
+  /**
    * Method to get the chip avatar.
    *
-   * @param {string} value The description of the item.
+   * @param {String} value The description of the item.
    * @returns {JSX.Element} The avatar for the chip.
    */
   function getChipAvatar(value) {
     const selectedItem = getSelectedItem(value);
 
-    if (useRounded) {
+    if (selectedItem) {
       return (
-        <Avatar variant="rounded" sx={getAvatarColour(value)}>
+        <Avatar variant={useRounded ? "rounded" : "circular"} sx={getAvatarStyle(value)}>
           <Typography variant="caption" sx={getAvatarTextStyle(selectedItem)}>
-            {getChipAvatarValue(value)}
-          </Typography>
-        </Avatar>
-      );
-    } else {
-      return (
-        <Avatar sx={getAvatarColour(value)}>
-          <Typography variant="caption" sx={getAvatarTextStyle(selectedItem)}>
-            {getChipAvatarValue(value)}
+            {selectedItem[0][`${lookupId}`]}
           </Typography>
         </Avatar>
       );
@@ -273,162 +278,71 @@ function ADSMultipleSelectControl({
   }
 
   /**
-   * Method to get the avatar colour.
+   * Method to get the avatar style.
    *
-   * @param {string} value The description of the item.
-   * @returns {object} The colour to set the avatar.
+   * @param {String} value The description of the item.
+   * @returns {Object} The style to set the avatar.
    */
-  function getAvatarColour(value) {
+  function getAvatarStyle(value) {
     const selectedItem = getSelectedItem(value);
 
     if (selectedItem) {
-      switch (selectedItem[0][`${lookupColour}`]) {
-        case adsGreenA:
-          return {
-            color: adsWhite,
-            backgroundColor: adsGreenA,
-          };
+      const avatarColour = lookupColour.includes("#") ? lookupColour : selectedItem[0][lookupColour];
+      const avatarIdLength = selectedItem[0][lookupId].toString().length;
+      const avatarWidth = avatarIdLength <= 2 ? "24px" : avatarIdLength <= 3 ? "36px" : "48px";
 
-        case adsLightPurple:
-          return {
-            color: adsWhite,
-            backgroundColor: adsLightPurple,
-          };
-
-        case adsMidBlueA:
-          return {
-            color: adsWhite,
-            backgroundColor: adsMidBlueA,
-          };
-
-        case adsLightPink:
-          return {
-            color: adsWhite,
-            backgroundColor: adsLightPink,
-          };
-
-        case adsLightBrown:
-          return {
-            color: adsWhite,
-            backgroundColor: adsLightBrown,
-          };
-
-        case adsOrange:
-          return {
-            color: adsWhite,
-            backgroundColor: adsOrange,
-          };
-
-        case adsMagenta:
-          return {
-            color: adsWhite,
-            backgroundColor: adsMagenta,
-          };
-
-        case adsMidBrownA:
-          return {
-            color: adsWhite,
-            backgroundColor: adsMidBrownA,
-          };
-
-        case adsRoyalBlue:
-          return {
-            color: adsWhite,
-            backgroundColor: adsRoyalBlue,
-          };
-
-        case adsYellow:
-          return {
-            color: adsBlack,
-            backgroundColor: adsYellow,
-          };
-
-        case adsMidBlueB:
-          return {
-            color: adsWhite,
-            backgroundColor: adsMidBlueB,
-          };
-
-        case adsBlueB:
-          return {
-            color: adsWhite,
-            backgroundColor: adsBlueB,
-          };
-
-        case adsLightBlue:
-          return {
-            color: adsWhite,
-            backgroundColor: adsLightBlue,
-          };
-
-        case adsGreenB:
-          return {
-            color: adsWhite,
-            backgroundColor: adsGreenB,
-          };
-
-        case adsPink:
-          return {
-            color: adsWhite,
-            backgroundColor: adsPink,
-          };
-
-        case adsMidRed:
-          return {
-            color: adsWhite,
-            backgroundColor: adsMidRed,
-          };
-
-        case adsDarkBlue:
-          return {
-            color: adsWhite,
-            backgroundColor: adsDarkBlue,
-          };
-
-        default:
-          return {
-            color: adsWhite,
-            backgroundColor: adsBlueA,
-          };
-      }
-    } else
-      return {
-        color: adsWhite,
-        backgroundColor: adsBlueA,
-      };
-  }
-
-  /**
-   * Method to get the chip avatar value.
-   *
-   * @param {string} value The description for the item.
-   * @returns {number|null}
-   */
-  function getChipAvatarValue(value) {
-    const selectedItem = getSelectedItem(value);
-
-    if (selectedItem) return selectedItem[0][`${lookupId}`];
-    else return null;
+      if (lookupIcon)
+        return {
+          color: avatarColour,
+          height: "24px",
+          width: "24px",
+        };
+      else
+        return {
+          backgroundColor: avatarColour,
+          height: "24px",
+          width: avatarWidth,
+        };
+    } else {
+      if (lookupIcon)
+        return {
+          color: adsBlueA,
+          width: "24px",
+          height: "24px",
+        };
+      else
+        return {
+          backgroundColor: adsBlueA,
+          width: "24px",
+          height: "24px",
+        };
+    }
   }
 
   /**
    * Method to get the display label for the chip.
    *
-   * @param {string} value The description for the item.
-   * @returns {string}
+   * @param {String} value The description for the item.
+   * @returns {String}
    */
   function getChipDisplayLabel(value) {
     if (displayLabel) {
       const selectedItem = getSelectedItem(value);
 
-      if (selectedItem) return selectedItem[0][`${displayLabel}`];
+      if (selectedItem) {
+        if (isClassification) {
+          return `${selectedItem[0][`${lookupId}`]} - ${selectedItem[0][`${displayLabel}`]}`;
+        } else {
+          return selectedItem[0][`${displayLabel}`];
+        }
+      }
     } else return value;
   }
 
   /**
    * Method to get the lookup information.
    *
-   * @param {number} value The id for the item.
+   * @param {Number} value The id for the item.
    * @returns {JSX.Element} The lookup information.
    */
   function getLookupInfo(value) {
@@ -506,49 +420,153 @@ function ADSMultipleSelectControl({
 
   useEffect(() => {
     if (lookupData) {
-      setAllData(lookupData.map((a) => a[`${lookupLabel}`]));
+      setAllData(
+        lookupData.map((a) => (isClassification ? `${a[`${lookupId}`]} - ${a[`${lookupLabel}`]}` : a[`${lookupLabel}`]))
+      );
 
       if (lookupDefault) {
-        setDefaultData(lookupData.filter((x) => x[`${lookupDefault}`]).map((a) => a[`${lookupLabel}`]));
-        setHiddenData(lookupData.filter((x) => !x[`${lookupDefault}`]).map((a) => a[`${lookupLabel}`]));
+        setDefaultData(
+          lookupData
+            .filter((x) => x[`${lookupDefault}`])
+            .map((a) => (isClassification ? `${a[`${lookupId}`]} - ${a[`${lookupLabel}`]}` : a[`${lookupLabel}`]))
+        );
+        setHiddenData(
+          lookupData
+            .filter((x) => !x[`${lookupDefault}`])
+            .map((a) => (isClassification ? `${a[`${lookupId}`]} - ${a[`${lookupLabel}`]}` : a[`${lookupLabel}`]))
+        );
       }
     }
-  }, [lookupData, lookupLabel, lookupDefault]);
+  }, [lookupData, lookupLabel, lookupDefault, isClassification, lookupId]);
+
+  useEffect(() => {
+    setFilterData(value);
+  }, [value]);
 
   return (
-    <Box sx={FormBoxRowStyle(hasError.current)}>
-      <Grid container alignItems="center" sx={FormRowStyle(hasError.current)}>
-        <Grid item xs={3}>
-          <Typography
-            variant="body2"
-            align="left"
-            id={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-            sx={controlLabelStyle}
-          >
-            <Badge color="secondary" variant="dot" invisible={!indicateChange}>
-              {`${label}${isRequired ? "*" : ""}`}
-            </Badge>
-          </Typography>
-        </Grid>
-        <Grid item xs={9}>
-          <FormControl
-            sx={FormSelectInputStyle(hasError.current)}
-            variant="outlined"
-            margin="dense"
-            fullWidth
-            size="small"
-            disabled={!isEditable}
-            error={hasError.current}
-            required={isRequired}
-          >
-            {isEditable ? (
-              helperText && helperText.length > 0 ? (
-                <Tooltip
-                  title={isRequired ? helperText + " This is a required field." : helperText}
-                  arrow
-                  placement="right"
-                  sx={tooltipStyle}
-                >
+    <ThemeProvider theme={adsTheme}>
+      <Box sx={FormBoxRowStyle(hasError.current)}>
+        <Grid container alignItems="center" sx={FormRowStyle(hasError.current)}>
+          <Grid item xs={3}>
+            <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{ mr: "16px" }}>
+              <Typography
+                variant="body2"
+                align="left"
+                id={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+                sx={controlLabelStyle}
+              >
+                {`${label}${isRequired ? "*" : ""}`}
+              </Typography>
+              <Badge color="error" variant="dot" invisible={!indicateChange} />
+            </Stack>
+          </Grid>
+          <Grid item xs={9}>
+            <FormControl
+              sx={FormSelectInputStyle(hasError.current)}
+              variant="outlined"
+              margin="dense"
+              fullWidth
+              size="small"
+              disabled={!isEditable}
+              error={hasError.current}
+              required={isRequired}
+            >
+              {isEditable ? (
+                helperText && helperText.length > 0 ? (
+                  <Tooltip
+                    title={isRequired ? helperText + " This is a required field." : helperText}
+                    arrow
+                    placement="right"
+                    sx={tooltipStyle}
+                  >
+                    <Select
+                      sx={FormSelectInputStyle(hasError.current)}
+                      labelId={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+                      aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+                      id={`${label.toLowerCase().replaceAll(" ", "-")}-multiselect`}
+                      multiple
+                      value={filterData}
+                      onChange={handleChangeEvent}
+                      InputProps={{
+                        alignItems: "center",
+                      }}
+                      input={<Input id={`${label}-chip`} />}
+                      renderValue={(selected) => (
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          {selected.map((value) =>
+                            lookupIcon ? (
+                              <Chip
+                                key={value}
+                                size="small"
+                                color={getChipColour(value)}
+                                icon={getChipIcon(value)}
+                                label={getChipDisplayLabel(value)}
+                                sx={{
+                                  m: "2px",
+                                }}
+                                onDelete={() => handleRemoveItem(value)}
+                                onMouseDown={(event) => {
+                                  event.stopPropagation();
+                                }}
+                              />
+                            ) : (
+                              <Chip
+                                key={value}
+                                size="small"
+                                color={getChipColour(value)}
+                                avatar={getChipAvatar(value)}
+                                label={getChipDisplayLabel(value)}
+                                sx={{
+                                  m: "2px",
+                                }}
+                                onDelete={() => handleRemoveItem(value)}
+                                onMouseDown={(event) => {
+                                  event.stopPropagation();
+                                }}
+                              />
+                            )
+                          )}
+                        </Box>
+                      )}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+                            width: 250,
+                          },
+                        },
+                      }}
+                    >
+                      {defaultData &&
+                        defaultData.map((lookupText) => (
+                          <MenuItem key={lookupText} dense value={lookupText} sx={menuItemStyle(false)}>
+                            <Checkbox checked={filterData.indexOf(lookupText) > -1} />
+                            <ListItemText primary={lookupText} />
+                          </MenuItem>
+                        ))}
+                      {hiddenData && <ListSubheader disableSticky>Hidden by default</ListSubheader>}
+                      {hiddenData &&
+                        hiddenData.map((lookupText) => (
+                          <MenuItem key={lookupText} dense value={lookupText} sx={menuItemStyle(false)}>
+                            <Checkbox checked={filterData.indexOf(lookupText) > -1} />
+                            <ListItemText primary={lookupText} />
+                          </MenuItem>
+                        ))}
+                      {!defaultData &&
+                        allData.map((lookupText) => (
+                          <MenuItem key={lookupText} dense value={lookupText} sx={menuItemStyle(false)}>
+                            <Checkbox checked={filterData.indexOf(lookupText) > -1} />
+                            <ListItemText primary={lookupText} />
+                          </MenuItem>
+                        ))}
+                    </Select>
+                  </Tooltip>
+                ) : (
                   <Select
                     sx={FormSelectInputStyle(hasError.current)}
                     labelId={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
@@ -560,7 +578,7 @@ function ADSMultipleSelectControl({
                     InputProps={{
                       alignItems: "center",
                     }}
-                    input={<Input id={`${label}-chip`} />}
+                    input={<Input disableUnderline id={`${label}-chip`} />}
                     renderValue={(selected) => (
                       <Box
                         sx={{
@@ -573,6 +591,7 @@ function ADSMultipleSelectControl({
                             <Chip
                               key={value}
                               size="small"
+                              color={getChipColour(value)}
                               icon={getChipIcon(value)}
                               label={getChipDisplayLabel(value)}
                               sx={{
@@ -587,6 +606,7 @@ function ADSMultipleSelectControl({
                             <Chip
                               key={value}
                               size="small"
+                              color={getChipColour(value)}
                               avatar={getChipAvatar(value)}
                               label={getChipDisplayLabel(value)}
                               sx={{
@@ -633,101 +653,16 @@ function ADSMultipleSelectControl({
                         </MenuItem>
                       ))}
                   </Select>
-                </Tooltip>
+                )
               ) : (
-                <Select
-                  sx={FormSelectInputStyle(hasError.current)}
-                  labelId={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-                  aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-                  id={`${label.toLowerCase().replaceAll(" ", "-")}-multiselect`}
-                  multiple
-                  value={filterData}
-                  onChange={handleChangeEvent}
-                  InputProps={{
-                    alignItems: "center",
-                  }}
-                  input={<Input disableUnderline id={`${label}-chip`} />}
-                  renderValue={(selected) => (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      {selected.map((value) =>
-                        lookupIcon ? (
-                          <Chip
-                            key={value}
-                            size="small"
-                            icon={getChipIcon(value)}
-                            label={getChipDisplayLabel(value)}
-                            sx={{
-                              m: "2px",
-                            }}
-                            onDelete={() => handleRemoveItem(value)}
-                            onMouseDown={(event) => {
-                              event.stopPropagation();
-                            }}
-                          />
-                        ) : (
-                          <Chip
-                            key={value}
-                            size="small"
-                            avatar={getChipAvatar(value)}
-                            label={getChipDisplayLabel(value)}
-                            sx={{
-                              m: "2px",
-                            }}
-                            onDelete={() => handleRemoveItem(value)}
-                            onMouseDown={(event) => {
-                              event.stopPropagation();
-                            }}
-                          />
-                        )
-                      )}
-                    </Box>
-                  )}
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-                        width: 250,
-                      },
-                    },
-                  }}
-                >
-                  {defaultData &&
-                    defaultData.map((lookupText) => (
-                      <MenuItem key={lookupText} dense value={lookupText} sx={menuItemStyle(false)}>
-                        <Checkbox checked={filterData.indexOf(lookupText) > -1} />
-                        <ListItemText primary={lookupText} />
-                      </MenuItem>
-                    ))}
-                  {hiddenData && <ListSubheader disableSticky>Hidden by default</ListSubheader>}
-                  {hiddenData &&
-                    hiddenData.map((lookupText) => (
-                      <MenuItem key={lookupText} dense value={lookupText} sx={menuItemStyle(false)}>
-                        <Checkbox checked={filterData.indexOf(lookupText) > -1} />
-                        <ListItemText primary={lookupText} />
-                      </MenuItem>
-                    ))}
-                  {!defaultData &&
-                    allData.map((lookupText) => (
-                      <MenuItem key={lookupText} dense value={lookupText} sx={menuItemStyle(false)}>
-                        <Checkbox checked={filterData.indexOf(lookupText) > -1} />
-                        <ListItemText primary={lookupText} />
-                      </MenuItem>
-                    ))}
-                </Select>
-              )
-            ) : (
-              getLookupInfo(value)
-            )}
-          </FormControl>
+                getLookupInfo(value)
+              )}
+            </FormControl>
+          </Grid>
+          <ADSErrorDisplay errorText={displayError} id={`${label.toLowerCase().replaceAll(" ", "-")}-language-error`} />
         </Grid>
-        <ADSErrorDisplay errorText={displayError} id={`${label.toLowerCase().replaceAll(" ", "-")}-language-error`} />
-      </Grid>
-    </Box>
+      </Box>
+    </ThemeProvider>
   );
 }
 

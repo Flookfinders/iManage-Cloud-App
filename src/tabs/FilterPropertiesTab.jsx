@@ -15,87 +15,63 @@
 //    002   22.09.23 Sean Flook                 Changes required to handle Scottish classifications.
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.2.0 changes
+//    004   12.11.24 Sean Flook                 Various changes to improve the look and functionality.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
 /* #region imports */
 
-import React, { useContext, useState } from "react";
-import FilterContext from "../context/filterContext";
+import React, { useContext, useState, useEffect } from "react";
+import PropTypes from "prop-types";
+
 import SettingsContext from "../context/settingsContext";
+
+import { Box, Divider, Grid } from "@mui/material";
+import ADSMultipleSelectControl from "../components/ADSMultipleSelectControl";
+import ADSFilterDateControl from "../components/ADSFilterDateControl";
+
 import { GetLookupLabel } from "../utils/HelperUtils";
+
 import BLPULogicalStatus from "../data/BLPULogicalStatus";
 import BLPUState from "../data/BLPUState";
 import RepresentativePointCode from "../data/RepresentativePointCode";
 import BLPUClassification from "../data/BLPUClassification";
 import OSGClassification from "../data/OSGClassification";
 import LPILogicalStatus from "../data/LPILogicalStatus";
-import { Divider, Grid } from "@mui/material";
-import ADSMultipleSelectControl from "../components/ADSMultipleSelectControl";
-import ADSFilterDateControl from "../components/ADSFilterDateControl";
+
 import { useTheme } from "@mui/styles";
+
+FilterPropertiesTab.propTypes = {
+  changedFlags: PropTypes.object.isRequired,
+  selectedData: PropTypes.object.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
 
 /* #endregion imports */
 
-function FilterPropertiesTab(props) {
+function FilterPropertiesTab({ changedFlags, selectedData, onChange }) {
   const theme = useTheme();
 
-  const searchFilterContext = useContext(FilterContext);
   const settingsContext = useContext(SettingsContext);
 
-  const onChange = props.onChange;
-  // const onSearchClick = props.onSearchClick;
-
   const [blpuLogicalStatus, setBlpuLogicalStatus] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.property &&
-      searchFilterContext.currentSearchFilter.property.blpuLogicalStatus
-      ? searchFilterContext.currentSearchFilter.property.blpuLogicalStatus
-      : BLPULogicalStatus.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
+    BLPULogicalStatus.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
   );
   const [blpuState, setBlpuState] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.property &&
-      searchFilterContext.currentSearchFilter.property.blpuState
-      ? searchFilterContext.currentSearchFilter.property.blpuState
-      : BLPUState.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
+    BLPUState.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
   );
   const [rpc, setRpc] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.property &&
-      searchFilterContext.currentSearchFilter.property.rpc
-      ? searchFilterContext.currentSearchFilter.property.rpc
-      : RepresentativePointCode.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
+    RepresentativePointCode.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
   );
-  const [classification, setClassification] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.property &&
-      searchFilterContext.currentSearchFilter.property.classification
-      ? searchFilterContext.currentSearchFilter.property.classification
-      : []
-  );
+  const [classification, setClassification] = useState([]);
   const [lpiLogicalStatus, setLpiLogicalStatus] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.property &&
-      searchFilterContext.currentSearchFilter.property.lpiLogicalStatus
-      ? searchFilterContext.currentSearchFilter.property.lpiLogicalStatus
-      : LPILogicalStatus.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
+    LPILogicalStatus.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
   );
-  const [lastUpdated, setLastUpdated] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.property &&
-      searchFilterContext.currentSearchFilter.property.lastUpdated
-      ? searchFilterContext.currentSearchFilter.property.lastUpdated
-      : {}
-  );
-  const [startDate, setStartDate] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.property &&
-      searchFilterContext.currentSearchFilter.property.startDate
-      ? searchFilterContext.currentSearchFilter.property.startDate
-      : {}
-  );
+  const [lastUpdated, setLastUpdated] = useState({});
+  const [startDate, setStartDate] = useState({});
 
   const [blpuLogicalStatusChanged, setBLPULogicalStatusChanged] = useState(false);
   const [blpuStateChanged, setBLPUStateChanged] = useState(false);
@@ -128,6 +104,11 @@ function FilterPropertiesTab(props) {
    * @param {Array} newValue The list of BLPU logical statuses.
    */
   const handleBLPULogicalStatusChange = (newValue) => {
+    const idSortedData = BLPULogicalStatus.filter((x) =>
+      newValue.includes(x[`${GetLookupLabel(settingsContext.isScottish)}`])
+    )
+      .sort((a, b) => a.id - b.id)
+      .map((x) => x[`${GetLookupLabel(settingsContext.isScottish)}`]);
     const newValueSorted = newValue.slice().sort();
     const filterChanged = !(
       defaultBLPULogicalStatus.length === newValueSorted.length &&
@@ -136,13 +117,10 @@ function FilterPropertiesTab(props) {
       })
     );
 
-    setBlpuLogicalStatus(newValue);
-    setBLPULogicalStatusChanged(filterChanged);
-
     if (onChange) {
       onChange(
         {
-          blpuLogicalStatus: newValue,
+          blpuLogicalStatus: idSortedData,
           blpuState: blpuState,
           rpc: rpc,
           classification: classification,
@@ -150,13 +128,15 @@ function FilterPropertiesTab(props) {
           lastUpdated: lastUpdated,
           startDate: startDate,
         },
-        filterChanged ||
-          blpuStateChanged ||
-          rpcChanged ||
-          classificationChanged ||
-          lpiLogicalStatusChanged ||
-          lastUpdatedChanged ||
-          startDateChanged
+        {
+          blpuLogicalStatus: filterChanged,
+          blpuState: blpuStateChanged,
+          rpc: rpcChanged,
+          classification: classificationChanged,
+          lpiLogicalStatus: lpiLogicalStatusChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
@@ -167,6 +147,9 @@ function FilterPropertiesTab(props) {
    * @param {Array} newValue The list of BLPU states.
    */
   const handleBLPUStateChange = (newValue) => {
+    const idSortedData = BLPUState.filter((x) => newValue.includes(x[`${GetLookupLabel(settingsContext.isScottish)}`]))
+      .sort((a, b) => a.id - b.id)
+      .map((x) => x[`${GetLookupLabel(settingsContext.isScottish)}`]);
     const newValueSorted = newValue.slice().sort();
     const filterChanged = !(
       defaultBLPUState.length === newValueSorted.length &&
@@ -175,27 +158,26 @@ function FilterPropertiesTab(props) {
       })
     );
 
-    setBlpuState(newValue);
-    setBLPUStateChanged(filterChanged);
-
     if (onChange) {
       onChange(
         {
           blpuLogicalStatus: blpuLogicalStatus,
-          blpuState: newValue,
+          blpuState: idSortedData,
           rpc: rpc,
           classification: classification,
           lpiLogicalStatus: lpiLogicalStatus,
           lastUpdated: lastUpdated,
           startDate: startDate,
         },
-        blpuLogicalStatusChanged ||
-          filterChanged ||
-          rpcChanged ||
-          classificationChanged ||
-          lpiLogicalStatusChanged ||
-          lastUpdatedChanged ||
-          startDateChanged
+        {
+          blpuLogicalStatus: blpuLogicalStatusChanged,
+          blpuState: filterChanged,
+          rpc: rpcChanged,
+          classification: classificationChanged,
+          lpiLogicalStatus: lpiLogicalStatusChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
@@ -206,6 +188,11 @@ function FilterPropertiesTab(props) {
    * @param {Array} newValue The list of RPCs.
    */
   const handleRPCChange = (newValue) => {
+    const idSortedData = RepresentativePointCode.filter((x) =>
+      newValue.includes(x[`${GetLookupLabel(settingsContext.isScottish)}`])
+    )
+      .sort((a, b) => a.id - b.id)
+      .map((x) => x[`${GetLookupLabel(settingsContext.isScottish)}`]);
     const newValueSorted = newValue.slice().sort();
     const filterChanged = !(
       defaultRPC.length === newValueSorted.length &&
@@ -214,27 +201,26 @@ function FilterPropertiesTab(props) {
       })
     );
 
-    setRpc(newValue);
-    setRPCChanged(filterChanged);
-
     if (onChange) {
       onChange(
         {
           blpuLogicalStatus: blpuLogicalStatus,
           blpuState: blpuState,
-          rpc: newValue,
+          rpc: idSortedData,
           classification: classification,
           lpiLogicalStatus: lpiLogicalStatus,
           lastUpdated: lastUpdated,
           startDate: startDate,
         },
-        blpuLogicalStatusChanged ||
-          blpuStateChanged ||
-          filterChanged ||
-          classificationChanged ||
-          lpiLogicalStatusChanged ||
-          lastUpdatedChanged ||
-          startDateChanged
+        {
+          blpuLogicalStatus: blpuLogicalStatusChanged,
+          blpuState: blpuStateChanged,
+          rpc: filterChanged,
+          classification: classificationChanged,
+          lpiLogicalStatus: lpiLogicalStatusChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
@@ -245,10 +231,14 @@ function FilterPropertiesTab(props) {
    * @param {Array} newValue The list of classifications.
    */
   const handleClassificationChange = (newValue) => {
+    const idSortedData = settingsContext.isScottish
+      ? OSGClassification.filter((x) => newValue.includes(`${x.id} - ${x.lookup}`))
+          .sort((a, b) => a.id - b.id)
+          .map((x) => `${x.id} - ${x.lookup}`)
+      : BLPUClassification.filter((x) => newValue.includes(`${x.id} - ${x.lookup}`))
+          .sort((a, b) => a.id - b.id)
+          .map((x) => `${x.id} - ${x.lookup}`);
     const filterChanged = newValue && newValue.length > 0;
-
-    setClassification(newValue);
-    setClassificationChanged(filterChanged);
 
     if (onChange) {
       onChange(
@@ -256,18 +246,20 @@ function FilterPropertiesTab(props) {
           blpuLogicalStatus: blpuLogicalStatus,
           blpuState: blpuState,
           rpc: rpc,
-          classification: newValue,
+          classification: idSortedData,
           lpiLogicalStatus: lpiLogicalStatus,
           lastUpdated: lastUpdated,
           startDate: startDate,
         },
-        blpuLogicalStatusChanged ||
-          blpuStateChanged ||
-          rpcChanged ||
-          filterChanged ||
-          lpiLogicalStatusChanged ||
-          lastUpdatedChanged ||
-          startDateChanged
+        {
+          blpuLogicalStatus: blpuLogicalStatusChanged,
+          blpuState: blpuStateChanged,
+          rpc: rpcChanged,
+          classification: filterChanged,
+          lpiLogicalStatus: lpiLogicalStatusChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
@@ -278,6 +270,11 @@ function FilterPropertiesTab(props) {
    * @param {Array} newValue The list of LPI logical statuses.
    */
   const handleLPILogicalStatusChange = (newValue) => {
+    const idSortedData = LPILogicalStatus.filter((x) =>
+      newValue.includes(x[`${GetLookupLabel(settingsContext.isScottish)}`])
+    )
+      .sort((a, b) => a.id - b.id)
+      .map((x) => x[`${GetLookupLabel(settingsContext.isScottish)}`]);
     const newValueSorted = newValue.slice().sort();
     const filterChanged = !(
       defaultLPILogicalStatus.length === newValueSorted.length &&
@@ -286,9 +283,6 @@ function FilterPropertiesTab(props) {
       })
     );
 
-    setLpiLogicalStatus(newValue);
-    setLPILogicalStatusChanged(filterChanged);
-
     if (onChange) {
       onChange(
         {
@@ -296,17 +290,19 @@ function FilterPropertiesTab(props) {
           blpuState: blpuState,
           rpc: rpc,
           classification: classification,
-          lpiLogicalStatus: newValue,
+          lpiLogicalStatus: idSortedData,
           lastUpdated: lastUpdated,
           startDate: startDate,
         },
-        blpuLogicalStatusChanged ||
-          blpuStateChanged ||
-          rpcChanged ||
-          classificationChanged ||
-          filterChanged ||
-          lastUpdatedChanged ||
-          startDateChanged
+        {
+          blpuLogicalStatus: blpuLogicalStatusChanged,
+          blpuState: blpuStateChanged,
+          rpc: rpcChanged,
+          classification: classificationChanged,
+          lpiLogicalStatus: filterChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
@@ -317,10 +313,7 @@ function FilterPropertiesTab(props) {
    * @param {object} newValue The last updated object.
    */
   const handleLastUpdatedChange = (newValue) => {
-    const filterChanged = newValue && newValue.length > 0;
-
-    setLastUpdated(newValue);
-    setLastUpdatedChanged(filterChanged);
+    const filterChanged = !!newValue;
 
     if (onChange) {
       onChange(
@@ -333,13 +326,15 @@ function FilterPropertiesTab(props) {
           lastUpdated: newValue,
           startDate: startDate,
         },
-        blpuLogicalStatusChanged ||
-          blpuStateChanged ||
-          rpcChanged ||
-          classificationChanged ||
-          lpiLogicalStatusChanged ||
-          filterChanged ||
-          startDateChanged
+        {
+          blpuLogicalStatus: blpuLogicalStatusChanged,
+          blpuState: blpuStateChanged,
+          rpc: rpcChanged,
+          classification: classificationChanged,
+          lpiLogicalStatus: lpiLogicalStatusChanged,
+          lastUpdated: filterChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
@@ -350,10 +345,7 @@ function FilterPropertiesTab(props) {
    * @param {object} newValue The start date object.
    */
   const handleStartDateChange = (newValue) => {
-    const filterChanged = newValue && newValue.length > 0;
-
-    setStartDate(newValue);
-    setStartDateChanged(filterChanged);
+    const filterChanged = !!newValue;
 
     if (onChange) {
       onChange(
@@ -366,19 +358,53 @@ function FilterPropertiesTab(props) {
           lastUpdated: lastUpdated,
           startDate: newValue,
         },
-        blpuLogicalStatusChanged ||
-          blpuStateChanged ||
-          rpcChanged ||
-          classificationChanged ||
-          lpiLogicalStatusChanged ||
-          lastUpdatedChanged ||
-          filterChanged
+        {
+          blpuLogicalStatus: blpuLogicalStatusChanged,
+          blpuState: blpuStateChanged,
+          rpc: rpcChanged,
+          classification: classificationChanged,
+          lpiLogicalStatus: lpiLogicalStatusChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: filterChanged,
+        }
       );
     }
   };
 
+  useEffect(() => {
+    if (changedFlags) {
+      setBLPULogicalStatusChanged(changedFlags.blpuLogicalStatus);
+      setBLPUStateChanged(changedFlags.blpuState);
+      setRPCChanged(changedFlags.rpc);
+      setClassificationChanged(changedFlags.classification);
+      setLPILogicalStatusChanged(changedFlags.lpiLogicalStatus);
+      setLastUpdatedChanged(changedFlags.lastUpdated);
+      setStartDateChanged(changedFlags.startDate);
+    } else {
+      setBLPULogicalStatusChanged(false);
+      setBLPUStateChanged(false);
+      setRPCChanged(false);
+      setClassificationChanged(false);
+      setLPILogicalStatusChanged(false);
+      setLastUpdatedChanged(false);
+      setStartDateChanged(false);
+    }
+  }, [changedFlags]);
+
+  useEffect(() => {
+    if (selectedData) {
+      setBlpuLogicalStatus(selectedData.blpuLogicalStatus);
+      setBlpuState(selectedData.blpuState);
+      setRpc(selectedData.rpc);
+      setClassification(selectedData.classification);
+      setLpiLogicalStatus(selectedData.lpiLogicalStatus);
+      setLastUpdated(selectedData.lastUpdated);
+      setStartDate(selectedData.startDate);
+    }
+  }, [selectedData]);
+
   return (
-    <Grid container direction="row" justifyContent="center" alignItems="center">
+    <Box>
       <ADSMultipleSelectControl
         label="BLPU status"
         isEditable
@@ -427,6 +453,7 @@ function FilterPropertiesTab(props) {
       <ADSMultipleSelectControl
         label="Classification"
         isEditable
+        isClassification
         useRounded
         indicateChange={classificationChanged}
         lookupData={settingsContext.isScottish ? OSGClassification : BLPUClassification}
@@ -434,6 +461,7 @@ function FilterPropertiesTab(props) {
         lookupLabel="lookup"
         lookupColour="colour"
         displayLabel="display"
+        lookupIcon="useId"
         value={classification}
         onChange={handleClassificationChange}
       />
@@ -483,7 +511,7 @@ function FilterPropertiesTab(props) {
         date2={startDate.date2}
         onChange={handleStartDateChange}
       />
-    </Grid>
+    </Box>
   );
 }
 

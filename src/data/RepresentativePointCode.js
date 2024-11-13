@@ -13,7 +13,7 @@ const RepresentativePointCode = [
     gpText: "General internal point",
     osText: "General internal point",
     colour: adsMagenta,
-    default: false,
+    default: true,
   },
   {
     id: 3,
@@ -27,7 +27,7 @@ const RepresentativePointCode = [
     gpText: "Start of referenced Street",
     osText: "Start point of the referencing street",
     colour: adsMagenta,
-    default: true,
+    default: false,
   },
   {
     id: 5,

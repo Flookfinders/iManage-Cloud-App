@@ -20,6 +20,9 @@
 //#region Version 1.0.1.0 changes
 //    006   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    007   12.11.24 Sean Flook                 Added ability to show that something has been changed.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -29,8 +32,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { Grid, TextField, Typography, Tooltip, Button, Skeleton } from "@mui/material";
-import { Box } from "@mui/system";
+import { Grid, TextField, Typography, Tooltip, Button, Skeleton, Badge } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 
 import { PinDrop } from "@mui/icons-material";
@@ -61,6 +64,7 @@ ADSCoordinateControl.propTypes = {
   eastLabel: PropTypes.string,
   northLabel: PropTypes.string,
   displayButton: PropTypes.bool,
+  indicateChange: PropTypes.bool,
   buttonIcon: PropTypes.string,
   buttonLabel: PropTypes.string,
   eastErrorText: PropTypes.array,
@@ -79,6 +83,7 @@ ADSCoordinateControl.defaultProps = {
   eastLabel: "E",
   northLabel: "N",
   displayButton: false,
+  indicateChange: false,
   buttonIcon: "select",
 };
 
@@ -95,6 +100,7 @@ function ADSCoordinateControl({
   eastLabel,
   northLabel,
   displayButton,
+  indicateChange,
   buttonIcon,
   buttonLabel,
   eastErrorText,
@@ -183,14 +189,17 @@ function ADSCoordinateControl({
     <Box sx={FormBoxRowStyle(hasCoordError.current)}>
       <Grid container justifyContent="flex-start" alignItems={"baseline"} sx={FormRowStyle(hasCoordError.current)}>
         <Grid item xs={3}>
-          <Typography
-            id={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-            variant="body2"
-            align="left"
-            sx={controlLabelStyle}
-          >
-            {`${label}${isRequired ? "*" : ""}`}
-          </Typography>
+          <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{ mr: "16px" }}>
+            <Typography
+              id={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+              variant="body2"
+              align="left"
+              sx={controlLabelStyle}
+            >
+              {`${label}${isRequired ? "*" : ""}`}
+            </Typography>
+            <Badge color="error" variant="dot" invisible={!indicateChange} />
+          </Stack>
         </Grid>
         {displayButton ? (
           <Grid item xs={9} container justifyContent="space-between" alignItems="baseline">

@@ -36,6 +36,9 @@
 //#region Version 1.0.1.0 changes
 //    022   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    023   12.11.24 Sean Flook                 Added ability to show the data has been changed.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -55,6 +58,7 @@ import {
   Autocomplete,
   Skeleton,
   IconButton,
+  Badge,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
@@ -92,6 +96,7 @@ ADSSelectControl.propTypes = {
   isClassification: PropTypes.bool,
   includeHiddenCode: PropTypes.bool,
   displayNoChange: PropTypes.bool,
+  indicateChange: PropTypes.bool,
   allowAddLookup: PropTypes.bool,
   lookupData: PropTypes.array.isRequired,
   lookupId: PropTypes.string.isRequired,
@@ -118,6 +123,7 @@ ADSSelectControl.defaultProps = {
   isClassification: false,
   includeHiddenCode: false,
   displayNoChange: false,
+  indicateChange: false,
   allowAddLookup: false,
 };
 
@@ -134,6 +140,7 @@ function ADSSelectControl({
   isClassification,
   includeHiddenCode,
   displayNoChange,
+  indicateChange,
   allowAddLookup,
   lookupData,
   lookupId,
@@ -510,14 +517,17 @@ function ADSSelectControl({
     <Box sx={FormBoxRowStyle(hasError.current)}>
       <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
         <Grid item xs={3}>
-          <Typography
-            id={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-            variant="body2"
-            align="left"
-            sx={controlLabelStyle}
-          >
-            {`${label}${isRequired ? "*" : ""}`}
-          </Typography>
+          <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{ mr: "16px" }}>
+            <Typography
+              id={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+              variant="body2"
+              align="left"
+              sx={controlLabelStyle}
+            >
+              {`${label}${isRequired ? "*" : ""}`}
+            </Typography>
+            <Badge color="error" variant="dot" invisible={!indicateChange} />
+          </Stack>
         </Grid>
         <Grid item xs={9}>
           {loading ? (

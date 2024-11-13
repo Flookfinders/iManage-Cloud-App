@@ -14,81 +14,63 @@
 //    001   15.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.2.0 changes
+//    003   12.11.24 Sean Flook                 Various changes to improve the look and functionality.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
 /* #region imports */
 
-import React, { useContext, useState } from "react";
-import FilterContext from "../context/filterContext";
+import React, { useContext, useState, useEffect } from "react";
+import PropTypes from "prop-types";
+
 import SettingsContext from "../context/settingsContext";
-import { GetLookupLabel } from "../utils/HelperUtils";
+
+import { filteredLookup, GetLookupLabel } from "../utils/HelperUtils";
+
+import { Box, Divider, Grid } from "@mui/material";
+import ADSMultipleSelectControl from "../components/ADSMultipleSelectControl";
+import ADSFilterDateControl from "../components/ADSFilterDateControl";
+
 import RoadStatusCode from "../data/RoadStatusCode";
 import ReinstatementType from "../data/ReinstatementType";
 import SpecialDesignationCode from "../data/SpecialDesignationCode";
 import HWWDesignationCode from "../data/HWWDesignationCode";
-import { Divider, Grid } from "@mui/material";
-import ADSMultipleSelectControl from "../components/ADSMultipleSelectControl";
-import ADSFilterDateControl from "../components/ADSFilterDateControl";
+
 import { useTheme } from "@mui/styles";
+
+FilterASDTab.propTypes = {
+  changedFlags: PropTypes.object.isRequired,
+  selectedData: PropTypes.object.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
 
 /* #endregion imports */
 
-function FilterASDTab(props) {
+function FilterASDTab({ changedFlags, selectedData, onChange }) {
   const theme = useTheme();
 
-  const searchFilterContext = useContext(FilterContext);
   const settingsContext = useContext(SettingsContext);
 
-  const onChange = props.onChange;
-  // const onSearchClick = props.onSearchClick;
-
   const [streetStatus, setStreetStatus] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.asd &&
-      searchFilterContext.currentSearchFilter.asd.streetStatus
-      ? searchFilterContext.currentSearchFilter.asd.streetStatus
-      : RoadStatusCode.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
+    RoadStatusCode.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
   );
-  const [constructionType, setConstructionType] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.asd &&
-      searchFilterContext.currentSearchFilter.asd.constructionType
-      ? searchFilterContext.currentSearchFilter.asd.constructionType
-      : ReinstatementType.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
+  const [reinstatementType, setReinstatementType] = useState(
+    ReinstatementType.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
   );
   const [specialDesignationType, setSpecialDesignationType] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.asd &&
-      searchFilterContext.currentSearchFilter.asd.specialDesignationType
-      ? searchFilterContext.currentSearchFilter.asd.specialDesignationType
-      : SpecialDesignationCode.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
+    SpecialDesignationCode.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
   );
   const [hwwRestriction, setHWWRestriction] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.asd &&
-      searchFilterContext.currentSearchFilter.asd.hwwRestriction
-      ? searchFilterContext.currentSearchFilter.asd.hwwRestriction
-      : HWWDesignationCode.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
+    HWWDesignationCode.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
   );
-  const [lastUpdated, setLastUpdated] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.asd &&
-      searchFilterContext.currentSearchFilter.asd.lastUpdated
-      ? searchFilterContext.currentSearchFilter.asd.lastUpdated
-      : {}
-  );
-  const [startDate, setStartDate] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.asd &&
-      searchFilterContext.currentSearchFilter.asd.startDate
-      ? searchFilterContext.currentSearchFilter.asd.startDate
-      : {}
-  );
+  const [lastUpdated, setLastUpdated] = useState({});
+  const [startDate, setStartDate] = useState({});
 
   const [streetStatusChanged, setStreetStatusChanged] = useState(false);
-  const [constructionTypeChanged, setConstructionTypeChanged] = useState(false);
+  const [reinstatementTypeChanged, setReinstatementTypeChanged] = useState(false);
   const [specialDesignationTypeChanged, setSpecialDesignationTypeChanged] = useState(false);
   const [hwwRestrictionChanged, setHWWRestrictionChanged] = useState(false);
   const [lastUpdatedChanged, setLastUpdatedChanged] = useState(false);
@@ -98,7 +80,7 @@ function FilterASDTab(props) {
     .map((a) => a[GetLookupLabel(settingsContext.isScottish)])
     .slice()
     .sort();
-  const defaultConstructionType = ReinstatementType.filter((x) => x.default)
+  const defaultReinstatementType = ReinstatementType.filter((x) => x.default)
     .map((a) => a[GetLookupLabel(settingsContext.isScottish)])
     .slice()
     .sort();
@@ -117,6 +99,11 @@ function FilterASDTab(props) {
    * @param {Array} newValue The list of street statuses.
    */
   const handleStreetStatusChange = (newValue) => {
+    const idSortedData = RoadStatusCode.filter((x) =>
+      newValue.includes(x[`${GetLookupLabel(settingsContext.isScottish)}`])
+    )
+      .sort((a, b) => a.id - b.id)
+      .map((x) => x[`${GetLookupLabel(settingsContext.isScottish)}`]);
     const newValueSorted = newValue.slice().sort();
     const filterChanged = !(
       defaultStreetStatus.length === newValueSorted.length &&
@@ -125,62 +112,65 @@ function FilterASDTab(props) {
       })
     );
 
-    setStreetStatus(newValue);
-    setStreetStatusChanged(filterChanged);
-
     if (onChange) {
       onChange(
         {
-          streetStatus: newValue,
-          constructionType: constructionType,
+          streetStatus: idSortedData,
+          reinstatementType: reinstatementType,
           specialDesignationType: specialDesignationType,
           hwwRestriction: hwwRestriction,
           lastUpdated: lastUpdated,
           startDate: startDate,
         },
-        filterChanged ||
-          constructionTypeChanged ||
-          specialDesignationTypeChanged ||
-          hwwRestrictionChanged ||
-          lastUpdatedChanged ||
-          startDateChanged
+        {
+          streetStatus: filterChanged,
+          reinstatementType: reinstatementTypeChanged,
+          specialDesignationType: specialDesignationTypeChanged,
+          hwwRestriction: hwwRestrictionChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
 
   /**
-   * Event to handle when the list of selected construction types are changed.
+   * Event to handle when the list of selected reinstatement types are changed.
    *
-   * @param {Array} newValue The list of construction types.
+   * @param {Array} newValue The list of reinstatement types.
    */
-  const handleConstructionTypeChange = (newValue) => {
+  const handleReinstatementTypeChange = (newValue) => {
+    const idSortedData = ReinstatementType.filter((x) =>
+      newValue.includes(x[`${GetLookupLabel(settingsContext.isScottish)}`])
+    )
+      .sort((a, b) => a.id - b.id)
+      .map((x) => x[`${GetLookupLabel(settingsContext.isScottish)}`]);
     const newValueSorted = newValue.slice().sort();
     const filterChanged = !(
-      defaultConstructionType.length === newValueSorted.length &&
-      defaultConstructionType.every(function (value, index) {
+      defaultReinstatementType.length === newValueSorted.length &&
+      defaultReinstatementType.every(function (value, index) {
         return value === newValueSorted[index];
       })
     );
-
-    setConstructionType(newValue);
-    setConstructionTypeChanged(filterChanged);
 
     if (onChange) {
       onChange(
         {
           streetStatus: streetStatus,
-          constructionType: newValue,
+          reinstatementType: idSortedData,
           specialDesignationType: specialDesignationType,
           hwwRestriction: hwwRestriction,
           lastUpdated: lastUpdated,
           startDate: startDate,
         },
-        streetStatusChanged ||
-          filterChanged ||
-          specialDesignationTypeChanged ||
-          hwwRestrictionChanged ||
-          lastUpdatedChanged ||
-          startDateChanged
+        {
+          streetStatus: streetStatusChanged,
+          reinstatementType: filterChanged,
+          specialDesignationType: specialDesignationTypeChanged,
+          hwwRestriction: hwwRestrictionChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
@@ -191,6 +181,11 @@ function FilterASDTab(props) {
    * @param {Array} newValue The list of special designation types.
    */
   const handleSpecialDesignationTypeChange = (newValue) => {
+    const idSortedData = SpecialDesignationCode.filter((x) =>
+      newValue.includes(x[`${GetLookupLabel(settingsContext.isScottish)}`])
+    )
+      .sort((a, b) => a.id - b.id)
+      .map((x) => x[`${GetLookupLabel(settingsContext.isScottish)}`]);
     const newValueSorted = newValue.slice().sort();
     const filterChanged = !(
       defaultSpecialDesignationType.length === newValueSorted.length &&
@@ -199,25 +194,24 @@ function FilterASDTab(props) {
       })
     );
 
-    setSpecialDesignationType(newValue);
-    setSpecialDesignationTypeChanged(filterChanged);
-
     if (onChange) {
       onChange(
         {
           streetStatus: streetStatus,
-          constructionType: constructionType,
-          specialDesignationType: newValue,
+          reinstatementType: reinstatementType,
+          specialDesignationType: idSortedData,
           hwwRestriction: hwwRestriction,
           lastUpdated: lastUpdated,
           startDate: startDate,
         },
-        streetStatusChanged ||
-          constructionTypeChanged ||
-          filterChanged ||
-          hwwRestrictionChanged ||
-          lastUpdatedChanged ||
-          startDateChanged
+        {
+          streetStatus: streetStatusChanged,
+          reinstatementType: reinstatementTypeChanged,
+          specialDesignationType: filterChanged,
+          hwwRestriction: hwwRestrictionChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
@@ -228,6 +222,11 @@ function FilterASDTab(props) {
    * @param {Array} newValue The list of height, width & weight restrictions.
    */
   const handleHWWRestrictionChange = (newValue) => {
+    const idSortedData = HWWDesignationCode.filter((x) =>
+      newValue.includes(x[`${GetLookupLabel(settingsContext.isScottish)}`])
+    )
+      .sort((a, b) => a.id - b.id)
+      .map((x) => x[`${GetLookupLabel(settingsContext.isScottish)}`]);
     const newValueSorted = newValue.slice().sort();
     const filterChanged = !(
       defaultHWWRestriction.length === newValueSorted.length &&
@@ -236,25 +235,24 @@ function FilterASDTab(props) {
       })
     );
 
-    setHWWRestriction(newValue);
-    setHWWRestrictionChanged(filterChanged);
-
     if (onChange) {
       onChange(
         {
           streetStatus: streetStatus,
-          constructionType: constructionType,
+          reinstatementType: reinstatementType,
           specialDesignationType: specialDesignationType,
-          hwwRestriction: newValue,
+          hwwRestriction: idSortedData,
           lastUpdated: lastUpdated,
           startDate: startDate,
         },
-        streetStatusChanged ||
-          constructionTypeChanged ||
-          specialDesignationTypeChanged ||
-          filterChanged ||
-          lastUpdatedChanged ||
-          startDateChanged
+        {
+          streetStatus: streetStatusChanged,
+          reinstatementType: reinstatementTypeChanged,
+          specialDesignationType: specialDesignationTypeChanged,
+          hwwRestriction: filterChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
@@ -265,27 +263,26 @@ function FilterASDTab(props) {
    * @param {object} newValue The last updated object.
    */
   const handleLastUpdatedChange = (newValue) => {
-    const filterChanged = newValue && newValue.length > 0;
-
-    setLastUpdated(newValue);
-    setLastUpdatedChanged(filterChanged);
+    const filterChanged = !!newValue;
 
     if (onChange) {
       onChange(
         {
           streetStatus: streetStatus,
-          constructionType: constructionType,
+          reinstatementType: reinstatementType,
           specialDesignationType: specialDesignationType,
           hwwRestriction: hwwRestriction,
           lastUpdated: newValue,
           startDate: startDate,
         },
-        streetStatusChanged ||
-          constructionTypeChanged ||
-          specialDesignationTypeChanged ||
-          hwwRestrictionChanged ||
-          filterChanged ||
-          startDateChanged
+        {
+          streetStatus: streetStatusChanged,
+          reinstatementType: reinstatementTypeChanged,
+          specialDesignationType: specialDesignationTypeChanged,
+          hwwRestriction: hwwRestrictionChanged,
+          lastUpdated: filterChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
@@ -296,33 +293,61 @@ function FilterASDTab(props) {
    * @param {object} newValue The start date object.
    */
   const handleStartDateChange = (newValue) => {
-    const filterChanged = newValue && newValue.length > 0;
-
-    setStartDate(newValue);
-    setStartDateChanged(filterChanged);
+    const filterChanged = !!newValue;
 
     if (onChange) {
       onChange(
         {
           streetStatus: streetStatus,
-          constructionType: constructionType,
+          reinstatementType: reinstatementType,
           specialDesignationType: specialDesignationType,
           hwwRestriction: hwwRestriction,
           lastUpdated: lastUpdated,
           startDate: newValue,
         },
-        streetStatusChanged ||
-          constructionTypeChanged ||
-          specialDesignationTypeChanged ||
-          hwwRestrictionChanged ||
-          lastUpdatedChanged ||
-          filterChanged
+        {
+          streetStatus: streetStatusChanged,
+          reinstatementType: reinstatementTypeChanged,
+          specialDesignationType: specialDesignationTypeChanged,
+          hwwRestriction: hwwRestrictionChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: filterChanged,
+        }
       );
     }
   };
 
+  useEffect(() => {
+    if (changedFlags) {
+      setStreetStatusChanged(changedFlags.streetStatus);
+      setReinstatementTypeChanged(changedFlags.reinstatementType);
+      setSpecialDesignationTypeChanged(changedFlags.specialDesignationType);
+      setHWWRestrictionChanged(changedFlags.hwwRestriction);
+      setLastUpdatedChanged(changedFlags.lastUpdated);
+      setStartDateChanged(changedFlags.startDate);
+    } else {
+      setStreetStatusChanged(false);
+      setReinstatementTypeChanged(false);
+      setSpecialDesignationTypeChanged(false);
+      setHWWRestrictionChanged(false);
+      setLastUpdatedChanged(false);
+      setStartDateChanged(false);
+    }
+  }, [changedFlags]);
+
+  useEffect(() => {
+    if (selectedData) {
+      setStreetStatus(selectedData.streetStatus);
+      setReinstatementType(selectedData.reinstatementType);
+      setSpecialDesignationType(selectedData.specialDesignationType);
+      setHWWRestriction(selectedData.hwwRestriction);
+      setLastUpdated(selectedData.lastUpdated);
+      setStartDate(selectedData.startDate);
+    }
+  }, [selectedData]);
+
   return (
-    <Grid container direction="row" justifyContent="center" alignItems="center">
+    <Box>
       <ADSMultipleSelectControl
         label="Street status"
         isEditable
@@ -343,16 +368,16 @@ function FilterASDTab(props) {
         />
       </Grid>
       <ADSMultipleSelectControl
-        label="Construction type"
+        label="Reinstatement type"
         isEditable
-        indicateChange={constructionTypeChanged}
-        lookupData={ReinstatementType}
+        indicateChange={reinstatementTypeChanged}
+        lookupData={filteredLookup(ReinstatementType, settingsContext.isScottish)}
         lookupId="id"
         lookupLabel={GetLookupLabel(settingsContext.isScottish)}
         lookupColour="colour"
         lookupDefault="default"
-        value={constructionType}
-        onChange={handleConstructionTypeChange}
+        value={reinstatementType}
+        onChange={handleReinstatementTypeChange}
       />
       <Grid item xs={12}>
         <Divider
@@ -365,7 +390,7 @@ function FilterASDTab(props) {
         label="Special designation type"
         isEditable
         indicateChange={specialDesignationTypeChanged}
-        lookupData={SpecialDesignationCode}
+        lookupData={filteredLookup(SpecialDesignationCode, settingsContext.isScottish)}
         lookupId="id"
         lookupLabel={GetLookupLabel(settingsContext.isScottish)}
         lookupColour="colour"
@@ -380,25 +405,29 @@ function FilterASDTab(props) {
           }}
         />
       </Grid>
-      <ADSMultipleSelectControl
-        label="Height, width & weight restrictions"
-        isEditable
-        indicateChange={hwwRestrictionChanged}
-        lookupData={HWWDesignationCode}
-        lookupId="id"
-        lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-        lookupColour="colour"
-        lookupDefault="default"
-        value={hwwRestriction}
-        onChange={handleHWWRestrictionChange}
-      />
-      <Grid item xs={12}>
-        <Divider
-          sx={{
-            mt: theme.spacing(1),
-          }}
+      {!settingsContext.isScottish && (
+        <ADSMultipleSelectControl
+          label="Height, width & weight restrictions"
+          isEditable
+          indicateChange={hwwRestrictionChanged}
+          lookupData={HWWDesignationCode}
+          lookupId="id"
+          lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+          lookupColour="colour"
+          lookupDefault="default"
+          value={hwwRestriction}
+          onChange={handleHWWRestrictionChange}
         />
-      </Grid>
+      )}
+      {!settingsContext.isScottish && (
+        <Grid item xs={12}>
+          <Divider
+            sx={{
+              mt: theme.spacing(1),
+            }}
+          />
+        </Grid>
+      )}
       <ADSFilterDateControl
         label="Last updated"
         indicateChange={lastUpdatedChanged}
@@ -419,7 +448,7 @@ function FilterASDTab(props) {
         date2={startDate.date2}
         onChange={handleStartDateChange}
       />
-    </Grid>
+    </Box>
   );
 }
 

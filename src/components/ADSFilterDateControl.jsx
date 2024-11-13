@@ -17,15 +17,18 @@
 //    004   03.01.24 Sean Flook                 Fixed warning.
 //    005   16.01.24 Sean Flook       IMANN-237 Added a clear button.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.2.0 changes
+//    006   12.11.24 Sean Flook                 Various required to improve the display of the controls.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
 /* #region imports */
 
-import React, { useState, Fragment, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Grid, Typography, Badge, TextField, MenuItem } from "@mui/material";
+import { Grid, Typography, Badge, TextField, MenuItem, Stack } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { parseISO } from "date-fns";
 import { isValidDate } from "../utils/HelperUtils";
@@ -33,8 +36,9 @@ import {
   FormRowStyle,
   FormInputStyle,
   FormSelectInputStyle,
-  FormDateInputStyle,
   menuItemStyle,
+  controlLabelStyle,
+  FormDateInputNoMarginStyle,
 } from "../utils/ADSStyles";
 
 /* #endregion imports */
@@ -60,7 +64,7 @@ ADSFilterDateControl.defaultProps = {
 
 const dateFilters = [
   { id: 0, text: "No filter" },
-  { id: 1, text: "Within the last" },
+  { id: 1, text: "Within last" },
   { id: 2, text: "Between" },
   { id: 3, text: "Before" },
   { id: 4, text: "On" },
@@ -175,179 +179,172 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
     switch (type) {
       case 1: //Within
         return (
-          <Fragment>
-            <Grid item xs={2}>
-              <TextField
-                id={`${label.toLowerCase().replaceAll(" ", "-")}-within-last-number`}
-                sx={FormInputStyle()}
-                type="number"
-                fullWidth
-                variant="outlined"
-                margin="dense"
-                size="small"
-                value={withinNumber}
-                inputProps={{ min: 1 }}
-                onChange={handleWithinNumberChangeEvent}
-                aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                id={`${label.toLowerCase().replaceAll(" ", "-")}-within-last-type`}
-                sx={FormSelectInputStyle()}
-                fullWidth
-                select
-                defaultValue=""
-                variant="outlined"
-                margin="dense"
-                size="small"
-                value={withinPeriod}
-                onChange={handleWithinPeriodChangeEvent}
-                InputProps={{
-                  alignItems: "center",
-                }}
-                aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-              >
-                {withinItems.map((option) => (
-                  <MenuItem key={option} value={option} sx={menuItemStyle(false)}>
-                    <Typography
-                      sx={{
-                        verticalAlign: "middle",
-                        display: "inline-flex",
-                      }}
-                      variant="inherit"
-                    >
-                      {option}
-                    </Typography>
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-          </Fragment>
+          <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{ mt: "2px" }}>
+            <TextField
+              id={`${label.toLowerCase().replaceAll(" ", "-")}-within-last-number`}
+              sx={FormInputStyle()}
+              type="number"
+              fullWidth
+              variant="outlined"
+              margin="dense"
+              size="small"
+              value={withinNumber}
+              inputProps={{ min: 1 }}
+              onChange={handleWithinNumberChangeEvent}
+              aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+            />
+            <TextField
+              id={`${label.toLowerCase().replaceAll(" ", "-")}-within-last-type`}
+              sx={FormSelectInputStyle()}
+              fullWidth
+              select
+              defaultValue=""
+              variant="outlined"
+              margin="dense"
+              size="small"
+              value={withinPeriod}
+              onChange={handleWithinPeriodChangeEvent}
+              InputProps={{
+                alignItems: "center",
+              }}
+              aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+            >
+              {withinItems.map((option) => (
+                <MenuItem key={option} value={option} sx={menuItemStyle(false)}>
+                  <Typography
+                    sx={{
+                      verticalAlign: "middle",
+                      display: "inline-flex",
+                    }}
+                    variant="inherit"
+                  >
+                    {option}
+                  </Typography>
+                </MenuItem>
+              ))}
+            </TextField>
+          </Stack>
         );
 
       case 2: // Between
         return (
-          <Fragment>
-            <Grid item xs>
-              <DatePicker
-                id={`${label.toLowerCase().replaceAll(" ", "-")}-between-date1`}
-                format="dd/MM/yyyy"
-                disableMaskedInput
-                maxDate={new Date()}
-                showTodayButton
-                value={betweenDate1}
-                slotProps={{
-                  textField: {
-                    id: `${label.toLowerCase().replaceAll(" ", "-")}-between-date1-picker-textfield`,
-                    sx: FormDateInputStyle(),
-                    variant: "outlined",
-                    margin: "dense",
-                    fullWidth: true,
-                    size: "small",
-                  },
-                  field: { clearable: true },
-                }}
-                onChange={(date) => handleBetweenDate1ChangeEvent(date)}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
-                }}
-                aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <Typography variant="body2" align="center">
-                and
-              </Typography>
-            </Grid>
-            <Grid item xs>
-              <DatePicker
-                id={`${label.toLowerCase().replaceAll(" ", "-")}-between-date2`}
-                format="dd/MM/yyyy"
-                disableMaskedInput
-                maxDate={new Date()}
-                showTodayButton
-                value={betweenDate2}
-                initialFocusedDate={betweenDate2}
-                slotProps={{
-                  textField: {
-                    id: `${label.toLowerCase().replaceAll(" ", "-")}-between-date2-picker-textfield`,
-                    sx: FormDateInputStyle(),
-                    variant: "outlined",
-                    margin: "dense",
-                    fullWidth: true,
-                    size: "small",
-                  },
-                  field: { clearable: true },
-                }}
-                onChange={(date) => handleBetweenDate2ChangeEvent(date)}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
-                }}
-                aria-labelledby={`${label.replaceAll(" ", "-")}-label`}
-              />
-            </Grid>
-          </Fragment>
+          <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{ mt: "2px" }}>
+            <DatePicker
+              id={`${label.toLowerCase().replaceAll(" ", "-")}-between-date1`}
+              format="dd/MM/yyyy"
+              disableMaskedInput
+              disableFuture
+              showTodayButton
+              margin="dense"
+              value={betweenDate1}
+              slotProps={{
+                textField: {
+                  id: `${label.toLowerCase().replaceAll(" ", "-")}-between-date1-picker-textfield`,
+                  sx: FormDateInputNoMarginStyle(false),
+                  variant: "outlined",
+                  error: false,
+                  margin: "dense",
+                  fullWidth: true,
+                  size: "small",
+                },
+                field: { clearable: true },
+              }}
+              onChange={(date) => handleBetweenDate1ChangeEvent(date)}
+              KeyboardButtonProps={{
+                "aria-label": "change date",
+              }}
+              aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+            />
+            <Typography variant="body2" align="center">
+              and
+            </Typography>
+            <DatePicker
+              id={`${label.toLowerCase().replaceAll(" ", "-")}-between-date2`}
+              format="dd/MM/yyyy"
+              disableMaskedInput
+              disableFuture
+              showTodayButton
+              margin="dense"
+              value={betweenDate2}
+              slotProps={{
+                textField: {
+                  id: `${label.toLowerCase().replaceAll(" ", "-")}-between-date2-picker-textfield`,
+                  sx: FormDateInputNoMarginStyle(false),
+                  variant: "outlined",
+                  error: false,
+                  margin: "dense",
+                  fullWidth: true,
+                  size: "small",
+                },
+                field: { clearable: true },
+              }}
+              onChange={(date) => handleBetweenDate2ChangeEvent(date)}
+              KeyboardButtonProps={{
+                "aria-label": "change date",
+              }}
+              aria-labelledby={`${label.replaceAll(" ", "-")}-label`}
+            />
+          </Stack>
         );
 
       case 3: //Before
         return (
-          <Grid item xs={8}>
-            <DatePicker
-              id={`${label.toLowerCase().replaceAll(" ", "-")}-before-date`}
-              format="dd/MM/yyyy"
-              disableMaskedInput
-              maxDate={new Date()}
-              value={betweenDate1}
-              showTodayButton
-              slotProps={{
-                textField: {
-                  id: `${label.toLowerCase().replaceAll(" ", "-")}-before-date-picker-textfield`,
-                  sx: FormDateInputStyle(),
-                  variant: "outlined",
-                  margin: "dense",
-                  fullWidth: true,
-                  size: "small",
-                },
-                field: { clearable: true },
-              }}
-              onChange={(date) => handleBetweenDate1ChangeEvent(date)}
-              KeyboardButtonProps={{
-                "aria-label": "change date",
-              }}
-              aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-            />
-          </Grid>
+          <DatePicker
+            id={`${label.toLowerCase().replaceAll(" ", "-")}-before-date`}
+            format="dd/MM/yyyy"
+            disableMaskedInput
+            disableFuture
+            value={betweenDate1}
+            showTodayButton
+            margin="dense"
+            slotProps={{
+              textField: {
+                id: `${label.toLowerCase().replaceAll(" ", "-")}-before-date-picker-textfield`,
+                sx: FormDateInputNoMarginStyle(false),
+                variant: "outlined",
+                error: false,
+                margin: "dense",
+                fullWidth: true,
+                size: "small",
+              },
+              field: { clearable: true },
+            }}
+            onChange={(date) => handleBetweenDate1ChangeEvent(date)}
+            KeyboardButtonProps={{
+              "aria-label": "change date",
+            }}
+            aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+          />
         );
 
       case 4: //On
         return (
-          <Grid item xs={8}>
-            <DatePicker
-              id={`${label.toLowerCase().replaceAll(" ", "-")}-on-date`}
-              format="dd/MM/yyyy"
-              maxDate={new Date()}
-              disableMaskedInput
-              value={betweenDate1}
-              showTodayButton
-              slotProps={{
-                textField: {
-                  id: `${label.toLowerCase().replaceAll(" ", "-")}-on-date-picker-textfield`,
-                  sx: FormDateInputStyle(),
-                  variant: "outlined",
-                  margin: "dense",
-                  fullWidth: true,
-                  size: "small",
-                },
-                field: { clearable: true },
-              }}
-              onChange={(date) => handleBetweenDate1ChangeEvent(date)}
-              KeyboardButtonProps={{
-                "aria-label": "change date",
-              }}
-              aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
-            />
-          </Grid>
+          <DatePicker
+            id={`${label.toLowerCase().replaceAll(" ", "-")}-on-date`}
+            format="dd/MM/yyyy"
+            disableFuture
+            disableMaskedInput
+            value={betweenDate1}
+            showTodayButton
+            margin="dense"
+            slotProps={{
+              textField: {
+                id: `${label.toLowerCase().replaceAll(" ", "-")}-on-date-picker-textfield`,
+                sx: FormDateInputNoMarginStyle(false),
+                variant: "outlined",
+                error: false,
+                margin: "dense",
+                fullWidth: true,
+                size: "small",
+              },
+              field: { clearable: true },
+            }}
+            onChange={(date) => handleBetweenDate1ChangeEvent(date)}
+            KeyboardButtonProps={{
+              "aria-label": "change date",
+            }}
+            aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+          />
         );
 
       default:
@@ -357,29 +354,33 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
   };
 
   useEffect(() => {
+    setType(filterType);
+    setWithinNumber(lastN);
+    setWithinPeriod(lastPeriod);
     if (isValidDate(date1)) setBetweenDate1(date1);
     else setBetweenDate1(parseISO(date1));
     if (isValidDate(date2)) setBetweenDate2(date2);
     else setBetweenDate2(parseISO(date2));
-  }, [date1, date2]);
+  }, [filterType, lastN, lastPeriod, date1, date2]);
 
   return (
     <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle()}>
       <Grid item xs={3}>
-        <Badge color="secondary" variant="dot" invisible={!indicateChange || !dataChanged}>
+        <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{ mr: "16px" }}>
           <Typography
             id={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
             variant="body2"
-            color="textPrimary"
             align="left"
+            sx={controlLabelStyle}
           >
             {label}
           </Typography>
-        </Badge>
+          <Badge color="error" variant="dot" invisible={!indicateChange || !dataChanged} />
+        </Stack>
       </Grid>
       <Grid item xs={9}>
         <Grid container justifyContent="flex-start" alignItems="center" spacing={1}>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <TextField
               id={`${label.toLowerCase().replaceAll(" ", "-")}-select-type`}
               sx={FormSelectInputStyle()}
@@ -387,7 +388,7 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
               select
               defaultValue=""
               variant="outlined"
-              margin="none"
+              margin="dense"
               size="small"
               value={type}
               onChange={handleTypeChangeEvent}
@@ -411,7 +412,9 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
               ))}
             </TextField>
           </Grid>
-          {getDateControls()}
+          <Grid item xs={9}>
+            {getDateControls()}
+          </Grid>
         </Grid>
       </Grid>
     </Grid>

@@ -48,6 +48,9 @@
 //#region Version 1.0.1.0 changes
 //    034   31.10.24 Sean Flook      IMANN-1012 Changes required for plot to postal wizard.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    035   12.11.24 Sean Flook                 Added FormDateInputNoMarginStyle.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -310,6 +313,43 @@ export function FormDateInputStyle(hasError) {
 }
 
 /**
+ * Returns the styling for a date input component without the top margin.
+ *
+ * @param {boolean} hasError True if the component is displaying an error; otherwise false.
+ * @return {object} The styling to use for the form date input without the top margin.
+ */
+export function FormDateInputNoMarginStyle(hasError) {
+  if (hasError)
+    return {
+      fontFamily: "Nunito sans",
+      fontSize: "15px",
+      color: adsDarkGrey,
+      backgroundColor: adsWhite,
+      "&$outlinedInputFocused": {
+        borderColor: `${adsBlueA}`,
+      },
+      "&$notchedOutline": {
+        borderWidth: "1px",
+        borderColor: `${adsRed}`,
+      },
+    };
+  else
+    return {
+      fontFamily: "Nunito sans",
+      fontSize: "15px",
+      color: adsDarkGrey,
+      backgroundColor: adsWhite,
+      "&$outlinedInputFocused": {
+        borderColor: `${adsBlueA}`,
+      },
+      "&$notchedOutline": {
+        borderWidth: "1px",
+        borderColor: `${adsOffWhite}`,
+      },
+    };
+}
+
+/**
  * Returns the styling for a select input component.
  *
  * @param {boolean} hasError True if the component is displaying an error; otherwise false.
@@ -473,7 +513,7 @@ export const dataFormStyle = (dataForm) => {
 
     case "ADSHomepageLatestEditsControl":
       return {
-        height: "43vh",
+        height: "42.6vh",
         mb: "26px",
         "& .idox-homepage-latest-edits-data-grid-header": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
       };

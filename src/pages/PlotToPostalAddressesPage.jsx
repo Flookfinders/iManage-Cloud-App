@@ -251,6 +251,7 @@ function PlotToPostalAddressesPage({
   const [engError, setEngError] = useState(null);
   const [altLanguageError, setAltLanguageError] = useState(null);
 
+  const selectedId = useRef(-1);
   const postalAddresses = useRef([]);
   const haveErrors = useRef(false);
 
@@ -359,6 +360,15 @@ function PlotToPostalAddressesPage({
       sortable: false,
       filterable: false,
       renderCell: GetNewAddress,
+    },
+    {
+      field: "currentIndicator",
+      headerName: "",
+      headerClassName: "idox-data-grid-header",
+      flex: 1,
+      sortable: false,
+      filterable: false,
+      renderCell: GetCurrentIndicator,
     },
     {
       field: "newLpiLogicalStatus",
@@ -655,7 +665,7 @@ function PlotToPostalAddressesPage({
    * Method to get the right arrow to be displayed in the grid.
    *
    * @param {object} params The parameters passed into the method from the grid.
-   * @returns {JSX.Element} The display of for the new address.
+   * @returns {JSX.Element} The display of for the right arrow.
    */
   function GetRightArrow(params) {
     return <ArrowRightAltIcon />;
@@ -695,6 +705,20 @@ function PlotToPostalAddressesPage({
           </Tooltip>
         </Stack>
       );
+    }
+  }
+
+  /**
+   * Method to get the current indicator to be displayed in the grid.
+   *
+   * @param {object} params The parameters passed into the method from the grid.
+   * @returns {JSX.Element} The display of for the current indicator.
+   */
+  function GetCurrentIndicator(params) {
+    if (params && params.row) {
+      if (params.id === selectedRow) {
+        return <KeyboardArrowRightIcon />;
+      }
     }
   }
 
@@ -1131,13 +1155,23 @@ function PlotToPostalAddressesPage({
   };
 
   /**
+   * Method to set the various variables to the new row id.
+   *
+   * @param {Number} rowId The id of the selected row in the grid
+   */
+  const updateRowId = (rowId) => {
+    setSelectionModel(rowId);
+    setSelectedRow(rowId);
+    selectedId.current = rowId;
+  };
+
+  /**
    * Method to set the various models used by the grid to ensure the correct row is selected and can be seen.
    *
    * @param {Number} rowId The id of the selected row in the grid
    */
   const updateGridModels = (rowId) => {
-    setSelectionModel(rowId);
-    setSelectedRow(rowId);
+    updateRowId(rowId);
 
     if (!currentAddress.current.addressUpdated) {
       setPaoStartNumberFocused(true);
@@ -1721,8 +1755,7 @@ function PlotToPostalAddressesPage({
     if (!isNaN(model.page)) {
       setCurrentGridPage(model.page);
       setPaginationModel(model);
-      setSelectionModel(-1);
-      setSelectedRow(-1);
+      updateRowId(-1);
       setPaoStartNumberFocused(false);
     }
   };
@@ -1808,8 +1841,9 @@ function PlotToPostalAddressesPage({
         setPostalAddress(addresses[0].postallyAddressable);
         setStartDate(addresses[0].startDate);
 
-        setSelectionModel(0);
-        setSelectedRow(0);
+        if (selectedId.current === -1) {
+          updateRowId(0);
+        }
         setPaoStartNumberFocused(!addresses[0].addressUpdated);
       }
     }

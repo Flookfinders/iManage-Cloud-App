@@ -17,6 +17,9 @@
 //    004   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    005   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.2.0 changes
+//    006   12.11.24 Sean Flook                 Various required changes.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -28,23 +31,37 @@ import PropTypes from "prop-types";
 
 import FilterContext from "../context/filterContext";
 import UserContext from "../context/userContext";
+import SettingsContext from "../context/settingsContext";
 
-import { AppBar, Tabs, Tab, Typography, Button, Badge } from "@mui/material";
-import { Box } from "@mui/system";
+import { AppBar, Tabs, Tab, Typography, Button, Badge, Toolbar } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 
 import FilterLocationTab from "../tabs/FilterLocationTab";
 import FilterPropertiesTab from "../tabs/FilterPropertiesTab";
 import FilterStreetsTab from "../tabs/FilterStreetsTab";
 import FilterASDTab from "../tabs/FilterASDTab";
-import FilterScopeTab from "../tabs/FilterScopeTab";
 
 import SearchIcon from "@mui/icons-material/Search";
 import RestoreIcon from "@mui/icons-material/SettingsBackupRestore";
 import CancelIcon from "@mui/icons-material/Close";
 
-import { adsBlueA, adsWhite, adsLightGreyB, adsLightBlue } from "../utils/ADSColours";
+import { adsBlueA, adsWhite, adsLightGreyB, adsOffWhite } from "../utils/ADSColours";
 import { useTheme } from "@mui/styles";
-import { grey } from "@mui/material/colors";
+import { blueButtonStyle, tabContainerStyle, tabLabelStyle, tabStyle, whiteButtonStyle } from "../utils/ADSStyles";
+import BLPULogicalStatus from "../data/BLPULogicalStatus";
+import { GetLookupLabel } from "../utils/HelperUtils";
+import BLPUState from "../data/BLPUState";
+import RepresentativePointCode from "../data/RepresentativePointCode";
+import LPILogicalStatus from "../data/LPILogicalStatus";
+import StreetType from "../data/StreetType";
+import StreetState from "../data/StreetState";
+import HighwayDedicationCode from "../data/HighwayDedicationCode";
+import HighwayDedicationIndicator from "../data/HighwayDedicationIndicator";
+import ESUDirectionCode from "../data/ESUDirectionCode";
+import RoadStatusCode from "../data/RoadStatusCode";
+import ReinstatementType from "../data/ReinstatementType";
+import SpecialDesignationCode from "../data/SpecialDesignationCode";
+import HWWDesignationCode from "../data/HWWDesignationCode";
 
 /* #endregion imports */
 
@@ -88,19 +105,71 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
 
   const searchFilterContext = useContext(FilterContext);
   const userContext = useContext(UserContext);
+  const settingsContext = useContext(SettingsContext);
 
   const [value, setValue] = useState(0);
   const [resetLabel, setResetLabel] = useState("Reset location filters");
   const [locationChanged, setLocationChanged] = useState(false);
+  const [locationChanges, setLocationChanges] = useState(null);
   const [propertyChanged, setPropertyChanged] = useState(false);
+  const [propertyChanges, setPropertyChanges] = useState(null);
   const [streetChanged, setStreetChanged] = useState(false);
+  const [streetChanges, setStreetChanges] = useState(null);
   const [asdChanged, setASDChanged] = useState(false);
-  const [scopeChanged, setScopeChanged] = useState(false);
-  const [locationFilter, setLocationFilter] = useState();
-  const [propertyFilter, setPropertyFilter] = useState();
-  const [streetFilter, setStreetFilter] = useState();
-  const [asdFilter, setASDFilter] = useState();
-  const [scopeFilter, setScopeFilter] = useState();
+  const [asdChanges, setASDChanges] = useState(null);
+  const [locationFilter, setLocationFilter] = useState({
+    locality: null,
+    town: null,
+    island: null,
+    subLocality: null,
+    postcode: null,
+    ward: null,
+    parish: null,
+    east: 0,
+    north: 0,
+  });
+  const [propertyFilter, setPropertyFilter] = useState({
+    blpuLogicalStatus: BLPULogicalStatus.filter((x) => x.default).map(
+      (a) => a[GetLookupLabel(settingsContext.isScottish)]
+    ),
+    blpuState: BLPUState.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)]),
+    rpc: RepresentativePointCode.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)]),
+    classification: [],
+    lpiLogicalStatus: LPILogicalStatus.filter((x) => x.default).map(
+      (a) => a[GetLookupLabel(settingsContext.isScottish)]
+    ),
+    lastUpdated: {},
+    startDate: {},
+  });
+  const [streetFilter, setStreetFilter] = useState({
+    streetType: StreetType.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)]),
+    streetState: StreetState.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)]),
+    highwayDedicationCode: HighwayDedicationCode.filter((x) => x.default).map(
+      (a) => a[GetLookupLabel(settingsContext.isScottish)]
+    ),
+    highwayDedicationIndicator: HighwayDedicationIndicator.filter((x) => x.default).map(
+      (a) => a[GetLookupLabel(settingsContext.isScottish)]
+    ),
+    directionOfTravel: ESUDirectionCode.filter((x) => x.default).map(
+      (a) => a[GetLookupLabel(settingsContext.isScottish)]
+    ),
+    lastUpdated: {},
+    startDate: {},
+  });
+  const [asdFilter, setASDFilter] = useState({
+    streetStatus: RoadStatusCode.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)]),
+    reinstatementType: ReinstatementType.filter((x) => x.default).map(
+      (a) => a[GetLookupLabel(settingsContext.isScottish)]
+    ),
+    specialDesignationType: SpecialDesignationCode.filter((x) => x.default).map(
+      (a) => a[GetLookupLabel(settingsContext.isScottish)]
+    ),
+    hwwRestriction: HWWDesignationCode.filter((x) => x.default).map(
+      (a) => a[GetLookupLabel(settingsContext.isScottish)]
+    ),
+    lastUpdated: {},
+    startDate: {},
+  });
 
   const [hasASD, setHasASD] = useState(false);
   const [hasProperty, setHasProperty] = useState(false);
@@ -127,10 +196,6 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
         setResetLabel("Reset ASD filters");
         break;
 
-      case 4:
-        setResetLabel("Reset scope filters");
-        break;
-
       default:
         setResetLabel("Reset location filters");
         break;
@@ -138,16 +203,174 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
   };
 
   /**
+   * Event to handle when the restore all button is clicked.
+   */
+  const handleRestoreAllClick = () => {
+    setLocationChanged(false);
+    setLocationChanges(null);
+    setLocationFilter({
+      locality: null,
+      town: null,
+      island: null,
+      subLocality: null,
+      postcode: null,
+      ward: null,
+      parish: null,
+      east: 0,
+      north: 0,
+    });
+
+    setPropertyChanged(false);
+    setPropertyChanges(null);
+    setPropertyFilter({
+      blpuLogicalStatus: BLPULogicalStatus.filter((x) => x.default).map(
+        (a) => a[GetLookupLabel(settingsContext.isScottish)]
+      ),
+      blpuState: BLPUState.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)]),
+      rpc: RepresentativePointCode.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)]),
+      classification: [],
+      lpiLogicalStatus: LPILogicalStatus.filter((x) => x.default).map(
+        (a) => a[GetLookupLabel(settingsContext.isScottish)]
+      ),
+      lastUpdated: {},
+      startDate: {},
+    });
+
+    setStreetChanged(false);
+    setStreetChanges(null);
+    setStreetFilter({
+      streetType: StreetType.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)]),
+      streetState: StreetState.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)]),
+      highwayDedicationCode: HighwayDedicationCode.filter((x) => x.default).map(
+        (a) => a[GetLookupLabel(settingsContext.isScottish)]
+      ),
+      highwayDedicationIndicator: HighwayDedicationIndicator.filter((x) => x.default).map(
+        (a) => a[GetLookupLabel(settingsContext.isScottish)]
+      ),
+      directionOfTravel: ESUDirectionCode.filter((x) => x.default).map(
+        (a) => a[GetLookupLabel(settingsContext.isScottish)]
+      ),
+      lastUpdated: {},
+      startDate: {},
+    });
+
+    setASDChanged(false);
+    setASDChanges(null);
+    setASDFilter({
+      streetStatus: RoadStatusCode.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)]),
+      reinstatementType: ReinstatementType.filter((x) => x.default).map(
+        (a) => a[GetLookupLabel(settingsContext.isScottish)]
+      ),
+      specialDesignationType: SpecialDesignationCode.filter((x) => x.default).map(
+        (a) => a[GetLookupLabel(settingsContext.isScottish)]
+      ),
+      hwwRestriction: HWWDesignationCode.filter((x) => x.default).map(
+        (a) => a[GetLookupLabel(settingsContext.isScottish)]
+      ),
+      lastUpdated: {},
+      startDate: {},
+    });
+  };
+
+  /**
    * Event to handle when the search button is clicked.
    */
   const handleSearchClick = () => {
-    if (onFilter) onFilter();
+    if (onFilter)
+      onFilter({
+        location: locationFilter,
+        property: propertyFilter,
+        street: streetFilter,
+        asd: asdFilter,
+      });
   };
 
   /**
    * Event to handle when the restore button is clicked.
    */
-  const handleRestoreClick = () => {};
+  const handleRestoreClick = () => {
+    switch (value) {
+      case 1:
+        setPropertyChanged(false);
+        setPropertyChanges(null);
+        setPropertyFilter({
+          blpuLogicalStatus: BLPULogicalStatus.filter((x) => x.default).map(
+            (a) => a[GetLookupLabel(settingsContext.isScottish)]
+          ),
+          blpuState: BLPUState.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)]),
+          rpc: RepresentativePointCode.filter((x) => x.default).map(
+            (a) => a[GetLookupLabel(settingsContext.isScottish)]
+          ),
+          classification: [],
+          lpiLogicalStatus: LPILogicalStatus.filter((x) => x.default).map(
+            (a) => a[GetLookupLabel(settingsContext.isScottish)]
+          ),
+          lastUpdated: {},
+          startDate: {},
+        });
+        break;
+
+      case 2:
+        setStreetChanged(false);
+        setStreetChanges(null);
+        setStreetFilter({
+          streetType: StreetType.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)]),
+          streetState: StreetState.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)]),
+          highwayDedicationCode: HighwayDedicationCode.filter((x) => x.default).map(
+            (a) => a[GetLookupLabel(settingsContext.isScottish)]
+          ),
+          highwayDedicationIndicator: HighwayDedicationIndicator.filter((x) => x.default).map(
+            (a) => a[GetLookupLabel(settingsContext.isScottish)]
+          ),
+          directionOfTravel: ESUDirectionCode.filter((x) => x.default).map(
+            (a) => a[GetLookupLabel(settingsContext.isScottish)]
+          ),
+          lastUpdated: {},
+          startDate: {},
+        });
+        break;
+
+      case 3:
+        setASDChanged(false);
+        setASDChanges(null);
+        setASDFilter({
+          streetStatus: RoadStatusCode.filter((x) => x.default).map(
+            (a) => a[GetLookupLabel(settingsContext.isScottish)]
+          ),
+          reinstatementType: ReinstatementType.filter((x) => x.default).map(
+            (a) => a[GetLookupLabel(settingsContext.isScottish)]
+          ),
+          specialDesignationType: SpecialDesignationCode.filter((x) => x.default).map(
+            (a) => a[GetLookupLabel(settingsContext.isScottish)]
+          ),
+          hwwRestriction: HWWDesignationCode.filter((x) => x.default).map(
+            (a) => a[GetLookupLabel(settingsContext.isScottish)]
+          ),
+          lastUpdated: {},
+          startDate: {},
+        });
+        break;
+
+      case 4:
+        break;
+
+      default:
+        setLocationChanged(false);
+        setLocationChanges(null);
+        setLocationFilter({
+          locality: null,
+          town: null,
+          island: null,
+          subLocality: null,
+          postcode: null,
+          ward: null,
+          parish: null,
+          east: 0,
+          north: 0,
+        });
+        break;
+    }
+  };
 
   /**
    * Event to handle when the cancel button is clicked.
@@ -163,7 +386,19 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
    * @param {boolean} filterChanged True if the filter data has changed; otherwise false.
    */
   const handleLocationChange = (filterData, filterChanged) => {
-    setLocationChanged(filterChanged);
+    setLocationChanged(
+      filterChanged &&
+        (filterChanged.locality ||
+          filterChanged.town ||
+          filterChanged.island ||
+          filterChanged.subLocality ||
+          filterChanged.postcode ||
+          filterChanged.ward ||
+          filterChanged.parish ||
+          filterChanged.east ||
+          filterChanged.north)
+    );
+    setLocationChanges(filterChanged);
     setLocationFilter(filterData);
 
     searchFilterContext.onSearchFilterChange({
@@ -171,7 +406,6 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
       property: propertyFilter,
       street: streetFilter,
       asd: asdFilter,
-      scope: scopeFilter,
     });
   };
 
@@ -182,7 +416,17 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
    * @param {boolean} filterChanged True if the filter data has changed; otherwise false.
    */
   const handlePropertyChange = (filterData, filterChanged) => {
-    setPropertyChanged(filterChanged);
+    setPropertyChanged(
+      filterChanged &&
+        (filterChanged.blpuLogicalStatus ||
+          filterChanged.blpuState ||
+          filterChanged.rpc ||
+          filterChanged.classification ||
+          filterChanged.lpiLogicalStatus ||
+          filterChanged.lastUpdated ||
+          filterChanged.startDate)
+    );
+    setPropertyChanges(filterChanged);
     setPropertyFilter(filterData);
 
     searchFilterContext.onSearchFilterChange({
@@ -190,7 +434,6 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
       property: filterData,
       street: streetFilter,
       asd: asdFilter,
-      scope: scopeFilter,
     });
   };
 
@@ -201,7 +444,17 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
    * @param {boolean} filterChanged True if the filter data has changed; otherwise false.
    */
   const handleStreetChange = (filterData, filterChanged) => {
-    setStreetChanged(filterChanged);
+    setStreetChanged(
+      filterChanged &&
+        (filterChanged.streetType ||
+          filterChanged.streetState ||
+          filterChanged.highwayDedicationCode ||
+          filterChanged.highwayDedicationIndicator ||
+          filterChanged.directionOfTravel ||
+          filterChanged.lastUpdated ||
+          filterChanged.startDate)
+    );
+    setStreetChanges(filterChanged);
     setStreetFilter(filterData);
 
     searchFilterContext.onSearchFilterChange({
@@ -209,7 +462,6 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
       property: propertyFilter,
       street: filterData,
       asd: asdFilter,
-      scope: scopeFilter,
     });
   };
 
@@ -220,7 +472,16 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
    * @param {boolean} filterChanged True if the filter data has changed; otherwise false.
    */
   const handleASDChange = (filterData, filterChanged) => {
-    setASDChanged(filterChanged);
+    setASDChanged(
+      filterChanged &&
+        (filterChanged.streetStatus ||
+          filterChanged.reinstatementType ||
+          filterChanged.specialDesignationType ||
+          filterChanged.hwwRestriction ||
+          filterChanged.lastUpdated ||
+          filterChanged.startDate)
+    );
+    setASDChanges(filterChanged);
     setASDFilter(filterData);
 
     searchFilterContext.onSearchFilterChange({
@@ -228,26 +489,6 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
       property: propertyFilter,
       street: streetFilter,
       asd: filterData,
-      scope: scopeFilter,
-    });
-  };
-
-  /**
-   * Event to handle when the scope filter data has changed.
-   *
-   * @param {object|null} filterData The scope filter data.
-   * @param {boolean} filterChanged True if the filter data has changed; otherwise false.
-   */
-  const handleScopeChange = (filterData, filterChanged) => {
-    setScopeChanged(filterChanged);
-    setScopeFilter(filterData);
-
-    searchFilterContext.onSearchFilterChange({
-      location: locationFilter,
-      property: propertyFilter,
-      street: streetFilter,
-      asd: asdFilter,
-      scope: filterData,
     });
   };
 
@@ -277,11 +518,6 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
         if (hasProperty) return 3;
         else return 2;
 
-      case 4: // Scope
-        if (hasProperty && hasASD) return 4;
-        else if (hasASD) return 3;
-        else return 2;
-
       default:
         return nominalIndex;
     }
@@ -297,27 +533,27 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
       sx={{
         width: "40ch",
         mt: theme.spacing(2.5),
-        pb: theme.spacing(7),
-        borderWidth: "1px",
-        borderColor: adsLightGreyB,
-        backgroundColor: grey[200],
+        border: `1px solid ${adsLightGreyB}`,
+        backgroundColor: adsOffWhite,
       }}
     >
-      <AppBar position="static" color="default">
+      <AppBar position="static" color="default" elevation={0}>
         <Tabs
           value={value}
           onChange={handleTabChange}
-          TabIndicatorProps={{ style: { background: adsBlueA } }}
-          textColor="primary"
+          TabIndicatorProps={{ style: { background: adsBlueA, height: "2px" } }}
           variant="fullWidth"
           selectionFollowsFocus
           aria-label="filter-tabs"
+          sx={tabContainerStyle}
         >
           <Tab
-            sx={{ textTransform: "none" }}
+            sx={tabStyle}
             label={
-              <Badge color="secondary" variant="dot" invisible={!locationChanged}>
-                <Typography variant="subtitle2">Location</Typography>
+              <Badge color="error" variant="dot" invisible={!locationChanged}>
+                <Typography variant="subtitle2" sx={tabLabelStyle(value === 0)}>
+                  Location
+                </Typography>
               </Badge>
             }
             style={getStyle(value === 0)}
@@ -325,10 +561,12 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
           />
           {hasProperty && (
             <Tab
-              sx={{ textTransform: "none" }}
+              sx={tabStyle}
               label={
-                <Badge color="secondary" variant="dot" invisible={!propertyChanged}>
-                  <Typography variant="subtitle2">Properties</Typography>
+                <Badge color="error" variant="dot" invisible={!propertyChanged}>
+                  <Typography variant="subtitle2" sx={tabLabelStyle(value === 1)}>
+                    Properties
+                  </Typography>
                 </Badge>
               }
               style={getStyle(value === 1)}
@@ -336,10 +574,12 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
             />
           )}
           <Tab
-            sx={{ textTransform: "none" }}
+            sx={tabStyle}
             label={
-              <Badge color="secondary" variant="dot" invisible={!streetChanged}>
-                <Typography variant="subtitle2">Streets</Typography>
+              <Badge color="error" variant="dot" invisible={!streetChanged}>
+                <Typography variant="subtitle2" sx={tabLabelStyle(value === 2)}>
+                  Streets
+                </Typography>
               </Badge>
             }
             style={getStyle(value === 2)}
@@ -347,107 +587,83 @@ function ADSFilterControl({ searchButton, onFilter, onCancel }) {
           />
           {hasASD && (
             <Tab
-              sx={{ textTransform: "none" }}
+              sx={tabStyle}
               label={
-                <Badge color="secondary" variant="dot" invisible={!asdChanged}>
-                  <Typography variant="subtitle2">ASD</Typography>
+                <Badge color="error" variant="dot" invisible={!asdChanged}>
+                  <Typography variant="subtitle2" sx={tabLabelStyle(value === 3)}>
+                    ASD
+                  </Typography>
                 </Badge>
               }
               style={getStyle(value === 3)}
               {...a11yProps(3)}
             />
           )}
-          <Tab
-            sx={{ textTransform: "none" }}
-            label={
-              <Badge color="secondary" variant="dot" invisible={!scopeChanged}>
-                <Typography variant="subtitle2">Scope</Typography>
-              </Badge>
-            }
-            style={getStyle(value === 4)}
-            {...a11yProps(4)}
-          />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        <FilterLocationTab onSearchClick={handleSearchClick} onChange={handleLocationChange} />
+        <FilterLocationTab
+          changedFlags={locationChanges}
+          selectedData={locationFilter}
+          onChange={handleLocationChange}
+        />
       </TabPanel>
       {hasProperty && (
         <TabPanel value={value} index={1}>
-          <FilterPropertiesTab onSearchClick={handleSearchClick} onChange={handlePropertyChange} />
+          <FilterPropertiesTab
+            changedFlags={propertyChanges}
+            selectedData={propertyFilter}
+            onChange={handlePropertyChange}
+          />
         </TabPanel>
       )}
       <TabPanel value={value} index={getIndexNumber(2)}>
-        <FilterStreetsTab onSearchClick={handleSearchClick} onChange={(filterData) => handleStreetChange(filterData)} />
+        <FilterStreetsTab changedFlags={streetChanges} selectedData={streetFilter} onChange={handleStreetChange} />
       </TabPanel>
       {hasASD && (
         <TabPanel value={value} index={getIndexNumber(3)}>
-          <FilterASDTab onSearchClick={handleSearchClick} onChange={(filterData) => handleASDChange(filterData)} />
+          <FilterASDTab changedFlags={asdChanges} selectedData={asdFilter} onChange={handleASDChange} />
         </TabPanel>
       )}
-      <TabPanel value={value} index={getIndexNumber(4)}>
-        <FilterScopeTab onSearchClick={handleSearchClick} onChange={(filterData) => handleScopeChange(filterData)} />
-      </TabPanel>
       <AppBar
         position="static"
-        color="default"
+        elevation={0}
         sx={{
           mt: theme.spacing(1),
+          mr: theme.spacing(1),
           top: "auto",
           bottom: 0,
+          height: 54,
+          backgroundColor: `${adsWhite}`,
+          borderTop: `1px solid ${adsLightGreyB}`,
         }}
       >
-        <Box
+        <Toolbar
+          variant="dense"
+          disableGutters
           sx={{
-            ml: "auto",
-            mr: theme.spacing(1),
+            pl: theme.spacing(1),
+            pr: theme.spacing(2),
+            pt: theme.spacing(0),
+            pb: theme.spacing(0),
           }}
         >
-          <Button
-            variant="contained"
-            sx={{
-              ml: theme.spacing(1),
-              color: adsWhite,
-              backgroundColor: adsBlueA,
-              "&:hover": {
-                backgroundColor: adsLightBlue,
-                color: adsWhite,
-              },
-            }}
-            startIcon={<SearchIcon />}
-            onClick={handleSearchClick}
-          >
-            <Typography variant="body2">{searchButton}</Typography>
+          <Button sx={whiteButtonStyle} startIcon={<RestoreIcon />} onClick={handleRestoreAllClick}>
+            <Typography variant="body2">Reset all filters</Typography>
           </Button>
-          <Button
-            sx={{
-              ml: theme.spacing(1),
-              color: adsBlueA,
-              "&:hover": {
-                backgroundColor: adsLightBlue,
-                color: adsWhite,
-              },
-            }}
-            startIcon={<RestoreIcon />}
-            onClick={handleRestoreClick}
-          >
-            <Typography variant="body2">{resetLabel}</Typography>
-          </Button>
-          <Button
-            sx={{
-              ml: theme.spacing(1),
-              color: adsBlueA,
-              "&:hover": {
-                backgroundColor: adsLightBlue,
-                color: adsWhite,
-              },
-            }}
-            startIcon={<CancelIcon />}
-            onClick={handleCancelClick}
-          >
-            <Typography variant="body2">Cancel</Typography>
-          </Button>
-        </Box>
+          <Box sx={{ flexGrow: 1 }} />
+          <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={1}>
+            <Button variant="contained" sx={blueButtonStyle} startIcon={<SearchIcon />} onClick={handleSearchClick}>
+              <Typography variant="body2">{searchButton}</Typography>
+            </Button>
+            <Button sx={whiteButtonStyle} startIcon={<RestoreIcon />} onClick={handleRestoreClick}>
+              <Typography variant="body2">{resetLabel}</Typography>
+            </Button>
+            <Button sx={whiteButtonStyle} startIcon={<CancelIcon />} onClick={handleCancelClick}>
+              <Typography variant="body2">Cancel</Typography>
+            </Button>
+          </Stack>
+        </Toolbar>
       </AppBar>
     </Box>
   );

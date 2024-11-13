@@ -52,6 +52,9 @@
 //    037   02.10.24 Sean Flook       IMANN-996 Call onEditMapObject when opening a property.
 //    038   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    039   12.11.24 Sean Flook                 Anchor the filter dialog to the filter button when displaying.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -740,7 +743,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
    * Event to handle when the filter button is clicked.
    */
   const handleFilterClick = () => {
-    setFilterAnchorEl(filterAnchorEl ? null : document.getElementById(`ads-${variant}-search`));
+    setFilterAnchorEl(filterAnchorEl ? null : document.getElementById("filter-button"));
   };
 
   /**
@@ -1625,7 +1628,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                     <ClearIcon sx={ClearSearchIconStyle(search)} />
                   </IconButton>
                   {process.env.NODE_ENV === "development" && showIcons && variant === "appBar" && (
-                    <IconButton id="filter-button" disabled onClick={handleFilterClick} aria-label="filter button">
+                    <IconButton id="filter-button" onClick={handleFilterClick} aria-label="filter button">
                       <FilterListIcon sx={ActionIconStyle()} />
                     </IconButton>
                   )}
@@ -1645,7 +1648,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
           />
         )}
       />
-      <Popper id={filterId} open={filterOpen} anchorEl={filterAnchorEl} placement="bottom-start">
+      <Popper id={filterId} open={filterOpen} anchorEl={filterAnchorEl} placement="bottom-end">
         <ADSFilterControl searchButton="Search" onFilter={handleFilterResults} onCancel={handleCancelFilter} />
       </Popper>
       <Snackbar

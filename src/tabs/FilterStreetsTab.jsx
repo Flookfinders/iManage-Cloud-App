@@ -14,86 +14,64 @@
 //    001   15.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   05.01.24 Sean Flook                 Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.2.0 changes
+//    003   12.11.24 Sean Flook                 Various changes to improve the look and functionality.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
 /* #region imports */
 
-import React, { useContext, useState, Fragment } from "react";
-import FilterContext from "../context/filterContext";
+import React, { useContext, useState, Fragment, useEffect } from "react";
+import PropTypes from "prop-types";
+
 import SettingsContext from "../context/settingsContext";
+
 import { GetLookupLabel } from "../utils/HelperUtils";
+
+import { Box, Divider, Grid } from "@mui/material";
+import ADSMultipleSelectControl from "../components/ADSMultipleSelectControl";
+import ADSFilterDateControl from "../components/ADSFilterDateControl";
+
 import StreetType from "../data/StreetType";
 import StreetState from "../data/StreetState";
 import HighwayDedicationCode from "../data/HighwayDedicationCode";
 import HighwayDedicationIndicator from "../data/HighwayDedicationIndicator";
 import ESUDirectionCode from "../data/ESUDirectionCode";
-import { Divider, Grid } from "@mui/material";
-import ADSMultipleSelectControl from "../components/ADSMultipleSelectControl";
-import ADSFilterDateControl from "../components/ADSFilterDateControl";
+
 import { useTheme } from "@mui/styles";
+
+FilterStreetsTab.propTypes = {
+  changedFlags: PropTypes.object.isRequired,
+  selectedData: PropTypes.object.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
 
 /* #endregion imports */
 
-function FilterStreetsTab(props) {
+function FilterStreetsTab({ changedFlags, selectedData, onChange }) {
   const theme = useTheme();
 
-  const searchFilterContext = useContext(FilterContext);
   const settingsContext = useContext(SettingsContext);
 
-  const onChange = props.onChange;
-  // const onSearchClick = props.onSearchClick;
-
   const [streetType, setStreetType] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.street &&
-      searchFilterContext.currentSearchFilter.street.streetType
-      ? searchFilterContext.currentSearchFilter.street.streetType
-      : StreetType.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
+    StreetType.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
   );
   const [streetState, setStreetState] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.street &&
-      searchFilterContext.currentSearchFilter.street.streetState
-      ? searchFilterContext.currentSearchFilter.street.streetState
-      : StreetState.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
+    StreetState.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
   );
   const [highwayDedicationCode, setHighwayDedicationCode] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.street &&
-      searchFilterContext.currentSearchFilter.street.highwayDedicationCode
-      ? searchFilterContext.currentSearchFilter.street.highwayDedicationCode
-      : HighwayDedicationCode.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
+    HighwayDedicationCode.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
   );
   const [highwayDedicationIndicator, setHighwayDedicationIndicator] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.street &&
-      searchFilterContext.currentSearchFilter.street.highwayDedicationIndicator
-      ? searchFilterContext.currentSearchFilter.street.highwayDedicationIndicator
-      : HighwayDedicationIndicator.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
+    HighwayDedicationIndicator.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
   );
   const [directionOfTravel, setDirectionOfTravel] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.street &&
-      searchFilterContext.currentSearchFilter.street.directionOfTravel
-      ? searchFilterContext.currentSearchFilter.street.directionOfTravel
-      : ESUDirectionCode.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
+    ESUDirectionCode.filter((x) => x.default).map((a) => a[GetLookupLabel(settingsContext.isScottish)])
   );
-  const [lastUpdated, setLastUpdated] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.street &&
-      searchFilterContext.currentSearchFilter.street.lastUpdated
-      ? searchFilterContext.currentSearchFilter.street.lastUpdated
-      : {}
-  );
-  const [startDate, setStartDate] = useState(
-    searchFilterContext.currentSearchFilter &&
-      searchFilterContext.currentSearchFilter.street &&
-      searchFilterContext.currentSearchFilter.street.startDate
-      ? searchFilterContext.currentSearchFilter.street.startDate
-      : {}
-  );
+  const [lastUpdated, setLastUpdated] = useState({});
+  const [startDate, setStartDate] = useState({});
 
   const [streetTypeChanged, setStreetTypeChanged] = useState(false);
   const [streetStateChanged, setStreetStateChanged] = useState(false);
@@ -130,6 +108,9 @@ function FilterStreetsTab(props) {
    * @param {Array} newValue The list of street types.
    */
   const handleStreetTypeChange = (newValue) => {
+    const idSortedData = StreetType.filter((x) => newValue.includes(x[`${GetLookupLabel(settingsContext.isScottish)}`]))
+      .sort((a, b) => a.id - b.id)
+      .map((x) => x[`${GetLookupLabel(settingsContext.isScottish)}`]);
     const newValueSorted = newValue.slice().sort();
     const filterChanged = !(
       defaultStreetType.length === newValueSorted.length &&
@@ -138,13 +119,10 @@ function FilterStreetsTab(props) {
       })
     );
 
-    setStreetType(newValue);
-    setStreetTypeChanged(filterChanged);
-
     if (onChange) {
       onChange(
         {
-          streetType: newValue,
+          streetType: idSortedData,
           streetState: streetState,
           highwayDedicationCode: highwayDedicationCode,
           highwayDedicationIndicator: highwayDedicationIndicator,
@@ -152,13 +130,15 @@ function FilterStreetsTab(props) {
           lastUpdated: lastUpdated,
           startDate: startDate,
         },
-        filterChanged ||
-          streetStateChanged ||
-          highwayDedicationCodeChanged ||
-          highwayDedicationIndicatorChanged ||
-          directionOfTravelChanged ||
-          lastUpdatedChanged ||
-          startDateChanged
+        {
+          streetType: filterChanged,
+          streetState: streetStateChanged,
+          highwayDedicationCode: highwayDedicationCodeChanged,
+          highwayDedicationIndicator: highwayDedicationIndicatorChanged,
+          directionOfTravel: directionOfTravelChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
@@ -169,6 +149,11 @@ function FilterStreetsTab(props) {
    * @param {Array} newValue The list of street states.
    */
   const handleStreetStateChange = (newValue) => {
+    const idSortedData = StreetState.filter((x) =>
+      newValue.includes(x[`${GetLookupLabel(settingsContext.isScottish)}`])
+    )
+      .sort((a, b) => a.id - b.id)
+      .map((x) => x[`${GetLookupLabel(settingsContext.isScottish)}`]);
     const newValueSorted = newValue.slice().sort();
     const filterChanged = !(
       defaultStreetState.length === newValueSorted.length &&
@@ -177,27 +162,26 @@ function FilterStreetsTab(props) {
       })
     );
 
-    setStreetState(newValue);
-    setStreetStateChanged(filterChanged);
-
     if (onChange) {
       onChange(
         {
           streetType: streetType,
-          streetState: newValue,
+          streetState: idSortedData,
           highwayDedicationCode: highwayDedicationCode,
           highwayDedicationIndicator: highwayDedicationIndicator,
           directionOfTravel: directionOfTravel,
           lastUpdated: lastUpdated,
           startDate: startDate,
         },
-        streetTypeChanged ||
-          filterChanged ||
-          highwayDedicationCodeChanged ||
-          highwayDedicationIndicatorChanged ||
-          directionOfTravelChanged ||
-          lastUpdatedChanged ||
-          startDateChanged
+        {
+          streetType: streetTypeChanged,
+          streetState: filterChanged,
+          highwayDedicationCode: highwayDedicationCodeChanged,
+          highwayDedicationIndicator: highwayDedicationIndicatorChanged,
+          directionOfTravel: directionOfTravelChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
@@ -208,6 +192,11 @@ function FilterStreetsTab(props) {
    * @param {Array} newValue The list of highway dedication codes.
    */
   const handleHighwayDedicationCodeChange = (newValue) => {
+    const idSortedData = HighwayDedicationCode.filter((x) =>
+      newValue.includes(x[`${GetLookupLabel(settingsContext.isScottish)}`])
+    )
+      .sort((a, b) => a.id - b.id)
+      .map((x) => x[`${GetLookupLabel(settingsContext.isScottish)}`]);
     const newValueSorted = newValue.slice().sort();
     const filterChanged = !(
       defaultHighwayDedicationCode.length === newValueSorted.length &&
@@ -216,27 +205,26 @@ function FilterStreetsTab(props) {
       })
     );
 
-    setHighwayDedicationCode(newValue);
-    setHighwayDedicationCodeChanged(filterChanged);
-
     if (onChange) {
       onChange(
         {
           streetType: streetType,
           streetState: streetState,
-          highwayDedicationCode: newValue,
+          highwayDedicationCode: idSortedData,
           highwayDedicationIndicator: highwayDedicationIndicator,
           directionOfTravel: directionOfTravel,
           lastUpdated: lastUpdated,
           startDate: startDate,
         },
-        streetTypeChanged ||
-          streetStateChanged ||
-          filterChanged ||
-          highwayDedicationIndicatorChanged ||
-          directionOfTravelChanged ||
-          lastUpdatedChanged ||
-          startDateChanged
+        {
+          streetType: streetTypeChanged,
+          streetState: streetStateChanged,
+          highwayDedicationCode: filterChanged,
+          highwayDedicationIndicator: highwayDedicationIndicatorChanged,
+          directionOfTravel: directionOfTravelChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
@@ -247,6 +235,11 @@ function FilterStreetsTab(props) {
    * @param {Array} newValue The list of highway dedication indicators.
    */
   const handleHighwayDedicationIndicatorChange = (newValue) => {
+    const idSortedData = HighwayDedicationIndicator.filter((x) =>
+      newValue.includes(x[`${GetLookupLabel(settingsContext.isScottish)}`])
+    )
+      .sort((a, b) => a.id - b.id)
+      .map((x) => x[`${GetLookupLabel(settingsContext.isScottish)}`]);
     const newValueSorted = newValue.slice().sort();
     const filterChanged = !(
       defaultHighwayDedicationIndicator.length === newValueSorted.length &&
@@ -255,27 +248,26 @@ function FilterStreetsTab(props) {
       })
     );
 
-    setHighwayDedicationIndicator(newValue);
-    setHighwayDedicationIndicatorChanged(filterChanged);
-
     if (onChange) {
       onChange(
         {
           streetType: streetType,
           streetState: streetState,
           highwayDedicationCode: highwayDedicationCode,
-          highwayDedicationIndicator: newValue,
+          highwayDedicationIndicator: idSortedData,
           directionOfTravel: directionOfTravel,
           lastUpdated: lastUpdated,
           startDate: startDate,
         },
-        streetTypeChanged ||
-          streetStateChanged ||
-          highwayDedicationCodeChanged ||
-          filterChanged ||
-          directionOfTravelChanged ||
-          lastUpdatedChanged ||
-          startDateChanged
+        {
+          streetType: streetTypeChanged,
+          streetState: streetStateChanged,
+          highwayDedicationCode: highwayDedicationCodeChanged,
+          highwayDedicationIndicator: filterChanged,
+          directionOfTravel: directionOfTravelChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
@@ -286,6 +278,11 @@ function FilterStreetsTab(props) {
    * @param {Array} newValue The list of directions of travel.
    */
   const handleDirectionOfTravelChange = (newValue) => {
+    const idSortedData = ESUDirectionCode.filter((x) =>
+      newValue.includes(x[`${GetLookupLabel(settingsContext.isScottish)}`])
+    )
+      .sort((a, b) => a.id - b.id)
+      .map((x) => x[`${GetLookupLabel(settingsContext.isScottish)}`]);
     const newValueSorted = newValue.slice().sort();
     const filterChanged = !(
       defaultDirectionOfTravel.length === newValueSorted.length &&
@@ -294,9 +291,6 @@ function FilterStreetsTab(props) {
       })
     );
 
-    setDirectionOfTravel(newValue);
-    setDirectionOfTravelChanged(filterChanged);
-
     if (onChange) {
       onChange(
         {
@@ -304,17 +298,19 @@ function FilterStreetsTab(props) {
           streetState: streetState,
           highwayDedicationCode: highwayDedicationCode,
           highwayDedicationIndicator: highwayDedicationIndicator,
-          directionOfTravel: newValue,
+          directionOfTravel: idSortedData,
           lastUpdated: lastUpdated,
           startDate: startDate,
         },
-        streetTypeChanged ||
-          streetStateChanged ||
-          highwayDedicationCodeChanged ||
-          highwayDedicationIndicatorChanged ||
-          filterChanged ||
-          lastUpdatedChanged ||
-          startDateChanged
+        {
+          streetType: streetTypeChanged,
+          streetState: streetStateChanged,
+          highwayDedicationCode: highwayDedicationCodeChanged,
+          highwayDedicationIndicator: highwayDedicationIndicatorChanged,
+          directionOfTravel: filterChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
@@ -325,10 +321,7 @@ function FilterStreetsTab(props) {
    * @param {object} newValue The last updated object.
    */
   const handleLastUpdatedChange = (newValue) => {
-    const filterChanged = newValue && newValue.length > 0;
-
-    setLastUpdated(newValue);
-    setLastUpdatedChanged(filterChanged);
+    const filterChanged = !!newValue;
 
     if (onChange) {
       onChange(
@@ -341,13 +334,15 @@ function FilterStreetsTab(props) {
           lastUpdated: newValue,
           startDate: startDate,
         },
-        streetTypeChanged ||
-          streetStateChanged ||
-          highwayDedicationCodeChanged ||
-          highwayDedicationIndicatorChanged ||
-          directionOfTravelChanged ||
-          filterChanged ||
-          startDateChanged
+        {
+          streetType: streetTypeChanged,
+          streetState: streetStateChanged,
+          highwayDedicationCode: highwayDedicationCodeChanged,
+          highwayDedicationIndicator: highwayDedicationIndicatorChanged,
+          directionOfTravel: directionOfTravelChanged,
+          lastUpdated: filterChanged,
+          startDate: startDateChanged,
+        }
       );
     }
   };
@@ -358,10 +353,7 @@ function FilterStreetsTab(props) {
    * @param {object} newValue The start date object.
    */
   const handleStartDateChange = (newValue) => {
-    const filterChanged = newValue && newValue.length > 0;
-
-    setStartDate(newValue);
-    setStartDateChanged(filterChanged);
+    const filterChanged = !!newValue;
 
     if (onChange) {
       onChange(
@@ -374,19 +366,53 @@ function FilterStreetsTab(props) {
           lastUpdated: lastUpdated,
           startDate: newValue,
         },
-        streetTypeChanged ||
-          streetStateChanged ||
-          highwayDedicationCodeChanged ||
-          highwayDedicationIndicatorChanged ||
-          directionOfTravelChanged ||
-          lastUpdatedChanged ||
-          filterChanged
+        {
+          streetType: streetTypeChanged,
+          streetState: streetStateChanged,
+          highwayDedicationCode: highwayDedicationCodeChanged,
+          highwayDedicationIndicator: highwayDedicationIndicatorChanged,
+          directionOfTravel: directionOfTravelChanged,
+          lastUpdated: lastUpdatedChanged,
+          startDate: filterChanged,
+        }
       );
     }
   };
 
+  useEffect(() => {
+    if (changedFlags) {
+      setStreetTypeChanged(changedFlags.streetType);
+      setStreetStateChanged(changedFlags.streetState);
+      setHighwayDedicationCodeChanged(changedFlags.highwayDedicationCode);
+      setHighwayDedicationIndicatorChanged(changedFlags.highwayDedicationIndicator);
+      setDirectionOfTravelChanged(changedFlags.directionOfTravel);
+      setLastUpdatedChanged(changedFlags.lastUpdated);
+      setStartDateChanged(changedFlags.startDate);
+    } else {
+      setStreetTypeChanged(false);
+      setStreetStateChanged(false);
+      setHighwayDedicationCodeChanged(false);
+      setHighwayDedicationIndicatorChanged(false);
+      setDirectionOfTravelChanged(false);
+      setLastUpdatedChanged(false);
+      setStartDateChanged(false);
+    }
+  }, [changedFlags]);
+
+  useEffect(() => {
+    if (selectedData) {
+      setStreetType(selectedData.streetType);
+      setStreetState(selectedData.streetState);
+      setHighwayDedicationCode(selectedData.highwayDedicationCode);
+      setHighwayDedicationIndicator(selectedData.highwayDedicationIndicator);
+      setDirectionOfTravel(selectedData.directionOfTravel);
+      setLastUpdated(selectedData.lastUpdated);
+      setStartDate(selectedData.startDate);
+    }
+  }, [selectedData]);
+
   return (
-    <Grid container direction="row" justifyContent="center" alignItems="center">
+    <Box>
       <ADSMultipleSelectControl
         label="Type"
         isEditable
@@ -420,51 +446,59 @@ function FilterStreetsTab(props) {
               }}
             />
           </Grid>
-          <ADSMultipleSelectControl
-            label="Highway dedication type"
-            isEditable
-            indicateChange={highwayDedicationCodeChanged}
-            lookupData={HighwayDedicationCode}
-            lookupId="id"
-            lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-            lookupColour="colour"
-            lookupDefault="default"
-            value={highwayDedicationCode}
-            onChange={handleHighwayDedicationCodeChange}
-          />
-          <ADSMultipleSelectControl
-            label="Highway dedication indicators"
-            isEditable
-            indicateChange={highwayDedicationIndicatorChanged}
-            lookupData={HighwayDedicationIndicator}
-            lookupId="id"
-            lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-            lookupColour="colour"
-            lookupDefault="default"
-            lookupIcon="avatar_icon"
-            value={highwayDedicationIndicator}
-            onChange={handleHighwayDedicationIndicatorChange}
-          />
-          <Grid item xs={12}>
-            <Divider
-              sx={{
-                mt: theme.spacing(1),
-              }}
+          {!settingsContext.isScottish && (
+            <ADSMultipleSelectControl
+              label="Highway dedication type"
+              isEditable
+              indicateChange={highwayDedicationCodeChanged}
+              lookupData={HighwayDedicationCode}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              lookupDefault="default"
+              value={highwayDedicationCode}
+              onChange={handleHighwayDedicationCodeChange}
             />
-          </Grid>
-          <ADSMultipleSelectControl
-            label="Direction of traffic"
-            isEditable
-            indicateChange={directionOfTravelChanged}
-            lookupData={ESUDirectionCode}
-            lookupId="id"
-            lookupLabel={GetLookupLabel(settingsContext.isScottish)}
-            lookupColour="colour"
-            lookupDefault="default"
-            lookupIcon="avatar_icon"
-            value={directionOfTravel}
-            onChange={handleDirectionOfTravelChange}
-          />
+          )}
+          {!settingsContext.isScottish && (
+            <ADSMultipleSelectControl
+              label="Highway dedication indicators"
+              isEditable
+              indicateChange={highwayDedicationIndicatorChanged}
+              lookupData={HighwayDedicationIndicator}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              lookupDefault="default"
+              lookupIcon="avatar_icon"
+              value={highwayDedicationIndicator}
+              onChange={handleHighwayDedicationIndicatorChange}
+            />
+          )}
+          {!settingsContext.isScottish && (
+            <Grid item xs={12}>
+              <Divider
+                sx={{
+                  mt: theme.spacing(1),
+                }}
+              />
+            </Grid>
+          )}
+          {!settingsContext.isScottish && (
+            <ADSMultipleSelectControl
+              label="Direction of traffic"
+              isEditable
+              indicateChange={directionOfTravelChanged}
+              lookupData={ESUDirectionCode}
+              lookupId="id"
+              lookupLabel={GetLookupLabel(settingsContext.isScottish)}
+              lookupColour="colour"
+              lookupDefault="default"
+              lookupIcon="avatar_icon"
+              value={directionOfTravel}
+              onChange={handleDirectionOfTravelChange}
+            />
+          )}
         </Fragment>
       )}
       <Grid item xs={12}>
@@ -494,7 +528,7 @@ function FilterStreetsTab(props) {
         date2={startDate.date2}
         onChange={handleStartDateChange}
       />
-    </Grid>
+    </Box>
   );
 }
 
