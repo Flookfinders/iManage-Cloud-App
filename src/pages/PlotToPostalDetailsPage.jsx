@@ -13,6 +13,9 @@
 //#region Version 1.0.1.0 changes
 //    001   15.10.24 Sean Flook      IMANN-1012 Initial Revision.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    002   14.11.24 Sean Flook      IMANN-1012 Call the correct method to display the check icon.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -38,7 +41,7 @@ import { Box, Stack } from "@mui/system";
 
 import EditTemplateDialog from "../dialogs/EditTemplateDialog";
 
-import { DateString, GetCheck, StringToTitleCase } from "../utils/HelperUtils";
+import { DateString, getCheckIcon, StringToTitleCase } from "../utils/HelperUtils";
 import {
   getBlpuStatus,
   getBlpuRpc,
@@ -820,7 +823,7 @@ function PlotToPostalDetailsPage({ data, errors, onDataChanged, onErrorChanged }
                       <Grid item xs={1} />
                       <Grid item xs={7}>
                         <Typography variant="body2" sx={getWizardValueStyle(false)}>
-                          {GetCheck(createGaelic)}
+                          {getCheckIcon(createGaelic)}
                         </Typography>
                       </Grid>
                     </>

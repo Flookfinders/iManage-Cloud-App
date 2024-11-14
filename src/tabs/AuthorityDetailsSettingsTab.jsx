@@ -27,6 +27,9 @@
 //#region Version 1.0.1.0 changes
 //    013   02.10.24 Sean Flook       IMANN-997 Removed display language.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    014   14.11.24 Sean Flook      IMANN-1012 Use new getCheckIcon method.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -41,12 +44,10 @@ import { Box, Stack } from "@mui/system";
 import EditAuthorityDetailsDialog from "../dialogs/EditAuthorityDetailsDialog";
 
 import { GetAuthorityDetailsUrl } from "../configuration/ADSConfig";
-import { getAuthorityText } from "../utils/HelperUtils";
+import { getAuthorityText, getCheckIcon } from "../utils/HelperUtils";
 
 import EditIcon from "@mui/icons-material/Edit";
-import DoneIcon from "@mui/icons-material/Done";
 
-import { adsLightBlue } from "../utils/ADSColours";
 import {
   ActionIconStyle,
   settingsCardStyle,
@@ -103,17 +104,6 @@ function AuthorityDetailsSettingsTab() {
   const doEditAuthority = () => {
     setEditData(data);
     setShowEditDialog(true);
-  };
-
-  /**
-   * Method to get the check icon if required.
-   *
-   * @param {boolean} value True if a check is required; otherwise false.
-   * @returns {JSX.Element|null} The check icon.
-   */
-  const getCheck = (value) => {
-    if (value) return <DoneIcon fontSize="small" sx={{ color: adsLightBlue }} />;
-    else return null;
   };
 
   /**
@@ -318,13 +308,13 @@ function AuthorityDetailsSettingsTab() {
                       <Typography variant="body2">Create street BLPU</Typography>
                     </Grid>
                     <Grid item xs={9}>
-                      {getCheck(settingsContext.isScottish ? true : createStreetBlpu)}
+                      {getCheckIcon(settingsContext.isScottish ? true : createStreetBlpu)}
                     </Grid>
                     <Grid item xs={3}>
                       <Typography variant="body2">Address fields uppercase</Typography>
                     </Grid>
                     <Grid item xs={9}>
-                      {getCheck(uppercase)}
+                      {getCheckIcon(uppercase)}
                     </Grid>
                   </Grid>
                 </CardContent>

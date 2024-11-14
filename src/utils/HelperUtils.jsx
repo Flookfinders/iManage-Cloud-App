@@ -70,6 +70,7 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
 //    055   14.11.24 Sean Flook      IMANN-1049 Look for the correct character in GetUserName.
+//    056   14.11.24 Sean Flook      IMANN-1012 Added getCheckIcon.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -127,7 +128,9 @@ import LPILogicalStatus from "../data/LPILogicalStatus";
 import DETRCodes from "../data/DETRCodes";
 
 import { Avatar, Typography, Tooltip, Divider, Stack } from "@mui/material";
+
 import CheckIcon from "@mui/icons-material/Check";
+import DoneIcon from "@mui/icons-material/Done";
 
 import {
   adsGreenA,
@@ -138,6 +141,7 @@ import {
   adsOrange,
   adsDarkPink,
   adsRed,
+  adsLightBlue,
 } from "./ADSColours";
 import { tooltipStyle } from "./ADSStyles";
 
@@ -1332,6 +1336,17 @@ export function GetCheck(checkId, currentLookups, method, isScottish, showDebugM
 
   return currentCheck;
 }
+
+/**
+ * Method to get the check icon if required.
+ *
+ * @param {boolean} value True if a check is required; otherwise false.
+ * @returns {JSX.Element|null} The check icon.
+ */
+export const getCheckIcon = (value) => {
+  if (value) return <DoneIcon fontSize="small" sx={{ color: adsLightBlue }} />;
+  else return null;
+};
 
 /**
  * Function to determine if a check should be included in the checks done on the data

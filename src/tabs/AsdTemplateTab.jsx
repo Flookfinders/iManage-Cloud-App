@@ -29,9 +29,12 @@
 //    016   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    017   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.1.0 changes
 //    018   01.10.24 Sean Flook       IMANN-665 Changed Designation to Type for HWW.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    019   14.11.24 Sean Flook      IMANN-1012 Use new getCheckIcon method.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -48,7 +51,7 @@ import EditTemplateDialog from "../dialogs/EditTemplateDialog";
 
 import { GetStreetTemplateUrl } from "../configuration/ADSConfig";
 
-import { StringToTitleCase } from "../utils/HelperUtils";
+import { getCheckIcon, StringToTitleCase } from "../utils/HelperUtils";
 
 import RoadStatusCode from "../data/RoadStatusCode";
 import InterestType from "../data/InterestType";
@@ -69,9 +72,7 @@ import SkateboardingIcon from "@mui/icons-material/Skateboarding";
 import DirectionsBikeIcon from "@mui/icons-material/DirectionsBike";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import { EquestrianIcon } from "../utils/ADSIcons";
-import DoneIcon from "@mui/icons-material/Done";
 
-import { adsLightBlue } from "../utils/ADSColours";
 import {
   ActionIconStyle,
   settingsCardStyle,
@@ -425,17 +426,6 @@ function AsdTemplateTab() {
     const rec = PRoWStatusCode.find((x) => x.id === value);
 
     if (rec) return rec.gpText;
-    else return null;
-  };
-
-  /**
-   * Method to determine if a check needs to be displayed or not.
-   *
-   * @param {boolean} value True if the check icon is required; otherwise false.
-   * @returns {JSX.Element|null} The check icon.
-   */
-  const getCheck = (value) => {
-    if (value) return <DoneIcon fontSize="small" sx={{ color: adsLightBlue }} />;
     else return null;
   };
 
@@ -1406,13 +1396,13 @@ function AsdTemplateTab() {
                         <Typography variant="body2">Promoted route</Typography>
                       </Grid>
                       <Grid item xs={9}>
-                        {getCheck(prowPromotedRoute)}
+                        {getCheckIcon(prowPromotedRoute)}
                       </Grid>
                       <Grid item xs={3}>
                         <Typography variant="body2">Accessible route</Typography>
                       </Grid>
                       <Grid item xs={9}>
-                        {getCheck(prowAccessibleRoute)}
+                        {getCheckIcon(prowAccessibleRoute)}
                       </Grid>
                       <Grid item xs={3}>
                         <Typography variant="body2">Organisation</Typography>
