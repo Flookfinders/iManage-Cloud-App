@@ -13,6 +13,9 @@
 //#region Version 1.0.1.0 changes
 //    001   31.10.24 Sean Flook      IMANN-1012 Initial Revision.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    002   14.11.24 Sean Flook      IMANN-1039 Added failsCheck2400108.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -747,4 +750,14 @@ export const failsCheck2400105 = (text) => {
  */
 export const failsCheck2400107 = (paoText, saoText) => {
   return paoText && paoText.toLowerCase() === "street record" && saoText;
+};
+
+/**
+ * Check 2400108 - You must enter a street.
+ *
+ * @param {Number|Null} usrn The LPI SAO text
+ * @returns {Boolean} True if the check fails; otherwise false.
+ */
+export const failsCheck2400108 = (usrn) => {
+  return !usrn;
 };
