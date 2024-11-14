@@ -15,6 +15,7 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
 //    002   13.11.24 Sean Flook      IMANN-1012 Use the correct validation.
+//    003   14.11.24 Sean Flook      IMANN-1012 Only create the gaelic record if required.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1048,11 +1049,9 @@ function PlotToPostalAddressesPage({
                   altLangPostTownRef: currentAddress.current.altLangPostTownRef,
                   addressUpdated: false,
                 };
-              } else if (settingsContext.isScottish) {
+              } else if (settingsContext.isScottish && createGaelicRecords) {
                 const gaeLpi = propertyData.lpis.filter((x) => x.language === "GAE");
                 if (gaeLpi) {
-                  if (onCreateGaelicChanged) onCreateGaelicChanged(true);
-                  else setCreateGaelicRecords(true);
                   currentAddress.current = {
                     id: id,
                     uprn: currentAddress.current.uprn,

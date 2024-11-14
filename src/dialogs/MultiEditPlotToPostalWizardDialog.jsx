@@ -15,6 +15,7 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
 //    002   13.11.24 Sean Flook      IMANN-1012 Use the correct validation.
+//    003   14.11.24 Sean Flook      IMANN-1012 Only set the alt fields if required for Scottish authorities.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -871,14 +872,18 @@ function MultiEditPlotToPostalWizardDialog({ propertyUprns, isOpen, onClose }) {
                     officialAddress: lpiData.officialAddress,
                     postallyAddressable: lpiData.postallyAddressable,
                     startDate: lpiData.startDate,
-                    altLangLanguage: settingsContext.isWelsh ? "CYM" : settingsContext.isScottish ? "GAE" : null,
+                    altLangLanguage: settingsContext.isWelsh
+                      ? "CYM"
+                      : settingsContext.isScottish && otherData.createGaelic
+                      ? "GAE"
+                      : null,
                     altLangSaoStartSuffix:
                       idx === 0
-                        ? settingsContext.isWelsh
+                        ? settingsContext.isWelsh && cymLpi && cymLpi.length > 0
                           ? cymLpi[0].saoStartSuffix
                             ? cymLpi[0].saoStartSuffix
                             : null
-                          : settingsContext.isScottish
+                          : settingsContext.isScottish && otherData.createGaelic && gaeLpi && gaeLpi.length > 0
                           ? gaeLpi[0].saoStartSuffix
                             ? gaeLpi[0].saoStartSuffix
                             : null
@@ -886,11 +891,11 @@ function MultiEditPlotToPostalWizardDialog({ propertyUprns, isOpen, onClose }) {
                         : x.altLangSaoStartSuffix,
                     altLangSaoEndSuffix:
                       idx === 0
-                        ? settingsContext.isWelsh
+                        ? settingsContext.isWelsh && cymLpi && cymLpi.length > 0
                           ? cymLpi[0].saoEndSuffix
                             ? cymLpi[0].saoEndSuffix
                             : null
-                          : settingsContext.isScottish
+                          : settingsContext.isScottish && otherData.createGaelic && gaeLpi && gaeLpi.length > 0
                           ? gaeLpi[0].saoEndSuffix
                             ? gaeLpi[0].saoEndSuffix
                             : null
@@ -898,11 +903,11 @@ function MultiEditPlotToPostalWizardDialog({ propertyUprns, isOpen, onClose }) {
                         : x.altLangSaoEndSuffix,
                     altLangSaoText:
                       idx === 0
-                        ? settingsContext.isWelsh
+                        ? settingsContext.isWelsh && cymLpi && cymLpi.length > 0
                           ? cymLpi[0].saoText
                             ? cymLpi[0].saoText
                             : null
-                          : settingsContext.isScottish
+                          : settingsContext.isScottish && otherData.createGaelic && gaeLpi && gaeLpi.length > 0
                           ? gaeLpi[0].saoText
                             ? gaeLpi[0].saoText
                             : null
@@ -910,11 +915,11 @@ function MultiEditPlotToPostalWizardDialog({ propertyUprns, isOpen, onClose }) {
                         : x.altLangSaoText,
                     altLangPaoStartSuffix:
                       idx === 0
-                        ? settingsContext.isWelsh
+                        ? settingsContext.isWelsh && cymLpi && cymLpi.length > 0
                           ? cymLpi[0].paoStartSuffix
                             ? cymLpi[0].paoStartSuffix
                             : null
-                          : settingsContext.isScottish
+                          : settingsContext.isScottish && otherData.createGaelic && gaeLpi && gaeLpi.length > 0
                           ? gaeLpi[0].paoStartSuffix
                             ? gaeLpi[0].paoStartSuffix
                             : null
@@ -922,11 +927,11 @@ function MultiEditPlotToPostalWizardDialog({ propertyUprns, isOpen, onClose }) {
                         : x.altLangPaoStartSuffix,
                     altLangPaoEndSuffix:
                       idx === 0
-                        ? settingsContext.isWelsh
+                        ? settingsContext.isWelsh && cymLpi && cymLpi.length > 0
                           ? cymLpi[0].paoEndSuffix
                             ? cymLpi[0].paoEndSuffix
                             : null
-                          : settingsContext.isScottish
+                          : settingsContext.isScottish && otherData.createGaelic && gaeLpi && gaeLpi.length > 0
                           ? gaeLpi[0].paoEndSuffix
                             ? gaeLpi[0].paoEndSuffix
                             : null
@@ -934,11 +939,11 @@ function MultiEditPlotToPostalWizardDialog({ propertyUprns, isOpen, onClose }) {
                         : x.altLangPaoEndSuffix,
                     altLangPaoText:
                       idx === 0
-                        ? settingsContext.isWelsh
+                        ? settingsContext.isWelsh && cymLpi && cymLpi.length > 0
                           ? cymLpi[0].paoText
                             ? cymLpi[0].paoText
                             : null
-                          : settingsContext.isScottish
+                          : settingsContext.isScottish && otherData.createGaelic && gaeLpi && gaeLpi.length > 0
                           ? gaeLpi[0].paoText
                             ? gaeLpi[0].paoText
                             : null
