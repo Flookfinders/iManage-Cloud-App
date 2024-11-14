@@ -13,6 +13,9 @@
 //#region Version 1.0.1.0 changes
 //    001   15.10.24 Sean Flook      IMANN-1012 Initial Revision.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    002   13.11.24 Sean Flook      IMANN-1012 Use the correct validation.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -46,7 +49,7 @@ import {
   GetPropertyMapData,
   GetTempAddress,
 } from "../utils/PropertyUtils";
-// import { ValidatePlotToPostalAddress } from "../utils/WizardValidation";
+import { ValidatePlotToPostalAddress } from "../utils/WizardValidation";
 
 import OfficialAddress from "./../data/OfficialAddress";
 import PostallyAddressable from "./../data/PostallyAddressable";
@@ -870,14 +873,13 @@ function PlotToPostalAddressesPage({
         (value === 1 && oldAddress.altLangPaoText !== paoText),
     };
 
-    const validationErrors = [];
-    // const validationErrors = ValidatePlotToPostalAddress(
-    //   currentAddress.current,
-    //   lookupContext.currentLookups,
-    //   settingsContext.isScottish,
-    //   settingsContext.isWelsh,
-    //   settingsContext.isWelsh || (settingsContext.isScottish && createGaelicRecords)
-    // );
+    const validationErrors = ValidatePlotToPostalAddress(
+      currentAddress.current,
+      lookupContext.currentLookups,
+      settingsContext.isScottish,
+      settingsContext.isWelsh,
+      settingsContext.isWelsh || (settingsContext.isScottish && createGaelicRecords)
+    );
 
     haveErrors.current = validationErrors && validationErrors.length > 0;
 

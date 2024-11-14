@@ -56,6 +56,9 @@
 //    040   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //    041   31.10.24 Sean Flook      IMANN-1012 Added the plot to postal wizard.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    042   13.11.24 Sean Flook      IMANN-1012 Made the plot to postal wizard menu item visible.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -88,6 +91,7 @@ import MultiEditAddCrossReferenceDialog from "../dialogs/MultiEditAddCrossRefere
 import MultiEditRemoveCrossReferenceDialog from "../dialogs/MultiEditRemoveCrossReferenceDialog";
 import MultiEditAddClassificationDialog from "../dialogs/MultiEditAddClassificationDialog";
 import MoveBLPUDialog from "../dialogs/MoveBLPUDialog";
+import MultiEditPlotToPostalWizardDialog from "../dialogs/MultiEditPlotToPostalWizardDialog";
 
 import { copyTextToClipboard, GetWktCoordinates, openInStreetView } from "../utils/HelperUtils";
 import { GetStreetMapData, getStreetSearchData } from "../utils/StreetUtils";
@@ -108,7 +112,6 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { adsBlueA, adsWhite, adsLightGreyA50 } from "../utils/ADSColours";
 import { menuStyle, menuItemStyle } from "../utils/ADSStyles";
 import MakeChildDialog from "../dialogs/MakeChildDialog";
-import MultiEditPlotToPostalWizardDialog from "../dialogs/MultiEditPlotToPostalWizardDialog";
 
 ADSSelectionControl.propTypes = {
   selectionCount: PropTypes.number.isRequired,
@@ -1898,11 +1901,9 @@ function ADSSelectionControl({
                         <MenuItem dense onClick={handleEditAddressFieldsClick} sx={menuItemStyle(false)}>
                           <Typography variant="inherit">Edit address fields</Typography>
                         </MenuItem>
-                        {process.env.NODE_ENV === "development" && (
-                          <MenuItem dense onClick={handlePlotToPostalWizardClick} sx={menuItemStyle(false)}>
-                            <Typography variant="inherit">Plot to postal wizard</Typography>
-                          </MenuItem>
-                        )}
+                        <MenuItem dense onClick={handlePlotToPostalWizardClick} sx={menuItemStyle(false)}>
+                          <Typography variant="inherit">Plot to postal wizard</Typography>
+                        </MenuItem>
                       </NestedMenuItem>
                     )}
                     {userCanEditProperty && (

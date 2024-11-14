@@ -85,6 +85,9 @@
 //    070   05.11.24 Sean Flook       IMANN-904 Correctly handle clearing the geometry in HandleSetLineGeometry.
 //    071   06.11.24 Sean Flook      IMANN-1047 Undo changes done for IMANN-904.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    066   13.11.24 Sean Flook      IMANN-1012 Updated the version.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -168,7 +171,7 @@ function App() {
 
   const currentMapExtent = useRef(null);
 
-  const guiVersion = "1.0.1.0";
+  const guiVersion = "1.0.2.0";
 
   const onlinePolling = { enabled: true, url: "https://ipv4.icanhazip.com", interval: 5000, timeout: 5000 };
   const offlinePolling = { enabled: true, url: "https://ipv4.icanhazip.com", interval: 5000, timeout: 5000 };

@@ -13,6 +13,9 @@
 //#region Version 1.0.1.0 changes
 //    001   15.10.24 Sean Flook      IMANN-1012 Initial Revision.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    002   13.11.24 Sean Flook      IMANN-1012 Use the correct validation.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -27,7 +30,7 @@ import PropertyContext from "../context/propertyContext";
 import UserContext from "../context/userContext";
 
 import { GetCurrentDate, getLookupLinkedRef } from "../utils/HelperUtils";
-// import { ValidatePlotPropertyDetails } from "../utils/WizardValidation";
+import { ValidatePlotPropertyDetails } from "../utils/WizardValidation";
 import { addressToTitleCase, GetPropertyMapData, GetTempAddress, SaveProperty } from "../utils/PropertyUtils";
 
 import {
@@ -1034,13 +1037,12 @@ function MultiEditPlotToPostalWizardDialog({ propertyUprns, isOpen, onClose }) {
    * @returns {boolean} True if the property details are valid; otherwise false.
    */
   const propertyDetailsValid = () => {
-    const propertyDetailErrors = { blpu: [], lpi: [] };
-    // const propertyDetailErrors = ValidatePlotPropertyDetails(
-    //   blpuData,
-    //   lpiData,
-    //   lookupContext.currentLookups,
-    //   settingsContext.isScottish
-    // );
+    const propertyDetailErrors = ValidatePlotPropertyDetails(
+      blpuData,
+      lpiData,
+      lookupContext.currentLookups,
+      settingsContext.isScottish
+    );
 
     const havePropertyErrors = propertyDetailErrors.blpu.length > 0 || propertyDetailErrors.lpi.length > 0;
 
