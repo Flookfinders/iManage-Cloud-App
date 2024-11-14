@@ -68,6 +68,9 @@
 //    053   31.10.24 Sean Flook      IMANN-1012 Added getLookupLinkedRef method.
 //    054   01.10.24 Sean Flook      IMANN-1010 For streets the logicalStatus is no longer greater than 10 in GetAvatarTooltip.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    055   14.11.24 Sean Flook      IMANN-1049 Look for the correct character in GetUserName.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -937,7 +940,7 @@ export function GetPolygonAsWKT(polygon) {
  */
 export function GetUserName(username) {
   if (username) {
-    const lastSlash = username.lastIndexOf("\\");
+    const lastSlash = username.lastIndexOf("/");
     let user;
     if (lastSlash > -1) {
       user = username.substring(lastSlash + 1);
