@@ -16,6 +16,7 @@
 //#region Version 1.0.2.0 changes
 //    002   13.11.24 Sean Flook      IMANN-1012 Use the correct validation.
 //    003   14.11.24 Sean Flook      IMANN-1012 Only set the alt fields if required for Scottish authorities.
+//    004   18.11.24 Sean Flook      IMANN-1056 Use the new getPropertyListDetails method.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -24,7 +25,6 @@
 import React, { forwardRef, useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 
-import SearchContext from "../context/searchContext";
 import SettingsContext from "../context/settingsContext";
 import LookupContext from "./../context/lookupContext";
 import PropertyContext from "../context/propertyContext";
@@ -32,7 +32,13 @@ import UserContext from "../context/userContext";
 
 import { GetCurrentDate, getLookupLinkedRef } from "../utils/HelperUtils";
 import { ValidatePlotPropertyDetails } from "../utils/WizardValidation";
-import { addressToTitleCase, GetPropertyMapData, GetTempAddress, SaveProperty } from "../utils/PropertyUtils";
+import {
+  addressToTitleCase,
+  getPropertyListDetails,
+  GetPropertyMapData,
+  GetTempAddress,
+  SaveProperty,
+} from "../utils/PropertyUtils";
 
 import {
   Button,
@@ -89,7 +95,6 @@ const Transition = forwardRef(function Transition(props, ref) {
 function MultiEditPlotToPostalWizardDialog({ propertyUprns, isOpen, onClose }) {
   const theme = useTheme();
 
-  const searchContext = useContext(SearchContext);
   const settingsContext = useContext(SettingsContext);
   const lookupContext = useContext(LookupContext);
   const propertyContext = useContext(PropertyContext);
@@ -593,7 +598,6 @@ function MultiEditPlotToPostalWizardDialog({ propertyUprns, isOpen, onClose }) {
             createGaelic={settingsContext.isScottish ? otherData.createGaelic : false}
             errors={addressErrors}
             onDataChanged={handleAddressDetailsChanged}
-            onCreateGaelicChanged={handleCreateGaelicChanged}
             onErrorChanged={handleAddressDetailsErrorChanged}
           />
         );
@@ -717,20 +721,6 @@ function MultiEditPlotToPostalWizardDialog({ propertyUprns, isOpen, onClose }) {
     }
   };
 
-  /**
-   * Event to handle when the create gaelic flag is changed.
-   *
-   * @param {Boolean} newValue The new value for the create Gaelic flag.
-   */
-  const handleCreateGaelicChanged = (newValue) => {
-    if (settingsContext.isScottish) {
-      setOtherData({
-        createGaelic: newValue,
-        note: otherData.note,
-      });
-    }
-  };
-
   const handleAddressDetailsErrorChanged = (addressErrors) => {
     if (addressErrors) {
       setAddressErrors(addressErrors);
@@ -752,9 +742,7 @@ function MultiEditPlotToPostalWizardDialog({ propertyUprns, isOpen, onClose }) {
       case 0:
         if (propertyDetailsValid()) {
           if (propertyUprns && propertyUprns.length > 0) {
-            const selectedAddresses = searchContext.currentSearchData.results.filter(
-              (x) => x.type === 24 && propertyUprns.includes(x.uprn)
-            );
+            const selectedAddresses = await getPropertyListDetails(propertyUprns, userContext);
 
             const altLangPostTownRef =
               lpiData && lpiData.postTownRef

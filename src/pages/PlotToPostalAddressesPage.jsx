@@ -157,7 +157,7 @@ function a11yProps(index) {
 PlotToPostalAddressesPage.propTypes = {
   addresses: PropTypes.array.isRequired,
   createGaelic: PropTypes.bool,
-  errors: PropTypes.object,
+  errors: PropTypes.array,
   onDataChanged: PropTypes.func.isRequired,
   onCreateGaelicChanged: PropTypes.func.isRequired,
   onErrorChanged: PropTypes.func.isRequired,
@@ -167,14 +167,7 @@ PlotToPostalAddressesPage.defaultProps = {
   createGaelic: false,
 };
 
-function PlotToPostalAddressesPage({
-  addresses,
-  createGaelic,
-  errors,
-  onDataChanged,
-  onCreateGaelicChanged,
-  onErrorChanged,
-}) {
+function PlotToPostalAddressesPage({ addresses, createGaelic, errors, onDataChanged, onErrorChanged }) {
   const theme = useTheme();
   const classes = useStyles();
 

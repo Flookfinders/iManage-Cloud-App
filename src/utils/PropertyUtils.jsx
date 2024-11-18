@@ -67,6 +67,7 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
 //    052   18.11.24 Sean Flook      IMANN-1062 Include Alternative in the list of LPI logical status for Plot to Postal existing LPI.
+//    053   18.11.24 Sean Flook      IMANN-1056 Added getPropertyListDetails.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -90,6 +91,7 @@ import {
   GetUpdatePropertyUrl,
   GetTempAddressUrl,
   GetAddUprnsBackUrl,
+  GetMultiEditSearchUrl,
 } from "../configuration/ADSConfig";
 import BLPUClassification from "../data/BLPUClassification";
 import OSGClassification, { OSGScheme } from "../data/OSGClassification";
@@ -2833,4 +2835,55 @@ export const hasParentPaoChanged = (childCount, sourceProperty, currentProperty)
       return paoChanged;
     } else return false;
   } else return false;
+};
+
+/**
+ * Method to get the search objects for a list of UPRNs.
+ *
+ * @param {Array|null} propertyUprns The list of UPRNs that we want to search details for.
+ * @param {Object} userContext The user context for the user who is calling the endpoint.
+ * @returns {Array|null} The array of search objects for the list of UPRNs.
+ */
+export const getPropertyListDetails = async (propertyUprns, userContext) => {
+  const searchMultiEditUrl = GetMultiEditSearchUrl(userContext.currentUser.token);
+
+  if (searchMultiEditUrl) {
+    const newSearchData = await fetch(`${searchMultiEditUrl.url}/${propertyUprns.join()}`, {
+      headers: searchMultiEditUrl.headers,
+      crossDomain: true,
+      method: searchMultiEditUrl.type,
+    })
+      .then((res) => (res.ok ? res : Promise.reject(res)))
+      .then((res) => {
+        switch (res.status) {
+          case 200:
+            return res.json();
+
+          case 204:
+            if (userContext.currentUser.showMessages) console.log("[DEBUG] getPropertyListDetails: No content found");
+            return null;
+
+          case 401:
+            userContext.onExpired();
+            return null;
+
+          default:
+            if (userContext.currentUser.showMessages)
+              console.error("[ERROR] getPropertyListDetails: Unexpected error.", res);
+            return null;
+        }
+      })
+      .then(
+        (result) => {
+          return result;
+        },
+        (error) => {
+          if (userContext.currentUser.showMessages)
+            console.error("[ERROR] getPropertyListDetails: Unexpected error.", error);
+          return null;
+        }
+      );
+
+    return newSearchData;
+  } else return null;
 };

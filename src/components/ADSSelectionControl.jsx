@@ -58,6 +58,7 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
 //    042   13.11.24 Sean Flook      IMANN-1012 Made the plot to postal wizard menu item visible.
+//    043   18.11.24 Sean Flook      IMANN-1056 Use the new getPropertyListDetails method.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -100,8 +101,8 @@ import {
   GetPropertyMapData,
   UpdateRangeAfterSave,
   getClassificationCode,
+  getPropertyListDetails,
 } from "../utils/PropertyUtils";
-import { GetMultiEditSearchUrl } from "../configuration/ADSConfig";
 
 import Polyline from "@arcgis/core/geometry/Polyline";
 import * as geometryEngine from "@arcgis/core/geometry/geometryEngine";
@@ -1099,48 +1100,9 @@ function ADSSelectionControl({
   };
 
   const handlePropertiesSelected = async (action) => {
-    const searchMultiEditUrl = GetMultiEditSearchUrl(userContext.currentUser.token);
+    const newSearchData = await getPropertyListDetails(propertyUprns, userContext);
 
-    if (searchMultiEditUrl) {
-      const newSearchData = await fetch(`${searchMultiEditUrl.url}/${propertyUprns.join()}`, {
-        headers: searchMultiEditUrl.headers,
-        crossDomain: true,
-        method: searchMultiEditUrl.type,
-      })
-        .then((res) => (res.ok ? res : Promise.reject(res)))
-        .then((res) => {
-          switch (res.status) {
-            case 200:
-              return res.json();
-
-            case 204:
-              if (userContext.currentUser.showMessages)
-                console.log("[DEBUG] handlePropertiesSelected: No content found");
-              return null;
-
-            case 401:
-              userContext.onExpired();
-              return null;
-
-            default:
-              if (userContext.currentUser.showMessages)
-                console.error("[ERROR] handlePropertiesSelected: Unexpected error.", res);
-              return null;
-          }
-        })
-        .then(
-          (result) => {
-            return result;
-          },
-          (error) => {
-            if (userContext.currentUser.showMessages)
-              console.error("[ERROR] handlePropertiesSelected: Unexpected error.", error);
-            return null;
-          }
-        );
-
-      if (newSearchData) searchContext.onPropertiesSelected(action, propertyUprns, newSearchData);
-    }
+    if (newSearchData) searchContext.onPropertiesSelected(action, propertyUprns, newSearchData);
 
     if (onClose) onClose();
   };

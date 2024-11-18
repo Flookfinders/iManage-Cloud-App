@@ -31,6 +31,9 @@
 //#region Version 1.0.1.0 changes
 //    017   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    018   18.11.24 Sean Flook      IMANN-1056 Use the new getPropertyListDetails method.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -45,8 +48,13 @@ import SettingsContext from "../context/settingsContext";
 import PropertyContext from "../context/propertyContext";
 
 import { ArraysEqual } from "../utils/HelperUtils";
-import { addressToTitleCase, GetPropertyMapData, SaveProperty, getClassificationCode } from "../utils/PropertyUtils";
-import { GetMultiEditSearchUrl } from "../configuration/ADSConfig";
+import {
+  addressToTitleCase,
+  GetPropertyMapData,
+  SaveProperty,
+  getClassificationCode,
+  getPropertyListDetails,
+} from "../utils/PropertyUtils";
 
 import {
   Slide,
@@ -348,99 +356,76 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
 
   useEffect(() => {
     const getPropertyDetails = async () => {
-      const searchMultiEditUrl = GetMultiEditSearchUrl(userContext.currentUser.token);
+      const newSearchData = await getPropertyListDetails(propertyUprns, userContext);
 
-      if (searchMultiEditUrl) {
-        const newSearchData = await fetch(`${searchMultiEditUrl.url}/${propertyUprns.join()}`, {
-          headers: searchMultiEditUrl.headers,
-          crossDomain: true,
-          method: searchMultiEditUrl.type,
-        })
-          .then((res) => (res.ok ? res : Promise.reject(res)))
-          .then((res) => res.json())
-          .then(
-            (result) => {
-              return result;
-            },
-            (error) => {
-              if (error.status && error.status === 401) {
-                userContext.onExpired();
-              } else {
-                if (userContext.currentUser.showMessages) console.error("[ERROR] Getting selected properties", error);
-              }
-              return null;
-            }
+      let newPropertyData = [];
+      if (newSearchData) {
+        newPropertyData = newSearchData.map((x) => {
+          const postcodeRec = lookupContext.currentLookups.postcodes.find(
+            (p) => p.postcode.toUpperCase() === x.postcode.toUpperCase()
+          );
+          const postTownRec = lookupContext.currentLookups.postTowns.find(
+            (p) =>
+              ((x.post_town && x.post_town.length > 0 && p.postTown.toUpperCase() === x.post_town.toUpperCase()) ||
+                p.postTown.toUpperCase() === x.town.toUpperCase()) &&
+              p.language.toUpperCase() === x.language.toUpperCase()
           );
 
-        let newPropertyData = [];
-        if (newSearchData) {
-          newPropertyData = newSearchData.map((x) => {
-            const postcodeRec = lookupContext.currentLookups.postcodes.find(
-              (p) => p.postcode.toUpperCase() === x.postcode.toUpperCase()
-            );
-            const postTownRec = lookupContext.currentLookups.postTowns.find(
-              (p) =>
-                ((x.post_town && x.post_town.length > 0 && p.postTown.toUpperCase() === x.post_town.toUpperCase()) ||
-                  p.postTown.toUpperCase() === x.town.toUpperCase()) &&
-                p.language.toUpperCase() === x.language.toUpperCase()
-            );
+          return {
+            uprn: x.uprn,
+            id: `${x.language}_${x.uprn}`,
+            language: x.language,
+            easting: x.easting,
+            northing: x.northing,
+            parentUprn: x.parent_uprn,
+            blpu: {
+              logicalStatus: x.logical_status,
+              rpc: null,
+              state: null,
+              stateDate: null,
+              classification: x.classification_code,
+              startDate: null,
+            },
+            lpi: {
+              logicalStatus: x.logical_status,
+              level: null,
+              officialAddress: null,
+              postallyAddressable: null,
+              startDate: null,
+            },
+            other: {
+              provCode: null,
+              provStartDate: null,
+              notes: null,
+            },
+            addressDetails: {
+              id: null,
+              address: addressToTitleCase(x.formattedaddress, x.postcode),
+              mapLabel: x.full_building_desc,
+              saoStartNumber: null,
+              saoStartSuffix: null,
+              saoEndNumber: null,
+              saoEndSuffix: null,
+              saoText: null,
+              paoStartNumber: null,
+              paoStartSuffix: null,
+              paoEndNumber: null,
+              paoEndSuffix: null,
+              paoText: null,
+              paoDetails: null,
+              usrn: x.usrn,
+              postcodeRef: postcodeRec ? postcodeRec.postcodeRef : 0,
+              postTownRef: postTownRec ? postTownRec.postTownRef : 0,
+              included: true,
+            },
+          };
+        });
 
-            return {
-              uprn: x.uprn,
-              id: `${x.language}_${x.uprn}`,
-              language: x.language,
-              easting: x.easting,
-              northing: x.northing,
-              parentUprn: x.parent_uprn,
-              blpu: {
-                logicalStatus: x.logical_status,
-                rpc: null,
-                state: null,
-                stateDate: null,
-                classification: x.classification_code,
-                startDate: null,
-              },
-              lpi: {
-                logicalStatus: x.logical_status,
-                level: null,
-                officialAddress: null,
-                postallyAddressable: null,
-                startDate: null,
-              },
-              other: {
-                provCode: null,
-                provStartDate: null,
-                notes: null,
-              },
-              addressDetails: {
-                id: null,
-                address: addressToTitleCase(x.formattedaddress, x.postcode),
-                mapLabel: x.full_building_desc,
-                saoStartNumber: null,
-                saoStartSuffix: null,
-                saoEndNumber: null,
-                saoEndSuffix: null,
-                saoText: null,
-                paoStartNumber: null,
-                paoStartSuffix: null,
-                paoEndNumber: null,
-                paoEndSuffix: null,
-                paoText: null,
-                paoDetails: null,
-                usrn: x.usrn,
-                postcodeRef: postcodeRec ? postcodeRec.postcodeRef : 0,
-                postTownRef: postTownRec ? postTownRec.postTownRef : 0,
-                included: true,
-              },
-            };
-          });
-
-          setData(newPropertyData);
-          setCurrentUprns(propertyUprns);
-        }
-
-        return newPropertyData;
+        setData(newPropertyData);
+        setCurrentUprns(propertyUprns);
       }
+
+      return newPropertyData;
     };
 
     if (isOpen && propertyUprns && propertyUprns.length > 0 && !ArraysEqual(propertyUprns, currentUprns)) {
