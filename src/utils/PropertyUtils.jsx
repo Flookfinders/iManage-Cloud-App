@@ -65,6 +65,9 @@
 //    050   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //    051   31.10.24 Sean Flook      IMANN-1012 Various changes required for plot to postal wizard.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    052   18.11.24 Sean Flook      IMANN-1062 Include Alternative in the list of LPI logical status for Plot to Postal existing LPI.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -191,7 +194,7 @@ export const FilteredBLPUState = (isScottish, logicalStatus) => {
 export const FilteredLPILogicalStatus = (isScottish, blpuLogicalStatus, isTemplate = false, isPlot = false) => {
   if (isScottish) {
     return LPILogicalStatus.filter(
-      (x) => x.osText && (isPlot ? [7, 8, 9].includes(x.id) : !isTemplate || ![7, 8, 9].includes(x.id))
+      (x) => x.osText && (isPlot ? [3, 7, 8, 9].includes(x.id) : !isTemplate || ![7, 8, 9].includes(x.id))
     );
   } else {
     switch (blpuLogicalStatus) {
@@ -217,7 +220,7 @@ export const FilteredLPILogicalStatus = (isScottish, blpuLogicalStatus, isTempla
 
       default:
         return LPILogicalStatus.filter(
-          (x) => x.gpText && (isPlot ? [7, 8, 9].includes(x.id) : !isTemplate || ![7, 8, 9].includes(x.id))
+          (x) => x.gpText && (isPlot ? [3, 7, 8, 9].includes(x.id) : !isTemplate || ![7, 8, 9].includes(x.id))
         );
     }
   }
