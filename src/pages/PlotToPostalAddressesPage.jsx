@@ -2008,7 +2008,7 @@ function PlotToPostalAddressesPage({ addresses, createGaelic, errors, onDataChan
                     columns={columns}
                     initialState={initialState}
                     autoPageSize
-                    columnHeaderHeight={dataFormToolbarHeight}
+                    columnHeaderHeight={Number(dataFormToolbarHeight)}
                     disableColumnMenu
                     disableColumnSelector
                     disableDensitySelector
