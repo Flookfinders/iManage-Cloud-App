@@ -49,6 +49,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.2.0 changes
 //    032   31.10.24 Sean Flook       IMANN-1012 Changed to use new checks to prevent duplicating check code.
+//    033   21.11.24 Sean Flook       IMANN-1054 Pass through the currentLookups to failsCheck2300025.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1755,7 +1756,7 @@ export function ValidateCrossReference(data, currentLookups, isScottish) {
 
     // Source does not exist in the lookup table or is marked as historic/disabled.
     currentCheck = GetCheck(2300025, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && failsCheck2300025(data.sourceId)) {
+    if (includeCheck(currentCheck, isScottish) && failsCheck2300025(data.sourceId, currentLookups)) {
       sourceIdErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
