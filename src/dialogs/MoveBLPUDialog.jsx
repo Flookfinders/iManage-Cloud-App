@@ -33,6 +33,7 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
 //    018   18.11.24 Sean Flook      IMANN-1056 Use the new getPropertyListDetails method.
+//    019   21.11.24 Sean Flook      IMANN-1065 Correctly handle when the data is updated.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -194,6 +195,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
    * @param {object} updatedData The updated data.
    */
   const handleDataChanged = (updatedData) => {
+    setData(updatedData);
     // if (onDataChange) onDataChange(updatedData);
   };
 
@@ -203,6 +205,7 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
    * @param {Array} finaliseErrors The list of errors.
    */
   const handleErrorChanged = (finaliseErrors) => {
+    setFinaliseErrors(finaliseErrors);
     // if (onErrorChanged) onErrorChanged(finaliseErrors);
   };
 
@@ -254,8 +257,8 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
           let newSeqNum = maxSeqNum && maxSeqNum.seqNum ? maxSeqNum.seqNum + 1 : 1;
 
           const updatedNotes = currentProperty.blpuNotes ? [...currentProperty.blpuNotes] : [];
-          if (property.other.notes) {
-            property.other.notes.forEach((note) => {
+          if (property.other.note) {
+            property.other.note.forEach((note) => {
               updatedNotes.push({
                 uprn: property.uprn,
                 note: note,

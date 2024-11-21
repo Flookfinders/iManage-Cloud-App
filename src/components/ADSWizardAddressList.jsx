@@ -32,6 +32,9 @@
 //    019   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //    020   18.06.24 Sean Flook       IMANN-599 Use the correct classification when moving BLPUs for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.2.0 changes
+//    021   21.11.24 Sean Flook      IMANN-1065 Include the UPRN when dealing with move BLPU.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -861,71 +864,133 @@ function ADSWizardAddressList({
             case "note":
               let updatedNote = null;
 
-              if (!currentRecord.other.note) updatedNote = updatedData;
+              if (!currentRecord.other.note) updatedNote = [updatedData];
               else if (Array.isArray(currentRecord.other.note)) {
                 updatedNote = currentRecord.other.note.map((x) => x);
                 updatedNote.push(updatedData);
               } else updatedNote = [currentRecord.other.note, updatedData];
 
-              updatedRecords = updatedRecords.map(
-                (x) =>
-                  [
-                    {
-                      id: updateId,
-                      language: currentRecord.language,
-                      addressDetails: currentRecord.addressDetails,
-                      blpu: currentRecord.blpu,
-                      lpi: currentRecord.lpi,
-                      classification: currentRecord.classification,
-                      other: {
-                        provCode: currentRecord.other.provCode,
-                        provStartDate: currentRecord.other.provStartDate,
-                        note: updatedNote,
+              if (haveMoveBlpu)
+                updatedRecords = updatedRecords.map(
+                  (x) =>
+                    [
+                      {
+                        uprn: currentRecord.uprn,
+                        id: updateId,
+                        language: currentRecord.language,
+                        addressDetails: currentRecord.addressDetails,
+                        blpu: currentRecord.blpu,
+                        lpi: currentRecord.lpi,
+                        classification: currentRecord.classification,
+                        other: {
+                          provCode: currentRecord.other.provCode,
+                          provStartDate: currentRecord.other.provStartDate,
+                          note: updatedNote,
+                        },
+                        parentUprn: currentRecord.parentUprn,
+                        easting: currentRecord.easting,
+                        northing: currentRecord.northing,
                       },
-                      parentUprn: currentRecord.parentUprn,
-                      easting: currentRecord.easting,
-                      northing: currentRecord.northing,
-                    },
-                  ].find((rec) => rec.id === x.id) || x
-              );
+                    ].find((rec) => rec.id === x.id) || x
+                );
+              else
+                updatedRecords = updatedRecords.map(
+                  (x) =>
+                    [
+                      {
+                        id: updateId,
+                        language: currentRecord.language,
+                        addressDetails: currentRecord.addressDetails,
+                        blpu: currentRecord.blpu,
+                        lpi: currentRecord.lpi,
+                        classification: currentRecord.classification,
+                        other: {
+                          provCode: currentRecord.other.provCode,
+                          provStartDate: currentRecord.other.provStartDate,
+                          note: updatedNote,
+                        },
+                        parentUprn: currentRecord.parentUprn,
+                        easting: currentRecord.easting,
+                        northing: currentRecord.northing,
+                      },
+                    ].find((rec) => rec.id === x.id) || x
+                );
               break;
 
             case "rpc":
-              updatedRecords = updatedRecords.map(
-                (x) =>
-                  [
-                    {
-                      id: updateId,
-                      language: currentRecord.language,
-                      addressDetails: currentRecord.addressDetails,
-                      blpu: settingsContext.isScottish
-                        ? {
-                            logicalStatus: currentRecord.blpu.logicalStatus,
-                            rpc: updatedData,
-                            level: currentRecord.blpu.level,
-                            excludeFromExport: currentRecord.blpu.excludeFromExport,
-                            siteVisit: currentRecord.blpu.siteVisit,
-                            startDate: currentRecord.blpu.startDate,
-                          }
-                        : {
-                            logicalStatus: currentRecord.blpu.logicalStatus,
-                            rpc: updatedData,
-                            state: currentRecord.blpu.state,
-                            stateDate: currentRecord.blpu.stateDate,
-                            classification: currentRecord.blpu.classification,
-                            excludeFromExport: currentRecord.blpu.excludeFromExport,
-                            siteVisit: currentRecord.blpu.siteVisit,
-                            startDate: currentRecord.blpu.startDate,
-                          },
-                      lpi: currentRecord.lpi,
-                      classification: currentRecord.classification,
-                      other: currentRecord.other,
-                      parentUprn: currentRecord.parentUprn,
-                      easting: currentRecord.easting,
-                      northing: currentRecord.northing,
-                    },
-                  ].find((rec) => rec.id === x.id) || x
-              );
+              if (haveMoveBlpu)
+                updatedRecords = updatedRecords.map(
+                  (x) =>
+                    [
+                      {
+                        uprn: currentRecord.uprn,
+                        id: updateId,
+                        language: currentRecord.language,
+                        addressDetails: currentRecord.addressDetails,
+                        blpu: settingsContext.isScottish
+                          ? {
+                              logicalStatus: currentRecord.blpu.logicalStatus,
+                              rpc: updatedData,
+                              level: currentRecord.blpu.level,
+                              excludeFromExport: currentRecord.blpu.excludeFromExport,
+                              siteVisit: currentRecord.blpu.siteVisit,
+                              startDate: currentRecord.blpu.startDate,
+                            }
+                          : {
+                              logicalStatus: currentRecord.blpu.logicalStatus,
+                              rpc: updatedData,
+                              state: currentRecord.blpu.state,
+                              stateDate: currentRecord.blpu.stateDate,
+                              classification: currentRecord.blpu.classification,
+                              excludeFromExport: currentRecord.blpu.excludeFromExport,
+                              siteVisit: currentRecord.blpu.siteVisit,
+                              startDate: currentRecord.blpu.startDate,
+                            },
+                        lpi: currentRecord.lpi,
+                        classification: currentRecord.classification,
+                        other: currentRecord.other,
+                        parentUprn: currentRecord.parentUprn,
+                        easting: currentRecord.easting,
+                        northing: currentRecord.northing,
+                      },
+                    ].find((rec) => rec.id === x.id) || x
+                );
+              else
+                updatedRecords = updatedRecords.map(
+                  (x) =>
+                    [
+                      {
+                        id: updateId,
+                        language: currentRecord.language,
+                        addressDetails: currentRecord.addressDetails,
+                        blpu: settingsContext.isScottish
+                          ? {
+                              logicalStatus: currentRecord.blpu.logicalStatus,
+                              rpc: updatedData,
+                              level: currentRecord.blpu.level,
+                              excludeFromExport: currentRecord.blpu.excludeFromExport,
+                              siteVisit: currentRecord.blpu.siteVisit,
+                              startDate: currentRecord.blpu.startDate,
+                            }
+                          : {
+                              logicalStatus: currentRecord.blpu.logicalStatus,
+                              rpc: updatedData,
+                              state: currentRecord.blpu.state,
+                              stateDate: currentRecord.blpu.stateDate,
+                              classification: currentRecord.blpu.classification,
+                              excludeFromExport: currentRecord.blpu.excludeFromExport,
+                              siteVisit: currentRecord.blpu.siteVisit,
+                              startDate: currentRecord.blpu.startDate,
+                            },
+                        lpi: currentRecord.lpi,
+                        classification: currentRecord.classification,
+                        other: currentRecord.other,
+                        parentUprn: currentRecord.parentUprn,
+                        easting: currentRecord.easting,
+                        northing: currentRecord.northing,
+                      },
+                    ].find((rec) => rec.id === x.id) || x
+                );
               break;
 
             default:

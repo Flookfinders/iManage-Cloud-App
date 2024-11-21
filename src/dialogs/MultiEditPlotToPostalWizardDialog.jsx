@@ -17,6 +17,7 @@
 //    002   13.11.24 Sean Flook      IMANN-1012 Use the correct validation.
 //    003   14.11.24 Sean Flook      IMANN-1012 Only set the alt fields if required for Scottish authorities.
 //    004   18.11.24 Sean Flook      IMANN-1056 Use the new getPropertyListDetails method.
+//    005   21.11.24 Sean Flook      IMANN-1065 Added additional checks in the useEffect to prevent error.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1162,7 +1163,12 @@ function MultiEditPlotToPostalWizardDialog({ propertyUprns, isOpen, onClose }) {
   }, [isOpen, settingsContext.isScottish]);
 
   useEffect(() => {
-    if (propertyContext.currentPropertyHasErrors && propertyContext.currentErrors) {
+    if (
+      propertyContext.currentPropertyHasErrors &&
+      propertyContext.currentErrors &&
+      errorId.current &&
+      errorId.current.length > 0
+    ) {
       const failedRecord = errorId.current.find((x) => x.pkId === propertyContext.currentErrors.pkId);
       const addressId = failedRecord ? failedRecord.addressId : null;
       if (saveErrors.current) saveErrors.current.push({ id: addressId, errors: propertyContext.currentErrors });
