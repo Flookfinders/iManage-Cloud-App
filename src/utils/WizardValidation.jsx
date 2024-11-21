@@ -50,6 +50,7 @@
 //#region Version 1.0.2.0 changes
 //    032   31.10.24 Sean Flook       IMANN-1012 Changed to use new checks to prevent duplicating check code.
 //    033   21.11.24 Sean Flook       IMANN-1054 Pass through the currentLookups to failsCheck2300025.
+//    034   21.11.24 Sean Flook       IMANN-1064 Correctly get the post town and postcode data for check 2400060.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -948,8 +949,8 @@ export function ValidatePropertyDetails(
       currentCheck = GetCheck(2400087, currentLookups, methodName, isScottish, showDebugMessages);
       if (includeCheck(currentCheck, isScottish)) officialFlagErrors.push(GetErrorMessage(currentCheck, isScottish));
     } else {
-      const postTownData = currentLookups.postTowns.find((x) => x.postTownRef === lpiData.postTownRef);
-      const postcodeData = currentLookups.postcodes.find((x) => x.postcodeRef === lpiData.postcodeRef);
+      const postTownData = currentLookups.postTowns.find((x) => x.postTownRef === postTownRef);
+      const postcodeData = currentLookups.postcodes.find((x) => x.postcodeRef === postcodeRef);
 
       // Enter a start date.
       currentCheck = GetCheck(2400007, currentLookups, methodName, isScottish, showDebugMessages);
