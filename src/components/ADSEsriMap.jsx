@@ -113,6 +113,9 @@
 //    097   05.11.24 Sean Flook       IMANN-904 When clearing the current edit object clear the geometry as well.
 //    098   06.11.24 Sean Flook      IMANN-1047 Undo changes done for IMANN-904.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    099   21.11.24 Sean Flook      IMANN-1029 Use the correct UPRN when calling GetParentHierarchy.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -9456,7 +9459,7 @@ function ADSEsriMap(startExtent) {
               break;
 
             case "addChild":
-              GetParentHierarchy(propertyContext.wizardData.parent.uprn, userContext.current).then(
+              GetParentHierarchy(propertyContext.wizardData.savedProperty.uprn, userContext.current).then(
                 (parentProperties) => {
                   if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
                     propertyContext.resetPropertyErrors();
@@ -9476,7 +9479,7 @@ function ADSEsriMap(startExtent) {
               break;
 
             case "addChildren":
-              GetParentHierarchy(propertyContext.wizardData.parent.uprn, userContext.current).then(
+              GetParentHierarchy(propertyContext.wizardData.savedProperty.uprn, userContext.current).then(
                 (parentProperties) => {
                   if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
                     propertyContext.resetPropertyErrors();

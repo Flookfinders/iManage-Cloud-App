@@ -129,6 +129,9 @@
 //    113   01.11.24 Sean Flook      IMANN-1010 Include new fields in search results.
 //    114   06.11.24 Sean Flook      IMANN-1047 When discarding changes where there could be geometry ensure the map search data is updated as well.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    115   21.11.24 Sean Flook      IMANN-1029 Use the correct UPRN when calling GetParentHierarchy.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -10461,35 +10464,39 @@ function StreetDataForm({ data, loading }) {
               break;
 
             case "addChild":
-              GetParentHierarchy(propertyContext.wizardData.parent.uprn, userContext).then((parentProperties) => {
-                if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
-                  propertyContext.resetPropertyErrors();
-                  propertyContext.onWizardDone(null, false, null, null);
-                  mapContext.onWizardSetCoordinate(null);
-                  propertyWizardType.current = "child";
-                  propertyWizardParent.current = propertyContext.wizardData.parent;
-                  setOpenPropertyWizard(true);
-                } else {
-                  alertType.current = "maxParentLevel";
-                  setAlertOpen(true);
+              GetParentHierarchy(propertyContext.wizardData.savedProperty.uprn, userContext).then(
+                (parentProperties) => {
+                  if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
+                    propertyContext.resetPropertyErrors();
+                    propertyContext.onWizardDone(null, false, null, null);
+                    mapContext.onWizardSetCoordinate(null);
+                    propertyWizardType.current = "child";
+                    propertyWizardParent.current = propertyContext.wizardData.parent;
+                    setOpenPropertyWizard(true);
+                  } else {
+                    alertType.current = "maxParentLevel";
+                    setAlertOpen(true);
+                  }
                 }
-              });
+              );
               break;
 
             case "addChildren":
-              GetParentHierarchy(propertyContext.wizardData.parent.uprn, userContext).then((parentProperties) => {
-                if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
-                  propertyContext.resetPropertyErrors();
-                  propertyContext.onWizardDone(null, false, null, null);
-                  mapContext.onWizardSetCoordinate(null);
-                  propertyWizardType.current = "rangeChildren";
-                  propertyWizardParent.current = propertyContext.wizardData.parent;
-                  setOpenPropertyWizard(true);
-                } else {
-                  alertType.current = "maxParentLevel";
-                  setAlertOpen(true);
+              GetParentHierarchy(propertyContext.wizardData.savedProperty.uprn, userContext).then(
+                (parentProperties) => {
+                  if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
+                    propertyContext.resetPropertyErrors();
+                    propertyContext.onWizardDone(null, false, null, null);
+                    mapContext.onWizardSetCoordinate(null);
+                    propertyWizardType.current = "rangeChildren";
+                    propertyWizardParent.current = propertyContext.wizardData.parent;
+                    setOpenPropertyWizard(true);
+                  } else {
+                    alertType.current = "maxParentLevel";
+                    setAlertOpen(true);
+                  }
                 }
-              });
+              );
               break;
 
             default:

@@ -73,6 +73,9 @@
 //    057   23.10.24 Sean Flook      IMANN-1019 Use the correct data when opening the record.
 //    058   01.11.24 Sean Flook      IMANN-1010 Use the correct data determining the street icon.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    059   21.11.24 Sean Flook      IMANN-1029 Use the correct UPRN when calling GetParentHierarchy.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -1406,7 +1409,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
               break;
 
             case "addChild":
-              GetParentHierarchy(propertyContext.wizardData.savedProperty.parentUprn, userContext).then(
+              GetParentHierarchy(propertyContext.wizardData.savedProperty.uprn, userContext).then(
                 (parentProperties) => {
                   if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
                     propertyContext.resetPropertyErrors();
@@ -1465,7 +1468,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
               break;
 
             case "addChildren":
-              GetParentHierarchy(propertyContext.wizardData.savedProperty.parentUprn, userContext).then(
+              GetParentHierarchy(propertyContext.wizardData.savedProperty.uprn, userContext).then(
                 (parentProperties) => {
                   if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
                     propertyContext.resetPropertyErrors();
