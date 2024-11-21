@@ -51,6 +51,7 @@
 //    032   31.10.24 Sean Flook       IMANN-1012 Changed to use new checks to prevent duplicating check code.
 //    033   21.11.24 Sean Flook       IMANN-1054 Pass through the currentLookups to failsCheck2300025.
 //    034   21.11.24 Sean Flook       IMANN-1064 Correctly get the post town and postcode data for check 2400060.
+//    035   21.11.24 Sean Flook       IMANN-1074 Call the correct method for check 2400108.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -136,6 +137,7 @@ import {
   failsCheck2400090,
   failsCheck2400095,
   failsCheck2400096,
+  failsCheck2400108,
 } from "./Type24ValidationChecks";
 import {
   failsCheck3200008,
@@ -598,7 +600,7 @@ export function ValidateAddressDetails(
 
     // Enter a street.
     currentCheck = GetCheck(2400108, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && failsCheck2400018(data.usrn))
+    if (includeCheck(currentCheck, isScottish) && failsCheck2400108(data.usrn))
       usrnErrors.push(GetErrorMessage(currentCheck, isScottish));
 
     // Postcode does not exist in the lookup table.
