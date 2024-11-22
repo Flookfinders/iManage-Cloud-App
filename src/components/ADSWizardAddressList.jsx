@@ -34,6 +34,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.2.0 changes
 //    021   21.11.24 Sean Flook      IMANN-1065 Include the UPRN when dealing with move BLPU.
+//    022   22.11.24 Sean Flook      IMANN-1065 When moving a BLPU keep the classification in the BLPU object for Scottish authorities.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -927,25 +928,16 @@ function ADSWizardAddressList({
                         id: updateId,
                         language: currentRecord.language,
                         addressDetails: currentRecord.addressDetails,
-                        blpu: settingsContext.isScottish
-                          ? {
-                              logicalStatus: currentRecord.blpu.logicalStatus,
-                              rpc: updatedData,
-                              level: currentRecord.blpu.level,
-                              excludeFromExport: currentRecord.blpu.excludeFromExport,
-                              siteVisit: currentRecord.blpu.siteVisit,
-                              startDate: currentRecord.blpu.startDate,
-                            }
-                          : {
-                              logicalStatus: currentRecord.blpu.logicalStatus,
-                              rpc: updatedData,
-                              state: currentRecord.blpu.state,
-                              stateDate: currentRecord.blpu.stateDate,
-                              classification: currentRecord.blpu.classification,
-                              excludeFromExport: currentRecord.blpu.excludeFromExport,
-                              siteVisit: currentRecord.blpu.siteVisit,
-                              startDate: currentRecord.blpu.startDate,
-                            },
+                        blpu: {
+                          logicalStatus: currentRecord.blpu.logicalStatus,
+                          rpc: updatedData,
+                          state: currentRecord.blpu.state,
+                          stateDate: currentRecord.blpu.stateDate,
+                          classification: currentRecord.blpu.classification,
+                          excludeFromExport: currentRecord.blpu.excludeFromExport,
+                          siteVisit: currentRecord.blpu.siteVisit,
+                          startDate: currentRecord.blpu.startDate,
+                        },
                         lpi: currentRecord.lpi,
                         classification: currentRecord.classification,
                         other: currentRecord.other,
