@@ -52,6 +52,7 @@
 //    033   21.11.24 Sean Flook       IMANN-1054 Pass through the currentLookups to failsCheck2300025.
 //    034   21.11.24 Sean Flook       IMANN-1064 Correctly get the post town and postcode data for check 2400060.
 //    035   21.11.24 Sean Flook       IMANN-1074 Call the correct method for check 2400108.
+//    036   22.11.24 Sean Flook       IMANN-1065 When moving a BLPU there is no need to check the level as we do not have that data.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -921,13 +922,13 @@ export function ValidatePropertyDetails(
 
     // Level is invalid.
     currentCheck = GetCheck(2100063, currentLookups, methodName, isScottish, showDebugMessages);
-    if (isScottish && includeCheck(currentCheck, isScottish) && failsCheck2100063(blpuData.level)) {
+    if (!haveMoveBlpu && isScottish && includeCheck(currentCheck, isScottish) && failsCheck2100063(blpuData.level)) {
       blpuLevelErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
 
     // Enter a level.
     currentCheck = GetCheck(2100068, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && failsCheck2100068(blpuData.level)) {
+    if (!haveMoveBlpu && isScottish && includeCheck(currentCheck, isScottish) && failsCheck2100068(blpuData.level)) {
       blpuLevelErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
   }
