@@ -944,7 +944,8 @@ export function GetPolygonAsWKT(polygon) {
  */
 export function GetUserName(username) {
   if (username) {
-    const lastSlash = username.lastIndexOf("/");
+    let lastSlash = username.lastIndexOf("/");
+    if (lastSlash === -1) lastSlash = username.lastIndexOf("\\");
     let user;
     if (lastSlash > -1) {
       user = username.substring(lastSlash + 1);
