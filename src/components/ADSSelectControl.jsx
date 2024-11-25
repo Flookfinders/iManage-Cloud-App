@@ -39,6 +39,7 @@
 //#region Version 1.0.2.0 changes
 //    023   12.11.24 Sean Flook                 Added ability to show the data has been changed.
 //    024   25.11.24 Sean Flook      IMANN-1052 Changes required for the change in label for street classification.
+//    025   25.11.24 Sean Flook      IMANN-1052 Removed debug message which is no longer required.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -565,7 +566,6 @@ function ADSSelectControl({
                       onFocus={handleFocus}
                       onBlur={handleBlur}
                       renderOption={(props, option) => {
-                        console.log("[SF] Classification lookup", { props: props, option: option, options: options });
                         return (
                           <li {...props}>
                             <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
