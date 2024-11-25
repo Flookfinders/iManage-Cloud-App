@@ -53,6 +53,7 @@
 //    034   21.11.24 Sean Flook       IMANN-1064 Correctly get the post town and postcode data for check 2400060.
 //    035   21.11.24 Sean Flook       IMANN-1074 Call the correct method for check 2400108.
 //    036   22.11.24 Sean Flook       IMANN-1065 When moving a BLPU there is no need to check the level as we do not have that data.
+//    037   25.11.24 Sean Flook       IMANN-1076 Added check for a valid date in date fields.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -60,6 +61,7 @@
 
 import { includeCheck, GetErrorMessage, GetCheck } from "./HelperUtils";
 
+import { failsCheck1000020 } from "./Type10ValidationChecks";
 import { failsCheck1100007 } from "./Type11ValidationChecks";
 import {
   failsCheck2100008,
@@ -775,6 +777,15 @@ export function ValidatePropertyDetails(
     currentCheck = GetCheck(2100027, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish)) blpuStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
   } else {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(blpuData.stateDate)) {
+      stateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(blpuData.startDate)) {
+      blpuStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     // Enter a BLPU logical status.
     currentCheck = GetCheck(2100008, currentLookups, methodName, isScottish, showDebugMessages);
     if (!haveMoveBlpu && includeCheck(currentCheck, isScottish) && failsCheck2100008(blpuData.logicalStatus))
@@ -955,6 +966,12 @@ export function ValidatePropertyDetails(
       const postTownData = currentLookups.postTowns.find((x) => x.postTownRef === postTownRef);
       const postcodeData = currentLookups.postcodes.find((x) => x.postcodeRef === postcodeRef);
 
+      // Invalid date format
+      currentCheck = GetCheck(1000020, currentLookups, methodName, isScottish, showDebugMessages);
+      if (includeCheck(currentCheck, isScottish) && failsCheck1000020(lpiData.startDate)) {
+        lpiStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+
       // Enter a start date.
       currentCheck = GetCheck(2400007, currentLookups, methodName, isScottish, showDebugMessages);
       if (includeCheck(currentCheck, isScottish) && failsCheck2400007(lpiData.startDate)) {
@@ -1115,6 +1132,12 @@ export function ValidatePropertyDetails(
       if (includeCheck(currentCheck, isScottish))
         blpuClassificationErrors.push(GetErrorMessage(currentCheck, isScottish));
     } else {
+      // Invalid date format
+      currentCheck = GetCheck(1000020, currentLookups, methodName, isScottish, showDebugMessages);
+      if (includeCheck(currentCheck, isScottish) && failsCheck1000020(classificationData.startDate)) {
+        classificationStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+      }
+
       // Enter a classification code.
       currentCheck = GetCheck(3200008, currentLookups, methodName, isScottish, showDebugMessages);
       if (
@@ -1164,6 +1187,12 @@ export function ValidatePropertyDetails(
   }
 
   if (otherData && !haveMoveBlpu) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(otherData.provStartDate)) {
+      provStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     // Provenance code is invalid.
     currentCheck = GetCheck(2200010, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && failsCheck2200010(otherData.provCode)) {
@@ -1323,6 +1352,15 @@ export function ValidatePlotPropertyDetails(blpuData, lpiData, currentLookups, i
       stateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
   } else {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(blpuData.stateDate)) {
+      stateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(blpuData.startDate)) {
+      blpuStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     // Enter a BLPU logical status.
     currentCheck = GetCheck(2100008, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && failsCheck2100008(blpuData.logicalStatus))
@@ -1449,6 +1487,12 @@ export function ValidatePlotPropertyDetails(blpuData, lpiData, currentLookups, i
   } else {
     const postTownData = currentLookups.postTowns.find((x) => x.postTownRef === lpiData.postTownRef);
     const postcodeData = currentLookups.postcodes.find((x) => x.postcodeRef === lpiData.postcodeRef);
+
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(lpiData.startDate)) {
+      lpiStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
 
     // Enter a start date.
     currentCheck = GetCheck(2400007, currentLookups, methodName, isScottish, showDebugMessages);
@@ -1728,6 +1772,12 @@ export function ValidateCrossReference(data, currentLookups, isScottish) {
       sourceIdErrors.push(GetErrorMessage(currentCheck, isScottish));
     }
   } else {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.startDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     // Enter a start date.
     currentCheck = GetCheck(2300006, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && failsCheck2300006(data.startDate)) {
@@ -1913,6 +1963,12 @@ export function ValidatePlotToPostalAddress(data, currentLookups, isScottish, is
   } else {
     const postTownData = currentLookups.postTowns.find((x) => x.postTownRef === data.postTownRef);
     const postcodeData = currentLookups.postcodes.find((x) => x.postcodeRef === data.postcodeRef);
+
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.startDate)) {
+      lpiStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
 
     // Enter a descriptor.
     currentCheck = GetCheck(1100007, currentLookups, methodName, isScottish, showDebugMessages);

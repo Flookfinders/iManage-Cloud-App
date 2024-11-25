@@ -67,11 +67,13 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.2.0 changes
 //    045   31.10.24 Sean Flook       IMANN-1012 Changed to use new checks to prevent duplicating check code.
+//    046   25.11.24 Sean Flook       IMANN-1076 Added check for a valid date in date fields.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header
 
+import { failsCheck1000020 } from "./Type10ValidationChecks";
 import {
   failsCheck1100004,
   failsCheck1100009,
@@ -444,6 +446,18 @@ export function ValidateStreetData(data, currentLookups, isScottish, authorityCo
   let streetClassificationErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.streetStartDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.streetEndDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.stateDate)) {
+      stateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     // End date cannot be before the street start date.
     currentCheck = GetCheck(1100004, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && failsCheck1100004(data.streetStartDate, data.streetEndDate)) {
@@ -923,6 +937,21 @@ export function ValidateEsuData(data, index, currentLookups, isScottish) {
     const esuStartDate = isScottish ? data.startDate : data.esuStartDate;
     const esuEndDate = isScottish ? data.endDate : data.esuEndDate;
 
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(esuStartDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(esuEndDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.classificationDate)) {
+      classificationDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.stateDate)) {
+      stateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     // Enter geometry.
     currentCheck = GetCheck(1300002, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && failsCheck1300002(data.wktGeometry)) {
@@ -1135,6 +1164,15 @@ export function ValidateOneWayExemptionData(data, index, esuIndex, currentLookup
   let owePeriodicityCodeErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.recordEndDate)) {
+      recordEndDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.oneWayExemptionEndDate)) {
+      oweEndDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     // Type is invalid.
     currentCheck = GetCheck(1600001, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && failsCheck1600001(data.oneWayExemptionType)) {
@@ -1278,12 +1316,28 @@ export function ValidateHighwayDedicationData(data, index, esuIndex, currentLook
   let validationErrors = [];
   let currentCheck;
   let hdCodeErrors = [];
+  let hdStartDateErrors = [];
   let hdEndDateErrors = [];
   let hdEndTimeErrors = [];
   let hdSeasonalEndDateErrors = [];
   let recordEndDateErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.hdStartDate)) {
+      hdStartDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.hdEndDate)) {
+      hdEndDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.hdSeasonalEndDate)) {
+      hdSeasonalEndDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.recordEndDate)) {
+      recordEndDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     // Enter a type.
     currentCheck = GetCheck(1700002, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && failsCheck1700002(data.highwayDedicationCode)) {
@@ -1342,6 +1396,14 @@ export function ValidateHighwayDedicationData(data, index, esuIndex, currentLook
         errors: hdCodeErrors,
       });
 
+    if (hdStartDateErrors.length > 0)
+      validationErrors.push({
+        index: index,
+        esuIndex: esuIndex,
+        field: "HdStartDate",
+        errors: hdStartDateErrors,
+      });
+
     if (hdEndDateErrors.length > 0)
       validationErrors.push({
         index: index,
@@ -1396,6 +1458,15 @@ export function ValidateStreetSuccessorCrossRefData(data, index, currentLookups)
   let predecessorErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && failsCheck1000020(data.startDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+    if (includeCheck(currentCheck, true) && failsCheck1000020(data.endDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     // Enter a successor.
     currentCheck = GetCheck(3000004, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, true) && failsCheck3000004(data.successor)) {
@@ -1483,6 +1554,15 @@ export function ValidateMaintenanceResponsibilityData(data, index, currentLookup
   let wktGeometryErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && failsCheck1000020(data.startDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+    if (includeCheck(currentCheck, true) && failsCheck1000020(data.endDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     // Specify location is too long.
     currentCheck = GetCheck(5100008, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, true) && failsCheck5100008(data.specificLocation)) {
@@ -1707,6 +1787,15 @@ export function ValidateReinstatementCategoryData(data, index, currentLookups) {
   let wktGeometryErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && failsCheck1000020(data.startDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+    if (includeCheck(currentCheck, true) && failsCheck1000020(data.endDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     // Specify location is too long.
     currentCheck = GetCheck(5200008, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, true) && failsCheck5200008(data.specificLocation)) {
@@ -1932,6 +2021,15 @@ export function ValidateOSSpecialDesignationData(data, index, currentLookups) {
   let wktGeometryErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && failsCheck1000020(data.startDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+    if (includeCheck(currentCheck, true) && failsCheck1000020(data.endDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     // Enter a custodian.
     currentCheck = GetCheck(5300007, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, true) && failsCheck5300007(data.custodianCode)) {
@@ -2185,6 +2283,15 @@ export function ValidateInterestData(data, index, currentLookups) {
   let wktGeometryErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, false) && failsCheck1000020(data.recordStartDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+    if (includeCheck(currentCheck, false) && failsCheck1000020(data.recordEndDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
     // Start Easting(X) value is invalid.
     currentCheck = GetCheck(6100006, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, false) && failsCheck6100006(data.startX)) {
@@ -2495,6 +2602,15 @@ export function ValidateConstructionData(data, index, currentLookups) {
   let wktGeometryErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, false) && failsCheck1000020(data.recordStartDate)) {
+      recordStartDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+    if (includeCheck(currentCheck, false) && failsCheck1000020(data.recordEndDate)) {
+      recordEndDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
     // Start Easting(X) value is invalid.
     currentCheck = GetCheck(6200006, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, false) && failsCheck6200006(data.constructionStartX)) {
@@ -2821,6 +2937,21 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
   let wktGeometryErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, false) && failsCheck1000020(data.recordStartDate)) {
+      recordStartDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+    if (includeCheck(currentCheck, false) && failsCheck1000020(data.recordEndDate)) {
+      recordEndDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+    if (includeCheck(currentCheck, false) && failsCheck1000020(data.specialDesigStartDate)) {
+      specialDesigStartDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+    if (includeCheck(currentCheck, false) && failsCheck1000020(data.specialDesigEndDate)) {
+      specialDesigEndDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
     // Start Easting(X) value is invalid.
     currentCheck = GetCheck(6300006, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, false) && failsCheck6300006(data.specialDesigStartX)) {
@@ -3225,6 +3356,15 @@ export function ValidateHeightWidthWeightData(data, index, currentLookups) {
   let valueMetricErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, false) && failsCheck1000020(data.recordStartDate)) {
+      recordStartDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+    if (includeCheck(currentCheck, false) && failsCheck1000020(data.recordEndDate)) {
+      recordEndDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
     // Type is invalid.
     currentCheck = GetCheck(6400005, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, false) && failsCheck6400005(data.hwwRestrictionCode)) {
@@ -3565,6 +3705,27 @@ export function ValidatePublicRightOfWayData(data, index, currentLookups) {
   let divRelatedUsrnErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, false, showDebugMessages);
+    if (includeCheck(currentCheck, false) && failsCheck1000020(data.recordStartDate)) {
+      recordStartDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+    if (includeCheck(currentCheck, false) && failsCheck1000020(data.relevantStartDate)) {
+      relevantStartDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+    if (includeCheck(currentCheck, false) && failsCheck1000020(data.recordEndDate)) {
+      recordEndDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+    if (includeCheck(currentCheck, false) && failsCheck1000020(data.consultStartDate)) {
+      consultStartDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+    if (includeCheck(currentCheck, false) && failsCheck1000020(data.consultEndDate)) {
+      consultEndDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+    if (includeCheck(currentCheck, false) && failsCheck1000020(data.appealDate)) {
+      appealDateErrors.push(GetErrorMessage(currentCheck, false));
+    }
+
     // Enter a dedication.
     currentCheck = GetCheck(6600011, currentLookups, methodName, false, showDebugMessages);
     if (includeCheck(currentCheck, false) && failsCheck6600011(data.prowRights)) {

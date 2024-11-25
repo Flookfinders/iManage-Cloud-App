@@ -71,11 +71,13 @@
 //#region Version 1.0.2.0 changes
 //    044   31.10.24 Sean Flook       IMANN-1012 Changed to use new checks to prevent duplicating check code.
 //    045   14.11.24 Sean Flook       IMANN-1039 Correctly add check 2400108.
+//    046   25.11.24 Sean Flook       IMANN-1076 Added check for a valid date in date fields.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header
 
+import { failsCheck1000020 } from "./Type10ValidationChecks";
 import {
   failsCheck2100008,
   failsCheck2100009,
@@ -269,6 +271,18 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
   let levelErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.blpuStateDate)) {
+      blpuStateDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.startDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.endDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     // Enter a BLPU logical status.
     currentCheck = GetCheck(2100008, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && failsCheck2100008(data.logicalStatus)) {
@@ -678,6 +692,14 @@ export function ValidateLpiData(data, index, currentLookups, isScottish, isWelsh
   const postcodeData = currentLookups.postcodes.find((x) => x.postcodeRef === data.postcodeRef);
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.startDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.endDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
     // Enter a start date.
     currentCheck = GetCheck(2400007, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && failsCheck2400007(data.startDate)) {
@@ -1268,6 +1290,15 @@ export function ValidateProvenanceData(data, index, currentLookups, isScottish) 
   let annotationErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.startDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.endDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     // Enter a provenance code.
     currentCheck = GetCheck(2200009, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && failsCheck2200009(data.provenanceCode)) {
@@ -1370,6 +1401,15 @@ export function ValidateCrossRefData(data, index, currentLookups, isScottish) {
   let sourceErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, isScottish, showDebugMessages);
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.startDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+    if (includeCheck(currentCheck, isScottish) && failsCheck1000020(data.endDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, isScottish));
+    }
+
     // Enter a start date.
     currentCheck = GetCheck(2300006, currentLookups, methodName, isScottish, showDebugMessages);
     if (includeCheck(currentCheck, isScottish) && failsCheck2300006(data.startDate)) {
@@ -1489,6 +1529,15 @@ export function ValidateOrganisationData(data, index, currentLookups) {
   let legalNameErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && failsCheck1000020(data.startDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+    if (includeCheck(currentCheck, true) && failsCheck1000020(data.endDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     // Start date cannot be in the future.
     currentCheck = GetCheck(3100008, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, true) && failsCheck3100008(data.startDate)) {
@@ -1601,6 +1650,15 @@ export function ValidateClassificationData(data, index, currentLookups) {
   let classificationSchemeErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && failsCheck1000020(data.startDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+    if (includeCheck(currentCheck, true) && failsCheck1000020(data.endDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     // Enter a classification code.
     currentCheck = GetCheck(3200008, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, true) && failsCheck3200008(data.blpuClass)) {
@@ -1707,10 +1765,19 @@ export function ValidateSuccessorCrossRefData(data, index, currentLookups) {
   let predecessorErrors = [];
 
   if (data) {
+    // Invalid date format
+    currentCheck = GetCheck(1000020, currentLookups, methodName, true, showDebugMessages);
+    if (includeCheck(currentCheck, true) && failsCheck1000020(data.startDate)) {
+      startDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+    if (includeCheck(currentCheck, true) && failsCheck1000020(data.endDate)) {
+      endDateErrors.push(GetErrorMessage(currentCheck, true));
+    }
+
     // Enter a successor.
     currentCheck = GetCheck(3000004, currentLookups, methodName, true, showDebugMessages);
     if (includeCheck(currentCheck, true) && failsCheck3000004(data.successor)) {
-      endDateErrors.push(GetErrorMessage(currentCheck, true));
+      successorErrors.push(GetErrorMessage(currentCheck, true));
     }
 
     // Start date cannot be in the future.
