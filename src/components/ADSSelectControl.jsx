@@ -38,6 +38,7 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
 //    023   12.11.24 Sean Flook                 Added ability to show the data has been changed.
+//    024   25.11.24 Sean Flook      IMANN-1052 Changes required for the change in label for street classification.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -174,22 +175,28 @@ function ADSSelectControl({
 
     if (onChange) {
       const selectedItem = getSelectedItem(updatedValue);
-      if (selectedItem && selectedItem.length > 0) onChange(selectedItem[0][lookupId]);
+      if (selectedItem) onChange(selectedItem[lookupId]);
       else onChange(null);
     }
   };
 
   /**
    * Event to handle when the control is focused.
+   *
+   * @param {object} event The event object
    */
-  const handleFocus = () => {
+  const handleFocus = (event) => {
+    event.stopPropagation();
     setControlFocused(true);
   };
 
   /**
    * Event to handle when the control looses focus.
+   *
+   * @param {object} event The event object
    */
-  const handleBlur = () => {
+  const handleBlur = (event) => {
+    event.stopPropagation();
     setControlFocused(false);
   };
 
@@ -252,10 +259,10 @@ function ADSSelectControl({
    */
   const getLookupInfo = (value) => {
     if (lookupData) {
-      const currentRow = lookupData.filter((x) => x[lookupId] === value);
+      const currentRow = lookupData.find((x) => x[lookupId] === value);
 
-      if (currentRow && currentRow.length > 0) {
-        if (lookupIcon && currentRow[0][lookupIcon] && currentRow[0][lookupIcon].length !== 0) {
+      if (currentRow) {
+        if (lookupIcon && currentRow[lookupIcon] && currentRow[lookupIcon].length !== 0) {
           return (
             <TextField
               id={`${label.toLowerCase().replaceAll(" ", "-")}-lookup-info`}
@@ -270,11 +277,11 @@ function ADSSelectControl({
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    {getIcon(currentRow[0][lookupIcon], lookupColour ? currentRow[0][lookupColour] : adsBlueA)}
+                    {getIcon(currentRow[lookupIcon], lookupColour ? currentRow[lookupColour] : adsBlueA)}
                   </InputAdornment>
                 ),
               }}
-              value={lookupToTitleCase(currentRow[0][lookupLabel], doNotSetTitleCase)}
+              value={lookupToTitleCase(currentRow[lookupLabel], doNotSetTitleCase)}
             />
           );
         } else {
@@ -290,7 +297,7 @@ function ADSSelectControl({
               variant="outlined"
               margin="dense"
               size="small"
-              value={lookupToTitleCase(currentRow[0][lookupLabel], doNotSetTitleCase)}
+              value={lookupToTitleCase(currentRow[lookupLabel], doNotSetTitleCase)}
             />
           );
         }
@@ -321,7 +328,7 @@ function ADSSelectControl({
    * @returns {object} The styling for the avatar text.
    */
   function getAvatarTextStyle(selectedItem) {
-    switch (lookupColour.includes("#") ? lookupColour : selectedItem[0][lookupColour]) {
+    switch (lookupColour.includes("#") ? lookupColour : selectedItem[lookupColour]) {
       case adsYellow:
       case adsLightGreyA:
         return {
@@ -361,7 +368,7 @@ function ADSSelectControl({
   function getItemAvatar(value) {
     const selectedItem = getSelectedItem(stripCodeFromValue(value));
 
-    if (selectedItem && selectedItem.length > 0) {
+    if (selectedItem) {
       return (
         <Avatar
           id={`${label.toLowerCase().replaceAll(" ", "-")}-avatar`}
@@ -369,8 +376,8 @@ function ADSSelectControl({
           sx={getAvatarColour(stripCodeFromValue(value))}
           aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
         >
-          {lookupIcon && selectedItem[0][lookupIcon] && selectedItem[0][lookupIcon].length > 0 ? (
-            getIcon(selectedItem[0][lookupIcon], lookupColour ? selectedItem[0][lookupColour] : adsBlueA)
+          {lookupIcon && selectedItem[lookupIcon] && selectedItem[lookupIcon].length > 0 ? (
+            getIcon(selectedItem[lookupIcon], lookupColour ? selectedItem[lookupColour] : adsBlueA)
           ) : (
             <Typography variant="caption" sx={getAvatarTextStyle(selectedItem)}>
               {getAvatarValue(stripCodeFromValue(value))}
@@ -390,10 +397,10 @@ function ADSSelectControl({
   function getAvatarValue(value) {
     const selectedItem = getSelectedItem(value);
 
-    if (selectedItem && selectedItem.length > 0) {
-      if (!isCrossRef) return selectedItem[0][lookupId];
-      else if (selectedItem[0].xrefSourceRef73) return selectedItem[0].xrefSourceRef73.substring(4, 6);
-      else if (selectedItem[0].xrefSourceRef) return selectedItem[0].xrefSourceRef.substring(0, 2);
+    if (selectedItem) {
+      if (!isCrossRef) return selectedItem[lookupId];
+      else if (selectedItem.xrefSourceRef73) return selectedItem.xrefSourceRef73.substring(4, 6);
+      else if (selectedItem.xrefSourceRef) return selectedItem.xrefSourceRef.substring(0, 2);
       else return null;
     } else return null;
   }
@@ -406,7 +413,7 @@ function ADSSelectControl({
    */
   function getSelectedItem(value) {
     if (!lookupData || !value) return null;
-    return lookupData.filter((x) => x[lookupLabel] === value);
+    return lookupData.find((x) => x[lookupLabel] === value);
   }
 
   /**
@@ -418,12 +425,12 @@ function ADSSelectControl({
   function getAvatarColour(value) {
     const selectedItem = getSelectedItem(value);
 
-    if (selectedItem && selectedItem.length > 0) {
-      const avatarColour = lookupColour.includes("#") ? lookupColour : selectedItem[0][lookupColour];
+    if (selectedItem) {
+      const avatarColour = lookupColour.includes("#") ? lookupColour : selectedItem[lookupColour];
       const avatarWidth =
-        selectedItem[0][lookupId].toString().length <= 2
+        selectedItem[lookupId].toString().length <= 2
           ? "24px"
-          : selectedItem[0][lookupId].toString().length <= 3
+          : selectedItem[lookupId].toString().length <= 3
           ? "36px"
           : "48px";
 
@@ -449,7 +456,7 @@ function ADSSelectControl({
   function isHistoric(value) {
     const selectedItem = getSelectedItem(stripCodeFromValue(value));
 
-    if (selectedItem && selectedItem.length > 0) return selectedItem[0][lookupHistoric];
+    if (selectedItem) return selectedItem[lookupHistoric];
     else return false;
   }
 
@@ -486,13 +493,13 @@ function ADSSelectControl({
 
   useEffect(() => {
     if ((!controlValue || currentValue !== value) && lookupData) {
-      const selectedItem = lookupData.filter(
+      const selectedItem = lookupData.find(
         (x) =>
           (x[lookupId] || x[lookupId] === 0) && (value || value === 0) && x[lookupId].toString() === value.toString()
       );
 
-      if (selectedItem && selectedItem.length > 0) {
-        setControlValue(selectedItem[0][lookupLabel]);
+      if (selectedItem) {
+        setControlValue(selectedItem[lookupLabel]);
       } else {
         setControlValue(null);
       }
@@ -524,7 +531,7 @@ function ADSSelectControl({
               align="left"
               sx={controlLabelStyle}
             >
-              {`${label}${isRequired ? "*" : ""}`}
+              {`${label === "Street classification" ? "Classification" : label}${isRequired ? "*" : ""}`}
             </Typography>
             <Badge color="error" variant="dot" invisible={!indicateChange} />
           </Stack>
@@ -549,7 +556,7 @@ function ADSSelectControl({
                       }}
                       getOptionLabel={(option) => lookupToTitleCase(option, doNotSetTitleCase)}
                       isOptionEqualToValue={(option, value) => option.id === value.id}
-                      noOptionsText={`No ${label} records`}
+                      noOptionsText={`No ${label === "Street classification" ? "Classification" : label} records`}
                       options={options}
                       value={controlValue}
                       autoHighlight
@@ -558,6 +565,7 @@ function ADSSelectControl({
                       onFocus={handleFocus}
                       onBlur={handleBlur}
                       renderOption={(props, option) => {
+                        console.log("[SF] Classification lookup", { props: props, option: option, options: options });
                         return (
                           <li {...props}>
                             <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
@@ -632,7 +640,7 @@ function ADSSelectControl({
                         color: "inherit",
                       }}
                       getOptionLabel={(option) => lookupToTitleCase(option, doNotSetTitleCase)}
-                      noOptionsText={`No ${label} records`}
+                      noOptionsText={`No ${label === "Street classification" ? "Classification" : label} records`}
                       options={options}
                       value={controlValue}
                       autoHighlight
@@ -727,7 +735,7 @@ function ADSSelectControl({
                         color: "inherit",
                       }}
                       getOptionLabel={(option) => lookupToTitleCase(option, doNotSetTitleCase)}
-                      noOptionsText={`No ${label} records`}
+                      noOptionsText={`No ${label === "Street classification" ? "Classification" : label} records`}
                       options={options}
                       value={controlValue}
                       autoHighlight
@@ -812,7 +820,7 @@ function ADSSelectControl({
                     }}
                     getOptionLabel={(option) => lookupToTitleCase(option, doNotSetTitleCase)}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
-                    noOptionsText={`No ${label} records`}
+                    noOptionsText={`No ${label === "Street classification" ? "Classification" : label} records`}
                     options={options}
                     value={controlValue}
                     autoHighlight
@@ -892,7 +900,7 @@ function ADSSelectControl({
                       color: "inherit",
                     }}
                     getOptionLabel={(option) => lookupToTitleCase(option, doNotSetTitleCase)}
-                    noOptionsText={`No ${label} records`}
+                    noOptionsText={`No ${label === "Street classification" ? "Classification" : label} records`}
                     options={options}
                     value={controlValue}
                     autoHighlight
@@ -979,7 +987,7 @@ function ADSSelectControl({
                       color: "inherit",
                     }}
                     getOptionLabel={(option) => lookupToTitleCase(option, doNotSetTitleCase)}
-                    noOptionsText={`No ${label} records`}
+                    noOptionsText={`No ${label === "Street classification" ? "Classification" : label} records`}
                     options={options}
                     value={controlValue}
                     autoHighlight
@@ -1056,7 +1064,7 @@ function ADSSelectControl({
                   }}
                   getOptionLabel={(option) => lookupToTitleCase(option, doNotSetTitleCase)}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
-                  noOptionsText={`No ${label} records`}
+                  noOptionsText={`No ${label === "Street classification" ? "Classification" : label} records`}
                   options={options}
                   autoHighlight
                   autoSelect
@@ -1127,7 +1135,7 @@ function ADSSelectControl({
                     color: "inherit",
                   }}
                   getOptionLabel={(option) => lookupToTitleCase(option, doNotSetTitleCase)}
-                  noOptionsText={`No ${label} records`}
+                  noOptionsText={`No ${label === "Street classification" ? "Classification" : label} records`}
                   options={options}
                   autoHighlight
                   autoSelect
@@ -1205,7 +1213,7 @@ function ADSSelectControl({
                     color: "inherit",
                   }}
                   getOptionLabel={(option) => lookupToTitleCase(option, doNotSetTitleCase)}
-                  noOptionsText={`No ${label} records`}
+                  noOptionsText={`No ${label === "Street classification" ? "Classification" : label} records`}
                   options={options}
                   autoHighlight
                   autoSelect
@@ -1278,7 +1286,7 @@ function ADSSelectControl({
                 }}
                 getOptionLabel={(option) => lookupToTitleCase(option, doNotSetTitleCase)}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
-                noOptionsText={`No ${label} records`}
+                noOptionsText={`No ${label === "Street classification" ? "Classification" : label} records`}
                 options={options}
                 autoHighlight
                 autoSelect
@@ -1348,7 +1356,7 @@ function ADSSelectControl({
                   color: "inherit",
                 }}
                 getOptionLabel={(option) => lookupToTitleCase(option, doNotSetTitleCase)}
-                noOptionsText={`No ${label} records`}
+                noOptionsText={`No ${label === "Street classification" ? "Classification" : label} records`}
                 options={options}
                 autoHighlight
                 autoSelect
@@ -1425,7 +1433,7 @@ function ADSSelectControl({
                   color: "inherit",
                 }}
                 getOptionLabel={(option) => lookupToTitleCase(option, doNotSetTitleCase)}
-                noOptionsText={`No ${label} records`}
+                noOptionsText={`No ${label === "Street classification" ? "Classification" : label} records`}
                 options={options}
                 autoHighlight
                 autoSelect

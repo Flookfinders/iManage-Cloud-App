@@ -61,6 +61,9 @@
 //    046   02.10.24 Sean Flook       IMANN-999 Changed label to State date.
 //    047   10.10.24 Sean Flook      IMANN-1018 Allow LLPG editors to edit streets.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    048   25.11.24 Sean Flook      IMANN-1052 Changed label of classification so it will not clash with property wizard.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -1208,7 +1211,7 @@ function StreetDataTab({
         )}
         {!settingsContext.isScottish && (
           <ADSSelectControl
-            label="Classification"
+            label="Street classification"
             isEditable={userCanEdit}
             doNotSetTitleCase
             loading={loading}
