@@ -54,6 +54,9 @@
 //    039   01.10.24 Sean Flook       IMANN-665 Changed Designation to Type for HWW.
 //    040   31.10.24 Sean Flook      IMANN-1012 Changes required for the plot to postal wizard.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    041   25.11.24 Sean Flook      IMANN-1085 Added divider between Provenance and Notes for wizardOther.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -3123,6 +3126,11 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
       case "otherWizard":
         return (
           <Stack direction="column">
+            <Divider textAlign="center">
+              <Typography variant="body1" sx={{ color: `${adsBlueA}`, fontWeight: 700 }}>
+                Provenance
+              </Typography>
+            </Divider>
             <ADSSelectControl
               label="Provenance"
               isEditable
@@ -3146,6 +3154,11 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               errorText={otherProvenanceStartDateError}
               onChange={handleOtherProvenanceStartDateChangeEvent}
             />
+            <Divider textAlign="center">
+              <Typography variant="body1" sx={{ color: `${adsBlueA}`, fontWeight: 700 }}>
+                Notes
+              </Typography>
+            </Divider>
             <ADSTextControl
               label="Note"
               isEditable

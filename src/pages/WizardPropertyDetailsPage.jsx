@@ -27,6 +27,9 @@
 //    014   29.05.24 Sean Flook       IMANN-504 Corrected names for BLPU level.
 //    015   21.06.24 Sean Flook       IMANN-578 Corrected name for LPI level.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.2.0 changes
+//    016   25.11.24 Sean Flook      IMANN-1085 Added divider between Provenance and Notes in Other card.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -36,7 +39,17 @@ import PropTypes from "prop-types";
 
 import SettingsContext from "../context/settingsContext";
 
-import { Grid, Card, CardHeader, CardActionArea, CardContent, Typography, Tooltip, IconButton } from "@mui/material";
+import {
+  Grid,
+  Card,
+  CardHeader,
+  CardActionArea,
+  CardContent,
+  Typography,
+  Tooltip,
+  IconButton,
+  Divider,
+} from "@mui/material";
 import { Box, Stack } from "@mui/system";
 
 import EditTemplateDialog from "../dialogs/EditTemplateDialog";
@@ -56,7 +69,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 
-import { adsRed } from "../utils/ADSColours";
+import { adsBlueA, adsRed } from "../utils/ADSColours";
 import {
   ActionIconStyle,
   settingsCardStyle,
@@ -977,6 +990,13 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
               <CardActionArea onClick={doEditOther}>
                 <CardContent sx={settingsCardContentStyle("wizard")}>
                   <Grid container rowSpacing={1}>
+                    <Grid item xs={12}>
+                      <Divider textAlign="center">
+                        <Typography variant="body1" sx={{ color: `${adsBlueA}`, fontWeight: 700 }}>
+                          Provenance
+                        </Typography>
+                      </Divider>
+                    </Grid>
                     <Grid item xs={4}>
                       <Typography variant="body2">Provenance</Typography>
                     </Grid>
@@ -998,6 +1018,13 @@ function WizardPropertyDetailsPage({ data, errors, onDataChanged, onErrorChanged
                       <Typography variant="body2" sx={getWizardValueStyle(otherProvenanceStartDateError)}>
                         {DateString(otherProvenanceStartDate)}
                       </Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Divider textAlign="center">
+                        <Typography variant="body1" sx={{ color: `${adsBlueA}`, fontWeight: 700 }}>
+                          Notes
+                        </Typography>
+                      </Divider>
                     </Grid>
                     <Grid item xs={4}>
                       <Typography variant="body2">Note</Typography>
