@@ -71,6 +71,7 @@
 //#region Version 1.0.2.0 changes
 //    055   14.11.24 Sean Flook      IMANN-1049 Look for the correct character in GetUserName.
 //    056   14.11.24 Sean Flook      IMANN-1012 Added getCheckIcon.
+//    057   25.11.24 Sean Flook      IMANN-1083 Changed GeoPlaceProperty1 to allow the full ISO-8859-14 character set.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2720,8 +2721,7 @@ export const characterSetValidator = (str, characterSet) => {
 
   switch (characterSet) {
     case "GeoPlaceProperty1":
-      valid =
-        isIso885914(str) && !/[^\w àáâäèéêëìíîïòóôöùúûüỳýŷÿŵÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜỲÝŸŶŴ_@$£!.,&;:[\]()+-/]+/giu.test(str);
+      valid = isIso885914(str);
       break;
 
     case "GeoPlaceProperty2":
