@@ -91,6 +91,9 @@
 //    076   01.11.24 Sean Flook      IMANN-1010 Include new fields in search results.
 //    077   06.11.24 Sean Flook      IMANN-1047 Make some of the code more robust.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    078   26.11.24 Sean Flook      IMANN-1057 Scottish authorities do not have Gaelic lookup records.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -1423,17 +1426,8 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
   );
 
   if (isScottish) {
-    const unassignedGaeLocality = lookupContext.currentLookups.localities.find(
-      (x) => x.locality === "Unassigned" && x.language === "GAE"
-    );
-    const unassignedGaeTown = lookupContext.currentLookups.towns.find(
-      (x) => x.town === "Unassigned" && x.language === "GAE"
-    );
     const unassignedEngIsland = lookupContext.currentLookups.islands.find(
       (x) => x.island === "Unassigned" && x.language === "ENG"
-    );
-    const unassignedGaeAdminArea = lookupContext.currentLookups.adminAuthorities.find(
-      (x) => x.administrativeArea === "Unassigned" && x.language === "GAE"
     );
 
     return {
@@ -1535,34 +1529,18 @@ export function GetStreetCreateData(streetData, lookupContext, isScottish, hasAS
               changeType: "I",
               usrn: streetData.usrn && streetData.usrn > 0 ? streetData.usrn : 0,
               streetDescriptor: sd.streetDescriptor,
-              locRef: sd.locRef
-                ? sd.locRef
-                : sd.language === "GAE"
-                ? unassignedGaeLocality.localityRef
-                : unassignedEngLocality.localityRef,
+              locRef: sd.locRef ? sd.locRef : unassignedEngLocality.localityRef,
               locality: sd.locRef && sd.locality && sd.locality !== "Unassigned" ? sd.locality : "",
-              townRef: sd.townRef
-                ? sd.townRef
-                : sd.language === "GAE"
-                ? unassignedGaeTown.townRef
-                : unassignedEngTown.townRef,
+              townRef: sd.townRef ? sd.townRef : unassignedEngTown.townRef,
               town: sd.townRef && sd.town && sd.town !== "Unassigned" ? sd.town : "",
-              adminAreaRef: sd.adminAreaRef
-                ? sd.adminAreaRef
-                : sd.language === "GAE"
-                ? unassignedGaeAdminArea.administrativeAreaRef
-                : unassignedEngAdminArea.administrativeAreaRef,
+              adminAreaRef: sd.adminAreaRef ? sd.adminAreaRef : unassignedEngAdminArea.administrativeAreaRef,
               administrativeArea:
                 sd.adminAreaRef && sd.administrativeArea && sd.administrativeArea !== "Unassigned"
                   ? sd.administrativeArea
                   : "",
               language: sd.language,
               neverExport: streetData.neverExport ? streetData.neverExport : false,
-              islandRef: sd.islandRef
-                ? sd.islandRef
-                : sd.language === "GAE"
-                ? unassignedEngIsland.islandRef
-                : unassignedEngIsland.islandRef,
+              islandRef: sd.islandRef ? sd.islandRef : unassignedEngIsland.islandRef,
               island: sd.islandRef && sd.island && sd.island !== "Unassigned" ? sd.island : "",
             };
           })
