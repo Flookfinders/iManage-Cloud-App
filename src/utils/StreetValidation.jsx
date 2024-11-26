@@ -68,6 +68,7 @@
 //#region Version 1.0.2.0 changes
 //    045   31.10.24 Sean Flook       IMANN-1012 Changed to use new checks to prevent duplicating check code.
 //    046   25.11.24 Sean Flook       IMANN-1076 Added check for a valid date in date fields.
+//    047   26.11.24 Sean Flook       IMANN-1089 Updated checks 6100023, 6200028 and 6300033.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2352,9 +2353,12 @@ export function ValidateInterestData(data, index, currentLookups) {
       wholeRoadErrors.push(GetErrorMessage(currentCheck, true));
     }
 
-    // If whole road not set specify location must be set.
+    // If whole road not set specify location and coordinates must be set.
     currentCheck = GetCheck(6100023, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, false) && failsCheck6100023(data.specificLocation, data.wholeRoad)) {
+    if (
+      includeCheck(currentCheck, false) &&
+      failsCheck6100023(data.specificLocation, data.wholeRoad, data.startX, data.startY, data.endX, data.endY)
+    ) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -2713,9 +2717,19 @@ export function ValidateConstructionData(data, index, currentLookups) {
       wholeRoadErrors.push(GetErrorMessage(currentCheck, true));
     }
 
-    // If whole road not set specify location must be set.
+    // If whole road not set specify location and coordinates must be set.
     currentCheck = GetCheck(6200028, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, false) && failsCheck6200028(data.wholeRoad, data.specificLocation)) {
+    if (
+      includeCheck(currentCheck, false) &&
+      failsCheck6200028(
+        data.wholeRoad,
+        data.specificLocation,
+        data.constructionStartX,
+        data.constructionStartY,
+        data.constructionEndX,
+        data.constructionEndY
+      )
+    ) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 
@@ -3066,9 +3080,19 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
       wholeRoadErrors.push(GetErrorMessage(currentCheck, true));
     }
 
-    // If whole road not set specify location must be set.
+    // If whole road not set specify location and coordinates must be set.
     currentCheck = GetCheck(6300033, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, false) && failsCheck6300033(data.wholeRoad, data.specificLocation)) {
+    if (
+      includeCheck(currentCheck, false) &&
+      failsCheck6300033(
+        data.wholeRoad,
+        data.specificLocation,
+        data.specialDesigStartX,
+        data.specialDesigStartY,
+        data.specialDesigEndX,
+        data.specialDesigEndY
+      )
+    ) {
       specificLocationErrors.push(GetErrorMessage(currentCheck, true));
     }
 

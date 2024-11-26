@@ -13,6 +13,9 @@
 //#region Version 1.0.1.0 changes
 //    001   31.10.24 Sean Flook      IMANN-1012 Initial Revision.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    002   26.11.24 Sean Flook      IMANN-1089 Include coordinates in failsCheck6300033.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -221,14 +224,18 @@ export const failsCheck6300032 = (wholeRoad, location) => {
 };
 
 /**
- * Check 6300033 - If whole road not set specify location must be set.
+ * Check 6300033 - If whole road not set specify location and coordinates must be set.
  *
  * @param {Boolean} wholeRoad The special designation whole road flag
  * @param {String|Null} location The special designation location
+ * @param {Number|Null} startX The special designation start x
+ * @param {Number|Null} startY The special designation start y
+ * @param {Number|Null} endX The special designation end x
+ * @param {Number|Null} endY The special designation end y
  * @returns {Boolean} True if the check fails; otherwise false.
  */
-export const failsCheck6300033 = (wholeRoad, location) => {
-  return !wholeRoad && !location;
+export const failsCheck6300033 = (wholeRoad, location, startX, startY, endX, endY) => {
+  return !wholeRoad && (!location || !startX || !startY || !endX || !endY);
 };
 
 /**
