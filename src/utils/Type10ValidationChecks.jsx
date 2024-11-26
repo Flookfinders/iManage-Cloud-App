@@ -17,14 +17,15 @@
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import { isValid } from "date-fns";
+import { isValidDate } from "./HelperUtils";
+import { parseISO } from "date-fns";
 
 /**
  * Check 1100004 - End date cannot be before the street start date.
  *
- * @param {any} date The date to check.
+ * @param {*} date The object we want to determine if it is a date.
  * @returns {Boolean} True if the check fails; otherwise false.
  */
 export const failsCheck1000020 = (date) => {
-  return date && !isValid(date);
+  return date && !isValidDate(parseISO(date));
 };

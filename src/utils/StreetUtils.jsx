@@ -2739,19 +2739,22 @@ export function GetStreetValidationErrors(body, newStreet, showMessages) {
     if (showMessages)
       console.error(
         `[400 ERROR] ${newStreet ? "Creating" : "Updating"} Street - Successor Cross Reference`,
-        errorInterest
+        errorSuccessorCrossReference
       );
   }
   if (errorMaintenanceResponsibility.length > 0) {
     if (showMessages)
       console.error(
         `[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Maintenance Responsibility`,
-        errorInterest
+        errorMaintenanceResponsibility
       );
   }
   if (errorReinstatementCategory.length > 0) {
     if (showMessages)
-      console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Reinstatement Category`, errorInterest);
+      console.error(
+        `[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Reinstatement Category`,
+        errorReinstatementCategory
+      );
   }
   if (errorInterest.length > 0) {
     if (showMessages) console.error(`[400 ERROR] ${newStreet ? "Creating" : "Updating"} ASD - Interest`, errorInterest);
