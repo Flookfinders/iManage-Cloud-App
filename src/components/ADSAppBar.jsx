@@ -59,6 +59,9 @@
 //    054   10.10.24 Sean Flook      IMANN-1018 Allow LLPG editors to create streets.
 //    055   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    056   28.11.24 Sean Flook      IMANN-1073 If validation fails when trying to save do not proceed so validation messages can be seen.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -474,8 +477,6 @@ function ADSAppBar(props) {
                 failedValidation.current = true;
                 saveResult.current = false;
                 setSaveOpen(true);
-                ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
-                PerformReturnAction(postCheckAction, result === "discard");
               }
             } else {
               ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
@@ -528,8 +529,6 @@ function ADSAppBar(props) {
                 failedValidation.current = true;
                 saveResult.current = false;
                 setSaveOpen(true);
-                ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
-                PerformReturnAction(postCheckAction, result === "discard");
               }
             } else {
               ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
