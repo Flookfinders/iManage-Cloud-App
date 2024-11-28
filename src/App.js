@@ -87,6 +87,7 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
 //    066   13.11.24 Sean Flook      IMANN-1012 Updated the version.
+//    067   27.11.24 Sean Flook      IMANN-1096 Do not store the lookups in the session storage.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -667,25 +668,25 @@ function App() {
       dbAuthorities: dbAuthorities,
     });
 
-    sessionStorage.setItem(
-      "lookups",
-      JSON.stringify({
-        validationMessages: validationMessages,
-        localities: localities,
-        towns: towns,
-        islands: islands,
-        adminAuthorities: adminAuthorities,
-        operationalDistricts: operationalDistricts,
-        appCrossRefs: appCrossRefs,
-        subLocalities: subLocalities,
-        streetDescriptors: streetDescriptors,
-        postTowns: postTowns,
-        postcodes: postcodes,
-        wards: wards,
-        parishes: parishes,
-        dbAuthorities: dbAuthorities,
-      })
-    );
+    // sessionStorage.setItem(
+    //   "lookups",
+    //   JSON.stringify({
+    //     validationMessages: validationMessages,
+    //     localities: localities,
+    //     towns: towns,
+    //     islands: islands,
+    //     adminAuthorities: adminAuthorities,
+    //     operationalDistricts: operationalDistricts,
+    //     appCrossRefs: appCrossRefs,
+    //     subLocalities: subLocalities,
+    //     streetDescriptors: streetDescriptors,
+    //     postTowns: postTowns,
+    //     postcodes: postcodes,
+    //     wards: wards,
+    //     parishes: parishes,
+    //     dbAuthorities: dbAuthorities,
+    //   })
+    // );
   }
 
   /**
@@ -802,25 +803,25 @@ function App() {
    * Event to handle reloading the lookup context data from storage
    */
   function HandleLookupReload() {
-    if (sessionStorage.getItem("lookups") !== null && lookups.validationMessages.length === 0) {
-      const savedLookups = JSON.parse(sessionStorage.getItem("lookups"));
-      setLookups({
-        validationMessages: savedLookups.validationMessages,
-        localities: savedLookups.localities,
-        towns: savedLookups.towns,
-        islands: savedLookups.islands,
-        adminAuthorities: savedLookups.adminAuthorities,
-        operationalDistricts: savedLookups.operationalDistricts,
-        appCrossRefs: savedLookups.appCrossRefs,
-        subLocalities: savedLookups.subLocalities,
-        streetDescriptors: savedLookups.streetDescriptors,
-        postTowns: savedLookups.postTowns,
-        postcodes: savedLookups.postcodes,
-        wards: savedLookups.wards,
-        parishes: savedLookups.parishes,
-        dbAuthorities: savedLookups.dbAuthorities,
-      });
-    }
+    // if (sessionStorage.getItem("lookups") !== null && lookups.validationMessages.length === 0) {
+    //   const savedLookups = JSON.parse(sessionStorage.getItem("lookups"));
+    //   setLookups({
+    //     validationMessages: savedLookups.validationMessages,
+    //     localities: savedLookups.localities,
+    //     towns: savedLookups.towns,
+    //     islands: savedLookups.islands,
+    //     adminAuthorities: savedLookups.adminAuthorities,
+    //     operationalDistricts: savedLookups.operationalDistricts,
+    //     appCrossRefs: savedLookups.appCrossRefs,
+    //     subLocalities: savedLookups.subLocalities,
+    //     streetDescriptors: savedLookups.streetDescriptors,
+    //     postTowns: savedLookups.postTowns,
+    //     postcodes: savedLookups.postcodes,
+    //     wards: savedLookups.wards,
+    //     parishes: savedLookups.parishes,
+    //     dbAuthorities: savedLookups.dbAuthorities,
+    //   });
+    // }
 
     if (sessionStorage.getItem("metadata") !== null && !metadata) {
       const savedMetadata = JSON.parse(sessionStorage.getItem("metadata"));
