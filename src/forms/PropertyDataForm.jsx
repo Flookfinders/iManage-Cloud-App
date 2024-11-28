@@ -84,6 +84,9 @@
 //    069   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
 //    070   30.10.24 Joel Benford     IMANN-1036 Set OS blpu state 0 when LS -> 9
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    071   28.11.24 Sean Flook       IMANN-1086 When cancelling changes to provenance ensure the map is also updated.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -364,6 +367,17 @@ function PropertyDataForm({ data, loading }) {
       successorCrossRefData,
       noteData
     );
+
+    if (clearType === "provenance") {
+      const mapExtents = newPropertyData.blpuProvenances.map((rec) => ({
+        uprn: rec.uprn,
+        code: rec.provenanceCode,
+        geometry: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
+      }));
+
+      mapContext.onMapChange(mapExtents, null, null);
+    }
+
     updatePropertyDataAndClear(newPropertyData, clearType);
   };
 
