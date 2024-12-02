@@ -93,6 +93,7 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
 //    078   26.11.24 Sean Flook      IMANN-1057 Scottish authorities do not have Gaelic lookup records.
+//    079   02.12.24 Sean Flook      IMANN-1059 Do not set the change type to D on ASD records if the pk id is 0.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2418,12 +2419,13 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
               return {
                 pkId: i.pkId > 0 ? i.pkId : 0,
                 seqNum: i.seqNum,
-                changeType: streetData.state === 4 && [1, 2].includes(streetData.recordType) ? "D" : i.changeType,
+                changeType:
+                  streetData.state === 4 && [1, 2].includes(streetData.recordType) && i.pkId > 0 ? "D" : i.changeType,
                 swaOrgRefAuthority: i.swaOrgRefAuthority,
                 districtRefAuthority: i.districtRefAuthority,
                 recordStartDate: i.recordStartDate,
                 recordEndDate:
-                  !i.recordEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType)
+                  !i.recordEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType) && i.pkId > 0
                     ? currentDate
                     : i.recordEndDate,
                 swaOrgRefAuthMaintaining: i.swaOrgRefAuthMaintaining,
@@ -2440,7 +2442,8 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
         constructions: streetData.constructions
           ? streetData.constructions.map((c) => {
               return {
-                changeType: streetData.state === 4 && [1, 2].includes(streetData.recordType) ? "D" : c.changeType,
+                changeType:
+                  streetData.state === 4 && [1, 2].includes(streetData.recordType) && c.pkId > 0 ? "D" : c.changeType,
                 usrn: streetData.usrn,
                 seqNum: c.seqNum,
                 wholeRoad: c.wholeRoad,
@@ -2448,7 +2451,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                 neverExport: streetData.neverExport ? streetData.neverExport : false,
                 recordStartDate: c.recordStartDate,
                 recordEndDate:
-                  !c.recordEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType)
+                  !c.recordEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType) && c.pkId > 0
                     ? currentDate
                     : c.recordEndDate,
                 reinstatementTypeCode: c.reinstatementTypeCode,
@@ -2476,7 +2479,8 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
               return {
                 pkId: sd.pkId > 0 ? sd.pkId : 0,
                 seqNum: sd.seqNum,
-                changeType: streetData.state === 4 && [1, 2].includes(streetData.recordType) ? "D" : sd.changeType,
+                changeType:
+                  streetData.state === 4 && [1, 2].includes(streetData.recordType) && sd.pkId > 0 ? "D" : sd.changeType,
                 streetSpecialDesigCode: sd.streetSpecialDesigCode,
                 asdCoordinate: sd.asdCoordinate,
                 asdCoordinateCount: sd.asdCoordinateCount,
@@ -2487,7 +2491,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                 specialDesigEndY: sd.specialDesigEndY && !sd.wholeRoad ? sd.specialDesigEndY : 0,
                 recordStartDate: sd.recordStartDate,
                 recordEndDate:
-                  !sd.recordEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType)
+                  !sd.recordEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType) && sd.pkId > 0
                     ? currentDate
                     : sd.recordEndDate,
                 specialDesigStartDate: sd.specialDesigStartDate,
@@ -2509,7 +2513,7 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
         publicRightOfWays: streetData.publicRightOfWays
           ? streetData.publicRightOfWays.map((prow) => {
               return {
-                changeType: streetData.state === 4 ? "D" : prow.changeType,
+                changeType: streetData.state === 4 && prow.pkId > 0 ? "D" : prow.changeType,
                 prowUsrn: streetData.usrn,
                 defMapGeometryType: prow.defMapGeometryType,
                 defMapGeometryCount: prow.defMapGeometryCount,
@@ -2522,7 +2526,8 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
                 motAccess: prow.motAccess,
                 recordStartDate: prow.recordStartDate,
                 relevantStartDate: prow.relevantStartDate,
-                recordEndDate: !prow.recordEndDate && streetData.state === 4 ? currentDate : prow.recordEndDate,
+                recordEndDate:
+                  !prow.recordEndDate && streetData.state === 4 && prow.pkId > 0 ? currentDate : prow.recordEndDate,
                 prowStatus: prow.prowStatus,
                 consultStartDate: prow.consultStartDate,
                 consultEndDate: prow.consultEndDate,
@@ -2549,12 +2554,15 @@ export function GetStreetUpdateData(streetData, lookupContext, isScottish, hasAS
           ? streetData.heightWidthWeights.map((hww) => {
               return {
                 pkId: hww.pkId > 0 ? hww.pkId : 0,
-                changeType: streetData.state === 4 && [1, 2].includes(streetData.recordType) ? "D" : hww.changeType,
+                changeType:
+                  streetData.state === 4 && [1, 2].includes(streetData.recordType) && hww.pkId > 0
+                    ? "D"
+                    : hww.changeType,
                 seqNum: hww.seqNum,
                 hwwRestrictionCode: hww.hwwRestrictionCode,
                 recordStartDate: hww.recordStartDate,
                 recordEndDate:
-                  !hww.recordEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType)
+                  !hww.recordEndDate && streetData.state === 4 && [1, 2].includes(streetData.recordType) && hww.pkId > 0
                     ? currentDate
                     : hww.recordEndDate,
                 valueMetric: hww.valueMetric,
