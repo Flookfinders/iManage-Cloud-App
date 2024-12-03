@@ -16,6 +16,7 @@
 //#region Version 1.0.2.0 changes
 //    002   13.11.24 Sean Flook      IMANN-1012 Use the correct validation.
 //    003   14.11.24 Sean Flook      IMANN-1012 Only create the gaelic record if required.
+//    004   03.12.24 Sean Flook      IMANN-1056 Workout the grid page size from the available height when loading the page for the first time.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -66,6 +67,7 @@ import {
   dataFormStyle,
   dataFormToolbarHeight,
   offWhiteButtonStyle,
+  plotToPostalGridHeight,
   tabLabelStyle,
   tooltipStyle,
   wizardTabStyle,
@@ -179,12 +181,11 @@ function PlotToPostalAddressesPage({ addresses, createGaelic, errors, onDataChan
     FilteredLPILogicalStatus(settingsContext.isScottish, addresses.newLpiLogicalStatus)
   );
 
-  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
   const [selectionModel, setSelectionModel] = useState(-1);
   const [sortModel, setSortModel] = useState([]);
   const [selectedRow, setSelectedRow] = useState(-1);
   const [paoStartNumberFocused, setPaoStartNumberFocused] = useState(false);
-  const [gridPageSize, setGridPageSize] = useState(10);
+  const [gridPageSize, setGridPageSize] = useState(9);
   const [currentGridPage, setCurrentGridPage] = useState(0);
 
   const [loading, setLoading] = useState(false);
@@ -1173,12 +1174,11 @@ function PlotToPostalAddressesPage({ addresses, createGaelic, errors, onDataChan
 
     if (gridPageSize > 0) {
       if (rowId === -1) {
-        setPaginationModel({ page: 0, pageSize: gridPageSize });
+        currentGridPage(0);
       } else if (rowId >= gridPageSize || currentGridPage > 0) {
         const rowOnPage = Math.trunc(rowId / gridPageSize);
         if (!isNaN(rowOnPage) && rowOnPage !== currentGridPage) {
           setCurrentGridPage(rowOnPage);
-          setPaginationModel({ page: rowOnPage, pageSize: gridPageSize });
         }
       }
     }
@@ -1744,12 +1744,14 @@ function PlotToPostalAddressesPage({ addresses, createGaelic, errors, onDataChan
    * @param {Object} model The pagination model for the grid.
    */
   const handlePaginationModelChange = (model) => {
-    setGridPageSize(model.pageSize);
-
-    if (!isNaN(model.page)) {
-      setCurrentGridPage(model.page);
-      setPaginationModel(model);
-      updateRowId(-1);
+    if (!isNaN(model.page) && (gridPageSize !== model.pageSize || currentGridPage !== model.page)) {
+      if (gridPageSize !== model.pageSize) {
+        setGridPageSize(model.pageSize);
+      }
+      if (currentGridPage !== model.page) {
+        setCurrentGridPage(model.page);
+      }
+      updateRowId(0);
       setPaoStartNumberFocused(false);
     }
   };
@@ -1801,7 +1803,12 @@ function PlotToPostalAddressesPage({ addresses, createGaelic, errors, onDataChan
   }, [lookupContext.currentLookups.postcodes]);
 
   useEffect(() => {
+    setLoading(false);
     setSortModel([{ field: "originalAddress", sort: "asc" }]);
+    setCurrentGridPage(0);
+    setGridPageSize(Math.floor(plotToPostalGridHeight / 52) - 2);
+    setSelectionModel(-1);
+    setCreateGaelicRecords(false);
   }, []);
 
   useEffect(() => {
@@ -2015,7 +2022,7 @@ function PlotToPostalAddressesPage({ addresses, createGaelic, errors, onDataChan
                     hideFooterSelectedRowCount
                     editMode="row"
                     pagination
-                    paginationModel={paginationModel}
+                    paginationModel={{ page: currentGridPage, pageSize: gridPageSize }}
                     rowSelectionModel={selectionModel}
                     sortModel={sortModel}
                     getRowClassName={(params) =>

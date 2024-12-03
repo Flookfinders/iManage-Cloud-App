@@ -50,6 +50,7 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
 //    035   12.11.24 Sean Flook                 Added FormDateInputNoMarginStyle.
+//    036   03.12.24 Sean Flook      IMANN-1056 Added plotToPostalGridHeight.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -94,6 +95,10 @@ export const wizardStepperHeight = "70";
 const maxContentHeight = "400px";
 export const doughnutHeight = "360";
 export const skeletonHeight = "53";
+export const plotToPostalGridHeight =
+  (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) -
+  wizardStepperHeight * 2 -
+  dataFormToolbarHeight * 3;
 
 /**
  * Return the styling for action icons.
@@ -471,7 +476,7 @@ export const dataFormStyle = (dataForm) => {
 
     case "PlotToPostalAddressDataGrid":
     case "PlotLPI":
-      height = maxHeight - wizardStepperHeight * 2 - dataFormToolbarHeight * 3;
+      height = plotToPostalGridHeight;
       break;
 
     case "PlotLPIDetails":
