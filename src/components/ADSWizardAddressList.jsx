@@ -35,6 +35,7 @@
 //#region Version 1.0.2.0 changes
 //    021   21.11.24 Sean Flook      IMANN-1065 Include the UPRN when dealing with move BLPU.
 //    022   22.11.24 Sean Flook      IMANN-1065 When moving a BLPU keep the classification in the BLPU object for Scottish authorities.
+//    023   03.12.24 Sean Flook      IMANN-1081 Include classification errors for Scottish authorities.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1060,6 +1061,10 @@ function ADSWizardAddressList({
         foundErrors.errors.lpi && foundErrors.errors.lpi.length > 0
           ? [...new Set(foundErrors.errors.lpi.flatMap((x) => x.errors))]
           : [];
+      const classificationErrors =
+        foundErrors.errors.classification && foundErrors.errors.classification.length > 0
+          ? [...new Set(foundErrors.errors.classification.flatMap((x) => x.errors))]
+          : [];
       const otherErrors =
         foundErrors.errors.other && foundErrors.errors.other.length > 0
           ? [...new Set(foundErrors.errors.other.flatMap((x) => x.errors))]
@@ -1080,6 +1085,7 @@ function ADSWizardAddressList({
         ...new Set([
           ...blpuErrors,
           ...lpiErrors,
+          ...classificationErrors,
           ...otherErrors,
           ...provenanceErrors,
           ...crossRefErrors,

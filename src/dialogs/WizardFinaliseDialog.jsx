@@ -23,6 +23,9 @@
 //#region Version 1.0.1.0 changes
 //    009   31.10.24 Sean Flook      IMANN-1012 Added plotToPostal.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    010   03.12.24 Sean Flook      IMANN-1081 Include classification errors for Scottish authorities.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -121,6 +124,7 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
     if (variant) {
       let blpuErrors = [];
       let lpiErrors = [];
+      let classificationErrors = [];
       let provenanceErrors = [];
       let crossRefErrors = [];
       let noteErrors = [];
@@ -144,6 +148,12 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
               ? [...new Set([...error.lpi.flatMap((x) => x.errors), ...lpiErrors])]
               : lpiErrors.length > 0
               ? lpiErrors
+              : [];
+          classificationErrors =
+            ["property", "child"].includes(variant) && error && error.classification && error.classification.length > 0
+              ? [...new Set([...error.classification.flatMap((x) => x.errors), ...classificationErrors])]
+              : classificationErrors.length > 0
+              ? classificationErrors
               : [];
           provenanceErrors =
             ["property", "child"].includes(variant) && error && error.provenance && error.provenance.length > 0
@@ -182,6 +192,10 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
           errors.lpi.length > 0
             ? [...new Set(errors.lpi.flatMap((x) => x.errors))]
             : [];
+        classificationErrors =
+          ["property", "child"].includes(variant) && errors && errors.classification && errors.classification.length > 0
+            ? [...new Set(errors.classification.flatMap((x) => x.errors))]
+            : [];
         provenanceErrors =
           ["property", "child"].includes(variant) && errors && errors.provenance && errors.provenance.length > 0
             ? [...new Set(errors.provenance.flatMap((x) => x.errors))]
@@ -200,7 +214,14 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
       }
 
       const finalisedErrors = [
-        ...new Set([...blpuErrors, ...lpiErrors, ...provenanceErrors, ...crossRefErrors, ...noteErrors]),
+        ...new Set([
+          ...blpuErrors,
+          ...lpiErrors,
+          ...classificationErrors,
+          ...provenanceErrors,
+          ...crossRefErrors,
+          ...noteErrors,
+        ]),
       ];
 
       switch (variant) {
