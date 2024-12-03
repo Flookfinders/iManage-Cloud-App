@@ -52,6 +52,9 @@
 //#region Version 1.0.1.0 changes
 //    036   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    037   14.10.24 Sean Flook      IMANN-1100 Call onEditMapObject when opening a property.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -236,6 +239,7 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
       ];
       mapContext.onSearchDataChange([], [], searchProperties, null, uprn);
     }
+    mapContext.onEditMapObject(21, uprn);
     mapContext.onHighlightStreetProperty(null, [uprn.toString()]);
   };
 

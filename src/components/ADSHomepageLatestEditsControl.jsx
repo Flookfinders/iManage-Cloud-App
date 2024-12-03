@@ -42,6 +42,9 @@
 //    027   03.10.24 Sean Flook      IMANN-1001 Use getClassificationCode to determine the classification code to use.
 //    028   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.2.0 changes
+//    029   14.10.24 Sean Flook      IMANN-1100 Call onEditMapObject when opening a property.
+//#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -477,6 +480,7 @@ function ADSHomepageLatestEditsControl({ data }) {
       ];
       mapContext.onSearchDataChange([], [], searchProperties, null, uprn);
     }
+    mapContext.onEditMapObject(21, uprn);
     mapContext.onHighlightStreetProperty(null, [uprn.toString()]);
   };
 
