@@ -69,6 +69,7 @@
 //    045   31.10.24 Sean Flook       IMANN-1012 Changed to use new checks to prevent duplicating check code.
 //    046   25.11.24 Sean Flook       IMANN-1076 Added check for a valid date in date fields.
 //    047   26.11.24 Sean Flook       IMANN-1089 Updated checks 6100023, 6200028 and 6300033.
+//    048   04.12.24 Sean Flook       IMANN-1087 Corrected the order of parameters for check 6300012.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3004,7 +3005,7 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
 
     // End date cannot be before the start date.
     currentCheck = GetCheck(6300012, currentLookups, methodName, false, showDebugMessages);
-    if (includeCheck(currentCheck, false) && failsCheck6300012(data.recordEndDate, data.recordStartDate)) {
+    if (includeCheck(currentCheck, false) && failsCheck6300012(data.recordStartDate, data.recordEndDate)) {
       recordEndDateErrors.push(GetErrorMessage(currentCheck, false));
     }
 
