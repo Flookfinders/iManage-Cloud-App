@@ -70,6 +70,7 @@
 //    046   25.11.24 Sean Flook       IMANN-1076 Added check for a valid date in date fields.
 //    047   26.11.24 Sean Flook       IMANN-1089 Updated checks 6100023, 6200028 and 6300033.
 //    048   04.12.24 Sean Flook       IMANN-1087 Corrected the order of parameters for check 6300012.
+//    049   05.12.24 Sean Flook       IMANN-1087 Include the currentLookups in call to failsCheck6300051.
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3193,7 +3194,7 @@ export function ValidateSpecialDesignationData(data, index, currentLookups) {
 
     // District does not exist in the operational district table.
     currentCheck = GetCheck(6300051, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, false) && failsCheck6300051(data.districtRefConsultant)) {
+    if (includeCheck(currentCheck, false) && failsCheck6300051(data.districtRefConsultant, currentLookups)) {
       districtRefConsultantErrors.push(GetErrorMessage(currentCheck, true));
     }
 
