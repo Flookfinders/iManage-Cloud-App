@@ -64,14 +64,15 @@
 //    051   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    052   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
-//    053   31.10.24 Sean Flook      IMANN-1012 Added getLookupLinkedRef method.
-//    054   01.10.24 Sean Flook      IMANN-1010 For streets the logicalStatus is no longer greater than 10 in GetAvatarTooltip.
+//    052   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
+//    053   31.10.24 Sean Flook       IMANN-1012 Added getLookupLinkedRef method.
+//    054   01.10.24 Sean Flook       IMANN-1010 For streets the logicalStatus is no longer greater than 10 in GetAvatarTooltip.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    055   14.11.24 Sean Flook      IMANN-1049 Look for the correct character in GetUserName.
-//    056   14.11.24 Sean Flook      IMANN-1012 Added getCheckIcon.
-//    057   25.11.24 Sean Flook      IMANN-1083 Changed GeoPlaceProperty1 to allow the full ISO-8859-14 character set.
+//    055   14.11.24 Sean Flook       IMANN-1049 Look for the correct character in GetUserName.
+//    056   14.11.24 Sean Flook       IMANN-1012 Added getCheckIcon.
+//    057   25.11.24 Sean Flook       IMANN-1083 Changed GeoPlaceProperty1 to allow the full ISO-8859-14 character set.
+//    057   18.12.24 Joshua McCormick IMANN-1109 Change GeoPlaceProperty2 to allow apostrophe for PAO/SAO
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2726,7 +2727,8 @@ export const characterSetValidator = (str, characterSet) => {
 
     case "GeoPlaceProperty2":
       valid =
-        isIso885914(str) && !/[^\w !.,&;:[\]()+\-/@£$àáâäèéêëìíîïòóôöùúûüỳýŷÿŵÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜỲÝŸŶŴ]+/giu.test(str);
+        isIso885914(str) &&
+        !/[^\w !.,&;:[\]()+\-'/@£$àáâäèéêëìíîïòóôöùúûüỳýŷÿŵÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜỲÝŸŶŴ]+/giu.test(str);
       break;
 
     case "GeoPlaceAZOnly":
