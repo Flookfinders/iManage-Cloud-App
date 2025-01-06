@@ -35,7 +35,8 @@
 //    022   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.3.0 changes
-//    023   06.01.25 Sean Flook      IMANN-1119 Changed Multiple properties to Multiple addresses in popup.
+//    023   06.01.25 Sean Flook      IMANN-1123 Changed Multiple properties to Multiple addresses in popup.
+//    024   06.01.25 Sean Flook      IMANN-1123 Changed issue number above.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------

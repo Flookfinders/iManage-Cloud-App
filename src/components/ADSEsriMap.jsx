@@ -118,7 +118,8 @@
 //#endregion Version 1.0.2.0 changes
 //#region Version 1.0.3.0 changes
 //    100   06.01.25 Sean Flook      IMANN-1121 Tidied up code around UI controls.
-//    101   06.01.25 Sean Flook      IMANN-1119 Changed Multiple properties to Multiple addresses in popup.
+//    101   06.01.25 Sean Flook      IMANN-1123 Changed Multiple properties to Multiple addresses in popup.
+//    102   06.01.25 Sean Flook      IMANN-1123 Changed issue number above.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
