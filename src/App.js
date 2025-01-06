@@ -3,7 +3,7 @@
 //
 //  Description: The main application file used for contexts etc.
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -89,6 +89,9 @@
 //    066   13.11.24 Sean Flook      IMANN-1012 Updated the version.
 //    067   27.11.24 Sean Flook      IMANN-1096 Do not store the lookups in the session storage.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.3.0 changes
+//    068   02.01.25 Sean Flook      IMANN-1121 Updated the version.
+//#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -172,7 +175,7 @@ function App() {
 
   const currentMapExtent = useRef(null);
 
-  const guiVersion = "1.0.2.0";
+  const guiVersion = "1.0.3.0";
 
   const onlinePolling = { enabled: true, url: "https://ipv4.icanhazip.com", interval: 5000, timeout: 5000 };
   const offlinePolling = { enabled: true, url: "https://ipv4.icanhazip.com", interval: 5000, timeout: 5000 };

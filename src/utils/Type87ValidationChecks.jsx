@@ -3,7 +3,7 @@
 //
 //  Description: Type 87 validation checks
 //
-//  Copyright:    © 2024 Idox Software Limited.
+//  Copyright:    © 2024 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,6 +13,9 @@
 //#region Version 1.0.1.0 changes
 //    001   31.10.24 Sean Flook      IMANN-1012 Initial Revision.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.3.0 changes
+//    002   06.01.25 Sean Flook      IMANN-1121 Fixed logic for failsCheck8700004.
+//#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -26,7 +29,7 @@ import MapLayerTypes from "../data/MapLayerTypes";
  * @returns {Boolean} True if the check fails; otherwise false.
  */
 export const failsCheck8700004 = (layerType) => {
-  return layerType && MapLayerTypes.find((x) => x.id === layerType);
+  return layerType && !MapLayerTypes.find((x) => x.id === layerType);
 };
 
 /**

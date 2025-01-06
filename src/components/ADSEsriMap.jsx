@@ -3,7 +3,7 @@
 //
 //  Description: ESRI Map component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -116,6 +116,9 @@
 //#region Version 1.0.2.0 changes
 //    099   21.11.24 Sean Flook      IMANN-1029 Use the correct UPRN when calling GetParentHierarchy.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.3.0 changes
+//    100   06.01.25 Sean Flook      IMANN-1121 Tidied up code around UI controls.
+//#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -3194,25 +3197,11 @@ function ADSEsriMap(startExtent) {
         listItemCreatedFunction: defineActions,
       });
 
-      baseView.ui.add(baseSketch, {
-        position: "top-right",
-      });
-
       baseView.ui.remove("zoom"); // Remove default zoom widget first
 
-      baseView.ui.add("ads-buttons", "bottom-left");
-
-      baseView.ui.add(baseLayerList, {
-        position: "bottom-left",
-      });
-
-      baseView.ui.add(baseMeasurement, "bottom-left");
-
-      baseView.ui.add(scaleBar, {
-        position: "bottom-left",
-      });
-
-      baseView.ui.add(baseCoordinateConversion, { position: "bottom-right" });
+      baseView.ui.add(baseSketch, "top-right");
+      baseView.ui.add(["ads-buttons", baseLayerList, baseMeasurement, scaleBar], "bottom-left");
+      baseView.ui.add(baseCoordinateConversion, "bottom-right");
 
       baseSketch.activeTool = null;
 
