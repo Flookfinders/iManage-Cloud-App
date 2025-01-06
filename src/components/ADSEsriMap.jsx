@@ -118,6 +118,7 @@
 //#endregion Version 1.0.2.0 changes
 //#region Version 1.0.3.0 changes
 //    100   06.01.25 Sean Flook      IMANN-1121 Tidied up code around UI controls.
+//    101   06.01.25 Sean Flook      IMANN-1119 Changed Multiple properties to Multiple addresses in popup.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1121,7 +1122,7 @@ function PropertyFeatureReduction(radius, minSize, maxSize, yOffset) {
       },
     ],
     popupTemplate: {
-      title: "Multiple properties",
+      title: "Multiple addresses",
       content: "This cluster represents <b>{cluster_count}</b> addresses.",
       fieldInfos: [
         {

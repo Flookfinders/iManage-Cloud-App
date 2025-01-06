@@ -3,7 +3,7 @@
 //
 //  Description: Wizard Map
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -34,6 +34,9 @@
 //    021   08.07.24 Sean Flook       IMANN-728 Pass in the new parameter to onExtentChange.
 //    022   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.3.0 changes
+//    023   06.01.25 Sean Flook      IMANN-1119 Changed Multiple properties to Multiple addresses in popup.
+//#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -590,7 +593,7 @@ function PropertyFeatureReduction(radius, minSize, maxSize, yOffset) {
       },
     ],
     popupTemplate: {
-      title: "Multiple properties",
+      title: "Multiple addresses",
       content: "This cluster represents <b>{cluster_count}</b> addresses.",
       fieldInfos: [
         {
