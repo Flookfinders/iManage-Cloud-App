@@ -37,6 +37,7 @@
 //#region Version 1.0.3.0 changes
 //    023   06.01.25 Sean Flook      IMANN-1123 Changed Multiple properties to Multiple addresses in popup.
 //    024   06.01.25 Sean Flook      IMANN-1123 Changed issue number above.
+//    025   07.01.25 Sean Flook      IMANN-1126 If the user changes the zoom level remember it.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -707,6 +708,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
    * Method to handle when the zoom in button is clicked.
    */
   function handleZoomIn() {
+    initialExtent.current.zoomLevel++;
     view.zoom++;
   }
 
@@ -714,6 +716,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
    * Method to handle when the zoom out button is clicked.
    */
   function handleZoomOut() {
+    initialExtent.current.zoomLevel--;
     view.zoom--;
   }
 
