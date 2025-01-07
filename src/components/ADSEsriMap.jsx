@@ -121,6 +121,7 @@
 //    101   06.01.25 Sean Flook      IMANN-1123 Changed Multiple properties to Multiple addresses in popup.
 //    102   06.01.25 Sean Flook      IMANN-1123 Changed issue number above.
 //    103   07.01.25 Sean Flook      IMANN-1123 Sort properties on logical status to try and get the cluster symbol correct.
+//    104   07.01.25 Sean Flook      IMANN-1123 Fixed typo.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4061,7 +4062,7 @@ function ADSEsriMap(startExtent) {
       ],
       outFields: ["*"],
       objectIdField: "ObjectID",
-      displayInList: "hide",
+      listMode: "hide",
       visible: selectingProperties.current,
       popupEnabled: false,
       renderer: backgroundPropertyRenderer,
