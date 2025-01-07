@@ -120,6 +120,7 @@
 //    100   06.01.25 Sean Flook      IMANN-1121 Tidied up code around UI controls.
 //    101   06.01.25 Sean Flook      IMANN-1123 Changed Multiple properties to Multiple addresses in popup.
 //    102   06.01.25 Sean Flook      IMANN-1123 Changed issue number above.
+//    103   07.01.25 Sean Flook      IMANN-1123 Sort properties on logical status to try and get the cluster symbol correct.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3858,26 +3859,28 @@ function ADSEsriMap(startExtent) {
 
     const backgroundPropertyFeatures =
       backgroundPropertyData.current &&
-      backgroundPropertyData.current.map((rec, index) => ({
-        geometry: {
-          type: "point",
-          x: rec.easting,
-          y: rec.northing,
-          spatialReference: { wkid: 27700 },
-        },
-        attributes: {
-          ObjectID: index,
-          UPRN: rec.uprn ? rec.uprn.toString() : "",
-          Address: addressToTitleCase(rec.address, rec.postcode),
-          Postcode: rec.postcode,
-          Easting: rec.easting,
-          Northing: rec.northing,
-          LogicalStatus: rec.logicalStatus,
-          LogicalStatusLabel: GetLPILogicalStatusLabel(rec.logicalStatus, isScottish.current),
-          Classification: rec.blpuClass,
-          ClassificationLabel: GetClassificationLabel(rec.blpuClass, isScottish.current),
-        },
-      }));
+      backgroundPropertyData.current
+        .sort((a, b) => a.logicalStatus - b.logicalStatus)
+        .map((rec, index) => ({
+          geometry: {
+            type: "point",
+            x: rec.easting,
+            y: rec.northing,
+            spatialReference: { wkid: 27700 },
+          },
+          attributes: {
+            ObjectID: index,
+            UPRN: rec.uprn ? rec.uprn.toString() : "",
+            Address: addressToTitleCase(rec.address, rec.postcode),
+            Postcode: rec.postcode,
+            Easting: rec.easting,
+            Northing: rec.northing,
+            LogicalStatus: rec.logicalStatus,
+            LogicalStatusLabel: GetLPILogicalStatusLabel(rec.logicalStatus, isScottish.current),
+            Classification: rec.blpuClass,
+            ClassificationLabel: GetClassificationLabel(rec.blpuClass, isScottish.current),
+          },
+        }));
 
     const backgroundPropertyLayer = new FeatureLayer({
       id: backgroundPropertyLayerName,
@@ -3977,26 +3980,28 @@ function ADSEsriMap(startExtent) {
 
     const selectPropertyFeatures =
       mapContext.currentBackgroundData.properties &&
-      mapContext.currentBackgroundData.properties.map((rec, index) => ({
-        geometry: {
-          type: "point",
-          x: rec.easting,
-          y: rec.northing,
-          spatialReference: { wkid: 27700 },
-        },
-        attributes: {
-          ObjectID: index,
-          UPRN: rec.uprn ? rec.uprn.toString() : "",
-          Address: addressToTitleCase(rec.address, rec.postcode),
-          Postcode: rec.postcode,
-          Easting: rec.easting,
-          Northing: rec.northing,
-          LogicalStatus: rec.logicalStatus,
-          LogicalStatusLabel: GetLPILogicalStatusLabel(rec.logicalStatus, isScottish.current),
-          Classification: rec.blpuClass,
-          ClassificationLabel: GetClassificationLabel(rec.blpuClass, isScottish.current),
-        },
-      }));
+      mapContext.currentBackgroundData.properties
+        .sort((a, b) => a.logicalStatus - b.logicalStatus)
+        .map((rec, index) => ({
+          geometry: {
+            type: "point",
+            x: rec.easting,
+            y: rec.northing,
+            spatialReference: { wkid: 27700 },
+          },
+          attributes: {
+            ObjectID: index,
+            UPRN: rec.uprn ? rec.uprn.toString() : "",
+            Address: addressToTitleCase(rec.address, rec.postcode),
+            Postcode: rec.postcode,
+            Easting: rec.easting,
+            Northing: rec.northing,
+            LogicalStatus: rec.logicalStatus,
+            LogicalStatusLabel: GetLPILogicalStatusLabel(rec.logicalStatus, isScottish.current),
+            Classification: rec.blpuClass,
+            ClassificationLabel: GetClassificationLabel(rec.blpuClass, isScottish.current),
+          },
+        }));
 
     const selectPropertyLayer = new FeatureLayer({
       id: selectPropertyLayerName,
@@ -5032,94 +5037,96 @@ function ADSEsriMap(startExtent) {
 
     const propertyFeatures =
       propertyDataRef &&
-      propertyDataRef.map((rec, index) => ({
-        geometry: {
-          type: "point",
-          x:
-            mapContext.currentProperty &&
-            mapContext.currentProperty.uprn &&
-            mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
-              ? mapContext.currentProperty.xcoordinate
-              : rec.easting,
-          y:
-            mapContext.currentProperty &&
-            mapContext.currentProperty.uprn &&
-            mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
-              ? mapContext.currentProperty.ycoordinate
-              : rec.northing,
-          spatialReference: { wkid: 27700 },
-        },
-        attributes: {
-          ObjectID: index,
-          UPRN: rec.uprn.toString(),
-          Address: rec.address ? addressToTitleCase(rec.address, rec.postcode) : "New Property",
-          FormattedAddress: rec.formattedAddress
-            ? addressToTitleCase(rec.formattedAddress, rec.postcode)
-            : rec.address
-            ? addressToTitleCase(rec.address, rec.postcode)
-            : "New Property",
-          Postcode: rec.postcode,
-          Easting:
-            mapContext.currentProperty &&
-            mapContext.currentProperty.uprn &&
-            mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
-              ? mapContext.currentProperty.xcoordinate
-              : rec.easting,
-          Northing:
-            mapContext.currentProperty &&
-            mapContext.currentProperty.uprn &&
-            mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
-              ? mapContext.currentProperty.ycoordinate
-              : rec.northing,
-          LogicalStatus:
-            mapContext.currentProperty &&
-            mapContext.currentProperty.uprn &&
-            mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
-              ? mapContext.currentProperty.logicalStatus
-              : rec.logicalStatus,
-          LogicalStatusLabel: GetLPILogicalStatusLabel(
-            mapContext.currentProperty &&
+      propertyDataRef
+        .sort((a, b) => a.logicalStatus - b.logicalStatus)
+        .map((rec, index) => ({
+          geometry: {
+            type: "point",
+            x:
+              mapContext.currentProperty &&
               mapContext.currentProperty.uprn &&
               mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
-              ? mapContext.currentProperty.logicalStatus
-              : rec.logicalStatus,
-            isScottish.current
-          ),
-          Classification:
-            mapContext.currentProperty &&
-            mapContext.currentProperty.uprn &&
-            mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
-              ? mapContext.currentProperty.blpuClass
-              : rec.classificationCode,
-          ClassificationLabel: GetClassificationLabel(
-            mapContext.currentProperty &&
+                ? mapContext.currentProperty.xcoordinate
+                : rec.easting,
+            y:
+              mapContext.currentProperty &&
               mapContext.currentProperty.uprn &&
               mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
-              ? mapContext.currentProperty.blpuClass
-              : rec.classificationCode,
-            isScottish.current
-          ),
-          SymbolCode: `${
-            mapContext.currentProperty &&
-            mapContext.currentProperty.uprn &&
-            mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
-              ? mapContext.currentProperty.logicalStatus
-              : rec.logicalStatus
-              ? rec.logicalStatus
-              : 5
-          }, ${
-            mapContext.currentProperty &&
-            mapContext.currentProperty.uprn &&
-            mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
-              ? mapContext.currentProperty.blpuClass === "PS"
+                ? mapContext.currentProperty.ycoordinate
+                : rec.northing,
+            spatialReference: { wkid: 27700 },
+          },
+          attributes: {
+            ObjectID: index,
+            UPRN: rec.uprn.toString(),
+            Address: rec.address ? addressToTitleCase(rec.address, rec.postcode) : "New Property",
+            FormattedAddress: rec.formattedAddress
+              ? addressToTitleCase(rec.formattedAddress, rec.postcode)
+              : rec.address
+              ? addressToTitleCase(rec.address, rec.postcode)
+              : "New Property",
+            Postcode: rec.postcode,
+            Easting:
+              mapContext.currentProperty &&
+              mapContext.currentProperty.uprn &&
+              mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
+                ? mapContext.currentProperty.xcoordinate
+                : rec.easting,
+            Northing:
+              mapContext.currentProperty &&
+              mapContext.currentProperty.uprn &&
+              mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
+                ? mapContext.currentProperty.ycoordinate
+                : rec.northing,
+            LogicalStatus:
+              mapContext.currentProperty &&
+              mapContext.currentProperty.uprn &&
+              mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
+                ? mapContext.currentProperty.logicalStatus
+                : rec.logicalStatus,
+            LogicalStatusLabel: GetLPILogicalStatusLabel(
+              mapContext.currentProperty &&
+                mapContext.currentProperty.uprn &&
+                mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
+                ? mapContext.currentProperty.logicalStatus
+                : rec.logicalStatus,
+              isScottish.current
+            ),
+            Classification:
+              mapContext.currentProperty &&
+              mapContext.currentProperty.uprn &&
+              mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
+                ? mapContext.currentProperty.blpuClass
+                : rec.classificationCode,
+            ClassificationLabel: GetClassificationLabel(
+              mapContext.currentProperty &&
+                mapContext.currentProperty.uprn &&
+                mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
+                ? mapContext.currentProperty.blpuClass
+                : rec.classificationCode,
+              isScottish.current
+            ),
+            SymbolCode: `${
+              mapContext.currentProperty &&
+              mapContext.currentProperty.uprn &&
+              mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
+                ? mapContext.currentProperty.logicalStatus
+                : rec.logicalStatus
+                ? rec.logicalStatus
+                : 5
+            }, ${
+              mapContext.currentProperty &&
+              mapContext.currentProperty.uprn &&
+              mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
+                ? mapContext.currentProperty.blpuClass === "PS"
+                  ? "B"
+                  : mapContext.currentProperty.blpuClass.substring(0, 1)
+                : rec.classificationCode === "PS"
                 ? "B"
-                : mapContext.currentProperty.blpuClass.substring(0, 1)
-              : rec.classificationCode === "PS"
-              ? "B"
-              : rec.classificationCode.substring(0, 1)
-          }`,
-        },
-      }));
+                : rec.classificationCode.substring(0, 1)
+            }`,
+          },
+        }));
 
     const extentFeatures =
       extentData.current &&

@@ -38,6 +38,7 @@
 //    023   06.01.25 Sean Flook      IMANN-1123 Changed Multiple properties to Multiple addresses in popup.
 //    024   06.01.25 Sean Flook      IMANN-1123 Changed issue number above.
 //    025   07.01.25 Sean Flook      IMANN-1126 If the user changes the zoom level remember it.
+//    026   07.01.25 Sean Flook      IMANN-1123 Sort properties on logical status to try and get the cluster symbol correct.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1280,24 +1281,26 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
 
     const backgroundStreetFeatures =
       backgroundStreetData.current &&
-      backgroundStreetData.current.map((rec, index) => ({
-        geometry: {
-          type: "polyline",
-          paths: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
-          spatialReference: { wkid: 27700 },
-        },
-        attributes: {
-          ObjectID: index,
-          USRN: rec.usrn.toString(),
-          EsuId: rec.esuId ? rec.esuId.toString() : "",
-          Description: streetToTitleCase(rec.address),
-          State: rec.state,
-          Type: rec.type ? rec.type : 1,
-          StateLabel: GetStreetStateLabel(rec.state),
-          TypeLabel: GetStreetTypeLabel(rec.type ? rec.type : 1, isScottish.current),
-          SymbolCode: `${rec.type ? rec.type.toString() : "1"}, ${rec.state.toString()}`,
-        },
-      }));
+      backgroundStreetData.current
+        .sort((a, b) => a.logicalStatus - b.logicalStatus)
+        .map((rec, index) => ({
+          geometry: {
+            type: "polyline",
+            paths: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
+            spatialReference: { wkid: 27700 },
+          },
+          attributes: {
+            ObjectID: index,
+            USRN: rec.usrn.toString(),
+            EsuId: rec.esuId ? rec.esuId.toString() : "",
+            Description: streetToTitleCase(rec.address),
+            State: rec.state,
+            Type: rec.type ? rec.type : 1,
+            StateLabel: GetStreetStateLabel(rec.state),
+            TypeLabel: GetStreetTypeLabel(rec.type ? rec.type : 1, isScottish.current),
+            SymbolCode: `${rec.type ? rec.type.toString() : "1"}, ${rec.state.toString()}`,
+          },
+        }));
 
     const backgroundStreetLayer = new FeatureLayer({
       id: backgroundStreetLayerName,
@@ -1573,26 +1576,28 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
 
     const backgroundPropertyFeatures =
       backgroundPropertyData.current &&
-      backgroundPropertyData.current.map((rec, index) => ({
-        geometry: {
-          type: "point",
-          x: rec.easting,
-          y: rec.northing,
-          spatialReference: { wkid: 27700 },
-        },
-        attributes: {
-          ObjectID: index,
-          UPRN: rec.uprn ? rec.uprn.toString() : "",
-          Address: addressToTitleCase(rec.address, rec.postcode),
-          Postcode: rec.postcode,
-          Easting: rec.easting,
-          Northing: rec.northing,
-          LogicalStatus: rec.logicalStatus,
-          LogicalStatusLabel: GetLPILogicalStatusLabel(rec.logicalStatus, isScottish.current),
-          Classification: rec.blpuClass,
-          ClassificationLabel: GetClassificationLabel(rec.blpuClass, isScottish.current),
-        },
-      }));
+      backgroundPropertyData.current
+        .sort((a, b) => a.logicalStatus - b.logicalStatus)
+        .map((rec, index) => ({
+          geometry: {
+            type: "point",
+            x: rec.easting,
+            y: rec.northing,
+            spatialReference: { wkid: 27700 },
+          },
+          attributes: {
+            ObjectID: index,
+            UPRN: rec.uprn ? rec.uprn.toString() : "",
+            Address: addressToTitleCase(rec.address, rec.postcode),
+            Postcode: rec.postcode,
+            Easting: rec.easting,
+            Northing: rec.northing,
+            LogicalStatus: rec.logicalStatus,
+            LogicalStatusLabel: GetLPILogicalStatusLabel(rec.logicalStatus, isScottish.current),
+            Classification: rec.blpuClass,
+            ClassificationLabel: GetClassificationLabel(rec.blpuClass, isScottish.current),
+          },
+        }));
 
     const backgroundPropertyLayer = new FeatureLayer({
       id: backgroundPropertyLayerName,
