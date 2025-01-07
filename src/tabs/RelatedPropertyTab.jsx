@@ -3,7 +3,7 @@
 //
 //  Description: Related Property tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -65,6 +65,9 @@
 //    049   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    050   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.3.0 changes
+//    051   07.01.25 Sean Flook      IMANN-1124 Ensure the current property is in view when opening the related tab from code.
+//#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -973,8 +976,17 @@ function RelatedPropertyTab({
           propertyContext.currentProperty.openRelated.topNodeId &&
           document.getElementById(propertyContext.currentProperty.openRelated.topNodeId) &&
           onNodeToggle
-        )
+        ) {
           onNodeToggle(propertyContext.currentProperty.openRelated.expandList);
+          if (!initialPropertyFocused.current) {
+            document
+              .getElementById(
+                `property-related-tree-${propertyContext.currentProperty.openRelated.property.toString()}`
+              )
+              .scrollIntoView();
+            initialPropertyFocused.current = true;
+          }
+        }
       } else if (
         propertyContext.currentProperty.openRelated.property &&
         document.getElementById(

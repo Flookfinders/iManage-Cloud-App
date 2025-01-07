@@ -91,6 +91,7 @@
 //#endregion Version 1.0.2.0 changes
 //#region Version 1.0.3.0 changes
 //    068   02.01.25 Sean Flook      IMANN-1121 Updated the version.
+//    069   07.01.25 Sean Flook      IMANN-1124 When opening the related tab always include the current property in the expand list.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2239,7 +2240,7 @@ function App() {
     let relatedProperty = null;
 
     if (openRelated) {
-      let expandList = [];
+      let expandList = [`${openRelated.property.toString()}`];
       let topNodeId = `property-related-tree-${openRelated.property.toString()}`;
 
       if (openRelated.parent) {
