@@ -5,7 +5,7 @@
   "author": "Idox Software",
   "private": true,
   "dependencies": {
-    "@arcgis/core": "^4.28.10",
+    "@arcgis/core": "^4.31.6",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@date-io/date-fns": "^2.17.0",
     "@emotion/react": "^11.11.4",
