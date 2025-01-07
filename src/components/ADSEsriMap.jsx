@@ -122,6 +122,7 @@
 //    102   06.01.25 Sean Flook      IMANN-1123 Changed issue number above.
 //    103   07.01.25 Sean Flook      IMANN-1123 Sort properties on logical status to try and get the cluster symbol correct.
 //    104   07.01.25 Sean Flook      IMANN-1123 Fixed typo.
+//    105   07.01.25 Sean Flook      IMANN-1119 Added a new field to the property features called DisplayLogicalStatus to be used for the display of the symbols.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -694,7 +695,7 @@ const asd66Renderer = {
 
 const backgroundPropertyRenderer = {
   type: "unique-value",
-  field: "LogicalStatus",
+  field: "DisplayLogicalStatus",
   uniqueValueInfos: [
     {
       value: "1",
@@ -3861,7 +3862,7 @@ function ADSEsriMap(startExtent) {
     const backgroundPropertyFeatures =
       backgroundPropertyData.current &&
       backgroundPropertyData.current
-        .sort((a, b) => a.logicalStatus - b.logicalStatus)
+        // .sort((a, b) => a.logicalStatus - b.logicalStatus)
         .map((rec, index) => ({
           geometry: {
             type: "point",
@@ -3876,6 +3877,9 @@ function ADSEsriMap(startExtent) {
             Postcode: rec.postcode,
             Easting: rec.easting,
             Northing: rec.northing,
+            DisplayLogicalStatus: backgroundPropertyData.current
+              .filter((x) => x.uprn === rec.uprn)
+              .reduce((prev, curr) => (prev.logicalStatus < curr.logicalStatus ? prev : curr)).logicalStatus,
             LogicalStatus: rec.logicalStatus,
             LogicalStatusLabel: GetLPILogicalStatusLabel(rec.logicalStatus, isScottish.current),
             Classification: rec.blpuClass,
@@ -3918,6 +3922,11 @@ function ADSEsriMap(startExtent) {
           name: "Northing",
           alias: "Northing",
           type: "double",
+        },
+        {
+          name: "DisplayLogicalStatus",
+          alias: "DisplayLogicalStatus",
+          type: "integer",
         },
         {
           name: "LogicalStatus",
@@ -3982,7 +3991,7 @@ function ADSEsriMap(startExtent) {
     const selectPropertyFeatures =
       mapContext.currentBackgroundData.properties &&
       mapContext.currentBackgroundData.properties
-        .sort((a, b) => a.logicalStatus - b.logicalStatus)
+        // .sort((a, b) => a.logicalStatus - b.logicalStatus)
         .map((rec, index) => ({
           geometry: {
             type: "point",
@@ -3997,6 +4006,9 @@ function ADSEsriMap(startExtent) {
             Postcode: rec.postcode,
             Easting: rec.easting,
             Northing: rec.northing,
+            DisplayLogicalStatus: mapContext.currentBackgroundData.properties
+              .filter((x) => x.uprn === rec.uprn)
+              .reduce((prev, curr) => (prev.logicalStatus < curr.logicalStatus ? prev : curr)).logicalStatus,
             LogicalStatus: rec.logicalStatus,
             LogicalStatusLabel: GetLPILogicalStatusLabel(rec.logicalStatus, isScottish.current),
             Classification: rec.blpuClass,
@@ -4038,6 +4050,11 @@ function ADSEsriMap(startExtent) {
           name: "Northing",
           alias: "Northing",
           type: "double",
+        },
+        {
+          name: "DisplayLogicalStatus",
+          alias: "DisplayLogicalStatus",
+          type: "integer",
         },
         {
           name: "LogicalStatus",
@@ -5039,7 +5056,7 @@ function ADSEsriMap(startExtent) {
     const propertyFeatures =
       propertyDataRef &&
       propertyDataRef
-        .sort((a, b) => a.logicalStatus - b.logicalStatus)
+        // .sort((a, b) => a.logicalStatus - b.logicalStatus)
         .map((rec, index) => ({
           geometry: {
             type: "point",
@@ -5079,6 +5096,9 @@ function ADSEsriMap(startExtent) {
               mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
                 ? mapContext.currentProperty.ycoordinate
                 : rec.northing,
+            DisplayLogicalStatus: propertyDataRef
+              .filter((x) => x.uprn === rec.uprn)
+              .reduce((prev, curr) => (prev.logicalStatus < curr.logicalStatus ? prev : curr)).logicalStatus,
             LogicalStatus:
               mapContext.currentProperty &&
               mapContext.currentProperty.uprn &&
@@ -5111,9 +5131,15 @@ function ADSEsriMap(startExtent) {
               mapContext.currentProperty &&
               mapContext.currentProperty.uprn &&
               mapContext.currentProperty.uprn.toString() === rec.uprn.toString()
-                ? mapContext.currentProperty.logicalStatus
-                : rec.logicalStatus
-                ? rec.logicalStatus
+                ? mapContext.currentProperty
+                    .filter((x) => x.uprn === rec.uprn)
+                    .reduce((prev, curr) => (prev.logicalStatus < curr.logicalStatus ? prev : curr)).logicalStatus
+                : propertyDataRef
+                    .filter((x) => x.uprn === rec.uprn)
+                    .reduce((prev, curr) => (prev.logicalStatus < curr.logicalStatus ? prev : curr)).logicalStatus
+                ? propertyDataRef
+                    .filter((x) => x.uprn === rec.uprn)
+                    .reduce((prev, curr) => (prev.logicalStatus < curr.logicalStatus ? prev : curr)).logicalStatus
                 : 5
             }, ${
               mapContext.currentProperty &&
@@ -6029,6 +6055,11 @@ function ADSEsriMap(startExtent) {
           name: "Northing",
           alias: "Northing",
           type: "double",
+        },
+        {
+          name: "DisplayLogicalStatus",
+          alias: "DisplayLogicalStatus",
+          type: "integer",
         },
         {
           name: "LogicalStatus",
