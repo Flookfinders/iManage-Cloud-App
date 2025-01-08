@@ -66,6 +66,9 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    052   30.10.24 Joel Benford    IMANN-1036 Set OS blpu state 0 when LS -> 9
+//    053   07.01.25 Joshua McCormick IMANN-1122 Hide organisation change when editing
+//    054   07.01.25 Joshua McCormick IMANN-1122 Removed onOrganisationChange check inside updateCurrentData
+//    055   07.01.25 Joshua McCormick IMANN-1122 Removed unnecessary if statement for onOrganisationChange
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -171,7 +174,6 @@ PropertyDetailsTab.propTypes = {
   onLpiDeleted: PropTypes.func.isRequired,
   onDataChanged: PropTypes.func.isRequired,
   onLogicalStatusChanged: PropTypes.func.isRequired,
-  onOrganisationChanged: PropTypes.func.isRequired,
   onChildAdd: PropTypes.func.isRequired,
   onDeleteProperty: PropTypes.func.isRequired,
 };
@@ -188,7 +190,6 @@ function PropertyDetailsTab({
   onLpiDeleted,
   onDataChanged,
   onLogicalStatusChanged,
-  onOrganisationChanged,
   onChildAdd,
   onDeleteProperty,
 }) {
@@ -382,11 +383,7 @@ function PropertyDetailsTab({
             fieldName && fieldName === "parentUprn" ? (newValue ? newValue.postcode : null) : parentPostcode,
         };
 
-    if (fieldName === "organisation") {
-      if (onOrganisationChanged) onOrganisationChanged(organisation, newValue, currentData);
-    } else {
-      if (onDataChanged) onDataChanged(currentData);
-    }
+    if (onDataChanged) onDataChanged(currentData);
 
     if (["logicalStatus", "classification"].includes(fieldName)) mapContext.onMapPropertyChange(currentData);
     else if (["easting", "northing"].includes(fieldName)) {

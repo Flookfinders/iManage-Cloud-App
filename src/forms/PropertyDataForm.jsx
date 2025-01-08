@@ -86,6 +86,7 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
 //    071   28.11.24 Sean Flook       IMANN-1086 When cancelling changes to provenance ensure the map is also updated.
+//    072   07.01.25 Joshua McCormick IMANN-1122 Removed unnecessary code for handleOrganisationChanged
 //#endregion Version 1.0.2.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2638,101 +2639,6 @@ function PropertyDataForm({ data, loading }) {
   };
 
   /**
-   * Method to handle when the organisation is changed.
-   *
-   * @param {string} oldValue The previous organisation.
-   * @param {string} newValue The new organisation.
-   * @param {object} srcData The BLPU data.
-   * @returns
-   */
-  const handleOrganisationChanged = (oldValue, newValue, srcData) => {
-    if (oldValue === newValue) return;
-
-    const newLpis = [];
-
-    propertyData.lpis.forEach((lpi) => {
-      const baseAddress =
-        lpi.address && lpi.address.length > 0 && lpi.address.indexOf(`${oldValue}, `) !== -1
-          ? lpi.address.replace(`${oldValue}, `, "")
-          : lpi.address;
-
-      newLpis.push({
-        ...lpi,
-        address:
-          baseAddress && baseAddress.length > 0 && newValue && newValue.length > 0
-            ? `${newValue}, ${baseAddress}`
-            : baseAddress,
-      });
-    });
-
-    const newPropertyData = !settingsContext.isScottish
-      ? {
-          blpuStateDate: srcData.blpuStateDate,
-          parentUprn: srcData.parentUprn,
-          neverExport: srcData.neverExport,
-          siteSurvey: srcData.siteSurvey,
-          uprn: propertyData.uprn,
-          logicalStatus: srcData.logicalStatus,
-          endDate: srcData.endDate,
-          blpuState: srcData.blpuState,
-          startDate: srcData.startDate,
-          blpuClass: srcData.blpuClass,
-          localCustodianCode: srcData.localCustodianCode,
-          organisation: srcData.organisation,
-          xcoordinate: srcData.xcoordinate,
-          ycoordinate: srcData.ycoordinate,
-          wardCode: srcData.wardCode,
-          parishCode: srcData.parishCode,
-          pkId: propertyData.pkId,
-          changeType: propertyData.uprn === 0 ? "I" : "U",
-          rpc: srcData.rpc,
-          entryDate: propertyData.entryDate,
-          lastUpdateDate: propertyData.lastUpdateDate,
-          relatedPropertyCount: propertyData.relatedPropertyCount,
-          relatedStreetCount: propertyData.relatedStreetCount,
-          propertyLastUpdated: propertyData.propertyLastUpdated,
-          propertyLastUser: propertyData.propertyLastUser,
-          blpuAppCrossRefs: propertyData.blpuAppCrossRefs,
-          blpuProvenances: propertyData.blpuProvenances,
-          blpuNotes: propertyData.blpuNotes,
-          lpis: newLpis,
-        }
-      : {
-          blpuStateDate: srcData.blpuStateDate,
-          parentUprn: srcData.parentUprn,
-          neverExport: srcData.neverExport,
-          siteSurvey: srcData.siteSurvey,
-          uprn: propertyData.uprn,
-          logicalStatus: srcData.logicalStatus,
-          endDate: srcData.endDate,
-          startDate: srcData.startDate,
-          blpuState: srcData.blpuState,
-          custodianCode: srcData.custodianCode,
-          level: srcData.level,
-          xcoordinate: srcData.xcoordinate,
-          ycoordinate: srcData.ycoordinate,
-          pkId: propertyData.pkId,
-          changeType: propertyData.uprn === 0 ? "I" : "U",
-          rpc: srcData.rpc,
-          entryDate: propertyData.entryDate,
-          lastUpdateDate: propertyData.lastUpdateDate,
-          relatedPropertyCount: propertyData.relatedPropertyCount,
-          relatedStreetCount: propertyData.relatedStreetCount,
-          propertyLastUpdated: propertyData.propertyLastUpdated,
-          propertyLastUser: propertyData.propertyLastUser,
-          blpuAppCrossRefs: propertyData.blpuAppCrossRefs,
-          blpuProvenances: propertyData.blpuProvenances,
-          classifications: propertyData.classifications,
-          organisations: propertyData.organisations,
-          successorCrossRefs: propertyData.successorCrossRefs,
-          blpuNotes: propertyData.blpuNotes,
-          lpis: newLpis,
-        };
-
-    updatePropertyData(newPropertyData);
-  };
-
-  /**
    * Event to handle when the provenance data changes.
    */
   const handleProvenanceDataChanged = () => {
@@ -5190,9 +5096,6 @@ function PropertyDataForm({ data, loading }) {
             onLpiDeleted={(pkId) => handleDeleteLPI(pkId)}
             onDataChanged={handleBLPUDataChanged}
             onLogicalStatusChanged={handleLogicalStatusChanged}
-            onOrganisationChanged={(oldValue, newValue, srcData) =>
-              handleOrganisationChanged(oldValue, newValue, srcData)
-            }
             onChildAdd={handleChildAdd}
             onDeleteProperty={handleDeleteProperty}
           />

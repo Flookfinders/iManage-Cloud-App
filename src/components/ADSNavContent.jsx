@@ -41,6 +41,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    028   24.10.24 Sean Flook      IMANN-1040 Call the logoff endpoint when logging a user off the system.
+//    029   07.01.25 Joshua McCormick IMANN-1050 Inital Check Notifications with changeset 65608
 //#endregion Version 1.0.1.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -59,7 +60,13 @@ import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
 import InformationContext from "../context/informationContext";
-import { GetChangedAssociatedRecords, StringAvatar, stringToSentenceCase, ResetContexts } from "../utils/HelperUtils";
+import {
+  GetChangedAssociatedRecords,
+  StringAvatar,
+  stringToSentenceCase,
+  ResetContexts,
+  FormatDateTime,
+} from "../utils/HelperUtils";
 import { GetCurrentStreetData, SaveStreet, hasStreetChanged } from "../utils/StreetUtils";
 import {
   GetCurrentPropertyData,
@@ -82,16 +89,18 @@ import {
   CardContent,
   Avatar,
 } from "@mui/material";
-import { Stack } from "@mui/system";
+import { Box, Stack } from "@mui/system";
 import ADSActionButton from "./ADSActionButton";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ExploreIcon from "@mui/icons-material/Explore";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import InsertChartIcon from "@mui/icons-material/InsertChart";
+import CheckIcon from "@mui/icons-material/Check";
 import ADSWhatsNewAvatar from "./ADSWhatsNewAvatar";
 import ADSNotificationsAvatar from "./ADSNotificationsAvatar";
 import ADSUserAvatar from "./ADSUserAvatar";
+import CircleIcon from "@mui/icons-material/Circle";
 
 import {
   HomeRoute,
@@ -103,7 +112,15 @@ import {
   AdminSettingsRoute,
 } from "../PageRouting";
 
-import { adsBlueA, adsMidGreyA, adsLightGreyB, adsLightGreyA50 } from "../utils/ADSColours";
+import {
+  adsBlueA,
+  adsMidGreyA,
+  adsLightGreyB,
+  adsLightGreyA50,
+  adsMagenta,
+  adsPaleBlueA,
+  adsRed,
+} from "../utils/ADSColours";
 import {
   navBarWidth,
   GetAlertStyle,
@@ -150,9 +167,10 @@ const ADSNavContent = (props) => {
   const associatedRecords = useRef([]);
 
   const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorElNotifications, setAnchorElNotifications] = useState(null);
   const settingsOpen = Boolean(anchorEl);
+  const notificationsOpen = Boolean(anchorElNotifications);
   const settingsPopoverId = settingsOpen ? "ads-settings-popover" : undefined;
-
   const saveConfirmDialog = useSaveConfirmation();
 
   const [loginOpen, setLoginOpen] = useState(false);
@@ -174,6 +192,13 @@ const ADSNavContent = (props) => {
    */
   const handleSettingsClose = () => {
     setAnchorEl(null);
+  };
+
+  /**
+   * Event to handle closing the notifications.
+   */
+  const handleNotificationsClose = () => {
+    setAnchorElNotifications(null);
   };
 
   /**
@@ -258,6 +283,102 @@ const ADSNavContent = (props) => {
       </Stack>
     );
   }
+
+  /**
+   * Test data for notifications, can be removed once API is in place
+   */
+  const notifications = [
+    // { message: "Cross reference sync ran successfully", date: 1734601302728, variant: "default", unread: true },
+    // { message: "Cross reference sync failed", date: 1734001910622, variant: "failure", unread: true },
+    // { message: "Cross reference sync ran successfully", date: 1733501000000, variant: "default", unread: false },
+  ];
+  /**
+   * Method to get the notifications cards.
+   *
+   * @returns {JSX.Element} The notifications cards.
+   */
+  function GetNotificationsCard() {
+    return (
+      <Stack direction="row" spacing={0.5} width={440}>
+        {userContext.currentUser && (
+          <Card variant="outline" sx={{ width: "100%" }}>
+            <Box>
+              <Stack variant="subtitle2" textAlign="left" fontSize={18}>
+                <CardContent sx={{ mt: theme.spacing(0.5), p: theme.spacing(0.5), pl: theme.spacing(2) }}>
+                  Notifications
+                  <Typography
+                    right={theme.spacing(2)}
+                    position={"absolute"}
+                    top={theme.spacing(1.5)}
+                    fontSize={12}
+                    color={adsMagenta}
+                  >
+                    {notifications.length > 0 && (
+                      <>
+                        <CheckIcon fontSize="10" />
+                        Mark all as read
+                      </>
+                    )}
+                  </Typography>
+                </CardContent>
+
+                <Stack direction="column" alignItems="left">
+                  {notifications.map((data) => {
+                    return (
+                      <NotificationMessageHolder
+                        message={data.message}
+                        date={data.date}
+                        unread={data.unread}
+                        variant={data.variant}
+                      />
+                    );
+                  })}
+
+                  {!notifications.length && <NotificationMessageHolder message={"No notifications"} />}
+                </Stack>
+              </Stack>
+            </Box>
+          </Card>
+        )}
+      </Stack>
+    );
+  }
+
+  const NotificationMessageHolder = (props) => {
+    return (
+      <Typography>
+        <Grid
+          item
+          sx={{
+            background: props.unread ? adsPaleBlueA : "inherit",
+            cursor: "pointer",
+            padding: theme.spacing(2),
+            width: "100%",
+            borderTop: `1px solid ${adsLightGreyB}`,
+            "&:hover": { background: adsLightGreyB },
+          }}
+        >
+          <Typography sx={{ fontSize: 14 }}>
+            {props.message}
+            <Typography display={"inline"} sx={{ position: "absolute", right: theme.spacing(2) }}>
+              <CircleIcon
+                sx={{
+                  width: "12px",
+                  mt: theme.spacing(2),
+                  height: "12px",
+                  color: props.variant === "failure" ? adsRed : adsMagenta,
+                  display: props.unread || props.variant === "failure" ? "block" : "none",
+                }}
+              />
+            </Typography>
+          </Typography>
+          <Typography variant="subtitle2" sx={{ fontWeight: 200, color: adsMidGreyA, fontSize: 12 }}>
+            {FormatDateTime(props.date)}
+          </Typography>
+        </Grid>
+      </Typography>
+    );
+  };
 
   /**
    * Method to set the currently active button.
@@ -586,7 +707,12 @@ const ADSNavContent = (props) => {
    * Event to handle when the notification button is clicked.
    */
   const handleNotificationClick = () => {
-    informationContext.onClearInformation();
+    // informationContext.onClearInformation();
+    if (userContext.currentUser && userContext.currentUser.active) {
+      setAnchorElNotifications(document.getElementById("imanage-user-settings"));
+    } else {
+      userContext.onDisplayLogin();
+    }
   };
 
   /**
@@ -777,7 +903,10 @@ const ADSNavContent = (props) => {
                 <ADSWhatsNewAvatar count={0} handleClick={() => handlePageChangeClick("whatsNew")} />
               )}
               {process.env.NODE_ENV === "development" && (
-                <ADSNotificationsAvatar count={0} handleClick={() => handlePageChangeClick("notification")} />
+                <ADSNotificationsAvatar
+                  count={notifications.length}
+                  handleClick={() => handlePageChangeClick("notification")}
+                />
               )}
               <ADSUserAvatar onUserClick={() => handlePageChangeClick("user")} />
             </Grid>
@@ -816,6 +945,18 @@ const ADSNavContent = (props) => {
         >
           {GetSettingCards()}
         </Popover>
+
+        <Popover
+          id={settingsPopoverId}
+          open={notificationsOpen}
+          anchorEl={anchorElNotifications}
+          onClose={handleNotificationsClose}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          transformOrigin={{ vertical: "bottom", horizontal: "left" }}
+        >
+          {GetNotificationsCard()}
+        </Popover>
+
         <LoginDialog
           isOpen={loginOpen}
           title="Change Password"
