@@ -90,6 +90,7 @@
 //#region Version 1.0.3.0 changes
 //    072   07.01.25 Joshua McCormick IMANN-1122 Removed unnecessary code for handleOrganisationChanged
 //    073   09.01.25 Sean Flook        IMANN-781 Include the pkId in the extent object.
+//    074   09.01.25 Sean Flook       IMANN-1086 Ensure the polygon is reverted/removed when cancelling/deleting.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1962,6 +1963,17 @@ function PropertyDataForm({ data, loading }) {
           propertyData.successorCrossRefs,
           propertyData.blpuNotes
         );
+
+        const mapExtents = newProvenances
+          .filter((x) => x.changeType !== "D")
+          .map((rec) => ({
+            pkId: rec.pkId,
+            uprn: rec.uprn,
+            code: rec.provenanceCode,
+            geometry: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
+          }));
+
+        mapContext.onMapChange(mapExtents, null, null);
       }
     } else if (pkId && pkId < 0) {
       const newProvenances = propertyData.blpuProvenances.filter((x) => x.pkId !== pkId);
@@ -1974,6 +1986,15 @@ function PropertyDataForm({ data, loading }) {
         propertyData.successorCrossRefs,
         propertyData.blpuNotes
       );
+
+      const mapExtents = newProvenances.map((rec) => ({
+        pkId: rec.pkId,
+        uprn: rec.uprn,
+        code: rec.provenanceCode,
+        geometry: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
+      }));
+
+      mapContext.onMapChange(mapExtents, null, null);
     }
   };
 
@@ -3024,6 +3045,23 @@ function PropertyDataForm({ data, loading }) {
             propertyData.blpuNotes,
             "provenance"
           );
+      } else if (checkPkID > 0) {
+        const originalProvenance = sandboxContext.currentSandbox.sourceProperty.blpuProvenances.find(
+          (x) => x.pkId === checkPkID
+        );
+        if (originalProvenance) {
+          const canceledProvenances = propertyData.blpuProvenances.map(
+            (x) => [originalProvenance].find((prov) => prov.pkId === x.pkId) || x
+          );
+          const mapExtents = canceledProvenances.map((rec) => ({
+            pkId: rec.pkId,
+            uprn: rec.uprn,
+            code: rec.provenanceCode,
+            geometry: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
+          }));
+
+          mapContext.onMapChange(mapExtents, null, null);
+        }
       }
 
       failedValidation.current = false;

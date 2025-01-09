@@ -67,6 +67,7 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.3.0 changes
 //    051   07.01.25 Sean Flook      IMANN-1124 Ensure the current property is in view when opening the related tab from code.
+//    052   09.01.25 Sean Flook      IMANN-1124 Check the object exists before trying to bring it in to view.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -978,7 +979,12 @@ function RelatedPropertyTab({
           onNodeToggle
         ) {
           onNodeToggle(propertyContext.currentProperty.openRelated.expandList);
-          if (!initialPropertyFocused.current) {
+          if (
+            !initialPropertyFocused.current &&
+            document.getElementById(
+              `property-related-tree-${propertyContext.currentProperty.openRelated.property.toString()}`
+            )
+          ) {
             document
               .getElementById(
                 `property-related-tree-${propertyContext.currentProperty.openRelated.property.toString()}`
