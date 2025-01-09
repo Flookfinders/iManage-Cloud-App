@@ -3,91 +3,94 @@
 //
 //  Description: Property Data Form
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   20.07.21 Sean Flook         WI39??? Initial Revision.
-//    002   16.03.23 Sean Flook         WI40581 When deleting a cross ref ensure the form is closed.
-//    003   22.03.23 Sean Flook         WI40596 Pass the BLPU logical status to the data tabs.
-//    004   31.03.23 Sean Flook         WI40656 Ensure Site Survey is updated when changed.
-//    005   06.04.23 Sean Flook         WI40656 Included missing Site Survey.
-//    006   06.04.23 Sean Flook         WI40671 Allow newly created notes to be edited.
-//    007   06.04.23 Sean Flook         WI40610 Include parentUprn in handleBLPUDataChanged.
-//    008   26.04.23 Sean Flook         WI40700 Do not set end date when deleting.
-//    009   27.06.23 Sean Flook         WI40746 Remove new LPI if canceled.
-//    010   27.06.23 Sean Flook         WI40234 Allow for the update of the local custodian code.
-//    011   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    012   28.06.23 Sean Flook         WI40730 Get the temporary address before using it.
-//    013   29.06.23 Sean Flook         WI40731 Clear provenanceChanged after clicking OK button.
-//    014   20.07.23 Sean Flook                 Added code to handle when a user adds a new associated record and then clicks on the Cancel button.
-//    015   20.09.23 Sean Flook                 Changes required to handle the OneScotland specific record types.
-//    016   22.09.23 Sean Flook                 Various small bug fixes.
-//    017   06.10.23 Sean Flook                 Various changes to ensure this works for GeoPlace and OneScotland and use colour variables.
-//    018   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate and set end date for associated records when updating the logical status to historic or rejected.
-//    019   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system, renamed successor to successorCrossRef and changes to handle Scottish data structure.
-//    020   30.11.23 Sean Flook                 Use constant for default classification scheme and various bug fixes.
-//    021   14.12.23 Sean Flook                 Corrected note record type.
-//    022   21.12.23 Sean Flook                 Ensure the sandbox is correctly updated.
-//    023   03.01.24 Sean Flook                 Fixed warning.
-//    024   05.01.24 Sean Flook                 Changes to sort out warnings.
-//    025   10.01.24 Sean Flook                 Fix errors.
-//    026   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    027   26.01.24 Sean Flook       IMANN-232 Do not remove record when creating a new property.
-//    028   02.02.24 Sean Flook       IMANN-271 Reset the errors when opening a new property.
-//    029   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
-//    030   28.02.24 Joshua McCormick IMANN-280 Made tabStyle full-width when horizontal scrolling is not needed, so borders are full-width
-//    031   27.02.24 Sean Flook           MUL16 Changes required to correctly open the related tab.
-//    032   04.03.24 Sean Flook           MUL16 Try and ensure we get a new temp address when required.
-//    033   05.03.24 Sean Flook       IMANN-338 If navigating back to an existing record ensure the form is setup as it was left.
-//    034   05.03.24 Sean Flook       IMANN-338 Added code to ensure the tabs are not kept open when not required any more.
-//    035   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the Save button is correctly enabled.
-//    036   07.03.24 Joshua McCormick IMANN-280 Added tabContainerStyle to tab container, reverted old styling changes from 030
-//    037   08.03.24 Sean Flook       IMANN-348 Updated calls to ResetContexts.
-//    038   18.03.24 Sean Flook      STRFRM5_OS Only discard changes if a new record which has not previously been accepted.
-//    039   19.03.24 Sean Flook       PRFRM2_GP Ensure related object is always set in setupRelated.
-//    040   22.03.24 Sean Flook           GLB12 Fixed the height of controls so rest of forms height can be calculated correctly.
-//    041   22.03.24 Sean Flook                 Show updated address correctly.
-//    042   22.03.24 Sean Flook       PRFRM5_GP Clear information control when required.
-//    043   27.03.24 Sean Flook                 Ensure currentPointCaptureMode is not cleared when still required.
-//    044   27.03.24 Sean Flook                 Undone a previous change as it was causing an issue.
-//    045   04.04.24 Sean Flook                 Various changes required for adding a child/children, deleting and changing the logical status.
-//    046   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
-//    047   19.04.24 Sean Flook       IMANN-130 Prevent unnecessary reloading of form data when trying to close the form.
-//    048   22.04.24 Sean Flook       IMANN-374 Only try and open the related tab if not already displayed.
-//    049   29.04.24 Sean Flook       IMANN-371 When the current UPRN changes ensure the first tab is displayed.
-//    050   29.04.24 Sean Flook                 Set the sandbox source property data when opening a new street.
-//    051   30.04.24 Sean Flook       IMANN-371 Separate out streetTab and propertyTab.
-//    052   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
-//    053   17.05.24 Sean Flook       IMANN-458 Pass isActive to the GetTabIconStyle method.
-//    054   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
-//    055   04.06.24 Sean Flook       IMANN-281 Always validate the data before trying to save.
-//    056   06.06.24 Sean Flook       IMANN-524 Correctly update the sandbox when changing the extent geometry.
-//    057   12.06.24 Sean Flook       IMANN-562 Correctly set the pkId when updating the provenance geometry.
-//    058   12.06.24 Sean Flook       IMANN-565 Handle polygon deletion.
-//    059   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    060   21.06.24 Sean Flook       IMANN-561 Allow changing tabs if errors are not on current tab.
-//    061   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
-//    062   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
-//    063   18.07.24 Sean Flook       IMANN-563 When historicising a property also set the BLPU state to 4.
-//    064   19.07.24 Sean Flook       IMANN-802 Added ability for Scottish authorities to add new Gaelic LPIs.
-//    065   13.08.24 Sean Flook       IMANN-861 When creating a new successor record set the predecessor with the current UPRN.
-//    066   27.08.24 Sean Flook       IMANN-910 Corrected typo.
-//    067   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
+//    001   20.07.21 Sean Flook          WI39??? Initial Revision.
+//    002   16.03.23 Sean Flook          WI40581 When deleting a cross ref ensure the form is closed.
+//    003   22.03.23 Sean Flook          WI40596 Pass the BLPU logical status to the data tabs.
+//    004   31.03.23 Sean Flook          WI40656 Ensure Site Survey is updated when changed.
+//    005   06.04.23 Sean Flook          WI40656 Included missing Site Survey.
+//    006   06.04.23 Sean Flook          WI40671 Allow newly created notes to be edited.
+//    007   06.04.23 Sean Flook          WI40610 Include parentUprn in handleBLPUDataChanged.
+//    008   26.04.23 Sean Flook          WI40700 Do not set end date when deleting.
+//    009   27.06.23 Sean Flook          WI40746 Remove new LPI if canceled.
+//    010   27.06.23 Sean Flook          WI40234 Allow for the update of the local custodian code.
+//    011   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    012   28.06.23 Sean Flook          WI40730 Get the temporary address before using it.
+//    013   29.06.23 Sean Flook          WI40731 Clear provenanceChanged after clicking OK button.
+//    014   20.07.23 Sean Flook                  Added code to handle when a user adds a new associated record and then clicks on the Cancel button.
+//    015   20.09.23 Sean Flook                  Changes required to handle the OneScotland specific record types.
+//    016   22.09.23 Sean Flook                  Various small bug fixes.
+//    017   06.10.23 Sean Flook                  Various changes to ensure this works for GeoPlace and OneScotland and use colour variables.
+//    018   27.10.23 Sean Flook                  Updated call to SavePropertyAndUpdate and set end date for associated records when updating the logical status to historic or rejected.
+//    019   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system, renamed successor to successorCrossRef and changes to handle Scottish data structure.
+//    020   30.11.23 Sean Flook                  Use constant for default classification scheme and various bug fixes.
+//    021   14.12.23 Sean Flook                  Corrected note record type.
+//    022   21.12.23 Sean Flook                  Ensure the sandbox is correctly updated.
+//    023   03.01.24 Sean Flook                  Fixed warning.
+//    024   05.01.24 Sean Flook                  Changes to sort out warnings.
+//    025   10.01.24 Sean Flook                  Fix errors.
+//    026   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    027   26.01.24 Sean Flook        IMANN-232 Do not remove record when creating a new property.
+//    028   02.02.24 Sean Flook        IMANN-271 Reset the errors when opening a new property.
+//    029   16.02.24 Sean Flook         ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    030   28.02.24 Joshua McCormick  IMANN-280 Made tabStyle full-width when horizontal scrolling is not needed, so borders are full-width
+//    031   27.02.24 Sean Flook            MUL16 Changes required to correctly open the related tab.
+//    032   04.03.24 Sean Flook            MUL16 Try and ensure we get a new temp address when required.
+//    033   05.03.24 Sean Flook        IMANN-338 If navigating back to an existing record ensure the form is setup as it was left.
+//    034   05.03.24 Sean Flook        IMANN-338 Added code to ensure the tabs are not kept open when not required any more.
+//    035   07.03.24 Sean Flook        IMANN-348 Changes required to ensure the Save button is correctly enabled.
+//    036   07.03.24 Joshua McCormick  IMANN-280 Added tabContainerStyle to tab container, reverted old styling changes from 030
+//    037   08.03.24 Sean Flook        IMANN-348 Updated calls to ResetContexts.
+//    038   18.03.24 Sean Flook       STRFRM5_OS Only discard changes if a new record which has not previously been accepted.
+//    039   19.03.24 Sean Flook        PRFRM2_GP Ensure related object is always set in setupRelated.
+//    040   22.03.24 Sean Flook            GLB12 Fixed the height of controls so rest of forms height can be calculated correctly.
+//    041   22.03.24 Sean Flook                  Show updated address correctly.
+//    042   22.03.24 Sean Flook        PRFRM5_GP Clear information control when required.
+//    043   27.03.24 Sean Flook                  Ensure currentPointCaptureMode is not cleared when still required.
+//    044   27.03.24 Sean Flook                  Undone a previous change as it was causing an issue.
+//    045   04.04.24 Sean Flook                  Various changes required for adding a child/children, deleting and changing the logical status.
+//    046   05.04.24 Sean Flook                  Further changes to ensure the application is correctly updated after a delete.
+//    047   19.04.24 Sean Flook        IMANN-130 Prevent unnecessary reloading of form data when trying to close the form.
+//    048   22.04.24 Sean Flook        IMANN-374 Only try and open the related tab if not already displayed.
+//    049   29.04.24 Sean Flook        IMANN-371 When the current UPRN changes ensure the first tab is displayed.
+//    050   29.04.24 Sean Flook                  Set the sandbox source property data when opening a new street.
+//    051   30.04.24 Sean Flook        IMANN-371 Separate out streetTab and propertyTab.
+//    052   14.05.24 Sean Flook        IMANN-206 Changes required to display all the provenances.
+//    053   17.05.24 Sean Flook        IMANN-458 Pass isActive to the GetTabIconStyle method.
+//    054   23.05.24 Sean Flook        IMANN-486 Changed seqNo to seqNum.
+//    055   04.06.24 Sean Flook        IMANN-281 Always validate the data before trying to save.
+//    056   06.06.24 Sean Flook        IMANN-524 Correctly update the sandbox when changing the extent geometry.
+//    057   12.06.24 Sean Flook        IMANN-562 Correctly set the pkId when updating the provenance geometry.
+//    058   12.06.24 Sean Flook        IMANN-565 Handle polygon deletion.
+//    059   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    060   21.06.24 Sean Flook        IMANN-561 Allow changing tabs if errors are not on current tab.
+//    061   24.06.24 Sean Flook        IMANN-170 Changes required for cascading parent PAO changes to children.
+//    062   04.07.24 Sean Flook        IMANN-705 Use displayName if lastUser is the same as auditName.
+//    063   18.07.24 Sean Flook        IMANN-563 When historicising a property also set the BLPU state to 4.
+//    064   19.07.24 Sean Flook        IMANN-802 Added ability for Scottish authorities to add new Gaelic LPIs.
+//    065   13.08.24 Sean Flook        IMANN-861 When creating a new successor record set the predecessor with the current UPRN.
+//    066   27.08.24 Sean Flook        IMANN-910 Corrected typo.
+//    067   28.08.24 Sean Flook        IMANN-957 Added missing formattedAddress field to map search data.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    068   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//    068   27.09.24 Sean Flook        IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    069   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
 //    070   30.10.24 Joel Benford     IMANN-1036 Set OS blpu state 0 when LS -> 9
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
 //    071   28.11.24 Sean Flook       IMANN-1086 When cancelling changes to provenance ensure the map is also updated.
-//    072   07.01.25 Joshua McCormick IMANN-1122 Removed unnecessary code for handleOrganisationChanged
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.3.0 changes
+//    072   07.01.25 Joshua McCormick IMANN-1122 Removed unnecessary code for handleOrganisationChanged
+//    073   09.01.25 Sean Flook        IMANN-781 Include the pkId in the extent object.
+//#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -371,6 +374,7 @@ function PropertyDataForm({ data, loading }) {
 
     if (clearType === "provenance") {
       const mapExtents = newPropertyData.blpuProvenances.map((rec) => ({
+        pkId: rec.pkId,
         uprn: rec.uprn,
         code: rec.provenanceCode,
         geometry: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,
@@ -3898,6 +3902,7 @@ function PropertyDataForm({ data, loading }) {
         );
 
         const mapExtents = newProvenances.map((rec) => ({
+          pkId: rec.pkId,
           uprn: rec.uprn,
           code: rec.provenanceCode,
           geometry: rec.wktGeometry && rec.wktGeometry !== "" ? GetWktCoordinates(rec.wktGeometry) : undefined,

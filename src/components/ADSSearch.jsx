@@ -3,58 +3,61 @@
 //
 //  Description: Search component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   05.04.23 Sean Flook         WI40596 If opening an historic property display the warning dialog.
-//    003   18.04.23 Sean Flook         WI40687 Handle a 204 response.
-//    004   21.04.23 Sean Flook         WI40693 If no records found display a message informing the user of the fact.
-//    005   24.04.23 Sean Flook         WI40695 Do not bother doing an object comparison if we do not have a current object.
-//    006   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    007   07.09.23 Sean Flook                 Added code to handle unassigned ESUs.
-//    008   06.10.23 Sean Flook                 Added some error trapping and use colour variables.
-//    009   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate.
-//    010   03.11.23 Sean Flook                 Hide the filter and sort buttons for now.
-//    011   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
-//    012   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs.
-//    013   20.11.23 Sean Flook                 Undone above change.
-//    014   24.11.23 Sean Flook                 Moved Box to @mui/system.
-//    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    016   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
-//    017   25.01.24 Sean Flook                 Correctly handle status code 204.
-//    018   26.01.24 Sean Flook       IMANN-260 Corrected field name.
-//    019   01.02.24 Joel Benford     GLB9      Adjust placement/sizing
-//    020   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
-//    021   09.02.24 Sean Flook                 If only 1 record found in search pressing the Enter key will open the record.
-//    022   13.02.24 Sean Flook                 Corrected the type 66 map data.
-//    023   16.02.24 Sean Flook        ESU27_GP Tweaked styling for new Add street button.
-//    024   27.02.24 Sean Flook           MUL16 Changes required to allow control to be used for make child of dialog.
-//    025   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
-//    026   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
-//    027   30.04.24 Sean Flook                 Handle nulls being returned by the Scottish API for ASD records when none are present.
-//    028   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
-//    029   29.05.24 Sean Flook       IMANN-411 Added missing else statement.
-//    030   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    031   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    032   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
-//    033   03.07.24 Joshua McCormick IMANN-542 Searching when inside a property will now directly open property instead of showing search list
-//    034   08.07.24 Sean Flook       IMANN-728 Only get the background properties and provenances if the user can see properties.
-//    035   18.07.24 Sean Flook       IMANN-772 Corrected field name.
-//    036   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001            Sean Flook                  Initial Revision.
+//    002   05.04.23 Sean Flook          WI40596 If opening an historic property display the warning dialog.
+//    003   18.04.23 Sean Flook          WI40687 Handle a 204 response.
+//    004   21.04.23 Sean Flook          WI40693 If no records found display a message informing the user of the fact.
+//    005   24.04.23 Sean Flook          WI40695 Do not bother doing an object comparison if we do not have a current object.
+//    006   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    007   07.09.23 Sean Flook                  Added code to handle unassigned ESUs.
+//    008   06.10.23 Sean Flook                  Added some error trapping and use colour variables.
+//    009   27.10.23 Sean Flook                  Updated call to SavePropertyAndUpdate.
+//    010   03.11.23 Sean Flook                  Hide the filter and sort buttons for now.
+//    011   10.11.23 Sean Flook                  Removed HasASDPlus as no longer required.
+//    012   20.11.23 Sean Flook                  Tweak the classification code for street BLPUs.
+//    013   20.11.23 Sean Flook                  Undone above change.
+//    014   24.11.23 Sean Flook                  Moved Box to @mui/system.
+//    015   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    016   05.01.24 Sean Flook                  Changes to sort out warnings and use CSS shortcuts.
+//    017   25.01.24 Sean Flook                  Correctly handle status code 204.
+//    018   26.01.24 Sean Flook        IMANN-260 Corrected field name.
+//    019   01.02.24 Joel Benford      GLB9      Adjust placement/sizing
+//    020   09.02.24 Sean Flook                  Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
+//    021   09.02.24 Sean Flook                  If only 1 record found in search pressing the Enter key will open the record.
+//    022   13.02.24 Sean Flook                  Corrected the type 66 map data.
+//    023   16.02.24 Sean Flook         ESU27_GP Tweaked styling for new Add street button.
+//    024   27.02.24 Sean Flook            MUL16 Changes required to allow control to be used for make child of dialog.
+//    025   08.03.24 Sean Flook        IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
+//    026   04.04.24 Sean Flook                  Added parentUprn to mapContext search data for properties.
+//    027   30.04.24 Sean Flook                  Handle nulls being returned by the Scottish API for ASD records when none are present.
+//    028   14.05.24 Sean Flook        IMANN-206 Changes required to display all the provenances.
+//    029   29.05.24 Sean Flook        IMANN-411 Added missing else statement.
+//    030   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    031   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    032   24.06.24 Sean Flook        IMANN-170 Changes required for cascading parent PAO changes to children.
+//    033   03.07.24 Joshua McCormick  IMANN-542 Searching when inside a property will now directly open property instead of showing search list
+//    034   08.07.24 Sean Flook        IMANN-728 Only get the background properties and provenances if the user can see properties.
+//    035   18.07.24 Sean Flook        IMANN-772 Corrected field name.
+//    036   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    037   02.10.24 Sean Flook       IMANN-996 Call onEditMapObject when opening a property.
-//    038   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//    037   02.10.24 Sean Flook        IMANN-996 Call onEditMapObject when opening a property.
+//    038   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    039   12.11.24 Sean Flook                 Anchor the filter dialog to the filter button when displaying.
+//    039   12.11.24 Sean Flook                  Anchor the filter dialog to the filter button when displaying.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.3.0 changes
+//    040   09.01.25 Sean Flook        IMANN-781 Include the pkId in the extent object.
+//#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -796,6 +799,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
     const propertyData = await GetPropertyMapData(rec.uprn, userContext);
     const extents = propertyData
       ? propertyData.blpuProvenances.map((provRec) => ({
+          pkId: provRec.pkId,
           uprn: rec.uprn,
           code: provRec.provenanceCode,
           geometry:

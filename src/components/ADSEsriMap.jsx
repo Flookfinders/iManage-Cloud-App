@@ -9,120 +9,121 @@
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   30.07.21 Sean Flook         WI39??? Initial Revision.
-//    002   17.03.23 Sean Flook         WI40585 Use property wizard when creating properties.
-//    003   21.03.23 Sean Flook         WI40592 Do not allow properties to be created on a closed street or a type 3/4 street.
-//    004   28.03.23 Sean Flook         WI40632 Set the source for onWizardDone.
-//    005   05.04.23 Sean Flook         WI40596 If opening an historic property display the warning dialog.
-//    006   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    007   30.06.23 Sean Flook         WI40770 Set suffix letters to uppercase.
-//    008   24.07.23 Sean Flook                 Ensure the sketch tools are displayed if a new record is added.
-//    009   10.08.23 Sean Flook                 Removed ASD type 66 layer as not required as it will always be a whole road.
-//    010   10.08.23 Sean Flook                 Changes required for @arcgis/core version 4.27.6.
-//    011   07.09.23 Sean Flook                 Added code to handle unassigned ESUs and for dividing and assigning ESUs.
-//    012   20.09.23 Sean Flook                 Implemented ability to show street or property in Google street view. Also few other bug fixes.
-//    013   22.09.23 Sean Flook                 Changes required to handle Scottish classifications.
-//    014   06.10.23 Sean Flook                 Changes required to handle GeoPlace ASD records.
-//    014   10.10.23 Sean Flook       IMANN-163 Changes required for opening the related tab after the property wizard.
-//    015   11.10.23 Sean Flook       IMANN-163 Use the centralised doOpenRecord method.
-//    016   11.10.23 Sean Flook       IMANN-163 Correctly handle historic properties.
-//    017   16.10.23 Sean Flook                 Comment out the type 64 and 66 layers until they have been implemented in the API.
-//    018   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate.
-//    019   03.11.23 Sean Flook       IMANN-175 Added code to allow properties to be selected.
-//    020   10.11.23 Sean Flook       IMANN-175 Added code try and correctly highlight properties after doing a move BLPU.
-//    021   20.11.23 Sean Flook                 Added street BLPU to the list of classifications that display an icon.
-//    022   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and changed code to use map rather than foreach.
-//    023   06.12.23 Sean Flook       IMANN-149 Uncomment the type 64 and 66 layers as the API has now been written.
-//    024   19.12.23 Sean Flook                 Various bug fixes.
-//    025   20.12.23 Sean Flook       IMANN-152 Display a dialog when user selects the polyline tool when editing.
-//    026   02.01.24 Sean Flook                 Changes required to load shape files.
-//    027   02.01.24 Sean Flook                 Handle errors when loading shape files.
-//    028   03.01.24 Sean Flook                 Fixed warning.
-//    029   05.01.24 Sean Flook                 use CSS shortcuts.
-//    030   10.01.24 Sean Flook       IMANN-215 Allow ESUs to be assigned to a street when creating a new street.
-//    031   11.01.24 Sean Flook       IMANN-163 Close the add property wizard dialog when clicking on view properties.
-//    032   25.01.24 Sean Flook                 Changes required after UX review and some fixes for bugs/warnings.
-//    033   26.01.24 Sean Flook       IMANN-260 Corrected field name.
-//    034   06.02.24 Sean Flook                 Updated street view icon.
-//    035   07.02.24 Sean Flook                 Changes required to support viaEuropa mapping for OneScotland.
-//    036   07.02.24 Sean Flook                 Changes required to support WFS from viaEuropa mapping for OneScotland.
-//    037   08.02.24 Sean Flook                 Added a fix for using viaEuropa mapping with ArcGIS.
-//    038   09.02.24 Sean Flook                 Removed Divide and Assign from the street actions.
-//    039   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
-//    040   09.02.24 Sean Flook                 Change to use different line symbols for each type of ASD record.
-//    041   13.02.24 Sean Flook                 Ensure the ASD geometries are displayed when creating a new street.
-//    042   14.02.24 Sean Flook        ASD10_GP When editing an ASD record hide the other ASD geometries.
-//    043   14.02.24 Sean Flook        ASD10_GP Filter the current ASD layer to the one that is currently being viewed.
-//    044   14.02.24 Sean Flook                 Added a bit of error trapping.
-//    045   16.02.24 Sean Flook                 Corrected the parameters in GetViaEuropaFeatureAtCoord.
-//    046   16.02.24 Sean Flook        ESU16_GP Whilst assigning ESU prevent anything else from occurring with the ESUs.
-//    047   20.02.24 Sean Flook            MUL1 Changes required to selecting properties from the map.
-//    048   22.02.24 Sean Flook         ESU3_GP Set the fillOpacity on the highlight to 0.25.
-//    049   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods.
-//    050   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    051   11.03.24 Sean Flook        ESU29_GP Set ASD visibility after creating and adding to map.
-//    052   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    053   08.04.24 Sean Flook           STRT4 Changes to allow for authority extent defaults. Changes required to prevent crash when refreshing page.
-//    054   16.04.24 Sean Flook                 When loading a SHP file use the mapContext to retain the information and display the layer in the map.
-//    055   18.04.24 Sean Flook       IMANN-351 Changes required to prevent crashes when refreshing the page.
-//    056   02.05.24 Joshua McCormick IMANN-283 Set GetStreetTypeLabel and GetStreetStateLabel return street code set to false with map overlay
-//    057   02.05.24 Joshua McCormick IMANN-283 GetStreetTypeLabel and GetStreetStateLabel return street code false for all instances
-//    058   03.05.24 Sean Flook                 Moved functions out of useEffect by using useCallback.
-//    059   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
-//    060   14.05.24 Sean Flook       IMANN-206 Include property actions to the background provenance layer information dialog.
-//    061   20.05.24 Sean Flook       IMANN-444 Refresh the snap layers after loading a SHP file.
-//    062   20.05.24 Sean Flook       IMANN-476 Check view has been created first in fadeVisibilityOn.
-//    063   21.05.24 Sean Flook       IMANN-462 Moved loading of base mapping into its own method and wait for details before we try and load it.
-//    064   04.06.24 Sean Flook       IMANN-507 After redrawing a street or property if we are editing the graphic ensure the popup is disabled and the edit graphics layer is on top.
-//    065   06.06.24 Sean Flook       IMANN-522 Always allow editing of provenances.
-//    066   11.06.24 Sean Flook       IMANN-527 Corrected values in streetRenderer.
-//    067   12.06.24 Sean Flook       IMANN-565 Handle polygon deletion.
-//    068   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    069   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    070   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
-//    071   26.06.24 Sean Flook       IMANN-586 Reset the snapping layers after the edit graphics layer has been updated.
-//    072   26.06.24 Joshua McCormick IMANN-548 zoomStreet and property fix, zoomPropertyDataRef length > 0 check
-//    073   28.06.24 Sean Flook                 Set the active tool in the sketch widget, needs to be uncommented once ESRI has been updated.
-//    074   01.07.24 Sean Flook       IMANN-583 Only remove the graphics from the edit layer when required.
-//    075   01.07.24 Sean Flook       IMANN-592 When selecting to open a street or property that is not currently part of the map search data add it.
-//    076   02.07.24 Sean Flook       IMANN-507 Only add the edit graphics layer once.
-//    077   02.07.24 Sean Flook       IMANN-507 When editing a property ensure the edit layer is top of the list.
-//    078   02.07.24 Sean Flook       IMANN-689 Set the unassigned ESUs layer visibility to true.
-//    079   08.07.24 Sean Flook       IMANN-728 Pass in the new parameter to onExtentChange.
-//    080   10.07.24 Sean Flook       IMANN-742 Only allow properties to be added to a street if the user has permission to do that.
-//    081   17.07.24 Sean Flook       IMANN-596 When selecting objects ensure at least 500 milliseconds have elapsed since the last selection, this is a work around for an ESRI bug.
-//    082   18.07.24 Sean Flook       IMANN-772 Corrected field name.
-//    083   22.07.24 Sean Flook       IMANN-774 Added hack to cater for ESRI double event issue for when selecting ESUs.
-//    084   13.08.24 Sean Flook       IMANN-918 Do not display the sketch tool if the user does not have rights to edit the object.
-//    085   27.08.24 Sean Flook       IMANN-888 Ensure the background streets are redrawn when creating a new street whilst already looking at another street.
-//    086   28.08.24 Sean Flook       IMANN-957 Handle if formattedAddress  is missing from the property data.
-//    087   03.09.24 Sean Flook       IMANN-972 Prevent infinite loop from occurring.
-//    088   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001   30.07.21 Sean Flook          WI39??? Initial Revision.
+//    002   17.03.23 Sean Flook          WI40585 Use property wizard when creating properties.
+//    003   21.03.23 Sean Flook          WI40592 Do not allow properties to be created on a closed street or a type 3/4 street.
+//    004   28.03.23 Sean Flook          WI40632 Set the source for onWizardDone.
+//    005   05.04.23 Sean Flook          WI40596 If opening an historic property display the warning dialog.
+//    006   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    007   30.06.23 Sean Flook          WI40770 Set suffix letters to uppercase.
+//    008   24.07.23 Sean Flook                  Ensure the sketch tools are displayed if a new record is added.
+//    009   10.08.23 Sean Flook                  Removed ASD type 66 layer as not required as it will always be a whole road.
+//    010   10.08.23 Sean Flook                  Changes required for @arcgis/core version 4.27.6.
+//    011   07.09.23 Sean Flook                  Added code to handle unassigned ESUs and for dividing and assigning ESUs.
+//    012   20.09.23 Sean Flook                  Implemented ability to show street or property in Google street view. Also few other bug fixes.
+//    013   22.09.23 Sean Flook                  Changes required to handle Scottish classifications.
+//    014   06.10.23 Sean Flook                  Changes required to handle GeoPlace ASD records.
+//    014   10.10.23 Sean Flook        IMANN-163 Changes required for opening the related tab after the property wizard.
+//    015   11.10.23 Sean Flook        IMANN-163 Use the centralised doOpenRecord method.
+//    016   11.10.23 Sean Flook        IMANN-163 Correctly handle historic properties.
+//    017   16.10.23 Sean Flook                  Comment out the type 64 and 66 layers until they have been implemented in the API.
+//    018   27.10.23 Sean Flook                  Updated call to SavePropertyAndUpdate.
+//    019   03.11.23 Sean Flook        IMANN-175 Added code to allow properties to be selected.
+//    020   10.11.23 Sean Flook        IMANN-175 Added code try and correctly highlight properties after doing a move BLPU.
+//    021   20.11.23 Sean Flook                  Added street BLPU to the list of classifications that display an icon.
+//    022   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and changed code to use map rather than foreach.
+//    023   06.12.23 Sean Flook        IMANN-149 Uncomment the type 64 and 66 layers as the API has now been written.
+//    024   19.12.23 Sean Flook                  Various bug fixes.
+//    025   20.12.23 Sean Flook        IMANN-152 Display a dialog when user selects the polyline tool when editing.
+//    026   02.01.24 Sean Flook                  Changes required to load shape files.
+//    027   02.01.24 Sean Flook                  Handle errors when loading shape files.
+//    028   03.01.24 Sean Flook                  Fixed warning.
+//    029   05.01.24 Sean Flook                  use CSS shortcuts.
+//    030   10.01.24 Sean Flook        IMANN-215 Allow ESUs to be assigned to a street when creating a new street.
+//    031   11.01.24 Sean Flook        IMANN-163 Close the add property wizard dialog when clicking on view properties.
+//    032   25.01.24 Sean Flook                  Changes required after UX review and some fixes for bugs/warnings.
+//    033   26.01.24 Sean Flook        IMANN-260 Corrected field name.
+//    034   06.02.24 Sean Flook                  Updated street view icon.
+//    035   07.02.24 Sean Flook                  Changes required to support viaEuropa mapping for OneScotland.
+//    036   07.02.24 Sean Flook                  Changes required to support WFS from viaEuropa mapping for OneScotland.
+//    037   08.02.24 Sean Flook                  Added a fix for using viaEuropa mapping with ArcGIS.
+//    038   09.02.24 Sean Flook                  Removed Divide and Assign from the street actions.
+//    039   09.02.24 Sean Flook                  Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
+//    040   09.02.24 Sean Flook                  Change to use different line symbols for each type of ASD record.
+//    041   13.02.24 Sean Flook                  Ensure the ASD geometries are displayed when creating a new street.
+//    042   14.02.24 Sean Flook         ASD10_GP When editing an ASD record hide the other ASD geometries.
+//    043   14.02.24 Sean Flook         ASD10_GP Filter the current ASD layer to the one that is currently being viewed.
+//    044   14.02.24 Sean Flook                  Added a bit of error trapping.
+//    045   16.02.24 Sean Flook                  Corrected the parameters in GetViaEuropaFeatureAtCoord.
+//    046   16.02.24 Sean Flook         ESU16_GP Whilst assigning ESU prevent anything else from occurring with the ESUs.
+//    047   20.02.24 Sean Flook             MUL1 Changes required to selecting properties from the map.
+//    048   22.02.24 Sean Flook          ESU3_GP Set the fillOpacity on the highlight to 0.25.
+//    049   08.03.24 Sean Flook        IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods.
+//    050   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
+//    051   11.03.24 Sean Flook         ESU29_GP Set ASD visibility after creating and adding to map.
+//    052   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    053   08.04.24 Sean Flook            STRT4 Changes to allow for authority extent defaults. Changes required to prevent crash when refreshing page.
+//    054   16.04.24 Sean Flook                  When loading a SHP file use the mapContext to retain the information and display the layer in the map.
+//    055   18.04.24 Sean Flook        IMANN-351 Changes required to prevent crashes when refreshing the page.
+//    056   02.05.24 Joshua McCormick  IMANN-283 Set GetStreetTypeLabel and GetStreetStateLabel return street code set to false with map overlay
+//    057   02.05.24 Joshua McCormick  IMANN-283 GetStreetTypeLabel and GetStreetStateLabel return street code false for all instances
+//    058   03.05.24 Sean Flook                  Moved functions out of useEffect by using useCallback.
+//    059   14.05.24 Sean Flook        IMANN-206 Changes required to display all the provenances.
+//    060   14.05.24 Sean Flook        IMANN-206 Include property actions to the background provenance layer information dialog.
+//    061   20.05.24 Sean Flook        IMANN-444 Refresh the snap layers after loading a SHP file.
+//    062   20.05.24 Sean Flook        IMANN-476 Check view has been created first in fadeVisibilityOn.
+//    063   21.05.24 Sean Flook        IMANN-462 Moved loading of base mapping into its own method and wait for details before we try and load it.
+//    064   04.06.24 Sean Flook        IMANN-507 After redrawing a street or property if we are editing the graphic ensure the popup is disabled and the edit graphics layer is on top.
+//    065   06.06.24 Sean Flook        IMANN-522 Always allow editing of provenances.
+//    066   11.06.24 Sean Flook        IMANN-527 Corrected values in streetRenderer.
+//    067   12.06.24 Sean Flook        IMANN-565 Handle polygon deletion.
+//    068   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    069   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    070   24.06.24 Sean Flook        IMANN-170 Changes required for cascading parent PAO changes to children.
+//    071   26.06.24 Sean Flook        IMANN-586 Reset the snapping layers after the edit graphics layer has been updated.
+//    072   26.06.24 Joshua McCormick  IMANN-548 zoomStreet and property fix, zoomPropertyDataRef length > 0 check
+//    073   28.06.24 Sean Flook                  Set the active tool in the sketch widget, needs to be uncommented once ESRI has been updated.
+//    074   01.07.24 Sean Flook        IMANN-583 Only remove the graphics from the edit layer when required.
+//    075   01.07.24 Sean Flook        IMANN-592 When selecting to open a street or property that is not currently part of the map search data add it.
+//    076   02.07.24 Sean Flook        IMANN-507 Only add the edit graphics layer once.
+//    077   02.07.24 Sean Flook        IMANN-507 When editing a property ensure the edit layer is top of the list.
+//    078   02.07.24 Sean Flook        IMANN-689 Set the unassigned ESUs layer visibility to true.
+//    079   08.07.24 Sean Flook        IMANN-728 Pass in the new parameter to onExtentChange.
+//    080   10.07.24 Sean Flook        IMANN-742 Only allow properties to be added to a street if the user has permission to do that.
+//    081   17.07.24 Sean Flook        IMANN-596 When selecting objects ensure at least 500 milliseconds have elapsed since the last selection, this is a work around for an ESRI bug.
+//    082   18.07.24 Sean Flook        IMANN-772 Corrected field name.
+//    083   22.07.24 Sean Flook        IMANN-774 Added hack to cater for ESRI double event issue for when selecting ESUs.
+//    084   13.08.24 Sean Flook        IMANN-918 Do not display the sketch tool if the user does not have rights to edit the object.
+//    085   27.08.24 Sean Flook        IMANN-888 Ensure the background streets are redrawn when creating a new street whilst already looking at another street.
+//    086   28.08.24 Sean Flook        IMANN-957 Handle if formattedAddress  is missing from the property data.
+//    087   03.09.24 Sean Flook        IMANN-972 Prevent infinite loop from occurring.
+//    088   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    089   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
-//    090   01.10.24 Sean Flook       IMANN-713 Changed the text on the buttons for adding a property/ies to a street.
-//    091   01.10.24 Sean Flook       IMANN-993 Display the extent merge tool.
-//    092   03.10.24 Sean Flook       IMANN-958 Check user has property edit permission before trying to create a child/children.
-//    093   04.10.24 Sean Flook      IMANN-1005 Use a different colour for a closed street.
-//    094   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
-//    095   14.10.24 Sean Flook      IMANN-1024 Call onEditMapObject when opening a property.
-//    096   28.10.24 Joshua McCormick IMANN-904 useEffect for mapContext.currentClearObject
-//    097   05.11.24 Sean Flook       IMANN-904 When clearing the current edit object clear the geometry as well.
-//    098   06.11.24 Sean Flook      IMANN-1047 Undo changes done for IMANN-904.
+//    089   27.09.24 Sean Flook        IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//    090   01.10.24 Sean Flook        IMANN-713 Changed the text on the buttons for adding a property/ies to a street.
+//    091   01.10.24 Sean Flook        IMANN-993 Display the extent merge tool.
+//    092   03.10.24 Sean Flook        IMANN-958 Check user has property edit permission before trying to create a child/children.
+//    093   04.10.24 Sean Flook       IMANN-1005 Use a different colour for a closed street.
+//    094   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
+//    095   14.10.24 Sean Flook       IMANN-1024 Call onEditMapObject when opening a property.
+//    096   28.10.24 Joshua McCormick  IMANN-904 useEffect for mapContext.currentClearObject
+//    097   05.11.24 Sean Flook        IMANN-904 When clearing the current edit object clear the geometry as well.
+//    098   06.11.24 Sean Flook       IMANN-1047 Undo changes done for IMANN-904.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    099   21.11.24 Sean Flook      IMANN-1029 Use the correct UPRN when calling GetParentHierarchy.
+//    099   21.11.24 Sean Flook       IMANN-1029 Use the correct UPRN when calling GetParentHierarchy.
 //#endregion Version 1.0.2.0 changes
 //#region Version 1.0.3.0 changes
-//    100   06.01.25 Sean Flook      IMANN-1121 Tidied up code around UI controls.
-//    101   06.01.25 Sean Flook      IMANN-1123 Changed Multiple properties to Multiple addresses in popup.
-//    102   06.01.25 Sean Flook      IMANN-1123 Changed issue number above.
-//    103   07.01.25 Sean Flook      IMANN-1123 Sort properties on logical status to try and get the cluster symbol correct.
-//    104   07.01.25 Sean Flook      IMANN-1123 Fixed typo.
-//    105   07.01.25 Sean Flook      IMANN-1119 Added a new field to the property features called DisplayLogicalStatus to be used for the display of the symbols.
+//    100   06.01.25 Sean Flook       IMANN-1121 Tidied up code around UI controls.
+//    101   06.01.25 Sean Flook       IMANN-1123 Changed Multiple properties to Multiple addresses in popup.
+//    102   06.01.25 Sean Flook       IMANN-1123 Changed issue number above.
+//    103   07.01.25 Sean Flook       IMANN-1123 Sort properties on logical status to try and get the cluster symbol correct.
+//    104   07.01.25 Sean Flook       IMANN-1123 Fixed typo.
+//    105   07.01.25 Sean Flook       IMANN-1119 Added a new field to the property features called DisplayLogicalStatus to be used for the display of the symbols.
+//    106   09.01.25 Sean Flook        IMANN-781 Include the pkId in the extent object.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2992,6 +2993,8 @@ function ADSEsriMap(startExtent) {
   useEffect(() => {
     if (viewRef.current) return;
 
+    // console.log("[SF] Base mapping");
+
     const loadBaseMapLayers = () => {
       baseMapLayers.current
         .sort((a, b) => a.layerPosition - b.layerPosition)
@@ -3269,6 +3272,7 @@ function ADSEsriMap(startExtent) {
   // Extent change
   useEffect(() => {
     if (mapContext.currentExtent && backgroundExtent.current !== mapContext.currentExtent) {
+      // console.log("[SF] Extent change");
       backgroundExtent.current = mapContext.currentExtent;
     }
   }, [mapContext.currentExtent]);
@@ -3276,6 +3280,8 @@ function ADSEsriMap(startExtent) {
   // Measurement tool
   useEffect(() => {
     if (!measurementRef.current) return;
+
+    // console.log("[SF] Measurement tool");
 
     measurementRef.current.visible = displayMeasurement;
     measurementRef.current.activeTool = measurementActiveTool;
@@ -3285,6 +3291,8 @@ function ADSEsriMap(startExtent) {
   // Layer list tool
   useEffect(() => {
     if (!layerListRef.current) return;
+
+    // console.log("[SF] Layer list tool");
 
     layerListRef.current.visible = displayLayerList;
   }, [displayLayerList]);
@@ -3315,6 +3323,8 @@ function ADSEsriMap(startExtent) {
     }
 
     if (!mapRef.current || !mapRef.current.layers || !haveStreets || oldAndNewSame) return;
+
+    // console.log("[SF] Background streets Layer");
 
     oldMapData.current = {
       streets: oldMapData.current.streets,
@@ -3509,6 +3519,8 @@ function ADSEsriMap(startExtent) {
 
     if (!mapRef.current || !mapRef.current.layers || !haveEsus || oldAndNewSame) return;
 
+    // console.log("[SF] Unassigned ESUs layer");
+
     oldMapData.current = {
       streets: oldMapData.current.streets,
       llpgStreets: oldMapData.current.llpgStreets,
@@ -3659,6 +3671,8 @@ function ADSEsriMap(startExtent) {
       : false;
 
     if (!mapRef.current || !mapRef.current.layers || !haveLlpgStreets || oldAndNewSame) return;
+
+    // console.log("[SF] LLPG Street layer");
 
     oldMapData.current = {
       streets: oldMapData.current.streets,
@@ -3824,6 +3838,8 @@ function ADSEsriMap(startExtent) {
     }
 
     if (!mapRef.current || !mapRef.current.layers || !haveProperties || oldAndNewSame) return;
+
+    // console.log("[SF] Background property layer");
 
     oldMapData.current = {
       streets: oldMapData.current.streets,
@@ -4124,6 +4140,8 @@ function ADSEsriMap(startExtent) {
 
     if (!mapRef.current || !mapRef.current.layers || !haveProvenances || oldAndNewSame) return;
 
+    // console.log("[SF] Background provenance layer");
+
     oldMapData.current = {
       streets: oldMapData.current.streets,
       llpgStreets: oldMapData.current.llpgStreets,
@@ -4238,6 +4256,7 @@ function ADSEsriMap(startExtent) {
 
   // Display loaded SHP files
   useEffect(() => {
+    // console.log("[SF] Display loaded SHP files");
     // First unload all the shpFiles previously loaded
     if (loadedShpFileIds.current && loadedShpFileIds.current.length) {
       loadedShpFileIds.current.forEach((shpId) => {
@@ -4300,6 +4319,8 @@ function ADSEsriMap(startExtent) {
     )
       return;
 
+    // console.log("[SF] Edit, street & property layers");
+
     let streetDataRef = null;
     let llpgStreetDataRef = null;
     let asdType51DataRef = null;
@@ -4316,7 +4337,11 @@ function ADSEsriMap(startExtent) {
 
     if (mapContext.currentLayers && mapContext.currentSearchData) {
       if (mapContext.currentLayers.zoomStreet) {
-        if (userContext.current.currentUser.hasStreet) {
+        if (
+          mapContext.currentSearchData.streets &&
+          mapContext.currentSearchData.streets.length > 0 &&
+          userContext.current.currentUser.hasStreet
+        ) {
           const currentStreets = mapContext.currentSearchData.streets.filter(
             (x) => x.usrn.toString() === mapContext.currentLayers.zoomStreet.usrn.toString()
           );
@@ -4341,7 +4366,7 @@ function ADSEsriMap(startExtent) {
 
           if (mapStreets && mapStreets.length > 0) zoomStreetDataRef = mapStreets;
           else zoomStreetDataRef = null;
-        } else {
+        } else if (mapContext.currentSearchData.llpgStreets && mapContext.currentSearchData.llpgStreets.length > 0) {
           const currentLlpgStreets = mapContext.currentSearchData.llpgStreets.filter(
             (x) => x.usrn.toString() === mapContext.currentLayers.zoomStreet.usrn.toString()
           );
@@ -4366,18 +4391,26 @@ function ADSEsriMap(startExtent) {
 
           if (mapLlpgStreets && mapLlpgStreets.length > 0) zoomStreetDataRef = mapLlpgStreets;
           else zoomStreetDataRef = null;
-        }
+        } else zoomStreetDataRef = null;
       } else zoomStreetDataRef = null;
       setZoomStreetData(zoomStreetDataRef);
 
-      if (mapContext.currentLayers.zoomProperty) {
+      if (
+        mapContext.currentSearchData.properties &&
+        mapContext.currentSearchData.properties.length > 0 &&
+        mapContext.currentLayers.zoomProperty
+      ) {
         zoomPropertyDataRef = mapContext.currentSearchData.properties.filter(
           (x) => x.uprn.toString() === mapContext.currentLayers.zoomProperty.toString()
         );
       } else zoomPropertyDataRef = null;
       setZoomPropertyData(zoomPropertyDataRef);
 
-      if (mapContext.currentSearchData.properties && !mapContext.currentSearchData.editStreet) {
+      if (
+        mapContext.currentSearchData.properties &&
+        mapContext.currentSearchData.properties.length > 0 &&
+        !mapContext.currentSearchData.editStreet
+      ) {
         if (mapContext.currentSearchData.editProperty)
           propertyDataRef = mapContext.currentSearchData.properties.filter(
             (x) => x.uprn.toString() === mapContext.currentSearchData.editProperty.toString()
@@ -4387,7 +4420,11 @@ function ADSEsriMap(startExtent) {
       setPropertyData(propertyDataRef);
       refPropertyData.current = propertyDataRef;
 
-      if (mapContext.currentLayers.extents && mapContext.currentSearchData.editProperty) {
+      if (
+        mapContext.currentLayers.extents &&
+        mapContext.currentLayers.extents.length > 0 &&
+        mapContext.currentSearchData.editProperty
+      ) {
         extentData.current = mapContext.currentLayers.extents.filter(
           (x) => x.geometry && x.uprn.toString() === mapContext.currentSearchData.editProperty.toString()
         );
@@ -8031,6 +8068,8 @@ function ADSEsriMap(startExtent) {
   useEffect(() => {
     if (!mapRef.current || !mapRef.current.layers || !mapRef.current.layers.length) return;
 
+    // console.log("[SF] Fix the order of the layers");
+
     const backgroundStreetLayer = mapRef.current.findLayerById(backgroundStreetLayerName);
     const unassignedEsusLayer = mapRef.current.findLayerById(unassignedEsusLayerName);
     const backgroundPropertyLayer = mapRef.current.findLayerById(backgroundPropertyLayerName);
@@ -8101,6 +8140,7 @@ function ADSEsriMap(startExtent) {
 
   // Edit graphics layer & setting sketch tools
   useEffect(() => {
+    // console.log("[SF] Edit graphics layer & setting sketch tools");
     const setSnappingLayers = () => {
       const LayersUsedForSnapping = [];
       let baseLayer = null;
@@ -8910,6 +8950,8 @@ function ADSEsriMap(startExtent) {
   useEffect(() => {
     if (!mapRef.current || !mapRef.current.layers || !mapRef.current.layers.length) return;
 
+    // console.log("[SF] ASD Layer visibility");
+
     if (streetContext.currentRecord) {
       const asd51Layer = mapRef.current && mapRef.current.findLayerById(asd51LayerName);
       const asd52Layer = mapRef.current && mapRef.current.findLayerById(asd52LayerName);
@@ -8933,12 +8975,14 @@ function ADSEsriMap(startExtent) {
 
   // Store sandboxContext
   useEffect(() => {
+    // console.log("[SF] Store sandboxContext");
     sandbox.current = sandboxContext.currentSandbox;
   }, [sandboxContext.currentSandbox]);
 
   // Map actions and events
   useEffect(() => {
     if (view) {
+      // console.log("[SF] Map actions and events");
       reactiveUtils.when(
         () => view.popup?.actions,
         () => {
@@ -9093,6 +9137,8 @@ function ADSEsriMap(startExtent) {
         !mapContext.currentHighlight.extent)
     )
       return;
+
+    // console.log("[SF] Highlight map objects");
 
     const mapLayers = mapRef.current.layers.items;
     let streetLayer = null;
@@ -9329,6 +9375,8 @@ function ADSEsriMap(startExtent) {
   useEffect(() => {
     if (!mapRef.current || !mapRef.current.layers || !mapRef.current.layers.length) return;
 
+    // console.log("[SF] Capture coordinates");
+
     const streetLayer = mapRef.current && mapRef.current.findLayerById(streetLayerName);
     const llpgStreetLayer = mapRef.current && mapRef.current.findLayerById(llpgStreetLayerName);
     const asd51Layer = mapRef.current && mapRef.current.findLayerById(asd51LayerName);
@@ -9388,6 +9436,7 @@ function ADSEsriMap(startExtent) {
       propertyContext.wizardData.source &&
       propertyContext.wizardData.source === "map"
     ) {
+      // console.log("[SF] Property wizard finalise");
       if (!propertyContext.wizardData.savedProperty || propertyContext.wizardData.savedProperty.length === 0) {
         if (propertyContext.wizardData.type === "close") {
           setOpenPropertyWizard(false);
@@ -9548,6 +9597,8 @@ function ADSEsriMap(startExtent) {
   // Selecting properties
   useEffect(() => {
     if (!mapRef.current || !mapRef.current.layers || !mapRef.current.layers.length) return;
+
+    // console.log("[SF] Selecting properties");
 
     if (mapContext.currentBackgroundData.properties && !(editingObject.current && editingObject.current.objectType)) {
       const streetLayer = mapRef.current && mapRef.current.findLayerById(streetLayerName);

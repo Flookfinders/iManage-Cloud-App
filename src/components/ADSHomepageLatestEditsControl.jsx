@@ -3,48 +3,51 @@
 //
 //  Description: Latest Edits control for homepage
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited
+//  Copyright:    © 2021 - 2025 Idox Software Limited
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   02.06.23 Joel Benford       WI40689 Initial Revision.
-//    002          ? Sean Flook                 Various layout changes
-//    003   05.07.23 Joel Benford       WI40762 Add lastUser to latest edits grid
-//    004   24.07.23 Sean Flook                 Corrected spelling mistake.
-//    005   07.09.23 Sean Flook                 Removed unnecessary code.
-//    006   06.10.23 Sean Flook                 Use colour variables and added some error trapping.
-//    007   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required and corrected display of user avatar.
-//    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and removed a couple of warnings.
-//    009   08.12.23 Sean Flook                 Migrated DataGrid to v6.
-//    010   05.01.24 Sean Flook                 Changes to sort out warnings.
-//    011   26.01.24 Sean Flook       IMANN-260 Corrected field name.
-//    012   02.02.24 Joel Benford               Styling changes on tabs/grid
-//    013   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
-//    014   13.02.24 Sean Flook                 Corrected the type 66 map data.
-//    015   14.02.24 Sean Flook                 Added a bit of error trapping.
-//    016   07.03.24 Joshua McCormick  IMANN-280 Added tabContainerStyle to tab container
-//    017   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    018   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
-//    019   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    020   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
-//    021   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    022   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    023   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
-//    024   04.07.24 Sean Flook       IMANN-705 Also change tooltip.
-//    025   18.07.24 Sean Flook       IMANN-772 Corrected field name.
-//    026   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
+//    001   02.06.23 Joel Benford        WI40689 Initial Revision.
+//    002          ? Sean Flook                  Various layout changes
+//    003   05.07.23 Joel Benford        WI40762 Add lastUser to latest edits grid
+//    004   24.07.23 Sean Flook                  Corrected spelling mistake.
+//    005   07.09.23 Sean Flook                  Removed unnecessary code.
+//    006   06.10.23 Sean Flook                  Use colour variables and added some error trapping.
+//    007   10.11.23 Sean Flook                  Removed HasASDPlus as no longer required and corrected display of user avatar.
+//    008   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and removed a couple of warnings.
+//    009   08.12.23 Sean Flook                  Migrated DataGrid to v6.
+//    010   05.01.24 Sean Flook                  Changes to sort out warnings.
+//    011   26.01.24 Sean Flook        IMANN-260 Corrected field name.
+//    012   02.02.24 Joel Benford                Styling changes on tabs/grid
+//    013   09.02.24 Sean Flook                  Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
+//    014   13.02.24 Sean Flook                  Corrected the type 66 map data.
+//    015   14.02.24 Sean Flook                  Added a bit of error trapping.
+//    016   07.03.24 Joshua McCormick   IMANN-280 Added tabContainerStyle to tab container
+//    017   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
+//    018   18.03.24 Sean Flook       STRFRM3_OS Set the styling for the header row of the data grid.
+//    019   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    020   04.04.24 Sean Flook                  Added parentUprn to mapContext search data for properties.
+//    021   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    022   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    023   04.07.24 Sean Flook        IMANN-705 Use displayName if lastUser is the same as auditName.
+//    024   04.07.24 Sean Flook        IMANN-705 Also change tooltip.
+//    025   18.07.24 Sean Flook        IMANN-772 Corrected field name.
+//    026   28.08.24 Sean Flook        IMANN-957 Added missing formattedAddress field to map search data.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    027   03.10.24 Sean Flook      IMANN-1001 Use getClassificationCode to determine the classification code to use.
-//    028   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//    027   03.10.24 Sean Flook       IMANN-1001 Use getClassificationCode to determine the classification code to use.
+//    028   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    029   14.10.24 Sean Flook      IMANN-1100 Call onEditMapObject when opening a property.
+//    029   14.10.24 Sean Flook       IMANN-1100 Call onEditMapObject when opening a property.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.3.0 changes
+//    003   09.01.25 Sean Flook        IMANN-781 Call onMapChange when opening a property.
+//#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -443,7 +446,7 @@ function ADSHomepageLatestEditsControl({ data }) {
    * @param {number} logicalStatus The logical status of the property to be edited.
    * @param {string} classificationCode The classification code of the property to be edited.
    */
-  const doEditProperty = (
+  const doEditProperty = async (
     uprn,
     parentUprn,
     address,
@@ -465,6 +468,17 @@ function ADSHomepageLatestEditsControl({ data }) {
         uprn
       );
     } else {
+      const propertyData = await GetPropertyMapData(uprn, userContext);
+      const extents = propertyData
+        ? propertyData.blpuProvenances.map((provRec) => ({
+            pkId: provRec.pkId,
+            uprn: uprn,
+            code: provRec.provenanceCode,
+            geometry:
+              provRec.wktGeometry && provRec.wktGeometry !== "" ? GetWktCoordinates(provRec.wktGeometry) : undefined,
+          }))
+        : undefined;
+
       const searchProperties = [
         {
           uprn: uprn,
@@ -479,6 +493,7 @@ function ADSHomepageLatestEditsControl({ data }) {
         },
       ];
       mapContext.onSearchDataChange([], [], searchProperties, null, uprn);
+      mapContext.onMapChange(extents, null, null);
     }
     mapContext.onEditMapObject(21, uprn);
     mapContext.onHighlightStreetProperty(null, [uprn.toString()]);
