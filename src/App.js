@@ -92,6 +92,7 @@
 //#region Version 1.0.3.0 changes
 //    068   02.01.25 Sean Flook      IMANN-1121 Updated the version.
 //    069   07.01.25 Sean Flook      IMANN-1124 When opening the related tab always include the current property in the expand list.
+//    070   09.01.25 Sean Flook      IMANN-1125 Moved code to prevent the calls to get the background data from being run multiple times.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3170,14 +3171,33 @@ function App() {
     let backgroundProvenanceData = null;
 
     if (
-      !currentMapExtent.current ||
-      (currentMapExtent.current.zoomLevel !== extent.zoomLevel && extent.zoomLevel > 15) ||
-      (currentMapExtent.current.zoomLevel === extent.zoomLevel &&
-        (currentMapExtent.current.xmin !== extent.xmin ||
-          currentMapExtent.current.ymin !== extent.ymin ||
-          currentMapExtent.current.xmax !== extent.xmax ||
-          currentMapExtent.current.ymax !== extent.ymax))
+      extent.zoomLevel > 15 &&
+      (!currentMapExtent.current ||
+        currentMapExtent.current.zoomLevel !== extent.zoomLevel ||
+        (currentMapExtent.current.zoomLevel === extent.zoomLevel &&
+          (currentMapExtent.current.xmin !== extent.xmin ||
+            currentMapExtent.current.ymin !== extent.ymin ||
+            currentMapExtent.current.xmax !== extent.xmax ||
+            currentMapExtent.current.ymax !== extent.ymax)))
     ) {
+      console.log("[SF] Extent Change", {
+        extent: {
+          xmin: extent.xmin,
+          ymin: extent.ymin,
+          xmax: extent.xmax,
+          ymax: extent.ymax,
+          zoomLevel: extent.zoomLevel,
+        },
+        currentMapExtent: currentMapExtent.current,
+      });
+      currentMapExtent.current = {
+        xmin: extent.xmin,
+        ymin: extent.ymin,
+        xmax: extent.xmax,
+        ymax: extent.ymax,
+        zoomLevel: extent.zoomLevel,
+      };
+
       if (extent.zoomLevel > 15) {
         backgroundStreetData = await GetBackgroundStreetData(extent);
         unassignedEsuData = await GetUnassignedEsuData(extent);
@@ -3212,14 +3232,6 @@ function App() {
           })
         );
       }
-
-      currentMapExtent.current = {
-        xmin: extent.xmin,
-        ymin: extent.ymin,
-        xmax: extent.xmax,
-        ymax: extent.ymax,
-        zoomLevel: extent.zoomLevel,
-      };
     }
   }
 

@@ -57,6 +57,7 @@
 //#endregion Version 1.0.2.0 changes
 //#region Version 1.0.3.0 changes
 //    040   09.01.25 Sean Flook        IMANN-781 Include the pkId in the extent object.
+//    041   09.01.25 Sean Flook       IMANN-1125 Only get background data if required.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1508,38 +1509,46 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
     if (
       variant === "appBar" &&
       !backgroundStreetData.current &&
+      !mapContext.currentBackgroundData.streets &&
       mapContext.currentExtent &&
       mapContext.currentExtent.zoomLevel > 15
-    )
+    ) {
       GetBackgroundStreetData();
+    }
 
     if (
       variant === "appBar" &&
       !unassignedEsuData.current &&
+      !mapContext.currentBackgroundData.unassignedEsus &&
       mapContext.currentExtent &&
       mapContext.currentExtent.zoomLevel > 15
-    )
+    ) {
       GetUnassignedEsuData();
+    }
 
     if (
       variant === "appBar" &&
       !backgroundPropertyData.current &&
+      !mapContext.currentBackgroundData.properties &&
       mapContext.currentExtent &&
       mapContext.currentExtent.zoomLevel > 17 &&
       userContext.currentUser &&
       userContext.currentUser.hasProperty
-    )
+    ) {
       GetBackgroundPropertyData();
+    }
 
     if (
       variant === "appBar" &&
       !backgroundProvenanceData.current &&
+      !mapContext.currentBackgroundData.provenances &&
       mapContext.currentExtent &&
       mapContext.currentExtent.zoomLevel > 17 &&
       userContext.currentUser &&
       userContext.currentUser.hasProperty
-    )
+    ) {
       GetBackgroundProvenanceData();
+    }
 
     return () => {
       setData([{ uprn: 0, address: "Loading Data...", postcode: "" }]);

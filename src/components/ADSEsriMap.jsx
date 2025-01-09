@@ -124,6 +124,7 @@
 //    104   07.01.25 Sean Flook       IMANN-1123 Fixed typo.
 //    105   07.01.25 Sean Flook       IMANN-1119 Added a new field to the property features called DisplayLogicalStatus to be used for the display of the symbols.
 //    106   09.01.25 Sean Flook        IMANN-781 Include the pkId in the extent object.
+//    107   09.01.25 Sean Flook       IMANN-1125 Correctly check for nulls when determining if background data is the same.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3310,21 +3311,23 @@ function ADSEsriMap(startExtent) {
 
     if (oldAndNewSame) {
       oldAndNewSame =
-        !!mapContext.currentSearchData.editStreet &&
-        !!oldMapData.current.editStreet &&
-        mapContext.currentSearchData.editStreet === oldMapData.current.editStreet;
+        (mapContext.currentSearchData.editStreet === null && oldMapData.current.editStreet === null) ||
+        (!!mapContext.currentSearchData.editStreet &&
+          !!oldMapData.current.editStreet &&
+          mapContext.currentSearchData.editStreet === oldMapData.current.editStreet);
     }
 
     if (oldAndNewSame) {
       oldAndNewSame =
-        !!mapContext.currentLayers.zoomStreet &&
-        !!oldMapData.current.zoomStreet &&
-        mapContext.currentLayers.zoomStreet === oldMapData.current.zoomStreet;
+        (mapContext.currentLayers.zoomStreet === null && oldMapData.current.zoomStreet === null) ||
+        (!!mapContext.currentLayers.zoomStreet &&
+          !!oldMapData.current.zoomStreet &&
+          mapContext.currentLayers.zoomStreet === oldMapData.current.zoomStreet);
     }
 
     if (!mapRef.current || !mapRef.current.layers || !haveStreets || oldAndNewSame) return;
 
-    // console.log("[SF] Background streets Layer");
+    console.log("[SF] Background streets Layer");
 
     oldMapData.current = {
       streets: oldMapData.current.streets,
@@ -3825,16 +3828,18 @@ function ADSEsriMap(startExtent) {
 
     if (oldAndNewSame) {
       oldAndNewSame =
-        !!mapContext.currentSearchData.editProperty &&
-        !!oldMapData.current.editProperty &&
-        mapContext.currentSearchData.editProperty === oldMapData.current.editProperty;
+        (mapContext.currentSearchData.editProperty === null && oldMapData.current.editProperty === null) ||
+        (!!mapContext.currentSearchData.editProperty &&
+          !!oldMapData.current.editProperty &&
+          mapContext.currentSearchData.editProperty === oldMapData.current.editProperty);
     }
 
     if (oldAndNewSame) {
       oldAndNewSame =
-        !!mapContext.currentLayers.zoomProperty &&
-        !!oldMapData.current.zoomProperty &&
-        mapContext.currentLayers.zoomProperty === oldMapData.current.zoomProperty;
+        (mapContext.currentLayers.zoomProperty === null && oldMapData.current.zoomProperty === null) ||
+        (!!mapContext.currentLayers.zoomProperty &&
+          !!oldMapData.current.zoomProperty &&
+          mapContext.currentLayers.zoomProperty === oldMapData.current.zoomProperty);
     }
 
     if (!mapRef.current || !mapRef.current.layers || !haveProperties || oldAndNewSame) return;
