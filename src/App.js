@@ -3180,16 +3180,6 @@ function App() {
             currentMapExtent.current.xmax !== extent.xmax ||
             currentMapExtent.current.ymax !== extent.ymax)))
     ) {
-      console.log("[SF] Extent Change", {
-        extent: {
-          xmin: extent.xmin,
-          ymin: extent.ymin,
-          xmax: extent.xmax,
-          ymax: extent.ymax,
-          zoomLevel: extent.zoomLevel,
-        },
-        currentMapExtent: currentMapExtent.current,
-      });
       currentMapExtent.current = {
         xmin: extent.xmin,
         ymin: extent.ymin,
