@@ -126,6 +126,7 @@
 //    106   09.01.25 Sean Flook        IMANN-781 Include the pkId in the extent object.
 //    107   09.01.25 Sean Flook       IMANN-1125 Correctly check for nulls when determining if background data is the same.
 //    108   09.01.25 Sean Flook       IMANN-1125 Remove console logs where not required.
+//    109   10.01.25 Sean Flook        IMANN-781 Do not redo the layers when editing a provenance record.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -4321,6 +4322,10 @@ function ADSEsriMap(startExtent) {
     let zoomStreetDataRef = null;
     let zoomPropertyDataRef = null;
 
+    const editingGraphic = editingObject.current && editingObject.current.objectType;
+
+    if (editingGraphic === 22) return;
+
     if (mapContext.currentLayers && mapContext.currentSearchData) {
       if (mapContext.currentLayers.zoomStreet) {
         if (
@@ -6219,7 +6224,7 @@ function ADSEsriMap(startExtent) {
     mapRef.current.remove(mapRef.current.findLayerById(propertyLayerName));
     mapRef.current.remove(mapRef.current.findLayerById(zoomGraphicsLayerName));
 
-    const editingGraphic = editingObject.current && editingObject.current.objectType;
+    // const editingGraphic = editingObject.current && editingObject.current.objectType;
 
     if (streetDataRef && streetDataRef.length > 0) {
       mapRef.current.add(streetLayer);
