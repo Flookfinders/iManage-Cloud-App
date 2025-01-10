@@ -39,6 +39,7 @@
 //    024   06.01.25 Sean Flook      IMANN-1123 Changed issue number above.
 //    025   07.01.25 Sean Flook      IMANN-1126 If the user changes the zoom level remember it.
 //    026   07.01.25 Sean Flook      IMANN-1123 Sort properties on logical status to try and get the cluster symbol correct.
+//    027   10.01.25 Sean Flook      IMANN-1126 Also handle when user uses the mouse wheel to zoom on the map.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1922,6 +1923,7 @@ function ADSWizardMap({ data, placeOnMapData, isChild, isRange, displayPlaceOnMa
       () => view?.stationary === true,
       () => {
         if (view.extent && mapContext) {
+          initialExtent.current.zoomLevel = view.zoom;
           mapContext.onExtentChange({
             xmin: view.extent.xmin,
             ymin: view.extent.ymin,
