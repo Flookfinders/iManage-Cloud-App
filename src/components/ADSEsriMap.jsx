@@ -127,6 +127,7 @@
 //    107   09.01.25 Sean Flook       IMANN-1125 Correctly check for nulls when determining if background data is the same.
 //    108   09.01.25 Sean Flook       IMANN-1125 Remove console logs where not required.
 //    109   10.01.25 Sean Flook        IMANN-781 Do not redo the layers when editing a provenance record.
+//    110   13.01.25 Sean Flook       IMANN-1135 If background streets layer was visible when selecting properties keep it visible.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -9592,7 +9593,8 @@ function ADSEsriMap(startExtent) {
           editGraphicsLayer.current.graphics.removeAll();
           editGraphicsLayer.current.listMode = "hide";
 
-          if (backgroundStreetLayerRef.current) backgroundStreetLayerRef.current.visible = false;
+          if (backgroundStreetLayerRef.current)
+            backgroundStreetLayerRef.current.visible = mapContext.layerVisibility.backgroundStreets;
           if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.visible = false;
           if (streetLayer) streetLayer.visible = false;
           if (llpgStreetLayer) llpgStreetLayer.visible = false;
