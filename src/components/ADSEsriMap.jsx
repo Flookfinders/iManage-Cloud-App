@@ -128,6 +128,7 @@
 //    108   09.01.25 Sean Flook       IMANN-1125 Remove console logs where not required.
 //    109   10.01.25 Sean Flook        IMANN-781 Do not redo the layers when editing a provenance record.
 //    110   13.01.25 Sean Flook       IMANN-1135 If background streets layer was visible when selecting properties keep it visible.
+//    111   13.01.25 Sean Flook       IMANN-1135 Remember the visibility of the layers between redraws.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3490,8 +3491,11 @@ function ADSEsriMap(startExtent) {
 
     mapRef.current.remove(mapRef.current.findLayerById(backgroundStreetLayerName));
 
-    if (backgroundStreetData && backgroundStreetData.current && backgroundStreetData.current.length > 0)
+    if (backgroundStreetData && backgroundStreetData.current && backgroundStreetData.current.length > 0) {
       mapRef.current.add(backgroundStreetLayer);
+
+      if (mapContext.layerVisibility) backgroundStreetLayer.visible = mapContext.layerVisibility.backgroundStreets;
+    }
 
     backgroundStreetLayer.watch("visible", (visible) => {
       mapContext.onLayerVisibilityChange("backgroundStreets", visible);
@@ -3641,8 +3645,11 @@ function ADSEsriMap(startExtent) {
 
     mapRef.current.remove(mapRef.current.findLayerById(unassignedEsusLayerName));
 
-    if (unassignedEsusData && unassignedEsusData.current && unassignedEsusData.current.length > 0)
+    if (unassignedEsusData && unassignedEsusData.current && unassignedEsusData.current.length > 0) {
       mapRef.current.add(unassignedEsusLayer);
+
+      if (mapContext.layerVisibility) unassignedEsusLayer.visible = mapContext.layerVisibility.unassignedEsus;
+    }
 
     unassignedEsusLayer.watch("visible", (visible) => {
       mapContext.onLayerVisibilityChange("unassignedEsus", visible);
@@ -3792,8 +3799,11 @@ function ADSEsriMap(startExtent) {
 
     mapRef.current.remove(mapRef.current.findLayerById(unassignedEsusLayerName));
 
-    if (unassignedEsusData && unassignedEsusData.current && unassignedEsusData.current.length > 0)
+    if (unassignedEsusData && unassignedEsusData.current && unassignedEsusData.current.length > 0) {
       mapRef.current.add(unassignedEsusLayer);
+
+      if (mapContext.layerVisibility) unassignedEsusLayer.visible = mapContext.layerVisibility.unassignedEsus;
+    }
 
     unassignedEsusLayer.watch("visible", (visible) => {
       mapContext.onLayerVisibilityChange("unassignedEsus", visible);
@@ -4100,8 +4110,11 @@ function ADSEsriMap(startExtent) {
     mapRef.current.remove(mapRef.current.findLayerById(backgroundPropertyLayerName));
     mapRef.current.remove(mapRef.current.findLayerById(selectPropertyLayerName));
 
-    if (backgroundPropertyData && backgroundPropertyData.current && backgroundPropertyData.current.length > 0)
+    if (backgroundPropertyData && backgroundPropertyData.current && backgroundPropertyData.current.length > 0) {
       mapRef.current.add(backgroundPropertyLayer);
+
+      if (mapContext.layerVisibility) backgroundPropertyLayer.visible = mapContext.layerVisibility.backgroundProperties;
+    }
 
     if (
       mapContext.currentBackgroundData &&
@@ -4232,8 +4245,12 @@ function ADSEsriMap(startExtent) {
 
     mapRef.current.remove(mapRef.current.findLayerById(backgroundProvenanceLayerName));
 
-    if (backgroundProvenanceData && backgroundProvenanceData.current && backgroundProvenanceData.current.length > 0)
+    if (backgroundProvenanceData && backgroundProvenanceData.current && backgroundProvenanceData.current.length > 0) {
       mapRef.current.add(backgroundProvenancesLayer);
+
+      if (mapContext.layerVisibility)
+        backgroundProvenancesLayer.visible = mapContext.layerVisibility.backgroundProvenances;
+    }
 
     backgroundProvenancesLayer.watch("visible", (visible) => {
       mapContext.onLayerVisibilityChange("backgroundProvenances", visible);
