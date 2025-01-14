@@ -130,6 +130,7 @@
 //    110   13.01.25 Sean Flook       IMANN-1135 If background streets layer was visible when selecting properties keep it visible.
 //    111   13.01.25 Sean Flook       IMANN-1135 Remember the visibility of the layers between redraws.
 //    112   13.01.25 Sean Flook       IMANN-1136 Various changes to improve editing provenances.
+//    113   13.01.25 Sean Flook       IMANN-1132 Ensure the reordering of the layers is correctly run.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -8092,8 +8093,7 @@ function ADSEsriMap(startExtent) {
     const propertyLayer = mapRef.current.findLayerById(propertyLayerName);
     const extentLayer = mapRef.current.findLayerById(extentLayerName);
 
-    if (!backgroundStreetLayer || !backgroundPropertyLayer || !streetLayer || !llpgStreetLayer || !propertyLayer)
-      return;
+    if (!backgroundStreetLayer || !backgroundPropertyLayer) return;
 
     let levelAboveBase = baseMapLayers.current.length;
 
@@ -8140,9 +8140,11 @@ function ADSEsriMap(startExtent) {
       if (currentExtentIndex !== requiredExtentIndex) mapRef.current.reorder(extentLayer, requiredExtentIndex);
     }
 
-    const currentPropertyIndex = mapRef.current.layers.indexOf(propertyLayer);
-    const requiredPropertyIndex = levelAboveBase++;
-    if (currentPropertyIndex !== requiredPropertyIndex) mapRef.current.reorder(propertyLayer, requiredPropertyIndex);
+    if (propertyLayer) {
+      const currentPropertyIndex = mapRef.current.layers.indexOf(propertyLayer);
+      const requiredPropertyIndex = levelAboveBase++;
+      if (currentPropertyIndex !== requiredPropertyIndex) mapRef.current.reorder(propertyLayer, requiredPropertyIndex);
+    }
 
     if (editingObject.current && editingObject.current.objectType && editGraphicsLayer.current) {
       const currentEditIndex = mapRef.current.layers.indexOf(editGraphicsLayer.current);
@@ -8357,7 +8359,7 @@ function ADSEsriMap(startExtent) {
 
     if (
       editingObject.current &&
-      !mapContext.provenanceMerged &&
+      (mapContext.currentEditObject.objectType !== 22 || !mapContext.provenanceMerged) &&
       mapContext.currentEditObject &&
       mapContext.currentEditObject.objectType === editingObject.current.objectType &&
       mapContext.currentEditObject.objectId === editingObject.current.objectId
@@ -8584,8 +8586,7 @@ function ADSEsriMap(startExtent) {
             if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
             else {
               sketchRef.current.availableCreateTools = ["polyline"];
-              // TODO: Uncomment following line once upgraded ESRI
-              // sketchRef.current._activeCreateTool("polyline");
+              sketchRef.current._activateCreateTool("polyline");
             }
             break;
 
@@ -8620,8 +8621,7 @@ function ADSEsriMap(startExtent) {
             if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
             else {
               sketchRef.current.availableCreateTools = ["point"];
-              // TODO: Uncomment following line once upgraded ESRI
-              // sketchRef.current._activeCreateTool("point");
+              sketchRef.current._activateCreateTool("point");
             }
             break;
 
@@ -8649,8 +8649,7 @@ function ADSEsriMap(startExtent) {
             if (mapContext.currentEditObject.objectId > 0 && hasGeometry) sketchRef.current.availableCreateTools = [];
             else {
               sketchRef.current.availableCreateTools = ["polygon"];
-              // TODO: Uncomment following line once upgraded ESRI
-              // sketchRef.current._activeCreateTool("polygon");
+              sketchRef.current._activateCreateTool("polygon");
             }
             break;
 
@@ -8677,8 +8676,7 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
-            // TODO: Uncomment following line once upgraded ESRI
-            // sketchRef.current._activeCreateTool("polyline");
+            sketchRef.current._activateCreateTool("polyline");
             break;
 
           case 52: // Reinstatement Category
@@ -8704,8 +8702,7 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
-            // TODO: Uncomment following line once upgraded ESRI
-            // sketchRef.current._activeCreateTool("polyline");
+            sketchRef.current._activateCreateTool("polyline");
             break;
 
           case 53: // Special Designation
@@ -8731,8 +8728,7 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
-            // TODO: Uncomment following line once upgraded ESRI
-            // sketchRef.current._activeCreateTool("polyline");
+            sketchRef.current._activateCreateTool("polyline");
             break;
 
           case 61: // Interest
@@ -8760,8 +8756,7 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
-            // TODO: Uncomment following line once upgraded ESRI
-            // sketchRef.current._activeCreateTool("polyline");
+            sketchRef.current._activateCreateTool("polyline");
             break;
 
           case 62: // Construction
@@ -8789,8 +8784,7 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
-            // TODO: Uncomment following line once upgraded ESRI
-            // sketchRef.current._activeCreateTool("polyline");
+            sketchRef.current._activateCreateTool("polyline");
             break;
 
           case 63: // Special Designation
@@ -8818,8 +8812,7 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
-            // TODO: Uncomment following line once upgraded ESRI
-            // sketchRef.current._activeCreateTool("polyline");
+            sketchRef.current._activateCreateTool("polyline");
             break;
 
           case 64: // Height, Width & Weight Restriction
@@ -8846,8 +8839,7 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
-            // TODO: Uncomment following line once upgraded ESRI
-            // sketchRef.current._activeCreateTool("polyline");
+            sketchRef.current._activateCreateTool("polyline");
             break;
 
           case 66: // Public right of way
@@ -8875,8 +8867,7 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
-            // TODO: Uncomment following line once upgraded ESRI
-            // sketchRef.current._activeCreateTool("polyline");
+            sketchRef.current._activateCreateTool("polyline");
             break;
 
           default:
