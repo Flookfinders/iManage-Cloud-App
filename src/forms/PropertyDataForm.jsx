@@ -91,6 +91,7 @@
 //    072   07.01.25 Joshua McCormick IMANN-1122 Removed unnecessary code for handleOrganisationChanged
 //    073   09.01.25 Sean Flook        IMANN-781 Include the pkId in the extent object.
 //    074   09.01.25 Sean Flook       IMANN-1086 Ensure the polygon is reverted/removed when cancelling/deleting.
+//    075   13.01.25 Sean Flook       IMANN-1136 Various changes to improve editing provenances.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3071,6 +3072,7 @@ function PropertyDataForm({ data, loading }) {
 
     failedValidation.current = false;
     informationContext.onClearInformation();
+    mapContext.onEditingProvenance(false);
 
     switch (action) {
       case "check":
@@ -4014,6 +4016,7 @@ function PropertyDataForm({ data, loading }) {
 
         if (newPropertyData) {
           mapContext.onSetPolygonGeometry(null);
+          mapContext.onProvenanceMerged(true);
 
           setPropertyData(newPropertyData);
           clearingType.current = "provenance";

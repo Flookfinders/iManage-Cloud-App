@@ -129,6 +129,7 @@
 //    109   10.01.25 Sean Flook        IMANN-781 Do not redo the layers when editing a provenance record.
 //    110   13.01.25 Sean Flook       IMANN-1135 If background streets layer was visible when selecting properties keep it visible.
 //    111   13.01.25 Sean Flook       IMANN-1135 Remember the visibility of the layers between redraws.
+//    112   13.01.25 Sean Flook       IMANN-1136 Various changes to improve editing provenances.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1480,6 +1481,8 @@ function ADSEsriMap(startExtent) {
           break;
 
         case "Extent":
+          mapContext.onEditingProvenance(false);
+          editingObject.current = null;
           for (let i = 0; i < currentFeatureLayer.graphics.items.length; i++) {
             featureGeometries.push(currentFeatureLayer.graphics.items[i].geometry);
           }
@@ -4342,7 +4345,7 @@ function ADSEsriMap(startExtent) {
 
     const editingGraphic = editingObject.current && editingObject.current.objectType;
 
-    if (editingGraphic === 22) return;
+    if (mapContext.editingProvenance) return;
 
     if (mapContext.currentLayers && mapContext.currentSearchData) {
       if (mapContext.currentLayers.zoomStreet) {
@@ -6666,10 +6669,11 @@ function ADSEsriMap(startExtent) {
 
         let graphics = null;
         const currentLayer = mapRef.current && mapRef.current.findLayerById(featureLayer.layer.layerId);
-        const opts = { include: currentLayer };
+        const opts = { include: [currentLayer, editGraphicsLayer.current] };
 
         if (currentLayer) {
           view.hitTest(event, opts).then(function (response) {
+            const clickedEditGraphic = response.results.find((x) => x.graphic.layer.id === editGraphicsLayerName);
             let newGraphics;
             switch (featureLayer.layer.geometryType) {
               case "line":
@@ -6721,139 +6725,141 @@ function ADSEsriMap(startExtent) {
                 break;
 
               case "polygon":
-                if (
-                  response.results.length &&
-                  (!lastSelectedExtent.current ||
-                    response.results[0].graphic.attributes.TOID !== lastSelectedExtent.current.toid ||
-                    performance.now() - lastSelectedExtent.current.time > doubleEventWait)
-                ) {
-                  lastSelectedExtent.current = {
-                    toid: response.results[0].graphic.attributes.TOID,
-                    time: performance.now(),
-                  };
-                  newGraphics = currentLayer.graphics.filter(
-                    (x) => x.attributes && x.attributes.TOID !== response.results[0].graphic.attributes.TOID
-                  );
+                if (!clickedEditGraphic) {
+                  if (
+                    response.results.length &&
+                    (!lastSelectedExtent.current ||
+                      response.results[0].graphic.attributes.TOID !== lastSelectedExtent.current.toid ||
+                      performance.now() - lastSelectedExtent.current.time > doubleEventWait)
+                  ) {
+                    lastSelectedExtent.current = {
+                      toid: response.results[0].graphic.attributes.TOID,
+                      time: performance.now(),
+                    };
+                    newGraphics = currentLayer.graphics.filter(
+                      (x) => x.attributes && x.attributes.TOID !== response.results[0].graphic.attributes.TOID
+                    );
 
-                  const layerIndex = mapRef.current.layers.indexOf(currentLayer);
+                    const layerIndex = mapRef.current.layers.indexOf(currentLayer);
 
-                  setDisplayExtentMergeTool(newGraphics.length > 0);
+                    setDisplayExtentMergeTool(newGraphics.length > 0);
 
-                  const updatedLayer = new GraphicsLayer({
-                    id: currentLayer.id,
-                    graphics: newGraphics,
-                    copyright: currentLayer.copyright,
-                    title: currentLayer.title,
-                    listMode: currentLayer.listMode,
-                    maxScale: currentLayer.maxScale,
-                    minScale: currentLayer.minScale,
-                    opacity: currentLayer.opacity,
-                    visible: currentLayer.visible,
-                  });
+                    const updatedLayer = new GraphicsLayer({
+                      id: currentLayer.id,
+                      graphics: newGraphics,
+                      copyright: currentLayer.copyright,
+                      title: currentLayer.title,
+                      listMode: currentLayer.listMode,
+                      maxScale: currentLayer.maxScale,
+                      minScale: currentLayer.minScale,
+                      opacity: currentLayer.opacity,
+                      visible: currentLayer.visible,
+                    });
 
-                  const newSelected = [...new Set(newGraphics.map((x) => x.attributes.TOID))];
-                  setSelectedExtents(newSelected);
-                  if (newSelected.length > 0) {
-                    setSelectionAnchorEl(document.getElementById("ads-provenance-data-tab"));
-                    setDisplayExtentMergeTool(true);
+                    const newSelected = [...new Set(newGraphics.map((x) => x.attributes.TOID))];
+                    setSelectedExtents(newSelected);
+                    if (newSelected.length > 0) {
+                      setSelectionAnchorEl(document.getElementById("ads-provenance-data-tab"));
+                      setDisplayExtentMergeTool(true);
+                    } else {
+                      setSelectionAnchorEl(null);
+                      setDisplayExtentMergeTool(false);
+                    }
+
+                    mapRef.current.remove(currentLayer);
+                    mapRef.current.add(updatedLayer, layerIndex);
                   } else {
-                    setSelectionAnchorEl(null);
-                    setDisplayExtentMergeTool(false);
-                  }
+                    GetFeatureAtCoord(coord, featureLayer.layer).then(function (json) {
+                      if (json) {
+                        geoJson.featureCollection.features.push.apply(
+                          geoJson.featureCollection.features,
+                          json.data.features
+                        );
 
-                  mapRef.current.remove(currentLayer);
-                  mapRef.current.add(updatedLayer, layerIndex);
-                } else {
-                  GetFeatureAtCoord(coord, featureLayer.layer).then(function (json) {
-                    if (json) {
-                      geoJson.featureCollection.features.push.apply(
-                        geoJson.featureCollection.features,
-                        json.data.features
-                      );
+                        if (!foundExistingGeoJson) geoJSONFeatures.current.push(geoJson);
 
-                      if (!foundExistingGeoJson) geoJSONFeatures.current.push(geoJson);
+                        if (geoJson.featureCollection.features.length > 0) {
+                          graphics = geoJson.featureCollection.features.map(function (f) {
+                            switch (featureLayer.layer.geometryType) {
+                              case "line":
+                                const polyline = {
+                                  type: "polyline",
+                                  paths: f.geometry.coordinates[0],
+                                  spatialReference: { wkid: 27700 },
+                                };
 
-                      if (geoJson.featureCollection.features.length > 0) {
-                        graphics = geoJson.featureCollection.features.map(function (f) {
-                          switch (featureLayer.layer.geometryType) {
-                            case "line":
-                              const polyline = {
-                                type: "polyline",
-                                paths: f.geometry.coordinates[0],
-                                spatialReference: { wkid: 27700 },
-                              };
+                                const lineSymbol = {
+                                  type: "simple-line",
+                                  color: [51, 136, 255, 0.5],
+                                  width: 1,
+                                };
 
-                              const lineSymbol = {
-                                type: "simple-line",
-                                color: [51, 136, 255, 0.5],
-                                width: 1,
-                              };
+                                return new Graphic({
+                                  geometry: polyline,
+                                  attributes: f.properties,
+                                  symbol: lineSymbol,
+                                });
 
-                              return new Graphic({
-                                geometry: polyline,
-                                attributes: f.properties,
-                                symbol: lineSymbol,
-                              });
+                              case "polygon":
+                                const polygon = {
+                                  type: "polygon",
+                                  rings: f.geometry.coordinates[0],
+                                  spatialReference: { wkid: 27700 },
+                                };
 
-                            case "polygon":
-                              const polygon = {
-                                type: "polygon",
-                                rings: f.geometry.coordinates[0],
-                                spatialReference: { wkid: 27700 },
-                              };
+                                const fillSymbol = {
+                                  type: "simple-fill",
+                                  color: [51, 136, 255, 0.5],
+                                  outline: {
+                                    color: [51, 136, 255],
+                                    width: 0,
+                                  },
+                                };
 
-                              const fillSymbol = {
-                                type: "simple-fill",
-                                color: [51, 136, 255, 0.5],
-                                outline: {
-                                  color: [51, 136, 255],
-                                  width: 0,
-                                },
-                              };
+                                return new Graphic({
+                                  geometry: polygon,
+                                  attributes: f.properties,
+                                  symbol: fillSymbol,
+                                });
 
-                              return new Graphic({
-                                geometry: polygon,
-                                attributes: f.properties,
-                                symbol: fillSymbol,
-                              });
+                              default:
+                                return null;
+                            }
+                          });
 
-                            default:
-                              return null;
+                          const layerIndex = mapRef.current.layers.indexOf(currentLayer);
+
+                          const updatedFeatureLayer = new GraphicsLayer({
+                            id: featureLayer.layer.layerId,
+                            graphics: graphics,
+                            copyright:
+                              featureLayer.layer.copyright && featureLayer.layer.copyright.includes("<<year>>")
+                                ? featureLayer.layer.copyright.replace("<<year>>", new Date().getFullYear().toString())
+                                : featureLayer.layer.copyright,
+                            title: featureLayer.layer.title,
+                            listMode: featureLayer.layer.displayInList ? "show" : "hide",
+                            maxScale: featureLayer.layer.maxScale,
+                            minScale: featureLayer.layer.minScale,
+                            opacity: featureLayer.layer.opacity,
+                            visible: currentLayer.visible,
+                          });
+
+                          mapRef.current.remove(currentLayer);
+                          mapRef.current.add(updatedFeatureLayer, layerIndex);
+
+                          const newSelected = [...new Set(graphics.map((x) => x.attributes.TOID))];
+                          setSelectedExtents(newSelected);
+                          if (newSelected.length > 0) {
+                            setSelectionAnchorEl(document.getElementById("ads-provenance-data-tab"));
+                            setDisplayExtentMergeTool(true);
+                          } else {
+                            setSelectionAnchorEl(null);
+                            setDisplayExtentMergeTool(false);
                           }
-                        });
-
-                        const layerIndex = mapRef.current.layers.indexOf(currentLayer);
-
-                        const updatedFeatureLayer = new GraphicsLayer({
-                          id: featureLayer.layer.layerId,
-                          graphics: graphics,
-                          copyright:
-                            featureLayer.layer.copyright && featureLayer.layer.copyright.includes("<<year>>")
-                              ? featureLayer.layer.copyright.replace("<<year>>", new Date().getFullYear().toString())
-                              : featureLayer.layer.copyright,
-                          title: featureLayer.layer.title,
-                          listMode: featureLayer.layer.displayInList ? "show" : "hide",
-                          maxScale: featureLayer.layer.maxScale,
-                          minScale: featureLayer.layer.minScale,
-                          opacity: featureLayer.layer.opacity,
-                          visible: currentLayer.visible,
-                        });
-
-                        mapRef.current.remove(currentLayer);
-                        mapRef.current.add(updatedFeatureLayer, layerIndex);
-
-                        const newSelected = [...new Set(graphics.map((x) => x.attributes.TOID))];
-                        setSelectedExtents(newSelected);
-                        if (newSelected.length > 0) {
-                          setSelectionAnchorEl(document.getElementById("ads-provenance-data-tab"));
-                          setDisplayExtentMergeTool(true);
-                        } else {
-                          setSelectionAnchorEl(null);
-                          setDisplayExtentMergeTool(false);
                         }
                       }
-                    }
-                  });
+                    });
+                  }
                 }
                 break;
 
@@ -8333,7 +8339,8 @@ function ADSEsriMap(startExtent) {
       }
     };
 
-    if (!mapRef.current || !mapRef.current.layers || !mapRef.current.layers.length) return;
+    if (!mapRef.current || !mapRef.current.layers || !mapRef.current.layers.length || !mapContext.currentEditObject)
+      return;
 
     const streetLayer = mapRef.current && mapRef.current.findLayerById(streetLayerName);
     const llpgStreetLayer = mapRef.current && mapRef.current.findLayerById(llpgStreetLayerName);
@@ -8350,12 +8357,14 @@ function ADSEsriMap(startExtent) {
 
     if (
       editingObject.current &&
+      !mapContext.provenanceMerged &&
       mapContext.currentEditObject &&
       mapContext.currentEditObject.objectType === editingObject.current.objectType &&
       mapContext.currentEditObject.objectId === editingObject.current.objectId
     ) {
       setSnappingLayers();
     } else {
+      if (mapContext.provenanceMerged) mapContext.onProvenanceMerged(false);
       editGraphicsLayer.current.graphics.removeAll();
 
       let canContinue = false;
@@ -8944,8 +8953,7 @@ function ADSEsriMap(startExtent) {
       }
     }
   }, [
-    mapContext.currentEditObject,
-    mapContext.currentSearchData,
+    mapContext,
     streetContext.currentStreet,
     streetContext.currentRecord,
     propertyContext.currentProperty,

@@ -93,6 +93,7 @@
 //    068   02.01.25 Sean Flook      IMANN-1121 Updated the version.
 //    069   07.01.25 Sean Flook      IMANN-1124 When opening the related tab always include the current property in the expand list.
 //    070   09.01.25 Sean Flook      IMANN-1125 Moved code to prevent the calls to get the background data from being run multiple times.
+//    071   13.01.25 Sean Flook      IMANN-1136 Various changes to improve editing provenances.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -486,6 +487,8 @@ function App() {
     backgroundProvenances: false,
     backgroundProperties: true,
   });
+  const [editingProvenance, setEditingProvenance] = useState(false);
+  const [provenanceMerged, setProvenanceMerged] = useState(false);
 
   const [pointCaptureMode, setPointCaptureMode] = useState(null);
   const [selectedPin, setSelectedPin] = useState(null);
@@ -2925,6 +2928,7 @@ function App() {
       setEditObject(null);
       editObjectRef.current = null;
     } else {
+      if (objectType === 22) setEditingProvenance(true);
       setEditObject({ objectType: objectType, objectId: objectId });
       editObjectRef.current = { objectType: objectType, objectId: objectId };
     }
@@ -3621,6 +3625,24 @@ function App() {
   }
 
   /**
+   * Handle when editing a provenance record.
+   *
+   * @param {Boolean} editing True when creating or editing a provenance record.
+   */
+  function HandleEditingProvenance(editing) {
+    setEditingProvenance(editing);
+  }
+
+  /**
+   * Handle when merging a provenance record.
+   *
+   * @param {Boolean} merged True when a provenance record is merged.
+   */
+  function HandleProvenanceMerged(merged) {
+    setProvenanceMerged(merged);
+  }
+
+  /**
    * Method to handle when the display information should be shown.
    *
    * @param {string} type The type of information being displayed.
@@ -3850,6 +3872,8 @@ function App() {
                             selectingProperties: selectingProperties,
                             loadedShpFiles: loadedShpFiles,
                             layerVisibility: layerVisibility,
+                            editingProvenance: editingProvenance,
+                            provenanceMerged: provenanceMerged,
                             onBackgroundDataChange: HandleBackgroundDataChange,
                             onSearchDataChange: HandleMapSearchDataChange,
                             onMapChange: HandleMapChange,
@@ -3874,6 +3898,8 @@ function App() {
                             onUnloadShpFile: HandleUnloadShpFile,
                             onReload: HandleMapReload,
                             onLayerVisibilityChange: HandleLayerVisibilityChange,
+                            onEditingProvenance: HandleEditingProvenance,
+                            onProvenanceMerged: HandleProvenanceMerged,
                           }}
                         >
                           <InformationContext.Provider
