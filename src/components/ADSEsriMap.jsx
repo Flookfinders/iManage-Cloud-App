@@ -132,6 +132,7 @@
 //    112   13.01.25 Sean Flook       IMANN-1136 Various changes to improve editing provenances.
 //    113   13.01.25 Sean Flook       IMANN-1132 Ensure the reordering of the layers is correctly run.
 //    114   16.01.25 Sean Flook       IMANN-1135 When selecting properties adjust the opacity of the street layer.
+//    115   16.01.25 Sean Flook       IMANN-1136 Correctly handle merging provenance extents.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1483,7 +1484,7 @@ function ADSEsriMap(startExtent) {
           break;
 
         case "Extent":
-          mapContext.onEditingProvenance(false);
+          mapContext.onProvenanceMerging(true);
           editingObject.current = null;
           for (let i = 0; i < currentFeatureLayer.graphics.items.length; i++) {
             featureGeometries.push(currentFeatureLayer.graphics.items[i].geometry);
@@ -4347,7 +4348,7 @@ function ADSEsriMap(startExtent) {
 
     const editingGraphic = editingObject.current && editingObject.current.objectType;
 
-    if (mapContext.editingProvenance) return;
+    if (mapContext.provenanceMerging) return;
 
     if (mapContext.currentLayers && mapContext.currentSearchData) {
       if (mapContext.currentLayers.zoomStreet) {
@@ -7245,7 +7246,10 @@ function ADSEsriMap(startExtent) {
             event.state === "complete" ||
             event.type === "undo" ||
             event.type === "redo" ||
-            (event.graphic.geometry.paths && event.toolEventInfo && event.toolEventInfo.type === "vertex-add")
+            (event.graphic.geometry &&
+              event.graphic.geometry.paths &&
+              event.toolEventInfo &&
+              event.toolEventInfo.type === "vertex-add")
           ) {
             handlePolylineUpdate(event.graphic, event.state === "complete");
           }
@@ -7256,7 +7260,10 @@ function ADSEsriMap(startExtent) {
             event.state === "complete" ||
             event.type === "undo" ||
             event.type === "redo" ||
-            (event.graphic.geometry.rings && event.toolEventInfo && event.toolEventInfo.type === "vertex-add")
+            (event.graphic.geometry &&
+              event.graphic.geometry.rings &&
+              event.toolEventInfo &&
+              event.toolEventInfo.type === "vertex-add")
           ) {
             handlePolygonUpdate(event.graphic, event.state === "complete");
           }
@@ -8360,14 +8367,14 @@ function ADSEsriMap(startExtent) {
 
     if (
       editingObject.current &&
-      (mapContext.currentEditObject.objectType !== 22 || !mapContext.provenanceMerged) &&
+      (mapContext.currentEditObject.objectType !== 22 || mapContext.provenanceMerging) &&
       mapContext.currentEditObject &&
       mapContext.currentEditObject.objectType === editingObject.current.objectType &&
       mapContext.currentEditObject.objectId === editingObject.current.objectId
     ) {
       setSnappingLayers();
     } else {
-      if (mapContext.provenanceMerged) mapContext.onProvenanceMerged(false);
+      if (mapContext.provenanceMerging) mapContext.onProvenanceMerging(false);
       editGraphicsLayer.current.graphics.removeAll();
 
       let canContinue = false;
@@ -8587,7 +8594,10 @@ function ADSEsriMap(startExtent) {
             if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
             else {
               sketchRef.current.availableCreateTools = ["polyline"];
-              sketchRef.current._activateCreateTool("polyline");
+              if (!mapContext.createToolActivated) {
+                sketchRef.current._activateCreateTool("polyline");
+                mapContext.onCreateToolActivated(true);
+              }
             }
             break;
 
@@ -8622,7 +8632,10 @@ function ADSEsriMap(startExtent) {
             if (mapContext.currentEditObject.objectId > 0) sketchRef.current.availableCreateTools = [];
             else {
               sketchRef.current.availableCreateTools = ["point"];
-              sketchRef.current._activateCreateTool("point");
+              if (!mapContext.createToolActivated) {
+                sketchRef.current._activateCreateTool("point");
+                mapContext.onCreateToolActivated(true);
+              }
             }
             break;
 
@@ -8650,7 +8663,10 @@ function ADSEsriMap(startExtent) {
             if (mapContext.currentEditObject.objectId > 0 && hasGeometry) sketchRef.current.availableCreateTools = [];
             else {
               sketchRef.current.availableCreateTools = ["polygon"];
-              sketchRef.current._activateCreateTool("polygon");
+              if (!mapContext.createToolActivated) {
+                sketchRef.current._activateCreateTool("polygon");
+                mapContext.onCreateToolActivated(true);
+              }
             }
             break;
 
@@ -8677,7 +8693,10 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
-            sketchRef.current._activateCreateTool("polyline");
+            if (!mapContext.createToolActivated) {
+              sketchRef.current._activateCreateTool("polyline");
+              mapContext.onCreateToolActivated(true);
+            }
             break;
 
           case 52: // Reinstatement Category
@@ -8703,7 +8722,10 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
-            sketchRef.current._activateCreateTool("polyline");
+            if (!mapContext.createToolActivated) {
+              sketchRef.current._activateCreateTool("polyline");
+              mapContext.onCreateToolActivated(true);
+            }
             break;
 
           case 53: // Special Designation
@@ -8729,7 +8751,10 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
-            sketchRef.current._activateCreateTool("polyline");
+            if (!mapContext.createToolActivated) {
+              sketchRef.current._activateCreateTool("polyline");
+              mapContext.onCreateToolActivated(true);
+            }
             break;
 
           case 61: // Interest
@@ -8757,7 +8782,10 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
-            sketchRef.current._activateCreateTool("polyline");
+            if (!mapContext.createToolActivated) {
+              sketchRef.current._activateCreateTool("polyline");
+              mapContext.onCreateToolActivated(true);
+            }
             break;
 
           case 62: // Construction
@@ -8785,7 +8813,10 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
-            sketchRef.current._activateCreateTool("polyline");
+            if (!mapContext.createToolActivated) {
+              sketchRef.current._activateCreateTool("polyline");
+              mapContext.onCreateToolActivated(true);
+            }
             break;
 
           case 63: // Special Designation
@@ -8813,7 +8844,10 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
-            sketchRef.current._activateCreateTool("polyline");
+            if (!mapContext.createToolActivated) {
+              sketchRef.current._activateCreateTool("polyline");
+              mapContext.onCreateToolActivated(true);
+            }
             break;
 
           case 64: // Height, Width & Weight Restriction
@@ -8840,7 +8874,10 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
-            sketchRef.current._activateCreateTool("polyline");
+            if (!mapContext.createToolActivated) {
+              sketchRef.current._activateCreateTool("polyline");
+              mapContext.onCreateToolActivated(true);
+            }
             break;
 
           case 66: // Public right of way
@@ -8868,7 +8905,10 @@ function ADSEsriMap(startExtent) {
             }
 
             sketchRef.current.availableCreateTools = ["polyline"];
-            sketchRef.current._activateCreateTool("polyline");
+            if (!mapContext.createToolActivated) {
+              sketchRef.current._activateCreateTool("polyline");
+              mapContext.onCreateToolActivated(true);
+            }
             break;
 
           default:

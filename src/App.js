@@ -94,6 +94,7 @@
 //    069   07.01.25 Sean Flook      IMANN-1124 When opening the related tab always include the current property in the expand list.
 //    070   09.01.25 Sean Flook      IMANN-1125 Moved code to prevent the calls to get the background data from being run multiple times.
 //    071   13.01.25 Sean Flook      IMANN-1136 Various changes to improve editing provenances.
+//    072   16.01.25 Sean Flook      IMANN-1136 Removed editingProvenance and changed provenanceMerged to provenanceMerging.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -487,8 +488,8 @@ function App() {
     backgroundProvenances: false,
     backgroundProperties: true,
   });
-  const [editingProvenance, setEditingProvenance] = useState(false);
-  const [provenanceMerged, setProvenanceMerged] = useState(false);
+  const [provenanceMerging, setProvenanceMerging] = useState(false);
+  const [createToolActivated, setCreateToolActivated] = useState(false);
 
   const [pointCaptureMode, setPointCaptureMode] = useState(null);
   const [selectedPin, setSelectedPin] = useState(null);
@@ -2927,8 +2928,8 @@ function App() {
     if (!objectType) {
       setEditObject(null);
       editObjectRef.current = null;
+      setCreateToolActivated(false);
     } else {
-      if (objectType === 22) setEditingProvenance(true);
       setEditObject({ objectType: objectType, objectId: objectId });
       editObjectRef.current = { objectType: objectType, objectId: objectId };
     }
@@ -3625,21 +3626,21 @@ function App() {
   }
 
   /**
-   * Handle when editing a provenance record.
+   * Handle when merging a provenance record.
    *
-   * @param {Boolean} editing True when creating or editing a provenance record.
+   * @param {Boolean} merging True when a provenance record is being merged.
    */
-  function HandleEditingProvenance(editing) {
-    setEditingProvenance(editing);
+  function HandleProvenanceMerging(merging) {
+    setProvenanceMerging(merging);
   }
 
   /**
-   * Handle when merging a provenance record.
+   * Handle when setting flag for activating the create tool.
    *
-   * @param {Boolean} merged True when a provenance record is merged.
+   * @param {Boolean} activated True when a provenance record is being merged.
    */
-  function HandleProvenanceMerged(merged) {
-    setProvenanceMerged(merged);
+  function HandleCreateToolActivated(activated) {
+    setCreateToolActivated(activated);
   }
 
   /**
@@ -3872,8 +3873,8 @@ function App() {
                             selectingProperties: selectingProperties,
                             loadedShpFiles: loadedShpFiles,
                             layerVisibility: layerVisibility,
-                            editingProvenance: editingProvenance,
-                            provenanceMerged: provenanceMerged,
+                            provenanceMerging: provenanceMerging,
+                            createToolActivated: createToolActivated,
                             onBackgroundDataChange: HandleBackgroundDataChange,
                             onSearchDataChange: HandleMapSearchDataChange,
                             onMapChange: HandleMapChange,
@@ -3898,8 +3899,8 @@ function App() {
                             onUnloadShpFile: HandleUnloadShpFile,
                             onReload: HandleMapReload,
                             onLayerVisibilityChange: HandleLayerVisibilityChange,
-                            onEditingProvenance: HandleEditingProvenance,
-                            onProvenanceMerged: HandleProvenanceMerged,
+                            onProvenanceMerging: HandleProvenanceMerging,
+                            onCreateToolActivated: HandleCreateToolActivated,
                           }}
                         >
                           <InformationContext.Provider

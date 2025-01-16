@@ -3,7 +3,7 @@
 //
 //  Description: Street data form
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -131,7 +131,13 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
 //    115   21.11.24 Sean Flook      IMANN-1029 Use the correct UPRN when calling GetParentHierarchy.
+//    116   15.01.25 Joshua McCormick IMANN-1128 streetDescriptors town/ref use adminAreaRef when null
+//    117   15.01.25 Joshua McCormick IMANN-1128 newSecondDescriptor uses firstLocality instead of null
+//    118   15.01.25 Joshua McCormick IMANN-1128 Ensure newSecondDescriptor doesnt return null for town/ref
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.3.0 changes
+//    116   16.01.25 Sean Flook      IMANN-1136 Clear the createToolActivated flag if required.
+//#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -4878,6 +4884,7 @@ function StreetDataForm({ data, loading }) {
     };
 
     informationContext.onClearInformation();
+    if (mapContext.createToolActivated) mapContext.onCreateToolActivated(false);
 
     failedValidation.current = false;
 
@@ -5126,6 +5133,7 @@ function StreetDataForm({ data, loading }) {
     };
 
     failedValidation.current = false;
+    if (mapContext.createToolActivated) mapContext.onCreateToolActivated(false);
 
     switch (action) {
       case "check":
@@ -5224,6 +5232,7 @@ function StreetDataForm({ data, loading }) {
     };
 
     failedValidation.current = false;
+    if (mapContext.createToolActivated) mapContext.onCreateToolActivated(false);
 
     switch (action) {
       case "check":
@@ -5320,6 +5329,7 @@ function StreetDataForm({ data, loading }) {
     };
 
     failedValidation.current = false;
+    if (mapContext.createToolActivated) mapContext.onCreateToolActivated(false);
 
     switch (action) {
       case "check":
@@ -5511,6 +5521,7 @@ function StreetDataForm({ data, loading }) {
     };
 
     failedValidation.current = false;
+    if (mapContext.createToolActivated) mapContext.onCreateToolActivated(false);
 
     switch (action) {
       case "check":
@@ -5607,6 +5618,7 @@ function StreetDataForm({ data, loading }) {
     };
 
     failedValidation.current = false;
+    if (mapContext.createToolActivated) mapContext.onCreateToolActivated(false);
 
     switch (action) {
       case "check":
@@ -5703,6 +5715,7 @@ function StreetDataForm({ data, loading }) {
     };
 
     failedValidation.current = false;
+    if (mapContext.createToolActivated) mapContext.onCreateToolActivated(false);
 
     switch (action) {
       case "check":
@@ -5799,6 +5812,7 @@ function StreetDataForm({ data, loading }) {
     };
 
     failedValidation.current = false;
+    if (mapContext.createToolActivated) mapContext.onCreateToolActivated(false);
 
     switch (action) {
       case "check":
@@ -5968,6 +5982,7 @@ function StreetDataForm({ data, loading }) {
           (x) => x.dualLanguageLink === newData.dualLanguageLink && x.language === secondLanguage
         );
       }
+
       const secondLocality = lookupContext.currentLookups.localities.find(
         (x) => x.linkedRef === newData.locRef && x.language === secondLanguage
       );
@@ -5978,30 +5993,44 @@ function StreetDataForm({ data, loading }) {
         (x) => x.linkedRef === newData.adminAreaRef && x.language === secondLanguage
       );
 
-      const newSecondDescriptor = {
-        changeType: secondDescriptor.changeType,
-        usrn: secondDescriptor.usrn,
-        streetDescriptor:
-          secondDescriptor && secondDescriptor.streetDescriptor
+      if (secondDescriptor) {
+        const newSecondDescriptor = {
+          ...secondDescriptor,
+          streetDescriptor: secondDescriptor.streetDescriptor
             ? secondDescriptor.streetDescriptor
             : newData.streetDescriptor,
-        locRef: secondLocality ? secondLocality.localityRef : null,
-        locality: secondLocality ? secondLocality.locality : null,
-        townRef: secondTown ? secondTown.townRef : null,
-        town: secondTown ? secondTown.town : null,
-        adminAreaRef: secondAdminAuthorities ? secondAdminAuthorities.administrativeAreaRef : null,
-        administrativeArea: secondAdminAuthorities ? secondAdminAuthorities.administrativeArea : null,
-        language: secondLanguage,
-        neverExport: newData.neverExport,
-        dualLanguageLink: secondDescriptor.dualLanguageLink,
-        pkId: secondDescriptor.pkId,
-      };
+          locRef: secondLocality ? secondLocality.localityRef : secondDescriptor.locRef,
+          locality: secondLocality ? secondLocality.locality : secondDescriptor.locality,
+          townRef: secondTown ? secondTown.townRef : secondDescriptor.townRef,
+          town: secondTown ? secondTown.town : secondDescriptor.town,
+          adminAreaRef: secondAdminAuthorities
+            ? secondAdminAuthorities.administrativeAreaRef
+            : secondDescriptor.adminAreaRef,
+          administrativeArea: secondAdminAuthorities
+            ? secondAdminAuthorities.administrativeArea
+            : secondDescriptor.administrativeArea,
+          language: secondLanguage,
+          neverExport: newData.neverExport,
+          dualLanguageLink: secondDescriptor.dualLanguageLink,
+          pkId: secondDescriptor.pkId,
+        };
 
-      newDescriptors = streetData.streetDescriptors.map(
-        (x) =>
-          [newData].find((descriptor) => descriptor.pkId === x.pkId) ||
-          [newSecondDescriptor].find((descriptor) => descriptor.pkId === x.pkId)
-      );
+        newDescriptors = streetData.streetDescriptors.map((desc) => {
+          if (desc.pkId === newData.pkId) {
+            return { ...desc, ...newData };
+          } else if (desc.pkId === newSecondDescriptor.pkId) {
+            return { ...desc, ...newSecondDescriptor };
+          }
+          return desc;
+        });
+      } else {
+        newDescriptors = streetData.streetDescriptors.map((desc) => {
+          if (desc.pkId === newData.pkId) {
+            return { ...desc, ...newData };
+          }
+          return desc;
+        });
+      }
     } else if (settingsContext.isScottish) {
       const secondLanguage = newData.language === "ENG" ? "GAE" : "ENG";
 
@@ -6013,22 +6042,27 @@ function StreetDataForm({ data, loading }) {
         const newSecondDescriptor = {
           ...secondDescriptor,
           language: secondLanguage,
-          streetDescriptor:
-            secondDescriptor && secondDescriptor.streetDescriptor
-              ? secondDescriptor.streetDescriptor
-              : newData.streetDescriptor,
+          streetDescriptor: secondDescriptor?.streetDescriptor
+            ? secondDescriptor.streetDescriptor
+            : newData.streetDescriptor,
           neverExport: newData.neverExport,
         };
 
-        newDescriptors = streetData.streetDescriptors.map(
-          (x) =>
-            [newData].find((descriptor) => descriptor.pkId === x.pkId) ||
-            [newSecondDescriptor].find((descriptor) => descriptor.pkId === x.pkId)
-        );
+        newDescriptors = streetData.streetDescriptors.map((desc) => {
+          if (desc.pkId === newData.pkId) {
+            return { ...desc, ...newData };
+          } else if (desc.pkId === newSecondDescriptor.pkId) {
+            return { ...desc, ...newSecondDescriptor };
+          }
+          return desc;
+        });
       } else {
-        newDescriptors = streetData.streetDescriptors.map((x) =>
-          [newData].find((descriptor) => descriptor.pkId === x.pkId)
-        );
+        newDescriptors = streetData.streetDescriptors.map((desc) => {
+          if (desc.pkId === newData.pkId) {
+            return { ...desc, ...newData };
+          }
+          return desc;
+        });
       }
     } else {
       newDescriptors = streetData.streetDescriptors.map((x) =>
