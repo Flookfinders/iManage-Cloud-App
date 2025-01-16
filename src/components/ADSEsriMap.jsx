@@ -131,6 +131,7 @@
 //    111   13.01.25 Sean Flook       IMANN-1135 Remember the visibility of the layers between redraws.
 //    112   13.01.25 Sean Flook       IMANN-1136 Various changes to improve editing provenances.
 //    113   13.01.25 Sean Flook       IMANN-1132 Ensure the reordering of the layers is correctly run.
+//    114   16.01.25 Sean Flook       IMANN-1135 When selecting properties adjust the opacity of the street layer.
 //#endregion Version 1.0.3.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -9612,7 +9613,7 @@ function ADSEsriMap(startExtent) {
           if (backgroundStreetLayerRef.current)
             backgroundStreetLayerRef.current.visible = mapContext.layerVisibility.backgroundStreets;
           if (unassignedEsusLayerRef.current) unassignedEsusLayerRef.current.visible = false;
-          if (streetLayer) streetLayer.visible = false;
+          if (streetLayer) streetLayer.opacity = 0.5;
           if (llpgStreetLayer) llpgStreetLayer.visible = false;
           if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.visible = false;
           if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.visible = false;
@@ -9651,7 +9652,7 @@ function ADSEsriMap(startExtent) {
           backgroundStreetLayerRef.current.visible = mapContext.layerVisibility.backgroundStreets;
         if (unassignedEsusLayerRef.current)
           unassignedEsusLayerRef.current.visible = mapContext.layerVisibility.unassignedEsus;
-        if (streetLayer) streetLayer.visible = true;
+        if (streetLayer) streetLayer.opacity = 1;
         if (llpgStreetLayer) llpgStreetLayer.visible = true;
         if (backgroundProvenanceLayerRef.current)
           backgroundProvenanceLayerRef.current.visible = mapContext.layerVisibility.backgroundProvenances;
