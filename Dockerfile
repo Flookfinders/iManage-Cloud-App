@@ -1,18 +1,18 @@
+# syntax=docker/dockerfile:1
+# escape=`
+
 FROM node:22-alpine
 
+LABEL description="iManage Cloud App."
 LABEL version="1.0.3.0"
-LABEL description="iManage Cloud image."
 LABEL maintainer="Idox Software Ltd"
 
-WORKDIR /imanage-icloud-docker/
+WORKDIR /imanage-icloud-docker
+COPY package.json ./package.json
+COPY package-lock.json ./package-lock.json
+
+RUN npm ci
+COPY . ./
 EXPOSE 3000
-
-COPY environments/ /imanage-icloud-docker/environments/
-COPY public/ /imanage-icloud-docker/public/
-COPY src/ /imanage-icloud-docker/src/
-COPY *.config.js /imanage-icloud-docker/
-COPY package.json /imanage-icloud-docker/
-
-RUN npm install
 
 CMD [ "npm", "run", "start:dev"]
